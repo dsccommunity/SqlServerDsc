@@ -78,7 +78,18 @@
         "sqlcmd",
         "PBIRS",
         "SSRS",
-        "DSCSQLTEST"
+        "DSCSQLTEST",
+        "unshallow",
+        "pullrequest",
+        "targetbranch",
+        "hqrm",
+        "sqlps",
+        "securestring",
+        "encryptorname",
+        "wsfc",
+        "SOURCEBRANCH",
+        "SOURCEBRANCHNAME",
+        "setvariable"
     ],
     "cSpell.ignorePaths": [
         ".git"

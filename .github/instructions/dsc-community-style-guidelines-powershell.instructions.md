@@ -1,6 +1,6 @@
 ---
 description: Guidelines for writing PowerShell scripts and modules.
-applyTo: "**/*.psm1,**/*.psd1,**/*.ps1"
+applyTo: "**/*.ps?(m|d)1"
 ---
 
 # PowerShell Guidelines
@@ -134,6 +134,7 @@ function Get-Something
 - Parameter type on line above parameter name
 - Parameters separated by blank line
 - Parameters should use full type name.
+- Pipeline parameters (`ValueFromPipeline = $true`) must be declared in ALL parameter sets
 
 ## Best Practices
 

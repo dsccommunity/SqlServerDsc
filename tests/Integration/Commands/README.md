@@ -40,6 +40,7 @@ to each other. Dependencies are made to speed up the testing.**
 Command | Run order # | Depends on # | Use instance
 --- | --- | --- | ---
 Install-SqlDscServer | 1 | - | -
+New-SqlDscLogin | 2 | 1 (Install-SqlDscServer), Prerequisites | DSCSQLTEST
 
 ## Integration Tests
 
@@ -52,6 +53,14 @@ first.
 
 Installs all the [instances](#instances).
 
+### `New-SqlDscLogin`
+
+Creates test logins on the DSCSQLTEST instance for use by other
+integration tests. Tests SQL Server logins, Windows user logins,
+and Windows group logins (using the local SqlIntegrationTestGroup).
+The main test login `IntegrationTestSqlLogin` and the Windows group
+login for `.\SqlIntegrationTestGroup` are left in place after the
+test completes so other tests can use them for validation.
 ## Dependencies
 
 ### SqlServer module
@@ -102,14 +111,27 @@ User | Password | Permission | Description
 --- | --- | --- | ---
 .\SqlInstall | P@ssw0rd1 | Local Windows administrator and sysadmin | Runs Setup for all the instances.
 .\SqlAdmin | P@ssw0rd1 | Local Windows user and sysadmin | Administrator of all the SQL Server instances.
+.\SqlIntegrationTest | P@ssw0rd1 | Local Windows user | User for SQL integration testing.
 .\svc-SqlPrimary | yig-C^Equ3 | Local Windows user. | Runs the SQL Server service.
 .\svc-SqlAgentPri | yig-C^Equ3 | Local Windows user. | Runs the SQL Server Agent service.
 .\svc-SqlSecondary | yig-C^Equ3 | Local Windows user. | Runs the SQL Server service in multi node scenarios.
 .\svc-SqlAgentSec | yig-C^Equ3 | Local Windows user. | Runs the SQL Server Agent service in multi node scenarios.
 
+### Groups
+
+The following local groups are created and can be used by integration tests.
+
+Group | Description
+--- | ---
+.\SqlIntegrationTestGroup | Local Windows group for SQL integration testing.
+
+### SQL Server Logins
+
 Login | Password | Permission | Description
 --- | --- | --- | ---
 sa | P@ssw0rd1 | sysadmin | Administrator of all the Database Engine instances.
+IntegrationTestSqlLogin | P@ssw0rd123! | - | SQL Server login created by New-SqlDscLogin integration tests for testing purposes.
+.\SqlIntegrationTestGroup | - | - | Windows group login created by New-SqlDscLogin integration tests for testing purposes.
 <!-- markdownlint-enable MD013 -->
 
 ### Image media (ISO)

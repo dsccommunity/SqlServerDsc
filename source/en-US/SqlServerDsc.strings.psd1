@@ -67,6 +67,13 @@ ConvertFrom-StringData @'
     Login_Get_RetrievingByName = Retrieving login by name '{0}' from server '{1}'.
     Login_Get_ReturningAllLogins = Returning all logins from server '{0}'.
 
+    ## Remove-SqlDscLogin
+    Login_Remove_ShouldProcessVerboseDescription = Removing the login '{0}' on the instance '{1}'.
+    Login_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove the login '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Login_Remove_ShouldProcessCaption = Remove login on instance
+    Login_Remove_Failed = Removal of the login '{0}' failed. (RSDL0001)
+
     ## Remove-SqlDscAudit
     Audit_Remove_ShouldProcessVerboseDescription = Removing the audit '{0}' on the instance '{1}'.
     Audit_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove the audit '{0}'?
@@ -261,4 +268,12 @@ ConvertFrom-StringData @'
     Role_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove the server role '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Role_Remove_ShouldProcessCaption = Remove server role from instance
+
+    ## New-SqlDscLogin
+    Login_Add_ShouldProcessVerboseDescription = Creating the login '{0}' of type '{1}' on the instance '{2}'.
+    Login_Add_ShouldProcessVerboseWarning = Are you sure you want to create the login '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Login_Add_ShouldProcessCaption = Create login on instance
+    Login_Add_LoginCreated = Successfully created login '{0}' on the instance '{1}'.
+    Login_Add_LoginAlreadyExists = The login '{0}' already exists on the instance '{1}'.
 '@

@@ -91,20 +91,30 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                # Set the target branch for comparison
-                $targetBranch = "origin/$(System.PullRequest.TargetBranch)"
-                if (-not $env:SYSTEM_PULLREQUEST_TARGETBRANCH) {
-                    $targetBranch = "origin/main"
+                # Determine if we should run DSC resource integration tests based on branch logic
+                $shouldRun = $false
+
+                if ($env:SYSTEM_PULLREQUEST_TARGETBRANCH)
+                {
+                    $targetBranch = "origin/$env:SYSTEM_PULLREQUEST_TARGETBRANCH"
+                    Write-Host "Pull request detected, targeting branch $targetBranch. Using script analysis to determine test requirements."
+                    $shouldRun = & ./.build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch $targetBranch -CurrentBranch 'HEAD'
                 }
-
-                Write-Output "Target branch: $targetBranch"
-                Write-Output "Current branch: HEAD"
-
-                # Run the script to determine if DSC resource integration tests should run
-                $shouldRun = ./.build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch $targetBranch -CurrentBranch HEAD
+                elseif ($env:BUILD.SOURCEBRANCHNAME -eq '$(defaultBranch)')
+                {
+                    Write-Host "Target is default branch ($(defaultBranch)). Always running DSC resource integration tests."
+                    $shouldRun = $true
+                }
+                else
+                {
+                    Write-Host "Target is non-default branch ($env:BUILD.SOURCEBRANCH). Using script analysis to determine test requirements against default branch."
+                    $shouldRun = & ./.build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch "origin/$(defaultBranch)" -CurrentBranch 'HEAD' -UseMergeBase
+                }
 
                 # Set Azure DevOps output variable for pipeline conditions
                 Write-Host "##vso[task.setvariable variable=ShouldRunDscResourceIntegrationTests;isOutput=true]$shouldRun"
+
+                Write-Host "Variable ShouldRunDscResourceIntegrationTests is set to: $shouldRun"
               pwsh: true
 
       - job: Test_HQRM
@@ -282,10 +292,13 @@ stages:
                   'tests/Integration/Commands/Connect-SqlDscDatabaseEngine.Integration.Tests.ps1'
                   # Group 2
                   'tests/Integration/Commands/Assert-SqlDscLogin.Integration.Tests.ps1'
+                  'tests/Integration/Commands/New-SqlDscLogin.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscLogin.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRole.Integration.Tests.ps1'
                   'tests/Integration/Commands/New-SqlDscRole.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscRole.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Remove-SqlDscLogin.Integration.Tests.ps1'
+
                   # Group 9
                   'tests/Integration/Commands/Uninstall-SqlDscServer.Integration.Tests.ps1'
               )
@@ -440,7 +453,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'True')
+        eq(lower(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests']), 'true')
       )
     jobs:
       - job: Test_Integration
@@ -538,7 +551,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'True')
+        eq(lower(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests']), 'true')
       )
     jobs:
       - job: Test_Integration
@@ -633,7 +646,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'True')
+        eq(lower(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests']), 'true')
       )
     jobs:
       - job: Test_Integration
@@ -709,7 +722,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'True')
+        eq(lower(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests']), 'true')
       )
     jobs:
       - job: Test_Integration
@@ -776,7 +789,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'True')
+        eq(lower(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests']), 'true')
       )
     jobs:
       - job: Test_Integration

@@ -23,6 +23,7 @@ applyTo: "**"
 - Integration tests: `tests/Integration/Commands/{CommandName}.Integration.Tests.ps1`
 
 ## Requirements
+- Follow guidelines over existing code patterns
 - Always update CHANGELOG.md Unreleased section
 - Localize all strings using string keys
 - Check DscResource.Common before creating private functions
