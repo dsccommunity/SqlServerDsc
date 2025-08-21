@@ -105,12 +105,29 @@ Describe 'New-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017', '
         }
 
         It 'Should throw an error when creating a role that already exists' {
-            # First, create the role
-            New-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -Force
+            # Use a unique role name for this test to avoid conflicts
+            $duplicateTestRoleName = 'DuplicateTestRole_' + (Get-Random)
+            
+            try {
+                # First, create the role
+                New-SqlDscRole -ServerObject $script:serverObject -Name $duplicateTestRoleName -Force
 
-            # Then try to create it again, should fail
-            { New-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -Force -ErrorAction 'Stop' } |
-                Should -Throw
+                # Then try to create it again, should fail
+                { New-SqlDscRole -ServerObject $script:serverObject -Name $duplicateTestRoleName -Force -ErrorAction 'Stop' } |
+                    Should -Throw
+            }
+            finally {
+                # Clean up the duplicate test role
+                try {
+                    $roleToCleanup = Get-SqlDscRole -ServerObject $script:serverObject -Name $duplicateTestRoleName -ErrorAction 'SilentlyContinue'
+                    if ($roleToCleanup) {
+                        Remove-SqlDscRole -RoleObject $roleToCleanup -Force
+                    }
+                }
+                catch {
+                    # Ignore cleanup errors
+                }
+            }
         }
     }
 
