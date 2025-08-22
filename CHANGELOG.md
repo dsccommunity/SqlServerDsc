@@ -27,29 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     exists as a login, throwing a terminating error if it doesn't exist.
   - Supports pipeline input and provides detailed error messages with localization.
   - Uses `Test-SqlDscIsLogin` command for login validation following module patterns.
-- `Get-SqlDscLogin`
-  - Added new public command to get a SQL Server login from a Database Engine instance.
-  - Returns a `Microsoft.SqlServer.Management.Smo.Login` object that represents
-    the login.
-  - Supports getting a specific login by name or all logins if no name is specified.
-  - Includes a `-Refresh` parameter to refresh the server's login collection
-    before retrieval.
-- `Remove-SqlDscLogin`
-  - Added new public command to remove a SQL Server login from a Database
-    Engine instance.
-  - Supports removing a login by specifying a `ServerObject` and `Name`, or by
-    passing a `LoginObject` through the pipeline.
-  - Includes confirmation prompts with `-Force` parameter to bypass confirmation.
-  - Includes a `-Refresh` parameter to refresh the server's login collection
-    before attempting removal.
-  - Provides detailed error messages with localization support.
-- `New-SqlDscLogin`
-  - Added new public command to create a new login on a SQL Server Database
-    Engine instance.
-  - Supports creating SQL Server logins, Windows user logins, Windows group
-    logins, certificate-based logins, and asymmetric key-based logins.
-  - Implements proper parameter sets to prevent combining hashed passwords
-    with password policy options, following SQL Server restrictions.
+- Added `Get-SqlDscLogin`, `Get-SqlDscRole`, `New-SqlDscLogin`, `New-SqlDscRole`, `Remove-SqlDscRole`, and `Remove-SqlDscLogin` commands for retrieving and managing SQL Server logins and roles with support for refresh, pipeline input, and ShouldProcess.
 
 ### Changed
 
