@@ -75,14 +75,11 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017'
 
     Context 'When removing a SQL Server role by name' {
         BeforeEach {
-            # Clean up any existing test role first
+            # Only create test role if it doesn't exist
             $existingRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Ignore'
-            if ($existingRole) {
-                Remove-SqlDscRole -RoleObject $existingRole -Force -ErrorAction 'Ignore'
+            if (-not $existingRole) {
+                New-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -Force
             }
-
-            # Create a test role for each test
-            New-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -Force
         }
 
         It 'Should remove a role when it exists' {
@@ -91,7 +88,7 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017'
             $existingRole | Should -Not -BeNullOrEmpty
 
             # Remove the role
-            { Remove-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -Force } | Should -Not -Throw
+            Remove-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -Force
 
             # Verify the role no longer exists
             $removedRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'SilentlyContinue'
@@ -116,7 +113,7 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017'
             $existingRole | Should -Not -BeNullOrEmpty
 
             # Remove the shared role
-            { Remove-SqlDscRole -ServerObject $script:serverObject -Name $script:sharedTestRoleForRemoval -Force } | Should -Not -Throw
+            Remove-SqlDscRole -ServerObject $script:serverObject -Name $script:sharedTestRoleForRemoval -Force
 
             # Verify the role no longer exists
             $removedRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:sharedTestRoleForRemoval -ErrorAction 'SilentlyContinue'
@@ -134,14 +131,11 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017'
 
     Context 'When removing a SQL Server role by object' {
         BeforeEach {
-            # Clean up any existing test role first
+            # Only create test role if it doesn't exist
             $existingRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleNameByObject -ErrorAction 'Ignore'
-            if ($existingRole) {
-                Remove-SqlDscRole -RoleObject $existingRole -Force -ErrorAction 'Ignore'
+            if (-not $existingRole) {
+                New-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleNameByObject -Force
             }
-
-            # Create a test role for each test
-            New-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleNameByObject -Force
         }
 
         It 'Should remove a role when passed a role object' {
@@ -149,7 +143,7 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017'
             $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleNameByObject
 
             # Remove the role using the object
-            { Remove-SqlDscRole -RoleObject $roleObject -Force } | Should -Not -Throw
+            Remove-SqlDscRole -RoleObject $roleObject -Force
 
             # Verify the role no longer exists
             $removedRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleNameByObject -ErrorAction 'SilentlyContinue'
@@ -167,14 +161,11 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017'
 
     Context 'When using pipeline input' {
         BeforeEach {
-            # Clean up any existing test role first
+            # Only create test role if it doesn't exist
             $existingRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Ignore'
-            if ($existingRole) {
-                Remove-SqlDscRole -RoleObject $existingRole -Force -ErrorAction 'Ignore'
+            if (-not $existingRole) {
+                New-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -Force
             }
-
-            # Create a test role for each test
-            New-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -Force
         }
 
         It 'Should accept ServerObject from pipeline for removal by name' {
@@ -183,7 +174,7 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017'
             $existingRole | Should -Not -BeNullOrEmpty
 
             # Remove the role using pipeline
-            { $script:serverObject | Remove-SqlDscRole -Name $script:testRoleName -Force } | Should -Not -Throw
+            $script:serverObject | Remove-SqlDscRole -Name $script:testRoleName -Force
 
             # Verify the role no longer exists
             $removedRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'SilentlyContinue'
@@ -194,7 +185,7 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017'
             # Get the role object and remove it via pipeline
             $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName
 
-            { $roleObject | Remove-SqlDscRole -Force } | Should -Not -Throw
+            $roleObject | Remove-SqlDscRole -Force
 
             # Verify the role no longer exists
             $removedRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'SilentlyContinue'

@@ -95,49 +95,19 @@ Describe 'New-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017', '
             $result.Owner | Should -Be 'sa'
             $result.IsFixedRole | Should -BeFalse
         }
-
-        It 'Should throw an error when creating a role that already exists' {
-            # Use a unique role name for this test to avoid conflicts
-            $duplicateTestRoleName = 'DuplicateTestRole_' + (Get-Random)
-
-            try {
-                # First, create the role
-                New-SqlDscRole -ServerObject $script:serverObject -Name $duplicateTestRoleName -Force
-
-                # Then try to create it again, should fail
-                { New-SqlDscRole -ServerObject $script:serverObject -Name $duplicateTestRoleName -Force -ErrorAction 'Stop' } |
-                    Should -Throw
-            }
-            finally {
-                # Clean up the duplicate test role
-                $roleToCleanup = Get-SqlDscRole -ServerObject $script:serverObject -Name $duplicateTestRoleName -ErrorAction 'Ignore'
-                if ($roleToCleanup) {
-                    Remove-SqlDscRole -RoleObject $roleToCleanup -Force -ErrorAction 'Ignore'
-                }
-            }
-        }
     }
 
     Context 'When using pipeline input' {
         It 'Should accept ServerObject from pipeline' {
             $uniqueRoleName = 'PipelineTestRole_' + (Get-Random)
 
-            try
-            {
-                $result = $script:serverObject | New-SqlDscRole -Name $uniqueRoleName -Force
+            $result = $script:serverObject | New-SqlDscRole -Name $uniqueRoleName -Force
 
-                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
-                $result.Name | Should -Be $uniqueRoleName
-            }
-            finally
-            {
-                # Clean up
-                $roleToCleanup = Get-SqlDscRole -ServerObject $script:serverObject -Name $uniqueRoleName -ErrorAction 'Ignore'
-                if ($roleToCleanup)
-                {
-                    Remove-SqlDscRole -RoleObject $roleToCleanup -Force -ErrorAction 'Ignore'
-                }
-            }
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
+            $result.Name | Should -Be $uniqueRoleName
+
+            # Clean up the pipeline test role
+            Remove-SqlDscRole -RoleObject $result -Force -ErrorAction 'Ignore'
         }
     }
 
@@ -184,6 +154,14 @@ Describe 'New-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017', '
             $verifyRole | Should -Not -BeNullOrEmpty
             $verifyRole.Name | Should -Be $script:persistentTestRole
             $verifyRole.Owner | Should -Be 'sa'
+        }
+    }
+
+    Context 'When attempting to create duplicate roles' {
+        It 'Should throw an error when creating a role that already exists' {
+            # Try to re-create the persistent role which should already exist
+            { New-SqlDscRole -ServerObject $script:serverObject -Name $script:persistentTestRole -Force -ErrorAction 'Stop' } |
+                Should -Throw -ExpectedMessage "*already exists*"
         }
     }
 }
