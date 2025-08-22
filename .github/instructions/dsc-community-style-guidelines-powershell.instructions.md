@@ -151,7 +151,7 @@ function Get-Something
 - Use `PSCredential` for credentials
 - Avoid hardcoded computer names, use cross-platform [`Get-ComputerName`](https://github.com/dsccommunity/DscResource.Common/wiki/Get%E2%80%91ComputerName) instead of `$env:COMPUTERNAME`
 - Place `$null` on left side of comparisons
-- Avoid empty catch blocks (use `-ErrorAction SilentlyContinue`)
+- Avoid empty catch blocks (use `-ErrorAction Ignore`)
 - Don't use `Invoke-Expression` (use `&` operator)
 - Use CIM commands instead of WMI commands
 
@@ -165,7 +165,7 @@ function Get-Something
 
 ## File Rules
 
-- End files with newline
+- End files with a blank line
 - Use CR+LF line endings
 - Maximum two consecutive newlines
 
