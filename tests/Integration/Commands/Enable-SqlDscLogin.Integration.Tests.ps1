@@ -61,10 +61,10 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
             $testLogin = $script:serverObject.Logins[$script:testLoginName]
             if ($testLogin.IsDisabled -eq $false)
             {
-                $testLogin.Disable()
-                $testLogin.Refresh()
+                Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force
             }
         }
+
         It 'Should enable the specified login' {
             # Verify login is initially disabled
             $loginBefore = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
@@ -103,10 +103,10 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
             $testLogin = $script:serverObject.Logins[$script:testLoginName]
             if ($testLogin.IsDisabled -eq $false)
             {
-                $testLogin.Disable()
-                $testLogin.Refresh()
+                Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force
             }
         }
+
         It 'Should enable the specified login object' {
             # Get the login object and enable it
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
