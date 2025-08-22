@@ -57,12 +57,7 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
 
     Context 'When enabling a login using ServerObject parameter set' {
         BeforeEach {
-            # Ensure the login is disabled before each test
-            $testLogin = $script:serverObject.Logins[$script:testLoginName]
-            if ($testLogin.IsDisabled -eq $false)
-            {
-                Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force
-            }
+            Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force -ErrorAction 'Stop'
         }
 
         It 'Should enable the specified login' {
@@ -99,12 +94,7 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
 
     Context 'When enabling a login using LoginObject parameter set' {
         BeforeEach {
-            # Ensure the login is disabled before each test
-            $testLogin = $script:serverObject.Logins[$script:testLoginName]
-            if ($testLogin.IsDisabled -eq $false)
-            {
-                Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force
-            }
+            Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force -ErrorAction 'Stop'
         }
 
         It 'Should enable the specified login object' {
