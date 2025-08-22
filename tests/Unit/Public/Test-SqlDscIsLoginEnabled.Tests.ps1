@@ -169,4 +169,3 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag 'Public' {
         }
     }
 }
-

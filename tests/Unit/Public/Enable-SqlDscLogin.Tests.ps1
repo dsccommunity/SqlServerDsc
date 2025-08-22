@@ -153,4 +153,3 @@ Describe 'Enable-SqlDscLogin' -Tag 'Public' {
         }
     }
 }
-

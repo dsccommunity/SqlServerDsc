@@ -84,4 +84,3 @@ function Test-SqlDscIsLoginEnabled
         return $loginEnabled
     }
 }
-

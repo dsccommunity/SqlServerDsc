@@ -904,4 +904,3 @@ stages:
               GitHubToken: $(GitHubToken)
               ReleaseBranch: $(defaultBranch)
               MainGitBranch: $(defaultBranch)
-

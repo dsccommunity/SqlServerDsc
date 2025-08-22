@@ -289,5 +289,3 @@ ConvertFrom-StringData @'
     Login_Add_LoginCreated = Successfully created login '{0}' on the instance '{1}'.
     Login_Add_LoginAlreadyExists = The login '{0}' already exists on the instance '{1}'.
 '@
-
-

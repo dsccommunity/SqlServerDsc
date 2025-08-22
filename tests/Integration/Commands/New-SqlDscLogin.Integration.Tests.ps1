@@ -218,7 +218,7 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
                     # Disable using login object
                     Disable-SqlDscLogin -LoginObject $loginObject -Force
 
-                    # Verify it is disabled using login object  
+                    # Verify it is disabled using login object
                     Test-SqlDscIsLoginEnabled -LoginObject $loginObject | Should -BeFalse
 
                     # Re-enable using login object
