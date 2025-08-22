@@ -357,11 +357,13 @@ namespace Microsoft.SqlServer.Management.Smo
 
         public string Name;
         public LoginType LoginType = LoginType.Unknown;
+        public bool MockCreateCalled = false;
         public bool MustChangePassword = false;
         public bool PasswordPolicyEnforced = false;
         public bool PasswordExpirationEnabled = false;
         public bool IsDisabled = false;
         public string DefaultDatabase;
+        public Server Parent;
 
         public Login( string name )
         {
@@ -371,11 +373,16 @@ namespace Microsoft.SqlServer.Management.Smo
         public Login( Server server, string name )
         {
             this.Name = name;
+            this.Parent = server;
         }
 
         public Login( Object server, string name )
         {
             this.Name = name;
+            if (server is Server)
+            {
+                this.Parent = (Server)server;
+            }
         }
 
         public void Alter()
@@ -427,6 +434,8 @@ namespace Microsoft.SqlServer.Management.Smo
             if( this.LoginType == LoginType.SqlLogin && _mockPasswordPassed != true ) {
                 throw new System.Exception( "Called Create() method for the LoginType 'SqlLogin' but called with the wrong overloaded method. Did not pass the password with the Create() method." );
             }
+
+            this.MockCreateCalled = true;
         }
 
         public void Create( SecureString secureString )
@@ -477,6 +486,20 @@ namespace Microsoft.SqlServer.Management.Smo
                 Marshal.ZeroFreeGlobalAllocUnicode(valuePtr);
             }
         }
+
+        public void Disable()
+        {
+            this.IsDisabled = true;
+        }
+
+        public void Enable()
+        {
+            this.IsDisabled = false;
+        }
+
+        public string Certificate;
+        public string AsymmetricKey;
+        public string Language;
 
         public void Drop()
         {

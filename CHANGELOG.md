@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Make sure tests forcibly imports the module being tested to avoid AI failing
   when testing changes.
+- Fixed Azure DevOps pipeline conditions that were preventing DSC resource
+  integration tests from running when they should by removing incorrect quotes
+  around boolean values.
 
 ### Added
 
@@ -16,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Switch the workflow to use Linux.
   - Attempt to unshallow the Copilot branch
   - Improved AI instructions.
+  - Enhanced workflow with proper environment variable configuration and DSCv3 verification.
+  - Fixed environment variable persistence by using $GITHUB_ENV instead of
+    job-level env declaration.
 - `Assert-SqlDscLogin`
   - Added new public command to validate that a specified SQL Server principal
     is a login
@@ -28,16 +34,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     exists as a login, throwing a terminating error if it doesn't exist.
   - Supports pipeline input and provides detailed error messages with localization.
   - Uses `Test-SqlDscIsLogin` command for login validation following module patterns.
-- `Get-SqlDscLogin`
-  - Added new public command to get a SQL Server login from a Database Engine instance.
-  - Returns a `Microsoft.SqlServer.Management.Smo.Login` object that represents
-    the login.
-  - Supports getting a specific login by name or all logins if no name is specified.
-  - Includes a `-Refresh` parameter to refresh the server's login collection
-    before retrieval.
+- Added `Get-SqlDscLogin`, `Get-SqlDscRole`, `New-SqlDscLogin`, `New-SqlDscRole`, `Remove-SqlDscRole`, and `Remove-SqlDscLogin` commands for retrieving and managing SQL Server logins and roles with support for refresh, pipeline input, and ShouldProcess.
 
 ### Changed
 
+- Refactored GitHub Copilot workflow setup to be module-agnostic via MODULE_NAME
+  environment variable, includes full-history detection, uses idempotent .NET
+  tool install, and adds Linux dependency handling ([issue #2127](https://github.com/dsccommunity/SqlServerDsc/issues/2127)).
+- Module now outputs a verbose message instead of a warning when the SMO
+  dependency module is missing during import to work around a DSC v3 issue.
+- VS Code tasks configuration was improved to support AI.
+- `Prerequisites` tests
+  - Added creation of `SqlIntegrationTest` local Windows user for integration testing.
+- `tests/Integration/Commands/README.md`
+  - Added documentation for `SqlIntegrationTest` user and
+    `IntegrationTestSqlLogin` login.
+  - Added run order information for `New-SqlDscLogin` integration test.
 - `azure-pipelines.yml`
   - Remove `windows-2019` images fixes [#2106](https://github.com/dsccommunity/SqlServerDsc/issues/2106).
   - Move individual tasks to `windows-latest`.
@@ -54,7 +66,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     resources, public commands used by resources, or related components.
   - Unit tests, QA tests, and command integration tests continue to run for
     all changes.
-  - Provides time savings for non-DSC changes while maintaining coverage.
+- Bump actions/checkout task to v5.
+- `.build/Test-ShouldRunDscResourceIntegrationTests.ps1`
+  - Improved performance by adding an early optimization to check for changes
+    under the configured SourcePath before expensive analysis.
+  - Moved public command discovery to only run when source changes are detected.
+- `.build/README.md`
+  - Added flow diagram showing decision process for DSC resource integration tests.
+  - Improved documentation with optimized analysis workflow description.
+- DSC community style guidelines
+  - Added requirement to follow guidelines over existing code patterns.
+- Improved markdown, pester, powershell, and changelog instructions.
+  - Fixed `Ingore` that seems in edge-cases fail.
 
 ## [17.1.0] - 2025-05-22
 

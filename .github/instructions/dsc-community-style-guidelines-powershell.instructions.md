@@ -1,6 +1,6 @@
 ---
 description: Guidelines for writing PowerShell scripts and modules.
-applyTo: "**/*.psm1,**/*.psd1,**/*.ps1"
+applyTo: "**/*.ps?(m|d)1"
 ---
 
 # PowerShell Guidelines
@@ -134,6 +134,7 @@ function Get-Something
 - Parameter type on line above parameter name
 - Parameters separated by blank line
 - Parameters should use full type name.
+- Pipeline parameters (`ValueFromPipeline = $true`) must be declared in ALL parameter sets
 
 ## Best Practices
 
@@ -150,7 +151,7 @@ function Get-Something
 - Use `PSCredential` for credentials
 - Avoid hardcoded computer names, use cross-platform [`Get-ComputerName`](https://github.com/dsccommunity/DscResource.Common/wiki/Get%E2%80%91ComputerName) instead of `$env:COMPUTERNAME`
 - Place `$null` on left side of comparisons
-- Avoid empty catch blocks (use `-ErrorAction SilentlyContinue`)
+- Avoid empty catch blocks (instead use `-ErrorAction SilentlyContinue`)
 - Don't use `Invoke-Expression` (use `&` operator)
 - Use CIM commands instead of WMI commands
 
@@ -164,7 +165,7 @@ function Get-Something
 
 ## File Rules
 
-- End files with newline
+- End files with a blank line
 - Use CR+LF line endings
 - Maximum two consecutive newlines
 
