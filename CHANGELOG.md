@@ -69,6 +69,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved documentation with optimized analysis workflow description.
 - DSC community style guidelines
   - Added requirement to follow guidelines over existing code patterns.
+- Improved markdown, pester, powershell, and changelog instructions.
+  - Fixed `Ingore` that seems in edge-cases fail.
 
 ## [17.1.0] - 2025-05-22
 
