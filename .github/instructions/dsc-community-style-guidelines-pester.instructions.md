@@ -47,5 +47,5 @@ applyTo: "**/*.[Tt]ests.ps1"
 - Keep results and assertions in same `It` block
 - Cover all scenarios and code paths
 - Use `BeforeEach` and `AfterEach` sparingly
-- Avoid try-catch for cleanup, use `AfterAll` or `AfterEach`
+- Avoid try-catch-finally for cleanup, use `AfterAll` or `AfterEach`
 - Avoid unnecessary remove/recreate cycles
