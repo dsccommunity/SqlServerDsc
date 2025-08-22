@@ -98,16 +98,25 @@ Describe 'New-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017', '
     }
 
     Context 'When using pipeline input' {
+        BeforeAll {
+            $script:pipelineTestRole = $null
+        }
+
         It 'Should accept ServerObject from pipeline' {
             $uniqueRoleName = 'PipelineTestRole_' + (Get-Random)
 
-            $result = $script:serverObject | New-SqlDscRole -Name $uniqueRoleName -Force
+            $script:pipelineTestRole = $script:serverObject | New-SqlDscRole -Name $uniqueRoleName -Force
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
-            $result.Name | Should -Be $uniqueRoleName
+            $script:pipelineTestRole | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
+            $script:pipelineTestRole.Name | Should -Be $uniqueRoleName
+        }
 
+        AfterAll {
             # Clean up the pipeline test role
-            Remove-SqlDscRole -RoleObject $result -Force -ErrorAction 'Ignore'
+            if ($script:pipelineTestRole)
+            {
+                Remove-SqlDscRole -RoleObject $script:pipelineTestRole -Force -ErrorAction 'Ignore'
+            }
         }
     }
 
