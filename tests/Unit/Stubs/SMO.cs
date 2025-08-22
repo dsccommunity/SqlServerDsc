@@ -504,16 +504,6 @@ namespace Microsoft.SqlServer.Management.Smo
         public void Drop()
         {
         }
-
-        public void Enable()
-        {
-            this.IsDisabled = false;
-        }
-
-        public void Disable()
-        {
-            this.IsDisabled = true;
-        }
     }
 
     // TypeName: Microsoft.SqlServer.Management.Smo.ServerRole
