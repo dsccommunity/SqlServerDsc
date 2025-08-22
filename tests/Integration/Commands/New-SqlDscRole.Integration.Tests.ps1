@@ -55,16 +55,16 @@ Describe 'New-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017', '
 
     AfterAll {
         # Clean up only the temporary test roles, not the shared ones
-        $existingRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Ignore'
+        $existingRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'SilentlyContinue'
         if ($existingRole)
         {
-            Remove-SqlDscRole -RoleObject $existingRole -Force -ErrorAction 'Ignore'
+            Remove-SqlDscRole -RoleObject $existingRole -Force -ErrorAction 'SilentlyContinue'
         }
 
-        $existingRoleWithOwner = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleNameWithOwner -ErrorAction 'Ignore'
+        $existingRoleWithOwner = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleNameWithOwner -ErrorAction 'SilentlyContinue'
         if ($existingRoleWithOwner)
         {
-            Remove-SqlDscRole -RoleObject $existingRoleWithOwner -Force -ErrorAction 'Ignore'
+            Remove-SqlDscRole -RoleObject $existingRoleWithOwner -Force -ErrorAction 'SilentlyContinue'
         }
 
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
@@ -115,7 +115,7 @@ Describe 'New-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017', '
             # Clean up the pipeline test role
             if ($script:pipelineTestRole)
             {
-                Remove-SqlDscRole -RoleObject $script:pipelineTestRole -Force -ErrorAction 'Ignore'
+                Remove-SqlDscRole -RoleObject $script:pipelineTestRole -Force -ErrorAction 'SilentlyContinue'
             }
         }
     }
