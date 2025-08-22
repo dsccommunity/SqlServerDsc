@@ -44,35 +44,11 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
 
         $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
 
-        # Create a test login for testing
-        $script:testLoginName = 'TestLogin_Enable'
-        $testLoginPassword = ConvertTo-SecureString -String 'P@ssw0rd123!' -AsPlainText -Force
-
-        # Create the login if it doesn't exist
-        $existingLogin = $script:serverObject.Logins[$script:testLoginName]
-        if (-not $existingLogin)
-        {
-            $newLogin = [Microsoft.SqlServer.Management.Smo.Login]::new($script:serverObject, $script:testLoginName)
-            $newLogin.LoginType = 'SqlLogin'
-            $newLogin.Create($testLoginPassword)
-        }
-
-        # Ensure the login is initially disabled for testing
-        $testLogin = $script:serverObject.Logins[$script:testLoginName]
-        if ($testLogin.IsDisabled -eq $false)
-        {
-            $testLogin.Disable()
-        }
+        # Use existing persistent login for testing
+        $script:testLoginName = 'IntegrationTestSqlLogin'
     }
 
     AfterAll {
-        # Clean up test login
-        $testLogin = $script:serverObject.Logins[$script:testLoginName]
-        if ($testLogin)
-        {
-            $testLogin.Drop()
-        }
-
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
 
         # Stop the named instance SQL Server service to save memory on the build worker.
@@ -80,6 +56,15 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
     }
 
     Context 'When enabling a login using ServerObject parameter set' {
+        BeforeEach {
+            # Ensure the login is disabled before each test
+            $testLogin = $script:serverObject.Logins[$script:testLoginName]
+            if ($testLogin.IsDisabled -eq $false)
+            {
+                $testLogin.Disable()
+                $testLogin.Refresh()
+            }
+        }
         It 'Should enable the specified login' {
             # Verify login is initially disabled
             $loginBefore = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
@@ -94,9 +79,6 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         }
 
         It 'Should enable the login with Refresh parameter' {
-            # First disable the login
-            Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force
-
             # Enable with Refresh parameter
             Enable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh -Force
 
@@ -106,9 +88,6 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         }
 
         It 'Should accept ServerObject from pipeline' {
-            # First disable the login
-            Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force
-
             # Enable using pipeline
             $script:serverObject | Enable-SqlDscLogin -Name $script:testLoginName -Force
 
@@ -119,10 +98,16 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
     }
 
     Context 'When enabling a login using LoginObject parameter set' {
+        BeforeEach {
+            # Ensure the login is disabled before each test
+            $testLogin = $script:serverObject.Logins[$script:testLoginName]
+            if ($testLogin.IsDisabled -eq $false)
+            {
+                $testLogin.Disable()
+                $testLogin.Refresh()
+            }
+        }
         It 'Should enable the specified login object' {
-            # First disable the login
-            Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force
-
             # Get the login object and enable it
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
             Enable-SqlDscLogin -LoginObject $loginObject -Force
@@ -133,9 +118,6 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         }
 
         It 'Should accept LoginObject from pipeline' {
-            # First disable the login
-            Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force
-
             # Enable using pipeline
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
             $loginObject | Enable-SqlDscLogin -Force

@@ -44,28 +44,11 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2016', 'Integration_
 
         $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
 
-        # Create a test login for testing
-        $script:testLoginName = 'TestLogin_IsEnabled'
-        $testLoginPassword = ConvertTo-SecureString -String 'P@ssw0rd123!' -AsPlainText -Force
-
-        # Create the login if it doesn't exist
-        $existingLogin = $script:serverObject.Logins[$script:testLoginName]
-        if (-not $existingLogin)
-        {
-            $newLogin = [Microsoft.SqlServer.Management.Smo.Login]::new($script:serverObject, $script:testLoginName)
-            $newLogin.LoginType = 'SqlLogin'
-            $newLogin.Create($testLoginPassword)
-        }
+        # Use existing persistent login for testing
+        $script:testLoginName = 'IntegrationTestSqlLogin'
     }
 
     AfterAll {
-        # Clean up test login
-        $testLogin = $script:serverObject.Logins[$script:testLoginName]
-        if ($testLogin)
-        {
-            $testLogin.Drop()
-        }
-
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
 
         # Stop the named instance SQL Server service to save memory on the build worker.
