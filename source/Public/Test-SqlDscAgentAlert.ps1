@@ -77,7 +77,7 @@ function Test-SqlDscAgentAlert
 
         $alertObject = Get-AgentAlertObject -ServerObject $ServerObject -Name $Name
 
-        if (-not $alertObject)
+        if ($null -eq $alertObject)
         {
             Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_AlertNotFound -f $Name)
 
