@@ -15,6 +15,10 @@ applyTo: "**/*.ps?(m|d)1"
 - Classes: PascalCase
 - Include scope for script/global/environment variables: `$script:`, `$global:`, `$env:`
 
+## File naming
+
+- Class files: `###.ClassName.ps1` format (e.g. `001.SqlReason.ps1`, `004.StartupParameters.ps1`)
+
 ## Formatting
 
 ### Indentation & Spacing
