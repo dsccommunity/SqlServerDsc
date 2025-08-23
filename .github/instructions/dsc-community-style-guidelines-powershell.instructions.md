@@ -135,7 +135,7 @@ if ($Force.IsPresent -and -not $Confirm)
 function Get-Something
 {
     [CmdletBinding()]
-    [OutputType([String])]
+    [OutputType([System.String])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -156,7 +156,7 @@ function Get-Something
 - Include `[CmdletBinding()]` on every function
 - Parameter block at top
 - Parameter block: `param ()` if empty, else opening/closing parentheses on own lines
-- `[OutputType()]` for functions with output
+- `[OutputType({return type})]` for functions with output, no output use `[OutputType(System.Void)]`
 - All parameters use `[Parameter()]` attribute, mandatory parameters use `[Parameter(Mandatory = $true)]`
 - Parameter attributes on separate lines
 - Parameter type on line above parameter name
