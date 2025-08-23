@@ -24,7 +24,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     job-level env declaration.
 - `Assert-SqlDscLogin`
   - Added new public command to validate that a specified SQL Server principal
-    exists as a login, throwing a terminating error if it doesn't exist.
+    is a login.
+- `Enable-SqlDscLogin`
+  - Added new public command to enable a SQL Server login.
+- `Disable-SqlDscLogin`
+  - Added new public command to disable a SQL Server login.
+- `Test-SqlDscIsLoginEnabled`
+  - Added new public command to test whether a SQL Server login is enabled.
+    Throws a terminating error if the specified principal does not exist as a login.
   - Supports pipeline input and provides detailed error messages with localization.
   - Uses `Test-SqlDscIsLogin` command for login validation following module patterns.
 - Added `Get-SqlDscLogin`, `Get-SqlDscRole`, `New-SqlDscLogin`, `New-SqlDscRole`, `Remove-SqlDscRole`, and `Remove-SqlDscLogin` commands for retrieving and managing SQL Server logins and roles with support for refresh, pipeline input, and ShouldProcess.
