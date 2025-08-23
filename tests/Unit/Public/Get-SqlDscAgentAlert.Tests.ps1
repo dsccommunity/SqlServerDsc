@@ -165,7 +165,8 @@ Describe 'Get-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should accept server object from pipeline' {
-            $script:mockServerObject | Get-SqlDscAgentAlert
+            $result = $script:mockServerObject | Get-SqlDscAgentAlert
+            $result | Should -BeNullOrEmpty
         }
     }
 }
