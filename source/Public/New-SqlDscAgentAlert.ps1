@@ -48,6 +48,9 @@
         $alertObject = $serverObject | New-SqlDscAgentAlert -Name 'MyAlert' -Severity 16 -PassThru
 
         Creates a new SQL Agent Alert and returns the created object.
+
+    .NOTES
+        Either -Severity or -MessageId must be specified (mutually exclusive).
 #>
 function New-SqlDscAgentAlert
 {
