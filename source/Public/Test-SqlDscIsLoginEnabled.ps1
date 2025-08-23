@@ -21,6 +21,15 @@
         But on instances with a large amount of logins it might be better to make
         sure the **ServerObject** is recent enough, or pass in **LoginObject**.
 
+    .INPUTS
+        [Microsoft.SqlServer.Management.Smo.Server]
+
+        Server object accepted from the pipeline.
+
+        [Microsoft.SqlServer.Management.Smo.Login]
+
+        Login object accepted from the pipeline.
+
     .OUTPUTS
         [System.Boolean]
 
