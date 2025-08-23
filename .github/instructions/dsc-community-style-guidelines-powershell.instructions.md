@@ -197,7 +197,7 @@ function Get-Something
 
 ## File Rules
 
-- End files with a blank line
+- End files with only one blank line
 - Use CR+LF line endings
 - Maximum two consecutive newlines
 
