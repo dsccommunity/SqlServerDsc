@@ -37,6 +37,15 @@
 
         Disables the login named **MyLogin**.
 
+    .INPUTS
+        [Microsoft.SqlServer.Management.Smo.Server]
+
+        Server object accepted from the pipeline (ServerObject parameter set).
+
+        [Microsoft.SqlServer.Management.Smo.Login]
+
+        Login object accepted from the pipeline (LoginObject parameter set).
+
     .OUTPUTS
         None.
 #>
