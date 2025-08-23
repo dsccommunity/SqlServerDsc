@@ -97,7 +97,6 @@ Describe 'Get-SqlDscAgentAlert' -Tag 'Public' {
             $script:mockAlert2.MessageID = 50001
 
             # Mock alert collection
-            # Mock alert collection
             $script:mockAlertCollection = [Microsoft.SqlServer.Management.Smo.Agent.AlertCollection]::CreateTypeInstance()
             $script:mockAlertCollection.Add($script:mockAlert1)
             $script:mockAlertCollection.Add($script:mockAlert2)
