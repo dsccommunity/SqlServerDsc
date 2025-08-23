@@ -212,7 +212,7 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should call parameter validation with both severity and message ID' {
-            Test-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -MessageId 50001
+            $null = Test-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -MessageId 50001
 
             Should -Invoke -CommandName 'Assert-BoundParameter' -ModuleName $script:dscModuleName -ParameterFilter {
                 $BoundParameterList.ContainsKey('Severity') -and $BoundParameterList.ContainsKey('MessageId')
@@ -220,7 +220,7 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should call parameter validation with only severity' {
-            Test-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
+            $null = Test-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
 
             Should -Invoke -CommandName 'Assert-BoundParameter' -ModuleName $script:dscModuleName -ParameterFilter {
                 $BoundParameterList.ContainsKey('Severity') -and -not $BoundParameterList.ContainsKey('MessageId')

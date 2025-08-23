@@ -130,14 +130,14 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should create alert with severity successfully' {
-            New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
+            $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
 
             Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
             Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
         }
 
         It 'Should create alert with message ID successfully' {
-            New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001
+            $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001
 
             Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
             Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
@@ -158,18 +158,18 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
 
         It 'Should create alert with boundary severity values' {
             # Test minimum value (0)
-            New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert1' -Severity 0
+            $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert1' -Severity 0
 
             # Test maximum value (25)
-            New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert2' -Severity 25
+            $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert2' -Severity 25
         }
 
         It 'Should create alert with boundary message ID values' {
             # Test minimum value (0)
-            New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert3' -MessageId 0
+            $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert3' -MessageId 0
 
             # Test maximum value (2147483647)
-            New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert4' -MessageId 2147483647
+            $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert4' -MessageId 2147483647
         }
     }
 
@@ -221,7 +221,7 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should not create alert when WhatIf is specified' {
-            New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -WhatIf
+            $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -WhatIf
         }
     }
 }

@@ -121,13 +121,13 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should remove alert successfully' {
-            Remove-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Force
+            $null = Remove-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Force
 
             Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
         }
 
         It 'Should refresh server object when Refresh is specified' {
-            Remove-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Refresh -Force
+            $null = Remove-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Refresh -Force
 
             # Verify that Refresh was called on the Alerts collection
             # This would need to be mocked more specifically to verify the call
@@ -155,7 +155,7 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should remove alert using AlertObject parameter' {
-            Remove-SqlDscAgentAlert -AlertObject $script:mockAlert -Force
+            $null = Remove-SqlDscAgentAlert -AlertObject $script:mockAlert -Force
         }
     }
 
@@ -176,7 +176,7 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should not throw error when alert does not exist' {
-            Remove-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'NonExistentAlert' -Force
+            $null = Remove-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'NonExistentAlert' -Force
 
             Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
         }
@@ -246,7 +246,7 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should not remove alert when WhatIf is specified' {
-            Remove-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -WhatIf
+            $null = Remove-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -WhatIf
 
             # The Drop method should not be called with WhatIf
             # This would need more sophisticated mocking to verify
@@ -283,7 +283,7 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Public' {
         It 'Should remove alert without confirmation when Force is specified' {
             # This test verifies that Force parameter works, but full confirmation testing
             # would require more complex mocking of the confirmation system
-            Remove-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Force
+            $null = Remove-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Force
         }
     }
 }

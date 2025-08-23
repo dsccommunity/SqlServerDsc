@@ -131,7 +131,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should update alert severity successfully' {
-            Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
+            $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
 
             Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
             Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
@@ -140,7 +140,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should update alert message ID successfully' {
-            Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001
+            $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001
 
             $script:mockAlert.MessageId | Should -Be 50001
             $script:mockAlert.Severity | Should -Be 0
@@ -154,7 +154,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should refresh server object when Refresh is specified' {
-            Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -Refresh
+            $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -Refresh
 
             # Verify that Refresh was called on the Alerts collection
             # This would need to be mocked more specifically to verify the call
@@ -173,7 +173,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should update alert using AlertObject parameter' {
-            Set-SqlDscAgentAlert -AlertObject $script:mockAlert -Severity 16
+            $null = Set-SqlDscAgentAlert -AlertObject $script:mockAlert -Severity 16
 
             Should -Invoke -CommandName 'Assert-BoundParameter' -ModuleName $script:dscModuleName -Times 1 -Exactly
             $script:mockAlert.Severity | Should -Be 16
