@@ -157,19 +157,29 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should create alert with boundary severity values' {
-            # Test minimum value (0)
+            # Test minimum value (0) - should complete without errors
             $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert1' -Severity 0
 
-            # Test maximum value (25)
+            # Test maximum value (25) - should complete without errors  
             $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert2' -Severity 25
+
+            # Verify that Get-AgentAlertObject was called for each alert creation to check existence
+            Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 2 -Exactly
+            # Verify that Assert-BoundParameter was called for each alert creation
+            Should -Invoke -CommandName 'Assert-BoundParameter' -Times 2 -Exactly
         }
 
         It 'Should create alert with boundary message ID values' {
-            # Test minimum value (0)
+            # Test minimum value (0) - should complete without errors
             $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert3' -MessageId 0
 
-            # Test maximum value (2147483647)
+            # Test maximum value (2147483647) - should complete without errors
             $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert4' -MessageId 2147483647
+
+            # Verify that Get-AgentAlertObject was called for each alert creation to check existence
+            Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 2 -Exactly
+            # Verify that Assert-BoundParameter was called for each alert creation
+            Should -Invoke -CommandName 'Assert-BoundParameter' -Times 2 -Exactly
         }
     }
 
