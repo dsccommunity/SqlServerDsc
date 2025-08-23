@@ -89,16 +89,16 @@ applyTo: "**/*.ps?(m|d)1"
 
 ## ShouldProcess Required Pattern
 
-- Ensure VerboseDescription explains what will happen
-- Ensure VerboseWarning asks for confirmation
-- Keep Caption short and descriptive (without ending `.`)
+- Ensure `$descriptionMessage` explains what will happen
+- Ensure `$confirmationMessage` succinctly asks for confirmation
+- Keep `$captionMessage` short and descriptive (no trailing `.`)
 
 ```powershell
-$verboseDescriptionMessage = $script:localizedData.FunctionName_Action_ShouldProcessVerboseDescription -f $param1, $param2
-$verboseWarningMessage = $script:localizedData.FunctionName_Action_ShouldProcessVerboseWarning -f $param1
+$descriptionMessage = $script:localizedData.FunctionName_Action_ShouldProcessDescription -f $param1, $param2
+$confirmationMessage = $script:localizedData.FunctionName_Action_ShouldProcessConfirmation -f $param1
 $captionMessage = $script:localizedData.FunctionName_Action_ShouldProcessCaption
 
-if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
 {
     # state changing code
 }
