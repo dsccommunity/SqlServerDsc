@@ -28,6 +28,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Supports pipeline input and provides detailed error messages with localization.
   - Uses `Test-SqlDscIsLogin` command for login validation following module patterns.
 - Added `Get-SqlDscLogin`, `Get-SqlDscRole`, `New-SqlDscLogin`, `New-SqlDscRole`, `Remove-SqlDscRole`, and `Remove-SqlDscLogin` commands for retrieving and managing SQL Server logins and roles with support for refresh, pipeline input, and ShouldProcess.
+- Added new public commands for database management:
+  - `Get-SqlDscDatabase` - Get databases from a SQL Server Database Engine instance
+  - `New-SqlDscDatabase` - Create a new database with specified properties
+  - `Set-SqlDscDatabase` - Modify properties of an existing database
+  - `Remove-SqlDscDatabase` - Remove a database from SQL Server instance
+  - `Test-SqlDscDatabase` - Test if a database is in the desired state
+  - All commands support pipeline input with ServerObject and follow established patterns
+  - Database objects can also be used as pipeline input for Set and Remove operations
+  - Commands include comprehensive validation, localization, and ShouldProcess support
 
 ### Changed
 

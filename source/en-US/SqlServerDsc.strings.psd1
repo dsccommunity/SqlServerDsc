@@ -276,4 +276,59 @@ ConvertFrom-StringData @'
     Login_Add_ShouldProcessCaption = Create login on instance
     Login_Add_LoginCreated = Successfully created login '{0}' on the instance '{1}'.
     Login_Add_LoginAlreadyExists = The login '{0}' already exists on the instance '{1}'.
+
+    ## Get-SqlDscDatabase
+    Database_Get = Getting databases from instance '{0}'.
+    Database_GetAll = Getting all databases.
+    Database_Found = Found database '{0}'.
+    Database_NotFound = Database '{0}' was not found.
+
+    ## New-SqlDscDatabase
+    Database_Create = Creating database '{0}' on instance '{1}'.
+    Database_Creating = Creating database '{0}'.
+    Database_Created = Database '{0}' was created successfully.
+    Database_CreateFailed = Failed to create database '{0}' on instance '{1}'.
+    Database_AlreadyExists = Database '{0}' already exists on instance '{1}'.
+    Database_InvalidCompatibilityLevel = The specified compatibility level '{0}' is not a valid compatibility level for the instance '{1}'.
+    Database_InvalidCollation = The specified collation '{0}' is not a valid collation for the instance '{1}'.
+    Database_Create_ShouldProcessVerboseDescription = Creating the database '{0}' on the instance '{1}'.
+    Database_Create_ShouldProcessVerboseWarning = Are you sure you want to create the database '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Database_Create_ShouldProcessCaption = Create database on instance
+
+    ## Set-SqlDscDatabase
+    Database_Set = Setting properties of database '{0}' on instance '{1}'.
+    Database_Updating = Updating database '{0}'.
+    Database_Updated = Database '{0}' was updated successfully.
+    Database_SetFailed = Failed to set properties of database '{0}' on instance '{1}'.
+    Database_UpdatingCollation = Changing the database collation to '{0}'.
+    Database_UpdatingCompatibilityLevel = Changing the database compatibility level to '{0}'.
+    Database_UpdatingRecoveryModel = Changing the database recovery model to '{0}'.
+    Database_UpdatingOwner = Changing the database owner to '{0}'.
+    Database_Set_ShouldProcessVerboseDescription = Setting properties of the database '{0}' on the instance '{1}'.
+    Database_Set_ShouldProcessVerboseWarning = Are you sure you want to modify the database '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Database_Set_ShouldProcessCaption = Set database properties on instance
+
+    ## Remove-SqlDscDatabase
+    Database_Remove = Removing database '{0}' from instance '{1}'.
+    Database_Removing = Removing database '{0}'.
+    Database_Removed = Database '{0}' was removed successfully.
+    Database_RemoveFailed = Failed to remove database '{0}' from instance '{1}'.
+    Database_CannotRemoveSystem = Cannot remove system database '{0}'.
+    Database_Remove_ShouldProcessVerboseDescription = Removing the database '{0}' from the instance '{1}'.
+    Database_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove the database '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Database_Remove_ShouldProcessCaption = Remove database from instance
+
+    ## Test-SqlDscDatabase
+    Database_Test = Testing the state of database '{0}' on instance '{1}'.
+    Database_InDesiredStatePresent = Database '{0}' is present and in desired state.
+    Database_InDesiredStateAbsent = Database '{0}' is absent as expected.
+    Database_NotInDesiredStatePresent = Expected the database '{0}' to be present, but it was absent.
+    Database_NotInDesiredStateAbsent = Expected the database '{0}' to be absent, but it was present.
+    Database_CollationWrong = The database '{0}' exists and has the collation '{1}', but expected it to have the collation '{2}'.
+    Database_CompatibilityLevelWrong = The database '{0}' exists and has the compatibility level '{1}', but expected it to have the compatibility level '{2}'.
+    Database_RecoveryModelWrong = The database '{0}' exists and has the recovery model '{1}', but expected it to have the recovery model '{2}'.
+    Database_OwnerNameWrong = The database '{0}' exists and has the owner '{1}', but expected it to have the owner '{2}'.
 '@
