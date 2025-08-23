@@ -12,7 +12,7 @@ applyTo: "**/*.[Tt]ests.ps1"
 - One `Describe` block per file matching the tested entity name
 - Test code only inside `Describe` blocks
 - Assertions only in `It` blocks
-- Never test `Write-Verbose`, `Write-Debug`, or parameter binding behavior
+- Never test verbose or debug messages, or parameter binding behavior
 - Pass all mandatory parameters to avoid prompts
 
 ## Structure & Scope
