@@ -30,6 +30,8 @@ applyTo: "**/*.[Tt]ests.ps1"
 - Mock variables prefix: 'mock'
 - Prefer `-BeTrue`/`-BeFalse` over `-Be $true`/`-Be $false`
 - No `Should -Not -Throw` - invoke commands directly
+- Never add an empty `-MockWith` block
+- Omit `-MockWith` when returning `$null`
 
 ## File Organization
 - Class resources: `tests/Unit/Classes/{Name}.Tests.ps1`
