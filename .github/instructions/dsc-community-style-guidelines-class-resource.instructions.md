@@ -8,7 +8,7 @@ applyTo: "source/[cC]lasses/**/*.ps1"
 **Applies to:** Classes with `[DscResource(...)]` decoration only.
 
 ## Requirements
-- File: `source/Classes/020_{ResourceName}.ps1`
+- File: `source/Classes/020.{ResourceName}.ps1`
 - Decoration: `[DscResource(RunAsCredential = 'Optional')]` (replace with `'Mandatory'` if required)
 - Inheritance: Must inherit `ResourceBase` (part of module DscResource.Base)
 - `$this.localizedData` hashtable auto-populated by `ResourceBase` from localization file
