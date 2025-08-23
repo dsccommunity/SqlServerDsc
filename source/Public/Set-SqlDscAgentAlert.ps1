@@ -108,7 +108,7 @@ function Set-SqlDscAgentAlert
 
             $alertObjectToUpdate = Get-AgentAlertObject -ServerObject $ServerObject -Name $Name
 
-            if (-not $alertObjectToUpdate)
+            if ($null -eq $alertObjectToUpdate)
             {
                 $errorMessage = $script:localizedData.Set_SqlDscAgentAlert_AlertNotFound -f $Name
                 New-ObjectNotFoundException -Message $errorMessage
