@@ -108,7 +108,7 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag 'Public' {
                 $mockLoginObject.IsDisabled = $false
 
                 Mock -CommandName Get-SqlDscLogin -MockWith {
-                    return @($mockLoginObject)
+                    return $mockLoginObject
                 }
             }
 
@@ -129,7 +129,7 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag 'Public' {
                 $mockLoginObject.IsDisabled = $true
 
                 Mock -CommandName Get-SqlDscLogin -MockWith {
-                    return @($mockLoginObject)
+                    return $mockLoginObject
                 }
             }
 
@@ -150,7 +150,7 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag 'Public' {
                 $mockLoginObject.IsDisabled = $false
 
                 Mock -CommandName Get-SqlDscLogin -MockWith {
-                    return @($mockLoginObject)
+                    return $mockLoginObject
                 }
             }
 
