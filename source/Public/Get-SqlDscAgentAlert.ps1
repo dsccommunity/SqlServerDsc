@@ -49,6 +49,7 @@ function Get-SqlDscAgentAlert
         $ServerObject,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Name
     )

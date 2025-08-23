@@ -70,6 +70,7 @@ function Set-SqlDscAgentAlert
         $AlertObject,
 
         [Parameter(ParameterSetName = 'ServerObject', Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
 
