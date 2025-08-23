@@ -13,8 +13,12 @@
         all alerts are returned.
 
     .OUTPUTS
-        [Microsoft.SqlServer.Management.Smo.Agent.Alert[]]
+        [Microsoft.SqlServer.Management.Smo.Agent.Alert]
+        Returns one or more alert objects.
 
+    .OUTPUTS
+        None
+        Returns nothing when no alerts are found for the specified criteria.
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine
         Get-SqlDscAgentAlert -ServerObject $serverObject
