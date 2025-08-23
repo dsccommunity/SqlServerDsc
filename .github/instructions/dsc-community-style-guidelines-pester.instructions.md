@@ -46,7 +46,7 @@ applyTo: "**/*.[Tt]ests.ps1"
 - Keep scope close to usage context
 
 ## Best Practices
-- Assign unused return objects to `$null`
+- Inside `It` blocks, assign unused return objects to `$null` (unless part of pipeline)
 - Tested entity must be called from within the `It` blocks
 - Keep results and assertions in same `It` block
 - Cover all scenarios and code paths
