@@ -71,8 +71,10 @@ applyTo: "**/*.ps?(m|d)1"
 - Avoid `Write-Output` (use `return` instead)
 - Avoid `ConvertTo-SecureString -AsPlainText` in production code
 - Don't redefine reserved parameters (Verbose, Debug, etc.)
-- Include a `Force` parameter for functions that support `$PSCmdlet.ShouldContinue` or that use `$PSCmdlet.ShouldProcess`
+- Include a `Force` parameter for functions that uses `$PSCmdlet.ShouldContinue` or `$PSCmdlet.ShouldProcess`
 - For state-changing functions, use `SupportsShouldProcess`
+    - Place ShouldProcess check immediately before each state-change
+    - `$PSCmdlet.ShouldProcess` must use required pattern
 - Use `$PSCmdlet.ThrowTerminatingError()` for terminating errors, use relevant error category
 - Use `Write-Error` for non-terminating errors, use relevant error category
 - Use `Write-Warning` for warnings
@@ -80,6 +82,32 @@ applyTo: "**/*.ps?(m|d)1"
 - Use `Write-Verbose` for actionable information
 - Use `Write-Information` for informational messages.
 - Never use backtick as line continuation in production code.
+
+## ShouldProcess Required Pattern
+
+- Ensure VerboseDescription explains what will happen
+- Ensure VerboseWarning asks for confirmation
+- Keep Caption short and descriptive (without ending `.`)
+
+```powershell
+$verboseDescriptionMessage = $script:localizedData.FunctionName_Action_ShouldProcessVerboseDescription -f $param1, $param2
+$verboseWarningMessage = $script:localizedData.FunctionName_Action_ShouldProcessVerboseWarning -f $param1
+$captionMessage = $script:localizedData.FunctionName_Action_ShouldProcessCaption
+
+if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+{
+    # state changing code
+}
+```
+
+## Force Parameter Pattern
+
+```powershell
+if ($Force.IsPresent -and -not $Confirm)
+{
+    $ConfirmPreference = 'None'
+}
+```
 
 ### Structure
 
