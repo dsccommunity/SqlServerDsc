@@ -76,7 +76,7 @@ function Test-SqlDscIsLoginEnabled
         [Microsoft.SqlServer.Management.Smo.Login]
         $LoginObject,
 
-        [Parameter(ParameterSetName = 'ServerObject', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ParameterSetName = 'ServerObject', Mandatory = $true)]
         [System.String]
         $Name,
 

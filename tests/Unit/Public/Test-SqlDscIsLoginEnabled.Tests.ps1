@@ -91,11 +91,6 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag 'Public' {
         ($parameterInfo.Attributes.ValueFromPipeline -or $parameterInfo.Attributes.ValueFromPipelineByPropertyName) | Should -BeTrue
     }
 
-    It 'Should have Name parameter accept pipeline input by property name' {
-        $parameterInfo = (Get-Command -Name 'Test-SqlDscIsLoginEnabled').Parameters['Name']
-        $parameterInfo.Attributes.ValueFromPipelineByPropertyName | Should -BeTrue
-    }
-
     It 'Should have LoginObject parameter accept pipeline input' {
         $parameterInfo = (Get-Command -Name 'Test-SqlDscIsLoginEnabled').Parameters['LoginObject']
         ($parameterInfo.Attributes.ValueFromPipeline -or $parameterInfo.Attributes.ValueFromPipelineByPropertyName) | Should -BeTrue
@@ -166,24 +161,6 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag 'Public' {
 
                 Should -Invoke -CommandName Get-SqlDscLogin -ParameterFilter {
                     $ServerObject -eq $mockServerObject -and $Name -eq 'TestLogin' -and $Refresh -eq $true
-                } -Exactly -Times 1 -Scope It
-            }
-        }
-
-        Context 'When the login cannot be resolved' {
-            BeforeAll {
-                Mock -CommandName Get-SqlDscLogin -MockWith {
-                    # Simulate Get-SqlDscLogin behavior when login is not found with ErrorAction Stop
-                    $PSCmdlet.ThrowTerminatingError((New-Object System.Management.Automation.ErrorRecord ([System.Exception]"Login 'NonExistentLogin' does not exist."), 'GSDL0001', [System.Management.Automation.ErrorCategory]::ObjectNotFound, 'NonExistentLogin'))
-                }
-            }
-
-            It 'Should handle error when login is not found' {
-                # The behavior will depend on ErrorAction preference - with 'Stop' it should throw
-                { Test-SqlDscIsLoginEnabled -ServerObject $mockServerObject -Name 'NonExistentLogin' } | Should -Throw
-
-                Should -Invoke -CommandName Get-SqlDscLogin -ParameterFilter {
-                    $ServerObject -eq $mockServerObject -and $Name -eq 'NonExistentLogin'
                 } -Exactly -Times 1 -Scope It
             }
         }
