@@ -12,11 +12,11 @@ applyTo: "**/*.[Tt]ests.ps1"
 - One `Describe` block per file matching the tested entity name
 - Test code only inside `Describe` blocks
 - Assertions only in `It` blocks
-- Never test verbose or debug messages, or parameter binding behavior
+- Never test verbose messages, debug messages, and parameter binding behavior
 - Pass all mandatory parameters to avoid prompts
 
 ## Structure & Scope
-- Public commands: Never use `InModuleScope` (unless retrieving localized strings or testing stub type method invocation)
+- Public commands: Never use `InModuleScope` (unless retrieving localized strings)
 - Private functions/class resources: Always use `InModuleScope`
 - Each scenario = separate `Context` block
 - Use nested `Context` blocks for complex scenarios
