@@ -26,9 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added new public command to validate that a specified SQL Server principal
     is a login.
 - `Enable-SqlDscLogin`
-  - Added new public command to enable a SQL Server login
+- `Enable-SqlDscLogin`
+  - Added new public command to enable a SQL Server login.
 - `Disable-SqlDscLogin`
-  - Added new public command to disable a SQL Server login
+  - Added new public command to disable a SQL Server login.
 - `Test-SqlDscIsLoginEnabled`
   - Added new public command to test whether a SQL Server login is enabled.
     Throws a terminating error if the specified principal does not exist as a login.
