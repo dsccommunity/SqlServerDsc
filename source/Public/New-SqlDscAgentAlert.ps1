@@ -22,6 +22,11 @@
     .PARAMETER PassThru
         If specified, the created alert object will be returned.
 
+    .INPUTS
+        Microsoft.SqlServer.Management.Smo.Server
+
+        SQL Server Database Engine instance object.
+
     .OUTPUTS
         `[Microsoft.SqlServer.Management.Smo.Agent.Alert]` if passing parameter **PassThru**,
          otherwise none.

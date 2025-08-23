@@ -12,6 +12,11 @@
         Specifies the name of the SQL Agent Alert to retrieve. If not specified,
         all alerts are returned.
 
+    .INPUTS
+        Microsoft.SqlServer.Management.Smo.Server
+
+        SQL Server Database Engine instance object.
+
     .OUTPUTS
         [Microsoft.SqlServer.Management.Smo.Agent.Alert]
         Returns one or more alert objects.

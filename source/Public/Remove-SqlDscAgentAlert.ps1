@@ -22,6 +22,18 @@
         trying to remove the alert object. This is helpful when alerts could have
         been modified outside of the **ServerObject**, for example through T-SQL.
 
+    .INPUTS
+        Microsoft.SqlServer.Management.Smo.Server
+
+        SQL Server Database Engine instance object.
+
+        Microsoft.SqlServer.Management.Smo.Agent.Alert
+
+        SQL Agent Alert object to remove.
+
+    .OUTPUTS
+        None.
+
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $alertObject = $serverObject | Get-SqlDscAgentAlert -Name 'MyAlert'

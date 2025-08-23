@@ -31,6 +31,15 @@
         is helpful when alerts could have been modified outside of the **ServerObject**,
         for example through T-SQL.
 
+    .INPUTS
+        Microsoft.SqlServer.Management.Smo.Server
+
+        SQL Server Database Engine instance object.
+
+        Microsoft.SqlServer.Management.Smo.Agent.Alert
+
+        SQL Agent Alert object to update.
+
     .OUTPUTS
         `[Microsoft.SqlServer.Management.Smo.Agent.Alert]` if passing parameter **PassThru**,
          otherwise none.

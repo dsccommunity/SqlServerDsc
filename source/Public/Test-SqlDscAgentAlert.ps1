@@ -20,6 +20,11 @@
         Specifies the expected message ID for the SQL Agent Alert. Valid range is 0 to 2147483647.
         If specified, the command will return $true only if the alert exists and has this message ID.
 
+    .INPUTS
+        Microsoft.SqlServer.Management.Smo.Server
+
+        SQL Server Database Engine instance object.
+
     .OUTPUTS
         [System.Boolean]
 
