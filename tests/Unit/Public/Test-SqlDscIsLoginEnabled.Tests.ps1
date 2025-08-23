@@ -71,6 +71,21 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag 'Public' {
         $result.ParameterListAsString | Should -Be $ExpectedParameters
     }
 
+    It 'Should have ServerObject parameter as mandatory in ServerObject parameter set' {
+        $parameterInfo = (Get-Command -Name 'Test-SqlDscIsLoginEnabled').Parameters['ServerObject']
+        $parameterInfo.Attributes.Mandatory | Should -BeTrue
+    }
+
+    It 'Should have Name parameter as mandatory in ServerObject parameter set' {
+        $parameterInfo = (Get-Command -Name 'Test-SqlDscIsLoginEnabled').Parameters['Name']
+        $parameterInfo.Attributes.Mandatory | Should -BeTrue
+    }
+
+    It 'Should have LoginObject parameter as mandatory in LoginObject parameter set' {
+        $parameterInfo = (Get-Command -Name 'Test-SqlDscIsLoginEnabled').Parameters['LoginObject']
+        $parameterInfo.Attributes.Mandatory | Should -BeTrue
+    }
+
     Context 'When using parameter set ServerObject' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'

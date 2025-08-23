@@ -36,6 +36,9 @@ BeforeAll {
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
     $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+
+    # Script-scoped variables for tracking method calls
+    $script:mockMethodEnableWasRun = 0
 }
 
 AfterAll {
@@ -71,6 +74,21 @@ Describe 'Enable-SqlDscLogin' -Tag 'Public' {
         $result.ParameterListAsString | Should -Be $ExpectedParameters
     }
 
+    It 'Should have ServerObject parameter as mandatory in ServerObject parameter set' {
+        $parameterInfo = (Get-Command -Name 'Enable-SqlDscLogin').Parameters['ServerObject']
+        $parameterInfo.Attributes.Mandatory | Should -BeTrue
+    }
+
+    It 'Should have Name parameter as mandatory in ServerObject parameter set' {
+        $parameterInfo = (Get-Command -Name 'Enable-SqlDscLogin').Parameters['Name']
+        $parameterInfo.Attributes.Mandatory | Should -BeTrue
+    }
+
+    It 'Should have LoginObject parameter as mandatory in LoginObject parameter set' {
+        $parameterInfo = (Get-Command -Name 'Enable-SqlDscLogin').Parameters['LoginObject']
+        $parameterInfo.Attributes.Mandatory | Should -BeTrue
+    }
+
     Context 'When using parameter set ServerObject' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
@@ -86,14 +104,10 @@ Describe 'Enable-SqlDscLogin' -Tag 'Public' {
 
         Context 'When the login should be enabled' {
             BeforeAll {
-                InModuleScope -ScriptBlock {
-                    $script:mockMethodEnableWasRun = 0
-                }
+                $script:mockMethodEnableWasRun = 0
 
                 $mockLoginObject | Add-Member -MemberType 'ScriptMethod' -Name 'Enable' -Value {
-                    InModuleScope -ScriptBlock {
-                        $script:mockMethodEnableWasRun += 1
-                    }
+                    $script:mockMethodEnableWasRun += 1
                 } -Force
 
                 # Add parent property
@@ -101,21 +115,43 @@ Describe 'Enable-SqlDscLogin' -Tag 'Public' {
             }
 
             It 'Should call the correct methods' {
-                { Enable-SqlDscLogin -ServerObject $mockServerObject -Name 'TestLogin' -Force } | Should -Not -Throw
+                Enable-SqlDscLogin -ServerObject $mockServerObject -Name 'TestLogin' -Force
 
                 Should -Invoke -CommandName Get-SqlDscLogin -ParameterFilter {
                     $ServerObject -eq $mockServerObject -and $Name -eq 'TestLogin'
                 } -Exactly -Times 1 -Scope It
 
-                InModuleScope -ScriptBlock {
-                    $script:mockMethodEnableWasRun | Should -Be 1
+                $script:mockMethodEnableWasRun | Should -Be 1
+            }
+
+            It 'Should not call Enable method when using WhatIf' {
+                $script:mockMethodEnableWasRun = 0
+
+                Enable-SqlDscLogin -ServerObject $mockServerObject -Name 'TestLogin' -WhatIf
+
+                $script:mockMethodEnableWasRun | Should -Be 0
+            }
+        }
+
+        Context 'When the login does not exist' {
+            BeforeAll {
+                Mock -CommandName Get-SqlDscLogin -MockWith {
+                    return @()
                 }
+            }
+
+            It 'Should throw a terminating error when login is not found' {
+                { Enable-SqlDscLogin -ServerObject $mockServerObject -Name 'NonExistent' -Force } | Should -Throw
+
+                Should -Invoke -CommandName Get-SqlDscLogin -ParameterFilter {
+                    $ServerObject -eq $mockServerObject -and $Name -eq 'NonExistent'
+                } -Exactly -Times 1 -Scope It
             }
         }
 
         Context 'When using Refresh parameter' {
             It 'Should pass Refresh parameter to Get-SqlDscLogin' {
-                { Enable-SqlDscLogin -ServerObject $mockServerObject -Name 'TestLogin' -Refresh -Force } | Should -Not -Throw
+                Enable-SqlDscLogin -ServerObject $mockServerObject -Name 'TestLogin' -Refresh -Force
 
                 Should -Invoke -CommandName Get-SqlDscLogin -ParameterFilter {
                     $ServerObject -eq $mockServerObject -and $Name -eq 'TestLogin' -and $Refresh -eq $true
@@ -133,23 +169,25 @@ Describe 'Enable-SqlDscLogin' -Tag 'Public' {
             $mockLoginObject.IsDisabled = $true
             $mockLoginObject | Add-Member -MemberType 'NoteProperty' -Name 'Parent' -Value $mockServerObject -Force
 
-            InModuleScope -ScriptBlock {
-                $script:mockMethodEnableWasRun = 0
-            }
+            $script:mockMethodEnableWasRun = 0
 
             $mockLoginObject | Add-Member -MemberType 'ScriptMethod' -Name 'Enable' -Value {
-                InModuleScope -ScriptBlock {
-                    $script:mockMethodEnableWasRun += 1
-                }
+                $script:mockMethodEnableWasRun += 1
             } -Force
         }
 
         It 'Should call the correct methods' {
-            { Enable-SqlDscLogin -LoginObject $mockLoginObject -Force } | Should -Not -Throw
+            Enable-SqlDscLogin -LoginObject $mockLoginObject -Force
 
-            InModuleScope -ScriptBlock {
-                $script:mockMethodEnableWasRun | Should -Be 1
-            }
+            $script:mockMethodEnableWasRun | Should -Be 1
+        }
+
+        It 'Should not call Enable method when using WhatIf' {
+            $script:mockMethodEnableWasRun = 0
+
+            Enable-SqlDscLogin -LoginObject $mockLoginObject -WhatIf
+
+            $script:mockMethodEnableWasRun | Should -Be 0
         }
     }
 }
