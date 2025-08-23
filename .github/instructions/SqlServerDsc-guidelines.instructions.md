@@ -7,6 +7,7 @@ applyTo: "**"
 
 ## Naming
 - Public commands: `{Verb}-SqlDsc{Noun}` format
+- Private function: `{Verb}-{Noun}` format
 
 ## Resources
 - Database Engine resources: inherit `SqlResourceBase`
