@@ -37,6 +37,17 @@
 
         Disables the login named **MyLogin**.
 
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $serverObject | Disable-SqlDscLogin -Name 'MyLogin' -Force
+
+        Disables the login without confirmation using **-Force**.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $serverObject | Disable-SqlDscLogin -Name 'MyLogin' -Refresh
+
+        Refreshes the server logins collection before disabling **MyLogin**.
     .INPUTS
         [Microsoft.SqlServer.Management.Smo.Server]
 
