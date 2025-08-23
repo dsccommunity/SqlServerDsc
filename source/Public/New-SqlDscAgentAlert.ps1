@@ -100,7 +100,7 @@ function New-SqlDscAgentAlert
                 Write-Verbose -Message ($script:localizedData.New_SqlDscAgentAlert_CreatingAlert -f $Name)
 
                 # Create the new alert SMO object
-                $newAlertObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Agent.Alert -ArgumentList $ServerObject.JobServer, $Name
+                $newAlertObject = [Microsoft.SqlServer.Management.Smo.Agent.Alert]::new($ServerObject.JobServer, $Name)
 
                 if ($PSBoundParameters.ContainsKey('Severity'))
                 {
