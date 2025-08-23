@@ -3,8 +3,10 @@
         Returns whether the server login is enabled or disabled.
 
     .DESCRIPTION
-        Returns whether the server login is enabled or disabled.
-
+        Tests the state of a SQL Server login and returns a Boolean result.
+        When a Server object is provided, the login is resolved using
+        Get-SqlDscLogin (optionally refreshing the server logins first).
+        When a Login object is provided, its current state is evaluated directly.
     .PARAMETER ServerObject
         Specifies current server connection object.
 
