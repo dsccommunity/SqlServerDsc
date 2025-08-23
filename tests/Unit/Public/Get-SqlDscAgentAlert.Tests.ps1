@@ -32,13 +32,11 @@ BeforeAll {
     # Load SMO stub types
     Add-Type -Path "$PSScriptRoot/../Stubs/SMO.cs"
 
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
     $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
 }
 
 AfterAll {
-    $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
 
@@ -84,103 +82,90 @@ Describe 'Get-SqlDscAgentAlert' -Tag 'Public' {
 
     Context 'When getting all alerts' {
         BeforeAll {
-            InModuleScope -ScriptBlock {
-                # Mock alert objects using SMO stub types
-                $script:mockAlert1 = [Microsoft.SqlServer.Management.Smo.Agent.Alert]::CreateTypeInstance()
-                $script:mockAlert1.Name = 'Alert1'
-                $script:mockAlert1.Severity = 16
+            # Mock alert objects using SMO stub types
+            $script:mockAlert1 = [Microsoft.SqlServer.Management.Smo.Agent.Alert]::CreateTypeInstance()
+            $script:mockAlert1.Name = 'Alert1'
+            $script:mockAlert1.Severity = 16
 
-                $script:mockAlert2 = [Microsoft.SqlServer.Management.Smo.Agent.Alert]::CreateTypeInstance()
-                $script:mockAlert2.Name = 'Alert2'
-                $script:mockAlert2.MessageID = 50001
+            $script:mockAlert2 = [Microsoft.SqlServer.Management.Smo.Agent.Alert]::CreateTypeInstance()
+            $script:mockAlert2.Name = 'Alert2'
+            $script:mockAlert2.MessageID = 50001
 
-                # Mock alert collection
-                $script:mockAlertCollection = [Microsoft.SqlServer.Management.Smo.Agent.AlertCollection]::CreateTypeInstance()
-                $script:mockAlertCollection.Add($script:mockAlert1)
-                $script:mockAlertCollection.Add($script:mockAlert2)
+            # Mock alert collection
+            # Mock alert collection
+            $script:mockAlertCollection = [Microsoft.SqlServer.Management.Smo.Agent.AlertCollection]::CreateTypeInstance()
+            $script:mockAlertCollection.Add($script:mockAlert1)
+            $script:mockAlertCollection.Add($script:mockAlert2)
 
-                # Mock JobServer object
-                $script:mockJobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
-                $script:mockJobServer.Alerts = $script:mockAlertCollection
+            # Mock JobServer object
+            $script:mockJobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
+            $script:mockJobServer.Alerts = $script:mockAlertCollection
 
-                # Mock server object
-                $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
-                $script:mockServerObject.JobServer = $script:mockJobServer
-            }
+            # Mock server object
+            $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
+            $script:mockServerObject.JobServer = $script:mockJobServer
         }
 
         It 'Should return all alerts when no name is specified' {
-            InModuleScope -ScriptBlock {
-                $result = Get-SqlDscAgentAlert -ServerObject $script:mockServerObject
+            $result = Get-SqlDscAgentAlert -ServerObject $script:mockServerObject
 
-                $result | Should -HaveCount 2
-                $result[0].Name | Should -Be 'Alert1'
-                $result[1].Name | Should -Be 'Alert2'
-            }
+            $result | Should -HaveCount 2
+            $result[0].Name | Should -Be 'Alert1'
+            $result[1].Name | Should -Be 'Alert2'
         }
     }
 
     Context 'When getting a specific alert' {
         BeforeAll {
-            InModuleScope -ScriptBlock {
-                # Mock alert objects using SMO stub types
-                $script:mockAlert1 = [Microsoft.SqlServer.Management.Smo.Agent.Alert]::CreateTypeInstance()
-                $script:mockAlert1.Name = 'TestAlert'
-                $script:mockAlert1.Severity = 16
+            # Mock alert objects using SMO stub types
+            $script:mockAlert1 = [Microsoft.SqlServer.Management.Smo.Agent.Alert]::CreateTypeInstance()
+            $script:mockAlert1.Name = 'TestAlert'
+            $script:mockAlert1.Severity = 16
 
-                # Mock alert collection
-                $script:mockAlertCollection = [Microsoft.SqlServer.Management.Smo.Agent.AlertCollection]::CreateTypeInstance()
-                $script:mockAlertCollection.Add($script:mockAlert1)
+            # Mock alert collection
+            $script:mockAlertCollection = [Microsoft.SqlServer.Management.Smo.Agent.AlertCollection]::CreateTypeInstance()
+            $script:mockAlertCollection.Add($script:mockAlert1)
 
-                # Mock JobServer object
-                $script:mockJobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
-                $script:mockJobServer.Alerts = $script:mockAlertCollection
+            # Mock JobServer object
+            $script:mockJobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
+            $script:mockJobServer.Alerts = $script:mockAlertCollection
 
-                # Mock server object
-                $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
-                $script:mockServerObject.JobServer = $script:mockJobServer
-            }
+            # Mock server object
+            $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
+            $script:mockServerObject.JobServer = $script:mockJobServer
         }
 
         It 'Should return specific alert when name matches' {
-            InModuleScope -ScriptBlock {
-                $result = Get-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert'
+            $result = Get-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be 'TestAlert'
-                $result.Severity | Should -Be '16'
-            }
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be 'TestAlert'
+            $result.Severity | Should -Be 16
         }
 
         It 'Should return null when alert does not exist' {
-            InModuleScope -ScriptBlock {
-                $result = Get-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'NonExistentAlert'
+            $result = Get-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'NonExistentAlert'
 
-                $result | Should -BeNull
-            }
+            $result | Should -BeNull
         }
     }
 
     Context 'When using pipeline input' {
         BeforeAll {
-            InModuleScope -ScriptBlock {
-                # Mock alert collection
-                $script:mockAlertCollection = [Microsoft.SqlServer.Management.Smo.Agent.AlertCollection]::CreateTypeInstance()
+            # Mock alert collection
+            $script:mockAlertCollection = [Microsoft.SqlServer.Management.Smo.Agent.AlertCollection]::CreateTypeInstance()
 
-                # Mock JobServer object
-                $script:mockJobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
-                $script:mockJobServer.Alerts = $script:mockAlertCollection
+            # Mock JobServer object
+            $script:mockJobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
+            $script:mockJobServer.Alerts = $script:mockAlertCollection
 
-                # Mock server object
-                $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
-                $script:mockServerObject.JobServer = $script:mockJobServer
-            }
+            # Mock server object
+            $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
+            $script:mockServerObject.JobServer = $script:mockJobServer
         }
 
         It 'Should accept server object from pipeline' {
-            InModuleScope -ScriptBlock {
-                { $script:mockServerObject | Get-SqlDscAgentAlert } | Should -Not -Throw
-            }
+            $script:mockServerObject | Get-SqlDscAgentAlert
         }
     }
 }

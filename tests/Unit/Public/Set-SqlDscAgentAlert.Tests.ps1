@@ -32,13 +32,11 @@ BeforeAll {
     # Load SMO stub types
     Add-Type -Path "$PSScriptRoot/../Stubs/SMO.cs"
 
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
     $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
 }
 
 AfterAll {
-    $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
 
@@ -51,11 +49,11 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = 'ServerObject'
-                ExpectedParameters = '-ServerObject <Server> -Name <string> [-Severity <string>] [-MessageId <string>] [-PassThru] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-ServerObject <Server> -Name <string> [-Severity <int>] [-MessageId <int>] [-PassThru] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
             @{
                 ExpectedParameterSetName = 'AlertObject'
-                ExpectedParameters = '-AlertObject <Alert> [-Severity <string>] [-MessageId <string>] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-AlertObject <Alert> [-Severity <int>] [-MessageId <int>] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Set-SqlDscAgentAlert').ParameterSets |
@@ -89,161 +87,156 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
         # }
     }
 
+    Context 'When validating parameter ranges' {
+        It 'Should accept valid Severity values (0-25)' {
+            $command = Get-Command -Name 'Set-SqlDscAgentAlert'
+            $severityParam = $command.Parameters['Severity']
+            $validateRangeAttribute = $severityParam.Attributes | Where-Object { $_ -is [System.Management.Automation.ValidateRangeAttribute] }
+
+            $validateRangeAttribute.MinRange | Should -Be 0
+            $validateRangeAttribute.MaxRange | Should -Be 25
+        }
+
+        It 'Should accept valid MessageId values (0-2147483647)' {
+            $command = Get-Command -Name 'Set-SqlDscAgentAlert'
+            $messageIdParam = $command.Parameters['MessageId']
+            $validateRangeAttribute = $messageIdParam.Attributes | Where-Object { $_ -is [System.Management.Automation.ValidateRangeAttribute] }
+
+            $validateRangeAttribute.MinRange | Should -Be 0
+            $validateRangeAttribute.MaxRange | Should -Be 2147483647
+        }
+    }
+
     Context 'When updating alert using ServerObject parameter set' {
         BeforeAll {
-            InModuleScope -ScriptBlock {
-                # Mock the alert object
-                # Mock the alert object using SMO stub types
-                $script:mockAlert = [Microsoft.SqlServer.Management.Smo.Agent.Alert]::CreateTypeInstance()
-                $script:mockAlert.Name = 'TestAlert'
-                $script:mockAlert.Severity = 14
-                $script:mockAlert.MessageId = 0
+            # Mock the alert object using SMO stub types
+            $script:mockAlert = [Microsoft.SqlServer.Management.Smo.Agent.Alert]::CreateTypeInstance()
+            $script:mockAlert.Name = 'TestAlert'
+            $script:mockAlert.Severity = 14
+            $script:mockAlert.MessageId = 0
 
-                # Mock alert collection using SMO stub types
-                $script:mockAlertCollection = [Microsoft.SqlServer.Management.Smo.Agent.AlertCollection]::CreateTypeInstance()
+            # Mock alert collection using SMO stub types
+            $script:mockAlertCollection = [Microsoft.SqlServer.Management.Smo.Agent.AlertCollection]::CreateTypeInstance()
 
-                # Mock the JobServer using SMO stub types
-                $script:mockJobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
-                $script:mockJobServer.Alerts = $script:mockAlertCollection
+            # Mock the JobServer using SMO stub types
+            $script:mockJobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
+            $script:mockJobServer.Alerts = $script:mockAlertCollection
 
-                # Mock server object using SMO stub types
-                $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
-                $script:mockServerObject.JobServer = $script:mockJobServer
+            # Mock server object using SMO stub types
+            $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
+            $script:mockServerObject.JobServer = $script:mockJobServer
 
-                Mock -CommandName 'Assert-BoundParameter'
-                Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $script:mockAlert }
-            }
+            Mock -CommandName 'Assert-BoundParameter'
+            Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $script:mockAlert }
         }
 
         It 'Should update alert severity successfully' {
-            InModuleScope -ScriptBlock {
-                { Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity '16' } | Should -Not -Throw
+            Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
 
-                Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
-                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
-                $script:mockAlert.Severity | Should -Be '16'
-                $script:mockAlert.MessageId | Should -Be 0
-            }
+            Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
+            Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
+            $script:mockAlert.Severity | Should -Be 16
+            $script:mockAlert.MessageId | Should -Be 0
         }
 
         It 'Should update alert message ID successfully' {
-            InModuleScope -ScriptBlock {
-                { Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId '50001' } | Should -Not -Throw
+            Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001
 
-                $script:mockAlert.MessageId | Should -Be '50001'
-                $script:mockAlert.Severity | Should -Be 0
-            }
+            $script:mockAlert.MessageId | Should -Be 50001
+            $script:mockAlert.Severity | Should -Be 0
         }
 
         It 'Should return alert object when PassThru is specified' {
-            InModuleScope -ScriptBlock {
-                $result = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity '16' -PassThru
+            $result = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -PassThru
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be 'TestAlert'
-            }
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be 'TestAlert'
         }
 
         It 'Should refresh server object when Refresh is specified' {
-            InModuleScope -ScriptBlock {
-                { Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity '16' -Refresh } | Should -Not -Throw
+            Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -Refresh
 
-                # Verify that Refresh was called on the Alerts collection
-                # This would need to be mocked more specifically to verify the call
-            }
+            # Verify that Refresh was called on the Alerts collection
+            # This would need to be mocked more specifically to verify the call
         }
-
     }
 
     Context 'When updating alert using AlertObject parameter set' {
         BeforeAll {
-            InModuleScope -ScriptBlock {
-                # Mock the alert object using SMO stub types
-                $script:mockAlert = [Microsoft.SqlServer.Management.Smo.Agent.Alert]::CreateTypeInstance()
-                $script:mockAlert.Name = 'TestAlert'
-                $script:mockAlert.Severity = 14
-                $script:mockAlert.MessageId = 0
+            # Mock the alert object using SMO stub types
+            $script:mockAlert = [Microsoft.SqlServer.Management.Smo.Agent.Alert]::CreateTypeInstance()
+            $script:mockAlert.Name = 'TestAlert'
+            $script:mockAlert.Severity = 14
+            $script:mockAlert.MessageId = 0
 
-                Mock -CommandName 'Assert-BoundParameter'
-            }
+            Mock -CommandName 'Assert-BoundParameter' -ModuleName $script:dscModuleName
         }
 
         It 'Should update alert using AlertObject parameter' {
-            InModuleScope -ScriptBlock {
-                { Set-SqlDscAgentAlert -AlertObject $script:mockAlert -Severity '16' } | Should -Not -Throw
+            Set-SqlDscAgentAlert -AlertObject $script:mockAlert -Severity 16
 
-                Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
-                $script:mockAlert.Severity | Should -Be '16'
-                $script:mockAlert.MessageId | Should -Be 0
-            }
+            Should -Invoke -CommandName 'Assert-BoundParameter' -ModuleName $script:dscModuleName -Times 1 -Exactly
+            $script:mockAlert.Severity | Should -Be 16
+            $script:mockAlert.MessageId | Should -Be 0
         }
     }
 
     Context 'When alert does not exist' {
         BeforeAll {
-            InModuleScope -ScriptBlock {
-                # Mock server object using SMO stub types
-                $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
-                $script:mockServerObject.JobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
+            # Mock server object using SMO stub types
+            $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
+            $script:mockServerObject.JobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
 
-                Mock -CommandName 'Assert-BoundParameter'
-                Mock -CommandName 'Get-AgentAlertObject'
-            }
+            Mock -CommandName 'Assert-BoundParameter' -ModuleName $script:dscModuleName
+            Mock -CommandName 'Get-AgentAlertObject' -ModuleName $script:dscModuleName
         }
 
         It 'Should throw error when alert does not exist' {
-            InModuleScope -ScriptBlock {
-                { Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'NonExistentAlert' -Severity '16' } |
-                    Should -Throw -ExpectedMessage '*was not found*'
-            }
+            { Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'NonExistentAlert' -Severity 16 } |
+                Should -Throw -ExpectedMessage '*was not found*'
         }
     }
 
     Context 'When no changes are needed' {
         BeforeAll {
-            InModuleScope -ScriptBlock {
-                # Mock the alert object using SMO stub types
-                $script:mockAlert = [Microsoft.SqlServer.Management.Smo.Agent.Alert]::CreateTypeInstance()
-                $script:mockAlert.Name = 'TestAlert'
-                $script:mockAlert.Severity = 14
-                $script:mockAlert.MessageId = 0
+            # Mock the alert object using SMO stub types
+            # Mock the alert object using SMO stub types
+            $script:mockAlert = [Microsoft.SqlServer.Management.Smo.Agent.Alert]::CreateTypeInstance()
+            $script:mockAlert.Name = 'TestAlert'
+            $script:mockAlert.Severity = 14
+            $script:mockAlert.MessageId = 0
 
-                # Mock server object using SMO stub types
-                $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
-                $script:mockServerObject.JobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
+            # Mock server object using SMO stub types
+            $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
+            $script:mockServerObject.JobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
 
-                Mock -CommandName 'Assert-BoundParameter'
-                Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $script:mockAlert }
-            }
+            Mock -CommandName 'Assert-BoundParameter' -ModuleName $script:dscModuleName
+            Mock -CommandName 'Get-AgentAlertObject' -ModuleName $script:dscModuleName -MockWith { return $script:mockAlert }
         }
 
     }
 
     Context 'When update fails' {
         BeforeAll {
-            InModuleScope -ScriptBlock {
-                # Mock the alert object that will fail on Alter using SMO stub types
-                $script:mockFailingAlert = [Microsoft.SqlServer.Management.Smo.Agent.Alert]::CreateTypeInstance()
-                $script:mockFailingAlert.Name = 'TestAlert'
-                $script:mockFailingAlert.Severity = 14
-                $script:mockFailingAlert.MessageId = 0
-                # Mock the Alter method to throw an exception  
-                $script:mockFailingAlert | Add-Member -MemberType ScriptMethod -Name 'Alter' -Value { throw 'Update failed' } -Force
+            # Mock the alert object that will fail on Alter using SMO stub types
+            $script:mockFailingAlert = [Microsoft.SqlServer.Management.Smo.Agent.Alert]::CreateTypeInstance()
+            $script:mockFailingAlert.Name = 'TestAlert'
+            $script:mockFailingAlert.Severity = 14
+            $script:mockFailingAlert.MessageId = 0
+            # Mock the Alter method to throw an exception
+            $script:mockFailingAlert | Add-Member -MemberType ScriptMethod -Name 'Alter' -Value { throw 'Update failed' } -Force
 
-                # Mock server object using SMO stub types
-                $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
-                $script:mockServerObject.JobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
+            # Mock server object using SMO stub types
+            $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
+            $script:mockServerObject.JobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
 
-                Mock -CommandName 'Assert-BoundParameter'
-                Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $script:mockFailingAlert }
-            }
+            Mock -CommandName 'Assert-BoundParameter' -ModuleName $script:dscModuleName
+            Mock -CommandName 'Get-AgentAlertObject' -ModuleName $script:dscModuleName -MockWith { return $script:mockFailingAlert }
         }
 
         It 'Should throw error when update fails' {
-            InModuleScope -ScriptBlock {
-                { Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity '16' } |
-                    Should -Throw -ExpectedMessage '*Failed to update*'
-            }
+            { Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 } |
+                Should -Throw -ExpectedMessage '*Failed to update*'
         }
     }
 }
