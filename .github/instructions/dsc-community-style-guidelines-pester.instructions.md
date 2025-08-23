@@ -32,6 +32,8 @@ applyTo: "**/*.[Tt]ests.ps1"
 - No `Should -Not -Throw` - invoke commands directly
 - Never add an empty `-MockWith` block
 - Omit `-MockWith` when returning `$null`
+- Set `$PSDefaultParameterValues` for `Mock:ModuleName`, `Should:ModuleName`, `InModuleScope:ModuleName`
+- Omit `-ModuleName` parameter on Pester commands
 
 ## File Organization
 - Class resources: `tests/Unit/Classes/{Name}.Tests.ps1`
