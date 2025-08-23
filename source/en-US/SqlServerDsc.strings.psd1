@@ -278,7 +278,7 @@ ConvertFrom-StringData @'
     Login_Add_LoginAlreadyExists = The login '{0}' already exists on the instance '{1}'.
 
     ## Get-SqlDscAgentAlertObject
-    GetSqlDscAgentAlertObject_GettingAlert = Getting SQL Agent Alert '{0}'. (GSAAO0001)
+    Get_SqlDscAgentAlertObject_GettingAlert = Getting SQL Agent Alert '{0}'. (GSAAO0001)
 
     ## Assert-SqlDscAgentAlertParameter
     Assert_SqlDscAgentAlertParameter_MultipleParameterError = Cannot specify both Severity and MessageId parameters simultaneously. A SQL Agent Alert can only be based on one or the other. (ASAAP0001)
@@ -289,7 +289,7 @@ ConvertFrom-StringData @'
     New_SqlDscAgentAlertSmoObject_SettingMessageId = Setting message ID '{0}' for SQL Agent Alert '{1}'. (NSAASO0003)
 
     ## Get-SqlDscAgentAlert
-    Get_SqlDscAgentAlert_GettingAlerts = Getting SQL Agent Alerts from server. (GSAA0001)
+    Get_SqlDscAgentAlert_GettingAlerts = Getting SQL Agent Alerts from server '{0}'. (GSAA0001)
     Get_SqlDscAgentAlert_FilteringByName = Filtering SQL Agent Alerts by name '{0}'. (GSAA0002)
     Get_SqlDscAgentAlert_AlertFound = SQL Agent Alert '{0}' was found. (GSAA0003)
     Get_SqlDscAgentAlert_AlertNotFound = SQL Agent Alert '{0}' was not found. (GSAA0004)

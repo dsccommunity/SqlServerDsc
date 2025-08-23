@@ -52,7 +52,7 @@ function Get-SqlDscAgentAlert
     # cSpell: ignore GSAA
     process
     {
-        Write-Verbose -Message ($script:localizedData.Get_SqlDscAgentAlert_GettingAlerts)
+        Write-Verbose -Message ($script:localizedData.Get_SqlDscAgentAlert_GettingAlerts -f $ServerObject.InstanceName)
 
         $alertCollection = $ServerObject.JobServer.Alerts
 

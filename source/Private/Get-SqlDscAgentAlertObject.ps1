@@ -35,7 +35,7 @@ function Get-SqlDscAgentAlertObject
         $Name
     )
 
-    Write-Verbose -Message ($script:localizedData.GetSqlDscAgentAlertObject_GettingAlert -f $Name)
+    Write-Verbose -Message ($script:localizedData.Get_SqlDscAgentAlertObject_GettingAlert -f $Name)
 
     $alertObject = $ServerObject.JobServer.Alerts | Where-Object -FilterScript { $_.Name -eq $Name }
 
