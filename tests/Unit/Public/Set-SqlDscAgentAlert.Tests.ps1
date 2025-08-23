@@ -199,7 +199,6 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
     Context 'When no changes are needed' {
         BeforeAll {
             # Mock the alert object using SMO stub types
-            # Mock the alert object using SMO stub types
             $script:mockAlert = [Microsoft.SqlServer.Management.Smo.Agent.Alert]::CreateTypeInstance()
             $script:mockAlert.Name = 'TestAlert'
             $script:mockAlert.Severity = 14
