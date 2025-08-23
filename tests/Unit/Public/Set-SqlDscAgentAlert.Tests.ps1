@@ -143,7 +143,6 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
             $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001
 
             $script:mockAlert.MessageId | Should -Be 50001
-            $script:mockAlert.Severity | Should -Be 0
         }
 
         It 'Should return alert object when PassThru is specified' {
@@ -214,6 +213,14 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
             Mock -CommandName 'Get-AgentAlertObject' -ModuleName $script:dscModuleName -MockWith { return $script:mockAlert }
         }
 
+        It 'Should not call Alter when properties are unchanged' {
+            $script:alterCalled = $false
+            $script:mockAlert | Add-Member -MemberType ScriptMethod -Name 'Alter' -Value { $script:alterCalled = $true } -Force
+
+            Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 14 -MessageId 0
+
+            $script:alterCalled | Should -BeFalse
+        }
     }
 
     Context 'When update fails' {

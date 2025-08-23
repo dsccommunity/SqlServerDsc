@@ -143,18 +143,30 @@ function Set-SqlDscAgentAlert
 
                 if ($PSBoundParameters.ContainsKey('Severity'))
                 {
-                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentAlert_SettingSeverity -f $Severity, $alertObjectToUpdate.Name)
-                    $alertObjectToUpdate.MessageId = 0
-                    $alertObjectToUpdate.Severity = $Severity
-                    $hasChanges = $true
+                    if ($alertObjectToUpdate.Severity -ne $Severity)
+                    {
+                        Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentAlert_SettingSeverity -f $Severity, $alertObjectToUpdate.Name)
+                        $alertObjectToUpdate.Severity = $Severity
+                        $hasChanges = $true
+                    }
+                    else
+                    {
+                        Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentAlert_SeverityAlreadyCorrect -f $Severity, $alertObjectToUpdate.Name)
+                    }
                 }
 
                 if ($PSBoundParameters.ContainsKey('MessageId'))
                 {
-                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentAlert_SettingMessageId -f $MessageId, $alertObjectToUpdate.Name)
-                    $alertObjectToUpdate.Severity = 0
-                    $alertObjectToUpdate.MessageId = $MessageId
-                    $hasChanges = $true
+                    if ($alertObjectToUpdate.MessageId -ne $MessageId)
+                    {
+                        Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentAlert_SettingMessageId -f $MessageId, $alertObjectToUpdate.Name)
+                        $alertObjectToUpdate.MessageId = $MessageId
+                        $hasChanges = $true
+                    }
+                    else
+                    {
+                        Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentAlert_MessageIdAlreadyCorrect -f $MessageId, $alertObjectToUpdate.Name)
+                    }
                 }
 
                 if ($hasChanges)

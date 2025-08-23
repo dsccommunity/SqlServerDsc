@@ -313,6 +313,8 @@ ConvertFrom-StringData @'
     Set_SqlDscAgentAlert_AlertUpdated = SQL Agent Alert '{0}' was updated successfully. (SSAA0006)
     Set_SqlDscAgentAlert_NoChangesNeeded = No changes needed for SQL Agent Alert '{0}'. (SSAA0007)
     Set_SqlDscAgentAlert_UpdateFailed = Failed to update SQL Agent Alert '{0}'. (SSAA0008)
+    Set_SqlDscAgentAlert_SeverityAlreadyCorrect = Severity '{0}' for SQL Agent Alert '{1}' is already correct. (SSAA0009)
+    Set_SqlDscAgentAlert_MessageIdAlreadyCorrect = Message ID '{0}' for SQL Agent Alert '{1}' is already correct. (SSAA0010)
     Set_SqlDscAgentAlert_UpdateShouldProcessVerboseDescription = Updating the SQL Agent Alert '{0}' on the instance '{1}'.
     Set_SqlDscAgentAlert_UpdateShouldProcessVerboseWarning = Are you sure you want to update the SQL Agent Alert '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
