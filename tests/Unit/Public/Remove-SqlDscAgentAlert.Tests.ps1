@@ -111,7 +111,7 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Public' {
                             ) -PassThru
                     ) -PassThru
 
-                Mock -CommandName 'Get-SqlDscAgentAlertObject' -MockWith { return $script:mockAlert }
+                Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $script:mockAlert }
             }
         }
 
@@ -119,7 +119,7 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Public' {
             InModuleScope -ScriptBlock {
                 { Remove-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Force } | Should -Not -Throw
 
-                Should -Invoke -CommandName 'Get-SqlDscAgentAlertObject' -Times 1 -Exactly
+                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
             }
         }
 
@@ -169,7 +169,7 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Public' {
                 $script:mockServerObject = New-Object -TypeName Object |
                     Add-Member -MemberType NoteProperty -Name 'JobServer' -Value (New-Object -TypeName Object) -PassThru
 
-                Mock -CommandName 'Get-SqlDscAgentAlertObject' -MockWith { return $null }
+                Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $null }
             }
         }
 
@@ -177,7 +177,7 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Public' {
             InModuleScope -ScriptBlock {
                 { Remove-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'NonExistentAlert' -Force } | Should -Not -Throw
 
-                Should -Invoke -CommandName 'Get-SqlDscAgentAlertObject' -Times 1 -Exactly
+                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
             }
         }
 
@@ -204,7 +204,7 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Public' {
                 $script:mockServerObject = New-Object -TypeName Object |
                     Add-Member -MemberType NoteProperty -Name 'JobServer' -Value (New-Object -TypeName Object) -PassThru
 
-                Mock -CommandName 'Get-SqlDscAgentAlertObject' -MockWith { return $script:mockFailingAlert }
+                Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $script:mockFailingAlert }
             }
         }
 
@@ -226,7 +226,7 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Public' {
                 $script:mockServerObject = New-Object -TypeName Object |
                     Add-Member -MemberType NoteProperty -Name 'JobServer' -Value (New-Object -TypeName Object) -PassThru
 
-                Mock -CommandName 'Get-SqlDscAgentAlertObject' -MockWith { return $script:mockAlert }
+                Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $script:mockAlert }
             }
         }
 
@@ -250,7 +250,7 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Public' {
                 $script:mockServerObject = New-Object -TypeName Object |
                     Add-Member -MemberType NoteProperty -Name 'JobServer' -Value (New-Object -TypeName Object) -PassThru
 
-                Mock -CommandName 'Get-SqlDscAgentAlertObject' -MockWith { return $script:mockAlert }
+                Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $script:mockAlert }
             }
         }
 

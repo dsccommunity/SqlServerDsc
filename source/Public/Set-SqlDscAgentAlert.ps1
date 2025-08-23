@@ -106,7 +106,7 @@ function Set-SqlDscAgentAlert
                 $ServerObject.JobServer.Alerts.Refresh()
             }
 
-            $alertObjectToUpdate = Get-SqlDscAgentAlertObject -ServerObject $ServerObject -Name $Name
+            $alertObjectToUpdate = Get-AgentAlertObject -ServerObject $ServerObject -Name $Name
 
             if (-not $alertObjectToUpdate)
             {

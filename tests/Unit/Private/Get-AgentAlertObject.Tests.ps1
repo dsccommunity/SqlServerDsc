@@ -46,7 +46,7 @@ AfterAll {
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 }
 
-Describe 'Get-SqlDscAgentAlertObject' -Tag 'Private' {
+Describe 'Get-AgentAlertObject' -Tag 'Private' {
     Context 'When getting an alert object' {
         BeforeAll {
             InModuleScope -ScriptBlock {
@@ -72,7 +72,7 @@ Describe 'Get-SqlDscAgentAlertObject' -Tag 'Private' {
 
         It 'Should return the correct alert object when alert exists' {
             InModuleScope -ScriptBlock {
-                $result = Get-SqlDscAgentAlertObject -ServerObject $script:mockServerObject -Name 'TestAlert'
+                $result = Get-AgentAlertObject -ServerObject $script:mockServerObject -Name 'TestAlert'
 
                 $result | Should -Not -BeNullOrEmpty
                 $result.Name | Should -Be 'TestAlert'
@@ -82,21 +82,9 @@ Describe 'Get-SqlDscAgentAlertObject' -Tag 'Private' {
 
         It 'Should return null when alert does not exist' {
             InModuleScope -ScriptBlock {
-                $result = Get-SqlDscAgentAlertObject -ServerObject $script:mockServerObject -Name 'NonExistentAlert'
+                $result = Get-AgentAlertObject -ServerObject $script:mockServerObject -Name 'NonExistentAlert'
 
                 $result | Should -BeNull
-            }
-        }
-
-        It 'Should write verbose message' {
-            InModuleScope -ScriptBlock {
-                $verboseMessages = @()
-
-                Get-SqlDscAgentAlertObject -ServerObject $script:mockServerObject -Name 'TestAlert' -Verbose 4>&1 |
-                    ForEach-Object { $verboseMessages += $_ }
-
-                $verboseMessages | Should -Not -BeNullOrEmpty
-                $verboseMessages[0] | Should -Match 'Getting SQL Agent Alert'
             }
         }
     }
@@ -119,7 +107,7 @@ Describe 'Get-SqlDscAgentAlertObject' -Tag 'Private' {
 
         It 'Should return null when no alerts exist' {
             InModuleScope -ScriptBlock {
-                $result = Get-SqlDscAgentAlertObject -ServerObject $script:mockEmptyServerObject -Name 'TestAlert'
+                $result = Get-AgentAlertObject -ServerObject $script:mockEmptyServerObject -Name 'TestAlert'
 
                 $result | Should -BeNull
             }

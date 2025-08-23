@@ -111,7 +111,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
                 $script:mockServerObject.JobServer = $script:mockJobServer
 
                 Mock -CommandName 'Assert-BoundParameter' -MockWith { }
-                Mock -CommandName 'Get-SqlDscAgentAlertObject' -MockWith { return $script:mockAlert }
+                Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $script:mockAlert }
             }
         }
 
@@ -120,7 +120,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
                 { Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity '16' } | Should -Not -Throw
 
                 Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
-                Should -Invoke -CommandName 'Get-SqlDscAgentAlertObject' -Times 1 -Exactly
+                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
                 $script:mockAlert.Severity | Should -Be '16'
                 $script:mockAlert.MessageId | Should -Be 0
             }
@@ -187,7 +187,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
                 $script:mockServerObject.JobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
 
                 Mock -CommandName 'Assert-BoundParameter' -MockWith { }
-                Mock -CommandName 'Get-SqlDscAgentAlertObject' -MockWith { return $null }
+                Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $null }
             }
         }
 
@@ -213,7 +213,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
                 $script:mockServerObject.JobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
 
                 Mock -CommandName 'Assert-BoundParameter' -MockWith { }
-                Mock -CommandName 'Get-SqlDscAgentAlertObject' -MockWith { return $script:mockAlert }
+                Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $script:mockAlert }
             }
         }
 
@@ -235,7 +235,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
                 $script:mockServerObject.JobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
 
                 Mock -CommandName 'Assert-BoundParameter' -MockWith { }
-                Mock -CommandName 'Get-SqlDscAgentAlertObject' -MockWith { return $script:mockFailingAlert }
+                Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $script:mockFailingAlert }
             }
         }
 

@@ -75,7 +75,7 @@ function Test-SqlDscAgentAlert
 
         Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_TestingAlert -f $Name)
 
-        $alertObject = Get-SqlDscAgentAlertObject -ServerObject $ServerObject -Name $Name
+        $alertObject = Get-AgentAlertObject -ServerObject $ServerObject -Name $Name
 
         if (-not $alertObject)
         {

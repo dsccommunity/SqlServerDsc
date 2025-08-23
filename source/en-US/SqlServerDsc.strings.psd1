@@ -277,8 +277,8 @@ ConvertFrom-StringData @'
     Login_Add_LoginCreated = Successfully created login '{0}' on the instance '{1}'.
     Login_Add_LoginAlreadyExists = The login '{0}' already exists on the instance '{1}'.
 
-    ## Get-SqlDscAgentAlertObject
-    Get_SqlDscAgentAlertObject_GettingAlert = Getting SQL Agent Alert '{0}'. (GSAAO0001)
+    ## Get-AgentAlertObject
+    Get_AgentAlertObject_GettingAlert = Getting SQL Agent Alert '{0}'. (GAAO0001)
 
     ## Assert-SqlDscAgentAlertParameter
     Assert_SqlDscAgentAlertParameter_MultipleParameterError = Cannot specify both Severity and MessageId parameters simultaneously. A SQL Agent Alert can only be based on one or the other. (ASAAP0001)

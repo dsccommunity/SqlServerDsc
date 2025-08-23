@@ -88,7 +88,7 @@ function Remove-SqlDscAgentAlert
                 $ServerObject.JobServer.Alerts.Refresh()
             }
 
-            $alertObjectToRemove = Get-SqlDscAgentAlertObject -ServerObject $ServerObject -Name $Name
+            $alertObjectToRemove = Get-AgentAlertObject -ServerObject $ServerObject -Name $Name
 
             if (-not $alertObjectToRemove)
             {

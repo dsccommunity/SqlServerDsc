@@ -16,11 +16,11 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine
-        Get-SqlDscAgentAlertObject -ServerObject $serverObject -Name 'MyAlert'
+        Get-AgentAlertObject -ServerObject $serverObject -Name 'MyAlert'
 
         Gets the SQL Agent Alert named 'MyAlert'.
 #>
-function Get-SqlDscAgentAlertObject
+function Get-AgentAlertObject
 {
     [CmdletBinding()]
     [OutputType([Microsoft.SqlServer.Management.Smo.Agent.Alert])]
@@ -35,7 +35,7 @@ function Get-SqlDscAgentAlertObject
         $Name
     )
 
-    Write-Verbose -Message ($script:localizedData.Get_SqlDscAgentAlertObject_GettingAlert -f $Name)
+    Write-Verbose -Message ($script:localizedData.Get_AgentAlertObject_GettingAlert -f $Name)
 
     $alertObject = $ServerObject.JobServer.Alerts | Where-Object -FilterScript { $_.Name -eq $Name }
 
