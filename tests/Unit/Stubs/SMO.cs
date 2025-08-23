@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using System.Security;
 using System.Runtime.InteropServices;
 
@@ -344,6 +345,19 @@ namespace Microsoft.SqlServer.Management.Smo
 
         public void Revoke( Microsoft.SqlServer.Management.Smo.ServerPermissionSet permission, string granteeName )
         {
+        }
+
+        // Property for SQL Agent support
+        public Microsoft.SqlServer.Management.Smo.Agent.JobServer JobServer { get; set; }
+
+        // Fabricated constructor
+        private Server(string name, bool dummyParam)
+        {
+            this.Name = name;
+        }
+        public static Server CreateTypeInstance()
+        {
+            return new Server();
         }
     }
 
@@ -1466,6 +1480,155 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
         public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
         public System.Object UserData { get; set; }
         public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+    }
+
+    #endregion
+}
+
+namespace Microsoft.SqlServer.Management.Smo.Agent
+{
+    #region Public Enums
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.AlertType
+    // Used by:
+    //  Get-SqlDscAgentAlert.Tests.ps1
+    //  New-SqlDscAgentAlert.Tests.ps1
+    //  Set-SqlDscAgentAlert.Tests.ps1
+    //  Remove-SqlDscAgentAlert.Tests.ps1
+    //  Test-SqlDscAgentAlert.Tests.ps1
+    public enum AlertType
+    {
+        SqlServerEvent = 1,
+        SqlServerPerformanceCondition = 2,
+        NonSqlServerEvent = 3,
+        WmiEvent = 4
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.CompletionAction
+    // Used by:
+    //  SQL Agent Alert commands unit tests
+    public enum CompletionAction
+    {
+        Never = 0,
+        OnSuccess = 1,
+        OnFailure = 2,
+        Always = 3
+    }
+
+    #endregion
+
+    #region Public Classes
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.JobServer
+    // Used by:
+    //  SQL Agent Alert commands unit tests
+    public class JobServer
+    {
+        // Constructor
+        public JobServer() { }
+
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Agent.AlertCollection Alerts { get; set; }
+        public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
+        public System.String Name { get; set; }
+        public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+
+        // Fabricated constructor
+        private JobServer(Microsoft.SqlServer.Management.Smo.Server server) { }
+        public static JobServer CreateTypeInstance()
+        {
+            return new JobServer();
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.AlertCollection
+    // Used by:
+    //  SQL Agent Alert commands unit tests
+    public class AlertCollection : ICollection
+    {
+        private System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Agent.Alert> alerts = new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Agent.Alert>();
+
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Agent.Alert this[System.String name]
+        {
+            get { return alerts.ContainsKey(name) ? alerts[name] : null; }
+            set { alerts[name] = value; }
+        }
+        public Microsoft.SqlServer.Management.Smo.Agent.Alert this[System.Int32 index]
+        {
+            get { return alerts.Values.ElementAtOrDefault(index); }
+            set { /* Not implemented for stub */ }
+        }
+        public System.Int32 Count { get { return alerts.Count; } set { } }
+        public System.Boolean IsSynchronized { get; set; }
+        public System.Object SyncRoot { get; set; }
+
+        // Method
+        public void Add(Microsoft.SqlServer.Management.Smo.Agent.Alert alert) { alerts[alert.Name] = alert; }
+        public void Remove(Microsoft.SqlServer.Management.Smo.Agent.Alert alert) { alerts.Remove(alert.Name); }
+        public void Remove(System.String name) { alerts.Remove(name); }
+        public void CopyTo(System.Array array, System.Int32 index) { }
+        public IEnumerator GetEnumerator() { return alerts.Values.GetEnumerator(); }
+        public void Refresh() { /* Stub implementation for refreshing alerts */ }
+
+        // Fabricated constructor
+        private AlertCollection() { }
+        public static AlertCollection CreateTypeInstance()
+        {
+            return new AlertCollection();
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.Alert
+    // Used by:
+    //  Get-SqlDscAgentAlert.Tests.ps1
+    //  New-SqlDscAgentAlert.Tests.ps1
+    //  Set-SqlDscAgentAlert.Tests.ps1
+    //  Remove-SqlDscAgentAlert.Tests.ps1
+    //  Test-SqlDscAgentAlert.Tests.ps1
+    public class Alert
+    {
+        // Constructor
+        public Alert() { }
+        public Alert(Microsoft.SqlServer.Management.Smo.Agent.JobServer jobServer, System.String name) 
+        { 
+            this.Name = name;
+        }
+
+        // Property
+        public System.String Name { get; set; }
+        public System.Boolean IsEnabled { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.AlertType AlertType { get; set; }
+        public System.String DatabaseName { get; set; }
+        public System.String DelayBetweenResponses { get; set; }
+        public System.String EventDescriptionKeyword { get; set; }
+        public System.String EventSource { get; set; }
+        public System.Boolean HasNotification { get; set; }
+        public System.Boolean IncludeEventDescription { get; set; }
+        public System.Int32 MessageID { get; set; }
+        public System.String NotificationMessage { get; set; }
+        public System.String PerformanceCondition { get; set; }
+        public System.Int32 Severity { get; set; }
+        public System.String WmiEventNamespace { get; set; }
+        public System.String WmiEventQuery { get; set; }
+        public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
+        public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+
+        // Method
+        public void Create() { }
+        public void Drop() { }
+        public void Alter() { }
+
+        // Fabricated constructor
+        private Alert(Microsoft.SqlServer.Management.Smo.Agent.JobServer jobServer, System.String name, System.Boolean dummyParam) { }
+        public static Alert CreateTypeInstance()
+        {
+            return new Alert();
+        }
     }
 
     #endregion

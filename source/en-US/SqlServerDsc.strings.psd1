@@ -276,4 +276,70 @@ ConvertFrom-StringData @'
     Login_Add_ShouldProcessCaption = Create login on instance
     Login_Add_LoginCreated = Successfully created login '{0}' on the instance '{1}'.
     Login_Add_LoginAlreadyExists = The login '{0}' already exists on the instance '{1}'.
+
+    ## Get-SqlDscAgentAlertObject
+    GetSqlDscAgentAlertObject_GettingAlert = Getting SQL Agent Alert '{0}'. (GSAAO0001)
+
+    ## Assert-SqlDscAgentAlertParameter
+    Assert_SqlDscAgentAlertParameter_MultipleParameterError = Cannot specify both Severity and MessageId parameters simultaneously. A SQL Agent Alert can only be based on one or the other. (ASAAP0001)
+
+    ## New-SqlDscAgentAlertSmoObject
+    New_SqlDscAgentAlertSmoObject_CreatingAlert = Creating SQL Agent Alert SMO object '{0}'. (NSAASO0001)
+    New_SqlDscAgentAlertSmoObject_SettingSeverity = Setting severity '{0}' for SQL Agent Alert '{1}'. (NSAASO0002)
+    New_SqlDscAgentAlertSmoObject_SettingMessageId = Setting message ID '{0}' for SQL Agent Alert '{1}'. (NSAASO0003)
+
+    ## Get-SqlDscAgentAlert
+    Get_SqlDscAgentAlert_GettingAlerts = Getting SQL Agent Alerts from server. (GSAA0001)
+    Get_SqlDscAgentAlert_FilteringByName = Filtering SQL Agent Alerts by name '{0}'. (GSAA0002)
+    Get_SqlDscAgentAlert_AlertFound = SQL Agent Alert '{0}' was found. (GSAA0003)
+    Get_SqlDscAgentAlert_AlertNotFound = SQL Agent Alert '{0}' was not found. (GSAA0004)
+    Get_SqlDscAgentAlert_ReturningAllAlerts = Returning all {0} SQL Agent Alerts. (GSAA0005)
+
+    ## New-SqlDscAgentAlert
+    New_SqlDscAgentAlert_AlertAlreadyExists = SQL Agent Alert '{0}' already exists. (NSAA0001)
+    New_SqlDscAgentAlert_CreatingAlert = Creating SQL Agent Alert '{0}'. (NSAA0002)
+    New_SqlDscAgentAlert_AlertCreated = SQL Agent Alert '{0}' was successfully created. (NSAA0003)
+    New_SqlDscAgentAlert_CreateFailed = Failed to create SQL Agent Alert '{0}'. (NSAA0004)
+    New_SqlDscAgentAlert_SettingSeverity = Setting severity '{0}' for SQL Agent Alert '{1}'. (NSAA0005)
+    New_SqlDscAgentAlert_SettingMessageId = Setting message ID '{0}' for SQL Agent Alert '{1}'. (NSAA0006)
+    New_SqlDscAgentAlert_CreateShouldProcessVerboseDescription = Creating the SQL Agent Alert '{0}' on the instance '{1}'.
+    New_SqlDscAgentAlert_CreateShouldProcessVerboseWarning = Are you sure you want to create the SQL Agent Alert '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    New_SqlDscAgentAlert_CreateShouldProcessCaption = Create SQL Agent Alert on instance
+
+    ## Set-SqlDscAgentAlert
+    Set_SqlDscAgentAlert_RefreshingServerObject = Refreshing server object alerts collection. (SSAA0001)
+    Set_SqlDscAgentAlert_AlertNotFound = SQL Agent Alert '{0}' was not found. (SSAA0002)
+    Set_SqlDscAgentAlert_UpdatingAlert = Updating SQL Agent Alert '{0}'. (SSAA0003)
+    Set_SqlDscAgentAlert_SettingSeverity = Setting severity '{0}' for SQL Agent Alert '{1}'. (SSAA0004)
+    Set_SqlDscAgentAlert_SettingMessageId = Setting message ID '{0}' for SQL Agent Alert '{1}'. (SSAA0005)
+    Set_SqlDscAgentAlert_AlertUpdated = SQL Agent Alert '{0}' was successfully updated. (SSAA0006)
+    Set_SqlDscAgentAlert_NoChangesNeeded = No changes needed for SQL Agent Alert '{0}'. (SSAA0007)
+    Set_SqlDscAgentAlert_UpdateFailed = Failed to update SQL Agent Alert '{0}'. (SSAA0008)
+    Set_SqlDscAgentAlert_UpdateShouldProcessVerboseDescription = Updating the SQL Agent Alert '{0}' on the instance '{1}'.
+    Set_SqlDscAgentAlert_UpdateShouldProcessVerboseWarning = Are you sure you want to update the SQL Agent Alert '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Set_SqlDscAgentAlert_UpdateShouldProcessCaption = Update SQL Agent Alert on instance
+
+    ## Remove-SqlDscAgentAlert
+    Remove_SqlDscAgentAlert_RefreshingServerObject = Refreshing server object alerts collection. (RSAA0001)
+    Remove_SqlDscAgentAlert_AlertNotFound = SQL Agent Alert '{0}' was not found. (RSAA0002)
+    Remove_SqlDscAgentAlert_RemovingAlert = Removing SQL Agent Alert '{0}'. (RSAA0003)
+    Remove_SqlDscAgentAlert_AlertRemoved = SQL Agent Alert '{0}' was successfully removed. (RSAA0004)
+    Remove_SqlDscAgentAlert_RemoveFailed = Failed to remove SQL Agent Alert '{0}'. (RSAA0005)
+    Remove_SqlDscAgentAlert_RemoveShouldProcessVerboseDescription = Removing the SQL Agent Alert '{0}' on the instance '{1}'.
+    Remove_SqlDscAgentAlert_RemoveShouldProcessVerboseWarning = Are you sure you want to remove the SQL Agent Alert '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Remove_SqlDscAgentAlert_RemoveShouldProcessCaption = Remove SQL Agent Alert on instance
+
+    ## Test-SqlDscAgentAlert
+    Test_SqlDscAgentAlert_TestingAlert = Testing if SQL Agent Alert '{0}' exists and has desired properties. (TSAA0001)
+    Test_SqlDscAgentAlert_AlertNotFound = SQL Agent Alert '{0}' was not found. (TSAA0002)
+    Test_SqlDscAgentAlert_AlertFound = SQL Agent Alert '{0}' was found. (TSAA0003)
+    Test_SqlDscAgentAlert_NoPropertyTest = No specific properties to test, alert exists. (TSAA0004)
+    Test_SqlDscAgentAlert_SeverityMismatch = Severity mismatch: current '{0}', expected '{1}'. (TSAA0005)
+    Test_SqlDscAgentAlert_SeverityMatch = Severity matches expected value '{0}'. (TSAA0006)
+    Test_SqlDscAgentAlert_MessageIdMismatch = Message ID mismatch: current '{0}', expected '{1}'. (TSAA0007)
+    Test_SqlDscAgentAlert_MessageIdMatch = Message ID matches expected value '{0}'. (TSAA0008)
+    Test_SqlDscAgentAlert_AllTestsPassed = All tests passed for SQL Agent Alert '{0}'. (TSAA0009)
 '@
