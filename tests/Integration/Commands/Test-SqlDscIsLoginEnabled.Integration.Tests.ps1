@@ -173,8 +173,7 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2016', 'Integration_
             $result = Test-SqlDscIsLoginEnabled -ServerObject $script:serverObject -Name 'sa'
 
             $result | Should -BeOfType [System.Boolean]
-            # sa login should typically be enabled by default, but we just verify it returns a boolean
-            $result | Should -BeIn @($true, $false)
+            # We only assert the type here; specific state is environment-dependent.
         }
     }
 }
