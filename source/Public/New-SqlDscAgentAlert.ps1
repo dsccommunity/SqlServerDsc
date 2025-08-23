@@ -12,12 +12,12 @@
         Specifies the name of the SQL Agent Alert to create.
 
     .PARAMETER Severity
-        Specifies the severity level for the SQL Agent Alert. Cannot be used
-        together with MessageId.
+        Specifies the severity level for the SQL Agent Alert. Valid range is 0 to 25.
+        Cannot be used together with MessageId.
 
     .PARAMETER MessageId
-        Specifies the message ID for the SQL Agent Alert. Cannot be used
-        together with Severity.
+        Specifies the message ID for the SQL Agent Alert. Valid range is 0 to 2147483647.
+        Cannot be used together with Severity.
 
     .PARAMETER PassThru
         If specified, the created alert object will be returned.
@@ -60,11 +60,13 @@ function New-SqlDscAgentAlert
         $Name,
 
         [Parameter()]
-        [System.String]
+        [ValidateRange(0, 25)]
+        [System.Int32]
         $Severity,
 
         [Parameter()]
-        [System.String]
+        [ValidateRange(0, 2147483647)]
+        [System.Int32]
         $MessageId,
 
         [Parameter()]
@@ -100,13 +102,13 @@ function New-SqlDscAgentAlert
                 # Create the new alert SMO object
                 $newAlertObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Agent.Alert -ArgumentList $ServerObject.JobServer, $Name
 
-                if (-not [System.String]::IsNullOrEmpty($Severity))
+                if ($PSBoundParameters.ContainsKey('Severity'))
                 {
                     Write-Verbose -Message ($script:localizedData.New_SqlDscAgentAlert_SettingSeverity -f $Severity, $Name)
                     $newAlertObject.Severity = $Severity
                 }
 
-                if (-not [System.String]::IsNullOrEmpty($MessageId))
+                if ($PSBoundParameters.ContainsKey('MessageId'))
                 {
                     Write-Verbose -Message ($script:localizedData.New_SqlDscAgentAlert_SettingMessageId -f $MessageId, $Name)
                     $newAlertObject.MessageId = $MessageId

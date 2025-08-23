@@ -13,12 +13,12 @@
         Specifies the name of the SQL Agent Alert to test.
 
     .PARAMETER Severity
-        Specifies the expected severity level for the SQL Agent Alert. If specified,
-        the command will return $true only if the alert exists and has this severity.
+        Specifies the expected severity level for the SQL Agent Alert. Valid range is 0 to 25.
+        If specified, the command will return $true only if the alert exists and has this severity.
 
     .PARAMETER MessageId
-        Specifies the expected message ID for the SQL Agent Alert. If specified,
-        the command will return $true only if the alert exists and has this message ID.
+        Specifies the expected message ID for the SQL Agent Alert. Valid range is 0 to 2147483647.
+        If specified, the command will return $true only if the alert exists and has this message ID.
 
     .OUTPUTS
         [System.Boolean]
@@ -57,11 +57,13 @@ function Test-SqlDscAgentAlert
         $Name,
 
         [Parameter()]
-        [System.String]
+        [ValidateRange(0, 25)]
+        [System.Int32]
         $Severity,
 
         [Parameter()]
-        [System.String]
+        [ValidateRange(0, 2147483647)]
+        [System.Int32]
         $MessageId
     )
 
@@ -78,24 +80,27 @@ function Test-SqlDscAgentAlert
         if (-not $alertObject)
         {
             Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_AlertNotFound -f $Name)
+
             return $false
         }
 
         Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_AlertFound -f $Name)
 
         # If no specific properties are specified, just return true (alert exists)
-        if ([System.String]::IsNullOrEmpty($Severity) -and [System.String]::IsNullOrEmpty($MessageId))
+        if (-not $PSBoundParameters.ContainsKey('Severity') -and -not $PSBoundParameters.ContainsKey('MessageId'))
         {
             Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_NoPropertyTest)
+
             return $true
         }
 
         # Test severity if specified
-        if (-not [System.String]::IsNullOrEmpty($Severity))
+        if ($PSBoundParameters.ContainsKey('Severity'))
         {
             if ($alertObject.Severity -ne $Severity)
             {
                 Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_SeverityMismatch -f $alertObject.Severity, $Severity)
+
                 return $false
             }
             else
@@ -105,11 +110,12 @@ function Test-SqlDscAgentAlert
         }
 
         # Test message ID if specified
-        if (-not [System.String]::IsNullOrEmpty($MessageId))
+        if ($PSBoundParameters.ContainsKey('MessageId'))
         {
             if ($alertObject.MessageId -ne $MessageId)
             {
                 Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_MessageIdMismatch -f $alertObject.MessageId, $MessageId)
+
                 return $false
             }
             else
@@ -119,6 +125,7 @@ function Test-SqlDscAgentAlert
         }
 
         Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_AllTestsPassed -f $Name)
+
         return $true
     }
 }

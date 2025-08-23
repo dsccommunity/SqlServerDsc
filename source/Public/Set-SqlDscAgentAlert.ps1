@@ -16,12 +16,12 @@
         Specifies the name of the SQL Agent Alert to update.
 
     .PARAMETER Severity
-        Specifies the severity level for the SQL Agent Alert. Cannot be used
-        together with MessageId.
+        Specifies the severity level for the SQL Agent Alert. Valid range is 0 to 25.
+        Cannot be used together with MessageId.
 
     .PARAMETER MessageId
-        Specifies the message ID for the SQL Agent Alert. Cannot be used
-        together with Severity.
+        Specifies the message ID for the SQL Agent Alert. Valid range is 0 to 2147483647.
+        Cannot be used together with Severity.
 
     .PARAMETER PassThru
         If specified, the updated alert object will be returned.
@@ -74,11 +74,13 @@ function Set-SqlDscAgentAlert
         $Name,
 
         [Parameter()]
-        [System.String]
+        [ValidateRange(0, 25)]
+        [System.Int32]
         $Severity,
 
         [Parameter()]
-        [System.String]
+        [ValidateRange(0, 2147483647)]
+        [System.Int32]
         $MessageId,
 
         [Parameter()]
@@ -129,7 +131,7 @@ function Set-SqlDscAgentAlert
 
                 $hasChanges = $false
 
-                if (-not [System.String]::IsNullOrEmpty($Severity))
+                if ($PSBoundParameters.ContainsKey('Severity'))
                 {
                     Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentAlert_SettingSeverity -f $Severity, $alertObjectToUpdate.Name)
                     $alertObjectToUpdate.MessageId = 0
@@ -137,7 +139,7 @@ function Set-SqlDscAgentAlert
                     $hasChanges = $true
                 }
 
-                if (-not [System.String]::IsNullOrEmpty($MessageId))
+                if ($PSBoundParameters.ContainsKey('MessageId'))
                 {
                     Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentAlert_SettingMessageId -f $MessageId, $alertObjectToUpdate.Name)
                     $alertObjectToUpdate.Severity = 0
