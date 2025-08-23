@@ -99,7 +99,7 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Public' {
                 # Mock server object using SMO stub types
                 $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
 
-                Mock -CommandName 'Assert-BoundParameter' -MockWith { }
+                Mock -CommandName 'Assert-BoundParameter'
                 Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $script:mockAlert }
             }
         }
@@ -127,7 +127,7 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Public' {
                 # Mock server object using SMO stub types
                 $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
 
-                Mock -CommandName 'Assert-BoundParameter' -MockWith { }
+                Mock -CommandName 'Assert-BoundParameter'
                 Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $script:mockAlert }
             }
         }
@@ -161,7 +161,7 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Public' {
                 # Mock server object using SMO stub types
                 $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
 
-                Mock -CommandName 'Assert-BoundParameter' -MockWith { }
+                Mock -CommandName 'Assert-BoundParameter'
                 Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $script:mockAlert }
             }
         }
@@ -189,8 +189,8 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Public' {
                 # Mock server object using SMO stub types
                 $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
 
-                Mock -CommandName 'Assert-BoundParameter' -MockWith { }
-                Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $null }
+                Mock -CommandName 'Assert-BoundParameter'
+                Mock -CommandName 'Get-AgentAlertObject'
             }
         }
 
@@ -210,8 +210,8 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Public' {
                 # Mock server object using SMO stub types
                 $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
 
-                Mock -CommandName 'Assert-BoundParameter' -MockWith { }
-                Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $null }
+                Mock -CommandName 'Assert-BoundParameter'
+                Mock -CommandName 'Get-AgentAlertObject'
             }
         }
 

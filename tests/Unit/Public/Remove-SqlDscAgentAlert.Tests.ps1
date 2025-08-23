@@ -169,7 +169,7 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Public' {
                 $script:mockServerObject = New-Object -TypeName Object |
                     Add-Member -MemberType NoteProperty -Name 'JobServer' -Value (New-Object -TypeName Object) -PassThru
 
-                Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $null }
+                Mock -CommandName 'Get-AgentAlertObject'
             }
         }
 

@@ -114,8 +114,8 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
                 $script:mockNewAlert.MessageID = 0
 
                 # Mock the private functions
-                Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $null }
-                Mock -CommandName 'Assert-BoundParameter' -MockWith { }
+                Mock -CommandName 'Get-AgentAlertObject'
+                Mock -CommandName 'Assert-BoundParameter'
             }
         }
 
@@ -174,7 +174,7 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
                 $script:mockServerObject.JobServer = $script:mockJobServer
 
                 Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $script:mockExistingAlert }
-                Mock -CommandName 'Assert-BoundParameter' -MockWith { }
+                Mock -CommandName 'Assert-BoundParameter'
             }
         }
 
@@ -206,8 +206,8 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
                 # Mock failing alert that throws on Create()
                 $script:mockFailingAlert = [Microsoft.SqlServer.Management.Smo.Agent.Alert]::CreateTypeInstance()
 
-                Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $null }
-                Mock -CommandName 'Assert-BoundParameter' -MockWith { }
+                Mock -CommandName 'Get-AgentAlertObject'
+                Mock -CommandName 'Assert-BoundParameter'
             }
         }
 
@@ -230,8 +230,8 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
                 # Mock alert object
                 $script:mockAlert = [Microsoft.SqlServer.Management.Smo.Agent.Alert]::CreateTypeInstance()
 
-                Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $null }
-                Mock -CommandName 'Assert-BoundParameter' -MockWith { }
+                Mock -CommandName 'Get-AgentAlertObject'
+                Mock -CommandName 'Assert-BoundParameter'
             }
         }
 
