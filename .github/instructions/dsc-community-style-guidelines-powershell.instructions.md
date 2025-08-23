@@ -77,8 +77,8 @@ applyTo: "**/*.ps?(m|d)1"
 - Don't redefine reserved parameters (Verbose, Debug, etc.)
 - Include a `Force` parameter for functions that uses `$PSCmdlet.ShouldContinue` or `$PSCmdlet.ShouldProcess`
 - For state-changing functions, use `SupportsShouldProcess`
-    - Place ShouldProcess check immediately before each state-change
-    - `$PSCmdlet.ShouldProcess` must use required pattern
+  - Place ShouldProcess check immediately before each state-change
+  - `$PSCmdlet.ShouldProcess` must use required pattern
 - Use `$PSCmdlet.ThrowTerminatingError()` for terminating errors, use relevant error category
 - Use `Write-Error` for non-terminating errors, use relevant error category
 - Use `Write-Warning` for warnings
