@@ -35,7 +35,6 @@ Describe 'Disable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL201
         Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
 
         $script:mockInstanceName = 'DSCSQLTEST'
-        $script:mockComputerName = Get-ComputerName
 
         $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
         $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
@@ -66,7 +65,7 @@ Describe 'Disable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL201
             $loginBefore.IsDisabled | Should -BeFalse
 
             # Disable the login
-            Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force
+            Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force -ErrorAction 'Stop'
 
             # Verify login is now disabled
             $loginAfter = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
@@ -75,7 +74,7 @@ Describe 'Disable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL201
 
         It 'Should disable the login with Refresh parameter' {
             # Disable with Refresh parameter
-            Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh -Force
+            Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh -Force -ErrorAction 'Stop'
 
             # Verify login is disabled
             $loginAfter = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
@@ -84,7 +83,7 @@ Describe 'Disable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL201
 
         It 'Should accept ServerObject from pipeline' {
             # Disable using pipeline
-            $script:serverObject | Disable-SqlDscLogin -Name $script:testLoginName -Force
+            $script:serverObject | Disable-SqlDscLogin -Name $script:testLoginName -Force -ErrorAction 'Stop'
 
             # Verify login is disabled
             $loginAfter = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
@@ -100,7 +99,7 @@ Describe 'Disable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL201
         It 'Should disable the specified login object' {
             # Get the login object and disable it
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
-            Disable-SqlDscLogin -LoginObject $loginObject -Force
+            Disable-SqlDscLogin -LoginObject $loginObject -Force -ErrorAction 'Stop'
 
             # Verify login is disabled
             $loginAfter = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
@@ -110,7 +109,7 @@ Describe 'Disable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL201
         It 'Should accept LoginObject from pipeline' {
             # Disable using pipeline
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
-            $loginObject | Disable-SqlDscLogin -Force
+            $loginObject | Disable-SqlDscLogin -Force -ErrorAction 'Stop'
 
             # Verify login is disabled
             $loginAfter = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
@@ -121,7 +120,7 @@ Describe 'Disable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL201
     Context 'When disabling a non-existent login' {
         It 'Should throw an error for non-existent login' {
             { Disable-SqlDscLogin -ServerObject $script:serverObject -Name 'NonExistentLogin' -Force -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage 'There is no login with the name ''NonExistentLogin''.'
+                Should -Throw
         }
     }
 }

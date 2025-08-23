@@ -58,7 +58,7 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2016', 'Integration_
     Context 'When testing login state using ServerObject parameter set' {
         It 'Should return True when login is enabled' {
             # Ensure login is enabled
-            Enable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force
+            Enable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force -ErrorAction 'Stop'
 
             # Test if login is enabled
             $result = Test-SqlDscIsLoginEnabled -ServerObject $script:serverObject -Name $script:testLoginName
@@ -69,7 +69,7 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2016', 'Integration_
 
         It 'Should return False when login is disabled' {
             # Ensure login is disabled
-            Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force
+            Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force -ErrorAction 'Stop'
 
             # Test if login is enabled
             $result = Test-SqlDscIsLoginEnabled -ServerObject $script:serverObject -Name $script:testLoginName
@@ -80,7 +80,7 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2016', 'Integration_
 
         It 'Should work with Refresh parameter when login is enabled' {
             # Ensure login is enabled
-            Enable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force
+            Enable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force -ErrorAction 'Stop'
 
             # Test with Refresh parameter
             $result = Test-SqlDscIsLoginEnabled -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
@@ -91,7 +91,7 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2016', 'Integration_
 
         It 'Should work with Refresh parameter when login is disabled' {
             # Ensure login is disabled
-            Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force
+            Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force -ErrorAction 'Stop'
 
             # Test with Refresh parameter
             $result = Test-SqlDscIsLoginEnabled -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
@@ -102,7 +102,7 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2016', 'Integration_
 
         It 'Should accept ServerObject from pipeline' {
             # Ensure login is enabled
-            Enable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force
+            Enable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force -ErrorAction 'Stop'
 
             # Test using pipeline
             $result = $script:serverObject | Test-SqlDscIsLoginEnabled -Name $script:testLoginName
@@ -115,7 +115,7 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2016', 'Integration_
     Context 'When testing login state using LoginObject parameter set' {
         It 'Should return True when login object is enabled' {
             # Ensure login is enabled
-            Enable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force
+            Enable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force -ErrorAction 'Stop'
 
             # Get login object and test
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
@@ -127,7 +127,7 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2016', 'Integration_
 
         It 'Should return False when login object is disabled' {
             # Ensure login is disabled
-            Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force
+            Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force -ErrorAction 'Stop'
 
             # Get login object and test
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
@@ -139,7 +139,7 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2016', 'Integration_
 
         It 'Should accept LoginObject from pipeline when enabled' {
             # Ensure login is enabled
-            Enable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force
+            Enable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force -ErrorAction 'Stop'
 
             # Test using pipeline
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
@@ -151,7 +151,7 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2016', 'Integration_
 
         It 'Should accept LoginObject from pipeline when disabled' {
             # Ensure login is disabled
-            Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force
+            Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force -ErrorAction 'Stop'
 
             # Test using pipeline
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName

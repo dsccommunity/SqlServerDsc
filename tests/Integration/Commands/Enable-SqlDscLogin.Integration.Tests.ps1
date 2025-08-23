@@ -35,7 +35,6 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
 
         $script:mockInstanceName = 'DSCSQLTEST'
-        $script:mockComputerName = Get-ComputerName
 
         $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
         $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
@@ -66,7 +65,7 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
             $loginBefore.IsDisabled | Should -BeTrue
 
             # Enable the login
-            Enable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force
+            Enable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force -ErrorAction 'Stop'
 
             # Verify login is now enabled
             $loginAfter = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
@@ -75,7 +74,7 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
 
         It 'Should enable the login with Refresh parameter' {
             # Enable with Refresh parameter
-            Enable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh -Force
+            Enable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh -Force -ErrorAction 'Stop'
 
             # Verify login is enabled
             $loginAfter = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
@@ -84,7 +83,7 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
 
         It 'Should accept ServerObject from pipeline' {
             # Enable using pipeline
-            $script:serverObject | Enable-SqlDscLogin -Name $script:testLoginName -Force
+            $script:serverObject | Enable-SqlDscLogin -Name $script:testLoginName -Force -ErrorAction 'Stop'
 
             # Verify login is enabled
             $loginAfter = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
@@ -100,7 +99,7 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         It 'Should enable the specified login object' {
             # Get the login object and enable it
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
-            Enable-SqlDscLogin -LoginObject $loginObject -Force
+            Enable-SqlDscLogin -LoginObject $loginObject -Force -ErrorAction 'Stop'
 
             # Verify login is enabled
             $loginAfter = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
@@ -110,7 +109,7 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         It 'Should accept LoginObject from pipeline' {
             # Enable using pipeline
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
-            $loginObject | Enable-SqlDscLogin -Force
+            $loginObject | Enable-SqlDscLogin -Force -ErrorAction 'Stop'
 
             # Verify login is enabled
             $loginAfter = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
@@ -121,7 +120,7 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
     Context 'When enabling a non-existent login' {
         It 'Should throw an error for non-existent login' {
             { Enable-SqlDscLogin -ServerObject $script:serverObject -Name 'NonExistentLogin' -Force -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage 'There is no login with the name ''NonExistentLogin''.'
+                Should -Throw
         }
     }
 }

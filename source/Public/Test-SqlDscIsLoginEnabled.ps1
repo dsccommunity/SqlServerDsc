@@ -85,7 +85,7 @@ function Test-SqlDscIsLoginEnabled
             $loginObjectArray = Get-SqlDscLogin @getSqlDscLoginParameters
 
             # Pick the only object in the array.
-            $LoginObject = $loginObjectArray | Select-Object -First 1
+            $LoginObject = $loginObjectArray
         }
 
         $loginEnabled = -not $LoginObject.IsDisabled
