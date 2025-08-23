@@ -48,8 +48,12 @@ Describe 'Get-SqlDscAgentAlert' -Tag 'Public' {
     Context 'When command has correct parameter sets' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
-                ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-ServerObject] <Server> [[-Name] <String>] [<CommonParameters>]'
+                ExpectedParameterSetName = 'All'
+                ExpectedParameters = '-ServerObject <Server> [<CommonParameters>]'
+            }
+            @{
+                ExpectedParameterSetName = 'ByName'
+                ExpectedParameters = '-ServerObject <Server> -Name <string> [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Get-SqlDscAgentAlert').ParameterSets |
@@ -74,9 +78,10 @@ Describe 'Get-SqlDscAgentAlert' -Tag 'Public' {
             $parameterInfo.Attributes.ValueFromPipeline | Should -BeTrue
         }
 
-        It 'Should have Name as an optional parameter' {
+        It 'Should have Name as a mandatory parameter in ByName parameter set' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscAgentAlert').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+            $byNameParameterSet = $parameterInfo.ParameterSets['ByName']
+            $byNameParameterSet.IsMandatory | Should -BeTrue
         }
     }
 
