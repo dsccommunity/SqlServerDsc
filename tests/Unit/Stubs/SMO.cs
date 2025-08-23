@@ -1534,6 +1534,7 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
         public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
         public System.Object UserData { get; set; }
         public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Server Parent { get; set; }
 
         // Fabricated constructor
         private JobServer(Microsoft.SqlServer.Management.Smo.Server server) { }
@@ -1617,6 +1618,7 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
         public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
         public System.Object UserData { get; set; }
         public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.JobServer Parent { get; set; }
 
         // Method
         public void Create() { }
