@@ -57,30 +57,18 @@ function Get-SqlDscAgentAlert
     # cSpell: ignore GSAA
     process
     {
-        Write-Verbose -Message ($script:localizedData.Get_SqlDscAgentAlert_GettingAlerts -f $ServerObject.InstanceName)
-
-        $alertCollection = $ServerObject.JobServer.Alerts
-
         if ($PSBoundParameters.ContainsKey('Name'))
         {
-            Write-Verbose -Message ($script:localizedData.Get_SqlDscAgentAlert_FilteringByName -f $Name)
-
-            $alertObject = $alertCollection | Where-Object -FilterScript { $_.Name -eq $Name }
-
-            if ($alertObject)
-            {
-                Write-Verbose -Message ($script:localizedData.Get_SqlDscAgentAlert_AlertFound -f $Name)
-                return $alertObject
-            }
-            else
-            {
-                Write-Verbose -Message ($script:localizedData.Get_SqlDscAgentAlert_AlertNotFound -f $Name)
-                return $null
-            }
+            return Get-AgentAlertObject -ServerObject $ServerObject -Name $Name
         }
         else
         {
+            Write-Verbose -Message ($script:localizedData.Get_SqlDscAgentAlert_GettingAlerts -f $ServerObject.InstanceName)
+
+            $alertCollection = $ServerObject.JobServer.Alerts
+
             Write-Verbose -Message ($script:localizedData.Get_SqlDscAgentAlert_ReturningAllAlerts -f $alertCollection.Count)
+
             return $alertCollection
         }
     }

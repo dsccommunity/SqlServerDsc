@@ -290,9 +290,6 @@ ConvertFrom-StringData @'
 
     ## Get-SqlDscAgentAlert
     Get_SqlDscAgentAlert_GettingAlerts = Getting SQL Agent Alerts from server '{0}'. (GSAA0001)
-    Get_SqlDscAgentAlert_FilteringByName = Filtering SQL Agent Alerts by name '{0}'. (GSAA0002)
-    Get_SqlDscAgentAlert_AlertFound = SQL Agent Alert '{0}' was found. (GSAA0003)
-    Get_SqlDscAgentAlert_AlertNotFound = SQL Agent Alert '{0}' was not found. (GSAA0004)
     Get_SqlDscAgentAlert_ReturningAllAlerts = Returning all {0} SQL Agent Alerts. (GSAA0005)
 
     ## New-SqlDscAgentAlert
