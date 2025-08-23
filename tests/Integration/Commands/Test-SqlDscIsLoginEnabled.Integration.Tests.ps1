@@ -35,7 +35,6 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2016', 'Integration_
         Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
 
         $script:mockInstanceName = 'DSCSQLTEST'
-        $script:mockComputerName = Get-ComputerName
 
         $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
         $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force

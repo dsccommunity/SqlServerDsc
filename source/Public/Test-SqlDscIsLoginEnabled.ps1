@@ -33,6 +33,8 @@
     .OUTPUTS
         [System.Boolean]
 
+        Returns $true if the login is enabled, $false if the login is disabled.
+
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         Test-SqlDscIsLoginEnabled -ServerObject $serverObject -Name 'MyLogin'
@@ -45,6 +47,19 @@
         Test-SqlDscIsLoginEnabled -LoginObject $loginObject
 
         Returns $true if the login is enabled, if not $false is returned.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $result = $serverObject | Test-SqlDscIsLoginEnabled -Name 'MyLogin'
+
+        Demonstrates pipeline usage with ServerObject. Returns $true if the login is enabled, if not $false is returned.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $loginObject = $serverObject | Get-SqlDscLogin -Name 'MyLogin'
+        $result = $loginObject | Test-SqlDscIsLoginEnabled
+
+        Demonstrates pipeline usage with LoginObject. Returns $true if the login is enabled, if not $false is returned.
 #>
 function Test-SqlDscIsLoginEnabled
 {
@@ -61,7 +76,7 @@ function Test-SqlDscIsLoginEnabled
         [Microsoft.SqlServer.Management.Smo.Login]
         $LoginObject,
 
-        [Parameter(ParameterSetName = 'ServerObject', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'ServerObject', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [System.String]
         $Name,
 

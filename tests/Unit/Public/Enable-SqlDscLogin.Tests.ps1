@@ -170,16 +170,26 @@ Describe 'Enable-SqlDscLogin' -Tag 'Public' {
             $mockLoginObject | Add-Member -MemberType 'NoteProperty' -Name 'Parent' -Value $mockServerObject -Force
 
             $script:mockMethodEnableWasRun = 0
+            $script:mockGetSqlDscLoginWasRun = 0
 
             $mockLoginObject | Add-Member -MemberType 'ScriptMethod' -Name 'Enable' -Value {
                 $script:mockMethodEnableWasRun += 1
             } -Force
+
+            Mock -CommandName Get-SqlDscLogin -MockWith {
+                $script:mockGetSqlDscLoginWasRun += 1
+                return @($mockLoginObject)
+            }
         }
 
-        It 'Should call the correct methods' {
+        It 'Should call the correct methods and not invoke Get-SqlDscLogin' {
+            $script:mockMethodEnableWasRun = 0
+            $script:mockGetSqlDscLoginWasRun = 0
+
             Enable-SqlDscLogin -LoginObject $mockLoginObject -Force
 
             $script:mockMethodEnableWasRun | Should -Be 1
+            $script:mockGetSqlDscLoginWasRun | Should -Be 0
         }
 
         It 'Should not call Enable method when using WhatIf' {

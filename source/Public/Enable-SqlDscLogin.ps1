@@ -92,10 +92,7 @@ function Enable-SqlDscLogin
             }
 
             # If this command does not find the login it will throw an exception.
-            $loginObjectArray = Get-SqlDscLogin @getSqlDscLoginParameters
-
-            # Pick the only object in the array.
-            $LoginObject = $loginObjectArray
+            $LoginObject = Get-SqlDscLogin @getSqlDscLoginParameters
         }
 
         $verboseDescriptionMessage = $script:localizedData.Login_Enable_ShouldProcessVerboseDescription -f $LoginObject.Name, $LoginObject.Parent.InstanceName
