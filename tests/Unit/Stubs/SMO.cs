@@ -355,9 +355,13 @@ namespace Microsoft.SqlServer.Management.Smo
         {
             this.Name = name;
         }
+
         public static Server CreateTypeInstance()
         {
-            return new Server();
+            var server = new Server();
+            server.JobServer = new Microsoft.SqlServer.Management.Smo.Agent.JobServer();
+            server.JobServer.Alerts = Microsoft.SqlServer.Management.Smo.Agent.AlertCollection.CreateTypeInstance();
+            return server;
         }
     }
 
@@ -1593,8 +1597,8 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
     {
         // Constructor
         public Alert() { }
-        public Alert(Microsoft.SqlServer.Management.Smo.Agent.JobServer jobServer, System.String name) 
-        { 
+        public Alert(Microsoft.SqlServer.Management.Smo.Agent.JobServer jobServer, System.String name)
+        {
             this.Name = name;
         }
 
