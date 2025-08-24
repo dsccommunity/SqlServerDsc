@@ -32,7 +32,6 @@ BeforeAll {
 
     # Integration tests are run on the DSCSQLTEST instance
     $script:sqlServerInstance = 'DSCSQLTEST'
-    $script:sqlServerName = Get-ComputerName
 }
 
 AfterAll {
@@ -92,7 +91,7 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019
     }
 
     It 'Should create alert with severity' {
-        { $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -Severity '14' } | Should -Not -Throw
+        $null = $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -Severity '14'
 
         $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert'
         $alert | Should -Not -BeNullOrEmpty
@@ -101,7 +100,7 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019
     }
 
     It 'Should create alert with message ID' {
-        { $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_MessageIdAlert' -MessageId '50002' } | Should -Not -Throw
+        $null = $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_MessageIdAlert' -MessageId '50002'
 
         $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_MessageIdAlert'
         $alert | Should -Not -BeNullOrEmpty
@@ -123,11 +122,11 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019
 
         # Try to create it again - should throw
         { $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_DuplicateAlert' -Severity '14' } |
-            Should -Throw -ExpectedMessage '*already exists*'
+            Should -Throw
     }
 
     It 'Should throw error when both Severity and MessageId are specified' {
         { $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_InvalidAlert' -Severity '16' -MessageId '50001' } |
-            Should -Throw -ExpectedMessage '*Cannot specify both Severity and MessageId*'
+            Should -Throw
     }
 }

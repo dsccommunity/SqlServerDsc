@@ -32,7 +32,6 @@ BeforeAll {
 
     # Integration tests are run on the DSCSQLTEST instance
     $script:sqlServerInstance = 'DSCSQLTEST'
-    $script:sqlServerName = Get-ComputerName
 }
 
 AfterAll {
@@ -85,28 +84,34 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:sqlServerObject
     }
 
-    It 'Should remove alert using ServerObject parameter set' {
-        # Create alert for this test
-        $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert' -Severity '16'
+    Context 'When removing by ServerObject' {
+        It 'Should remove alert' {
+            # Create alert for this test
+            $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert' -Severity '16'
 
-        { $script:sqlServerObject | Remove-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert' -Force } | Should -Not -Throw
+            $null = $script:sqlServerObject | Remove-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert' -Force
 
-        $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert'
-        $alert | Should -BeNull
+            $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert'
+            $alert | Should -BeNull
+        }
     }
 
-    It 'Should remove alert using AlertObject parameter set' {
-        # Create a new alert for this test
-        $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert2' -Severity '16'
-        $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert2'
+    Context 'When removing by AlertObject' {
+        It 'Should remove alert' {
+            # Create a new alert for this test
+            $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert2' -Severity '16'
+            $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert2'
 
-        { $alert | Remove-SqlDscAgentAlert -Force } | Should -Not -Throw
+            $null = $alert | Remove-SqlDscAgentAlert -Force
 
-        $removedAlert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert2'
-        $removedAlert | Should -BeNull
+            $removedAlert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert2'
+            $removedAlert | Should -BeNull
+        }
     }
 
-    It 'Should not throw error when alert does not exist' {
-        { $script:sqlServerObject | Remove-SqlDscAgentAlert -Name 'NonExistentAlert' -Force } | Should -Not -Throw
+    Context 'When alert does not exist' {
+        It 'Should not throw error' {
+            $null = $script:sqlServerObject | Remove-SqlDscAgentAlert -Name 'NonExistentAlert' -Force
+        }
     }
 }

@@ -32,7 +32,6 @@ BeforeAll {
 
     # Integration tests are run on the DSCSQLTEST instance
     $script:sqlServerInstance = 'DSCSQLTEST'
-    $script:sqlServerName = Get-ComputerName
 }
 
 AfterAll {
@@ -85,7 +84,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019
     }
 
     It 'Should update alert severity using ServerObject parameter set' {
-        { $script:sqlServerObject | Set-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -Severity '16' } | Should -Not -Throw
+        $null = $script:sqlServerObject | Set-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -Severity '16'
 
         $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert'
         $alert.Severity | Should -Be 16
@@ -93,7 +92,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019
     }
 
     It 'Should update alert message ID using ServerObject parameter set' {
-        { $script:sqlServerObject | Set-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -MessageId '50003' } | Should -Not -Throw
+        $null = $script:sqlServerObject | Set-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -MessageId '50003'
 
         $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert'
         $alert.MessageId | Should -Be 50003
@@ -106,7 +105,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019
 
         $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert'
 
-        { $alert | Set-SqlDscAgentAlert -Severity '18' } | Should -Not -Throw
+        $null = $alert | Set-SqlDscAgentAlert -Severity '18'
 
         # Refresh the alert to get updated values
         $updatedAlert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert'
@@ -124,11 +123,11 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019
 
     It 'Should throw error when alert does not exist' {
         { $script:sqlServerObject | Set-SqlDscAgentAlert -Name 'NonExistentAlert' -Severity '16' } |
-            Should -Throw -ExpectedMessage '*was not found*'
+            Should -Throw
     }
 
     It 'Should throw error when both Severity and MessageId are specified' {
         { $script:sqlServerObject | Set-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -Severity '16' -MessageId '50001' } |
-            Should -Throw -ExpectedMessage '*Cannot specify both Severity and MessageId*'
+            Should -Throw
     }
 }

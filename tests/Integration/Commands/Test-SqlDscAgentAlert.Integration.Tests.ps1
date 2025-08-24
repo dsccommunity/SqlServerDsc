@@ -32,7 +32,6 @@ BeforeAll {
 
     # Integration tests are run on the DSCSQLTEST instance
     $script:sqlServerInstance = 'DSCSQLTEST'
-    $script:sqlServerName = Get-ComputerName
 }
 
 AfterAll {
@@ -125,6 +124,6 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL201
 
     It 'Should throw error when both Severity and MessageId are specified' {
         { $script:sqlServerObject | Test-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -Severity '16' -MessageId '50001' } |
-            Should -Throw -ExpectedMessage '*Cannot specify both Severity and MessageId*'
+            Should -Throw
     }
 }

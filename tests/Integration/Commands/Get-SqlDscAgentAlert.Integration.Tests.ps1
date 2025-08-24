@@ -32,7 +32,6 @@ BeforeAll {
 
     # Integration tests are run on the DSCSQLTEST instance
     $script:sqlServerInstance = 'DSCSQLTEST'
-    $script:sqlServerName = Get-ComputerName
 }
 
 AfterAll {
@@ -63,8 +62,8 @@ Describe 'Get-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019
         }
 
         # Create test alerts for getting
-        $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_GetAlert1' -Severity '16'
-        $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_GetAlert2' -MessageId '50001'
+        $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_GetAlert1' -Severity 16
+        $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_GetAlert2' -MessageId 50001
     }
 
     AfterAll {
