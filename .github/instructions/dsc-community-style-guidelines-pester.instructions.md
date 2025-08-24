@@ -29,7 +29,13 @@ applyTo: "**/*.[Tt]ests.ps1"
 - `Context` descriptions start with 'When'
 - Mock variables prefix: 'mock'
 - Prefer `-BeTrue`/`-BeFalse` over `-Be $true`/`-Be $false`
+- Never use `Assert-MockCalled`, use `Should -Invoke` instead
 - No `Should -Not -Throw` - invoke commands directly
+- Never add an empty `-MockWith` block
+- Omit `-MockWith` when returning `$null`
+- Set `$PSDefaultParameterValues` for `Mock:ModuleName`, `Should:ModuleName`, `InModuleScope:ModuleName`
+- Omit `-ModuleName` parameter on Pester commands
+- Never use `Mock` inside `InModuleScope`-block
 
 ## File Organization
 - Class resources: `tests/Unit/Classes/{Name}.Tests.ps1`

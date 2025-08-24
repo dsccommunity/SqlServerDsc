@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added setup workflow for GitHub Copilot.
   - Switch the workflow to use Linux.
   - Attempt to unshallow the Copilot branch
+- `SqlAgentAlert`
+  - Added new DSC resource to manage SQL Server Agent alerts.
   - Improved AI instructions.
   - Enhanced workflow with proper environment variable configuration and DSCv3 verification.
   - Fixed environment variable persistence by using $GITHUB_ENV instead of
