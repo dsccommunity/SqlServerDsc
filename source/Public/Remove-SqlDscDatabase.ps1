@@ -108,7 +108,7 @@ function Remove-SqlDscDatabase
         {
             $Name = $DatabaseObject.Name
             Write-Verbose -Message ($script:localizedData.Database_Remove -f $Name, $DatabaseObject.Parent.InstanceName)
-            
+
             # Check if the database is a system database (cannot be dropped)
             $systemDatabases = @('master', 'model', 'msdb', 'tempdb')
             if ($Name -in $systemDatabases)
