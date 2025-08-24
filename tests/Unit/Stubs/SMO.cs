@@ -366,6 +366,8 @@ namespace Microsoft.SqlServer.Management.Smo
                 Alerts = Microsoft.SqlServer.Management.Smo.Agent.AlertCollection.CreateTypeInstance()
             };
 
+            server.JobServer.Alerts.Parent = server.JobServer;
+
             return server;
         }
     }
@@ -1574,6 +1576,7 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
         public System.Int32 Count { get { return alerts.Count; } set { } }
         public System.Boolean IsSynchronized { get; set; }
         public System.Object SyncRoot { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.JobServer Parent { get; set; }
 
         // Method
         public void Add(Microsoft.SqlServer.Management.Smo.Agent.Alert alert) { alerts[alert.Name] = alert; }
