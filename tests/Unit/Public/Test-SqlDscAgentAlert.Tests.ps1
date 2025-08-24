@@ -69,6 +69,11 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Public' {
             $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
 
+        It 'Should have ServerObject accept pipeline input' {
+            $parameterInfo = (Get-Command -Name 'Test-SqlDscAgentAlert').Parameters['ServerObject']
+            $parameterInfo.Attributes.ValueFromPipeline | Should -BeTrue
+        }
+
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscAgentAlert').Parameters['Name']
             $parameterInfo.Attributes.Mandatory | Should -BeTrue
