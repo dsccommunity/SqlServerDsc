@@ -150,7 +150,9 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
                 $result = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -PassThru
 
                 $result | Should -Not -BeNullOrEmpty
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.Agent.Alert]
                 $result.Name | Should -Be 'TestAlert'
+                $result.Severity | Should -Be 16
             }
 
             It 'Should not return alert object without PassThru' {

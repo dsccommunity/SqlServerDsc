@@ -139,24 +139,35 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
             $script:mockAlert.MessageId | Should -Be 0
         }
 
-        It 'Should update alert message ID successfully' {
-            $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001
+        Context 'When using PassThru parameter' {
+            It 'Should update alert message ID successfully' {
+                $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001
 
-            $script:mockAlert.MessageId | Should -Be 50001
+                $script:mockAlert.MessageId | Should -Be 50001
+            }
+
+            It 'Should return alert object' {
+                $result = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -PassThru
+
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.Agent.Alert]
+                $result.Name | Should -Be 'TestAlert'
+                $result.Severity | Should -Be 16
+            }
+
+            It 'Should not return alert object without PassThru' {
+                $result = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
+
+                $result | Should -BeNullOrEmpty
+            }
         }
 
-        It 'Should return alert object when PassThru is specified' {
-            $result = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -PassThru
+        Context 'When using PassThru parameter' {
+            It 'Should refresh server object when Refresh is specified' {
+                $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -Refresh
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestAlert'
-        }
-
-        It 'Should refresh server object when Refresh is specified' {
-            $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -Refresh
-
-            # Verify that Refresh was called on the Alerts collection
-            # This would need to be mocked more specifically to verify the call
+                # Verify that Refresh was called on the Alerts collection
+                # This would need to be mocked more specifically to verify the call
+            }
         }
     }
 
