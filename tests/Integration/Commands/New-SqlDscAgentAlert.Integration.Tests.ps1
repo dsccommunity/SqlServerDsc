@@ -91,7 +91,7 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019
     }
 
     It 'Should create alert with severity' {
-        $null = $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -Severity '14'
+        $null = $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -Severity 14 -ErrorAction Stop
 
         $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert'
         $alert | Should -Not -BeNullOrEmpty
@@ -100,7 +100,7 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019
     }
 
     It 'Should create alert with message ID' {
-        $null = $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_MessageIdAlert' -MessageId '50002'
+        $null = $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_MessageIdAlert' -MessageId 50002 -ErrorAction Stop
 
         $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_MessageIdAlert'
         $alert | Should -Not -BeNullOrEmpty
@@ -109,7 +109,7 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019
     }
 
     It 'Should return alert object when PassThru is specified' {
-        $result = $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_PassThruAlert' -Severity '16' -PassThru
+        $result = $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_PassThruAlert' -Severity 16 -PassThru -ErrorAction Stop
 
         $result | Should -Not -BeNullOrEmpty
         $result.Name | Should -Be 'IntegrationTest_PassThruAlert'
@@ -118,15 +118,15 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019
 
     It 'Should throw error when alert already exists' {
         # First create the alert
-        $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_DuplicateAlert' -Severity '16'
+        $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_DuplicateAlert' -Severity 16 -ErrorAction Stop
 
         # Try to create it again - should throw
-        { $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_DuplicateAlert' -Severity '14' } |
+        { $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_DuplicateAlert' -Severity 14 } |
             Should -Throw
     }
 
     It 'Should throw error when both Severity and MessageId are specified' {
-        { $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_InvalidAlert' -Severity '16' -MessageId '50001' } |
+        { $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_InvalidAlert' -Severity 16 -MessageId 50001 } |
             Should -Throw
     }
 }

@@ -62,8 +62,8 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL201
         }
 
         # Create test alerts for testing
-        $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -Severity '16'
-        $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_MessageIdAlert' -MessageId '50001'
+        $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -Severity 16 -ErrorAction Stop
+        $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_MessageIdAlert' -MessageId 50001 -ErrorAction Stop
     }
 
     AfterAll {
@@ -99,31 +99,31 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL201
     }
 
     It 'Should return true when alert exists and severity matches' {
-        $result = $script:sqlServerObject | Test-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -Severity '16'
+        $result = $script:sqlServerObject | Test-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -Severity 16
 
         $result | Should -BeTrue
     }
 
     It 'Should return false when alert exists but severity does not match' {
-        $result = $script:sqlServerObject | Test-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -Severity '14'
+        $result = $script:sqlServerObject | Test-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -Severity 14
 
         $result | Should -BeFalse
     }
 
     It 'Should return true when alert exists and message ID matches' {
-        $result = $script:sqlServerObject | Test-SqlDscAgentAlert -Name 'IntegrationTest_MessageIdAlert' -MessageId '50001'
+        $result = $script:sqlServerObject | Test-SqlDscAgentAlert -Name 'IntegrationTest_MessageIdAlert' -MessageId 50001
 
         $result | Should -BeTrue
     }
 
     It 'Should return false when alert exists but message ID does not match' {
-        $result = $script:sqlServerObject | Test-SqlDscAgentAlert -Name 'IntegrationTest_MessageIdAlert' -MessageId '50002'
+        $result = $script:sqlServerObject | Test-SqlDscAgentAlert -Name 'IntegrationTest_MessageIdAlert' -MessageId 50002
 
         $result | Should -BeFalse
     }
 
     It 'Should throw error when both Severity and MessageId are specified' {
-        { $script:sqlServerObject | Test-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -Severity '16' -MessageId '50001' } |
+        { $script:sqlServerObject | Test-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -Severity 16 -MessageId 50001 } |
             Should -Throw
     }
 }

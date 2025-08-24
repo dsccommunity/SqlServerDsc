@@ -87,9 +87,9 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2
     Context 'When removing by ServerObject' {
         It 'Should remove alert' {
             # Create alert for this test
-            $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert' -Severity '16'
+            $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert' -Severity 16 -ErrorAction Stop
 
-            $null = $script:sqlServerObject | Remove-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert' -Force
+            $null = $script:sqlServerObject | Remove-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert' -Force -ErrorAction Stop
 
             $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert'
             $alert | Should -BeNull
@@ -99,10 +99,10 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2
     Context 'When removing by AlertObject' {
         It 'Should remove alert' {
             # Create a new alert for this test
-            $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert2' -Severity '16'
+            $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert2' -Severity 16 -ErrorAction Stop
             $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert2'
 
-            $null = $alert | Remove-SqlDscAgentAlert -Force
+            $null = $alert | Remove-SqlDscAgentAlert -Force -ErrorAction Stop
 
             $removedAlert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert2'
             $removedAlert | Should -BeNull
@@ -111,7 +111,7 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2
 
     Context 'When alert does not exist' {
         It 'Should not throw error' {
-            $null = $script:sqlServerObject | Remove-SqlDscAgentAlert -Name 'NonExistentAlert' -Force
+            $null = $script:sqlServerObject | Remove-SqlDscAgentAlert -Name 'NonExistentAlert' -Force -ErrorAction Stop
         }
     }
 }
