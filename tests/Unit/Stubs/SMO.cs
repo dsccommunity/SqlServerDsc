@@ -359,9 +359,13 @@ namespace Microsoft.SqlServer.Management.Smo
         public static Server CreateTypeInstance()
         {
             var server = new Server();
-            server.JobServer = new Microsoft.SqlServer.Management.Smo.Agent.JobServer();
-            server.JobServer.Parent = server;
-            server.JobServer.Alerts = Microsoft.SqlServer.Management.Smo.Agent.AlertCollection.CreateTypeInstance();
+
+            server.JobServer = new Microsoft.SqlServer.Management.Smo.Agent.JobServer
+            {
+                Parent = server,
+                Alerts = Microsoft.SqlServer.Management.Smo.Agent.AlertCollection.CreateTypeInstance()
+            };
+
             return server;
         }
     }
