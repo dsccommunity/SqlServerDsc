@@ -129,57 +129,63 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
             Mock -CommandName 'Assert-BoundParameter'
         }
 
-        It 'Should create alert with severity successfully' {
-            $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
+        Context 'When using basic parameters' {
+            It 'Should create alert with severity successfully' {
+                $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
 
-            Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
-            Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
+                Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
+                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
+            }
+
+            It 'Should create alert with message ID successfully' {
+                $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001
+
+                Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
+                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
+            }
         }
 
-        It 'Should create alert with message ID successfully' {
-            $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001
+        Context 'When using PassThru parameter' {
+            It 'Should return alert object for PassThru' {
+                $result = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -PassThru
 
-            Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
-            Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
+                $result | Should -Not -BeNullOrEmpty
+                $result.Name | Should -Be 'TestAlert'
+            }
+
+            It 'Should not return alert object without PassThru' {
+                $result = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
+
+                $result | Should -BeNullOrEmpty
+            }
         }
 
-        It 'Should return alert object when PassThru is specified' {
-            $result = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -PassThru
+        Context 'When using boundary values' {
+            It 'Should create alert with boundary severity values' {
+                # Test minimum value (0) - should complete without errors
+                $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert1' -Severity 0
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestAlert'
-        }
+                # Test maximum value (25) - should complete without errors
+                $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert2' -Severity 25
 
-        It 'Should not return alert object when PassThru is not specified' {
-            $result = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
+                # Verify that Get-AgentAlertObject was called for each alert creation to check existence
+                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 2 -Exactly
+                # Verify that Assert-BoundParameter was called for each alert creation
+                Should -Invoke -CommandName 'Assert-BoundParameter' -Times 2 -Exactly
+            }
 
-            $result | Should -BeNullOrEmpty
-        }
+            It 'Should create alert with boundary message ID values' {
+                # Test minimum value (0) - should complete without errors
+                $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert3' -MessageId 0
 
-        It 'Should create alert with boundary severity values' {
-            # Test minimum value (0) - should complete without errors
-            $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert1' -Severity 0
+                # Test maximum value (2147483647) - should complete without errors
+                $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert4' -MessageId 2147483647
 
-            # Test maximum value (25) - should complete without errors  
-            $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert2' -Severity 25
-
-            # Verify that Get-AgentAlertObject was called for each alert creation to check existence
-            Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 2 -Exactly
-            # Verify that Assert-BoundParameter was called for each alert creation
-            Should -Invoke -CommandName 'Assert-BoundParameter' -Times 2 -Exactly
-        }
-
-        It 'Should create alert with boundary message ID values' {
-            # Test minimum value (0) - should complete without errors
-            $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert3' -MessageId 0
-
-            # Test maximum value (2147483647) - should complete without errors
-            $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert4' -MessageId 2147483647
-
-            # Verify that Get-AgentAlertObject was called for each alert creation to check existence
-            Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 2 -Exactly
-            # Verify that Assert-BoundParameter was called for each alert creation
-            Should -Invoke -CommandName 'Assert-BoundParameter' -Times 2 -Exactly
+                # Verify that Get-AgentAlertObject was called for each alert creation to check existence
+                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 2 -Exactly
+                # Verify that Assert-BoundParameter was called for each alert creation
+                Should -Invoke -CommandName 'Assert-BoundParameter' -Times 2 -Exactly
+            }
         }
     }
 
@@ -204,7 +210,7 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
             Mock -CommandName 'Assert-BoundParameter'
         }
 
-        It 'Should throw error when alert already exists' {
+        It 'Should throw error' {
             { New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'ExistingAlert' -Severity 16 } |
                 Should -Throw -ExpectedMessage '*already exists*'
         }
@@ -230,7 +236,7 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
             Mock -CommandName 'Assert-BoundParameter'
         }
 
-        It 'Should not create alert when WhatIf is specified' {
+        It 'Should not create alert' {
             $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -WhatIf
         }
     }
