@@ -59,11 +59,8 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019
 
         foreach ($alertName in $testAlerts)
         {
-            $existingAlert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name $alertName -ErrorAction 'SilentlyContinue'
-            if ($existingAlert)
-            {
-                $existingAlert | Remove-SqlDscAgentAlert -Force
-            }
+            $null = $script:sqlServerObject |
+                Remove-SqlDscAgentAlert -Name $alertName -Force -ErrorAction 'SilentlyContinue'
         }
     }
 
@@ -79,11 +76,8 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019
 
         foreach ($alertName in $testAlerts)
         {
-            $existingAlert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name $alertName -ErrorAction 'SilentlyContinue'
-            if ($existingAlert)
-            {
-                $existingAlert | Remove-SqlDscAgentAlert -Force
-            }
+            $null = $script:sqlServerObject |
+                Remove-SqlDscAgentAlert -Name $alertName -Force -ErrorAction 'SilentlyContinue'
         }
 
         # Disconnect from the SQL Server

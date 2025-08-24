@@ -52,15 +52,6 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL201
             'IntegrationTest_MessageIdAlert'
         )
 
-        foreach ($alertName in $testAlerts)
-        {
-            $existingAlert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name $alertName -ErrorAction 'SilentlyContinue'
-            if ($existingAlert)
-            {
-                $existingAlert | Remove-SqlDscAgentAlert -Force
-            }
-        }
-
         # Create test alerts for testing
         $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -Severity 16 -ErrorAction Stop
         $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_MessageIdAlert' -MessageId 50001 -ErrorAction Stop
@@ -68,19 +59,8 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL201
 
     AfterAll {
         # Clean up test alerts
-        $testAlerts = @(
-            'IntegrationTest_SeverityAlert',
-            'IntegrationTest_MessageIdAlert'
-        )
-
-        foreach ($alertName in $testAlerts)
-        {
-            $existingAlert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name $alertName -ErrorAction 'SilentlyContinue'
-            if ($existingAlert)
-            {
-                $existingAlert | Remove-SqlDscAgentAlert -Force
-            }
-        }
+        $script:sqlServerObject | Remove-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -Force -ErrorAction 'SilentlyContinue'
+        $script:sqlServerObject | Remove-SqlDscAgentAlert -Name 'IntegrationTest_MessageIdAlert' -Force -ErrorAction 'SilentlyContinue'
 
         # Disconnect from the SQL Server
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:sqlServerObject

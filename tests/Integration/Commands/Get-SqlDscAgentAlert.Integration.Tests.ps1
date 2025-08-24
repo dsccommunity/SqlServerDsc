@@ -46,41 +46,14 @@ Describe 'Get-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019
         # Connect to the SQL Server instance
         $script:sqlServerObject = Connect-SqlDscDatabaseEngine -InstanceName $script:sqlServerInstance
 
-        # Clean up any test alerts that might exist from previous runs
-        $testAlerts = @(
-            'IntegrationTest_GetAlert1',
-            'IntegrationTest_GetAlert2'
-        )
-
-        foreach ($alertName in $testAlerts)
-        {
-            $existingAlert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name $alertName -ErrorAction 'SilentlyContinue'
-            if ($existingAlert)
-            {
-                $existingAlert | Remove-SqlDscAgentAlert -Force
-            }
-        }
-
         # Create test alerts for getting
         $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_GetAlert1' -Severity 16 -ErrorAction Stop
         $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_GetAlert2' -MessageId 50001 -ErrorAction Stop
     }
 
     AfterAll {
-        # Clean up test alerts
-        $testAlerts = @(
-            'IntegrationTest_GetAlert1',
-            'IntegrationTest_GetAlert2'
-        )
-
-        foreach ($alertName in $testAlerts)
-        {
-            $existingAlert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name $alertName -ErrorAction 'SilentlyContinue'
-            if ($existingAlert)
-            {
-                $existingAlert | Remove-SqlDscAgentAlert -Force
-            }
-        }
+        $script:sqlServerObject | Remove-SqlDscAgentAlert -Name 'IntegrationTest_GetAlert1' -Force -ErrorAction 'SilentlyContinue'
+        $script:sqlServerObject | Remove-SqlDscAgentAlert -Name 'IntegrationTest_GetAlert2' -Force -ErrorAction 'SilentlyContinue'
 
         # Disconnect from the SQL Server
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:sqlServerObject
