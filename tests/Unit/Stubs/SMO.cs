@@ -360,6 +360,7 @@ namespace Microsoft.SqlServer.Management.Smo
         {
             var server = new Server();
             server.JobServer = new Microsoft.SqlServer.Management.Smo.Agent.JobServer();
+            server.JobServer.Parent = server;
             server.JobServer.Alerts = Microsoft.SqlServer.Management.Smo.Agent.AlertCollection.CreateTypeInstance();
             return server;
         }
