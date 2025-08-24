@@ -44,9 +44,11 @@
         SQL Agent Alert object to update.
 
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Agent.Alert]` if passing parameter **PassThru**,
-         otherwise none.
+        Microsoft.SqlServer.Management.Smo.Agent.Alert
+            Returned when parameter **PassThru** is specified.
 
+        None
+            No output is returned unless **PassThru** is specified.
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         Set-SqlDscAgentAlert -ServerObject $serverObject -Name 'MyAlert' -Severity 16
