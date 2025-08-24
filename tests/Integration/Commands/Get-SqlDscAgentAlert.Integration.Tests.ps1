@@ -61,7 +61,7 @@ EXECUTE sp_addmessage
     16,
     N'Mock message';
 '@
-        $script:sqlServerObject | Invoke-SqlDscQuery -DatabaseName 'master' -Query $addMessageQuery -Force -ErrorAction 'Stop'
+        $script:sqlServerObject | Invoke-SqlDscQuery -DatabaseName 'master' -Query $addMessageQuery -Verbose -Force -ErrorAction 'Stop'
 
         # Create test alerts for getting
         $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_GetAlert1' -Severity 16 -ErrorAction Stop
