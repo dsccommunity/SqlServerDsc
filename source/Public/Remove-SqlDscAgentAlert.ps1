@@ -52,9 +52,6 @@
         $serverObject | Remove-SqlDscAgentAlert -Name 'MyAlert' -Force
 
         Removes the alert named **MyAlert** without confirmation.
-
-    .OUTPUTS
-        None.
 #>
 function Remove-SqlDscAgentAlert
 {
