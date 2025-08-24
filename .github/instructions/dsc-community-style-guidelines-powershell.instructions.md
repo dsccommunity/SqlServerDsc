@@ -79,7 +79,7 @@ applyTo: "**/*.ps?(m|d)1"
 - For state-changing functions, use `SupportsShouldProcess`
   - Place ShouldProcess check immediately before each state-change
   - `$PSCmdlet.ShouldProcess` must use required pattern
-- Use `$PSCmdlet.ThrowTerminatingError()` for terminating errors, use relevant error category
+- Use `$PSCmdlet.ThrowTerminatingError()` for terminating errors (except for classes), use relevant error category
 - Use `Write-Error` for non-terminating errors, use relevant error category
 - Use `Write-Warning` for warnings
 - Use `Write-Debug` for debugging information
