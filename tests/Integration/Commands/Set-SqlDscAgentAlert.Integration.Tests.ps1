@@ -52,7 +52,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019
         $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
 
         # Connect to the SQL Server instance
-        $script:sqlServerObject = Connect-SqlDscDatabaseEngine -InstanceName $script:sqlServerInstance -Credential $script:mockSqlAdminCredential
+        $script:sqlServerObject = Connect-SqlDscDatabaseEngine -InstanceName $script:sqlServerInstance -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
 
         # Create a test alert for updating
         $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -Severity 14 -ErrorAction Stop
@@ -77,6 +77,19 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019
     }
 
     It 'Should update alert message ID using ServerObject parameter set' {
+                # Add SQL Server system message for testing message ID alerts
+        $addMessageQuery = @'
+IF NOT EXISTS (SELECT 1 FROM sys.messages WHERE message_id = 50003 AND language_id = 1033)
+BEGIN
+    EXECUTE sp_addmessage
+        50003,
+        16,
+        N'Mock message 50003';
+END
+'@
+        $script:sqlServerObject | Invoke-SqlDscQuery -DatabaseName 'master' -Query $addMessageQuery -Verbose -Force -ErrorAction 'Stop'
+
+
         $null = $script:sqlServerObject | Set-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -MessageId 50003 -ErrorAction Stop
 
         $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert'

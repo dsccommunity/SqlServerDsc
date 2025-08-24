@@ -52,14 +52,17 @@ Describe 'Get-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019
         $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
 
         # Connect to the SQL Server instance
-        $script:sqlServerObject = Connect-SqlDscDatabaseEngine -InstanceName $script:sqlServerInstance -Credential $script:mockSqlAdminCredential
+        $script:sqlServerObject = Connect-SqlDscDatabaseEngine -InstanceName $script:sqlServerInstance -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
 
-        Write-Verbose -Message 'Add SQL Server system message for testing message ID alerts' -Verbose
+        # Add SQL Server system message for testing message ID alerts
         $addMessageQuery = @'
-EXECUTE sp_addmessage
-    50001,
-    16,
-    N'Mock message';
+IF NOT EXISTS (SELECT 1 FROM sys.messages WHERE message_id = 50001 AND language_id = 1033)
+BEGIN
+    EXECUTE sp_addmessage
+        50001,
+        16,
+        N'Mock message 50001';
+END
 '@
         $script:sqlServerObject | Invoke-SqlDscQuery -DatabaseName 'master' -Query $addMessageQuery -Verbose -Force -ErrorAction 'Stop'
 
