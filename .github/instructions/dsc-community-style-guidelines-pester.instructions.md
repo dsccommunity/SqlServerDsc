@@ -26,7 +26,7 @@ applyTo: "**/*.[Tt]ests.ps1"
 ## Syntax Rules
 - PascalCase: `Describe`, `Context`, `It`, `Should`, `BeforeAll`, `BeforeEach`, `AfterAll`, `AfterEach`
 - `Context` descriptions start with 'When'
-- `It` descriptions start with 'Should' (never use 'when')
+- `It` descriptions start with 'Should', must not contain 'when'
 - Mock variables prefix: 'mock'
 - Prefer `-BeTrue`/`-BeFalse` over `-Be $true`/`-Be $false`
 - No `Should -Not -Throw` - invoke commands directly
