@@ -336,7 +336,7 @@ ConvertFrom-StringData @'
     Remove_SqlDscAgentAlert_RemoveShouldProcessCaption = Remove SQL Agent Alert on instance
 
     ## Test-SqlDscAgentAlert
-    Test_SqlDscAgentAlert_TestingAlert = Testing if SQL Agent Alert '{0}' exists and has desired properties. (TSAA0001)
+    Test_SqlDscAgentAlert_TestingAlert = Testing if the SQL Agent Alert '{0}' exists and has the desired properties. (TSAA0001)
     Test_SqlDscAgentAlert_AlertNotFound = SQL Agent Alert '{0}' was not found. (TSAA0002)
     Test_SqlDscAgentAlert_AlertFound = SQL Agent Alert '{0}' was found. (TSAA0003)
     Test_SqlDscAgentAlert_NoPropertyTest = No specific properties to test, alert exists. (TSAA0004)
