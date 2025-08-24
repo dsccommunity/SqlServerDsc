@@ -293,7 +293,7 @@ ConvertFrom-StringData @'
     Get_AgentAlertObject_GettingAlert = Getting SQL Agent Alert '{0}'. (GAAO0001)
 
     ## Get-SqlDscAgentAlert
-    Get_SqlDscAgentAlert_GettingAlerts = Getting SQL Agent Alerts from server '{0}'. (GSAA0001)
+    Get_SqlDscAgentAlert_GettingAlerts = Getting SQL Agent Alerts from instance '{0}'. (GSAA0001)
     Get_SqlDscAgentAlert_ReturningAllAlerts = Returning all {0} SQL Agent Alerts. (GSAA0005)
 
     ## New-SqlDscAgentAlert
