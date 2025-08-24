@@ -43,25 +43,13 @@ AfterAll {
 
 Describe 'New-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022' {
     BeforeAll {
+        $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+        $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+        $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
+
         # Connect to the SQL Server instance
-        $script:sqlServerObject = Connect-SqlDscDatabaseEngine -InstanceName $script:sqlServerInstance
-    }
-
-    BeforeEach {
-        # Clean up any test alerts that might exist from previous runs
-        $testAlerts = @(
-            'IntegrationTest_SeverityAlert',
-            'IntegrationTest_MessageIdAlert',
-            'IntegrationTest_PassThruAlert',
-            'IntegrationTest_DuplicateAlert',
-            'IntegrationTest_InvalidAlert'
-        )
-
-        foreach ($alertName in $testAlerts)
-        {
-            $null = $script:sqlServerObject |
-                Remove-SqlDscAgentAlert -Name $alertName -Force -ErrorAction 'SilentlyContinue'
-        }
+        $script:sqlServerObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
     }
 
     AfterAll {

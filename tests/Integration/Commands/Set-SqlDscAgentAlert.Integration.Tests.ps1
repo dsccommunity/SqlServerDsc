@@ -43,41 +43,20 @@ AfterAll {
 
 Describe 'Set-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022' {
     BeforeAll {
+        $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+        $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+        $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
+
         # Connect to the SQL Server instance
-        $script:sqlServerObject = Connect-SqlDscDatabaseEngine -InstanceName $script:sqlServerInstance
-
-        # Clean up any test alerts that might exist from previous runs
-        $testAlerts = @(
-            'IntegrationTest_UpdateAlert'
-        )
-
-        foreach ($alertName in $testAlerts)
-        {
-            $existingAlert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name $alertName -ErrorAction 'SilentlyContinue'
-            if ($existingAlert)
-            {
-                $existingAlert | Remove-SqlDscAgentAlert -Force
-            }
-        }
+        $script:sqlServerObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
 
         # Create a test alert for updating
         $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -Severity 14 -ErrorAction Stop
     }
 
     AfterAll {
-        # Clean up test alerts
-        $testAlerts = @(
-            'IntegrationTest_UpdateAlert'
-        )
-
-        foreach ($alertName in $testAlerts)
-        {
-            $existingAlert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name $alertName -ErrorAction 'SilentlyContinue'
-            if ($existingAlert)
-            {
-                $existingAlert | Remove-SqlDscAgentAlert -Force
-            }
-        }
+        $null = $script:sqlServerObject | Remove-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -Force -ErrorAction 'SilentlyContinue'
 
         # Disconnect from the SQL Server
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:sqlServerObject
