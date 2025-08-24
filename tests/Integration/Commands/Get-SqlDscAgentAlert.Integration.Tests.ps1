@@ -54,14 +54,14 @@ Describe 'Get-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019
         # Connect to the SQL Server instance
         $script:sqlServerObject = Connect-SqlDscDatabaseEngine -InstanceName $script:sqlServerInstance -Credential $script:mockSqlAdminCredential
 
-        # Add SQL Server system message for testing message ID alerts
+        Write-Verbose -Message 'Add SQL Server system message for testing message ID alerts' -Verbose
         $addMessageQuery = @'
 EXECUTE sp_addmessage
     50001,
     16,
     N'Mock message';
 '@
-        $script:sqlServerObject | Invoke-SqlDscQuery -DatabaseName 'master' -Query $addMessageQuery -Credential $script:mockSqlAdminCredential -Force -ErrorAction 'Stop'
+        $script:sqlServerObject | Invoke-SqlDscQuery -DatabaseName 'master' -Query $addMessageQuery -Force -ErrorAction 'Stop'
 
         # Create test alerts for getting
         $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_GetAlert1' -Severity 16 -ErrorAction Stop
@@ -72,7 +72,7 @@ EXECUTE sp_addmessage
         $script:sqlServerObject | Remove-SqlDscAgentAlert -Name 'IntegrationTest_GetAlert1' -Force -ErrorAction 'SilentlyContinue'
         $script:sqlServerObject | Remove-SqlDscAgentAlert -Name 'IntegrationTest_GetAlert2' -Force -ErrorAction 'SilentlyContinue'
 
-# TODO: Keep this commented until we have a coreect command to remove messages, and we can have another integration tests keeping a persistent message
+# TODO: Keep this commented until we have a correct command to remove messages, and we can have another integration tests keeping a persistent message
 #         # Remove SQL Server system message
 #         $removeMessageQuery = @'
 # EXECUTE sp_dropmessage 50001;
