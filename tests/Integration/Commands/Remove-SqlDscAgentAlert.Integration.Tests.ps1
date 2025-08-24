@@ -47,39 +47,8 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2
         $script:sqlServerObject = Connect-SqlDscDatabaseEngine -InstanceName $script:sqlServerInstance
     }
 
-    BeforeEach {
-        # Clean up any test alerts that might exist from previous runs
-        $testAlerts = @(
-            'IntegrationTest_RemoveAlert',
-            'IntegrationTest_RemoveAlert2'
-        )
-
-        foreach ($alertName in $testAlerts)
-        {
-            $existingAlert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name $alertName -ErrorAction 'SilentlyContinue'
-            if ($existingAlert)
-            {
-                $existingAlert | Remove-SqlDscAgentAlert -Force
-            }
-        }
-    }
 
     AfterAll {
-        # Clean up test alerts
-        $testAlerts = @(
-            'IntegrationTest_RemoveAlert',
-            'IntegrationTest_RemoveAlert2'
-        )
-
-        foreach ($alertName in $testAlerts)
-        {
-            $existingAlert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name $alertName -ErrorAction 'SilentlyContinue'
-            if ($existingAlert)
-            {
-                $existingAlert | Remove-SqlDscAgentAlert -Force
-            }
-        }
-
         # Disconnect from the SQL Server
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:sqlServerObject
     }
