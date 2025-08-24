@@ -31,6 +31,9 @@
         is helpful when alerts could have been modified outside of the **ServerObject**,
         for example through T-SQL.
 
+    .PARAMETER Force
+        Specifies that the alert should be updated without prompting for confirmation.
+
     .INPUTS
         Microsoft.SqlServer.Management.Smo.Server
 
@@ -62,6 +65,12 @@
         $updatedAlert = $serverObject | Set-SqlDscAgentAlert -Name 'MyAlert' -Severity 16 -PassThru
 
         Updates the alert and returns the updated object.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        Set-SqlDscAgentAlert -ServerObject $serverObject -Name 'MyAlert' -Severity 16 -Force
+
+        Updates the SQL Agent Alert named 'MyAlert' to severity level 16 without prompting for confirmation.
 #>
 function Set-SqlDscAgentAlert
 {
@@ -99,12 +108,21 @@ function Set-SqlDscAgentAlert
 
         [Parameter(ParameterSetName = 'ServerObject')]
         [System.Management.Automation.SwitchParameter]
-        $Refresh
+        $Refresh,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Force
     )
 
     # cSpell: ignore SSAA
     process
     {
+        if ($Force.IsPresent -and -not $Confirm)
+        {
+            $ConfirmPreference = 'None'
+        }
+
         # Validate that both Severity and MessageId are not specified
         Assert-BoundParameter -BoundParameterList $PSBoundParameters -MutuallyExclusiveList1 @('Severity') -MutuallyExclusiveList2 @('MessageId')
 

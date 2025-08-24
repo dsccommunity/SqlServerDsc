@@ -49,11 +49,11 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = 'ServerObject'
-                ExpectedParameters = '-ServerObject <Server> -Name <string> [-Severity <int>] [-MessageId <int>] [-PassThru] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-ServerObject <Server> -Name <string> [-Severity <int>] [-MessageId <int>] [-PassThru] [-Refresh] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
             @{
                 ExpectedParameterSetName = 'AlertObject'
-                ExpectedParameters = '-AlertObject <Alert> [-Severity <int>] [-MessageId <int>] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-AlertObject <Alert> [-Severity <int>] [-MessageId <int>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Set-SqlDscAgentAlert').ParameterSets |
