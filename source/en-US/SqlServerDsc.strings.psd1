@@ -292,14 +292,6 @@ ConvertFrom-StringData @'
     ## Get-AgentAlertObject
     Get_AgentAlertObject_GettingAlert = Getting SQL Agent Alert '{0}'. (GAAO0001)
 
-    ## Assert-SqlDscAgentAlertParameter
-    Assert_SqlDscAgentAlertParameter_MultipleParameterError = Cannot specify both Severity and MessageId parameters simultaneously. A SQL Agent Alert can only be based on one or the other. (ASAAP0001)
-
-    ## New-SqlDscAgentAlertSmoObject
-    New_SqlDscAgentAlertSmoObject_CreatingAlert = Creating SQL Agent Alert SMO object '{0}'. (NSAASO0001)
-    New_SqlDscAgentAlertSmoObject_SettingSeverity = Setting severity '{0}' for SQL Agent Alert '{1}'. (NSAASO0002)
-    New_SqlDscAgentAlertSmoObject_SettingMessageId = Setting message ID '{0}' for SQL Agent Alert '{1}'. (NSAASO0003)
-
     ## Get-SqlDscAgentAlert
     Get_SqlDscAgentAlert_GettingAlerts = Getting SQL Agent Alerts from server '{0}'. (GSAA0001)
     Get_SqlDscAgentAlert_ReturningAllAlerts = Returning all {0} SQL Agent Alerts. (GSAA0005)
