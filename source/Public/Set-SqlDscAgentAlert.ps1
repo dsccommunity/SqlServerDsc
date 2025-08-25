@@ -167,6 +167,7 @@ function Set-SqlDscAgentAlert
                     {
                         Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentAlert_SettingSeverity -f $Severity, $alertObjectToUpdate.Name)
                         $alertObjectToUpdate.Severity = $Severity
+                        $alertObjectToUpdate.MessageId = 0 # Must set any conflicting properties to 0
                         $hasChanges = $true
                     }
                     else
@@ -181,6 +182,7 @@ function Set-SqlDscAgentAlert
                     {
                         Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentAlert_SettingMessageId -f $MessageId, $alertObjectToUpdate.Name)
                         $alertObjectToUpdate.MessageId = $MessageId
+                        $alertObjectToUpdate.Severity = 0 # Must set any conflicting properties to 0
                         $hasChanges = $true
                     }
                     else
