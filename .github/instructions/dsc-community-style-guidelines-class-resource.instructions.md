@@ -19,7 +19,7 @@ applyTo: "source/[cC]lasses/**/*.ps1"
 ```powershell
 MyResourceName () : base ()
 {
-    # Property names where state cannot be enforced, e.g. IsSingelInstance
+    # Property names where state cannot be enforced, e.g. IsSingleInstance, Force
     $this.ExcludeDscProperties = @()
 }
 ```
