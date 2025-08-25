@@ -7,6 +7,7 @@ applyTo: "**"
 
 ## Naming
 - Public commands: `{Verb}-SqlDsc{Noun}` format
+- Private function: `{Verb}-{Noun}` format
 
 ## Resources
 - Database Engine resources: inherit `SqlResourceBase`
@@ -24,8 +25,15 @@ applyTo: "**"
 
 ## Test Requirements
 - Unit tests: Add `$env:SqlServerDscCI = $true` in `BeforeAll`, remove in `AfterAll`
-- Integration tests: Use `Disconnect-SqlDscDatabaseEngine` after `Connect-SqlDscDatabaseEngine`
-- Test config: tests/Integration/Commands/README.md and tests/Integration/Resources/README.md
-- Integration test script files must be added to a group
-within the test stage in ./azure-pipelines.yml.
-- Choose the appropriate group number based on the required dependencies
+- Integration tests:
+  - If requiring SQL Server DB, start the Windows service in `BeforeAll`, stop it in `AfterAll`.
+  - Use `Connect-SqlDscDatabaseEngine` for SQL Server DB session, and always with correct CI credentials
+  - Use `Disconnect-SqlDscDatabaseEngine` after `Connect-SqlDscDatabaseEngine`
+  - Test config: tests/Integration/Commands/README.md and tests/Integration/Resources/README.md
+  - Integration test script files must be added to a group within the test stage in ./azure-pipelines.yml.
+    - Choose the appropriate group number based on the required dependencies
+
+## Unit tests
+- When unit test uses SMO types, ensure they are properly stubbed in SMO.cs
+- Load stub types from SMO.cs in unit test files, e.g. `Add-Type -Path "$PSScriptRoot/../Stubs/SMO.cs"`
+- After changing SMO stub types, run tests in a new PowerShell session for changes to take effect.

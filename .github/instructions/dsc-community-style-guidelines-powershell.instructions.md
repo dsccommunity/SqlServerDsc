@@ -15,6 +15,10 @@ applyTo: "**/*.ps?(m|d)1"
 - Classes: PascalCase
 - Include scope for script/global/environment variables: `$script:`, `$global:`, `$env:`
 
+## File naming
+
+- Class files: `###.ClassName.ps1` format (e.g. `001.SqlReason.ps1`, `004.StartupParameters.ps1`)
+
 ## Formatting
 
 ### Indentation & Spacing
@@ -71,8 +75,10 @@ applyTo: "**/*.ps?(m|d)1"
 - Avoid `Write-Output` (use `return` instead)
 - Avoid `ConvertTo-SecureString -AsPlainText` in production code
 - Don't redefine reserved parameters (Verbose, Debug, etc.)
-- Include a `Force` parameter for functions that support `$PSCmdlet.ShouldContinue` or that use `$PSCmdlet.ShouldProcess`
+- Include a `Force` parameter for functions that uses `$PSCmdlet.ShouldContinue` or `$PSCmdlet.ShouldProcess`
 - For state-changing functions, use `SupportsShouldProcess`
+  - Place ShouldProcess check immediately before each state-change
+  - `$PSCmdlet.ShouldProcess` must use required pattern
 - Use `$PSCmdlet.ThrowTerminatingError()` for terminating errors, use relevant error category
 - Use `Write-Error` for non-terminating errors, use relevant error category
 - Use `Write-Warning` for warnings
@@ -80,6 +86,32 @@ applyTo: "**/*.ps?(m|d)1"
 - Use `Write-Verbose` for actionable information
 - Use `Write-Information` for informational messages.
 - Never use backtick as line continuation in production code.
+
+## ShouldProcess Required Pattern
+
+- Ensure `$descriptionMessage` explains what will happen
+- Ensure `$confirmationMessage` succinctly asks for confirmation
+- Keep `$captionMessage` short and descriptive (no trailing `.`)
+
+```powershell
+$descriptionMessage = $script:localizedData.FunctionName_Action_ShouldProcessDescription -f $param1, $param2
+$confirmationMessage = $script:localizedData.FunctionName_Action_ShouldProcessConfirmation -f $param1
+$captionMessage = $script:localizedData.FunctionName_Action_ShouldProcessCaption
+
+if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
+{
+    # state changing code
+}
+```
+
+## Force Parameter Pattern
+
+```powershell
+if ($Force.IsPresent -and -not $Confirm)
+{
+    $ConfirmPreference = 'None'
+}
+```
 
 ### Structure
 
@@ -107,7 +139,7 @@ applyTo: "**/*.ps?(m|d)1"
 function Get-Something
 {
     [CmdletBinding()]
-    [OutputType([String])]
+    [OutputType([System.String])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -128,7 +160,7 @@ function Get-Something
 - Include `[CmdletBinding()]` on every function
 - Parameter block at top
 - Parameter block: `param ()` if empty, else opening/closing parentheses on own lines
-- `[OutputType()]` for functions with output
+- `[OutputType({return type})]` for functions with output, no output use `[OutputType()]`
 - All parameters use `[Parameter()]` attribute, mandatory parameters use `[Parameter(Mandatory = $true)]`
 - Parameter attributes on separate lines
 - Parameter type on line above parameter name

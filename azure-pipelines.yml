@@ -301,6 +301,12 @@ stages:
                   'tests/Integration/Commands/Get-SqlDscRole.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscRole.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscLogin.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscAgentAlert.Integration.Tests.ps1'
+                  'tests/Integration/Commands/New-SqlDscAgentAlert.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscAgentAlert.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Test-SqlDscAgentAlert.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Remove-SqlDscAgentAlert.Integration.Tests.ps1'
+
                   # Group 9
                   'tests/Integration/Commands/Uninstall-SqlDscServer.Integration.Tests.ps1'
               )
