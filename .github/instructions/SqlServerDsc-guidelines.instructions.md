@@ -34,6 +34,7 @@ applyTo: "**"
     - Choose the appropriate group number based on the required dependencies
 
 ## Unit tests
-- When unit test uses SMO types, ensure they are properly stubbed in SMO.cs
-- Load stub types from SMO.cs in unit test files, e.g. `Add-Type -Path "$PSScriptRoot/../Stubs/SMO.cs"`
-- After changing SMO stub types, run tests in a new PowerShell session for changes to take effect.
+- When unit test tests classes or commands that contain SMO types, e.g. `[Microsoft.SqlServer.Management.Smo.*]`
+  - Ensure they are properly stubbed in SMO.cs
+  - Load SMO stub types from SMO.cs in unit test files, e.g. `Add-Type -Path "$PSScriptRoot/../Stubs/SMO.cs"`
+  - After changing SMO stub types, run tests in a new PowerShell session for changes to take effect.

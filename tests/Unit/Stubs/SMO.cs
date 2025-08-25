@@ -1507,6 +1507,7 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
     //  Set-SqlDscAgentAlert.Tests.ps1
     //  Remove-SqlDscAgentAlert.Tests.ps1
     //  Test-SqlDscAgentAlert.Tests.ps1
+    //  SqlAgentAlert.Tests.ps1
     public enum AlertType
     {
         SqlServerEvent = 1,
@@ -1518,6 +1519,7 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
     // TypeName: Microsoft.SqlServer.Management.Smo.Agent.CompletionAction
     // Used by:
     //  SQL Agent Alert commands unit tests
+    //  SqlAgentAlert.Tests.ps1
     public enum CompletionAction
     {
         Never = 0,
@@ -1533,6 +1535,7 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
     // TypeName: Microsoft.SqlServer.Management.Smo.Agent.JobServer
     // Used by:
     //  SQL Agent Alert commands unit tests
+    //  SqlAgentAlert.Tests.ps1
     public class JobServer
     {
         // Constructor
@@ -1558,6 +1561,7 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
     // TypeName: Microsoft.SqlServer.Management.Smo.Agent.AlertCollection
     // Used by:
     //  SQL Agent Alert commands unit tests
+    //  SqlAgentAlert.Tests.ps1
     public class AlertCollection : ICollection
     {
         private System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Agent.Alert> alerts = new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Agent.Alert>();
