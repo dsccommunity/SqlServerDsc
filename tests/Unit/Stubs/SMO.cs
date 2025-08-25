@@ -278,7 +278,7 @@ namespace Microsoft.SqlServer.Management.Smo
     public class Server
     {
         public AvailabilityGroupCollection AvailabilityGroups = new AvailabilityGroupCollection();
-        public ServerConnection ConnectionContext;
+        public ServerConnection ConnectionContext = new ServerConnection();
         public string ComputerNamePhysicalNetBIOS;
         public DatabaseCollection Databases = new DatabaseCollection();
         public string DisplayName;
@@ -296,6 +296,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public Hashtable Logins = new Hashtable();
         public string Name;
         public string NetName;
+        public string ServerInstance;
         public Hashtable Roles = new Hashtable();
         public Hashtable Version = new Hashtable();
 
@@ -323,6 +324,7 @@ namespace Microsoft.SqlServer.Management.Smo
                 Logins = this.Logins,
                 Name = this.Name,
                 NetName = this.NetName,
+                ServerInstance = this.ServerInstance,
                 Roles = this.Roles,
                 ServiceName = this.ServiceName,
                 Version = this.Version
@@ -589,6 +591,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public Database() {}
 
         public string Name;
+        public string ServerInstance;
 
         public void Create()
         {
@@ -778,6 +781,11 @@ namespace Microsoft.SqlServer.Management.Smo
     public class ServerConnection
     {
         public string TrueLogin;
+        public string ServerInstance;
+        public int StatementTimeout;
+        public int ConnectTimeout;
+        public string ApplicationName;
+        public bool EncryptConnection;
 
         public void Create()
         {}
@@ -798,6 +806,8 @@ namespace Microsoft.SqlServer.Management.Smo
     //  SqlAGDatabase
     public class DatabaseCollection : Collection<Database>
     {
+        public DatabaseCollection() : base() { }
+
         public Database this[string name]
         {
             get
@@ -820,6 +830,8 @@ namespace Microsoft.SqlServer.Management.Smo
     //  SqlAGDatabase
     public class AvailabilityReplicaCollection : Collection<AvailabilityReplica>
     {
+        public AvailabilityReplicaCollection() : base() { }
+
         public AvailabilityReplica this[string name]
         {
             get
@@ -859,6 +871,8 @@ namespace Microsoft.SqlServer.Management.Smo
     //  SqlAGDatabase
     public class AvailabilityDatabaseCollection : Collection<AvailabilityDatabase>
     {
+        public AvailabilityDatabaseCollection() : base() { }
+
         public AvailabilityDatabase this[string name]
         {
             get
