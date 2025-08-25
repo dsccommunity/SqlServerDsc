@@ -187,8 +187,7 @@ class SqlRSSetup : ResourceBase
     $EditionUpgrade
 
     [DscProperty()]
-    [ValidateSet('Developer', 'Evaluation', 'ExpressAdvanced')]
-    [System.String]
+    [ReportServerEdition]
     $Edition
 
     [DscProperty()]
@@ -402,8 +401,9 @@ class SqlRSSetup : ResourceBase
     hidden [void] Modify([System.Collections.Hashtable] $properties)
     {
         $getDscPropertyParameters = @{
-            HasValue    = $true
-            Attribute   = @(
+            HasValue             = $true
+            IgnoreZeroEnumValue  = $true
+            Attribute            = @(
                 'Optional'
                 'Mandatory'
             )
