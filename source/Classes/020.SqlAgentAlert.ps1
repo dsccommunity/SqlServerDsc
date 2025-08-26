@@ -168,8 +168,16 @@ class SqlAgentAlert : SqlResourceBase
 
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
-        # Validate that both Severity and MessageId are not specified
-        Assert-BoundParameter -BoundParameterList $properties -MutuallyExclusiveList1 @('Severity') -MutuallyExclusiveList2 @('MessageId')
+        # TODO: Waiting for issue: https://github.com/dsccommunity/DscResource.Common/issues/160
+        if ($this.Ensure -eq 'Present')
+        {
+            # Validate that at least one of Severity or MessageId is specified
+            # TODO: Waiting for issue: https://github.com/dsccommunity/DscResource.Common/issues/161
+            #Assert-BoundParameter -BoundParameterList $properties -AtLeastOneList @('Severity', 'MessageId')
+
+            # Validate that both Severity and MessageId are not specified
+            Assert-BoundParameter -BoundParameterList $properties -MutuallyExclusiveList1 @('Severity') -MutuallyExclusiveList2 @('MessageId')
+        }
     }
 
     hidden [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
