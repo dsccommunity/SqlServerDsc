@@ -75,6 +75,7 @@ Configuration DSC_SqlAgentAlert_ChangeToMessageId_Config
             Id                   = 'CreateCustomMessage'
             InstanceName         = $Node.InstanceName
             ServerName           = $Node.ServerName
+            Encrypt              = 'Optional'
             # cSpell: ignore addmessage msgnum msgtext
             SetQuery             = "
                 IF NOT EXISTS (SELECT 1 FROM sys.messages WHERE message_id = $($Node.MessageId) AND language_id = 1033)
@@ -148,6 +149,7 @@ Configuration DSC_SqlAgentAlert_Remove_Config
             Id                   = 'RemoveCustomMessage'
             InstanceName         = $Node.InstanceName
             ServerName           = $Node.ServerName
+            Encrypt              = 'Optional'
             # cSpell: ignore dropmessage
             SetQuery             = "
                 IF EXISTS (SELECT 1 FROM sys.messages WHERE message_id = $($Node.MessageId) AND language_id = 1033)
