@@ -1,7 +1,7 @@
-# AI Instructions for SqlServerDsc
+# AI Instructions
 
-This file provides AI agent guidance for the SqlServerDsc project. Each
-instruction file below targets specific file glob patterns and use cases.
+This file provides AI agent guidance for the project. Each instruction file below
+targets specific file glob patterns and use cases.
 
 ## Instructions Overview
 
