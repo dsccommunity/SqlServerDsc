@@ -309,73 +309,130 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
         }
     }
 
-    Context 'When testing AssertProperties() method' {
-        It 'Should throw an error when both Severity and MessageId are specified' {
-            InModuleScope -ScriptBlock {
-                $instance = [SqlAgentAlert]::new()
-
-                $properties = @{
-                    Name = 'TestAlert'
-                    Ensure = 'Present'
-                    Severity = 16
-                    MessageId = 50001
+    Context 'When passing mutually exclusive parameters' {
+        Context 'When passing both Severity and MessageId' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlAgentAlertInstance = [SqlAgentAlert]::new()
                 }
+            }
 
-                { $instance.AssertProperties($properties) } | Should -Throw -ExpectedMessage '*may be used at the same time*'
+            It 'Should throw the correct error' {
+                InModuleScope -ScriptBlock {
+                    $properties = @{
+                        Name = 'TestAlert'
+                        Ensure = 'Present'
+                        Severity = 16
+                        MessageId = 50001
+                    }
+
+                    { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Throw -ExpectedMessage '*may be used at the same time*'
+                }
+            }
+        }
+    }
+
+    Context 'When passing valid parameter combinations' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlAgentAlertInstance = [SqlAgentAlert]::new()
             }
         }
 
-        It 'Should not throw when neither Severity nor MessageId are specified' {
-            InModuleScope -ScriptBlock {
-                $instance = [SqlAgentAlert]::new()
+        Context 'When Ensure is Present' {
+            It 'Should not throw when neither Severity nor MessageId are specified' {
+                InModuleScope -ScriptBlock {
+                    $properties = @{
+                        Name = 'TestAlert'
+                        Ensure = 'Present'
+                    }
 
-                $properties = @{
-                    Name = 'TestAlert'
-                    Ensure = 'Present'
+                    { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Not -Throw
                 }
+            }
 
-                { $instance.AssertProperties($properties) } | Should -Not -Throw
+            It 'Should not throw when only Severity is specified' {
+                InModuleScope -ScriptBlock {
+                    $properties = @{
+                        Name = 'TestAlert'
+                        Ensure = 'Present'
+                        Severity = 16
+                    }
+
+                    { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Not -Throw
+                }
+            }
+
+            It 'Should not throw when only MessageId is specified' {
+                InModuleScope -ScriptBlock {
+                    $properties = @{
+                        Name = 'TestAlert'
+                        Ensure = 'Present'
+                        MessageId = 50001
+                    }
+
+                    { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Not -Throw
+                }
             }
         }
 
-        It 'Should not throw when only Severity is specified' {
-            InModuleScope -ScriptBlock {
-                $instance = [SqlAgentAlert]::new()
+        Context 'When Ensure is Absent' {
+            It 'Should not throw when only Name and Ensure are specified' {
+                InModuleScope -ScriptBlock {
+                    $properties = @{
+                        Name = 'TestAlert'
+                        Ensure = 'Absent'
+                    }
 
-                $properties = @{
-                    Name = 'TestAlert'
-                    Ensure = 'Present'
-                    Severity = 16
+                    { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Not -Throw
                 }
+            }
+        }
+    }
 
-                { $instance.AssertProperties($properties) } | Should -Not -Throw
+    Context 'When passing invalid parameter combinations' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlAgentAlertInstance = [SqlAgentAlert]::new()
             }
         }
 
-        It 'Should not throw when only MessageId is specified' {
-            InModuleScope -ScriptBlock {
-                $instance = [SqlAgentAlert]::new()
+        Context 'When Ensure is Absent and Severity or MessageId are specified' {
+            It 'Should throw the correct error when Severity is specified' {
+                InModuleScope -ScriptBlock {
+                    $properties = @{
+                        Name = 'TestAlert'
+                        Ensure = 'Absent'
+                        Severity = 16
+                    }
 
-                $properties = @{
-                    Name = 'TestAlert'
-                    Ensure = 'Present'
-                    MessageId = 50001
+                    { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Throw -ExpectedMessage '*Cannot specify Severity or MessageId when Ensure is set to ''Absent''*'
                 }
-
-                { $instance.AssertProperties($properties) } | Should -Not -Throw
             }
-        }
 
-        It 'Should not throw when Ensure is Absent' {
-            InModuleScope -ScriptBlock {
-                $instance = [SqlAgentAlert]::new()
+            It 'Should throw the correct error when MessageId is specified' {
+                InModuleScope -ScriptBlock {
+                    $properties = @{
+                        Name = 'TestAlert'
+                        Ensure = 'Absent'
+                        MessageId = 50001
+                    }
 
-                $properties = @{
-                    Name = 'TestAlert'
-                    Ensure = 'Absent'
+                    { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Throw -ExpectedMessage '*Cannot specify Severity or MessageId when Ensure is set to ''Absent''*'
                 }
+            }
 
-                { $instance.AssertProperties($properties) } | Should -Not -Throw
+            It 'Should throw the correct error when both Severity and MessageId are specified' {
+                InModuleScope -ScriptBlock {
+                    $properties = @{
+                        Name = 'TestAlert'
+                        Ensure = 'Absent'
+                        Severity = 16
+                        MessageId = 50001
+                    }
+
+                    { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Throw -ExpectedMessage '*Cannot specify Severity or MessageId when Ensure is set to ''Absent''*'
+                }
             }
         }
     }

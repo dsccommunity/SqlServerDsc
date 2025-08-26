@@ -141,6 +141,7 @@ class SqlAgentAlert : SqlResourceBase
             'InstanceName',
             'ServerName',
             'Credential'
+            'Name'
         )
     }
 
@@ -177,6 +178,16 @@ class SqlAgentAlert : SqlResourceBase
 
             # Validate that both Severity and MessageId are not specified
             Assert-BoundParameter -BoundParameterList $properties -MutuallyExclusiveList1 @('Severity') -MutuallyExclusiveList2 @('MessageId')
+        }
+        else
+        {
+            # When Ensure is 'Absent', Severity and MessageId must not be set
+            if ($properties.ContainsKey('Severity') -or $properties.ContainsKey('MessageId'))
+            {
+                $errorMessage = $this.localizedData.SqlAgentAlert_SeverityOrMessageIdNotAllowedWhenAbsent
+
+                New-InvalidArgumentException -ArgumentName 'Severity, MessageId' -Message $errorMessage
+            }
         }
     }
 
