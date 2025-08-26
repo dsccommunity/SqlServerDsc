@@ -11,11 +11,11 @@ applyTo: "source/**/*.ps1"
 - Assume `$script:localizedData` is available
 
 ## String Files
-- Commands/functions: `source/en-US/SqlServerDsc.strings.psd1`
+- Commands/functions: `source/en-US/{MyModuleName}.strings.psd1`
 - Class resources: `source/en-US/{ResourceClassName}.strings.psd1`
 
 ## Key Naming Patterns
-- Format: `Verb_FunctionName_Action` (underscore separators), e.g. `Get_SqlDscDatabase_ConnectingToDatabase`
+- Format: `Verb_FunctionName_Action` (underscore separators), e.g. `Get_Database_ConnectingToDatabase`
 
 ## String Format
 ```powershell
