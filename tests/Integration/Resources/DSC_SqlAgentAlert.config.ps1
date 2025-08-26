@@ -82,5 +82,3 @@ Configuration DSC_SqlAgentAlert_Remove_Config
         }
     }
 }
-
-
