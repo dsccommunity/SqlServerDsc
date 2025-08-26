@@ -169,7 +169,7 @@ class SqlAgentAlert : SqlResourceBase
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
         # TODO: Waiting for issue: https://github.com/dsccommunity/DscResource.Common/issues/160
-        if ($this.Ensure -eq 'Present')
+        if ($properties.Ensure -eq 'Present')
         {
             # Validate that at least one of Severity or MessageId is specified
             # TODO: Waiting for issue: https://github.com/dsccommunity/DscResource.Common/issues/161
