@@ -158,7 +158,7 @@ Describe "<dscResourceFriendlyName>_Integration" -Tag @('Integration_SQL2016', '
             }
 
             $resourceCurrentState.Ensure | Should -Be 'Absent'
-            $resourceCurrentState.Name | Should -BeNullOrEmpty
+            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.Name
             $resourceCurrentState.Severity | Should -BeNullOrEmpty
         }
 
