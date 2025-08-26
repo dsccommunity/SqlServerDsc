@@ -12,7 +12,7 @@ applyTo: "source/[cC]lasses/**/*.ps1"
 - Decoration: `[DscResource(RunAsCredential = 'Optional')]` (replace with `'Mandatory'` if required)
 - Inheritance: Must inherit `ResourceBase` (part of module DscResource.Base)
 - `$this.localizedData` hashtable auto-populated by `ResourceBase` from localization file
-- Properties must have nullable types for types not nullable (`[Nullable[{Type}]]`)
+- value-type properties: Use `[Nullable[{FullTypeName}]]` (e.g., `[Nullable[System.Int32]]`)
 
 ## Required constructor
 
@@ -20,16 +20,6 @@ applyTo: "source/[cC]lasses/**/*.ps1"
 MyResourceName () : base ()
 {
     # Property names where state cannot be enforced, e.g. IsSingleInstance, Force
-    $this.ExcludeDscProperties = @()
-}
-```
-
-## Required constructor
-
-```powershell
-MyResourceName () : base ($PSScriptRoot)
-{
-    # Property names where state cannot be enforced, e.g Ensure
     $this.ExcludeDscProperties = @()
 }
 ```
