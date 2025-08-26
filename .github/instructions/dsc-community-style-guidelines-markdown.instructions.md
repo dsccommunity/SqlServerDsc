@@ -10,6 +10,7 @@ applyTo: "**/*.md"
 - Use '1.' for all items in ordered lists (1/1/1 numbering style)
 - Disable `MD013` rule by adding a comment for tables/code blocks exceeding 80 characters
 - Empty lines required before/after code blocks and headings (except before line 1)
+- Escape backslashes in file paths only (not in code blocks)
 - Code blocks must specify language identifiers
 
 ## Text Formatting

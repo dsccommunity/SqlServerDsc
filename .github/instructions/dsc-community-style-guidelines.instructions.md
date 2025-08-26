@@ -25,7 +25,7 @@ applyTo: "**"
 ## Requirements
 - Follow guidelines over existing code patterns
 - Always update CHANGELOG.md Unreleased section
-- Localize all strings using string keys
+- Localize all strings using string keys; remove any orphaned string keys
 - Check DscResource.Common before creating private functions
 - Separate reusable logic into private functions
 - Add unit tests for all commands/functions/resources

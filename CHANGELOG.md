@@ -34,7 +34,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Throws a terminating error if the specified principal does not exist as a login.
   - Supports pipeline input and provides detailed error messages with localization.
   - Uses `Test-SqlDscIsLogin` command for login validation following module patterns.
-- Added `Get-SqlDscLogin`, `Get-SqlDscRole`, `New-SqlDscLogin`, `New-SqlDscRole`, `Remove-SqlDscRole`, and `Remove-SqlDscLogin` commands for retrieving and managing SQL Server logins and roles with support for refresh, pipeline input, and ShouldProcess.
+- Added `Get-SqlDscLogin`, `Get-SqlDscRole`, `New-SqlDscLogin`, `New-SqlDscRole`,
+  `Remove-SqlDscRole`, and `Remove-SqlDscLogin` commands for retrieving and managing
+   SQL Server logins and roles with support for refresh, pipeline input, and ShouldProcess.
+- Added `Get-SqlDscAgentAlert`, `New-SqlDscAgentAlert`,
+  `Set-SqlDscAgentAlert`, `Remove-SqlDscAgentAlert`, and `Test-SqlDscAgentAlert`
+  to manage SQL Agent alerts on a Database Engine instance.
 - Added new public commands for database management:
   - `Get-SqlDscDatabase` - Get databases from a SQL Server Database Engine instance
   - `New-SqlDscDatabase` - Create a new database with specified properties
@@ -86,7 +91,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - DSC community style guidelines
   - Added requirement to follow guidelines over existing code patterns.
 - Improved markdown, pester, powershell, and changelog instructions.
-  - Fixed `Ingore` that seems in edge-cases fail.
+  - Fixed `Ignore` that seems in edge-cases fail.
+  - Improved markdown and changelog instructions.
 
 ## [17.1.0] - 2025-05-22
 

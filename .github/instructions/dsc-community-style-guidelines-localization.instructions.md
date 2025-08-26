@@ -14,9 +14,8 @@ applyTo: "source/**/*.ps1"
 - Commands/functions: `source/en-US/SqlServerDsc.strings.psd1`
 - Class resources: `source/en-US/{ResourceClassName}.strings.psd1`
 
-## Key Naming
-- Format: `FunctionName_Description` (underscore separators)
-- Example: `Get_SqlDscDatabase_ConnectingToDatabase`
+## Key Naming Patterns
+- Format: `Verb_FunctionName_Action` (underscore separators), e.g. `Get_SqlDscDatabase_ConnectingToDatabase`
 
 ## String Format
 ```powershell
