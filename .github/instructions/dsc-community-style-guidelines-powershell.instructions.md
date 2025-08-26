@@ -49,7 +49,7 @@ applyTo: "**/*.ps?(m|d)1"
 ### Hashtables
 
 - Empty: `@{}`
-- Multi-line: each property on separate line with proper indentation
+- Each property on separate line with proper indentation
 - Properties: Use PascalCase
 
 ### Comments
