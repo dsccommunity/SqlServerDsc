@@ -11,7 +11,8 @@ applyTo: "**"
 
 ## Resources
 - Database Engine resources: inherit `SqlResourceBase`
-- `SqlResourceBase` provides: `InstanceName`, `ServerName`, `Credential`, `Reasons`, `GetServerObject()`
+  - Inheriting `SqlResourceBase`; add `InstanceName`, `ServerName`, and `Credential` to `$this.ExcludeDscProperties`
+  - `SqlResourceBase` provides: `InstanceName`, `ServerName`, `Credential`, `Reasons`, `GetServerObject()`
 
 ## SQL Server Interaction
 - Always prefer SMO over T-SQL
