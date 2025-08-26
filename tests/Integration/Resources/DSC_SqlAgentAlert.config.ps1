@@ -75,6 +75,7 @@ Configuration DSC_SqlAgentAlert_ChangeToMessageId_Config
             Id                   = 'CreateCustomMessage'
             InstanceName         = $Node.InstanceName
             ServerName           = $Node.ServerName
+            # cSpell: ignore addmessage msgnum msgtext
             SetQuery             = "
                 IF NOT EXISTS (SELECT 1 FROM sys.messages WHERE message_id = $($Node.MessageId) AND language_id = 1033)
                 BEGIN
@@ -85,8 +86,17 @@ Configuration DSC_SqlAgentAlert_ChangeToMessageId_Config
                         @lang = 'us_english'
                 END
             "
-            TestQuery            = "SELECT 1 FROM sys.messages WHERE message_id = $($Node.MessageId) AND language_id = 1033"
-            GetQuery             = "SELECT message_id, text FROM sys.messages WHERE message_id = $($Node.MessageId) AND language_id = 1033"
+            TestQuery            = "
+                IF NOT EXISTS (SELECT 1 FROM sys.messages WHERE message_id = $($Node.MessageId) AND language_id = 1033)
+                BEGIN
+                    RAISERROR ('Did not found message id [$($Node.MessageId)]', 16, 1)
+                END
+                ELSE
+                BEGIN
+                    PRINT 'Found a message id [$($Node.MessageId)]'
+                END
+            "
+            GetQuery             = "SELECT message_id, text FROM sys.messages WHERE message_id = $($Node.MessageId) AND language_id = 1033 FOR JSON AUTO"
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
@@ -138,6 +148,7 @@ Configuration DSC_SqlAgentAlert_Remove_Config
             Id                   = 'RemoveCustomMessage'
             InstanceName         = $Node.InstanceName
             ServerName           = $Node.ServerName
+            # cSpell: ignore dropmessage
             SetQuery             = "
                 IF EXISTS (SELECT 1 FROM sys.messages WHERE message_id = $($Node.MessageId) AND language_id = 1033)
                 BEGIN
@@ -146,8 +157,17 @@ Configuration DSC_SqlAgentAlert_Remove_Config
                         @lang = 'us_english'
                 END
             "
-            TestQuery            = "SELECT CASE WHEN NOT EXISTS (SELECT 1 FROM sys.messages WHERE message_id = $($Node.MessageId) AND language_id = 1033) THEN 1 ELSE 0 END AS MessageRemoved"
-            GetQuery             = "SELECT COUNT(*) as MessageCount FROM sys.messages WHERE message_id = $($Node.MessageId) AND language_id = 1033"
+            TestQuery            = "
+                IF EXISTS (SELECT 1 FROM sys.messages WHERE message_id = $($Node.MessageId) AND language_id = 1033)
+                BEGIN
+                    RAISERROR ('Found message id [$($Node.MessageId)]', 16, 1)
+                END
+                ELSE
+                BEGIN
+                    PRINT 'Did not found a message id [$($Node.MessageId)]'
+                END
+            "
+            GetQuery             = "SELECT message_id, text FROM sys.messages WHERE message_id = $($Node.MessageId) AND language_id = 1033 FOR JSON AUTO"
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
