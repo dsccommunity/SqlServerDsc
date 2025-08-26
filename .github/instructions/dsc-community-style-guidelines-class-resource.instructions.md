@@ -12,7 +12,7 @@ applyTo: "source/[cC]lasses/**/*.ps1"
 - Decoration: `[DscResource(RunAsCredential = 'Optional')]` (replace with `'Mandatory'` if required)
 - Inheritance: Must inherit `ResourceBase` (part of module DscResource.Base)
 - `$this.localizedData` hashtable auto-populated by `ResourceBase` from localization file
-- Properties must have nullable types (`[Nullable[{Type}]]` where needed)
+- Properties must have nullable types for types not nullable (`[Nullable[{Type}]]`)
 
 ## Required constructor
 
