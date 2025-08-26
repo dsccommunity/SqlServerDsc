@@ -85,7 +85,7 @@ applyTo: "**/*.ps?(m|d)1"
 
 - Never output sensitive data/secrets
 - Use `Write-Debug` for: Internal diagnostics; Variable values/traces; Developer-focused details
-- Use `Write-Verbose` for: high-level execution flow only; User-actionable information
+- Use `Write-Verbose` for: High-level execution flow only; User-actionable information
 - Use `Write-Information` for: User-facing status updates; Important operational messages; Non-error state changes
 - Use `Write-Warning` for: Non-fatal issues requiring attention; Deprecated functionality usage; Configuration problems that don't block execution
 - Use `$PSCmdlet.ThrowTerminatingError()` for terminating errors (except for classes), use relevant error category
