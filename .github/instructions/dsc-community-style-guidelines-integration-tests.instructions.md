@@ -45,8 +45,8 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    $script:dscModuleName = '{MyModuleName}'
+    $script:moduleName = '{MyModuleName}'
 
-    Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
+    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
 }
 ```
