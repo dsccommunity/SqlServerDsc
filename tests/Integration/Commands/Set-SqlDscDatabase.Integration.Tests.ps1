@@ -44,7 +44,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2016', 'Integration_SQL2017
 
         $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
 
-        # Test database names  
+        # Test database names
         $script:testDatabaseName = 'SqlDscTestSetDatabase_' + (Get-Random)
         $script:testDatabaseNameForObject = 'SqlDscTestSetDatabaseObj_' + (Get-Random)
 
@@ -56,7 +56,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2016', 'Integration_SQL2017
     AfterAll {
         # Clean up test databases
         $testDatabasesToRemove = @($script:testDatabaseName, $script:testDatabaseNameForObject)
-        
+
         foreach ($dbName in $testDatabasesToRemove) {
             $existingDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $dbName -ErrorAction 'SilentlyContinue'
             if ($existingDb) {
@@ -80,7 +80,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         }
 
         It 'Should set owner name successfully' {
-            Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -OwnerName 'sa' -Force
+            Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -OwnerName ('{0}\SqlAdmin' -f $script:mockComputerName) -Force
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName
@@ -88,7 +88,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         }
 
         It 'Should set multiple properties successfully' {
-            Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Full' -OwnerName 'sa' -Force
+            Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Full' -OwnerName ('{0}\SqlAdmin' -f $script:mockComputerName) -Force
 
             # Verify the changes
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName
@@ -114,7 +114,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2016', 'Integration_SQL2017
 
         It 'Should set owner name using database object' {
             $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject
-            Set-SqlDscDatabase -DatabaseObject $databaseObject -OwnerName 'sa' -Force
+            Set-SqlDscDatabase -DatabaseObject $databaseObject -OwnerName ('{0}\SqlAdmin' -f $script:mockComputerName) -Force
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject
