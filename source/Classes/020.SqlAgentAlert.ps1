@@ -169,19 +169,42 @@ class SqlAgentAlert : SqlResourceBase
 
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
-        # TODO: Waiting for issue: https://github.com/dsccommunity/DscResource.Common/issues/160
-        if ($properties.Ensure -eq 'Present')
-        {
-            # Validate that at least one of Severity or MessageId is specified
-            # TODO: Waiting for issue: https://github.com/dsccommunity/DscResource.Common/issues/161
-            #Assert-BoundParameter -BoundParameterList $properties -AtLeastOneList @('Severity', 'MessageId')
-
-            # Validate that both Severity and MessageId are not specified
-            Assert-BoundParameter -BoundParameterList $properties -MutuallyExclusiveList1 @('Severity') -MutuallyExclusiveList2 @('MessageId')
+        # Validate that at least one of Severity or MessageId is specified
+        $assertAtLeastOneParams = @{
+            BoundParameterList   = $properties
+            AtLeastOneList       = @('Severity', 'MessageId')
+            IfEqualParameterList = @{
+                Ensure = 'Present'
+            }
         }
-        else
+
+        Assert-BoundParameter @assertAtLeastOneParams
+
+        # Validate that both Severity and MessageId are not specified
+        $assertMutuallyExclusiveParams = @{
+            BoundParameterList       = $properties
+            MutuallyExclusiveList1   = @('Severity')
+            MutuallyExclusiveList2   = @('MessageId')
+            IfEqualParameterList     = @{
+                Ensure = 'Present'
+            }
+        }
+
+        Assert-BoundParameter @assertMutuallyExclusiveParams
+
+        if ($properties.Ensure -eq 'Absent')
         {
             # When Ensure is 'Absent', Severity and MessageId must not be set
+            $assertAbsentParams = @{
+                BoundParameterList   = $properties
+                NotAllowedList       = @('Severity', 'MessageId')
+                IfEqualParameterList = @{
+                    Ensure = 'Absent'
+                }
+            }
+
+            Assert-BoundParameter @assertAbsentParams
+
             if ($properties.ContainsKey('Severity') -or $properties.ContainsKey('MessageId'))
             {
                 $errorMessage = $this.localizedData.SqlAgentAlert_SeverityOrMessageIdNotAllowedWhenAbsent

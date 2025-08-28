@@ -145,6 +145,7 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
                 $instance = [SqlAgentAlert] @{
                     Name         = 'TestAlert'
                     InstanceName = 'MSSQLSERVER'
+                    Severity     = 17
                 } |
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
                         return $script:mockServerObject
@@ -168,6 +169,7 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
                 $instance = [SqlAgentAlert] @{
                     Name         = 'TestAlert'
                     InstanceName = 'MSSQLSERVER'
+                    Severity     = 17
                 } |
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
                         return $script:mockServerObject
@@ -340,14 +342,14 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
         }
 
         Context 'When Ensure is Present' {
-            It 'Should not throw when neither Severity nor MessageId are specified' {
+            It 'Should throw when neither Severity nor MessageId are specified' {
                 InModuleScope -ScriptBlock {
                     $properties = @{
                         Name = 'TestAlert'
                         Ensure = 'Present'
                     }
 
-                    { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Not -Throw
+                    { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Throw -ExpectedMessage '*(DRC0052)*'
                 }
             }
 
@@ -406,7 +408,7 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
                         Severity = 16
                     }
 
-                    { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Throw -ExpectedMessage '*Cannot specify Severity or MessageId when Ensure is set to ''Absent''*'
+                    { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Throw -ExpectedMessage '*(DRC0053)*'
                 }
             }
 
@@ -418,7 +420,7 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
                         MessageId = 50001
                     }
 
-                    { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Throw -ExpectedMessage '*Cannot specify Severity or MessageId when Ensure is set to ''Absent''*'
+                    { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Throw -ExpectedMessage '*(DRC0053)*'
                 }
             }
 
@@ -431,7 +433,107 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
                         MessageId = 50001
                     }
 
-                    { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Throw -ExpectedMessage '*Cannot specify Severity or MessageId when Ensure is set to ''Absent''*'
+                    { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Throw -ExpectedMessage '*(DRC0053)*'
+                }
+            }
+        }
+    }
+
+    Context 'When validating Assert-BoundParameter calls' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlAgentAlertInstance = [SqlAgentAlert]::new()
+            }
+        }
+
+        Context 'When Ensure is Present' {
+            It 'Should call Assert-BoundParameter to validate at least one of Severity or MessageId is specified' {
+                InModuleScope -ScriptBlock {
+                    Mock -CommandName 'Assert-BoundParameter' -MockWith { }
+
+                    $properties = @{
+                        Name = 'TestAlert'
+                        Ensure = 'Present'
+                        Severity = 16
+                    }
+
+                    { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Not -Throw
+
+                    Should -Invoke -CommandName 'Assert-BoundParameter' -ParameterFilter {
+                        $BoundParameterList -is [hashtable] -and
+                        $AtLeastOneList -contains 'Severity' -and
+                        $AtLeastOneList -contains 'MessageId' -and
+                        $IfEqualParameterList.Ensure -eq 'Present'
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            It 'Should call Assert-BoundParameter to validate Severity and MessageId are mutually exclusive' {
+                InModuleScope -ScriptBlock {
+                    Mock -CommandName 'Assert-BoundParameter' -MockWith { }
+
+                    $properties = @{
+                        Name = 'TestAlert'
+                        Ensure = 'Present'
+                        Severity = 16
+                    }
+
+                    { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Not -Throw
+
+                    Should -Invoke -CommandName 'Assert-BoundParameter' -ParameterFilter {
+                        $BoundParameterList -is [hashtable] -and
+                        $MutuallyExclusiveList1 -contains 'Severity' -and
+                        $MutuallyExclusiveList2 -contains 'MessageId' -and
+                        $IfEqualParameterList.Ensure -eq 'Present'
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+        }
+
+        Context 'When Ensure is Absent' {
+            It 'Should call Assert-BoundParameter to validate Severity and MessageId are not allowed' {
+                InModuleScope -ScriptBlock {
+                    Mock -CommandName 'Assert-BoundParameter' -MockWith { }
+
+                    $properties = @{
+                        Name = 'TestAlert'
+                        Ensure = 'Absent'
+                    }
+
+                    { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Not -Throw
+
+                    Should -Invoke -CommandName 'Assert-BoundParameter' -ParameterFilter {
+                        $BoundParameterList -is [hashtable] -and
+                        $NotAllowedList -contains 'Severity' -and
+                        $NotAllowedList -contains 'MessageId' -and
+                        $IfEqualParameterList.Ensure -eq 'Absent'
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            It 'Should call Assert-BoundParameter with correct parameters when Severity is specified' {
+                InModuleScope -ScriptBlock {
+                    Mock -CommandName 'Assert-BoundParameter' -MockWith {
+                        # Simulate the Assert-BoundParameter throwing an exception for NotAllowed parameters
+                        if ($NotAllowedList -and ($BoundParameterList.ContainsKey('Severity') -or $BoundParameterList.ContainsKey('MessageId'))) {
+                            throw 'Parameter validation failed'
+                        }
+                    }
+
+                    $properties = @{
+                        Name = 'TestAlert'
+                        Ensure = 'Absent'
+                        Severity = 16
+                    }
+
+                    { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Throw
+
+                    Should -Invoke -CommandName 'Assert-BoundParameter' -ParameterFilter {
+                        $BoundParameterList -is [hashtable] -and
+                        $NotAllowedList -contains 'Severity' -and
+                        $NotAllowedList -contains 'MessageId' -and
+                        $IfEqualParameterList.Ensure -eq 'Absent'
+                    } -Exactly -Times 1 -Scope It
                 }
             }
         }
