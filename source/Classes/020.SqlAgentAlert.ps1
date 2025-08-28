@@ -7,13 +7,14 @@
         The `SqlAgentAlert` DSC resource is used to create, modify, or remove
         _SQL Server Agent_ alerts.
 
-        An alert can be switch between using system message and severity-based alerts by passing
-        the required parameter. It will switch the alert type accordingly.
+        An alert can be switched between a system-message–based alert and a severity-based
+        alert by specifying the corresponding parameter. The alert type will be switched
+        accordingly.
 
         The built-in parameter **PSDscRunAsCredential** can be used to run the resource
         as another user. The resource will then authenticate to the _SQL Server_
-        instance as that user. It also possible to instead use impersonation by the
-        parameter **Credential**.
+        instance as that user. It is also possible to use impersonation via the
+        **Credential** parameter.
 
         ## Requirements
 
@@ -31,20 +32,20 @@
         When using the built-in parameter **PSDscRunAsCredential** the read-only
         property **Reasons** will return empty values for the properties **Code**
         and **Phrase**. The built-in property **PSDscRunAsCredential** does not work
-        together with class-based resources that using advanced type like the parameter
-        **Reasons** have.
+        together with class-based resources that use advanced types, such as the
+        **Reasons** parameter.
 
         ### Using **Credential** property
 
-        SQL Authentication and Group Managed Service Accounts is not supported as
-        impersonation credentials. Currently only Windows Integrated Security is
-        supported to use as credentials.
+        SQL Authentication and Group Managed Service Accounts are not supported as
+        impersonation credentials. Currently, only Windows Integrated Security is
+        supported.
 
         For Windows Authentication the username must either be provided with the User
-        Principal Name (UPN), e.g. `username@domain.local` or if using non-domain
-        (for example a local Windows Server account) account the username must be
-        provided without the NetBIOS name, e.g. `username`. Using the NetBIOS name, e.g
-        using the format `DOMAIN\username` will not work.
+        Principal Name (UPN), e.g., `username@domain.local`, or, if using a non‑domain
+        account (for example, a local Windows Server account), the username must be
+        provided without the NetBIOS name, e.g., `username`. Using the NetBIOS name,
+        for example `DOMAIN\username`, will not work.
 
         See more information in [Credential Overview](https://github.com/dsccommunity/SqlServerDsc/wiki/CredentialOverview).
 
