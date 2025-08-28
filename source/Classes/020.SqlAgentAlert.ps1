@@ -56,11 +56,11 @@
         Default value is `'Present'`.
 
     .PARAMETER Severity
-        The severity of the _SQL Server Agent_ alert. Valid range is 0 to 25.
+        The severity of the _SQL Server Agent_ alert. Valid range is 1 to 25.
         Cannot be used together with **MessageId**.
 
     .PARAMETER MessageId
-        The message id of the _SQL Server Agent_ alert. Valid range is 0 to 2147483647.
+        The message id of the _SQL Server Agent_ alert. Valid range is 1 to 2147483647.
         Cannot be used together with **Severity**.
 
     .EXAMPLE
