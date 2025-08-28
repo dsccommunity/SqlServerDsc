@@ -11,8 +11,9 @@ applyTo: "**"
 
 ## Resources
 - Database Engine resources: inherit `SqlResourceBase`
-  - Inheriting `SqlResourceBase`; add `InstanceName`, `ServerName`, and `Credential` to `$this.ExcludeDscProperties`
+  - Add `InstanceName`, `ServerName`, and `Credential` to `$this.ExcludeDscProperties`
   - `SqlResourceBase` provides: `InstanceName`, `ServerName`, `Credential`, `Reasons`, `GetServerObject()`
+  - Constructor: `MyResourceName() : base () { }` (no $PSScriptRoot parameter)
 
 ## SQL Server Interaction
 - Always prefer SMO over T-SQL
