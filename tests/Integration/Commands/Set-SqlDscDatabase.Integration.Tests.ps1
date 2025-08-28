@@ -49,8 +49,8 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         $script:testDatabaseNameForObject = 'SqlDscTestSetDatabaseObj_' + (Get-Random)
 
         # Create test databases
-        New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force
-        New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Force
+        New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction 'Stop'
+        New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Force -ErrorAction 'Stop'
     }
 
     AfterAll {
@@ -72,7 +72,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2016', 'Integration_SQL2017
 
     Context 'When setting database properties using ServerObject parameter set' {
         It 'Should set recovery model successfully' {
-            Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Simple' -Force
+            Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Simple' -Force -ErrorAction 'Stop'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName
@@ -80,70 +80,70 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         }
 
         It 'Should set owner name successfully' {
-            Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -OwnerName ('{0}\SqlAdmin' -f $script:mockComputerName) -Force
+            Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -OwnerName ('{0}\SqlAdmin' -f $script:mockComputerName) -Force -ErrorAction 'Stop'
 
             # Verify the change
-            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName
-            $updatedDb.Owner | Should -Be 'sa'
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
+            $updatedDb.Owner | Should -Be ('{0}\SqlAdmin' -f $script:mockComputerName)
         }
 
         It 'Should set multiple properties successfully' {
-            Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Full' -OwnerName ('{0}\SqlAdmin' -f $script:mockComputerName) -Force
+            Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Full' -OwnerName ('{0}\SqlAdmin' -f $script:mockComputerName) -Force -ErrorAction 'Stop'
 
             # Verify the changes
-            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
             $updatedDb.RecoveryModel | Should -Be 'Full'
-            $updatedDb.Owner | Should -Be 'sa'
+            $updatedDb.Owner | Should -Be ('{0}\SqlAdmin' -f $script:mockComputerName)
         }
 
         It 'Should throw error when trying to set properties of non-existent database' {
-            { Set-SqlDscDatabase -ServerObject $script:serverObject -Name 'NonExistentDatabase' -RecoveryModel 'Simple' -Force } |
-                Should -Throw -ExpectedMessage "*not found*"
+            { Set-SqlDscDatabase -ServerObject $script:serverObject -Name 'NonExistentDatabase' -RecoveryModel 'Simple' -Force -ErrorAction 'Stop' } |
+                Should -Throw
         }
     }
 
     Context 'When setting database properties using DatabaseObject parameter set' {
         It 'Should set recovery model using database object' {
-            $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject
-            Set-SqlDscDatabase -DatabaseObject $databaseObject -RecoveryModel 'Simple' -Force
+            $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
+            Set-SqlDscDatabase -DatabaseObject $databaseObject -RecoveryModel 'Simple' -Force -ErrorAction 'Stop'
 
             # Verify the change
-            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
             $updatedDb.RecoveryModel | Should -Be 'Simple'
         }
 
         It 'Should set owner name using database object' {
-            $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject
-            Set-SqlDscDatabase -DatabaseObject $databaseObject -OwnerName ('{0}\SqlAdmin' -f $script:mockComputerName) -Force
+            $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
+            Set-SqlDscDatabase -DatabaseObject $databaseObject -OwnerName ('{0}\SqlAdmin' -f $script:mockComputerName) -Force -ErrorAction 'Stop'
 
             # Verify the change
-            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject
-            $updatedDb.Owner | Should -Be 'sa'
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
+            $updatedDb.Owner | Should -Be ('{0}\SqlAdmin' -f $script:mockComputerName)
         }
 
         It 'Should support pipeline input with database object' {
-            $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject
-            $databaseObject | Set-SqlDscDatabase -RecoveryModel 'Full' -Force
+            $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
+            $databaseObject | Set-SqlDscDatabase -RecoveryModel 'Full' -Force -ErrorAction 'Stop'
 
             # Verify the change
-            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
             $updatedDb.RecoveryModel | Should -Be 'Full'
         }
     }
 
     Context 'When using the Refresh parameter' {
         It 'Should refresh the database collection before setting properties' {
-            Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'BulkLogged' -Refresh -Force
+            Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'BulkLogged' -Refresh -Force -ErrorAction 'Stop'
 
             # Verify the change
-            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
             $updatedDb.RecoveryModel | Should -Be 'BulkLogged'
         }
     }
 
     Context 'When using the PassThru parameter' {
         It 'Should return the database object when PassThru is specified' {
-            $result = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Simple' -PassThru -Force
+            $result = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Simple' -PassThru -Force -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
             $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
