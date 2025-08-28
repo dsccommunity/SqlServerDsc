@@ -204,6 +204,8 @@ class SqlAgentAlert : SqlResourceBase
                 Ensure = 'Absent'
             }
         }
+
+        Assert-BoundParameter @assertAbsentParams
     }
 
     hidden [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
