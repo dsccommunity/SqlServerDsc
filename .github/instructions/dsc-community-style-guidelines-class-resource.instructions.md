@@ -17,7 +17,7 @@ applyTo: "source/[cC]lasses/**/*.ps1"
 ## Required constructor
 
 ```powershell
-MyResourceName () : base ()
+MyResourceName () : base ($PSScriptRoot)
 {
     # Property names where state cannot be enforced, e.g. IsSingleInstance, Force
     $this.ExcludeDscProperties = @()
