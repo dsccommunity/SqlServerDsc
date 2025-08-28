@@ -7,6 +7,9 @@
         The `SqlAgentAlert` DSC resource is used to create, modify, or remove
         _SQL Server Agent_ alerts.
 
+        An alert can be switch between using system message and severity-based alerts by passing
+        the required parameter. It will switch the alert type accordingly.
+
         The built-in parameter **PSDscRunAsCredential** can be used to run the resource
         as another user. The resource will then authenticate to the _SQL Server_
         instance as that user. It also possible to instead use impersonation by the
@@ -125,12 +128,12 @@ class SqlAgentAlert : SqlResourceBase
     $Ensure = 'Present'
 
     [DscProperty()]
-    [ValidateRange(0, 25)]
+    [ValidateRange(1, 25)]
     [Nullable[System.Int32]]
     $Severity
 
     [DscProperty()]
-    [ValidateRange(0, 2147483647)]
+    [ValidateRange(1, 2147483647)]
     [Nullable[System.Int32]]
     $MessageId
 
