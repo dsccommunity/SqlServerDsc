@@ -196,24 +196,12 @@ class SqlAgentAlert : SqlResourceBase
 
         Assert-BoundParameter @assertMutuallyExclusiveParams
 
-        if ($properties.Ensure -eq 'Absent')
-        {
-            # When Ensure is 'Absent', Severity and MessageId must not be set
-            $assertAbsentParams = @{
-                BoundParameterList   = $properties
-                NotAllowedList       = @('Severity', 'MessageId')
-                IfEqualParameterList = @{
-                    Ensure = 'Absent'
-                }
-            }
-
-            Assert-BoundParameter @assertAbsentParams
-
-            if ($properties.ContainsKey('Severity') -or $properties.ContainsKey('MessageId'))
-            {
-                $errorMessage = $this.localizedData.SqlAgentAlert_SeverityOrMessageIdNotAllowedWhenAbsent
-
-                New-InvalidArgumentException -ArgumentName 'Severity, MessageId' -Message $errorMessage
+        # When Ensure is 'Absent', Severity and MessageId must not be set
+        $assertAbsentParams = @{
+            BoundParameterList   = $properties
+            NotAllowedList       = @('Severity', 'MessageId')
+            IfEqualParameterList = @{
+                Ensure = 'Absent'
             }
         }
     }
