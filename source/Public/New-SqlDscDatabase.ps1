@@ -96,6 +96,14 @@ function New-SqlDscDatabase
         $Refresh
     )
 
+    begin
+    {
+        if ($Force.IsPresent -and -not $Confirm)
+        {
+            $ConfirmPreference = 'None'
+        }
+    }
+
     process
     {
         if ($Refresh.IsPresent)
@@ -131,7 +139,7 @@ function New-SqlDscDatabase
             if ($CompatibilityLevel -notin $supportedCompatibilityLevels.$($ServerObject.VersionMajor))
             {
                 $errorMessage = $script:localizedData.Database_InvalidCompatibilityLevel -f $CompatibilityLevel, $ServerObject.InstanceName
-                New-ObjectNotFoundException -Message $errorMessage
+                New-InvalidArgumentException -ArgumentName 'CompatibilityLevel' -Message $errorMessage
             }
         }
 
@@ -141,7 +149,7 @@ function New-SqlDscDatabase
             if ($Collation -notin $ServerObject.EnumCollations().Name)
             {
                 $errorMessage = $script:localizedData.Database_InvalidCollation -f $Collation, $ServerObject.InstanceName
-                New-ObjectNotFoundException -Message $errorMessage
+                New-InvalidArgumentException -ArgumentName 'Collation' -Message $errorMessage
             }
         }
 
@@ -149,7 +157,7 @@ function New-SqlDscDatabase
         $verboseWarningMessage = $script:localizedData.Database_Create_ShouldProcessVerboseWarning -f $Name
         $captionMessage = $script:localizedData.Database_Create_ShouldProcessCaption
 
-        if ($Force.IsPresent -or $PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
             try
             {

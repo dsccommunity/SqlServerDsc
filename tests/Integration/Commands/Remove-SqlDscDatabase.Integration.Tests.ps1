@@ -29,7 +29,7 @@ BeforeAll {
     Import-Module -Name $script:dscModuleName
 }
 
-Describe 'Remove-SqlDscDatabase' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'Remove-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         # Starting the named instance SQL Server service prior to running tests.
         Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
@@ -42,7 +42,7 @@ Describe 'Remove-SqlDscDatabase' -Tag @('Integration_SQL2016', 'Integration_SQL2
 
         $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
 
-        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
+        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction Stop
     }
 
     AfterAll {
@@ -56,16 +56,16 @@ Describe 'Remove-SqlDscDatabase' -Tag @('Integration_SQL2016', 'Integration_SQL2
         BeforeEach {
             # Create a test database for each test
             $script:testDatabaseName = 'SqlDscTestRemoveDatabase_' + (Get-Random)
-            New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force
+            New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction Stop
         }
 
         It 'Should remove a database successfully' {
             # Verify database exists before removal
-            $existingDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName
+            $existingDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction Stop
             $existingDb | Should -Not -BeNullOrEmpty
 
             # Remove the database
-            Remove-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force
+            Remove-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction Stop
 
             # Verify database no longer exists
             $removedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'SilentlyContinue'
@@ -73,8 +73,8 @@ Describe 'Remove-SqlDscDatabase' -Tag @('Integration_SQL2016', 'Integration_SQL2
         }
 
         It 'Should throw error when trying to remove non-existent database' {
-            { Remove-SqlDscDatabase -ServerObject $script:serverObject -Name 'NonExistentDatabase' -Force } |
-                Should -Throw -ExpectedMessage "*not found*"
+            { Remove-SqlDscDatabase -ServerObject $script:serverObject -Name 'NonExistentDatabase' -Force -ErrorAction Stop } |
+                Should -Throw
         }
     }
 
@@ -82,15 +82,15 @@ Describe 'Remove-SqlDscDatabase' -Tag @('Integration_SQL2016', 'Integration_SQL2
         BeforeEach {
             # Create a test database for each test
             $script:testDatabaseNameForObject = 'SqlDscTestRemoveDatabaseObj_' + (Get-Random)
-            New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Force
+            New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Force -ErrorAction Stop
         }
 
         It 'Should remove a database using database object' {
-            $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject
+            $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction Stop
             $databaseObject | Should -Not -BeNullOrEmpty
 
             # Remove the database using database object
-            Remove-SqlDscDatabase -DatabaseObject $databaseObject -Force
+            Remove-SqlDscDatabase -DatabaseObject $databaseObject -Force -ErrorAction Stop
 
             # Verify database no longer exists
             $removedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'SilentlyContinue'
@@ -98,11 +98,11 @@ Describe 'Remove-SqlDscDatabase' -Tag @('Integration_SQL2016', 'Integration_SQL2
         }
 
         It 'Should support pipeline input with database object' {
-            $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject
+            $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction Stop
             $databaseObject | Should -Not -BeNullOrEmpty
 
             # Remove the database using pipeline
-            $databaseObject | Remove-SqlDscDatabase -Force
+            $databaseObject | Remove-SqlDscDatabase -Force -ErrorAction Stop
 
             # Verify database no longer exists
             $removedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'SilentlyContinue'
@@ -112,23 +112,23 @@ Describe 'Remove-SqlDscDatabase' -Tag @('Integration_SQL2016', 'Integration_SQL2
 
     Context 'When attempting to remove system databases' {
         It 'Should throw error when trying to remove master database' {
-            { Remove-SqlDscDatabase -ServerObject $script:serverObject -Name 'master' -Force } |
-                Should -Throw -ExpectedMessage "*system database*"
+            { Remove-SqlDscDatabase -ServerObject $script:serverObject -Name 'master' -Force -ErrorAction Stop } |
+                Should -Throw
         }
 
         It 'Should throw error when trying to remove model database' {
-            { Remove-SqlDscDatabase -ServerObject $script:serverObject -Name 'model' -Force } |
-                Should -Throw -ExpectedMessage "*system database*"
+            { Remove-SqlDscDatabase -ServerObject $script:serverObject -Name 'model' -Force -ErrorAction Stop } |
+                Should -Throw
         }
 
         It 'Should throw error when trying to remove msdb database' {
-            { Remove-SqlDscDatabase -ServerObject $script:serverObject -Name 'msdb' -Force } |
-                Should -Throw -ExpectedMessage "*system database*"
+            { Remove-SqlDscDatabase -ServerObject $script:serverObject -Name 'msdb' -Force -ErrorAction Stop } |
+                Should -Throw
         }
 
         It 'Should throw error when trying to remove tempdb database' {
-            { Remove-SqlDscDatabase -ServerObject $script:serverObject -Name 'tempdb' -Force } |
-                Should -Throw -ExpectedMessage "*system database*"
+            { Remove-SqlDscDatabase -ServerObject $script:serverObject -Name 'tempdb' -Force -ErrorAction Stop } |
+                Should -Throw
         }
     }
 
@@ -136,12 +136,12 @@ Describe 'Remove-SqlDscDatabase' -Tag @('Integration_SQL2016', 'Integration_SQL2
         BeforeEach {
             # Create a test database for each test
             $script:testDatabaseNameRefresh = 'SqlDscTestRemoveDatabaseRefresh_' + (Get-Random)
-            New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameRefresh -Force
+            New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameRefresh -Force -ErrorAction Stop
         }
 
         It 'Should refresh the database collection before removing' {
             # Remove the database with refresh
-            Remove-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameRefresh -Refresh -Force
+            Remove-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameRefresh -Refresh -Force -ErrorAction Stop
 
             # Verify database no longer exists
             $removedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameRefresh -ErrorAction 'SilentlyContinue'

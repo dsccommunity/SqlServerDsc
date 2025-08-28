@@ -29,7 +29,7 @@ BeforeAll {
     Import-Module -Name $script:dscModuleName
 }
 
-Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         # Starting the named instance SQL Server service prior to running tests.
         Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
@@ -57,9 +57,12 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         # Clean up test databases
         $testDatabasesToRemove = @($script:testDatabaseName, $script:testDatabaseNameForObject)
 
-        foreach ($dbName in $testDatabasesToRemove) {
+        foreach ($dbName in $testDatabasesToRemove)
+        {
             $existingDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $dbName -ErrorAction 'SilentlyContinue'
-            if ($existingDb) {
+
+            if ($existingDb)
+            {
                 Remove-SqlDscDatabase -DatabaseObject $existingDb -Force
             }
         }

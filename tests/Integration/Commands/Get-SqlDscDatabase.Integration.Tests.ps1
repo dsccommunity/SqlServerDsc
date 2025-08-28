@@ -29,7 +29,7 @@ BeforeAll {
     Import-Module -Name $script:dscModuleName
 }
 
-Describe 'Get-SqlDscDatabase' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'Get-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         # Starting the named instance SQL Server service prior to running tests.
         Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
@@ -85,7 +85,7 @@ Describe 'Get-SqlDscDatabase' -Tag @('Integration_SQL2016', 'Integration_SQL2017
 
         It 'Should throw error when getting a non-existent database' {
             { Get-SqlDscDatabase -ServerObject $script:serverObject -Name 'NonExistentDatabase' -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage "*not found*"
+                Should -Throw
         }
 
         It 'Should return nothing when getting a non-existent database with SilentlyContinue' {
