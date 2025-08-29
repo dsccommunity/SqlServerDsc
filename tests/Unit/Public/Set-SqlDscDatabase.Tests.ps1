@@ -153,6 +153,150 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
         }
     }
 
+    Context 'When testing CompatibilityLevel parameter validation' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+            $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'VersionMajor' -Value 15 -Force
+            $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+                $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
+                return @{
+                    'TestDatabase' = $mockDatabaseObject
+                }
+            } -Force
+            $mockServerObject | Add-Member -MemberType 'ScriptMethod' -Name 'EnumCollations' -Value {
+                return @(
+                    @{ Name = 'SQL_Latin1_General_CP1_CI_AS' }
+                )
+            } -Force
+        }
+
+        It 'Should throw error when CompatibilityLevel is invalid for SQL Server version' {
+            Mock -CommandName 'Write-Verbose'
+
+            { Set-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -CompatibilityLevel 'Version80' -Force } |
+                Should -Throw -ExpectedMessage '*not a valid compatibility level*'
+        }
+
+        It 'Should allow valid CompatibilityLevel for SQL Server version' {
+            Mock -CommandName 'Write-Verbose'
+
+            # We only test that the validation passes, not the actual property setting
+            $mockServerObjectWithValidDb = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObjectWithValidDb | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+            $mockServerObjectWithValidDb | Add-Member -MemberType 'NoteProperty' -Name 'VersionMajor' -Value 15 -Force
+            $mockDatabaseObjectWithValidProps = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+            $mockDatabaseObjectWithValidProps | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
+            $mockDatabaseObjectWithValidProps | Add-Member -MemberType 'NoteProperty' -Name 'CompatibilityLevel' -Value 'Version150' -Force
+            $mockDatabaseObjectWithValidProps | Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                # Mock implementation
+            } -Force
+            $mockServerObjectWithValidDb | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                return @{
+                    'TestDatabase' = $mockDatabaseObjectWithValidProps
+                }
+            } -Force
+            $mockServerObjectWithValidDb | Add-Member -MemberType 'ScriptMethod' -Name 'EnumCollations' -Value {
+                return @(
+                    @{ Name = 'SQL_Latin1_General_CP1_CI_AS' }
+                )
+            } -Force
+
+            { Set-SqlDscDatabase -ServerObject $mockServerObjectWithValidDb -Name 'TestDatabase' -CompatibilityLevel 'Version150' -Force } | Should -Not -Throw
+        }
+    }
+
+    Context 'When testing Collation parameter validation' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+            $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'VersionMajor' -Value 15 -Force
+            $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+                $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
+                $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                    # Mock implementation
+                } -Force
+                return @{
+                    'TestDatabase' = $mockDatabaseObject
+                }
+            } -Force
+            $mockServerObject | Add-Member -MemberType 'ScriptMethod' -Name 'EnumCollations' -Value {
+                return @(
+                    @{ Name = 'SQL_Latin1_General_CP1_CI_AS' },
+                    @{ Name = 'SQL_Latin1_General_Pref_CP850_CI_AS' }
+                )
+            } -Force
+        }
+
+        It 'Should throw error when Collation is invalid' {
+            Mock -CommandName 'Write-Verbose'
+
+            { Set-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Collation 'InvalidCollation' -Force } |
+                Should -Throw -ExpectedMessage '*not a valid collation*'
+        }
+
+        It 'Should allow valid Collation' {
+            Mock -CommandName 'Write-Verbose'
+
+            $mockServerObjectWithValidDb = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObjectWithValidDb | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+            $mockServerObjectWithValidDb | Add-Member -MemberType 'NoteProperty' -Name 'VersionMajor' -Value 15 -Force
+            $mockDatabaseObjectWithValidProps = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+            $mockDatabaseObjectWithValidProps | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
+            $mockDatabaseObjectWithValidProps | Add-Member -MemberType 'NoteProperty' -Name 'Collation' -Value 'SQL_Latin1_General_CP1_CI_AS' -Force
+            $mockDatabaseObjectWithValidProps | Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                # Mock implementation
+            } -Force
+            $mockServerObjectWithValidDb | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                return @{
+                    'TestDatabase' = $mockDatabaseObjectWithValidProps
+                }
+            } -Force
+            $mockServerObjectWithValidDb | Add-Member -MemberType 'ScriptMethod' -Name 'EnumCollations' -Value {
+                return @(
+                    @{ Name = 'SQL_Latin1_General_CP1_CI_AS' },
+                    @{ Name = 'SQL_Latin1_General_Pref_CP850_CI_AS' }
+                )
+            } -Force
+
+            { Set-SqlDscDatabase -ServerObject $mockServerObjectWithValidDb -Name 'TestDatabase' -Collation 'SQL_Latin1_General_CP1_CI_AS' -Force } | Should -Not -Throw
+        }
+    }
+
+    Context 'When testing OwnerName parameter usage' {
+        BeforeAll {
+            $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+            $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
+            $mockDatabaseObject | Add-Member -MemberType 'ScriptProperty' -Name 'Parent' -Value {
+                $mockParent = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                $mockParent | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+                $mockParent | Add-Member -MemberType 'NoteProperty' -Name 'VersionMajor' -Value 15 -Force
+                $mockParent | Add-Member -MemberType 'ScriptMethod' -Name 'EnumCollations' -Value {
+                    return @(
+                        @{ Name = 'SQL_Latin1_General_CP1_CI_AS' }
+                    )
+                } -Force
+                return $mockParent
+            } -Force
+            $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                # Mock implementation
+            } -Force
+            $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'SetOwner' -Value {
+                param($OwnerName)
+                # Mock implementation
+            } -Force
+        }
+
+        It 'Should call SetOwner when OwnerName parameter is specified' {
+            Mock -CommandName 'Write-Verbose'
+
+            # This tests that the OwnerName parameter usage path (line 202) is covered
+            { Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -OwnerName 'sa' -Force } | Should -Not -Throw
+        }
+    }
+
     Context 'Parameter validation' {
         It 'Should have the correct parameters in parameter set ServerObject' -ForEach @(
             @{

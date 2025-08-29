@@ -115,6 +115,21 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
 
             { Remove-SqlDscDatabase -DatabaseObject $mockDatabaseObject -Force } | Should -Not -Throw
         }
+
+        It 'Should throw error when trying to remove system database using DatabaseObject' {
+            $mockSystemDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+            $mockSystemDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'master' -Force
+            $mockSystemDatabaseObject | Add-Member -MemberType 'ScriptProperty' -Name 'Parent' -Value {
+                $mockParent = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                $mockParent | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+                return $mockParent
+            } -Force
+
+            Mock -CommandName 'Write-Verbose'
+
+            { Remove-SqlDscDatabase -DatabaseObject $mockSystemDatabaseObject -Force } |
+                Should -Throw -ExpectedMessage '*Cannot remove system database*'
+        }
     }
 
     Context 'Parameter validation' {

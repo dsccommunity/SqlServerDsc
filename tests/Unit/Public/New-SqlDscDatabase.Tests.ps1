@@ -120,6 +120,37 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
         }
     }
 
+    Context 'When testing parameter validation errors' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+            $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'VersionMajor' -Value 15 -Force
+            $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                return @{}
+            } -Force
+            $mockServerObject | Add-Member -MemberType 'ScriptMethod' -Name 'EnumCollations' -Value {
+                return @(
+                    @{ Name = 'SQL_Latin1_General_CP1_CI_AS' },
+                    @{ Name = 'SQL_Latin1_General_Pref_CP850_CI_AS' }
+                )
+            } -Force
+        }
+
+        It 'Should throw error when CompatibilityLevel is invalid for SQL Server version' {
+            Mock -CommandName 'Write-Verbose'
+
+            { New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDB' -CompatibilityLevel 'Version80' -Force } |
+                Should -Throw -ExpectedMessage '*not a valid compatibility level*'
+        }
+
+        It 'Should throw error when Collation is invalid' {
+            Mock -CommandName 'Write-Verbose'
+
+            { New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDB' -Collation 'InvalidCollation' -Force } |
+                Should -Throw -ExpectedMessage '*not a valid collation*'
+        }
+    }
+
     Context 'Parameter validation' {
         It 'Should have the correct parameters in parameter set __AllParameterSets' -ForEach @(
             @{
