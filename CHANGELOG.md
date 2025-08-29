@@ -42,6 +42,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `Get-SqlDscAgentAlert`, `New-SqlDscAgentAlert`,
   `Set-SqlDscAgentAlert`, `Remove-SqlDscAgentAlert`, and `Test-SqlDscAgentAlert`
   to manage SQL Agent alerts on a Database Engine instance.
+- Added new public commands for database management:
+  - `Get-SqlDscDatabase` - Get databases from a SQL Server Database Engine instance
+  - `New-SqlDscDatabase` - Create a new database with specified properties
+  - `Set-SqlDscDatabase` - Modify properties of an existing database
+  - `Remove-SqlDscDatabase` - Remove a database from SQL Server instance
+  - `Test-SqlDscDatabase` - Test if a database is in the desired state
+  - All commands support pipeline input with ServerObject and follow established patterns
+  - Database objects can also be used as pipeline input for Set and Remove operations
+  - Commands include comprehensive validation, localization, and ShouldProcess support
 
 ### Changed
 
