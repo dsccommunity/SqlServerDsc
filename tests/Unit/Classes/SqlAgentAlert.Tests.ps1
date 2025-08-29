@@ -311,6 +311,128 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
         }
     }
 
+    Context 'When testing the hidden method Modify()' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            }
+
+            Mock -CommandName 'New-SqlDscAgentAlert'
+            Mock -CommandName 'Remove-SqlDscAgentAlert'
+            Mock -CommandName 'Set-SqlDscAgentAlert'
+        }
+
+        Context 'When Ensure is Present and alert exists' {
+            It 'Should update alert when Severity property differs' {
+                InModuleScope -ScriptBlock {
+                    Mock -CommandName 'Get-SqlDscAgentAlert' -MockWith {
+                        $mockAlertObject = New-Object -TypeName 'PSCustomObject'
+                        $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestAlert'
+                        $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Severity' -Value 10
+                        $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'MessageId' -Value 0
+
+                        return $mockAlertObject
+                    }
+
+                    $instance = [SqlAgentAlert] @{
+                        Name         = 'TestAlert'
+                        InstanceName = 'MSSQLSERVER'
+                        Ensure       = 'Present'
+                        Severity     = 16
+                    } |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
+                            return $script:mockServerObject
+                        } -PassThru
+
+                    $properties = @{
+                        Severity = 16
+                    }
+
+                    { $instance.Modify($properties) } | Should -Not -Throw
+
+                    Should -Invoke -CommandName 'Get-SqlDscAgentAlert' -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName 'Set-SqlDscAgentAlert' -ParameterFilter {
+                        $AlertObject.Name -eq 'TestAlert' -and
+                        $Severity -eq 16
+                    } -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName 'New-SqlDscAgentAlert' -Exactly -Times 0 -Scope It
+                    Should -Invoke -CommandName 'Remove-SqlDscAgentAlert' -Exactly -Times 0 -Scope It
+                }
+            }
+
+            It 'Should update alert when MessageId property differs' {
+                InModuleScope -ScriptBlock {
+                    Mock -CommandName 'Get-SqlDscAgentAlert' -MockWith {
+                        $mockAlertObject = New-Object -TypeName 'PSCustomObject'
+                        $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestAlert'
+                        $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Severity' -Value 0
+                        $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'MessageId' -Value 50001
+
+                        return $mockAlertObject
+                    }
+
+                    $instance = [SqlAgentAlert] @{
+                        Name         = 'TestAlert'
+                        InstanceName = 'MSSQLSERVER'
+                        Ensure       = 'Present'
+                        MessageId    = 50002
+                    } |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
+                            return $script:mockServerObject
+                        } -PassThru
+
+                    $properties = @{
+                        MessageId = 50002
+                    }
+
+                    { $instance.Modify($properties) } | Should -Not -Throw
+
+                    Should -Invoke -CommandName 'Get-SqlDscAgentAlert' -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName 'Set-SqlDscAgentAlert' -ParameterFilter {
+                        $AlertObject.Name -eq 'TestAlert' -and
+                        $MessageId -eq 50002
+                    } -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName 'New-SqlDscAgentAlert' -Exactly -Times 0 -Scope It
+                    Should -Invoke -CommandName 'Remove-SqlDscAgentAlert' -Exactly -Times 0 -Scope It
+                }
+            }
+
+            It 'Should not update alert when no properties differ' {
+                InModuleScope -ScriptBlock {
+                    Mock -CommandName 'Get-SqlDscAgentAlert' -MockWith {
+                        $mockAlertObject = New-Object -TypeName 'PSCustomObject'
+                        $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestAlert'
+                        $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Severity' -Value 16
+                        $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'MessageId' -Value 0
+
+                        return $mockAlertObject
+                    }
+
+                    $instance = [SqlAgentAlert] @{
+                        Name         = 'TestAlert'
+                        InstanceName = 'MSSQLSERVER'
+                        Ensure       = 'Present'
+                        Severity     = 16
+                    } |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
+                            return $script:mockServerObject
+                        } -PassThru
+
+                    $properties = @{
+                        Severity = 16
+                    }
+
+                    { $instance.Modify($properties) } | Should -Not -Throw
+
+                    Should -Invoke -CommandName 'Get-SqlDscAgentAlert' -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName 'Set-SqlDscAgentAlert' -Exactly -Times 0 -Scope It
+                    Should -Invoke -CommandName 'New-SqlDscAgentAlert' -Exactly -Times 0 -Scope It
+                    Should -Invoke -CommandName 'Remove-SqlDscAgentAlert' -Exactly -Times 0 -Scope It
+                }
+            }
+        }
+    }
+
     Context 'When passing mutually exclusive parameters' {
         Context 'When passing both Severity and MessageId' {
             BeforeAll {
