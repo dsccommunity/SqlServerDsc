@@ -56,7 +56,7 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
     Context 'When using the constructor' {
         It 'Should not throw an exception' {
             InModuleScope -ScriptBlock {
-                { [SqlAgentAlert]::new() } | Should -Not -Throw
+                $null = [SqlAgentAlert]::new()
             }
         }
 
@@ -263,7 +263,7 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
                             return $script:mockServerObject
                         } -PassThru
 
-                    { $instance.Set() } | Should -Not -Throw
+                    $null = $instance.Set()
 
                     Should -Invoke -CommandName 'New-SqlDscAgentAlert' -Exactly -Times 1 -Scope It
                     Should -Invoke -CommandName 'Remove-SqlDscAgentAlert' -Exactly -Times 0 -Scope It
@@ -300,7 +300,7 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
                             return $script:mockServerObject
                         } -PassThru
 
-                    { $instance.Set() } | Should -Not -Throw
+                    $null = $instance.Set()
 
                     Should -Invoke -CommandName 'New-SqlDscAgentAlert' -Exactly -Times 0 -Scope It
                     Should -Invoke -CommandName 'Remove-SqlDscAgentAlert' -Exactly -Times 1 -Scope It
@@ -346,7 +346,7 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
                         Severity = 16
                     }
 
-                    { $instance.Modify($properties) } | Should -Not -Throw
+                    $null = $instance.Modify($properties)
 
                     Should -Invoke -CommandName 'Get-SqlDscAgentAlert' -Exactly -Times 1 -Scope It
                     Should -Invoke -CommandName 'Set-SqlDscAgentAlert' -ParameterFilter {
@@ -383,7 +383,7 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
                         MessageId = 50002
                     }
 
-                    { $instance.Modify($properties) } | Should -Not -Throw
+                    $null = $instance.Modify($properties)
 
                     Should -Invoke -CommandName 'Get-SqlDscAgentAlert' -Exactly -Times 1 -Scope It
                     Should -Invoke -CommandName 'Set-SqlDscAgentAlert' -ParameterFilter {
@@ -420,7 +420,7 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
                         Severity = 16
                     }
 
-                    { $instance.Modify($properties) } | Should -Not -Throw
+                    $null = $instance.Modify($properties)
 
                     Should -Invoke -CommandName 'Get-SqlDscAgentAlert' -Exactly -Times 1 -Scope It
                     Should -Invoke -CommandName 'Set-SqlDscAgentAlert' -Exactly -Times 0 -Scope It
@@ -482,7 +482,7 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
                             Severity = 16
                         }
 
-                        { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Not -Throw
+                        $null = $script:mockSqlAgentAlertInstance.AssertProperties($properties)
                     }
                 }
 
@@ -494,7 +494,7 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
                             MessageId = 50001
                         }
 
-                        { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Not -Throw
+                        $null = $script:mockSqlAgentAlertInstance.AssertProperties($properties)
                     }
                 }
             }
@@ -507,7 +507,7 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
                             Ensure = 'Absent'
                         }
 
-                        { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Not -Throw
+                        $null = $script:mockSqlAgentAlertInstance.AssertProperties($properties)
                     }
                 }
             }
@@ -578,7 +578,7 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
                             Severity = 16
                         }
 
-                        { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Not -Throw
+                        $null = $script:mockSqlAgentAlertInstance.AssertProperties($properties)
 
                         Should -Invoke -CommandName 'Assert-BoundParameter' -ParameterFilter {
                             $BoundParameterList -is [hashtable] -and
@@ -599,7 +599,7 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
                             Severity = 16
                         }
 
-                        { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Not -Throw
+                        $null = $script:mockSqlAgentAlertInstance.AssertProperties($properties)
 
                         Should -Invoke -CommandName 'Assert-BoundParameter' -ParameterFilter {
                             $BoundParameterList -is [hashtable] -and
@@ -621,7 +621,7 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
                             Ensure = 'Absent'
                         }
 
-                        { $script:mockSqlAgentAlertInstance.AssertProperties($properties) } | Should -Not -Throw
+                        $null = $script:mockSqlAgentAlertInstance.AssertProperties($properties)
 
                         Should -Invoke -CommandName 'Assert-BoundParameter' -ParameterFilter {
                             $BoundParameterList -is [hashtable] -and
