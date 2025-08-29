@@ -49,8 +49,8 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         $script:testDatabaseNameForObject = 'SqlDscTestSetDatabaseObj_' + (Get-Random)
 
         # Create test databases
-        New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction 'Stop'
-        New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Force -ErrorAction 'Stop'
+        $null = New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction 'Stop'
+        $null = New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Force -ErrorAction 'Stop'
     }
 
     AfterAll {
@@ -63,7 +63,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             if ($existingDb)
             {
-                Remove-SqlDscDatabase -DatabaseObject $existingDb -Force
+                Remove-SqlDscDatabase -DatabaseObject $existingDb -Force -ErrorAction 'Stop'
             }
         }
 
@@ -75,7 +75,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
     Context 'When setting database properties using ServerObject parameter set' {
         It 'Should set recovery model successfully' {
-            Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Simple' -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Simple' -Force -ErrorAction 'Stop'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName
@@ -83,7 +83,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         }
 
         It 'Should set owner name successfully' {
-            Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -OwnerName ('{0}\SqlAdmin' -f $script:mockComputerName) -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -OwnerName ('{0}\SqlAdmin' -f $script:mockComputerName) -Force -ErrorAction 'Stop'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
@@ -91,7 +91,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         }
 
         It 'Should set multiple properties successfully' {
-            Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Full' -OwnerName ('{0}\SqlAdmin' -f $script:mockComputerName) -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Full' -OwnerName ('{0}\SqlAdmin' -f $script:mockComputerName) -Force -ErrorAction 'Stop'
 
             # Verify the changes
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
@@ -108,7 +108,8 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
     Context 'When setting database properties using DatabaseObject parameter set' {
         It 'Should set recovery model using database object' {
             $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
-            Set-SqlDscDatabase -DatabaseObject $databaseObject -RecoveryModel 'Simple' -Force -ErrorAction 'Stop'
+
+            $null = Set-SqlDscDatabase -DatabaseObject $databaseObject -RecoveryModel 'Simple' -Force -ErrorAction 'Stop'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
@@ -117,7 +118,8 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
         It 'Should set owner name using database object' {
             $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
-            Set-SqlDscDatabase -DatabaseObject $databaseObject -OwnerName ('{0}\SqlAdmin' -f $script:mockComputerName) -Force -ErrorAction 'Stop'
+
+            $null = Set-SqlDscDatabase -DatabaseObject $databaseObject -OwnerName ('{0}\SqlAdmin' -f $script:mockComputerName) -Force -ErrorAction 'Stop'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
@@ -126,7 +128,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
         It 'Should support pipeline input with database object' {
             $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
-            $databaseObject | Set-SqlDscDatabase -RecoveryModel 'Full' -Force -ErrorAction 'Stop'
+            $null = $databaseObject | Set-SqlDscDatabase -RecoveryModel 'Full' -Force -ErrorAction 'Stop'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
@@ -136,7 +138,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
     Context 'When using the Refresh parameter' {
         It 'Should refresh the database collection before setting properties' {
-            Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'BulkLogged' -Refresh -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'BulkLogged' -Refresh -Force -ErrorAction 'Stop'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
