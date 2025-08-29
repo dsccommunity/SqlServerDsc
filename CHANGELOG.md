@@ -63,8 +63,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SqlAgentAlert`
   - Added additional unit tests covering MessageId-based alerts, the hidden
     `Modify()` method behavior, and `AssertProperties()` validation scenarios.
-  - Minor fix in `source/Classes/020.SqlAgentAlert.ps1` to correct `ExcludeDscProperties`
-    formatting (added missing delimiter).
 - Module now outputs a verbose message instead of a warning when the SMO
   dependency module is missing during import to work around a DSC v3 issue.
 - VS Code tasks configuration was improved to support AI.
