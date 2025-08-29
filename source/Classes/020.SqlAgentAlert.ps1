@@ -144,7 +144,7 @@ class SqlAgentAlert : SqlResourceBase
         $this.ExcludeDscProperties = @(
             'InstanceName',
             'ServerName',
-            'Credential'
+            'Credential',
             'Name'
         )
     }
@@ -173,39 +173,35 @@ class SqlAgentAlert : SqlResourceBase
 
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
-        # Validate that at least one of Severity or MessageId is specified
-        $assertAtLeastOneParams = @{
-            BoundParameterList   = $properties
-            AtLeastOneList       = @('Severity', 'MessageId')
-            IfEqualParameterList = @{
-                Ensure = 'Present'
+        # Only validate parameters if Ensure is Present
+        if ($properties.ContainsKey('Ensure') -and $properties.Ensure -eq 'Present')
+        {
+            # Validate that at least one of Severity or MessageId is specified
+            if (-not ($properties.ContainsKey('Severity') -or $properties.ContainsKey('MessageId')))
+            {
+                $errorMessage = "At least one of the parameters 'Severity' or 'MessageId' must be specified when 'Ensure' is set to 'Present'."
+                New-InvalidArgumentException -ArgumentName 'Parameters' -Message $errorMessage
             }
-        }
 
-        Assert-BoundParameter @assertAtLeastOneParams
-
-        # Validate that both Severity and MessageId are not specified
-        $assertMutuallyExclusiveParams = @{
-            BoundParameterList       = $properties
-            MutuallyExclusiveList1   = @('Severity')
-            MutuallyExclusiveList2   = @('MessageId')
-            IfEqualParameterList     = @{
-                Ensure = 'Present'
+            # Validate that both Severity and MessageId are not specified at the same time
+            $mutuallyExclusiveParams = @{
+                BoundParameterList     = $properties
+                MutuallyExclusiveList1 = @('Severity')
+                MutuallyExclusiveList2 = @('MessageId')
             }
-        }
 
-        Assert-BoundParameter @assertMutuallyExclusiveParams
+            Assert-BoundParameter @mutuallyExclusiveParams
+        }
 
         # When Ensure is 'Absent', Severity and MessageId must not be set
-        $assertAbsentParams = @{
-            BoundParameterList   = $properties
-            NotAllowedList       = @('Severity', 'MessageId')
-            IfEqualParameterList = @{
-                Ensure = 'Absent'
+        if ($properties.ContainsKey('Ensure') -and $properties.Ensure -eq 'Absent')
+        {
+            if ($properties.ContainsKey('Severity') -or $properties.ContainsKey('MessageId'))
+            {
+                $errorMessage = "The parameters 'Severity' and 'MessageId' cannot be used when 'Ensure' is set to 'Absent'."
+                New-InvalidArgumentException -ArgumentName 'Parameters' -Message $errorMessage
             }
         }
-
-        Assert-BoundParameter @assertAbsentParams
     }
 
     hidden [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
