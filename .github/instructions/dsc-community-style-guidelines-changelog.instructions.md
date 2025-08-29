@@ -8,6 +8,6 @@ applyTo: "CHANGELOG.md"
 - Always update the Unreleased section in CHANGELOG.md
 - Use Keep a Changelog format
 - Describe notable changes briefly, ≤2 items per change type
-- Reference issues using format [#<issue_number>](https://github.com/<owner>/<repo>/issues/<issue_number>)
+- Reference issues using format [issue #<issue_number>](https://github.com/<owner>/<repo>/issues/<issue_number>)
 - No empty lines between list items in same section
 - Do not add item if there are already an existing item for the same change

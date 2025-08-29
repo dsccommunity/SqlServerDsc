@@ -11,10 +11,9 @@ applyTo: "**"
 - **Resource**: DSC class-based resource
 
 ## Build & Test Workflow
-- Run project scripts in PowerShell from repository root
-- Build after source changes: `.\build.ps1 -Tasks build`
-- Test workflow: Build → `Invoke-Pester -Path @('<test paths>') -Output Detailed`
-- New session required after class changes
+- Run in PowerShell, from repository root
+- Build before running tests: `.\build.ps1 -Tasks build`
+- Always run tests in new PowerShell session: `Invoke-Pester -Path @({test paths}) -Output Detailed`
 
 ## File Organization
 - Public commands: `source/Public/{CommandName}.ps1`

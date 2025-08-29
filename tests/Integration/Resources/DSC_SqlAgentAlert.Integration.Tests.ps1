@@ -57,6 +57,7 @@ Describe "<dscResourceFriendlyName>_Integration" -Tag @('Integration_SQL2016', '
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_Add_Config"
+        "$($script:dscResourceName)_ChangeToMessageId_Config"
     ) {
         BeforeAll {
             $configurationName = $_
@@ -103,7 +104,15 @@ Describe "<dscResourceFriendlyName>_Integration" -Tag @('Integration_SQL2016', '
 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.Name
-            $resourceCurrentState.Severity | Should -Be $ConfigurationData.AllNodes.Severity
+            
+            if ($configurationName -eq "$($script:dscResourceName)_Add_Config")
+            {
+                $resourceCurrentState.Severity | Should -Be $ConfigurationData.AllNodes.Severity
+            }
+            elseif ($configurationName -eq "$($script:dscResourceName)_ChangeToMessageId_Config")
+            {
+                $resourceCurrentState.MessageId | Should -Be $ConfigurationData.AllNodes.MessageId
+            }
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -158,7 +167,7 @@ Describe "<dscResourceFriendlyName>_Integration" -Tag @('Integration_SQL2016', '
             }
 
             $resourceCurrentState.Ensure | Should -Be 'Absent'
-            $resourceCurrentState.Name | Should -BeNullOrEmpty
+            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.Name
             $resourceCurrentState.Severity | Should -BeNullOrEmpty
         }
 
