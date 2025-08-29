@@ -63,7 +63,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             if ($existingDb)
             {
-                Remove-SqlDscDatabase -DatabaseObject $existingDb -Force -ErrorAction 'Stop'
+                $null = Remove-SqlDscDatabase -DatabaseObject $existingDb -Force -ErrorAction 'Stop'
             }
         }
 

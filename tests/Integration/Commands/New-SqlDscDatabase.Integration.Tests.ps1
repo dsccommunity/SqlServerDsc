@@ -26,7 +26,7 @@ BeforeDiscovery {
 BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
 
-    Import-Module -Name $script:dscModuleName
+    Import-Module -Name $script:dscModuleName  -Force -ErrorAction 'Stop'
 }
 
 Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
@@ -59,7 +59,7 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             if ($existingDb)
             {
-                Remove-SqlDscDatabase -DatabaseObject $existingDb -Force
+                $null = Remove-SqlDscDatabase -DatabaseObject $existingDb -Force -ErrorAction 'Stop'
             }
         }
 
@@ -118,7 +118,7 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
                 $dbToRemove = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $uniqueName -ErrorAction 'SilentlyContinue'
                 if ($dbToRemove)
                 {
-                    Remove-SqlDscDatabase -DatabaseObject $dbToRemove -Force
+                    $null = Remove-SqlDscDatabase -DatabaseObject $dbToRemove -Force
                 }
             }
         }
