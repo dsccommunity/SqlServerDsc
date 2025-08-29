@@ -96,14 +96,10 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should modify database properties successfully' {
-            Mock -CommandName 'Write-Verbose'
-
-            { Set-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -RecoveryModel 'Simple' -Force } | Should -Not -Throw
+            $null = Set-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -RecoveryModel 'Simple' -Force
         }
 
         It 'Should return database object when PassThru is specified' {
-            Mock -CommandName 'Write-Verbose'
-
             $result = Set-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -RecoveryModel 'Simple' -Force -PassThru
 
             $result | Should -Not -BeNullOrEmpty
@@ -111,8 +107,6 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should throw error when database does not exist' {
-            Mock -CommandName 'Write-Verbose'
-
             { Set-SqlDscDatabase -ServerObject $mockServerObject -Name 'NonExistentDatabase' -RecoveryModel 'Simple' -Force } |
                 Should -Throw -ExpectedMessage '*not found*'
         }
@@ -147,9 +141,7 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should modify database using database object' {
-            Mock -CommandName 'Write-Verbose'
-
-            { Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -Force } | Should -Not -Throw
+            $null = Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -Force
         }
     }
 
@@ -173,15 +165,11 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should throw error when CompatibilityLevel is invalid for SQL Server version' {
-            Mock -CommandName 'Write-Verbose'
-
             { Set-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -CompatibilityLevel 'Version80' -Force } |
                 Should -Throw -ExpectedMessage '*not a valid compatibility level*'
         }
 
         It 'Should allow valid CompatibilityLevel for SQL Server version' {
-            Mock -CommandName 'Write-Verbose'
-
             # We only test that the validation passes, not the actual property setting
             $mockServerObjectWithValidDb = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObjectWithValidDb | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
@@ -203,7 +191,7 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
                 )
             } -Force
 
-            { Set-SqlDscDatabase -ServerObject $mockServerObjectWithValidDb -Name 'TestDatabase' -CompatibilityLevel 'Version150' -Force } | Should -Not -Throw
+            $null = Set-SqlDscDatabase -ServerObject $mockServerObjectWithValidDb -Name 'TestDatabase' -CompatibilityLevel 'Version150' -Force
         }
     }
 
@@ -231,15 +219,11 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should throw error when Collation is invalid' {
-            Mock -CommandName 'Write-Verbose'
-
             { Set-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Collation 'InvalidCollation' -Force } |
                 Should -Throw -ExpectedMessage '*not a valid collation*'
         }
 
         It 'Should allow valid Collation' {
-            Mock -CommandName 'Write-Verbose'
-
             $mockServerObjectWithValidDb = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObjectWithValidDb | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
             $mockServerObjectWithValidDb | Add-Member -MemberType 'NoteProperty' -Name 'VersionMajor' -Value 15 -Force
@@ -261,7 +245,7 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
                 )
             } -Force
 
-            { Set-SqlDscDatabase -ServerObject $mockServerObjectWithValidDb -Name 'TestDatabase' -Collation 'SQL_Latin1_General_CP1_CI_AS' -Force } | Should -Not -Throw
+            $null = Set-SqlDscDatabase -ServerObject $mockServerObjectWithValidDb -Name 'TestDatabase' -Collation 'SQL_Latin1_General_CP1_CI_AS' -Force
         }
     }
 
@@ -290,10 +274,8 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should call SetOwner when OwnerName parameter is specified' {
-            Mock -CommandName 'Write-Verbose'
-
             # This tests that the OwnerName parameter usage path (line 202) is covered
-            { Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -OwnerName 'sa' -Force } | Should -Not -Throw
+            $null = Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -OwnerName 'sa' -Force
         }
     }
 

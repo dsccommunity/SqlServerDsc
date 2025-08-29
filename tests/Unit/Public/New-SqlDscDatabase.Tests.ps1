@@ -85,8 +85,6 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should create a database successfully with minimal parameters' {
-            Mock -CommandName 'Write-Verbose'
-
             $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force
 
             $result | Should -Not -BeNullOrEmpty
@@ -95,8 +93,6 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should create a database with specified properties' {
-            Mock -CommandName 'Write-Verbose'
-
             $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase2' -Collation 'SQL_Latin1_General_CP1_CI_AS' -RecoveryModel 'Simple' -CompatibilityLevel 'Version150' -OwnerName 'sa' -Force
 
             $result | Should -Not -BeNullOrEmpty
@@ -137,15 +133,11 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should throw error when CompatibilityLevel is invalid for SQL Server version' {
-            Mock -CommandName 'Write-Verbose'
-
             { New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDB' -CompatibilityLevel 'Version80' -Force } |
                 Should -Throw -ExpectedMessage '*not a valid compatibility level*'
         }
 
         It 'Should throw error when Collation is invalid' {
-            Mock -CommandName 'Write-Verbose'
-
             { New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDB' -Collation 'InvalidCollation' -Force } |
                 Should -Throw -ExpectedMessage '*not a valid collation*'
         }

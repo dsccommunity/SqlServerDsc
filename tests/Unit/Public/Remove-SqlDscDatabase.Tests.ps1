@@ -76,21 +76,15 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should remove database successfully' {
-            Mock -CommandName 'Write-Verbose'
-
-            { Remove-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force } | Should -Not -Throw
+            $null = Remove-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force
         }
 
         It 'Should throw error when database does not exist' {
-            Mock -CommandName 'Write-Verbose'
-
             { Remove-SqlDscDatabase -ServerObject $mockServerObject -Name 'NonExistentDatabase' -Force } |
                 Should -Throw -ExpectedMessage '*not found*'
         }
 
         It 'Should throw error when trying to remove system database' {
-            Mock -CommandName 'Write-Verbose'
-
             { Remove-SqlDscDatabase -ServerObject $mockServerObject -Name 'master' -Force } |
                 Should -Throw -ExpectedMessage '*Cannot remove system database*'
         }
@@ -111,9 +105,7 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should remove database successfully using database object' {
-            Mock -CommandName 'Write-Verbose'
-
-            { Remove-SqlDscDatabase -DatabaseObject $mockDatabaseObject -Force } | Should -Not -Throw
+            $null = Remove-SqlDscDatabase -DatabaseObject $mockDatabaseObject -Force
         }
 
         It 'Should throw error when trying to remove system database using DatabaseObject' {
@@ -124,8 +116,6 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
                 $mockParent | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
                 return $mockParent
             } -Force
-
-            Mock -CommandName 'Write-Verbose'
 
             { Remove-SqlDscDatabase -DatabaseObject $mockSystemDatabaseObject -Force } |
                 Should -Throw -ExpectedMessage '*Cannot remove system database*'

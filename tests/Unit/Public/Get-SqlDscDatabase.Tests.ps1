@@ -66,8 +66,6 @@ Describe 'Get-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should return all databases when no Name parameter is specified' {
-            Mock -CommandName 'Write-Verbose'
-
             $result = Get-SqlDscDatabase -ServerObject $mockServerObject
 
             $result | Should -HaveCount 2
@@ -76,8 +74,6 @@ Describe 'Get-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should call Refresh when Refresh parameter is specified' {
-            Mock -CommandName 'Write-Verbose'
-            
             $script:refreshCalled = $false
             $mockServerObjectWithRefresh = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObjectWithRefresh | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
@@ -112,8 +108,6 @@ Describe 'Get-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should return the specified database when it exists' {
-            Mock -CommandName 'Write-Verbose'
-
             $result = Get-SqlDscDatabase -ServerObject $mockServerObject -Name 'master'
 
             $result | Should -Not -BeNullOrEmpty
@@ -121,8 +115,6 @@ Describe 'Get-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should throw the correct error when the specified database does not exist' {
-            Mock -CommandName 'Write-Verbose'
-
             # Test the exact error message first
             $expectedMessage = 'Database ''NonExistentDatabase'' was not found.'
 
@@ -131,8 +123,6 @@ Describe 'Get-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should return empty result when ignoring the error' {
-            Mock -CommandName 'Write-Verbose'
-
             $result = Get-SqlDscDatabase -ServerObject $mockServerObject -Name 'NonExistentDatabase' -ErrorAction 'SilentlyContinue'
 
             $result | Should -BeNullOrEmpty

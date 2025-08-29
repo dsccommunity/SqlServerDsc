@@ -71,7 +71,6 @@ Describe 'Test-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should return true when database exists and Ensure is Present' {
-            Mock -CommandName 'Write-Verbose'
 
             $result = Test-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Ensure 'Present'
 
@@ -79,7 +78,6 @@ Describe 'Test-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should return false when database does not exist and Ensure is Present' {
-            Mock -CommandName 'Write-Verbose'
 
             $result = Test-SqlDscDatabase -ServerObject $mockServerObject -Name 'NonExistentDatabase' -Ensure 'Present'
 
@@ -87,7 +85,6 @@ Describe 'Test-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should return false when database exists and Ensure is Absent' {
-            Mock -CommandName 'Write-Verbose'
 
             $result = Test-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Ensure 'Absent'
 
@@ -95,7 +92,6 @@ Describe 'Test-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should return true when database does not exist and Ensure is Absent' {
-            Mock -CommandName 'Write-Verbose'
 
             $result = Test-SqlDscDatabase -ServerObject $mockServerObject -Name 'NonExistentDatabase' -Ensure 'Absent'
 
@@ -124,7 +120,6 @@ Describe 'Test-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should return true when all properties match' {
-            Mock -CommandName 'Write-Verbose'
 
             $result = Test-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Ensure 'Present' -Collation 'SQL_Latin1_General_CP1_CI_AS' -CompatibilityLevel 'Version150' -RecoveryModel 'Full' -OwnerName 'sa'
 
@@ -132,7 +127,6 @@ Describe 'Test-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should return false when collation does not match' {
-            Mock -CommandName 'Write-Verbose'
 
             $result = Test-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Ensure 'Present' -Collation 'Different_Collation'
 
@@ -140,7 +134,6 @@ Describe 'Test-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should return false when compatibility level does not match' {
-            Mock -CommandName 'Write-Verbose'
 
             $result = Test-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Ensure 'Present' -CompatibilityLevel 'Version140'
 
@@ -148,7 +141,6 @@ Describe 'Test-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should return false when recovery model does not match' {
-            Mock -CommandName 'Write-Verbose'
 
             $result = Test-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Ensure 'Present' -RecoveryModel 'Simple'
 
@@ -156,7 +148,6 @@ Describe 'Test-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should return false when owner does not match' {
-            Mock -CommandName 'Write-Verbose'
 
             $result = Test-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Ensure 'Present' -OwnerName 'DifferentOwner'
 
