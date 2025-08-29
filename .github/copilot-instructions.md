@@ -1,7 +1,12 @@
-# AI Instructions for SqlServerDsc
+# AI Instructions
 
-This file provides AI agent guidance for the SqlServerDsc project. Each
-instruction file below targets specific file glob patterns and use cases.
+This file provides AI agent guidance for the project. Each instruction file below
+targets specific file glob patterns and use cases.
+
+## Build & Test Workflow
+- Run in PowerShell, from repository root
+- Build before running tests: `.\build.ps1 -Tasks build`
+- Always run tests in new PowerShell session: `Invoke-Pester -Path @({test paths}) -Output Detailed`
 
 ## Instructions Overview
 

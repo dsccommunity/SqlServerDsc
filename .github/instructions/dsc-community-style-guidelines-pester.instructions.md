@@ -9,15 +9,21 @@ applyTo: "**/*.[Tt]ests.ps1"
 - All public commands, private functions and classes must have unit tests
 - All public commands and class-based resources must have integration tests
 - Use Pester v5 syntax only
-- One `Describe` block per file matching the tested entity name
 - Test code only inside `Describe` blocks
 - Assertions only in `It` blocks
 - Never test verbose messages, debug messages or parameter binding behavior
 - Pass all mandatory parameters to avoid prompts
 
+## Naming
+- One `Describe` block per file matching the tested entity name
+- `Context` descriptions start with 'When'
+- `It` descriptions start with 'Should', must not contain 'when'
+- Mock variables prefix: 'mock'
+
 ## Structure & Scope
 - Public commands: Never use `InModuleScope` (unless retrieving localized strings)
 - Private functions/class resources: Always use `InModuleScope`
+- Each class method = separate `Context` block
 - Each scenario = separate `Context` block
 - Use nested `Context` blocks for complex scenarios
 - Mocking in `BeforeAll` (`BeforeEach` only when required)
@@ -25,15 +31,14 @@ applyTo: "**/*.[Tt]ests.ps1"
 
 ## Syntax Rules
 - PascalCase: `Describe`, `Context`, `It`, `Should`, `BeforeAll`, `BeforeEach`, `AfterAll`, `AfterEach`
-- `Context` descriptions start with 'When'
-- `It` descriptions start with 'Should', must not contain 'when'
-- Mock variables prefix: 'mock'
 - Prefer `-BeTrue`/`-BeFalse` over `-Be $true`/`-Be $false`
+- Never use `Assert-MockCalled`, use `Should -Invoke` instead
 - No `Should -Not -Throw` - invoke commands directly
 - Never add an empty `-MockWith` block
 - Omit `-MockWith` when returning `$null`
 - Set `$PSDefaultParameterValues` for `Mock:ModuleName`, `Should:ModuleName`, `InModuleScope:ModuleName`
 - Omit `-ModuleName` parameter on Pester commands
+- Never use `Mock` inside `InModuleScope`-block
 
 ## File Organization
 - Class resources: `tests/Unit/Classes/{Name}.Tests.ps1`

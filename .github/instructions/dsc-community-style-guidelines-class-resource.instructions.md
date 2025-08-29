@@ -12,13 +12,14 @@ applyTo: "source/[cC]lasses/**/*.ps1"
 - Decoration: `[DscResource(RunAsCredential = 'Optional')]` (replace with `'Mandatory'` if required)
 - Inheritance: Must inherit `ResourceBase` (part of module DscResource.Base)
 - `$this.localizedData` hashtable auto-populated by `ResourceBase` from localization file
+- value-type properties: Use `[Nullable[{FullTypeName}]]` (e.g., `[Nullable[System.Int32]]`)
 
 ## Required constructor
 
 ```powershell
 MyResourceName () : base ($PSScriptRoot)
 {
-    # Property names where state cannot be enforced, e.g Ensure
+    # Property names where state cannot be enforced, e.g. IsSingleInstance, Force
     $this.ExcludeDscProperties = @()
 }
 ```
@@ -78,3 +79,19 @@ hidden [void] NormalizeProperties([System.Collections.Hashtable] $properties)
     # Normalize user-provided properties, $properties contains user assigned values
 }
 ```
+
+## Required comment-based help
+
+Add to .DESCRIPTION section:
+- `## Requirements`: List minimum requirements
+- `## Known issues`: Critical issues + pattern: `All issues are not listed here, see [all open issues](https://github.com/{owner}/{repo}/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+{ResourceName}).`
+
+## Error Handling
+- Use `try/catch` blocks to handle exceptions
+- Do not use `throw` for terminating errors, use `New-*Exception` commands:
+  - [`New‑InvalidDataException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91InvalidDataException)
+  - [`New-ArgumentException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91ArgumentException)
+  - [`New-InvalidOperationException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91InvalidOperationException)
+  - [`New-ObjectNotFoundException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91ObjectNotFoundException)
+  - [`New-InvalidResultException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91InvalidResultException)
+  - [`New-NotImplementedException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91NotImplementedException)
