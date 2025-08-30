@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SqlAgentAlert`
   - Minor fix in `source/Classes/020.SqlAgentAlert.ps1` to correct `ExcludeDscProperties`
     formatting (added missing delimiter).
+- `SqlRSSetup`
+  - Re-added `ReportServerEdition` enum and updated class to use enum instead of
+    ValidateSet for the Edition property.
 
 ### Added
 
