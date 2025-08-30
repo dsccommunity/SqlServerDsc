@@ -75,7 +75,7 @@ function Remove-SqlDscDatabase
         $Refresh
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     process
     {

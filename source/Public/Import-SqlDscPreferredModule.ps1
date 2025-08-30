@@ -56,7 +56,7 @@ function Import-SqlDscPreferredModule
         $Force
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     $getSqlDscPreferredModuleParameters = @{
         Refresh = $true

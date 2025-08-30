@@ -42,7 +42,7 @@ function Get-AgentAlertObject
         $Name
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     Write-Verbose -Message ($script:localizedData.Get_AgentAlertObject_GettingAlert -f $Name)
 

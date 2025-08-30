@@ -35,7 +35,7 @@ function ConvertTo-SqlDscDatabasePermission
         $DatabasePermissionInfo
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     begin
     {

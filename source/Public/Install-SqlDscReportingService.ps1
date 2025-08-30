@@ -139,7 +139,7 @@ function Install-SqlDscReportingService
         $PassThru
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     $exitCode = Invoke-ReportServerSetupAction -Install @PSBoundParameters
 

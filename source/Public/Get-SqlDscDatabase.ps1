@@ -55,7 +55,7 @@ function Get-SqlDscDatabase
         $Refresh
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     process
     {

@@ -108,7 +108,7 @@ function Set-SqlDscDatabase
         $PassThru
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     process
     {

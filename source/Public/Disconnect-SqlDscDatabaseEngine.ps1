@@ -41,7 +41,7 @@ function Disconnect-SqlDscDatabaseEngine
         $Force
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     begin
     {

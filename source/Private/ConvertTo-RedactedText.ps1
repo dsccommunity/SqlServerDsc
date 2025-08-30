@@ -46,7 +46,7 @@ function ConvertTo-RedactedText
         $RedactWith = '*******'
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     process
     {

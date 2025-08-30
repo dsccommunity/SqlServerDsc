@@ -74,7 +74,7 @@ function Get-SqlDscManagedComputerService
         $ServiceType
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     begin
     {

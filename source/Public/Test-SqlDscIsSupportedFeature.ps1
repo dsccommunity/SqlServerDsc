@@ -35,7 +35,7 @@ function Test-SqlDscIsSupportedFeature
         $ProductVersion
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     begin
     {

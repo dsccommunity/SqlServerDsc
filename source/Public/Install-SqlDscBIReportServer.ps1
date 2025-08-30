@@ -137,7 +137,7 @@ function Install-SqlDscBIReportServer
         $PassThru
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     $exitCode = Invoke-ReportServerSetupAction -Install @PSBoundParameters
 

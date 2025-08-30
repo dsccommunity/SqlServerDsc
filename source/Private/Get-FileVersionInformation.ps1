@@ -32,7 +32,7 @@ function Get-FileVersionInformation
         $FilePath
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     process
     {

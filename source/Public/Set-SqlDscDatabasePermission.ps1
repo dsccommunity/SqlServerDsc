@@ -93,7 +93,7 @@ function Set-SqlDscDatabasePermission
         $Force
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     process
     {

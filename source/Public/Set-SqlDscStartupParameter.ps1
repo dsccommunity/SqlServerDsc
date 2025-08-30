@@ -89,7 +89,7 @@ function Set-SqlDscStartupParameter
         $Force
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     begin
     {

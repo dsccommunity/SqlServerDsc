@@ -48,7 +48,7 @@ function Get-SqlDscAudit
         $Refresh
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     process
     {

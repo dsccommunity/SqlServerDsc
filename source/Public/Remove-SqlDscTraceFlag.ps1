@@ -80,7 +80,7 @@ function Remove-SqlDscTraceFlag
         $Force
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     begin
     {

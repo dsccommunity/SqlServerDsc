@@ -41,7 +41,7 @@ function Test-SqlDscRSInstalled
         $InstanceName
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     Write-Verbose -Message ($script:localizedData.Test_SqlDscRSInstalled_Checking -f $InstanceName)
 

@@ -39,7 +39,7 @@ function Assert-SetupActionProperties
         $SetupAction
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     if ($Property.ContainsKey('Features'))
     {

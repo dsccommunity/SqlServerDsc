@@ -55,7 +55,7 @@ function Get-SqlDscRole
         $Refresh
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     process
     {

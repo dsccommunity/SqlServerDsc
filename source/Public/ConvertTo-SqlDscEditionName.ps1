@@ -35,7 +35,7 @@ function ConvertTo-SqlDscEditionName
         $Id
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     Write-Debug -Message ($script:localizedData.ConvertTo_EditionName_ConvertingEditionId -f $Id)
 

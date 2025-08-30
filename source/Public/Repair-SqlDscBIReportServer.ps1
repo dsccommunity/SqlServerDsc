@@ -133,7 +133,7 @@ function Repair-SqlDscBIReportServer
         $PassThru
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     $exitCode = Invoke-ReportServerSetupAction -Repair @PSBoundParameters
 

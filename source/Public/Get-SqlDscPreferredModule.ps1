@@ -60,7 +60,7 @@ function Get-SqlDscPreferredModule
         $Refresh
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     if (-not $PSBoundParameters.ContainsKey('Name'))
     {

@@ -53,7 +53,7 @@ function Get-SqlDscConfigurationOption
         $Refresh
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     process
     {

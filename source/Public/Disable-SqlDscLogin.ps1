@@ -88,7 +88,7 @@ function Disable-SqlDscLogin
         $Refresh
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     process
     {

@@ -1372,7 +1372,7 @@ function Invoke-SetupAction
         $Force
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     if ($Force.IsPresent -and -not $Confirm)
     {

@@ -57,7 +57,7 @@ function Get-SqlDscLogin
         $Refresh
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     process
     {

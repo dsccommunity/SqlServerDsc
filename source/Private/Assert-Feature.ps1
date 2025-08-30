@@ -34,7 +34,7 @@ function Assert-Feature
         $ProductVersion
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     process
     {

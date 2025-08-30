@@ -65,7 +65,7 @@ function Get-SqlDscStartupParameter
         $InstanceName = 'MSSQLSERVER'
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     Assert-ElevatedUser -ErrorAction 'Stop'
 

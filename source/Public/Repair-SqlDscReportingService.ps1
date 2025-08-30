@@ -135,7 +135,7 @@ function Repair-SqlDscReportingService
         $PassThru
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     $exitCode = Invoke-ReportServerSetupAction -Repair @PSBoundParameters
 

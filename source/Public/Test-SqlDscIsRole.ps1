@@ -36,7 +36,7 @@ function Test-SqlDscIsRole
         $Name
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     process
     {

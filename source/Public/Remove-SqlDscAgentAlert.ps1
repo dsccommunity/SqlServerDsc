@@ -82,7 +82,7 @@ function Remove-SqlDscAgentAlert
         $Refresh
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     # cSpell: ignore RSAA
     process

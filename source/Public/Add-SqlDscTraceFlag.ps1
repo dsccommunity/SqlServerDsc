@@ -80,7 +80,7 @@ function Add-SqlDscTraceFlag
         $Force
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     begin
     {

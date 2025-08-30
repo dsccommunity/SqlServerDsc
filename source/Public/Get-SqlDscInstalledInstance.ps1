@@ -36,7 +36,7 @@ function Get-SqlDscInstalledInstance
         $ServiceType
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     if ($PSBoundParameters.ContainsKey('InstanceName'))
     {

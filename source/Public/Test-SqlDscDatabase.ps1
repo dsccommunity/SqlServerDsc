@@ -95,7 +95,7 @@ function Test-SqlDscDatabase
         $Refresh
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     process
     {

@@ -83,7 +83,7 @@ function New-SqlDscAgentAlert
         $PassThru
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     # cSpell: ignore NSAA
     process

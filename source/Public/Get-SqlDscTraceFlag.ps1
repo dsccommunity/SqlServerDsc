@@ -66,7 +66,7 @@ function Get-SqlDscTraceFlag
         $InstanceName = 'MSSQLSERVER'
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     Write-Verbose -Message (
         $script:localizedData.TraceFlag_Get_ReturnTraceFlags -f $InstanceName, $ServerName

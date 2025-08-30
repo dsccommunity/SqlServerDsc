@@ -33,7 +33,7 @@ function Get-SqlDscManagedComputer
         $ServerName = (Get-ComputerName)
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     Write-Verbose -Message (
         $script:localizedData.ManagedComputer_GetState -f $ServerName

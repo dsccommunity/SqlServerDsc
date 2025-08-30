@@ -67,7 +67,7 @@ function Get-SqlDscRSSetupConfiguration
         $InstanceName
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     $reportingServicesInstances = @()
 

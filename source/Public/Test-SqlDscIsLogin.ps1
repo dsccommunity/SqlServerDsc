@@ -36,7 +36,7 @@ function Test-SqlDscIsLogin
         $Name
     )
 
-    $ErrorPreference = 'Stop'
+    $ErrorActionPreference = 'Stop'
 
     process
     {
