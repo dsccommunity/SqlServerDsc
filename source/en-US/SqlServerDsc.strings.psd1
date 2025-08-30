@@ -61,6 +61,31 @@ ConvertFrom-StringData @'
     ## Get-SqlDscAudit
     Audit_Missing = There is no audit with the name '{0}'.
 
+    ## Get-SqlDscLogin
+    Login_Get_Missing = There is no login with the name '{0}'.
+    Login_Get_RefreshingLogins = Refreshing logins on server '{0}'.
+    Login_Get_RetrievingByName = Retrieving login by name '{0}' from server '{1}'.
+    Login_Get_ReturningAllLogins = Returning all logins from server '{0}'.
+
+    ## Remove-SqlDscLogin
+    Login_Remove_ShouldProcessVerboseDescription = Removing the login '{0}' on the instance '{1}'.
+    Login_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove the login '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Login_Remove_ShouldProcessCaption = Remove login on instance
+    Login_Remove_Failed = Removal of the login '{0}' failed. (RSDL0001)
+
+    ## Enable-SqlDscLogin
+    Login_Enable_ShouldProcessVerboseDescription = Enabling the login '{0}' on the instance '{1}'.
+    Login_Enable_ShouldProcessVerboseWarning = Are you sure you want to enable the login '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Login_Enable_ShouldProcessCaption = Enable login on instance
+
+    ## Disable-SqlDscLogin
+    Login_Disable_ShouldProcessVerboseDescription = Disabling the login '{0}' on the instance '{1}'.
+    Login_Disable_ShouldProcessVerboseWarning = Are you sure you want to disable the login '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Login_Disable_ShouldProcessCaption = Disable login on instance
+
     ## Remove-SqlDscAudit
     Audit_Remove_ShouldProcessVerboseDescription = Removing the audit '{0}' on the instance '{1}'.
     Audit_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove the audit '{0}'?
@@ -227,4 +252,152 @@ ConvertFrom-StringData @'
     Assert_Login_CheckingLogin = Checking if the principal '{0}' exists as a login on the instance '{1}'.
     Assert_Login_LoginMissing = The principal '{0}' does not exist as a login on the instance '{1}'.
     Assert_Login_LoginExists = The principal '{0}' exists as a login.
+
+    ## Get-SqlDscRole
+    Role_Get = Getting server roles from instance '{0}'.
+    Role_GetAll = Getting all server roles.
+    Role_Found = Found server role '{0}'.
+    Role_NotFound = Server role '{0}' was not found.
+
+    ## New-SqlDscRole
+    Role_Create = Creating server role '{0}' on instance '{1}'.
+    Role_Creating = Creating server role '{0}'.
+    Role_Created = Server role '{0}' was created successfully.
+    Role_CreateFailed = Failed to create server role '{0}' on instance '{1}'.
+    Role_AlreadyExists = Server role '{0}' already exists on instance '{1}'.
+    Role_Create_ShouldProcessVerboseDescription = Creating the server role '{0}' on the instance '{1}'.
+    Role_Create_ShouldProcessVerboseWarning = Are you sure you want to create the server role '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Role_Create_ShouldProcessCaption = Create server role on instance
+
+    ## Remove-SqlDscRole
+    Role_Remove = Removing server role '{0}' from instance '{1}'.
+    Role_Removing = Removing server role '{0}'.
+    Role_Removed = Server role '{0}' was removed successfully.
+    Role_RemoveFailed = Failed to remove server role '{0}' from instance '{1}'.
+    Role_CannotRemoveBuiltIn = Cannot remove built-in server role '{0}'.
+    Role_Remove_ShouldProcessVerboseDescription = Removing the server role '{0}' from the instance '{1}'.
+    Role_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove the server role '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Role_Remove_ShouldProcessCaption = Remove server role from instance
+
+    ## New-SqlDscLogin
+    Login_Add_ShouldProcessVerboseDescription = Creating the login '{0}' of type '{1}' on the instance '{2}'.
+    Login_Add_ShouldProcessVerboseWarning = Are you sure you want to create the login '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Login_Add_ShouldProcessCaption = Create login on instance
+    Login_Add_LoginCreated = Successfully created login '{0}' on the instance '{1}'.
+    Login_Add_LoginAlreadyExists = The login '{0}' already exists on the instance '{1}'.
+
+    ## Get-SqlDscDatabase
+    Database_Get = Getting databases from instance '{0}'.
+    Database_GetAll = Getting all databases.
+    Database_Found = Found database '{0}'.
+    Database_NotFound = Database '{0}' was not found.
+
+    ## New-SqlDscDatabase
+    Database_Create = Creating database '{0}' on instance '{1}'.
+    Database_Creating = Creating database '{0}'.
+    Database_Created = Database '{0}' was created successfully.
+    Database_CreateFailed = Failed to create database '{0}' on instance '{1}'.
+    Database_AlreadyExists = Database '{0}' already exists on instance '{1}'.
+    Database_InvalidCompatibilityLevel = The specified compatibility level '{0}' is not a valid compatibility level for the instance '{1}'.
+    Database_InvalidCollation = The specified collation '{0}' is not a valid collation for the instance '{1}'.
+    Database_Create_ShouldProcessVerboseDescription = Creating the database '{0}' on the instance '{1}'.
+    Database_Create_ShouldProcessVerboseWarning = Are you sure you want to create the database '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Database_Create_ShouldProcessCaption = Create database on instance
+
+    ## Set-SqlDscDatabase
+    Database_Set = Setting properties of database '{0}' on instance '{1}'.
+    Database_Updating = Updating database '{0}'.
+    Database_Updated = Database '{0}' was updated successfully.
+    Database_SetFailed = Failed to set properties of database '{0}' on instance '{1}'.
+    Database_UpdatingCollation = Changing the database collation to '{0}'.
+    Database_UpdatingCompatibilityLevel = Changing the database compatibility level to '{0}'.
+    Database_UpdatingRecoveryModel = Changing the database recovery model to '{0}'.
+    Database_UpdatingOwner = Changing the database owner to '{0}'.
+    Database_Set_ShouldProcessVerboseDescription = Setting properties of the database '{0}' on the instance '{1}'.
+    Database_Set_ShouldProcessVerboseWarning = Are you sure you want to modify the database '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Database_Set_ShouldProcessCaption = Set database properties on instance
+
+    ## Remove-SqlDscDatabase
+    Database_Remove = Removing database '{0}' from instance '{1}'.
+    Database_Removing = Removing database '{0}'.
+    Database_Removed = Database '{0}' was removed successfully.
+    Database_RemoveFailed = Failed to remove database '{0}' from instance '{1}'.
+    Database_CannotRemoveSystem = Cannot remove system database '{0}'.
+    Database_Remove_ShouldProcessVerboseDescription = Removing the database '{0}' from the instance '{1}'.
+    Database_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove the database '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Database_Remove_ShouldProcessCaption = Remove database from instance
+
+    ## Test-SqlDscDatabase
+    Database_Test = Testing the state of database '{0}' on instance '{1}'.
+    Database_InDesiredStatePresent = Database '{0}' is present and in desired state.
+    Database_InDesiredStateAbsent = Database '{0}' is absent as expected.
+    Database_NotInDesiredStatePresent = Expected the database '{0}' to be present, but it was absent.
+    Database_NotInDesiredStateAbsent = Expected the database '{0}' to be absent, but it was present.
+    Database_CollationWrong = The database '{0}' exists and has the collation '{1}', but expected it to have the collation '{2}'.
+    Database_CompatibilityLevelWrong = The database '{0}' exists and has the compatibility level '{1}', but expected it to have the compatibility level '{2}'.
+    Database_RecoveryModelWrong = The database '{0}' exists and has the recovery model '{1}', but expected it to have the recovery model '{2}'.
+    Database_OwnerNameWrong = The database '{0}' exists and has the owner '{1}', but expected it to have the owner '{2}'.
+
+    ## Get-AgentAlertObject
+    Get_AgentAlertObject_GettingAlert = Getting SQL Agent Alert '{0}'. (GAAO0001)
+
+    ## Get-SqlDscAgentAlert
+    Get_SqlDscAgentAlert_GettingAlerts = Getting SQL Agent Alerts from instance '{0}'. (GSAA0001)
+    Get_SqlDscAgentAlert_ReturningAllAlerts = Returning all {0} SQL Agent Alerts. (GSAA0005)
+
+    ## New-SqlDscAgentAlert
+    New_SqlDscAgentAlert_AlertAlreadyExists = SQL Agent Alert '{0}' already exists. (NSAA0001)
+    New_SqlDscAgentAlert_CreatingAlert = Creating SQL Agent Alert '{0}'. (NSAA0002)
+    New_SqlDscAgentAlert_AlertCreated = SQL Agent Alert '{0}' was created successfully. (NSAA0003)
+    New_SqlDscAgentAlert_CreateFailed = Failed to create SQL Agent Alert '{0}'. (NSAA0004)
+    New_SqlDscAgentAlert_SettingSeverity = Setting severity '{0}' for SQL Agent Alert '{1}'. (NSAA0005)
+    New_SqlDscAgentAlert_SettingMessageId = Setting message ID '{0}' for SQL Agent Alert '{1}'. (NSAA0006)
+    New_SqlDscAgentAlert_CreateShouldProcessVerboseDescription = Creating the SQL Agent Alert '{0}' on the instance '{1}'.
+    New_SqlDscAgentAlert_CreateShouldProcessVerboseWarning = Are you sure you want to create the SQL Agent Alert '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    New_SqlDscAgentAlert_CreateShouldProcessCaption = Create SQL Agent Alert on instance
+
+    ## Set-SqlDscAgentAlert
+    Set_SqlDscAgentAlert_RefreshingServerObject = Refreshing server object's alerts collection. (SSAA0001)
+    Set_SqlDscAgentAlert_AlertNotFound = SQL Agent Alert '{0}' was not found. (SSAA0002)
+    Set_SqlDscAgentAlert_UpdatingAlert = Updating SQL Agent Alert '{0}'. (SSAA0003)
+    Set_SqlDscAgentAlert_SettingSeverity = Setting severity '{0}' for SQL Agent Alert '{1}'. (SSAA0004)
+    Set_SqlDscAgentAlert_SettingMessageId = Setting message ID '{0}' for SQL Agent Alert '{1}'. (SSAA0005)
+    Set_SqlDscAgentAlert_AlertUpdated = SQL Agent Alert '{0}' was updated successfully. (SSAA0006)
+    Set_SqlDscAgentAlert_NoChangesNeeded = No changes needed for SQL Agent Alert '{0}'. (SSAA0007)
+    Set_SqlDscAgentAlert_UpdateFailed = Failed to update SQL Agent Alert '{0}'. (SSAA0008)
+    Set_SqlDscAgentAlert_SeverityAlreadyCorrect = Severity '{0}' for SQL Agent Alert '{1}' is already correct. (SSAA0009)
+    Set_SqlDscAgentAlert_MessageIdAlreadyCorrect = Message ID '{0}' for SQL Agent Alert '{1}' is already correct. (SSAA0010)
+    Set_SqlDscAgentAlert_UpdateShouldProcessVerboseDescription = Updating the SQL Agent Alert '{0}' on the instance '{1}'.
+    Set_SqlDscAgentAlert_UpdateShouldProcessVerboseWarning = Are you sure you want to update the SQL Agent Alert '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Set_SqlDscAgentAlert_UpdateShouldProcessCaption = Update SQL Agent Alert on instance
+
+    ## Remove-SqlDscAgentAlert
+    Remove_SqlDscAgentAlert_RefreshingServerObject = Refreshing server object's alerts collection. (RSAA0001)
+    Remove_SqlDscAgentAlert_AlertNotFound = SQL Agent Alert '{0}' was not found. (RSAA0002)
+    Remove_SqlDscAgentAlert_RemovingAlert = Removing SQL Agent Alert '{0}'. (RSAA0003)
+    Remove_SqlDscAgentAlert_AlertRemoved = SQL Agent Alert '{0}' was removed successfully. (RSAA0004)
+    Remove_SqlDscAgentAlert_RemoveFailed = Failed to remove SQL Agent Alert '{0}'. (RSAA0005)
+    Remove_SqlDscAgentAlert_RemoveShouldProcessVerboseDescription = Removing the SQL Agent Alert '{0}' on the instance '{1}'.
+    Remove_SqlDscAgentAlert_RemoveShouldProcessVerboseWarning = Are you sure you want to remove the SQL Agent Alert '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Remove_SqlDscAgentAlert_RemoveShouldProcessCaption = Remove SQL Agent Alert on instance
+
+    ## Test-SqlDscAgentAlert
+    Test_SqlDscAgentAlert_TestingAlert = Testing if the SQL Agent Alert '{0}' exists and has the desired properties. (TSAA0001)
+    Test_SqlDscAgentAlert_AlertNotFound = SQL Agent Alert '{0}' was not found. (TSAA0002)
+    Test_SqlDscAgentAlert_AlertFound = SQL Agent Alert '{0}' was found. (TSAA0003)
+    Test_SqlDscAgentAlert_NoPropertyTest = No specific properties to test, alert exists. (TSAA0004)
+    Test_SqlDscAgentAlert_SeverityMismatch = Severity mismatch: current '{0}', expected '{1}'. (TSAA0005)
+    Test_SqlDscAgentAlert_SeverityMatch = Severity matches expected value '{0}'. (TSAA0006)
+    Test_SqlDscAgentAlert_MessageIdMismatch = Message ID mismatch: current '{0}', expected '{1}'. (TSAA0007)
+    Test_SqlDscAgentAlert_MessageIdMatch = Message ID matches expected value '{0}'. (TSAA0008)
+    Test_SqlDscAgentAlert_AllTestsPassed = All tests passed for SQL Agent Alert '{0}'. (TSAA0009)
 '@

@@ -260,7 +260,7 @@ class DatabasePermission : IComparable, System.IEquatable[Object]
                 $object.GetType().FullName
             )
 
-            New-InvalidArgumentException -ArgumentName 'Object' -Message $errorMessage
+            New-ArgumentException -ArgumentName 'Object' -Message $errorMessage
         }
 
         return $returnValue

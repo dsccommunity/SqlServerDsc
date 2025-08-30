@@ -574,7 +574,7 @@ class SqlDatabasePermission : SqlResourceBase
         {
             $errorMessage = $this.localizedData.MustAssignOnePermissionProperty
 
-            New-InvalidArgumentException -ArgumentName 'Permission, PermissionToInclude, PermissionToExclude' -Message $errorMessage
+            New-ArgumentException -ArgumentName 'Permission, PermissionToInclude, PermissionToExclude' -Message $errorMessage
         }
 
         foreach ($currentAssignedPermissionProperty in $assignedPermissionProperty)
@@ -590,7 +590,7 @@ class SqlDatabasePermission : SqlResourceBase
             {
                 $errorMessage = $this.localizedData.DuplicatePermissionState
 
-                New-InvalidArgumentException -ArgumentName $currentAssignedPermissionProperty -Message $errorMessage
+                New-ArgumentException -ArgumentName $currentAssignedPermissionProperty -Message $errorMessage
             }
 
             # A specific permission must only exist in one permission state.
@@ -602,7 +602,7 @@ class SqlDatabasePermission : SqlResourceBase
             {
                 $errorMessage = $this.localizedData.DuplicatePermissionBetweenState
 
-                New-InvalidArgumentException -ArgumentName $currentAssignedPermissionProperty -Message $errorMessage
+                New-ArgumentException -ArgumentName $currentAssignedPermissionProperty -Message $errorMessage
             }
         }
 
@@ -619,7 +619,7 @@ class SqlDatabasePermission : SqlResourceBase
             {
                 $errorMessage = $this.localizedData.MissingPermissionState
 
-                New-InvalidArgumentException -ArgumentName 'Permission' -Message $errorMessage
+                New-ArgumentException -ArgumentName 'Permission' -Message $errorMessage
             }
         }
 
@@ -637,7 +637,7 @@ class SqlDatabasePermission : SqlResourceBase
                     {
                         $errorMessage = $this.localizedData.MustHaveMinimumOnePermissionInState -f $currentAssignedPermissionProperty
 
-                        New-InvalidArgumentException -ArgumentName $currentAssignedPermissionProperty -Message $errorMessage
+                        New-ArgumentException -ArgumentName $currentAssignedPermissionProperty -Message $errorMessage
                     }
                 }
             }

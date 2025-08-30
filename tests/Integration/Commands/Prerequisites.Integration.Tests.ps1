@@ -6,14 +6,14 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
@@ -42,6 +42,13 @@ Describe 'Prerequisites' {
 
             $user.Name | Should -Be 'SqlAdmin'
             (Get-LocalUser -Name 'SqlAdmin').Name | Should -Be 'SqlAdmin'
+        }
+
+        It 'Should create SqlIntegrationTest user' {
+            $user = New-LocalUser -Name 'SqlIntegrationTest' -Password $password -FullName 'SQL Integration Test User' -Description 'User for SQL integration testing.'
+
+            $user.Name | Should -Be 'SqlIntegrationTest'
+            (Get-LocalUser -Name 'SqlIntegrationTest').Name | Should -Be 'SqlIntegrationTest'
         }
     }
 
@@ -79,6 +86,15 @@ Describe 'Prerequisites' {
         }
     }
 
+    Context 'Create required local Windows groups' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
+        It 'Should create SqlIntegrationTestGroup group' {
+            $group = New-LocalGroup -Name 'SqlIntegrationTestGroup' -Description 'Local Windows group for SQL integration testing.'
+
+            $group.Name | Should -Be 'SqlIntegrationTestGroup'
+            (Get-LocalGroup -Name 'SqlIntegrationTestGroup').Name | Should -Be 'SqlIntegrationTestGroup'
+        }
+    }
+
     Context 'Add local Windows users to local groups' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
         It 'Should add SqlInstall to local administrator group' {
             # Add user to local administrator group
@@ -88,6 +104,16 @@ Describe 'Prerequisites' {
             $adminGroup = Get-LocalGroup -Name 'Administrators'
             $adminGroupMembers = Get-LocalGroupMember -Group $adminGroup
             $adminGroupMembers.Name | Should -Contain ('{0}\SqlInstall' -f (Get-ComputerName))
+        }
+
+        It 'Should add SqlIntegrationTest to SqlIntegrationTestGroup group' {
+            # Add user to the local group
+            Add-LocalGroupMember -Group 'SqlIntegrationTestGroup' -Member 'SqlIntegrationTest'
+
+            # Verify if user is part of the local group
+            $testGroup = Get-LocalGroup -Name 'SqlIntegrationTestGroup'
+            $testGroupMembers = Get-LocalGroupMember -Group $testGroup
+            $testGroupMembers.Name | Should -Contain ('{0}\SqlIntegrationTest' -f (Get-ComputerName))
         }
     }
 

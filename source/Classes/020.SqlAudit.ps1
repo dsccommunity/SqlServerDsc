@@ -519,7 +519,7 @@ class SqlAudit : SqlResourceBase
         {
             $errorMessage = $this.localizedData.BothFileSizePropertiesMustBeSet
 
-            New-InvalidArgumentException -ArgumentName 'MaximumFileSize, MaximumFileSizeUnit' -Message $errorMessage
+            New-ArgumentException -ArgumentName 'MaximumFileSize, MaximumFileSizeUnit' -Message $errorMessage
         }
 
         <#
@@ -530,7 +530,7 @@ class SqlAudit : SqlResourceBase
         {
             $errorMessage = $this.localizedData.MaximumFileSizeValueInvalid
 
-            New-InvalidArgumentException -ArgumentName 'MaximumFileSize' -Message $errorMessage
+            New-ArgumentException -ArgumentName 'MaximumFileSize' -Message $errorMessage
         }
 
         <#
@@ -541,7 +541,7 @@ class SqlAudit : SqlResourceBase
         {
             $errorMessage = $this.localizedData.QueueDelayValueInvalid
 
-            New-InvalidArgumentException -ArgumentName 'QueueDelay' -Message $errorMessage
+            New-ArgumentException -ArgumentName 'QueueDelay' -Message $errorMessage
         }
 
         # ReserveDiskSpace can only be used with MaximumFiles.
@@ -549,7 +549,7 @@ class SqlAudit : SqlResourceBase
         {
             $errorMessage = $this.localizedData.ReservDiskSpaceWithoutMaximumFiles
 
-            New-InvalidArgumentException -ArgumentName 'ReserveDiskSpace' -Message $errorMessage
+            New-ArgumentException -ArgumentName 'ReserveDiskSpace' -Message $errorMessage
         }
 
         # Test so that the path exists.
@@ -557,7 +557,7 @@ class SqlAudit : SqlResourceBase
         {
             $errorMessage = $this.localizedData.PathInvalid -f $properties.Path
 
-            New-InvalidArgumentException -ArgumentName 'Path' -Message $errorMessage
+            New-ArgumentException -ArgumentName 'Path' -Message $errorMessage
         }
     }
 
