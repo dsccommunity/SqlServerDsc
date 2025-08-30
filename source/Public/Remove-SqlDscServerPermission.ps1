@@ -13,9 +13,13 @@
         Specifies the name of the principal for which the permissions are revoked.
 
     .PARAMETER Permission
-        Specifies the permissions to revoke as ServerPermission objects. Each object must
-        specify the State ('Grant', 'GrantWithGrant', or 'Deny') and the permissions
-        to be revoked.
+        Specifies the permissions to revoke as a ServerPermissionSet object containing the
+        permissions to be revoked.
+
+    .PARAMETER WithGrant
+        Specifies that the right to grant the permission should also be revoked,
+        and the revocation will cascade to other principals that the grantee has
+        granted the same permission to.
 
     .PARAMETER Force
         Specifies that the permissions should be revoked without any confirmation.
@@ -26,28 +30,25 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
 
-        $permissions = @(
-            [ServerPermission] @{
-                State = 'Grant'
-                Permission = @('ConnectSql', 'ViewServerState')
-            }
-        )
+        $permissionSet = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
+            ConnectSql = $true
+            ViewServerState = $true
+        }
 
-        Remove-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -Permission $permissions
+        Remove-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -Permission $permissionSet
 
         Revokes the specified permissions from the principal 'MyPrincipal'.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
 
-        $permissions = @(
-            [ServerPermission] @{
-                State = 'GrantWithGrant'
-                Permission = @('AlterAnyDatabase')
-            }
-        )
+        $permissionSet = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
+            AlterAnyDatabase = $true
+        }
 
-        $serverInstance | Remove-SqlDscServerPermission -Name 'MyPrincipal' -Permission $permissions -Force
+        $serverInstance | Remove-SqlDscServerPermission -Name 'MyPrincipal' -Permission $permissionSet -WithGrant -Force
+
+        Revokes the specified permissions and the right to grant them from the principal 'MyPrincipal' with cascading effect, without prompting for confirmation.
 
         Revokes the specified permissions (including grant options) from the principal 'MyPrincipal' without prompting for confirmation.
 
@@ -77,8 +78,12 @@ function Remove-SqlDscServerPermission
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [ServerPermission[]]
+        [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]
         $Permission,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $WithGrant,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -102,41 +107,29 @@ function Remove-SqlDscServerPermission
 
         if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
-            foreach ($currentPermission in $Permission)
+            $invokeParameters = @{
+                ServerObject = $ServerObject
+                Name         = $Name
+                Permission   = $Permission
+                State        = 'Revoke'
+            }
+
+            try
             {
-                # Skip empty permission arrays
-                if ($currentPermission.Permission.Count -eq 0)
+                if ($WithGrant.IsPresent)
                 {
-                    continue
+                    Invoke-SqlDscServerPermissionOperation @invokeParameters -WithGrant
                 }
-
-                # Convert ServerPermission to ServerPermissionSet
-                $permissionSet = $currentPermission | ConvertFrom-SqlDscServerPermission
-
-                $invokeParameters = @{
-                    ServerObject = $ServerObject
-                    Name         = $Name
-                    Permission   = $permissionSet
-                    State        = 'Revoke'
-                }
-
-                try
+                else
                 {
-                    if ($currentPermission.State -eq 'GrantWithGrant')
-                    {
-                        Invoke-SqlDscServerPermissionOperation @invokeParameters -WithGrant
-                    }
-                    else
-                    {
-                        Invoke-SqlDscServerPermissionOperation @invokeParameters
-                    }
+                    Invoke-SqlDscServerPermissionOperation @invokeParameters
                 }
-                catch
-                {
-                    $errorMessage = $script:localizedData.ServerPermission_FailedToRevokePermission -f $Name, $ServerObject.InstanceName
+            }
+            catch
+            {
+                $errorMessage = $script:localizedData.ServerPermission_FailedToRevokePermission -f $Name, $ServerObject.InstanceName
 
-                    New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
-                }
+                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
             }
         }
     }

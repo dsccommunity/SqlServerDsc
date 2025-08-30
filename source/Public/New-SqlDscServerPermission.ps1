@@ -12,9 +12,18 @@
     .PARAMETER Name
         Specifies the name of the principal for which the permissions are granted.
 
+    .PARAMETER State
+        Specifies the state of the permission to be applied.
+
     .PARAMETER Permission
-        Specifies the permissions as ServerPermission objects. Each object must specify
-        the State ('Grant', 'GrantWithGrant', or 'Deny') and the permissions to be applied.
+        Specifies the permissions as a ServerPermissionSet object containing the
+        permissions to be applied.
+
+    .PARAMETER WithGrant
+        Specifies that the principal should also be granted the right to grant
+        other principals the same permission. This parameter is only valid when
+        parameter **State** is set to 'Grant'. When this parameter is used, the
+        effective state will be 'GrantWithGrant'.
 
     .PARAMETER Force
         Specifies that the permissions should be granted without any confirmation.
@@ -25,28 +34,23 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
 
-        $permissions = @(
-            [ServerPermission] @{
-                State = 'Grant'
-                Permission = @('ConnectSql', 'ViewServerState')
-            }
-        )
+        $permissionSet = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
+            ConnectSql = $true
+            ViewServerState = $true
+        }
 
-        New-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -Permission $permissions
+        New-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -State 'Grant' -Permission $permissionSet
 
         Grants the specified permissions to the principal 'MyPrincipal'.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
 
-        $permissions = @(
-            [ServerPermission] @{
-                State = 'GrantWithGrant'
-                Permission = @('AlterAnyDatabase')
-            }
-        )
+        $permissionSet = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
+            AlterAnyDatabase = $true
+        }
 
-        $serverInstance | New-SqlDscServerPermission -Name 'MyPrincipal' -Permission $permissions -Force
+        $serverInstance | New-SqlDscServerPermission -Name 'MyPrincipal' -State 'Grant' -Permission $permissionSet -WithGrant -Force
 
         Grants the specified permissions with grant option to the principal 'MyPrincipal' without prompting for confirmation.
 
@@ -72,8 +76,17 @@ function New-SqlDscServerPermission
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [ServerPermission[]]
+        [ValidateSet('Grant', 'Deny')]
+        [System.String]
+        $State,
+
+        [Parameter(Mandatory = $true)]
+        [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]
         $Permission,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $WithGrant,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -82,6 +95,11 @@ function New-SqlDscServerPermission
 
     process
     {
+        if ($State -eq 'Deny' -and $WithGrant.IsPresent)
+        {
+            Write-Warning -Message $script:localizedData.ServerPermission_IgnoreWithGrantForStateDeny
+        }
+
         if ($Force.IsPresent -and -not $Confirm)
         {
             $ConfirmPreference = 'None'
@@ -97,44 +115,28 @@ function New-SqlDscServerPermission
 
         if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
-            foreach ($currentPermission in $Permission)
+            $invokeParameters = @{
+                ServerObject = $ServerObject
+                Name         = $Name
+                Permission   = $Permission
+            }
+
+            try
             {
-                # Skip empty permission arrays
-                if ($currentPermission.Permission.Count -eq 0)
+                if ($WithGrant.IsPresent -and $State -eq 'Grant')
                 {
-                    continue
+                    Invoke-SqlDscServerPermissionOperation @invokeParameters -State 'Grant' -WithGrant
                 }
-
-                # Convert ServerPermission to ServerPermissionSet
-                $permissionSet = $currentPermission | ConvertFrom-SqlDscServerPermission
-
-                $invokeParameters = @{
-                    ServerObject = $ServerObject
-                    Name         = $Name
-                    Permission   = $permissionSet
-                }
-
-                try
+                else
                 {
-                    switch ($currentPermission.State)
-                    {
-                        'GrantWithGrant'
-                        {
-                            Invoke-SqlDscServerPermissionOperation @invokeParameters -State 'Grant' -WithGrant
-                        }
-
-                        default
-                        {
-                            Invoke-SqlDscServerPermissionOperation @invokeParameters -State $currentPermission.State
-                        }
-                    }
+                    Invoke-SqlDscServerPermissionOperation @invokeParameters -State $State
                 }
-                catch
-                {
-                    $errorMessage = $script:localizedData.ServerPermission_FailedToGrantPermission -f $Name, $ServerObject.InstanceName
+            }
+            catch
+            {
+                $errorMessage = $script:localizedData.ServerPermission_FailedToGrantPermission -f $Name, $ServerObject.InstanceName
 
-                    New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
-                }
+                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
             }
         }
     }

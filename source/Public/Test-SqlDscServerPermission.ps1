@@ -12,10 +12,18 @@
     .PARAMETER Name
         Specifies the name of the principal for which the permissions are tested.
 
+    .PARAMETER State
+        Specifies the desired state of the permission to be tested.
+
     .PARAMETER Permission
-        Specifies the desired permissions as ServerPermission objects. Each object must
-        specify the State ('Grant', 'GrantWithGrant', or 'Deny') and the permissions
-        that should be present.
+        Specifies the desired permissions as a ServerPermissionSet object containing the
+        permissions that should be present in the specified state.
+
+    .PARAMETER WithGrant
+        Specifies that the principal should have the right to grant other principals
+        the same permission. This parameter is only valid when parameter **State** is
+        set to 'Grant'. When this parameter is used, the effective state tested will
+        be 'GrantWithGrant'.
 
     .OUTPUTS
         [System.Boolean]
@@ -23,38 +31,25 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
 
-        $permissions = @(
-            [ServerPermission] @{
-                State = 'Grant'
-                Permission = @('ConnectSql', 'ViewServerState')
-            }
-            [ServerPermission] @{
-                State = 'GrantWithGrant'
-                Permission = @()
-            }
-            [ServerPermission] @{
-                State = 'Deny'
-                Permission = @()
-            }
-        )
+        $permissionSet = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
+            ConnectSql = $true
+            ViewServerState = $true
+        }
 
-        Test-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -Permission $permissions
+        $isInDesiredState = Test-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -State 'Grant' -Permission $permissionSet
 
-        Tests if the principal 'MyPrincipal' has exactly the specified permissions.
+        Tests if the specified permissions are granted to the principal 'MyPrincipal'.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
 
-        $permissions = @(
-            [ServerPermission] @{
-                State = 'Grant'
-                Permission = @('AlterAnyDatabase')
-            }
-        )
+        $permissionSet = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
+            AlterAnyDatabase = $true
+        }
 
-        $serverInstance | Test-SqlDscServerPermission -Name 'MyPrincipal' -Permission $permissions
+        $isInDesiredState = $serverInstance | Test-SqlDscServerPermission -Name 'MyPrincipal' -State 'Grant' -Permission $permissionSet -WithGrant
 
-        Tests if the principal 'MyPrincipal' has the specified grant permissions.
+        Tests if the specified permissions are granted with grant option to the principal 'MyPrincipal'.
 
     .NOTES
         If specifying `-ErrorAction 'SilentlyContinue'` then the command will silently
@@ -78,8 +73,17 @@ function Test-SqlDscServerPermission
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [ServerPermission[]]
-        $Permission
+        [ValidateSet('Grant', 'GrantWithGrant', 'Deny')]
+        [System.String]
+        $State,
+
+        [Parameter(Mandatory = $true)]
+        [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]
+        $Permission,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $WithGrant
     )
 
     process
@@ -90,7 +94,19 @@ function Test-SqlDscServerPermission
 
         try
         {
-            $isInDesiredState = Test-SqlDscServerPermissionState -ServerObject $ServerObject -Name $Name -Permission $Permission
+            $testParameters = @{
+                ServerObject = $ServerObject
+                Name         = $Name
+                State        = $State
+                Permission   = $Permission
+            }
+
+            if ($WithGrant.IsPresent)
+            {
+                $testParameters['WithGrant'] = $true
+            }
+
+            $isInDesiredState = Test-SqlDscServerPermissionState @testParameters
 
             return $isInDesiredState
         }

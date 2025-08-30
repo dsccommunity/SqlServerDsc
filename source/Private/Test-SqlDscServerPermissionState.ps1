@@ -12,8 +12,16 @@
     .PARAMETER Name
         Specifies the name of the principal to test.
 
+    .PARAMETER State
+        Specifies the desired state of the permission to be tested.
+
     .PARAMETER Permission
-        Specifies the desired permissions as ServerPermission objects.
+        Specifies the desired permissions as a ServerPermissionSet object.
+
+    .PARAMETER WithGrant
+        Specifies that the principal should have the right to grant other principals
+        the same permission. This parameter is only valid when parameter **State** is
+        set to 'Grant'.
 
     .OUTPUTS
         [System.Boolean]
@@ -33,67 +41,106 @@ function Test-SqlDscServerPermissionState
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [ServerPermission[]]
-        $Permission
+        [ValidateSet('Grant', 'GrantWithGrant', 'Deny')]
+        [System.String]
+        $State,
+
+        [Parameter(Mandatory = $true)]
+        [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]
+        $Permission,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $WithGrant
     )
 
     Write-Verbose -Message (
         $script:localizedData.ServerPermission_TestingDesiredState -f $Name, $ServerObject.InstanceName
     )
 
+    # Handle WithGrant parameter by adjusting the effective state
+    $effectiveState = $State
+    if ($WithGrant.IsPresent -and $State -eq 'Grant')
+    {
+        $effectiveState = 'GrantWithGrant'
+    }
+
     # Get current permissions
     $serverPermissionInfo = $ServerObject |
         Get-SqlDscServerPermission -Name $Name -ErrorAction 'SilentlyContinue'
 
+    if (-not $serverPermissionInfo)
+    {
+        Write-Verbose -Message (
+            $script:localizedData.ServerPermission_PermissionNotInDesiredState -f 'All', $effectiveState, $Name
+        )
+        return $false
+    }
+
     # Convert current permissions to ServerPermission objects
-    [ServerPermission[]] $currentPermissions = @()
-    if ($serverPermissionInfo)
-    {
-        $currentPermissions = $serverPermissionInfo | ConvertTo-SqlDscServerPermission
-    }
+    $currentPermissions = $serverPermissionInfo | ConvertTo-SqlDscServerPermission
 
-    # Always ensure all states are represented in current permissions
-    foreach ($permissionState in @('Grant', 'GrantWithGrant', 'Deny'))
+    # Find the current permission for the desired state
+    $currentPermissionForState = $currentPermissions |
+        Where-Object -FilterScript {
+            $_.State -eq $effectiveState
+        }
+
+    if (-not $currentPermissionForState)
     {
-        if ($currentPermissions.State -notcontains $permissionState)
-        {
-            [ServerPermission[]] $currentPermissions += [ServerPermission] @{
-                State      = $permissionState
-                Permission = @()
-            }
+        $currentPermissionForState = [ServerPermission] @{
+            State      = $effectiveState
+            Permission = @()
         }
     }
 
-    # Compare desired permissions with current permissions
-    foreach ($desiredPermission in $Permission)
+    # Get the list of permission names that should be true in the permission set
+    $desiredPermissionNames = @()
+    $permissionProperties = $Permission | Get-Member -MemberType Property | Where-Object { $_.Name -ne 'IsEmpty' }
+
+    foreach ($property in $permissionProperties)
     {
-        $currentPermissionForState = $currentPermissions |
-            Where-Object -FilterScript {
-                $_.State -eq $desiredPermission.State
-            }
-
-        # Check if all desired permissions are present in current state
-        foreach ($desiredPermissionName in $desiredPermission.Permission)
+        if ($Permission.$($property.Name) -eq $true)
         {
-            if ($desiredPermissionName -notin $currentPermissionForState.Permission)
-            {
-                Write-Verbose -Message (
-                    $script:localizedData.ServerPermission_PermissionNotInDesiredState -f $desiredPermissionName, $desiredPermission.State, $Name
-                )
-                return $false
-            }
+            $desiredPermissionNames += $property.Name
         }
+    }
 
-        # Check if current state has permissions not in desired state
+    # Check if all desired permissions are present in current state
+    foreach ($desiredPermissionName in $desiredPermissionNames)
+    {
+        if ($desiredPermissionName -notin $currentPermissionForState.Permission)
+        {
+            Write-Verbose -Message (
+                $script:localizedData.ServerPermission_PermissionNotInDesiredState -f $desiredPermissionName, $effectiveState, $Name
+            )
+            return $false
+        }
+    }
+
+    # Check if current state has permissions not in desired state (unless desired is empty)
+    if ($desiredPermissionNames.Count -gt 0)
+    {
         foreach ($currentPermissionName in $currentPermissionForState.Permission)
         {
-            if ($currentPermissionName -notin $desiredPermission.Permission)
+            if ($currentPermissionName -notin $desiredPermissionNames)
             {
                 Write-Verbose -Message (
-                    $script:localizedData.ServerPermission_PermissionNotInDesiredState -f $currentPermissionName, $desiredPermission.State, $Name
+                    $script:localizedData.ServerPermission_PermissionNotInDesiredState -f $currentPermissionName, $effectiveState, $Name
                 )
                 return $false
             }
+        }
+    }
+    else
+    {
+        # If no permissions are desired, current should also be empty
+        if ($currentPermissionForState.Permission.Count -gt 0)
+        {
+            Write-Verbose -Message (
+                $script:localizedData.ServerPermission_PermissionNotInDesiredState -f ($currentPermissionForState.Permission -join ', '), $effectiveState, $Name
+            )
+            return $false
         }
     }
 
