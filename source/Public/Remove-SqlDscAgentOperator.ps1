@@ -75,7 +75,7 @@ function Remove-SqlDscAgentOperator
             
             $ServerObject.JobServer.Operators.Refresh()
             
-            $OperatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name
+            $OperatorObject = Get-SqlDscAgentOperator -ServerObject $ServerObject -Name $Name
 
             if (-not $OperatorObject)
             {

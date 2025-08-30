@@ -17,6 +17,36 @@
     .PARAMETER EmailAddress
         Specifies the email address for the SQL Agent Operator.
 
+    .PARAMETER CategoryName
+        Specifies the category name for the SQL Agent Operator.
+
+    .PARAMETER NetSendAddress
+        Specifies the net send address for the SQL Agent Operator.
+
+    .PARAMETER PagerAddress
+        Specifies the pager address for the SQL Agent Operator.
+
+    .PARAMETER PagerDays
+        Specifies the days when pager notifications are active for the SQL Agent Operator.
+
+    .PARAMETER SaturdayPagerEndTime
+        Specifies the Saturday pager end time for the SQL Agent Operator.
+
+    .PARAMETER SaturdayPagerStartTime
+        Specifies the Saturday pager start time for the SQL Agent Operator.
+
+    .PARAMETER SundayPagerEndTime
+        Specifies the Sunday pager end time for the SQL Agent Operator.
+
+    .PARAMETER SundayPagerStartTime
+        Specifies the Sunday pager start time for the SQL Agent Operator.
+
+    .PARAMETER WeekdayPagerEndTime
+        Specifies the weekday pager end time for the SQL Agent Operator.
+
+    .PARAMETER WeekdayPagerStartTime
+        Specifies the weekday pager start time for the SQL Agent Operator.
+
     .INPUTS
         Microsoft.SqlServer.Management.Smo.Server
 
@@ -70,7 +100,47 @@ function Set-SqlDscAgentOperator
 
         [Parameter()]
         [System.String]
-        $EmailAddress
+        $EmailAddress,
+
+        [Parameter()]
+        [System.String]
+        $CategoryName,
+
+        [Parameter()]
+        [System.String]
+        $NetSendAddress,
+
+        [Parameter()]
+        [System.String]
+        $PagerAddress,
+
+        [Parameter()]
+        [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]
+        $PagerDays,
+
+        [Parameter()]
+        [System.TimeSpan]
+        $SaturdayPagerEndTime,
+
+        [Parameter()]
+        [System.TimeSpan]
+        $SaturdayPagerStartTime,
+
+        [Parameter()]
+        [System.TimeSpan]
+        $SundayPagerEndTime,
+
+        [Parameter()]
+        [System.TimeSpan]
+        $SundayPagerStartTime,
+
+        [Parameter()]
+        [System.TimeSpan]
+        $WeekdayPagerEndTime,
+
+        [Parameter()]
+        [System.TimeSpan]
+        $WeekdayPagerStartTime
     )
 
     # cSpell: ignore SSAO
@@ -82,7 +152,7 @@ function Set-SqlDscAgentOperator
             
             $ServerObject.JobServer.Operators.Refresh()
             
-            $OperatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name
+            $OperatorObject = Get-SqlDscAgentOperator -ServerObject $ServerObject -Name $Name
 
             if (-not $OperatorObject)
             {
@@ -106,6 +176,126 @@ function Set-SqlDscAgentOperator
             }
         }
 
+        if ($PSBoundParameters.ContainsKey('CategoryName'))
+        {
+            if ($OperatorObject.CategoryName -ne $CategoryName)
+            {
+                $changesNeeded = $true
+            }
+            else
+            {
+                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_CategoryNameAlreadyCorrect -f $CategoryName, $OperatorObject.Name)
+            }
+        }
+
+        if ($PSBoundParameters.ContainsKey('NetSendAddress'))
+        {
+            if ($OperatorObject.NetSendAddress -ne $NetSendAddress)
+            {
+                $changesNeeded = $true
+            }
+            else
+            {
+                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_NetSendAddressAlreadyCorrect -f $NetSendAddress, $OperatorObject.Name)
+            }
+        }
+
+        if ($PSBoundParameters.ContainsKey('PagerAddress'))
+        {
+            if ($OperatorObject.PagerAddress -ne $PagerAddress)
+            {
+                $changesNeeded = $true
+            }
+            else
+            {
+                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_PagerAddressAlreadyCorrect -f $PagerAddress, $OperatorObject.Name)
+            }
+        }
+
+        if ($PSBoundParameters.ContainsKey('PagerDays'))
+        {
+            if ($OperatorObject.PagerDays -ne $PagerDays)
+            {
+                $changesNeeded = $true
+            }
+            else
+            {
+                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_PagerDaysAlreadyCorrect -f $PagerDays, $OperatorObject.Name)
+            }
+        }
+
+        if ($PSBoundParameters.ContainsKey('SaturdayPagerEndTime'))
+        {
+            if ($OperatorObject.SaturdayPagerEndTime -ne $SaturdayPagerEndTime)
+            {
+                $changesNeeded = $true
+            }
+            else
+            {
+                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SaturdayPagerEndTimeAlreadyCorrect -f $SaturdayPagerEndTime, $OperatorObject.Name)
+            }
+        }
+
+        if ($PSBoundParameters.ContainsKey('SaturdayPagerStartTime'))
+        {
+            if ($OperatorObject.SaturdayPagerStartTime -ne $SaturdayPagerStartTime)
+            {
+                $changesNeeded = $true
+            }
+            else
+            {
+                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SaturdayPagerStartTimeAlreadyCorrect -f $SaturdayPagerStartTime, $OperatorObject.Name)
+            }
+        }
+
+        if ($PSBoundParameters.ContainsKey('SundayPagerEndTime'))
+        {
+            if ($OperatorObject.SundayPagerEndTime -ne $SundayPagerEndTime)
+            {
+                $changesNeeded = $true
+            }
+            else
+            {
+                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SundayPagerEndTimeAlreadyCorrect -f $SundayPagerEndTime, $OperatorObject.Name)
+            }
+        }
+
+        if ($PSBoundParameters.ContainsKey('SundayPagerStartTime'))
+        {
+            if ($OperatorObject.SundayPagerStartTime -ne $SundayPagerStartTime)
+            {
+                $changesNeeded = $true
+            }
+            else
+            {
+                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SundayPagerStartTimeAlreadyCorrect -f $SundayPagerStartTime, $OperatorObject.Name)
+            }
+        }
+
+        if ($PSBoundParameters.ContainsKey('WeekdayPagerEndTime'))
+        {
+            if ($OperatorObject.WeekdayPagerEndTime -ne $WeekdayPagerEndTime)
+            {
+                $changesNeeded = $true
+            }
+            else
+            {
+                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_WeekdayPagerEndTimeAlreadyCorrect -f $WeekdayPagerEndTime, $OperatorObject.Name)
+            }
+        }
+
+        if ($PSBoundParameters.ContainsKey('WeekdayPagerStartTime'))
+        {
+            if ($OperatorObject.WeekdayPagerStartTime -ne $WeekdayPagerStartTime)
+            {
+                $changesNeeded = $true
+            }
+            else
+            {
+                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_WeekdayPagerStartTimeAlreadyCorrect -f $WeekdayPagerStartTime, $OperatorObject.Name)
+            }
+        }
+
         if (-not $changesNeeded)
         {
             Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_NoChangesNeeded -f $OperatorObject.Name)
@@ -126,6 +316,66 @@ function Set-SqlDscAgentOperator
                 {
                     Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingEmailAddress -f $EmailAddress, $OperatorObject.Name)
                     $OperatorObject.EmailAddress = $EmailAddress
+                }
+
+                if ($PSBoundParameters.ContainsKey('CategoryName'))
+                {
+                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingCategoryName -f $CategoryName, $OperatorObject.Name)
+                    $OperatorObject.CategoryName = $CategoryName
+                }
+
+                if ($PSBoundParameters.ContainsKey('NetSendAddress'))
+                {
+                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingNetSendAddress -f $NetSendAddress, $OperatorObject.Name)
+                    $OperatorObject.NetSendAddress = $NetSendAddress
+                }
+
+                if ($PSBoundParameters.ContainsKey('PagerAddress'))
+                {
+                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingPagerAddress -f $PagerAddress, $OperatorObject.Name)
+                    $OperatorObject.PagerAddress = $PagerAddress
+                }
+
+                if ($PSBoundParameters.ContainsKey('PagerDays'))
+                {
+                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingPagerDays -f $PagerDays, $OperatorObject.Name)
+                    $OperatorObject.PagerDays = $PagerDays
+                }
+
+                if ($PSBoundParameters.ContainsKey('SaturdayPagerEndTime'))
+                {
+                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingSaturdayPagerEndTime -f $SaturdayPagerEndTime, $OperatorObject.Name)
+                    $OperatorObject.SaturdayPagerEndTime = $SaturdayPagerEndTime
+                }
+
+                if ($PSBoundParameters.ContainsKey('SaturdayPagerStartTime'))
+                {
+                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingSaturdayPagerStartTime -f $SaturdayPagerStartTime, $OperatorObject.Name)
+                    $OperatorObject.SaturdayPagerStartTime = $SaturdayPagerStartTime
+                }
+
+                if ($PSBoundParameters.ContainsKey('SundayPagerEndTime'))
+                {
+                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingSundayPagerEndTime -f $SundayPagerEndTime, $OperatorObject.Name)
+                    $OperatorObject.SundayPagerEndTime = $SundayPagerEndTime
+                }
+
+                if ($PSBoundParameters.ContainsKey('SundayPagerStartTime'))
+                {
+                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingSundayPagerStartTime -f $SundayPagerStartTime, $OperatorObject.Name)
+                    $OperatorObject.SundayPagerStartTime = $SundayPagerStartTime
+                }
+
+                if ($PSBoundParameters.ContainsKey('WeekdayPagerEndTime'))
+                {
+                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingWeekdayPagerEndTime -f $WeekdayPagerEndTime, $OperatorObject.Name)
+                    $OperatorObject.WeekdayPagerEndTime = $WeekdayPagerEndTime
+                }
+
+                if ($PSBoundParameters.ContainsKey('WeekdayPagerStartTime'))
+                {
+                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingWeekdayPagerStartTime -f $WeekdayPagerStartTime, $OperatorObject.Name)
+                    $OperatorObject.WeekdayPagerStartTime = $WeekdayPagerStartTime
                 }
 
                 $OperatorObject.Alter()

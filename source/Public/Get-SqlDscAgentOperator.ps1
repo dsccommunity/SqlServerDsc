@@ -74,7 +74,11 @@ function Get-SqlDscAgentOperator
         {
             'ByName'
             {
-                return Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name
+                Write-Verbose -Message ($script:localizedData.Get_SqlDscAgentOperator_GettingOperator -f $Name)
+
+                $operatorObject = $ServerObject.JobServer.Operators | Where-Object -FilterScript { $_.Name -eq $Name }
+
+                return $operatorObject
             }
 
             'All'

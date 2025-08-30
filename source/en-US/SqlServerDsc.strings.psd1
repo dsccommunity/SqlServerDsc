@@ -401,10 +401,8 @@ ConvertFrom-StringData @'
     Test_SqlDscAgentAlert_MessageIdMatch = Message ID matches expected value '{0}'. (TSAA0008)
     Test_SqlDscAgentAlert_AllTestsPassed = All tests passed for SQL Agent Alert '{0}'. (TSAA0009)
 
-    ## Get-AgentOperatorObject
-    Get_AgentOperatorObject_GettingOperator = Getting SQL Agent Operator '{0}'. (GAOO0001)
-
     ## Get-SqlDscAgentOperator
+    Get_SqlDscAgentOperator_GettingOperator = Getting SQL Agent Operator '{0}'. (GSAO0003)
     Get_SqlDscAgentOperator_GettingOperators = Getting SQL Agent Operators from instance '{0}'. (GSAO0001)
     Get_SqlDscAgentOperator_ReturningAllOperators = Returning all {0} SQL Agent Operators. (GSAO0002)
 
@@ -414,6 +412,16 @@ ConvertFrom-StringData @'
     New_SqlDscAgentOperator_OperatorCreated = SQL Agent Operator '{0}' was created successfully. (NSAO0003)
     New_SqlDscAgentOperator_CreateFailed = Failed to create SQL Agent Operator '{0}'. (NSAO0004)
     New_SqlDscAgentOperator_SettingEmailAddress = Setting email address '{0}' for SQL Agent Operator '{1}'. (NSAO0005)
+    New_SqlDscAgentOperator_SettingCategoryName = Setting category name '{0}' for SQL Agent Operator '{1}'. (NSAO0006)
+    New_SqlDscAgentOperator_SettingNetSendAddress = Setting net send address '{0}' for SQL Agent Operator '{1}'. (NSAO0007)
+    New_SqlDscAgentOperator_SettingPagerAddress = Setting pager address '{0}' for SQL Agent Operator '{1}'. (NSAO0008)
+    New_SqlDscAgentOperator_SettingPagerDays = Setting pager days '{0}' for SQL Agent Operator '{1}'. (NSAO0009)
+    New_SqlDscAgentOperator_SettingSaturdayPagerEndTime = Setting Saturday pager end time '{0}' for SQL Agent Operator '{1}'. (NSAO0010)
+    New_SqlDscAgentOperator_SettingSaturdayPagerStartTime = Setting Saturday pager start time '{0}' for SQL Agent Operator '{1}'. (NSAO0011)
+    New_SqlDscAgentOperator_SettingSundayPagerEndTime = Setting Sunday pager end time '{0}' for SQL Agent Operator '{1}'. (NSAO0012)
+    New_SqlDscAgentOperator_SettingSundayPagerStartTime = Setting Sunday pager start time '{0}' for SQL Agent Operator '{1}'. (NSAO0013)
+    New_SqlDscAgentOperator_SettingWeekdayPagerEndTime = Setting weekday pager end time '{0}' for SQL Agent Operator '{1}'. (NSAO0014)
+    New_SqlDscAgentOperator_SettingWeekdayPagerStartTime = Setting weekday pager start time '{0}' for SQL Agent Operator '{1}'. (NSAO0015)
     New_SqlDscAgentOperator_CreateShouldProcessVerboseDescription = Creating the SQL Agent Operator '{0}' on the instance '{1}'.
     New_SqlDscAgentOperator_CreateShouldProcessVerboseWarning = Are you sure you want to create the SQL Agent Operator '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
@@ -424,10 +432,30 @@ ConvertFrom-StringData @'
     Set_SqlDscAgentOperator_OperatorNotFound = SQL Agent Operator '{0}' was not found. (SSAO0002)
     Set_SqlDscAgentOperator_UpdatingOperator = Updating SQL Agent Operator '{0}'. (SSAO0003)
     Set_SqlDscAgentOperator_SettingEmailAddress = Setting email address '{0}' for SQL Agent Operator '{1}'. (SSAO0004)
+    Set_SqlDscAgentOperator_SettingCategoryName = Setting category name '{0}' for SQL Agent Operator '{1}'. (SSAO0009)
+    Set_SqlDscAgentOperator_SettingNetSendAddress = Setting net send address '{0}' for SQL Agent Operator '{1}'. (SSAO0010)
+    Set_SqlDscAgentOperator_SettingPagerAddress = Setting pager address '{0}' for SQL Agent Operator '{1}'. (SSAO0011)
+    Set_SqlDscAgentOperator_SettingPagerDays = Setting pager days '{0}' for SQL Agent Operator '{1}'. (SSAO0012)
+    Set_SqlDscAgentOperator_SettingSaturdayPagerEndTime = Setting Saturday pager end time '{0}' for SQL Agent Operator '{1}'. (SSAO0013)
+    Set_SqlDscAgentOperator_SettingSaturdayPagerStartTime = Setting Saturday pager start time '{0}' for SQL Agent Operator '{1}'. (SSAO0014)
+    Set_SqlDscAgentOperator_SettingSundayPagerEndTime = Setting Sunday pager end time '{0}' for SQL Agent Operator '{1}'. (SSAO0015)
+    Set_SqlDscAgentOperator_SettingSundayPagerStartTime = Setting Sunday pager start time '{0}' for SQL Agent Operator '{1}'. (SSAO0016)
+    Set_SqlDscAgentOperator_SettingWeekdayPagerEndTime = Setting weekday pager end time '{0}' for SQL Agent Operator '{1}'. (SSAO0017)
+    Set_SqlDscAgentOperator_SettingWeekdayPagerStartTime = Setting weekday pager start time '{0}' for SQL Agent Operator '{1}'. (SSAO0018)
     Set_SqlDscAgentOperator_OperatorUpdated = SQL Agent Operator '{0}' was updated successfully. (SSAO0005)
     Set_SqlDscAgentOperator_NoChangesNeeded = No changes needed for SQL Agent Operator '{0}'. (SSAO0006)
     Set_SqlDscAgentOperator_UpdateFailed = Failed to update SQL Agent Operator '{0}'. (SSAO0007)
     Set_SqlDscAgentOperator_EmailAddressAlreadyCorrect = Email address '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0008)
+    Set_SqlDscAgentOperator_CategoryNameAlreadyCorrect = Category name '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0019)
+    Set_SqlDscAgentOperator_NetSendAddressAlreadyCorrect = Net send address '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0020)
+    Set_SqlDscAgentOperator_PagerAddressAlreadyCorrect = Pager address '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0021)
+    Set_SqlDscAgentOperator_PagerDaysAlreadyCorrect = Pager days '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0022)
+    Set_SqlDscAgentOperator_SaturdayPagerEndTimeAlreadyCorrect = Saturday pager end time '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0023)
+    Set_SqlDscAgentOperator_SaturdayPagerStartTimeAlreadyCorrect = Saturday pager start time '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0024)
+    Set_SqlDscAgentOperator_SundayPagerEndTimeAlreadyCorrect = Sunday pager end time '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0025)
+    Set_SqlDscAgentOperator_SundayPagerStartTimeAlreadyCorrect = Sunday pager start time '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0026)
+    Set_SqlDscAgentOperator_WeekdayPagerEndTimeAlreadyCorrect = Weekday pager end time '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0027)
+    Set_SqlDscAgentOperator_WeekdayPagerStartTimeAlreadyCorrect = Weekday pager start time '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0028)
     Set_SqlDscAgentOperator_UpdateShouldProcessVerboseDescription = Updating the SQL Agent Operator '{0}' on the instance '{1}'.
     Set_SqlDscAgentOperator_UpdateShouldProcessVerboseWarning = Are you sure you want to update the SQL Agent Operator '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
@@ -452,4 +480,26 @@ ConvertFrom-StringData @'
     Test_SqlDscAgentOperator_EmailAddressMismatch = Email address mismatch: current '{0}', expected '{1}'. (TSAO0005)
     Test_SqlDscAgentOperator_EmailAddressMatch = Email address matches expected value '{0}'. (TSAO0006)
     Test_SqlDscAgentOperator_AllTestsPassed = All tests passed for SQL Agent Operator '{0}'. (TSAO0007)
+
+    ## Enable-SqlDscAgentOperator
+    Enable_SqlDscAgentOperator_RefreshingServerObject = Refreshing server object's operators collection. (ESAO0001)
+    Enable_SqlDscAgentOperator_OperatorNotFound = SQL Agent Operator '{0}' was not found. (ESAO0002)
+    Enable_SqlDscAgentOperator_EnablingOperator = Enabling SQL Agent Operator '{0}'. (ESAO0003)
+    Enable_SqlDscAgentOperator_OperatorEnabled = SQL Agent Operator '{0}' was enabled successfully. (ESAO0004)
+    Enable_SqlDscAgentOperator_EnableFailed = Failed to enable SQL Agent Operator '{0}'. (ESAO0005)
+    Enable_SqlDscAgentOperator_ShouldProcessVerboseDescription = Enabling the SQL Agent Operator '{0}' on the instance '{1}'.
+    Enable_SqlDscAgentOperator_ShouldProcessVerboseWarning = Are you sure you want to enable the SQL Agent Operator '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Enable_SqlDscAgentOperator_ShouldProcessCaption = Enable SQL Agent Operator on instance
+
+    ## Disable-SqlDscAgentOperator
+    Disable_SqlDscAgentOperator_RefreshingServerObject = Refreshing server object's operators collection. (DSAO0001)
+    Disable_SqlDscAgentOperator_OperatorNotFound = SQL Agent Operator '{0}' was not found. (DSAO0002)
+    Disable_SqlDscAgentOperator_DisablingOperator = Disabling SQL Agent Operator '{0}'. (DSAO0003)
+    Disable_SqlDscAgentOperator_OperatorDisabled = SQL Agent Operator '{0}' was disabled successfully. (DSAO0004)
+    Disable_SqlDscAgentOperator_DisableFailed = Failed to disable SQL Agent Operator '{0}'. (DSAO0005)
+    Disable_SqlDscAgentOperator_ShouldProcessVerboseDescription = Disabling the SQL Agent Operator '{0}' on the instance '{1}'.
+    Disable_SqlDscAgentOperator_ShouldProcessVerboseWarning = Are you sure you want to disable the SQL Agent Operator '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Disable_SqlDscAgentOperator_ShouldProcessCaption = Disable SQL Agent Operator on instance
 '@
