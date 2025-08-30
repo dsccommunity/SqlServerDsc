@@ -15,6 +15,10 @@ applyTo: "**/*.ps?(m|d)1"
 - Classes: PascalCase
 - Include scope for script/global/environment variables: `$script:`, `$global:`, `$env:`
 
+## File naming
+
+- Class files: `###.ClassName.ps1` format (e.g. `001.SqlReason.ps1`, `004.StartupParameters.ps1`)
+
 ## Formatting
 
 ### Indentation & Spacing
@@ -45,7 +49,7 @@ applyTo: "**/*.ps?(m|d)1"
 ### Hashtables
 
 - Empty: `@{}`
-- Multi-line: each property on separate line with proper indentation
+- Each property on separate line with proper indentation
 - Properties: Use PascalCase
 
 ### Comments
@@ -71,15 +75,47 @@ applyTo: "**/*.ps?(m|d)1"
 - Avoid `Write-Output` (use `return` instead)
 - Avoid `ConvertTo-SecureString -AsPlainText` in production code
 - Don't redefine reserved parameters (Verbose, Debug, etc.)
-- Include a `Force` parameter for functions that support `$PSCmdlet.ShouldContinue` or that use `$PSCmdlet.ShouldProcess`
+- Include a `Force` parameter for functions that uses `$PSCmdlet.ShouldContinue` or `$PSCmdlet.ShouldProcess`
 - For state-changing functions, use `SupportsShouldProcess`
-- Use `$PSCmdlet.ThrowTerminatingError()` for terminating errors, use relevant error category
-- Use `Write-Error` for non-terminating errors, use relevant error category
-- Use `Write-Warning` for warnings
-- Use `Write-Debug` for debugging information
-- Use `Write-Verbose` for actionable information
-- Use `Write-Information` for informational messages.
+  - Place ShouldProcess check immediately before each state-change
+  - `$PSCmdlet.ShouldProcess` must use required pattern
 - Never use backtick as line continuation in production code.
+
+## Output streams
+
+- Never output sensitive data/secrets
+- Use `Write-Debug` for: Internal diagnostics; Variable values/traces; Developer-focused details
+- Use `Write-Verbose` for: High-level execution flow only; User-actionable information
+- Use `Write-Information` for: User-facing status updates; Important operational messages; Non-error state changes
+- Use `Write-Warning` for: Non-fatal issues requiring attention; Deprecated functionality usage; Configuration problems that don't block execution
+- Use `$PSCmdlet.ThrowTerminatingError()` for terminating errors (except for classes), use relevant error category
+- Use `Write-Error` for non-terminating errors, use relevant error category
+
+## ShouldProcess Required Pattern
+
+- Ensure `$descriptionMessage` explains what will happen
+- Ensure `$confirmationMessage` succinctly asks for confirmation
+- Keep `$captionMessage` short and descriptive (no trailing `.`)
+
+```powershell
+$descriptionMessage = $script:localizedData.FunctionName_Action_ShouldProcessDescription -f $param1, $param2
+$confirmationMessage = $script:localizedData.FunctionName_Action_ShouldProcessConfirmation -f $param1
+$captionMessage = $script:localizedData.FunctionName_Action_ShouldProcessCaption
+
+if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
+{
+    # state changing code
+}
+```
+
+## Force Parameter Pattern
+
+```powershell
+if ($Force.IsPresent -and -not $Confirm)
+{
+    $ConfirmPreference = 'None'
+}
+```
 
 ### Structure
 
@@ -107,7 +143,7 @@ applyTo: "**/*.ps?(m|d)1"
 function Get-Something
 {
     [CmdletBinding()]
-    [OutputType([String])]
+    [OutputType([System.String])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -128,7 +164,7 @@ function Get-Something
 - Include `[CmdletBinding()]` on every function
 - Parameter block at top
 - Parameter block: `param ()` if empty, else opening/closing parentheses on own lines
-- `[OutputType()]` for functions with output
+- `[OutputType({return type})]` for functions with output, no output use `[OutputType()]`
 - All parameters use `[Parameter()]` attribute, mandatory parameters use `[Parameter(Mandatory = $true)]`
 - Parameter attributes on separate lines
 - Parameter type on line above parameter name
@@ -151,7 +187,7 @@ function Get-Something
 - Use `PSCredential` for credentials
 - Avoid hardcoded computer names, use cross-platform [`Get-ComputerName`](https://github.com/dsccommunity/DscResource.Common/wiki/Get%E2%80%91ComputerName) instead of `$env:COMPUTERNAME`
 - Place `$null` on left side of comparisons
-- Avoid empty catch blocks (use `-ErrorAction SilentlyContinue`)
+- Avoid empty catch blocks (instead use `-ErrorAction SilentlyContinue`)
 - Don't use `Invoke-Expression` (use `&` operator)
 - Use CIM commands instead of WMI commands
 
@@ -165,7 +201,7 @@ function Get-Something
 
 ## File Rules
 
-- End files with newline
+- End files with only one blank line
 - Use CR+LF line endings
 - Maximum two consecutive newlines
 

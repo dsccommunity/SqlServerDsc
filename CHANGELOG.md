@@ -12,50 +12,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed Azure DevOps pipeline conditions that were preventing DSC resource
   integration tests from running when they should by removing incorrect quotes
   around boolean values.
+- `SqlAgentAlert`
+  - Minor fix in `source/Classes/020.SqlAgentAlert.ps1` to correct `ExcludeDscProperties`
+    formatting (added missing delimiter).
 
 ### Added
 
 - Added setup workflow for GitHub Copilot.
   - Switch the workflow to use Linux.
   - Attempt to unshallow the Copilot branch
+- `SqlAgentAlert`
+  - Added new DSC resource to manage SQL Server Agent alerts.
   - Improved AI instructions.
   - Enhanced workflow with proper environment variable configuration and DSCv3 verification.
   - Fixed environment variable persistence by using $GITHUB_ENV instead of
     job-level env declaration.
 - `Assert-SqlDscLogin`
   - Added new public command to validate that a specified SQL Server principal
-    exists as a login, throwing a terminating error if it doesn't exist.
+    is a login.
+- `Enable-SqlDscLogin`
+  - Added new public command to enable a SQL Server login.
+- `Disable-SqlDscLogin`
+  - Added new public command to disable a SQL Server login.
+- `Test-SqlDscIsLoginEnabled`
+  - Added new public command to test whether a SQL Server login is enabled.
+    Throws a terminating error if the specified principal does not exist as a login.
   - Supports pipeline input and provides detailed error messages with localization.
   - Uses `Test-SqlDscIsLogin` command for login validation following module patterns.
-- `Get-SqlDscLogin`
-  - Added new public command to get a SQL Server login from a Database Engine instance.
-  - Returns a `Microsoft.SqlServer.Management.Smo.Login` object that represents
-    the login.
-  - Supports getting a specific login by name or all logins if no name is specified.
-  - Includes a `-Refresh` parameter to refresh the server's login collection
-    before retrieval.
-- `Remove-SqlDscLogin`
-  - Added new public command to remove a SQL Server login from a Database
-    Engine instance.
-  - Supports removing a login by specifying a `ServerObject` and `Name`, or by
-    passing a `LoginObject` through the pipeline.
-  - Includes confirmation prompts with `-Force` parameter to bypass confirmation.
-  - Includes a `-Refresh` parameter to refresh the server's login collection
-    before attempting removal.
-  - Provides detailed error messages with localization support.
-- `New-SqlDscLogin`
-  - Added new public command to create a new login on a SQL Server Database
-    Engine instance.
-  - Supports creating SQL Server logins, Windows user logins, Windows group
-    logins, certificate-based logins, and asymmetric key-based logins.
-  - Implements proper parameter sets to prevent combining hashed passwords
-    with password policy options, following SQL Server restrictions.
+- Added `Get-SqlDscLogin`, `Get-SqlDscRole`, `New-SqlDscLogin`, `New-SqlDscRole`,
+  `Remove-SqlDscRole`, and `Remove-SqlDscLogin` commands for retrieving and managing
+   SQL Server logins and roles with support for refresh, pipeline input, and ShouldProcess.
+- Added `Get-SqlDscAgentAlert`, `New-SqlDscAgentAlert`,
+  `Set-SqlDscAgentAlert`, `Remove-SqlDscAgentAlert`, and `Test-SqlDscAgentAlert`
+  to manage SQL Agent alerts on a Database Engine instance.
+- Added new public commands for database management:
+  - `Get-SqlDscDatabase` - Get databases from a SQL Server Database Engine instance
+  - `New-SqlDscDatabase` - Create a new database with specified properties
+  - `Set-SqlDscDatabase` - Modify properties of an existing database
+  - `Remove-SqlDscDatabase` - Remove a database from SQL Server instance
+  - `Test-SqlDscDatabase` - Test if a database is in the desired state
+  - All commands support pipeline input with ServerObject and follow established patterns
+  - Database objects can also be used as pipeline input for Set and Remove operations
+  - Commands include comprehensive validation, localization, and ShouldProcess support
 
 ### Changed
 
 - Refactored GitHub Copilot workflow setup to be module-agnostic via MODULE_NAME
   environment variable, includes full-history detection, uses idempotent .NET
   tool install, and adds Linux dependency handling ([issue #2127](https://github.com/dsccommunity/SqlServerDsc/issues/2127)).
+- `SqlAgentAlert`
+  - Added additional unit tests covering MessageId-based alerts, the hidden
+    `Modify()` method behavior, and `AssertProperties()` validation scenarios.
 - Module now outputs a verbose message instead of a warning when the SMO
   dependency module is missing during import to work around a DSC v3 issue.
 - VS Code tasks configuration was improved to support AI.
@@ -91,6 +98,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved documentation with optimized analysis workflow description.
 - DSC community style guidelines
   - Added requirement to follow guidelines over existing code patterns.
+- Improved markdown, pester, powershell, and changelog instructions.
+  - Fixed `Ignore` that seems in edge-cases fail.
+  - Improved markdown and changelog instructions.
 
 ## [17.1.0] - 2025-05-22
 

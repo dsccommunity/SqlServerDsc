@@ -89,7 +89,8 @@
         "wsfc",
         "SOURCEBRANCH",
         "SOURCEBRANCHNAME",
-        "setvariable"
+        "setvariable",
+        "RAISERROR"
     ],
     "cSpell.ignorePaths": [
         ".git"
@@ -110,7 +111,7 @@
         "/@prkelly/g",
         "/@glennsarti/g",
         "/tempdb/g",
-        "/sqlcmd\\.exe/g"
+        "/\\b[A-Za-z]{2,}\\d{4}\\b/g"
     ],
     "[markdown]": {
         "files.trimTrailingWhitespace": true,
