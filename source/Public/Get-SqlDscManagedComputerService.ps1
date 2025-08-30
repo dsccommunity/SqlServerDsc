@@ -74,10 +74,10 @@ function Get-SqlDscManagedComputerService
         $ServiceType
     )
 
-    $ErrorActionPreference = 'Stop'
-
     begin
     {
+        $ErrorActionPreference = 'Stop'
+
         if ($PSCmdlet.ParameterSetName -eq 'ByServerName')
         {
             $ManagedComputerObject = Get-SqlDscManagedComputer -ServerName $ServerName

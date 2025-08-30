@@ -70,7 +70,11 @@ function New-SqlDscRole
         $Refresh
     )
 
-    $ErrorActionPreference = 'Stop'
+
+    begin
+    {
+        $ErrorActionPreference = 'Stop'
+    }
 
     process
     {

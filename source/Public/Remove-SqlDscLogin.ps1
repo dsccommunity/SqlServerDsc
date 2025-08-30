@@ -77,7 +77,10 @@ function Remove-SqlDscLogin
         $Refresh
     )
 
-    $ErrorActionPreference = 'Stop'
+    begin
+    {
+        $ErrorActionPreference = 'Stop'
+    }
 
     process
     {

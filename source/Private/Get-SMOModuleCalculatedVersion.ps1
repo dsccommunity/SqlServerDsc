@@ -36,7 +36,11 @@ function Get-SMOModuleCalculatedVersion
         $PSModuleInfo
     )
 
-    $ErrorActionPreference = 'Stop'
+
+    begin
+    {
+        $ErrorActionPreference = 'Stop'
+    }
 
     process
     {

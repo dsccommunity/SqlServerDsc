@@ -68,7 +68,11 @@ function Remove-SqlDscAudit
         $Refresh
     )
 
-    $ErrorActionPreference = 'Stop'
+
+    begin
+    {
+        $ErrorActionPreference = 'Stop'
+    }
 
     process
     {

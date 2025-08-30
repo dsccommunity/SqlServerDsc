@@ -253,7 +253,11 @@ function New-SqlDscLogin
         $PassThru
     )
 
-    $ErrorActionPreference = 'Stop'
+
+    begin
+    {
+        $ErrorActionPreference = 'Stop'
+    }
 
     process
     {

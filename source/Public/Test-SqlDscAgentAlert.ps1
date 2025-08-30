@@ -73,7 +73,10 @@ function Test-SqlDscAgentAlert
         $MessageId
     )
 
-    $ErrorActionPreference = 'Stop'
+    begin
+    {
+        $ErrorActionPreference = 'Stop'
+    }
 
     # cSpell: ignore TSAA
     process

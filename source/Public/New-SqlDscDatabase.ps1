@@ -96,10 +96,11 @@ function New-SqlDscDatabase
         $Refresh
     )
 
-    $ErrorActionPreference = 'Stop'
 
     begin
     {
+        $ErrorActionPreference = 'Stop'
+
         if ($Force.IsPresent -and -not $Confirm)
         {
             $ConfirmPreference = 'None'

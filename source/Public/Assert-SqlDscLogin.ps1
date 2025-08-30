@@ -44,7 +44,11 @@ function Assert-SqlDscLogin
         $Name
     )
 
-    $ErrorActionPreference = 'Stop'
+
+    begin
+    {
+        $ErrorActionPreference = 'Stop'
+    }
 
     process
     {

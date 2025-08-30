@@ -75,7 +75,11 @@ function Remove-SqlDscRole
         $Refresh
     )
 
-    $ErrorActionPreference = 'Stop'
+
+    begin
+    {
+        $ErrorActionPreference = 'Stop'
+    }
 
     process
     {

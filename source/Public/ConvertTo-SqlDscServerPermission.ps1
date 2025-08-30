@@ -35,10 +35,11 @@ function ConvertTo-SqlDscServerPermission
         $ServerPermissionInfo
     )
 
-    $ErrorActionPreference = 'Stop'
 
     begin
     {
+        $ErrorActionPreference = 'Stop'
+
         [ServerPermission[]] $permissions = @()
     }
 
