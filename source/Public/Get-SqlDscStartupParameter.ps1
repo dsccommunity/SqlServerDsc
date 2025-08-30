@@ -65,8 +65,6 @@ function Get-SqlDscStartupParameter
         $InstanceName = 'MSSQLSERVER'
     )
 
-    $ErrorActionPreference = 'Stop'
-
     Assert-ElevatedUser -ErrorAction 'Stop'
 
     if ($PSCmdlet.ParameterSetName -eq 'ByServiceObject')
@@ -86,14 +84,21 @@ function Get-SqlDscStartupParameter
 
         if (-not $ServiceObject)
         {
-            $writeErrorParameters = @{
-                Message      = $script:localizedData.StartupParameter_Get_FailedToFindServiceObject
-                Category     = 'InvalidOperation'
-                ErrorId      = 'GSDSP0001' # CSpell: disable-line
-                TargetObject = $ServiceObject
+            # If SilentlyContinue is specified, just return without error
+            if ($PSBoundParameters.ContainsKey('ErrorAction') -and $PSBoundParameters['ErrorAction'] -eq 'SilentlyContinue')
+            {
+                return $null
             }
+            
+            $errorRecord = [System.Management.Automation.ErrorRecord]::new(
+                [System.InvalidOperationException]::new($script:localizedData.StartupParameter_Get_FailedToFindServiceObject),
+                'GSDSP0001', # CSpell: disable-line
+                [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                $ServiceObject
+            )
 
-            Write-Error @writeErrorParameters
+            $PSCmdlet.WriteError($errorRecord)
+            return
         }
     }
 
