@@ -36,6 +36,30 @@ ConvertFrom-StringData @'
     ServerPermission_GrantPermission = Grant the permissions '{0}' for the principal '{1}'.
     ServerPermission_DenyPermission = Deny the permissions '{0}' for the principal '{1}'.
     ServerPermission_RevokePermission = Revoke the permissions '{0}' for the principal '{1}'.
+    ServerPermission_TestingDesiredState = Testing if server permissions for principal '{0}' are in desired state on instance '{1}'.
+    ServerPermission_PermissionNotInDesiredState = The permission '{0}' in state '{1}' for principal '{2}' is not in desired state.
+    ServerPermission_InDesiredState = Server permissions for principal '{0}' are in desired state.
+
+    ## New-SqlDscServerPermission
+    ServerPermission_Grant_ShouldProcessVerboseDescription = Granting server permissions for the principal '{0}' on the instance '{1}'.
+    ServerPermission_Grant_ShouldProcessVerboseWarning = Are you sure you want to grant server permissions for the principal '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    ServerPermission_Grant_ShouldProcessCaption = Grant server permissions
+
+    ## Test-SqlDscServerPermission
+    ServerPermission_Test_ShouldProcessVerboseDescription = Testing server permissions for the principal '{0}' on the instance '{1}'.
+    ServerPermission_Test_ShouldProcessVerboseWarning = Are you sure you want to test server permissions for the principal '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    ServerPermission_Test_ShouldProcessCaption = Test server permissions
+
+    ## Remove-SqlDscServerPermission
+    ServerPermission_Remove_ShouldProcessVerboseDescription = Removing server permissions for the principal '{0}' on the instance '{1}'.
+    ServerPermission_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove server permissions for the principal '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    ServerPermission_Remove_ShouldProcessCaption = Remove server permissions
+    ServerPermission_FailedToGrantPermission = Failed to grant server permissions for principal '{0}' on instance '{1}'.
+    ServerPermission_FailedToRevokePermission = Failed to revoke server permissions for principal '{0}' on instance '{1}'.
+    ServerPermission_TestFailed = Failed to test server permissions for principal '{0}': {1}
 
     ## Class DatabasePermission
     InvalidTypeForCompare = Invalid type in comparison. Expected type [{0}], but the type was [{1}]. (DP0001)
