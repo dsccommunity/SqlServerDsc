@@ -45,6 +45,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `Get-SqlDscAgentAlert`, `New-SqlDscAgentAlert`,
   `Set-SqlDscAgentAlert`, `Remove-SqlDscAgentAlert`, and `Test-SqlDscAgentAlert`
   to manage SQL Agent alerts on a Database Engine instance.
+- Added new public commands for SQL Agent Operator management:
+  - `Get-SqlDscAgentOperator` - Get SQL Agent Operators from a SQL Server Database Engine instance
+  - `New-SqlDscAgentOperator` - Create a new SQL Agent Operator with specified properties
+  - `Set-SqlDscAgentOperator` - Update existing SQL Agent Operator properties
+  - `Remove-SqlDscAgentOperator` - Remove a SQL Agent Operator from the instance
+  - `Test-SqlDscAgentOperator` - Test if a SQL Agent Operator exists with desired properties
+  - Supports pipeline input for both ServerObject and OperatorObject where applicable
+  - Includes comprehensive unit tests and follows ShouldProcess patterns
 - Added new public commands for database management:
   - `Get-SqlDscDatabase` - Get databases from a SQL Server Database Engine instance
   - `New-SqlDscDatabase` - Create a new database with specified properties
