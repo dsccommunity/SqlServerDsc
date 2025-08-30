@@ -87,7 +87,6 @@ function Test-SqlDscIsLoginEnabled
         $Refresh
     )
 
-
     begin
     {
         $ErrorActionPreference = 'Stop'

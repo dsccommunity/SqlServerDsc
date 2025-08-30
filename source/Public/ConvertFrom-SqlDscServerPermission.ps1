@@ -34,7 +34,6 @@ function ConvertFrom-SqlDscServerPermission
         $Permission
     )
 
-
     begin
     {
         $ErrorActionPreference = 'Stop'

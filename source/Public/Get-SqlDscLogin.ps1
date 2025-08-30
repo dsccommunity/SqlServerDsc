@@ -57,7 +57,6 @@ function Get-SqlDscLogin
         $Refresh
     )
 
-
     begin
     {
         $ErrorActionPreference = 'Stop'

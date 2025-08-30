@@ -97,7 +97,6 @@ function Test-SqlDscIsDatabasePrincipal
         $ExcludeApplicationRoles
     )
 
-
     begin
     {
         $ErrorActionPreference = 'Stop'

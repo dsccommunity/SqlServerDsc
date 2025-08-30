@@ -151,7 +151,6 @@ function Invoke-SqlDscQuery
         $Force
     )
 
-
     begin
     {
         $ErrorActionPreference = 'Stop'

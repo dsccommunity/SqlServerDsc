@@ -82,7 +82,6 @@ function Set-SqlDscServerPermission
         $Force
     )
 
-
     begin
     {
         $ErrorActionPreference = 'Stop'

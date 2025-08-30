@@ -243,7 +243,6 @@ function Set-SqlDscAudit
         $MaximumRolloverFiles
     )
 
-
     begin
     {
         $ErrorActionPreference = 'Stop'

@@ -96,7 +96,6 @@ function New-SqlDscDatabase
         $Refresh
     )
 
-
     begin
     {
         $ErrorActionPreference = 'Stop'
