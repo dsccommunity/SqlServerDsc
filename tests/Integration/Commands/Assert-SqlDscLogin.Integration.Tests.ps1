@@ -53,6 +53,10 @@ Describe 'Assert-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
             $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:instanceName -Credential $script:sqlAdminCredential
         }
 
+        AfterAll {
+            Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
+        }
+
         Context 'When a login exists' {
             It 'Should not throw an error for sa login' {
                 { Assert-SqlDscLogin -ServerObject $script:serverObject -Name 'sa' } | Should -Not -Throw

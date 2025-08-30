@@ -60,6 +60,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `Get-SqlDscServerPermission`
+  - Enhanced the command to support server roles in addition to logins by
+    utilizing `Test-SqlDscIsRole` alongside the existing `Test-SqlDscIsLogin`
+    check.
+  - The command now accepts both login principals and server role principals
+    as the `Name` parameter (issue [#2063](https://github.com/dsccommunity/SqlServerDsc/issues/2063)).
 - Refactored GitHub Copilot workflow setup to be module-agnostic via MODULE_NAME
   environment variable, includes full-history detection, uses idempotent .NET
   tool install, and adds Linux dependency handling ([issue #2127](https://github.com/dsccommunity/SqlServerDsc/issues/2127)).
