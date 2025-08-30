@@ -400,4 +400,56 @@ ConvertFrom-StringData @'
     Test_SqlDscAgentAlert_MessageIdMismatch = Message ID mismatch: current '{0}', expected '{1}'. (TSAA0007)
     Test_SqlDscAgentAlert_MessageIdMatch = Message ID matches expected value '{0}'. (TSAA0008)
     Test_SqlDscAgentAlert_AllTestsPassed = All tests passed for SQL Agent Alert '{0}'. (TSAA0009)
+
+    ## Get-AgentOperatorObject
+    Get_AgentOperatorObject_GettingOperator = Getting SQL Agent Operator '{0}'. (GAOO0001)
+
+    ## Get-SqlDscAgentOperator
+    Get_SqlDscAgentOperator_GettingOperators = Getting SQL Agent Operators from instance '{0}'. (GSAO0001)
+    Get_SqlDscAgentOperator_ReturningAllOperators = Returning all {0} SQL Agent Operators. (GSAO0002)
+
+    ## New-SqlDscAgentOperator
+    New_SqlDscAgentOperator_OperatorAlreadyExists = SQL Agent Operator '{0}' already exists. (NSAO0001)
+    New_SqlDscAgentOperator_CreatingOperator = Creating SQL Agent Operator '{0}'. (NSAO0002)
+    New_SqlDscAgentOperator_OperatorCreated = SQL Agent Operator '{0}' was created successfully. (NSAO0003)
+    New_SqlDscAgentOperator_CreateFailed = Failed to create SQL Agent Operator '{0}'. (NSAO0004)
+    New_SqlDscAgentOperator_SettingEmailAddress = Setting email address '{0}' for SQL Agent Operator '{1}'. (NSAO0005)
+    New_SqlDscAgentOperator_CreateShouldProcessVerboseDescription = Creating the SQL Agent Operator '{0}' on the instance '{1}'.
+    New_SqlDscAgentOperator_CreateShouldProcessVerboseWarning = Are you sure you want to create the SQL Agent Operator '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    New_SqlDscAgentOperator_CreateShouldProcessCaption = Create SQL Agent Operator on instance
+
+    ## Set-SqlDscAgentOperator
+    Set_SqlDscAgentOperator_RefreshingServerObject = Refreshing server object's operators collection. (SSAO0001)
+    Set_SqlDscAgentOperator_OperatorNotFound = SQL Agent Operator '{0}' was not found. (SSAO0002)
+    Set_SqlDscAgentOperator_UpdatingOperator = Updating SQL Agent Operator '{0}'. (SSAO0003)
+    Set_SqlDscAgentOperator_SettingEmailAddress = Setting email address '{0}' for SQL Agent Operator '{1}'. (SSAO0004)
+    Set_SqlDscAgentOperator_OperatorUpdated = SQL Agent Operator '{0}' was updated successfully. (SSAO0005)
+    Set_SqlDscAgentOperator_NoChangesNeeded = No changes needed for SQL Agent Operator '{0}'. (SSAO0006)
+    Set_SqlDscAgentOperator_UpdateFailed = Failed to update SQL Agent Operator '{0}'. (SSAO0007)
+    Set_SqlDscAgentOperator_EmailAddressAlreadyCorrect = Email address '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0008)
+    Set_SqlDscAgentOperator_UpdateShouldProcessVerboseDescription = Updating the SQL Agent Operator '{0}' on the instance '{1}'.
+    Set_SqlDscAgentOperator_UpdateShouldProcessVerboseWarning = Are you sure you want to update the SQL Agent Operator '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Set_SqlDscAgentOperator_UpdateShouldProcessCaption = Update SQL Agent Operator on instance
+
+    ## Remove-SqlDscAgentOperator
+    Remove_SqlDscAgentOperator_RefreshingServerObject = Refreshing server object's operators collection. (RSAO0001)
+    Remove_SqlDscAgentOperator_OperatorNotFound = SQL Agent Operator '{0}' was not found. (RSAO0002)
+    Remove_SqlDscAgentOperator_RemovingOperator = Removing SQL Agent Operator '{0}'. (RSAO0003)
+    Remove_SqlDscAgentOperator_OperatorRemoved = SQL Agent Operator '{0}' was removed successfully. (RSAO0004)
+    Remove_SqlDscAgentOperator_RemoveFailed = Failed to remove SQL Agent Operator '{0}'. (RSAO0005)
+    Remove_SqlDscAgentOperator_RemoveShouldProcessVerboseDescription = Removing the SQL Agent Operator '{0}' on the instance '{1}'.
+    Remove_SqlDscAgentOperator_RemoveShouldProcessVerboseWarning = Are you sure you want to remove the SQL Agent Operator '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Remove_SqlDscAgentOperator_RemoveShouldProcessCaption = Remove SQL Agent Operator on instance
+
+    ## Test-SqlDscAgentOperator
+    Test_SqlDscAgentOperator_TestingOperator = Testing if the SQL Agent Operator '{0}' exists and has the desired properties. (TSAO0001)
+    Test_SqlDscAgentOperator_OperatorNotFound = SQL Agent Operator '{0}' was not found. (TSAO0002)
+    Test_SqlDscAgentOperator_OperatorFound = SQL Agent Operator '{0}' was found. (TSAO0003)
+    Test_SqlDscAgentOperator_NoPropertyTest = No specific properties to test, operator exists. (TSAO0004)
+    Test_SqlDscAgentOperator_EmailAddressMismatch = Email address mismatch: current '{0}', expected '{1}'. (TSAO0005)
+    Test_SqlDscAgentOperator_EmailAddressMatch = Email address matches expected value '{0}'. (TSAO0006)
+    Test_SqlDscAgentOperator_AllTestsPassed = All tests passed for SQL Agent Operator '{0}'. (TSAO0007)
 '@

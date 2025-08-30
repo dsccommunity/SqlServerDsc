@@ -363,10 +363,12 @@ namespace Microsoft.SqlServer.Management.Smo
             server.JobServer = new Microsoft.SqlServer.Management.Smo.Agent.JobServer
             {
                 Parent = server,
-                Alerts = Microsoft.SqlServer.Management.Smo.Agent.AlertCollection.CreateTypeInstance()
+                Alerts = Microsoft.SqlServer.Management.Smo.Agent.AlertCollection.CreateTypeInstance(),
+                Operators = Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection.CreateTypeInstance()
             };
 
             server.JobServer.Alerts.Parent = server.JobServer;
+            server.JobServer.Operators.Parent = server.JobServer;
 
             return server;
         }
@@ -1536,6 +1538,8 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
     // Used by:
     //  SQL Agent Alert commands unit tests
     //  SqlAgentAlert.Tests.ps1
+    //  SQL Agent Operator commands unit tests
+    //  SqlAgentOperator.Tests.ps1
     public class JobServer
     {
         // Constructor
@@ -1543,6 +1547,7 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
 
         // Property
         public Microsoft.SqlServer.Management.Smo.Agent.AlertCollection Alerts { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection Operators { get; set; }
         public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
         public System.String Name { get; set; }
         public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
@@ -1646,6 +1651,82 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
         public static Alert CreateTypeInstance()
         {
             return new Alert();
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection
+    // Used by:
+    //  SQL Agent Operator commands unit tests
+    //  SqlAgentOperator.Tests.ps1
+    public class OperatorCollection : ICollection
+    {
+        private System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Agent.Operator> operators = new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Agent.Operator>();
+
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Agent.Operator this[System.String name]
+        {
+            get { return operators.ContainsKey(name) ? operators[name] : null; }
+            set { operators[name] = value; }
+        }
+        public Microsoft.SqlServer.Management.Smo.Agent.Operator this[System.Int32 index]
+        {
+            get { return operators.Values.ElementAtOrDefault(index); }
+            set { /* Not implemented for stub */ }
+        }
+        public System.Int32 Count { get { return operators.Count; } set { } }
+        public System.Boolean IsSynchronized { get { return false; } set { } }
+        public System.Object SyncRoot { get { return null; } set { } }
+        public Microsoft.SqlServer.Management.Smo.Agent.JobServer Parent { get; set; }
+
+        public void Add(Microsoft.SqlServer.Management.Smo.Agent.Operator operatorObj) { operators[operatorObj.Name] = operatorObj; }
+        public void Remove(Microsoft.SqlServer.Management.Smo.Agent.Operator operatorObj) { operators.Remove(operatorObj.Name); }
+        public void CopyTo(System.Array array, System.Int32 index) { /* Not implemented for stub */ }
+        public System.Collections.IEnumerator GetEnumerator() { return operators.Values.GetEnumerator(); }
+        public void Refresh() { /* Not implemented for stub */ }
+
+        // Fabricated constructor
+        private OperatorCollection() { }
+        public static OperatorCollection CreateTypeInstance()
+        {
+            return new OperatorCollection();
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.Operator
+    // Used by:
+    //  Get-SqlDscAgentOperator.Tests.ps1
+    //  New-SqlDscAgentOperator.Tests.ps1
+    //  Set-SqlDscAgentOperator.Tests.ps1
+    //  Remove-SqlDscAgentOperator.Tests.ps1
+    //  Test-SqlDscAgentOperator.Tests.ps1
+    public class Operator
+    {
+        public Operator() { }
+        public Operator(Microsoft.SqlServer.Management.Smo.Agent.JobServer jobServer, System.String name)
+        {
+            this.Parent = jobServer;
+            this.Name = name;
+        }
+
+        // Property
+        public System.String Name { get; set; }
+        public System.String EmailAddress { get; set; }
+        public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
+        public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.JobServer Parent { get; set; }
+
+        // Method
+        public void Create() { /* Not implemented for stub */ }
+        public void Drop() { /* Not implemented for stub */ }
+        public void Alter() { /* Not implemented for stub */ }
+
+        // Fabricated constructor
+        private Operator(Microsoft.SqlServer.Management.Smo.Agent.JobServer jobServer, System.String name, System.Boolean dummyParam) { }
+        public static Operator CreateTypeInstance()
+        {
+            return new Operator();
         }
     }
 
