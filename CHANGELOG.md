@@ -27,6 +27,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Enhanced workflow with proper environment variable configuration and DSCv3 verification.
   - Fixed environment variable persistence by using $GITHUB_ENV instead of
     job-level env declaration.
+- `New-SqlDscServerPermission`
+  - Added new public command to grant server permissions to a principal on a SQL Server Database Engine instance.
+- `Test-SqlDscServerPermission`
+  - Added new public command to test if server permissions for a principal are in the desired state.
+- `Remove-SqlDscServerPermission`
+  - Added new public command to remove (revoke) server permissions from a principal on a SQL Server Database Engine instance.
+- `Invoke-SqlDscServerPermissionOperation`
+  - Added new private function to encapsulate core logic for server permission operations.
+- `Test-SqlDscServerPermissionState`
+  - Added new private function to test if server permissions are in the desired state.
 - `Assert-SqlDscLogin`
   - Added new public command to validate that a specified SQL Server principal
     is a login.
