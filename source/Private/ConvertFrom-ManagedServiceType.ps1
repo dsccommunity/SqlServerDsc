@@ -26,6 +26,8 @@ function ConvertFrom-ManagedServiceType
         $ServiceType
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         # Map the normalized service type to a valid value from the managed service type.

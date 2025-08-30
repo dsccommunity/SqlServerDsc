@@ -108,6 +108,8 @@ function Set-SqlDscDatabase
         $PassThru
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         if ($PSCmdlet.ParameterSetName -eq 'ServerObject')

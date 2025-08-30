@@ -135,6 +135,8 @@ function Repair-SqlDscReportingService
         $PassThru
     )
 
+    $ErrorPreference = 'Stop'
+
     $exitCode = Invoke-ReportServerSetupAction -Repair @PSBoundParameters
 
     if ($PassThru.IsPresent)

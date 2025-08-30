@@ -151,6 +151,8 @@ function Invoke-SqlDscQuery
         $Force
     )
 
+    $ErrorPreference = 'Stop'
+
     begin
     {
         if ($Force.IsPresent -and -not $Confirm)

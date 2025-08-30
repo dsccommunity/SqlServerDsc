@@ -96,6 +96,8 @@ function New-SqlDscDatabase
         $Refresh
     )
 
+    $ErrorPreference = 'Stop'
+
     begin
     {
         if ($Force.IsPresent -and -not $Confirm)

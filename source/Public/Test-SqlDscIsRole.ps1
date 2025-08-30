@@ -36,6 +36,8 @@ function Test-SqlDscIsRole
         $Name
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         $principalExist = $false

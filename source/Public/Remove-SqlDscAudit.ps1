@@ -68,6 +68,8 @@ function Remove-SqlDscAudit
         $Refresh
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         if ($Force.IsPresent -and -not $Confirm)

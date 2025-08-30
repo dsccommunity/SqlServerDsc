@@ -67,6 +67,8 @@ function Get-SqlDscAgentAlert
         $Name
     )
 
+    $ErrorPreference = 'Stop'
+
     # cSpell: ignore GSAA
     process
     {

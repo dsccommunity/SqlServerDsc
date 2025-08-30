@@ -200,6 +200,8 @@ function New-SqlDscAudit
         $MaximumRolloverFiles
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         if ($Force.IsPresent -and -not $Confirm)

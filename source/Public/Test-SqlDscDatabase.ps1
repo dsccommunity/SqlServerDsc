@@ -95,6 +95,8 @@ function Test-SqlDscDatabase
         $Refresh
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         if ($Refresh.IsPresent)

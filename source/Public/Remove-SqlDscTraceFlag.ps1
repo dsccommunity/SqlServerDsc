@@ -80,6 +80,8 @@ function Remove-SqlDscTraceFlag
         $Force
     )
 
+    $ErrorPreference = 'Stop'
+
     begin
     {
         if ($Force.IsPresent -and -not $Confirm)

@@ -36,6 +36,8 @@ function Test-SqlDscIsLogin
         $Name
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         $loginExist = $false

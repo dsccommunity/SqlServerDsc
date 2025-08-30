@@ -139,6 +139,8 @@ function Install-SqlDscReportingService
         $PassThru
     )
 
+    $ErrorPreference = 'Stop'
+
     $exitCode = Invoke-ReportServerSetupAction -Install @PSBoundParameters
 
     if ($PassThru.IsPresent)

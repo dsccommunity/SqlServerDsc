@@ -55,6 +55,8 @@ function Get-SqlDscRole
         $Refresh
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         if ($Refresh.IsPresent)

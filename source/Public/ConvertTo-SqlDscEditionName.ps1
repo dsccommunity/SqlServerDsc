@@ -35,6 +35,8 @@ function ConvertTo-SqlDscEditionName
         $Id
     )
 
+    $ErrorPreference = 'Stop'
+
     Write-Debug -Message ($script:localizedData.ConvertTo_EditionName_ConvertingEditionId -f $Id)
 
     $resultObject = [PSCustomObject] @{

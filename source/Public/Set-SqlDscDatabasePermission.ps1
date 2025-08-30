@@ -93,6 +93,8 @@ function Set-SqlDscDatabasePermission
         $Force
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         if ($State -eq 'Deny' -and $WithGrant.IsPresent)

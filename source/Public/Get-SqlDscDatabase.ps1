@@ -55,6 +55,8 @@ function Get-SqlDscDatabase
         $Refresh
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         if ($Refresh.IsPresent)

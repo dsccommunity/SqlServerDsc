@@ -253,6 +253,8 @@ function New-SqlDscLogin
         $PassThru
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         if ($Force.IsPresent -and -not $Confirm)

@@ -34,6 +34,8 @@ function Assert-Feature
         $ProductVersion
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         foreach ($currentFeature in $Feature)

@@ -48,6 +48,8 @@ function Get-SqlDscAudit
         $Refresh
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         if ($Refresh.IsPresent)

@@ -70,6 +70,8 @@ function New-SqlDscRole
         $Refresh
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         if ($Refresh.IsPresent)

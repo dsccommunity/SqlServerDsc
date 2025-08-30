@@ -97,6 +97,8 @@ function Test-SqlDscIsDatabasePrincipal
         $ExcludeApplicationRoles
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         $principalExist = $false

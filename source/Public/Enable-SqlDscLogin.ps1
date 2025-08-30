@@ -75,6 +75,8 @@ function Enable-SqlDscLogin
         $Refresh
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         if ($Force.IsPresent -and -not $Confirm)

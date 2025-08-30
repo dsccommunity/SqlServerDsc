@@ -75,6 +75,8 @@ function Remove-SqlDscDatabase
         $Refresh
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         if ($PSCmdlet.ParameterSetName -eq 'ServerObject')

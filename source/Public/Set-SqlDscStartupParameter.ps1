@@ -89,6 +89,8 @@ function Set-SqlDscStartupParameter
         $Force
     )
 
+    $ErrorPreference = 'Stop'
+
     begin
     {
         Assert-ElevatedUser -ErrorAction 'Stop'

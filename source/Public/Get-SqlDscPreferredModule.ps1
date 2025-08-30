@@ -60,6 +60,8 @@ function Get-SqlDscPreferredModule
         $Refresh
     )
 
+    $ErrorPreference = 'Stop'
+
     if (-not $PSBoundParameters.ContainsKey('Name'))
     {
         if ($env:SMODefaultModuleName)

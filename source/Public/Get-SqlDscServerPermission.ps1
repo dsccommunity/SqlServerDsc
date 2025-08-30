@@ -45,6 +45,8 @@ function Get-SqlDscServerPermission
         $Name
     )
 
+    $ErrorPreference = 'Stop'
+
     # cSpell: ignore GSDSP
     process
     {

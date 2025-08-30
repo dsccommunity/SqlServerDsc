@@ -74,6 +74,8 @@ function Get-SqlDscManagedComputerService
         $ServiceType
     )
 
+    $ErrorPreference = 'Stop'
+
     begin
     {
         if ($PSCmdlet.ParameterSetName -eq 'ByServerName')

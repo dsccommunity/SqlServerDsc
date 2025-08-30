@@ -57,6 +57,8 @@ function Get-SqlDscLogin
         $Refresh
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         if ($Refresh.IsPresent)

@@ -44,6 +44,8 @@ function Assert-ManagedServiceType
         $ServiceType
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         $normalizedServiceType = ConvertFrom-ManagedServiceType -ServiceType $ServiceObject.Type

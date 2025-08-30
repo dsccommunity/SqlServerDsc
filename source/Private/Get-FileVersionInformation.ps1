@@ -32,6 +32,8 @@ function Get-FileVersionInformation
         $FilePath
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         $file = Get-Item -Path $FilePath -ErrorAction 'Stop'

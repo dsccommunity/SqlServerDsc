@@ -53,6 +53,8 @@ function Get-SqlDscConfigurationOption
         $Refresh
     )
 
+    $ErrorPreference = 'Stop'
+
     process
     {
         if ($Refresh.IsPresent)

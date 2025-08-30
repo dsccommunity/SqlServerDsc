@@ -41,6 +41,8 @@ function Test-SqlDscRSInstalled
         $InstanceName
     )
 
+    $ErrorPreference = 'Stop'
+
     Write-Verbose -Message ($script:localizedData.Test_SqlDscRSInstalled_Checking -f $InstanceName)
 
     $reportingServices = Get-SqlDscRSSetupConfiguration -InstanceName $InstanceName -ErrorAction 'SilentlyContinue'
