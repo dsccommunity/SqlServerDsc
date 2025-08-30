@@ -274,7 +274,7 @@ function Set-TargetResource
                 if ( $impersonatePermissionsStatus.Values -contains $false )
                 {
                     $impersonatePermissionsMissingParameters = @(
-                        Get-CurrentWindowsIdentityName,
+                        Get-CurrentWindowsIdentityName
                         ( ( $impersonatePermissionsStatus.GetEnumerator() | Where-Object -FilterScript { -not $_.Value } | Select-Object -ExpandProperty Key ) -join ', ' )
                     )
                     throw ($script:localizedData.ImpersonatePermissionsMissing -f $impersonatePermissionsMissingParameters )

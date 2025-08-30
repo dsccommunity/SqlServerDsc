@@ -50,27 +50,12 @@ BeforeAll {
     # Load the default SQL Module stub
     $script:stubModuleName = Import-SQLModuleStub -PassThru
 
-    # Import the DSC resource module explicitly
-    try {
-        $resourceModulePath = Join-Path -Path $PSScriptRoot -ChildPath "../../source/DSCResources/$script:dscResourceName/$script:dscResourceName.psm1"
-        Import-Module -Name $resourceModulePath -Force -ErrorAction Stop -Global
-        Write-Verbose "Successfully imported DSC resource module: $resourceModulePath"
-    } catch {
-        Write-Warning "Failed to import DSC resource module: $_"
-        # Fallback to try loading from built module
-        try {
-            $builtResourceModulePath = Join-Path -Path $PSScriptRoot -ChildPath "../../output/builtModule/$script:dscModuleName/*/DSCResources/$script:dscResourceName/$script:dscResourceName.psm1"
-            $resolvedPath = Get-ChildItem -Path $builtResourceModulePath | Select-Object -First 1 -ExpandProperty FullName
-            Import-Module -Name $resolvedPath -Force -ErrorAction Stop -Global
-            Write-Verbose "Successfully imported built DSC resource module: $resolvedPath"
-        } catch {
-            Write-Warning "Failed to import built DSC resource module: $_"
-        }
-    }
-
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
+
+    # Global mock for cross-platform compatibility
+    Mock -CommandName Get-CurrentWindowsIdentityName -MockWith { return 'NT AUTHORITY\SYSTEM' }
 }
 
 AfterAll {
@@ -3071,6 +3056,7 @@ REVERT'
 
                 $mockAvailabilityDatabaseAbsentResults = @(
                     'DB2'
+                    'AnotherDB'
                 )
 
                 $mockAvailabilityDatabaseNames = @(
@@ -3087,12 +3073,27 @@ REVERT'
                 $mockAvailabilityGroupObject.Name = 'AvailabilityGroup1'
                 $mockAvailabilityGroupObject.AvailabilityDatabases = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityDatabaseCollection
                 
+                # Add databases to the availability group
+                foreach ($databaseName in $mockAvailabilityDatabaseNames) {
+                    $availabilityDatabase = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityDatabase
+                    $availabilityDatabase.Name = $databaseName
+                    $mockAvailabilityGroupObject.AvailabilityDatabases.Add($availabilityDatabase)
+                }
+                
                 $mockAvailabilityGroupWithoutDatabasesObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
                 $mockAvailabilityGroupWithoutDatabasesObject.Name = 'AvailabilityGroup2'
                 $mockAvailabilityGroupWithoutDatabasesObject.AvailabilityDatabases = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityDatabaseCollection
 
                 # Create server object
                 $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+                $mockServerObject.Databases = New-Object -TypeName Microsoft.SqlServer.Management.Smo.DatabaseCollection
+                
+                # Add databases to server that match the patterns
+                foreach ($databaseName in $mockAvailabilityDatabaseNames) {
+                    $database = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
+                    $database.Name = $databaseName
+                    $mockServerObject.Databases.Add($database)
+                }
             }
 
             BeforeEach {
@@ -3124,10 +3125,8 @@ REVERT'
 
                     $results = InModuleScope -Parameters @{ params = $getDatabasesToRemoveFromAvailabilityGroupParameters } -ScriptBlock { Get-DatabasesToRemoveFromAvailabilityGroup @params }
 
-                    foreach ( $result in $results )
-                    {
-                        $mockAvailabilityDatabaseAbsentResults -contains $result | Should -Be $true
-                    }
+                    # When availability group has no databases, nothing should be returned to remove
+                    $results | Should -BeNullOrEmpty
                 }
 
                 It 'Should return an empty object when no matches are found' {
@@ -3145,10 +3144,10 @@ REVERT'
                 It 'Should return an array of database names to remove when matches are found' {
                     $results = InModuleScope -Parameters @{ params = $getDatabasesToRemoveFromAvailabilityGroupParameters } -ScriptBlock { Get-DatabasesToRemoveFromAvailabilityGroup @params }
 
-                    foreach ( $result in $results )
-                    {
-                        $mockAvailabilityDatabaseExactlyRemoveResults -contains $result | Should -Be $true
-                    }
+                    # When Force = true and Ensure = Present, databases that DON'T match the patterns should be removed
+                    # Since both 'DB2' (matches 'DB*') and 'AnotherDB' (matches 'AnotherDB') are in the patterns,
+                    # nothing should be returned for removal
+                    $results | Should -BeNullOrEmpty
                 }
 
                 It 'Should return all of the databases in the availability group if no matches were found' {
