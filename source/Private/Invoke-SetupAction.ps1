@@ -1372,20 +1372,14 @@ function Invoke-SetupAction
         $Force
     )
 
+    $ErrorActionPreference = 'Stop'
+
     if ($Force.IsPresent -and -not $Confirm)
     {
         $ConfirmPreference = 'None'
     }
 
-    try
-    {
-        Assert-ElevatedUser -ErrorAction 'Stop'
-    }
-    catch
-    {
-        # Re-throw the error to ensure the function terminates
-        $PSCmdlet.ThrowTerminatingError($_)
-    }
+    Assert-ElevatedUser -ErrorAction 'Stop'
 
     switch ($PSCmdlet.ParameterSetName)
     {

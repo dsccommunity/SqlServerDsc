@@ -91,15 +91,9 @@ function Set-SqlDscStartupParameter
 
     begin
     {
-        try
-        {
-            Assert-ElevatedUser -ErrorAction 'Stop'
-        }
-        catch
-        {
-            # Re-throw the error to ensure the function terminates
-            $PSCmdlet.ThrowTerminatingError($_)
-        }
+        $ErrorActionPreference = 'Stop'
+
+        Assert-ElevatedUser -ErrorAction 'Stop'
 
         if ($Force.IsPresent -and -not $Confirm)
         {
