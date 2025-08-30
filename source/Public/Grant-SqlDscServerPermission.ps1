@@ -16,8 +16,8 @@
         Specifies the state of the permission to be applied.
 
     .PARAMETER Permission
-        Specifies the permissions as a ServerPermissionSet object containing the
-        permissions to be applied.
+        Specifies the permissions to be granted. Specify multiple permissions by
+        providing an array of permission names.
 
     .PARAMETER WithGrant
         Specifies that the principal should also be granted the right to grant
@@ -34,23 +34,14 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
 
-        $permissionSet = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-            ConnectSql = $true
-            ViewServerState = $true
-        }
-
-        Grant-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -Permission $permissionSet
+        Grant-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -Permission 'ConnectSql', 'ViewServerState'
 
         Grants the specified permissions to the principal 'MyPrincipal'.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
 
-        $permissionSet = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-            AlterAnyDatabase = $true
-        }
-
-        $serverInstance | Grant-SqlDscServerPermission -Name 'MyPrincipal' -Permission $permissionSet -WithGrant -Force
+        $serverInstance | Grant-SqlDscServerPermission -Name 'MyPrincipal' -Permission 'AlterAnyDatabase' -WithGrant -Force
 
         Grants the specified permissions with grant option to the principal 'MyPrincipal' without prompting for confirmation.
 
@@ -76,7 +67,43 @@ function Grant-SqlDscServerPermission
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]
+        [ValidateSet(
+            'AdministerBulkOperations',
+            'AlterAnyServerAudit',
+            'AlterAnyCredential',
+            'AlterAnyConnection',
+            'AlterAnyDatabase',
+            'AlterAnyEventNotification',
+            'AlterAnyEndpoint',
+            'AlterAnyLogin',
+            'AlterAnyLinkedServer',
+            'AlterResources',
+            'AlterServerState',
+            'AlterSettings',
+            'AlterTrace',
+            'AuthenticateServer',
+            'ControlServer',
+            'ConnectSql',
+            'CreateAnyDatabase',
+            'CreateDdlEventNotification',
+            'CreateEndpoint',
+            'CreateTraceEventNotification',
+            'Shutdown',
+            'ViewAnyDefinition',
+            'ViewAnyDatabase',
+            'ViewServerState',
+            'ExternalAccessAssembly',
+            'UnsafeAssembly',
+            'AlterAnyServerRole',
+            'CreateServerRole',
+            'AlterAnyAvailabilityGroup',
+            'CreateAvailabilityGroup',
+            'AlterAnyEventSession',
+            'SelectAllUserSecurables',
+            'ConnectAnyDatabase',
+            'ImpersonateAnyLogin'
+        )]
+        [System.String[]]
         $Permission,
 
         [Parameter()]
@@ -105,10 +132,17 @@ function Grant-SqlDscServerPermission
 
         if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
+            # Convert string array to ServerPermissionSet object
+            $permissionSet = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]::new()
+            foreach ($permissionName in $Permission)
+            {
+                $permissionSet.$permissionName = $true
+            }
+
             $invokeParameters = @{
                 ServerObject = $ServerObject
                 Name         = $Name
-                Permission   = $Permission
+                Permission   = $permissionSet
             }
 
             try

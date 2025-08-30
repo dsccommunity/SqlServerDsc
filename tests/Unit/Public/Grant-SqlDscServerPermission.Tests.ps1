@@ -49,15 +49,15 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'New-SqlDscServerPermission' -Tag 'Public' {
+Describe 'Grant-SqlDscServerPermission' -Tag 'Public' {
     Context 'When testing parameter sets' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-ServerObject] <Server> [-Name] <String> [-Permission] <ServerPermission[]> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '[-ServerObject] <Server> [-Name] <String> [-Permission] <String[]> [-WithGrant] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
-            $result = (Get-Command -Name 'New-SqlDscServerPermission').ParameterSets |
+            $result = (Get-Command -Name 'Grant-SqlDscServerPermission').ParameterSets |
                 Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
                 Select-Object -Property @(
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
@@ -70,22 +70,27 @@ Describe 'New-SqlDscServerPermission' -Tag 'Public' {
 
     Context 'When testing parameter properties' {
         It 'Should have ServerObject as a mandatory parameter' {
-            $parameterInfo = (Get-Command -Name 'New-SqlDscServerPermission').Parameters['ServerObject']
+            $parameterInfo = (Get-Command -Name 'Grant-SqlDscServerPermission').Parameters['ServerObject']
             $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
 
         It 'Should have Name as a mandatory parameter' {
-            $parameterInfo = (Get-Command -Name 'New-SqlDscServerPermission').Parameters['Name']
+            $parameterInfo = (Get-Command -Name 'Grant-SqlDscServerPermission').Parameters['Name']
             $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
 
         It 'Should have Permission as a mandatory parameter' {
-            $parameterInfo = (Get-Command -Name 'New-SqlDscServerPermission').Parameters['Permission']
+            $parameterInfo = (Get-Command -Name 'Grant-SqlDscServerPermission').Parameters['Permission']
             $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
 
         It 'Should have Force as an optional parameter' {
-            $parameterInfo = (Get-Command -Name 'New-SqlDscServerPermission').Parameters['Force']
+            $parameterInfo = (Get-Command -Name 'Grant-SqlDscServerPermission').Parameters['Force']
+            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+        }
+
+        It 'Should have WithGrant as an optional parameter' {
+            $parameterInfo = (Get-Command -Name 'Grant-SqlDscServerPermission').Parameters['WithGrant']
             $parameterInfo.Attributes.Mandatory | Should -BeFalse
         }
     }
@@ -110,44 +115,19 @@ Describe 'New-SqlDscServerPermission' -Tag 'Public' {
             InModuleScope -Parameters @{
                 mockServerObject = $mockServerObject
             } -ScriptBlock {
-                $permissions = @(
-                    [ServerPermission] @{
-                        State = 'Grant'
-                        Permission = @('ConnectSql')
-                    }
-                )
-
-                { New-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission $permissions -Force } |
+                { Grant-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission @('ConnectSql') -Force } |
                     Should -Not -Throw
             }
         }
 
         It 'Should call Invoke-SqlDscServerPermissionOperation for each non-empty permission' {
-            $permissions = @(
-                [ServerPermission] @{
-                    State = 'Grant'
-                    Permission = @('ConnectSql')
-                }
-                [ServerPermission] @{
-                    State = 'GrantWithGrant'
-                    Permission = @()
-                }
-            )
-
-            New-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission $permissions -Force
+            Grant-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission @('ConnectSql') -Force
 
             Should -Invoke -CommandName Invoke-SqlDscServerPermissionOperation -Times 1
         }
 
         It 'Should handle GrantWithGrant state correctly' {
-            $permissions = @(
-                [ServerPermission] @{
-                    State = 'GrantWithGrant'
-                    Permission = @('ConnectSql')
-                }
-            )
-
-            { New-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission $permissions -Force } |
+            { Grant-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission @('ConnectSql') -WithGrant -Force } |
                 Should -Not -Throw
 
             Should -Invoke -CommandName Invoke-SqlDscServerPermissionOperation -ParameterFilter {
@@ -173,14 +153,7 @@ Describe 'New-SqlDscServerPermission' -Tag 'Public' {
         }
 
         It 'Should throw a descriptive error when operation fails' {
-            $permissions = @(
-                [ServerPermission] @{
-                    State = 'Grant'
-                    Permission = @('ConnectSql')
-                }
-            )
-
-            { New-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission $permissions -Force } |
+            { Grant-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission @('ConnectSql') -Force } |
                 Should -Throw -ExpectedMessage '*Failed to grant server permissions*'
         }
     }
@@ -202,14 +175,7 @@ Describe 'New-SqlDscServerPermission' -Tag 'Public' {
         }
 
         It 'Should accept ServerObject from pipeline' {
-            $permissions = @(
-                [ServerPermission] @{
-                    State = 'Grant'
-                    Permission = @('ConnectSql')
-                }
-            )
-
-            { $mockServerObject | New-SqlDscServerPermission -Name 'TestUser' -Permission $permissions -Force } |
+            { $mockServerObject | Grant-SqlDscServerPermission -Name 'TestUser' -Permission @('ConnectSql') -Force } |
                 Should -Not -Throw
         }
     }

@@ -25,16 +25,18 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    $script:moduleName = 'SqlServerDsc'
+    $script:dscModuleName = 'SqlServerDsc'
 
-    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
+    $env:SqlServerDscCI = $true
 
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
 
-    # Loading stub types
-    Add-Type -Path "$PSScriptRoot/../../Stubs/SMO.cs"
+    # Loading mocked classes
+    Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../Stubs') -ChildPath 'SMO.cs')
+
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
 }
 
 AfterAll {
@@ -43,7 +45,9 @@ AfterAll {
     $PSDefaultParameterValues.Remove('Should:ModuleName')
 
     # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:moduleName -All | Remove-Module -Force
+    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
+
+    Remove-Item -Path 'env:SqlServerDscCI'
 }
 
 Describe 'Deny-SqlDscServerPermission' {
@@ -66,17 +70,16 @@ Describe 'Deny-SqlDscServerPermission' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
             $result.ParameterSetName | Should -Be '__AllParameterSets'
-            $result.ParameterListAsString | Should -Be '[-ServerObject] <Server> [-Name] <String> [-Permission] <ServerPermissionSet> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            $result.ParameterListAsString | Should -Be '[-ServerObject] <Server> [-Name] <String> [-Permission] <String[]> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
 
         It 'Should call Invoke-SqlDscServerPermissionOperation with State Deny' {
-            Deny-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission $mockPermissionSet -Force
+            Deny-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission @('ConnectSql') -Force
 
             Should -Invoke -CommandName Invoke-SqlDscServerPermissionOperation -Times 1 -Exactly -ParameterFilter {
                 $State -eq 'Deny' -and 
                 $ServerObject -eq $mockServerObject -and 
-                $Name -eq 'TestUser' -and 
-                $Permission -eq $mockPermissionSet
+                $Name -eq 'TestUser'
             }
         }
     }

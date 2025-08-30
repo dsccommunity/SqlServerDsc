@@ -49,15 +49,15 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'Remove-SqlDscServerPermission' -Tag 'Public' {
+Describe 'Revoke-SqlDscServerPermission' -Tag 'Public' {
     Context 'When testing parameter sets' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-ServerObject] <Server> [-Name] <String> [-Permission] <ServerPermission[]> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '[-ServerObject] <Server> [-Name] <String> [-Permission] <String[]> [-WithGrant] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
-            $result = (Get-Command -Name 'Remove-SqlDscServerPermission').ParameterSets |
+            $result = (Get-Command -Name 'Revoke-SqlDscServerPermission').ParameterSets |
                 Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
                 Select-Object -Property @(
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
@@ -70,22 +70,27 @@ Describe 'Remove-SqlDscServerPermission' -Tag 'Public' {
 
     Context 'When testing parameter properties' {
         It 'Should have ServerObject as a mandatory parameter' {
-            $parameterInfo = (Get-Command -Name 'Remove-SqlDscServerPermission').Parameters['ServerObject']
+            $parameterInfo = (Get-Command -Name 'Revoke-SqlDscServerPermission').Parameters['ServerObject']
             $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
 
         It 'Should have Name as a mandatory parameter' {
-            $parameterInfo = (Get-Command -Name 'Remove-SqlDscServerPermission').Parameters['Name']
+            $parameterInfo = (Get-Command -Name 'Revoke-SqlDscServerPermission').Parameters['Name']
             $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
 
         It 'Should have Permission as a mandatory parameter' {
-            $parameterInfo = (Get-Command -Name 'Remove-SqlDscServerPermission').Parameters['Permission']
+            $parameterInfo = (Get-Command -Name 'Revoke-SqlDscServerPermission').Parameters['Permission']
             $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
 
         It 'Should have Force as an optional parameter' {
-            $parameterInfo = (Get-Command -Name 'Remove-SqlDscServerPermission').Parameters['Force']
+            $parameterInfo = (Get-Command -Name 'Revoke-SqlDscServerPermission').Parameters['Force']
+            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+        }
+
+        It 'Should have WithGrant as an optional parameter' {
+            $parameterInfo = (Get-Command -Name 'Revoke-SqlDscServerPermission').Parameters['WithGrant']
             $parameterInfo.Attributes.Mandatory | Should -BeFalse
         }
     }
@@ -107,43 +112,18 @@ Describe 'Remove-SqlDscServerPermission' -Tag 'Public' {
         }
 
         It 'Should remove permissions without throwing' {
-            $permissions = @(
-                [ServerPermission] @{
-                    State = 'Grant'
-                    Permission = @('ConnectSql')
-                }
-            )
-
-            { Remove-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission $permissions -Force } |
+            { Revoke-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission @('ConnectSql') -Force } |
                 Should -Not -Throw
         }
 
         It 'Should call Invoke-SqlDscServerPermissionOperation for each non-empty permission' {
-            $permissions = @(
-                [ServerPermission] @{
-                    State = 'Grant'
-                    Permission = @('ConnectSql')
-                }
-                [ServerPermission] @{
-                    State = 'GrantWithGrant'
-                    Permission = @()
-                }
-            )
-
-            Remove-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission $permissions -Force
+            Revoke-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission @('ConnectSql') -Force
 
             Should -Invoke -CommandName Invoke-SqlDscServerPermissionOperation -Times 1
         }
 
         It 'Should handle GrantWithGrant state correctly' {
-            $permissions = @(
-                [ServerPermission] @{
-                    State = 'GrantWithGrant'
-                    Permission = @('ConnectSql')
-                }
-            )
-
-            { Remove-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission $permissions -Force } |
+            { Revoke-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission @('ConnectSql') -WithGrant -Force } |
                 Should -Not -Throw
 
             Should -Invoke -CommandName Invoke-SqlDscServerPermissionOperation -ParameterFilter {
@@ -152,14 +132,7 @@ Describe 'Remove-SqlDscServerPermission' -Tag 'Public' {
         }
 
         It 'Should handle Grant state correctly' {
-            $permissions = @(
-                [ServerPermission] @{
-                    State = 'Grant'
-                    Permission = @('ConnectSql')
-                }
-            )
-
-            { Remove-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission $permissions -Force } |
+            { Revoke-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission @('ConnectSql') -Force } |
                 Should -Not -Throw
 
             Should -Invoke -CommandName Invoke-SqlDscServerPermissionOperation -ParameterFilter {
@@ -185,14 +158,7 @@ Describe 'Remove-SqlDscServerPermission' -Tag 'Public' {
         }
 
         It 'Should throw a descriptive error when operation fails' {
-            $permissions = @(
-                [ServerPermission] @{
-                    State = 'Grant'
-                    Permission = @('ConnectSql')
-                }
-            )
-
-            { Remove-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission $permissions -Force } |
+            { Revoke-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission @('ConnectSql') -Force } |
                 Should -Throw -ExpectedMessage '*Failed to revoke server permissions*'
         }
     }
@@ -214,14 +180,7 @@ Describe 'Remove-SqlDscServerPermission' -Tag 'Public' {
         }
 
         It 'Should accept ServerObject from pipeline' {
-            $permissions = @(
-                [ServerPermission] @{
-                    State = 'Grant'
-                    Permission = @('ConnectSql')
-                }
-            )
-
-            { $mockServerObject | Remove-SqlDscServerPermission -Name 'TestUser' -Permission $permissions -Force } |
+            { $mockServerObject | Revoke-SqlDscServerPermission -Name 'TestUser' -Permission @('ConnectSql') -Force } |
                 Should -Not -Throw
         }
     }

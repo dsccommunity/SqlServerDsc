@@ -13,8 +13,8 @@
         Specifies the name of the principal for which the permissions are revoked.
 
     .PARAMETER Permission
-        Specifies the permissions to revoke as a ServerPermissionSet object containing the
-        permissions to be revoked.
+        Specifies the permissions to revoke. Specify multiple permissions by
+        providing an array of permission names.
 
     .PARAMETER WithGrant
         Specifies that the right to grant the permission should also be revoked,
@@ -30,23 +30,14 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
 
-        $permissionSet = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-            ConnectSql = $true
-            ViewServerState = $true
-        }
-
-        Revoke-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -Permission $permissionSet
+        Revoke-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -Permission 'ConnectSql', 'ViewServerState'
 
         Revokes the specified permissions from the principal 'MyPrincipal'.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
 
-        $permissionSet = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-            AlterAnyDatabase = $true
-        }
-
-        $serverInstance | Revoke-SqlDscServerPermission -Name 'MyPrincipal' -Permission $permissionSet -WithGrant -Force
+        $serverInstance | Revoke-SqlDscServerPermission -Name 'MyPrincipal' -Permission 'AlterAnyDatabase' -WithGrant -Force
 
         Revokes the specified permissions and the right to grant them from the principal 'MyPrincipal' with cascading effect, without prompting for confirmation.
 
@@ -78,7 +69,43 @@ function Revoke-SqlDscServerPermission
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]
+        [ValidateSet(
+            'AdministerBulkOperations',
+            'AlterAnyServerAudit',
+            'AlterAnyCredential',
+            'AlterAnyConnection',
+            'AlterAnyDatabase',
+            'AlterAnyEventNotification',
+            'AlterAnyEndpoint',
+            'AlterAnyLogin',
+            'AlterAnyLinkedServer',
+            'AlterResources',
+            'AlterServerState',
+            'AlterSettings',
+            'AlterTrace',
+            'AuthenticateServer',
+            'ControlServer',
+            'ConnectSql',
+            'CreateAnyDatabase',
+            'CreateDdlEventNotification',
+            'CreateEndpoint',
+            'CreateTraceEventNotification',
+            'Shutdown',
+            'ViewAnyDefinition',
+            'ViewAnyDatabase',
+            'ViewServerState',
+            'ExternalAccessAssembly',
+            'UnsafeAssembly',
+            'AlterAnyServerRole',
+            'CreateServerRole',
+            'AlterAnyAvailabilityGroup',
+            'CreateAvailabilityGroup',
+            'AlterAnyEventSession',
+            'SelectAllUserSecurables',
+            'ConnectAnyDatabase',
+            'ImpersonateAnyLogin'
+        )]
+        [System.String[]]
         $Permission,
 
         [Parameter()]
@@ -107,10 +134,17 @@ function Revoke-SqlDscServerPermission
 
         if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
+            # Convert string array to ServerPermissionSet object
+            $permissionSet = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]::new()
+            foreach ($permissionName in $Permission)
+            {
+                $permissionSet.$permissionName = $true
+            }
+
             $invokeParameters = @{
                 ServerObject = $ServerObject
                 Name         = $Name
-                Permission   = $Permission
+                Permission   = $permissionSet
                 State        = 'Revoke'
             }
 
