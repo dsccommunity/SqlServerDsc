@@ -12,8 +12,11 @@
     .PARAMETER Name
         Specifies the name of the principal for which the permissions are tested.
 
-    .PARAMETER State
-        Specifies the desired state of the permission to be tested.
+    .PARAMETER Grant
+        Specifies that the test should verify if the permissions are granted to the principal.
+
+    .PARAMETER Deny
+        Specifies that the test should verify if the permissions are denied to the principal.
 
     .PARAMETER Permission
         Specifies the desired permissions as a ServerPermissionSet object containing the
@@ -21,8 +24,8 @@
 
     .PARAMETER WithGrant
         Specifies that the principal should have the right to grant other principals
-        the same permission. This parameter is only valid when parameter **State** is
-        set to 'Grant'. When this parameter is used, the effective state tested will
+        the same permission. This parameter is only valid when parameter **Grant** is
+        used. When this parameter is used, the effective state tested will
         be 'GrantWithGrant'.
 
     .OUTPUTS
@@ -36,7 +39,7 @@
             ViewServerState = $true
         }
 
-        $isInDesiredState = Test-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -State 'Grant' -Permission $permissionSet
+        $isInDesiredState = Test-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -Grant -Permission $permissionSet
 
         Tests if the specified permissions are granted to the principal 'MyPrincipal'.
 
@@ -47,7 +50,7 @@
             AlterAnyDatabase = $true
         }
 
-        $isInDesiredState = $serverInstance | Test-SqlDscServerPermission -Name 'MyPrincipal' -State 'Grant' -Permission $permissionSet -WithGrant
+        $isInDesiredState = $serverInstance | Test-SqlDscServerPermission -Name 'MyPrincipal' -Grant -Permission $permissionSet -WithGrant
 
         Tests if the specified permissions are granted with grant option to the principal 'MyPrincipal'.
 
@@ -72,16 +75,20 @@ function Test-SqlDscServerPermission
         [System.String]
         $Name,
 
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('Grant', 'GrantWithGrant', 'Deny')]
-        [System.String]
-        $State,
+        [Parameter(Mandatory = $true, ParameterSetName = 'Grant')]
+        [System.Management.Automation.SwitchParameter]
+        $Grant,
+
+        [Parameter(Mandatory = $true, ParameterSetName = 'Deny')]
+        [System.Management.Automation.SwitchParameter]
+        $Deny,
 
         [Parameter(Mandatory = $true)]
         [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]
         $Permission,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'Grant')]
+        [Parameter(ParameterSetName = 'Deny')]
         [System.Management.Automation.SwitchParameter]
         $WithGrant
     )
@@ -94,10 +101,20 @@ function Test-SqlDscServerPermission
 
         try
         {
+            # Determine the state based on the parameter set
+            if ($Grant.IsPresent)
+            {
+                $state = 'Grant'
+            }
+            elseif ($Deny.IsPresent)
+            {
+                $state = 'Deny'
+            }
+
             $testParameters = @{
                 ServerObject = $ServerObject
                 Name         = $Name
-                State        = $State
+                State        = $state
                 Permission   = $Permission
             }
 

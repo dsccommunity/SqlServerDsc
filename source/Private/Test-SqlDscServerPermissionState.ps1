@@ -41,7 +41,7 @@ function Test-SqlDscServerPermissionState
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Grant', 'GrantWithGrant', 'Deny')]
+        [ValidateSet('Grant', 'Deny')]
         [System.String]
         $State,
 

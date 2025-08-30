@@ -1,32 +1,28 @@
 <#
     .SYNOPSIS
-        Grants server permissions to a principal on a SQL Server Database Engine instance.
+        Removes (revokes) server permissions from a principal on a SQL Server Database Engine instance.
 
     .DESCRIPTION
-        This command grants server permissions to an existing principal on a SQL Server
-        Database Engine instance.
+        This command removes (revokes) server permissions from an existing principal on
+        a SQL Server Database Engine instance.
 
     .PARAMETER ServerObject
         Specifies current server connection object.
 
     .PARAMETER Name
-        Specifies the name of the principal for which the permissions are granted.
-
-    .PARAMETER State
-        Specifies the state of the permission to be applied.
+        Specifies the name of the principal for which the permissions are revoked.
 
     .PARAMETER Permission
-        Specifies the permissions as a ServerPermissionSet object containing the
-        permissions to be applied.
+        Specifies the permissions to revoke as a ServerPermissionSet object containing the
+        permissions to be revoked.
 
     .PARAMETER WithGrant
-        Specifies that the principal should also be granted the right to grant
-        other principals the same permission. This parameter is only valid when
-        parameter **State** is set to 'Grant'. When this parameter is used, the
-        effective state will be 'GrantWithGrant'.
+        Specifies that the right to grant the permission should also be revoked,
+        and the revocation will cascade to other principals that the grantee has
+        granted the same permission to.
 
     .PARAMETER Force
-        Specifies that the permissions should be granted without any confirmation.
+        Specifies that the permissions should be revoked without any confirmation.
 
     .OUTPUTS
         None.
@@ -39,9 +35,9 @@
             ViewServerState = $true
         }
 
-        New-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -State 'Grant' -Permission $permissionSet
+        Revoke-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -Permission $permissionSet
 
-        Grants the specified permissions to the principal 'MyPrincipal'.
+        Revokes the specified permissions from the principal 'MyPrincipal'.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
@@ -50,16 +46,22 @@
             AlterAnyDatabase = $true
         }
 
-        $serverInstance | New-SqlDscServerPermission -Name 'MyPrincipal' -State 'Grant' -Permission $permissionSet -WithGrant -Force
+        $serverInstance | Revoke-SqlDscServerPermission -Name 'MyPrincipal' -Permission $permissionSet -WithGrant -Force
 
-        Grants the specified permissions with grant option to the principal 'MyPrincipal' without prompting for confirmation.
+        Revokes the specified permissions and the right to grant them from the principal 'MyPrincipal' with cascading effect, without prompting for confirmation.
+
+        Revokes the specified permissions (including grant options) from the principal 'MyPrincipal' without prompting for confirmation.
 
     .NOTES
         If specifying `-ErrorAction 'SilentlyContinue'` then the command will silently
         ignore if the principal is not present. If specifying `-ErrorAction 'Stop'` the
         command will throw an error if the principal is missing.
+
+        When revoking permission with State 'GrantWithGrant', both the
+        grantee and all the other users the grantee has granted the same permission
+        to, will also get their permission revoked.
 #>
-function New-SqlDscServerPermission
+function Revoke-SqlDscServerPermission
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('AvoidThrowOutsideOfTry', '', Justification = 'Because the code throws based on an prior expression')]
@@ -76,11 +78,6 @@ function New-SqlDscServerPermission
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Grant', 'Deny')]
-        [System.String]
-        $State,
-
-        [Parameter(Mandatory = $true)]
         [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]
         $Permission,
 
@@ -95,23 +92,18 @@ function New-SqlDscServerPermission
 
     process
     {
-        if ($State -eq 'Deny' -and $WithGrant.IsPresent)
-        {
-            Write-Warning -Message $script:localizedData.ServerPermission_IgnoreWithGrantForStateDeny
-        }
-
         if ($Force.IsPresent -and -not $Confirm)
         {
             $ConfirmPreference = 'None'
         }
 
         Write-Verbose -Message (
-            $script:localizedData.ServerPermission_Grant_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
+            $script:localizedData.ServerPermission_Remove_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
         )
 
-        $verboseDescriptionMessage = $script:localizedData.ServerPermission_Grant_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
-        $verboseWarningMessage = $script:localizedData.ServerPermission_Grant_ShouldProcessVerboseWarning -f $Name
-        $captionMessage = $script:localizedData.ServerPermission_Grant_ShouldProcessCaption
+        $verboseDescriptionMessage = $script:localizedData.ServerPermission_Remove_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
+        $verboseWarningMessage = $script:localizedData.ServerPermission_Remove_ShouldProcessVerboseWarning -f $Name
+        $captionMessage = $script:localizedData.ServerPermission_Remove_ShouldProcessCaption
 
         if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
@@ -119,22 +111,23 @@ function New-SqlDscServerPermission
                 ServerObject = $ServerObject
                 Name         = $Name
                 Permission   = $Permission
+                State        = 'Revoke'
             }
 
             try
             {
-                if ($WithGrant.IsPresent -and $State -eq 'Grant')
+                if ($WithGrant.IsPresent)
                 {
-                    Invoke-SqlDscServerPermissionOperation @invokeParameters -State 'Grant' -WithGrant
+                    Invoke-SqlDscServerPermissionOperation @invokeParameters -WithGrant
                 }
                 else
                 {
-                    Invoke-SqlDscServerPermissionOperation @invokeParameters -State $State
+                    Invoke-SqlDscServerPermissionOperation @invokeParameters
                 }
             }
             catch
             {
-                $errorMessage = $script:localizedData.ServerPermission_FailedToGrantPermission -f $Name, $ServerObject.InstanceName
+                $errorMessage = $script:localizedData.ServerPermission_FailedToRevokePermission -f $Name, $ServerObject.InstanceName
 
                 New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
             }

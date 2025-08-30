@@ -46,6 +46,13 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     ServerPermission_Grant_ShouldProcessCaption = Grant server permissions
 
+    ## Deny-SqlDscServerPermission
+    ServerPermission_Deny_ShouldProcessVerboseDescription = Denying server permissions for the principal '{0}' on the instance '{1}'.
+    ServerPermission_Deny_ShouldProcessVerboseWarning = Are you sure you want to deny server permissions for the principal '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    ServerPermission_Deny_ShouldProcessCaption = Deny server permissions
+    ServerPermission_FailedToDenyPermission = Failed to deny server permissions for principal '{0}' on instance '{1}'.
+
     ## Test-SqlDscServerPermission
     ServerPermission_Test_ShouldProcessVerboseDescription = Testing server permissions for the principal '{0}' on the instance '{1}'.
     ServerPermission_Test_ShouldProcessVerboseWarning = Are you sure you want to test server permissions for the principal '{0}'?
