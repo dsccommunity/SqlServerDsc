@@ -54,8 +54,8 @@ BeforeAll {
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
 
-    # Global mock for cross-platform compatibility
-    Mock -CommandName Get-CurrentWindowsIdentityName -MockWith { return 'NT AUTHORITY\SYSTEM' }
+    # Mock Windows identity function at module level for cross-platform testing
+    Mock -CommandName Get-CurrentWindowsIdentityName -MockWith { return 'NT AUTHORITY\SYSTEM' } -ModuleName $script:dscResourceName
 }
 
 AfterAll {

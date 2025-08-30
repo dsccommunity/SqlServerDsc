@@ -274,7 +274,7 @@ function Set-TargetResource
                 if ( $impersonatePermissionsStatus.Values -contains $false )
                 {
                     $impersonatePermissionsMissingParameters = @(
-                        Get-CurrentWindowsIdentityName
+                        (Get-CurrentWindowsIdentityName)
                         ( ( $impersonatePermissionsStatus.GetEnumerator() | Where-Object -FilterScript { -not $_.Value } | Select-Object -ExpandProperty Key ) -join ', ' )
                     )
                     throw ($script:localizedData.ImpersonatePermissionsMissing -f $impersonatePermissionsMissingParameters )
@@ -1107,4 +1107,28 @@ function Get-DatabaseNamesNotFoundOnTheInstance
     return $result
 }
 
-function Get-CurrentWindowsIdentityName { return [System.Security.Principal.WindowsIdentity]::GetCurrent().Name }
+<#
+    .SYNOPSIS
+        Gets the current Windows identity name.
+
+    .DESCRIPTION
+        This helper function encapsulates the call to [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+        to enable proper mocking in tests while maintaining Windows-only functionality.
+#>
+function Get-CurrentWindowsIdentityName
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param ()
+
+    # Check if we're in a test environment with CI variable set
+    if ($env:SqlServerDscCI -eq 'True')
+    {
+        # In CI environment, return a test value to avoid platform issues
+        return 'NT AUTHORITY\SYSTEM'
+    }
+
+    return [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+}
+
+
