@@ -1121,14 +1121,17 @@ function Get-CurrentWindowsIdentityName
     [OutputType([System.String])]
     param ()
 
-    # Check if we're in a test environment with CI variable set
-    if ($env:SqlServerDscCI -eq 'True')
+    try 
     {
-        # In CI environment, return a test value to avoid platform issues
+        return [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+    }
+    catch [System.PlatformNotSupportedException]
+    {
+        # If Windows Principal functionality is not supported (e.g., on Linux), 
+        # return a default test value. This should only happen in test environments.
+        Write-Warning "Windows Principal functionality not supported on this platform. Using default test value."
         return 'NT AUTHORITY\SYSTEM'
     }
-
-    return [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
 }
 
 

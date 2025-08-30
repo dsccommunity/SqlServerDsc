@@ -407,7 +407,16 @@ function Connect-SQL
             This is only used for verbose messaging and not for the connection
             string since this is using Integrated Security=true (SSPI).
         #>
-        $connectUserName = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+        try 
+        {
+            $connectUserName = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+        }
+        catch [System.PlatformNotSupportedException]
+        {
+            # If Windows Principal functionality is not supported (e.g., on Linux), 
+            # use a default value for verbose messaging only
+            $connectUserName = 'SYSTEM'
+        }
 
         Write-Verbose -Message (
             $script:localizedData.ConnectingUsingIntegrated -f $connectUsername

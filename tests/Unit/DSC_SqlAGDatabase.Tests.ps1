@@ -56,6 +56,15 @@ BeforeAll {
 
     # Mock Windows identity function at module level for cross-platform testing
     Mock -CommandName Get-CurrentWindowsIdentityName -MockWith { return 'NT AUTHORITY\SYSTEM' } -ModuleName $script:dscResourceName
+    
+    # Add comprehensive Connect-SQL mocks to prevent Windows identity calls in SqlServerDsc.Common
+    Mock -CommandName Connect-SQL -MockWith { 
+        $mockServer = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+        $mockServer.Name = 'TestServer'
+        $mockServer.InstanceName = 'MSSQLSERVER' 
+        $mockServer.NetName = 'TestServer'
+        return $mockServer
+    } -ModuleName 'SqlServerDsc.Common'
 }
 
 AfterAll {
