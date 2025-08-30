@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed Azure DevOps pipeline conditions that were preventing DSC resource
   integration tests from running when they should by removing incorrect quotes
   around boolean values.
+- `SqlAgentAlert`
+  - Minor fix in `source/Classes/020.SqlAgentAlert.ps1` to correct `ExcludeDscProperties`
+    formatting (added missing delimiter).
 
 ### Added
 
@@ -57,6 +60,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored GitHub Copilot workflow setup to be module-agnostic via MODULE_NAME
   environment variable, includes full-history detection, uses idempotent .NET
   tool install, and adds Linux dependency handling ([issue #2127](https://github.com/dsccommunity/SqlServerDsc/issues/2127)).
+- `SqlAgentAlert`
+  - Added additional unit tests covering MessageId-based alerts, the hidden
+    `Modify()` method behavior, and `AssertProperties()` validation scenarios.
 - Module now outputs a verbose message instead of a warning when the SMO
   dependency module is missing during import to work around a DSC v3 issue.
 - VS Code tasks configuration was improved to support AI.

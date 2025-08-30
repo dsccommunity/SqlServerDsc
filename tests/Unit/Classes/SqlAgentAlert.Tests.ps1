@@ -124,21 +124,17 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
     }
 
     Context 'When using the Get() method' {
-        BeforeAll {
-            InModuleScope -ScriptBlock {
-                $script:mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+        It 'Should return current state when alert exists' {
+            Mock -CommandName 'Get-SqlDscAgentAlert' -MockWith {
                 $script:mockAlertObject = New-Object -TypeName 'PSCustomObject'
                 $script:mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestAlert'
                 $script:mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Severity' -Value 16
-                # MessageId is not set when using Severity-based alerts
-            }
-        }
 
-        It 'Should return current state when alert exists' {
+                return $script:mockAlertObject
+            }
+
             InModuleScope -ScriptBlock {
-                Mock -CommandName 'Get-SqlDscAgentAlert' -MockWith {
-                    return $script:mockAlertObject
-                }
+                $script:mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
 
                 $instance = [SqlAgentAlert] @{
                     Name         = 'TestAlert'
@@ -159,10 +155,12 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
         }
 
         It 'Should return absent state when alert does not exist' {
+            Mock -CommandName 'Get-SqlDscAgentAlert' -MockWith {
+                return $null
+            }
+
             InModuleScope -ScriptBlock {
-                Mock -CommandName 'Get-SqlDscAgentAlert' -MockWith {
-                    return $null
-                }
+                $script:mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
 
                 $instance = [SqlAgentAlert] @{
                     Name         = 'TestAlert'
@@ -180,6 +178,38 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
                 $result.Ensure | Should -Be 'Absent'
             }
         }
+
+        It 'Should return current state when alert exists with MessageId' {
+            Mock -CommandName 'Get-SqlDscAgentAlert' -MockWith {
+                $script:mockAlertObjectWithMessageId = New-Object -TypeName 'PSCustomObject'
+                $script:mockAlertObjectWithMessageId | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestAlert'
+                $script:mockAlertObjectWithMessageId | Add-Member -MemberType 'NoteProperty' -Name 'Severity' -Value 0
+                $script:mockAlertObjectWithMessageId | Add-Member -MemberType 'NoteProperty' -Name 'MessageId' -Value 50001
+
+                return $script:mockAlertObjectWithMessageId
+            }
+
+            InModuleScope -ScriptBlock {
+                $script:mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+
+                $instance = [SqlAgentAlert] @{
+                    Name         = 'TestAlert'
+                    InstanceName = 'MSSQLSERVER'
+                    MessageId    = 50002
+                } |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
+                        return $script:mockServerObject
+                    } -PassThru
+
+                $result = $instance.Get()
+
+                $result | Should -Not -BeNullOrEmpty
+                $result.Name | Should -Be 'TestAlert'
+                $result.Ensure | Should -Be 'Present'
+                $result.MessageId | Should -Be 50001
+                $result.Severity | Should -BeNullOrEmpty
+            }
+        }
     }
 
     Context 'When using the Test() method' {
@@ -190,15 +220,15 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
         }
 
         It 'Should return true when alert exists and is in desired state' {
+            Mock -CommandName 'Get-SqlDscAgentAlert' -MockWith {
+                return $script:mockAlertObject
+            }
+
             InModuleScope -ScriptBlock {
                 $script:mockAlertObject = New-Object -TypeName 'PSCustomObject'
                 $script:mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestAlert'
                 $script:mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Severity' -Value 16
                 $script:mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'MessageId' -Value 0
-
-                Mock -CommandName 'Get-SqlDscAgentAlert' -MockWith {
-                    return $script:mockAlertObject
-                }
 
                 $instance = [SqlAgentAlert] @{
                     Name         = 'TestAlert'
@@ -217,11 +247,9 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
         }
 
         It 'Should return false when alert does not exist but should be present' {
-            InModuleScope -ScriptBlock {
-                Mock -CommandName 'Get-SqlDscAgentAlert' -MockWith {
-                    return $null
-                }
+            Mock -CommandName 'Get-SqlDscAgentAlert'
 
+            InModuleScope -ScriptBlock {
                 $instance = [SqlAgentAlert] @{
                     Name         = 'TestAlert'
                     InstanceName = 'MSSQLSERVER'
@@ -266,6 +294,27 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
                     $null = $instance.Set()
 
                     Should -Invoke -CommandName 'New-SqlDscAgentAlert' -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName 'Remove-SqlDscAgentAlert' -Exactly -Times 0 -Scope It
+                }
+            }
+
+            It 'Should create alert with MessageId' {
+                InModuleScope -ScriptBlock {
+                    $instance = [SqlAgentAlert] @{
+                        Name         = 'TestAlert'
+                        InstanceName = 'MSSQLSERVER'
+                        Ensure       = 'Present'
+                        MessageId    = 50001
+                    } |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
+                            return $script:mockServerObject
+                        } -PassThru
+
+                    $null = $instance.Set()
+
+                    Should -Invoke -CommandName 'New-SqlDscAgentAlert' -ParameterFilter {
+                        $MessageId -eq 50001
+                    } -Exactly -Times 1 -Scope It
                     Should -Invoke -CommandName 'Remove-SqlDscAgentAlert' -Exactly -Times 0 -Scope It
                 }
             }
@@ -320,18 +369,79 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
             Mock -CommandName 'Set-SqlDscAgentAlert'
         }
 
-        Context 'When Ensure is Present and alert exists' {
-            It 'Should update alert when Severity property differs' {
-                InModuleScope -ScriptBlock {
-                    Mock -CommandName 'Get-SqlDscAgentAlert' -MockWith {
-                        $mockAlertObject = New-Object -TypeName 'PSCustomObject'
-                        $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestAlert'
-                        $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Severity' -Value 10
-                        $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'MessageId' -Value 0
 
-                        return $mockAlertObject
+        Context 'When Ensure is Present and alert does not exist' {
+            BeforeAll {
+                Mock -CommandName 'Get-SqlDscAgentAlert'
+            }
+
+            It 'Should create alert with Severity' {
+                InModuleScope -ScriptBlock {
+                    $instance = [SqlAgentAlert] @{
+                        Name         = 'TestAlert'
+                        InstanceName = 'MSSQLSERVER'
+                        Ensure       = 'Present'
+                        Severity     = 16
+                    } |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
+                            return $script:mockServerObject
+                        } -PassThru
+
+                    $properties = @{
+                        Severity = 16
                     }
 
+                    $null = $instance.Modify($properties)
+
+                    Should -Invoke -CommandName 'Get-SqlDscAgentAlert' -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName 'New-SqlDscAgentAlert' -ParameterFilter {
+                        $Severity -eq 16
+                    } -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName 'Set-SqlDscAgentAlert' -Exactly -Times 0 -Scope It
+                    Should -Invoke -CommandName 'Remove-SqlDscAgentAlert' -Exactly -Times 0 -Scope It
+                }
+            }
+
+            It 'Should create alert with MessageId' {
+                InModuleScope -ScriptBlock {
+                    $instance = [SqlAgentAlert] @{
+                        Name         = 'TestAlert'
+                        InstanceName = 'MSSQLSERVER'
+                        Ensure       = 'Present'
+                        MessageId    = 50001
+                    } |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
+                            return $script:mockServerObject
+                        } -PassThru
+
+                    $properties = @{
+                        MessageId = 50001
+                    }
+
+                    $null = $instance.Modify($properties)
+
+                    Should -Invoke -CommandName 'Get-SqlDscAgentAlert' -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName 'New-SqlDscAgentAlert' -ParameterFilter {
+                        $MessageId -eq 50001
+                    } -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName 'Set-SqlDscAgentAlert' -Exactly -Times 0 -Scope It
+                    Should -Invoke -CommandName 'Remove-SqlDscAgentAlert' -Exactly -Times 0 -Scope It
+                }
+            }
+        }
+
+        Context 'When Ensure is Present and alert exists' {
+            It 'Should update alert when Severity property differs' {
+                Mock -CommandName 'Get-SqlDscAgentAlert' -MockWith {
+                    $mockAlertObject = New-Object -TypeName 'PSCustomObject'
+                    $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestAlert'
+                    $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Severity' -Value 10
+                    $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'MessageId' -Value 0
+
+                    return $mockAlertObject
+                }
+
+                InModuleScope -ScriptBlock {
                     $instance = [SqlAgentAlert] @{
                         Name         = 'TestAlert'
                         InstanceName = 'MSSQLSERVER'
@@ -359,16 +469,16 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
             }
 
             It 'Should update alert when MessageId property differs' {
+                Mock -CommandName 'Get-SqlDscAgentAlert' -MockWith {
+                    $mockAlertObject = New-Object -TypeName 'PSCustomObject'
+                    $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestAlert'
+                    $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Severity' -Value 0
+                    $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'MessageId' -Value 50001
+
+                    return $mockAlertObject
+                }
+
                 InModuleScope -ScriptBlock {
-                    Mock -CommandName 'Get-SqlDscAgentAlert' -MockWith {
-                        $mockAlertObject = New-Object -TypeName 'PSCustomObject'
-                        $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestAlert'
-                        $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Severity' -Value 0
-                        $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'MessageId' -Value 50001
-
-                        return $mockAlertObject
-                    }
-
                     $instance = [SqlAgentAlert] @{
                         Name         = 'TestAlert'
                         InstanceName = 'MSSQLSERVER'
@@ -396,16 +506,16 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
             }
 
             It 'Should not update alert when no properties differ' {
+                Mock -CommandName 'Get-SqlDscAgentAlert' -MockWith {
+                    $mockAlertObject = New-Object -TypeName 'PSCustomObject'
+                    $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestAlert'
+                    $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Severity' -Value 16
+                    $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'MessageId' -Value 0
+
+                    return $mockAlertObject
+                }
+
                 InModuleScope -ScriptBlock {
-                    Mock -CommandName 'Get-SqlDscAgentAlert' -MockWith {
-                        $mockAlertObject = New-Object -TypeName 'PSCustomObject'
-                        $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestAlert'
-                        $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'Severity' -Value 16
-                        $mockAlertObject | Add-Member -MemberType 'NoteProperty' -Name 'MessageId' -Value 0
-
-                        return $mockAlertObject
-                    }
-
                     $instance = [SqlAgentAlert] @{
                         Name         = 'TestAlert'
                         InstanceName = 'MSSQLSERVER'
@@ -568,10 +678,12 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
             }
 
             Context 'When Ensure is Present' {
+                BeforeAll {
+                    Mock -CommandName 'Assert-BoundParameter'
+                }
+
                 It 'Should call Assert-BoundParameter to validate at least one of Severity or MessageId is specified' {
                     InModuleScope -ScriptBlock {
-                        Mock -CommandName 'Assert-BoundParameter' -MockWith { }
-
                         $properties = @{
                             Name = 'TestAlert'
                             Ensure = 'Present'
@@ -591,8 +703,6 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
 
                 It 'Should call Assert-BoundParameter to validate Severity and MessageId are mutually exclusive' {
                     InModuleScope -ScriptBlock {
-                        Mock -CommandName 'Assert-BoundParameter' -MockWith { }
-
                         $properties = @{
                             Name = 'TestAlert'
                             Ensure = 'Present'
@@ -613,9 +723,9 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
 
             Context 'When Ensure is Absent' {
                 It 'Should call Assert-BoundParameter to validate Severity and MessageId are not allowed' {
-                    InModuleScope -ScriptBlock {
-                        Mock -CommandName 'Assert-BoundParameter' -MockWith { }
+                    Mock -CommandName 'Assert-BoundParameter'
 
+                    InModuleScope -ScriptBlock {
                         $properties = @{
                             Name = 'TestAlert'
                             Ensure = 'Absent'
@@ -633,14 +743,14 @@ Describe 'SqlAgentAlert' -Tag 'SqlAgentAlert' {
                 }
 
                 It 'Should call Assert-BoundParameter with correct parameters when Severity is specified' {
-                    InModuleScope -ScriptBlock {
-                        Mock -CommandName 'Assert-BoundParameter' -MockWith {
-                            # Simulate the Assert-BoundParameter throwing an exception for NotAllowed parameters
-                            if ($NotAllowedList -and ($BoundParameterList.ContainsKey('Severity') -or $BoundParameterList.ContainsKey('MessageId'))) {
-                                throw 'Parameter validation failed'
-                            }
+                    Mock -CommandName 'Assert-BoundParameter' -MockWith {
+                        # Simulate the Assert-BoundParameter throwing an exception for NotAllowed parameters
+                        if ($NotAllowedList -and ($BoundParameterList.ContainsKey('Severity') -or $BoundParameterList.ContainsKey('MessageId'))) {
+                            throw 'Parameter validation failed'
                         }
+                    }
 
+                    InModuleScope -ScriptBlock {
                         $properties = @{
                             Name = 'TestAlert'
                             Ensure = 'Absent'

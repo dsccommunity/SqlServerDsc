@@ -144,7 +144,7 @@ class SqlAgentAlert : SqlResourceBase
         $this.ExcludeDscProperties = @(
             'InstanceName',
             'ServerName',
-            'Credential'
+            'Credential',
             'Name'
         )
     }
