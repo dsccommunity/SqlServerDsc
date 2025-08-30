@@ -6,14 +6,14 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
@@ -57,6 +57,7 @@ Describe "<dscResourceFriendlyName>_Integration" -Tag @('Integration_SQL2016', '
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_Add_Config"
+        "$($script:dscResourceName)_ChangeToMessageId_Config"
     ) {
         BeforeAll {
             $configurationName = $_
@@ -103,7 +104,15 @@ Describe "<dscResourceFriendlyName>_Integration" -Tag @('Integration_SQL2016', '
 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.Name
-            $resourceCurrentState.Severity | Should -Be $ConfigurationData.AllNodes.Severity
+            
+            if ($configurationName -eq "$($script:dscResourceName)_Add_Config")
+            {
+                $resourceCurrentState.Severity | Should -Be $ConfigurationData.AllNodes.Severity
+            }
+            elseif ($configurationName -eq "$($script:dscResourceName)_ChangeToMessageId_Config")
+            {
+                $resourceCurrentState.MessageId | Should -Be $ConfigurationData.AllNodes.MessageId
+            }
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -158,7 +167,7 @@ Describe "<dscResourceFriendlyName>_Integration" -Tag @('Integration_SQL2016', '
             }
 
             $resourceCurrentState.Ensure | Should -Be 'Absent'
-            $resourceCurrentState.Name | Should -BeNullOrEmpty
+            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.Name
             $resourceCurrentState.Severity | Should -BeNullOrEmpty
         }
 

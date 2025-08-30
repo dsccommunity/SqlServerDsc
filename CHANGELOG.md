@@ -5,17 +5,102 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Make sure tests forcibly imports the module being tested to avoid AI failing
+  when testing changes.
+- Fixed Azure DevOps pipeline conditions that were preventing DSC resource
+  integration tests from running when they should by removing incorrect quotes
+  around boolean values.
+- `SqlAgentAlert`
+  - Minor fix in `source/Classes/020.SqlAgentAlert.ps1` to correct `ExcludeDscProperties`
+    formatting (added missing delimiter).
+
 ### Added
 
 - Added setup workflow for GitHub Copilot.
   - Switch the workflow to use Linux.
   - Attempt to unshallow the Copilot branch
+- `SqlAgentAlert`
+  - Added new DSC resource to manage SQL Server Agent alerts.
+  - Improved AI instructions.
+  - Enhanced workflow with proper environment variable configuration and DSCv3 verification.
+  - Fixed environment variable persistence by using $GITHUB_ENV instead of
+    job-level env declaration.
+- `Assert-SqlDscLogin`
+  - Added new public command to validate that a specified SQL Server principal
+    is a login.
+- `Enable-SqlDscLogin`
+  - Added new public command to enable a SQL Server login.
+- `Disable-SqlDscLogin`
+  - Added new public command to disable a SQL Server login.
+- `Test-SqlDscIsLoginEnabled`
+  - Added new public command to test whether a SQL Server login is enabled.
+    Throws a terminating error if the specified principal does not exist as a login.
+  - Supports pipeline input and provides detailed error messages with localization.
+  - Uses `Test-SqlDscIsLogin` command for login validation following module patterns.
+- Added `Get-SqlDscLogin`, `Get-SqlDscRole`, `New-SqlDscLogin`, `New-SqlDscRole`,
+  `Remove-SqlDscRole`, and `Remove-SqlDscLogin` commands for retrieving and managing
+   SQL Server logins and roles with support for refresh, pipeline input, and ShouldProcess.
+- Added `Get-SqlDscAgentAlert`, `New-SqlDscAgentAlert`,
+  `Set-SqlDscAgentAlert`, `Remove-SqlDscAgentAlert`, and `Test-SqlDscAgentAlert`
+  to manage SQL Agent alerts on a Database Engine instance.
+- Added new public commands for database management:
+  - `Get-SqlDscDatabase` - Get databases from a SQL Server Database Engine instance
+  - `New-SqlDscDatabase` - Create a new database with specified properties
+  - `Set-SqlDscDatabase` - Modify properties of an existing database
+  - `Remove-SqlDscDatabase` - Remove a database from SQL Server instance
+  - `Test-SqlDscDatabase` - Test if a database is in the desired state
+  - All commands support pipeline input with ServerObject and follow established patterns
+  - Database objects can also be used as pipeline input for Set and Remove operations
+  - Commands include comprehensive validation, localization, and ShouldProcess support
 
 ### Changed
 
+- Refactored GitHub Copilot workflow setup to be module-agnostic via MODULE_NAME
+  environment variable, includes full-history detection, uses idempotent .NET
+  tool install, and adds Linux dependency handling ([issue #2127](https://github.com/dsccommunity/SqlServerDsc/issues/2127)).
+- `SqlAgentAlert`
+  - Added additional unit tests covering MessageId-based alerts, the hidden
+    `Modify()` method behavior, and `AssertProperties()` validation scenarios.
+- Module now outputs a verbose message instead of a warning when the SMO
+  dependency module is missing during import to work around a DSC v3 issue.
+- VS Code tasks configuration was improved to support AI.
+- `Prerequisites` tests
+  - Added creation of `SqlIntegrationTest` local Windows user for integration testing.
+- `tests/Integration/Commands/README.md`
+  - Added documentation for `SqlIntegrationTest` user and
+    `IntegrationTestSqlLogin` login.
+  - Added run order information for `New-SqlDscLogin` integration test.
 - `azure-pipelines.yml`
   - Remove `windows-2019` images fixes [#2106](https://github.com/dsccommunity/SqlServerDsc/issues/2106).
   - Move individual tasks to `windows-latest`.
+  - Added integration tests for `Assert-SqlDscLogin` command in Group 2.
+  - Added conditional logic to skip DSC resource integration tests when
+    changes don't affect DSC resources, improving CI/CD performance for
+    non-DSC changes.
+- `SqlServerDsc.psd1`
+  - Set `CmdletsToExport` to `*` in module manifest to fix issue [#2109](https://github.com/dsccommunity/SqlServerDsc/issues/2109).
+- Added optimization for DSC resource integration tests
+  - Created `.build/Test-ShouldRunDscResourceIntegrationTests.ps1` to analyze
+    git changes and decide when DSC resource integration tests are needed.
+  - DSC resource integration test stages now run only when changes affect DSC
+    resources, public commands used by resources, or related components.
+  - Unit tests, QA tests, and command integration tests continue to run for
+    all changes.
+- Bump actions/checkout task to v5.
+- `.build/Test-ShouldRunDscResourceIntegrationTests.ps1`
+  - Improved performance by adding an early optimization to check for changes
+    under the configured SourcePath before expensive analysis.
+  - Moved public command discovery to only run when source changes are detected.
+- `.build/README.md`
+  - Added flow diagram showing decision process for DSC resource integration tests.
+  - Improved documentation with optimized analysis workflow description.
+- DSC community style guidelines
+  - Added requirement to follow guidelines over existing code patterns.
+- Improved markdown, pester, powershell, and changelog instructions.
+  - Fixed `Ignore` that seems in edge-cases fail.
+  - Improved markdown and changelog instructions.
 
 ## [17.1.0] - 2025-05-22
 

@@ -1,16 +1,10 @@
 name: 'Copilot Setup Steps'
 
-# This workflow sets up a complete development environment for the SqlServerDsc PowerShell DSC module project
+# This workflow sets up a complete development environment for the PowerShell module project
 # when executed by GitHub Copilot Agent for development assistance.
 
 on:
   workflow_dispatch:
-    # inputs:
-    #   skip_tests:
-    #     description: 'Skip running tests during setup'
-    #     required: false
-    #     default: true
-    #     type: boolean
   pull_request:
     paths:
       - '.github/workflows/copilot-setup-steps.yml'
@@ -18,214 +12,280 @@ on:
     paths:
       - '.github/workflows/copilot-setup-steps.yml'
 
-# cSpell: ignore pwsh cmdlets DSCResources nupkg HQRM SqlServerDsc dotnet gitversion
+# cSpell: ignore unshallow LASTEXITCODE PSDSC noreport dearmor distro keyrings endgroup libmi libc
 jobs:
   copilot-setup-steps:
-    name: Setup SqlServerDsc Development Environment
+    name: Setup PowerShell Development Environment
     runs-on: ubuntu-latest
+    env:
+      MODULE_NAME: 'SqlServerDsc'
 
-    # Set the permissions to the lowest permissions possible needed for your steps.
-    # Copilot will be given its own token for its operations.
     permissions:
-      # If you want to clone the repository as part of your setup steps, for example to install dependencies, you'll need the `contents: read` permission. If you don't clone the repository in your setup steps, Copilot will do this for you automatically after the steps complete.
       contents: read
 
     steps:
+      - name: Set Environment Variables
+        shell: bash
+        run: |
+          echo "MODULE_NAME=SqlServerDsc" >> "$GITHUB_ENV"
+
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0  # Full history needed for GitVersion
 
-      - name: Unshallow repository for GitVersion
-        if: startsWith(github.ref, 'refs/heads/copilot/')
+      # This step is needed for GitVersion because Copilot switches to its working branch
+      # after checkout and fetches only depth 2.
+      - name: Ensure full history for GitVersion
         shell: pwsh
         run: |
-          Write-Host "Unshallow Copilot branch..." -ForegroundColor Green
+          Write-Host 'Ensuring full history for GitVersion...'
 
-          Write-Host "Removing the depth limit, prune unused refs, and grab tags" -ForegroundColor DarkGray
-          git fetch --prune --unshallow --tags --no-recurse-submodules
+          $isShallow = (& git rev-parse --is-shallow-repository) -eq 'true'
 
-          Write-Host "Unshallow complete." -ForegroundColor Green
+          if ($isShallow)
+          {
+              Write-Host 'Repository is shallow. Fetching full history and tags...'
+
+              git fetch --prune --unshallow --tags --no-recurse-submodules
+
+              if ($LASTEXITCODE -ne 0)
+              {
+                  throw 'git fetch --unshallow failed'
+              }
+          }
+          else
+          {
+              Write-Host 'Repository is not shallow. Refreshing tags...'
+
+              git fetch --prune --tags --no-recurse-submodules
+
+              if ($LASTEXITCODE -ne 0)
+              {
+                  throw 'git fetch --tags failed'
+              }
+          }
+
+          Write-Host 'History ready for GitVersion.'
+
+      - name: Install Linux Dependencies
+        shell: bash
+        run: |
+          echo "Installing Linux dependencies for PowerShell DSC..."
+
+          # Update package list
+          echo "::group::Update package list"
+          echo "Updating package list..."
+          sudo apt-get update
+          echo "Package list updated successfully"
+          echo "::endgroup::"
+
+          # Ensure gpg is available
+          sudo apt-get install -y gnupg
+
+          # Check if Microsoft repository is already added, if not add it
+          if ! grep -q "packages.microsoft.com" /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null; then
+            echo "::group::Add Microsoft repository"
+            echo "Adding Microsoft repository..."
+            # Add Microsoft's GPG key and repository (keyring)
+            sudo install -m 0755 -d /etc/apt/keyrings
+            curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/keyrings/microsoft.gpg >/dev/null
+            sudo chmod a+r /etc/apt/keyrings/microsoft.gpg
+            DISTRO_CODENAME="$(lsb_release -cs)"
+            echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/microsoft-ubuntu-${DISTRO_CODENAME}-prod ${DISTRO_CODENAME} main" | sudo tee "/etc/apt/sources.list.d/microsoft-${DISTRO_CODENAME}-prod.list" >/dev/null
+
+            # Update package list again after adding the new repo
+            echo "Updating package list after adding Microsoft repository..."
+            if ! sudo apt-get update; then
+              echo "::warning::apt-get update failed after adding Microsoft repo (repo may be unavailable for this distro). Continuing..."
+            fi
+            echo "Microsoft repository added successfully"
+            echo "::endgroup::"
+          else
+            echo "Microsoft repository already configured, skipping..."
+          fi
+
+          # Install OMI (Open Management Infrastructure) which provides libmi
+          echo "::group::Install OMI and dependencies"
+          if apt-cache policy omi 2>/dev/null | grep -q 'Candidate:'; then
+            echo "Installing OMI package..."
+
+            # Set a shorter hostname to avoid SSL certificate generation errors
+            # OMI generates SSL certificates during installation and GitHub Actions runners
+            # often have very long hostnames that exceed the 64-character limit for CN fields
+            echo "Setting temporary hostname to avoid SSL certificate generation errors..."
+            ORIGINAL_HOSTNAME=$(hostname)
+
+            # Install trap to always restore hostname on EXIT or ERR
+            restore_hostname() {
+              echo "Restoring original hostname..."
+              sudo hostname "$ORIGINAL_HOSTNAME"
+              trap - EXIT ERR  # Remove the trap after restore
+            }
+            trap 'restore_hostname' EXIT ERR
+
+            sudo hostname "dsc-runner"
+
+            if ! sudo apt-get install -y omi; then
+              echo "OMI package failed to install; continuing..."
+              echo "::warning::OMI package failed to install; continuing without OMI"
+            else
+              echo "OMI package installed successfully"
+            fi
+
+            # Restore original hostname and remove trap
+            restore_hostname
+          else
+            echo "Package 'omi' not found in repositories; skipping OMI install."
+            echo "::warning::OMI package not found in repositories, skipping installation"
+          fi
+          echo "::endgroup::"
+
+          echo "::group::Installing additional development dependencies..."
+          echo "Installing development dependencies..."
+          sudo apt-get install -y libc6-dev libssl-dev tree
+          echo "Development dependencies installed successfully"
+          echo "::endgroup::"
+
+          # Set LD_LIBRARY_PATH permanently for the runner session
+          echo "Setting LD_LIBRARY_PATH environment variable..."
+          echo "LD_LIBRARY_PATH=/opt/omi/lib:/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}" >> "$GITHUB_ENV"
+          echo "Environment variable set successfully"
+
+          echo "Linux dependencies installed successfully"
 
       - name: Configure PowerShell Environment
         shell: pwsh
         run: |
-          Write-Host "Configure PowerShell environment..." -ForegroundColor Green
+          Write-Host "Configure PowerShell environment..."
 
           # Install dependent PowerShell modules
+          Write-Host "Installing SqlServer module..."
           Install-PSResource -Name 'SqlServer' -Version '21.1.18256' -Scope 'CurrentUser' -Repository 'PSGallery' -TrustRepository
-          Install-PSResource -Name 'PSDSC' -Scope 'CurrentUser' -Repository 'PSGallery' -TrustRepository
+          Write-Host "SqlServer module installed successfully"
 
-          Write-Host "PowerShell environment configuration complete." -ForegroundColor Green
+          Write-Host "Installing PSDSC module..."
+          Install-PSResource -Name 'PSDSC' -Scope 'CurrentUser' -Repository 'PSGallery' -TrustRepository
+          Write-Host "PSDSC module installed successfully"
+
+          Write-Host "PowerShell environment configuration complete"
 
       - name: Install DSCv3
         shell: pwsh
         run: |
-          Write-Host "Install DSCv3 in environment..." -ForegroundColor Green
+          Write-Host "Install DSCv3 in environment..."
 
           # Install dependent PowerShell modules
+          Write-Host "Installing DSCv3 executable..."
           Install-DscExe -IncludePrerelease -Force
+          Write-Host "DSCv3 installed successfully"
 
-          Write-Host "DSCv3 install complete." -ForegroundColor Green
+          Write-Host "DSCv3 install complete"
 
       - name: Verify DSCv3
         shell: pwsh
         run: |
-          Write-Host "Running DSCv3 to validate correct operation..." -ForegroundColor Green
+          Write-Host "Running DSCv3 to validate correct operation..."
           dsc --version
 
       - name: Install .NET Tools
         shell: pwsh
         run: |
-          Write-Host "Installing .NET tools..." -ForegroundColor Green
+          Write-Host 'Installing/Updating .NET tools...'
 
-          # Install GitVersion for semantic versioning
-          dotnet tool install --global GitVersion.Tool --version 5.*
+          # Install GitVersion for semantic versioning (idempotent)
+          dotnet tool update --global GitVersion.Tool --version 5.* `
+            || dotnet tool install --global GitVersion.Tool --version 5.*
 
           # Verify installation
-          dotnet-gitversion
+          dotnet-gitversion /version
 
-          Write-Host ".NET tools installation complete." -ForegroundColor Green
+          Write-Host '.NET tools ready.'
 
       - name: Verify GitVersion
         shell: pwsh
         run: |
-          Write-Host "Running GitVersion to determine semantic version..." -ForegroundColor Green
+          Write-Host 'Running GitVersion to determine semantic version...'
+          dotnet-gitversion
+          Write-Host 'Running GitVersion to determine semantic version (parsing to PowerShell object)...'
           dotnet-gitversion | ConvertFrom-Json
 
       - name: Resolve Dependencies
         shell: pwsh
         run: |
-          Write-Host "Resolving project dependencies..." -ForegroundColor Green
+          Write-Host 'Resolving project dependencies...'
 
           # Run dependency resolution
-          .\build.ps1 -ResolveDependency -Tasks 'noop' -ErrorAction Stop
+          ./build.ps1 -ResolveDependency -Tasks 'noop' -UseModuleFast -ErrorAction Stop
 
-          Write-Host "Dependencies resolved successfully." -ForegroundColor Green
+          Write-Host 'Dependencies resolved successfully.'
 
       - name: Build Module
         shell: pwsh
         run: |
-          Write-Host "Building SqlServerDsc module..." -ForegroundColor Green
+          Write-Host "Building $env:MODULE_NAME module..."
 
           # Build the module
-          .\build.ps1 -Tasks 'build' -ErrorAction Stop
+          ./build.ps1 -Tasks 'build' -ErrorAction Stop
 
           # Verify build output
-          if (Test-Path -Path "output\builtModule\SqlServerDsc") {
-              Write-Host "Module built successfully at: output\builtModule\SqlServerDsc" -ForegroundColor Green
-              Get-ChildItem -Path "output\builtModule\SqlServerDsc" -Recurse | Select-Object Name, Length | Format-Table
-          } else {
-              Write-Error "Module build failed - output directory not found"
+          $builtPath = "output/builtModule/$env:MODULE_NAME"
+          if (Test-Path -Path $builtPath)
+          {
+              Write-Host "Module built successfully at: $builtPath"
+              # Show files with paths relative to the built module base path using `tree` (run directly in PowerShell)
+              $base = (Resolve-Path -Path $builtPath).ProviderPath
+              Write-Host "Files under $base (relative paths):"
+
+              # Run tree directly and strip leading './' from its output
+              tree --noreport $builtPath
+          }
+          else
+          {
+              Write-Error 'Module build failed - output directory not found'
               exit 1
           }
 
       - name: Import Built Module
         shell: pwsh
         run: |
-          Write-Host "Importing built SqlServerDsc module..." -ForegroundColor Green
+          Write-Host "Importing built $env:MODULE_NAME module..."
 
-          .\build.ps1 -Tasks 'noop'
-          Import-Module -Name 'SqlServerDsc' -Force
+          ./build.ps1 -Tasks 'noop'
+          Import-Module -Name $env:MODULE_NAME -Force
 
           # Verify module is loaded
-          $module = Get-Module -Name SqlServerDsc
-          if ($module) {
-              Write-Host "Module imported successfully:" -ForegroundColor Green
-              Write-Host "  Name: $($module.Name)" -ForegroundColor Cyan
-              Write-Host "  Version: $($module.Version)" -ForegroundColor Cyan
-              Write-Host "  Path: $($module.Path)" -ForegroundColor Cyan
+          $module = Get-Module -Name $env:MODULE_NAME -ErrorAction SilentlyContinue
 
-              # Show available commands and resources
-              $commands = Get-Command -Module SqlServerDsc
-              Write-Host "  Exported Commands: $($commands.Count)" -ForegroundColor Cyan
+          if ($module)
+          {
+              Write-Host 'Module imported successfully:'
+              Write-Host "  Name: $($module.Name)"
+              Write-Host "  Version: $($module.Version)"
+              Write-Host "  Path: $($module.Path)"
+
+              # Show available commands
+              $commands = @(Get-Command -Module $env:MODULE_NAME)
+              if ($commands.Count -gt 0)
+              {
+                  Write-Host "  Exported Commands: $($commands.Count)"
+                  Write-Host "`nAvailable Commands:"
+
+                  $commands |
+                    Select-Object Name, ModuleName | Format-Table -AutoSize
+              }
+              else
+              {
+                  Write-Host 'No commands exported by the module.'
+              }
 
               $dscResources = @(dsc resource list --adapter Microsoft.DSC/PowerShell --output-format json | ConvertFrom-Json)
-              Write-Host "  Available class-based DSC Resources: $($dscResources.Count)" -ForegroundColor Cyan
-          } else {
-              Write-Error "Failed to import module"
+              Write-Host "`n  Available class-based DSC Resources: $($dscResources.Count)`n"
+              $dscResources | Format-Table type, capabilities, implementedAs, requireAdapter -GroupBy kind -AutoSize
+          }
+          else
+          {
+              Write-Error 'Failed to import module'
+
               exit 1
           }
-
-      # - name: Run QA & Unit Tests (Optional)
-      #   if: ${{ inputs.skip_tests == false }}
-      #   shell: powershell
-      #   run: |
-      #     Write-Host "Running QA & unit tests..." -ForegroundColor Green
-
-      #     # Run QA & unit tests only (skip integration tests in setup)
-      #     .\build.ps1 -Tasks 'test' -PesterPath 'tests\Unit', 'tests\QA'
-
-      #     Write-Host "QA & unit tests completed." -ForegroundColor Green
-
-    #   - name: Validate Project Structure
-    #     shell: pwsh
-    #     run: |
-    #       Write-Host "Validating project structure..." -ForegroundColor Green
-
-    #       $requiredPaths = @(
-    #           'source\Classes',
-    #           'source\Public',
-    #           'source\Private',
-    #           'source\DSCResources',
-    #           'source\en-US',
-    #           'tests\Unit',
-    #           'tests\Integration',
-    #           'build.ps1',
-    #           'build.yaml',
-    #           'RequiredModules.psd1'
-    #       )
-
-    #       $missingPaths = @()
-    #       foreach ($path in $requiredPaths) {
-    #           if (-not (Test-Path -Path $path)) {
-    #               $missingPaths += $path
-    #           } else {
-    #               Write-Host "✓ $path" -ForegroundColor Green
-    #           }
-    #       }
-
-    #       if ($missingPaths.Count -gt 0) {
-    #           Write-Warning "Missing expected project paths:"
-    #           $missingPaths | ForEach-Object { Write-Host "  ✗ $_" -ForegroundColor Red }
-    #       } else {
-    #           Write-Host "All expected project paths found." -ForegroundColor Green
-    #       }
-
-      - name: Setup Complete - Display Environment Info
-        shell: pwsh
-        run: |
-          Write-Host ""
-          Write-Host "=========================================" -ForegroundColor Green
-          Write-Host "SqlServerDsc Development Environment Ready!" -ForegroundColor Green
-          Write-Host "=========================================" -ForegroundColor Green
-          Write-Host ""
-          Write-Host "Project Information:" -ForegroundColor Cyan
-          Write-Host "  Repository: SqlServerDsc PowerShell DSC Module" -ForegroundColor White
-          Write-Host "  Type: Class-based DSC resources for SQL Server" -ForegroundColor White
-          Write-Host "  Framework: Sampler + ModuleBuilder" -ForegroundColor White
-          Write-Host "  Testing: Pester v5 framework" -ForegroundColor White
-          Write-Host ""
-          Write-Host "Available Build Commands:" -ForegroundColor Cyan
-          Write-Host "  .\build.ps1 -Tasks build          # Build module" -ForegroundColor White
-          Write-Host "  .\build.ps1 -Tasks test           # Run all tests" -ForegroundColor White
-          Write-Host "  .\build.ps1 -Tasks docs           # Generate documentation" -ForegroundColor White
-          Write-Host "  .\build.ps1 -Tasks clean          # Clean output" -ForegroundColor White
-          Write-Host ""
-          Write-Host "Key Directories:" -ForegroundColor Cyan
-          Write-Host "  source\Classes\     # DSC class-based resources" -ForegroundColor White
-          Write-Host "  source\Public\      # Public PowerShell commands" -ForegroundColor White
-          Write-Host "  source\Private\     # Private helper functions" -ForegroundColor White
-          Write-Host "  tests\Unit\         # Unit tests (Pester v5)" -ForegroundColor White
-          Write-Host "  tests\Integration\  # Integration tests" -ForegroundColor White
-          Write-Host "  output\builtModule\ # Built module output" -ForegroundColor White
-          Write-Host ""
-          Write-Host "Development Guidelines:" -ForegroundColor Cyan
-          Write-Host "  • Follow DSC Community style guidelines" -ForegroundColor White
-          Write-Host "  • Use PascalCase for functions, camelCase for variables" -ForegroundColor White
-          Write-Host "  • Inherit DSC resources from ResourceBase or SqlResourceBase" -ForegroundColor White
-          Write-Host "  • Include comment-based help for all functions" -ForegroundColor White
-          Write-Host "  • Add unit tests for all new code" -ForegroundColor White
-          Write-Host "  • Use localized strings for user messages" -ForegroundColor White
-          Write-Host ""
-          Write-Host "Ready for development! 🚀" -ForegroundColor Green
