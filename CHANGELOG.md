@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SqlRSSetup`
   - Re-added `ReportServerEdition` enum and updated class to use enum instead of
     ValidateSet for the Edition property.
+- Fixed commands continuing execution after `Assert-ElevatedUser` elevation
+  errors by setting `$ErrorActionPreference = 'Stop'` [issue #2070](https://github.com/dsccommunity/SqlServerDsc/issues/2070)
 
 ### Added
 
