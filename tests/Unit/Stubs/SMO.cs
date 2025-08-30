@@ -1530,6 +1530,25 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
         Always = 3
     }
 
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.WeekDays
+    // Used by:
+    //  SQL Agent Operator commands unit tests
+    //  New-SqlDscAgentOperator.Tests.ps1
+    //  Set-SqlDscAgentOperator.Tests.ps1
+    public enum WeekDays
+    {
+        Monday = 2,
+        Tuesday = 4,
+        Wednesday = 8,
+        Thursday = 16,
+        Friday = 32,
+        Saturday = 64,
+        Sunday = 1,
+        Weekdays = 62,
+        WeekEnds = 65,
+        EveryDay = 127
+    }
+
     #endregion
 
     #region Public Classes
@@ -1711,6 +1730,17 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
         // Property
         public System.String Name { get; set; }
         public System.String EmailAddress { get; set; }
+        public System.String CategoryName { get; set; }
+        public System.String NetSendAddress { get; set; }
+        public System.String PagerAddress { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.WeekDays PagerDays { get; set; }
+        public System.TimeSpan SaturdayPagerEndTime { get; set; }
+        public System.TimeSpan SaturdayPagerStartTime { get; set; }
+        public System.TimeSpan SundayPagerEndTime { get; set; }
+        public System.TimeSpan SundayPagerStartTime { get; set; }
+        public System.TimeSpan WeekdayPagerEndTime { get; set; }
+        public System.TimeSpan WeekdayPagerStartTime { get; set; }
+        public System.Boolean Enabled { get; set; }
         public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
         public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
         public System.Object UserData { get; set; }
