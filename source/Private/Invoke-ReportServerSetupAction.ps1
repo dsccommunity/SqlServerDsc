@@ -196,6 +196,8 @@ function Invoke-ReportServerSetupAction
         $PassThru
     )
 
+    $ErrorActionPreference = 'Stop'
+
     if ($Force.IsPresent -and -not $Confirm)
     {
         $ConfirmPreference = 'None'
