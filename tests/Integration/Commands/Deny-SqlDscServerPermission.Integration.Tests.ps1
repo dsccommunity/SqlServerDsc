@@ -27,15 +27,12 @@ BeforeAll {
     $script:moduleName = 'SqlServerDsc'
 
     Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
-
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
-
-    # Loading stub cmdlets
-    Import-Module -Name "$PSScriptRoot/../../Unit/Stubs/SqlServer.psm1" -Force
 }
 
+AfterAll {
+    # Unload the module being tested so that it doesn't impact any other tests.
+    Get-Module -Name $script:moduleName -All | Remove-Module -Force
+}
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
