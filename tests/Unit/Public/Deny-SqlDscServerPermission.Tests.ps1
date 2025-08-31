@@ -50,36 +50,139 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'Deny-SqlDscServerPermission' {
-    Context 'When the command is called with valid parameters' {
-        BeforeAll {
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-            $mockServerObject.InstanceName = 'TestInstance'
-
-            $mockPermissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
-            $mockPermissionSet.ConnectSql = $true
-
-            Mock -CommandName Invoke-SqlDscServerPermissionOperation
-        }
-
-        It 'Should have the correct parameters in parameter set __AllParameterSets' {
+Describe 'Deny-SqlDscServerPermission' -Tag 'Public' {
+    Context 'When testing parameter sets' {
+        It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
+            @{
+                ExpectedParameterSetName = 'Login'
+                ExpectedParameters = '-Login <Login> -Permission <SqlServerPermission[]> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            }
+            @{
+                ExpectedParameterSetName = 'ServerRole'
+                ExpectedParameters = '-ServerRole <ServerRole> -Permission <SqlServerPermission[]> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            }
+        ) {
             $result = (Get-Command -Name 'Deny-SqlDscServerPermission').ParameterSets |
-                Where-Object -FilterScript { $_.Name -eq '__AllParameterSets' } |
+                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
                 Select-Object -Property @(
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be '__AllParameterSets'
-            $result.ParameterListAsString | Should -Be '[-ServerObject] <Server> [-Name] <String> [-Permission] <String[]> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should -Be $ExpectedParameters
+        }
+    }
+
+    Context 'When testing parameter properties' {
+        It 'Should have Login as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Deny-SqlDscServerPermission').Parameters['Login']
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
 
-        It 'Should call Invoke-SqlDscServerPermissionOperation with State Deny' {
-            Deny-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission @('ConnectSql') -Force
+        It 'Should have ServerRole as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Deny-SqlDscServerPermission').Parameters['ServerRole']
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        }
 
-            Should -Invoke -CommandName Invoke-SqlDscServerPermissionOperation -Times 1 -Exactly -ParameterFilter {
-                $State -eq 'Deny' -and
-                $ServerObject -eq $mockServerObject -and
-                $Name -eq 'TestUser'
+        It 'Should have Permission as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Deny-SqlDscServerPermission').Parameters['Permission']
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        }
+
+        It 'Should have Force as an optional parameter' {
+            $parameterInfo = (Get-Command -Name 'Deny-SqlDscServerPermission').Parameters['Force']
+            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+        }
+    }
+
+    Context 'When denying permissions successfully' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject.InstanceName = 'MockInstance'
+
+            $mockLogin = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList $mockServerObject, 'TestUser'
+            $mockServerRole = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList $mockServerObject, 'TestRole'
+
+            # Mock the Deny method on the server object
+            $mockServerObject | Add-Member -MemberType ScriptMethod -Name 'Deny' -Value {
+                param($PermissionSet, $PrincipalName)
+                # Do nothing - just succeed
+            } -Force
+        }
+
+        It 'Should deny permissions to a login without throwing' {
+            InModuleScope -Parameters @{
+                mockLogin = $mockLogin
+            } -ScriptBlock {
+                { Deny-SqlDscServerPermission -Login $mockLogin -Permission ConnectSql -Force } |
+                    Should -Not -Throw
+            }
+        }
+
+        It 'Should deny permissions to a server role without throwing' {
+            InModuleScope -Parameters @{
+                mockServerRole = $mockServerRole
+            } -ScriptBlock {
+                { Deny-SqlDscServerPermission -ServerRole $mockServerRole -Permission ConnectSql -Force } |
+                    Should -Not -Throw
+            }
+        }
+    }
+
+    Context 'When denying permissions fails' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject.InstanceName = 'MockInstance'
+
+            $mockLogin = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList $mockServerObject, 'TestUser'
+
+            # Mock the Deny method to throw an error
+            $mockServerObject | Add-Member -MemberType ScriptMethod -Name 'Deny' -Value {
+                param($PermissionSet, $PrincipalName)
+                throw 'Mocked Deny failure'
+            } -Force
+        }
+
+        It 'Should throw a descriptive error when operation fails' {
+            InModuleScope -Parameters @{
+                mockLogin = $mockLogin
+            } -ScriptBlock {
+                { Deny-SqlDscServerPermission -Login $mockLogin -Permission ConnectSql -Force } |
+                    Should -Throw -ExpectedMessage '*Failed to deny server permissions*'
+            }
+        }
+    }
+
+    Context 'When using pipeline input' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject.InstanceName = 'MockInstance'
+
+            $mockLogin = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList $mockServerObject, 'TestUser'
+            $mockServerRole = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList $mockServerObject, 'TestRole'
+
+            # Mock the Deny method on the server object
+            $mockServerObject | Add-Member -MemberType ScriptMethod -Name 'Deny' -Value {
+                param($PermissionSet, $PrincipalName)
+                # Do nothing - just succeed
+            } -Force
+        }
+
+        It 'Should accept Login from pipeline' {
+            InModuleScope -Parameters @{
+                mockLogin = $mockLogin
+            } -ScriptBlock {
+                { $mockLogin | Deny-SqlDscServerPermission -Permission ConnectSql -Force } |
+                    Should -Not -Throw
+            }
+        }
+
+        It 'Should accept ServerRole from pipeline' {
+            InModuleScope -Parameters @{
+                mockServerRole = $mockServerRole
+            } -ScriptBlock {
+                { $mockServerRole | Deny-SqlDscServerPermission -Permission ConnectSql -Force } |
+                    Should -Not -Throw
             }
         }
     }

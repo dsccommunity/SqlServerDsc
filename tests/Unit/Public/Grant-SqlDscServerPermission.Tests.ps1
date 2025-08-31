@@ -53,8 +53,12 @@ Describe 'Grant-SqlDscServerPermission' -Tag 'Public' {
     Context 'When testing parameter sets' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
-                ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-ServerObject] <Server> [-Name] <String> [-Permission] <String[]> [-WithGrant] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameterSetName = 'Login'
+                ExpectedParameters = '-Login <Login> -Permission <SqlServerPermission[]> [-WithGrant] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            }
+            @{
+                ExpectedParameterSetName = 'ServerRole'
+                ExpectedParameters = '-ServerRole <ServerRole> -Permission <SqlServerPermission[]> [-WithGrant] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Grant-SqlDscServerPermission').ParameterSets |
@@ -69,13 +73,13 @@ Describe 'Grant-SqlDscServerPermission' -Tag 'Public' {
     }
 
     Context 'When testing parameter properties' {
-        It 'Should have ServerObject as a mandatory parameter' {
-            $parameterInfo = (Get-Command -Name 'Grant-SqlDscServerPermission').Parameters['ServerObject']
+        It 'Should have Login as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Grant-SqlDscServerPermission').Parameters['Login']
             $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
 
-        It 'Should have Name as a mandatory parameter' {
-            $parameterInfo = (Get-Command -Name 'Grant-SqlDscServerPermission').Parameters['Name']
+        It 'Should have ServerRole as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Grant-SqlDscServerPermission').Parameters['ServerRole']
             $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
 
@@ -100,38 +104,40 @@ Describe 'Grant-SqlDscServerPermission' -Tag 'Public' {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'MockInstance'
 
-            Mock -CommandName ConvertFrom-SqlDscServerPermission -MockWith {
-                $mockPermissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
-                $mockPermissionSet.ConnectSql = $true
-                return $mockPermissionSet
-            }
+            $mockLogin = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList $mockServerObject, 'TestUser'
+            $mockServerRole = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList $mockServerObject, 'TestRole'
 
-            Mock -CommandName Invoke-SqlDscServerPermissionOperation -MockWith {
-                # Mock successful operation
-            }
+            # Mock the Grant method on the server object
+            $mockServerObject | Add-Member -MemberType ScriptMethod -Name 'Grant' -Value {
+                param($PermissionSet, $PrincipalName, $GrantWithGrant)
+                # Do nothing - just succeed
+            } -Force
         }
 
-        It 'Should grant permissions without throwing' {
+        It 'Should grant permissions to a login without throwing' {
             InModuleScope -Parameters @{
-                mockServerObject = $mockServerObject
+                mockLogin = $mockLogin
             } -ScriptBlock {
-                { Grant-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission @('ConnectSql') -Force } |
+                { Grant-SqlDscServerPermission -Login $mockLogin -Permission ConnectSql -Force } |
                     Should -Not -Throw
             }
         }
 
-        It 'Should call Invoke-SqlDscServerPermissionOperation for each non-empty permission' {
-            Grant-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission @('ConnectSql') -Force
-
-            Should -Invoke -CommandName Invoke-SqlDscServerPermissionOperation -Times 1
+        It 'Should grant permissions to a server role without throwing' {
+            InModuleScope -Parameters @{
+                mockServerRole = $mockServerRole
+            } -ScriptBlock {
+                { Grant-SqlDscServerPermission -ServerRole $mockServerRole -Permission ConnectSql -Force } |
+                    Should -Not -Throw
+            }
         }
 
         It 'Should handle GrantWithGrant state correctly' {
-            { Grant-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission @('ConnectSql') -WithGrant -Force } |
-                Should -Not -Throw
-
-            Should -Invoke -CommandName Invoke-SqlDscServerPermissionOperation -ParameterFilter {
-                $State -eq 'Grant' -and $WithGrant.IsPresent
+            InModuleScope -Parameters @{
+                mockLogin = $mockLogin
+            } -ScriptBlock {
+                { Grant-SqlDscServerPermission -Login $mockLogin -Permission ConnectSql -WithGrant -Force } |
+                    Should -Not -Throw
             }
         }
     }
@@ -141,20 +147,22 @@ Describe 'Grant-SqlDscServerPermission' -Tag 'Public' {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'MockInstance'
 
-            Mock -CommandName ConvertFrom-SqlDscServerPermission -MockWith {
-                $mockPermissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
-                $mockPermissionSet.ConnectSql = $true
-                return $mockPermissionSet
-            }
+            $mockLogin = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList $mockServerObject, 'TestUser'
 
-            Mock -CommandName Invoke-SqlDscServerPermissionOperation -MockWith {
-                throw 'Mock error'
-            }
+            # Mock the Grant method to throw an error
+            $mockServerObject | Add-Member -MemberType ScriptMethod -Name 'Grant' -Value {
+                param($PermissionSet, $PrincipalName, $GrantWithGrant)
+                throw 'Mocked Grant failure'
+            } -Force
         }
 
         It 'Should throw a descriptive error when operation fails' {
-            { Grant-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission @('ConnectSql') -Force } |
-                Should -Throw -ExpectedMessage '*Failed to grant server permissions*'
+            InModuleScope -Parameters @{
+                mockLogin = $mockLogin
+            } -ScriptBlock {
+                { Grant-SqlDscServerPermission -Login $mockLogin -Permission ConnectSql -Force } |
+                    Should -Throw -ExpectedMessage '*Failed to grant server permissions*'
+            }
         }
     }
 
@@ -163,20 +171,32 @@ Describe 'Grant-SqlDscServerPermission' -Tag 'Public' {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'MockInstance'
 
-            Mock -CommandName ConvertFrom-SqlDscServerPermission -MockWith {
-                $mockPermissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
-                $mockPermissionSet.ConnectSql = $true
-                return $mockPermissionSet
-            }
+            $mockLogin = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList $mockServerObject, 'TestUser'
+            $mockServerRole = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList $mockServerObject, 'TestRole'
 
-            Mock -CommandName Invoke-SqlDscServerPermissionOperation -MockWith {
-                # Mock successful operation
+            # Mock the Grant method on the server object
+            $mockServerObject | Add-Member -MemberType ScriptMethod -Name 'Grant' -Value {
+                param($PermissionSet, $PrincipalName, $GrantWithGrant)
+                # Do nothing - just succeed
+            } -Force
+        }
+
+        It 'Should accept Login from pipeline' {
+            InModuleScope -Parameters @{
+                mockLogin = $mockLogin
+            } -ScriptBlock {
+                { $mockLogin | Grant-SqlDscServerPermission -Permission ConnectSql -Force } |
+                    Should -Not -Throw
             }
         }
 
-        It 'Should accept ServerObject from pipeline' {
-            { $mockServerObject | Grant-SqlDscServerPermission -Name 'TestUser' -Permission @('ConnectSql') -Force } |
-                Should -Not -Throw
+        It 'Should accept ServerRole from pipeline' {
+            InModuleScope -Parameters @{
+                mockServerRole = $mockServerRole
+            } -ScriptBlock {
+                { $mockServerRole | Grant-SqlDscServerPermission -Permission ConnectSql -Force } |
+                    Should -Not -Throw
+            }
         }
     }
 }

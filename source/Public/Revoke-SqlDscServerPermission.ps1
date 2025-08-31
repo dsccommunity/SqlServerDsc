@@ -104,11 +104,7 @@ function Revoke-SqlDscServerPermission
             $serverObject = $ServerRole.Parent
         }
 
-        Write-Verbose -Message (
-            $script:localizedData.ServerPermission_Revoke_ShouldProcessVerboseDescription -f $principalName, $serverObject.InstanceName
-        )
-
-        $verboseDescriptionMessage = $script:localizedData.ServerPermission_Revoke_ShouldProcessVerboseDescription -f $principalName, $serverObject.InstanceName
+        $verboseDescriptionMessage = $script:localizedData.ServerPermission_Revoke_ShouldProcessVerboseDescription -f $principalName, $serverObject.InstanceName, ($Permission -join ',')
         $verboseWarningMessage = $script:localizedData.ServerPermission_Revoke_ShouldProcessVerboseWarning -f $principalName
         $captionMessage = $script:localizedData.ServerPermission_Revoke_ShouldProcessCaption
 
@@ -131,10 +127,6 @@ function Revoke-SqlDscServerPermission
 
             try
             {
-                Write-Verbose -Message (
-                    $script:localizedData.ServerPermission_RevokePermission -f ($permissionName -join ','), $principalName
-                )
-
                 if ($WithGrant.IsPresent)
                 {
                     $serverObject.Revoke($permissionSet, $principalName, $false, $true)

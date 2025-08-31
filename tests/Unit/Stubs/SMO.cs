@@ -539,13 +539,16 @@ namespace Microsoft.SqlServer.Management.Smo
     {
         public ServerRole( Server server, string name ) {
             this.Name = name;
+            this.Parent = server;
         }
 
         public ServerRole( Object server, string name ) {
             this.Name = name;
+            this.Parent = (Server)server;
         }
 
         public string Name;
+        public Server Parent;
     }
 
 

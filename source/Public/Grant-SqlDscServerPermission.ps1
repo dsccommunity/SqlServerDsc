@@ -106,11 +106,7 @@ function Grant-SqlDscServerPermission
             $serverObject = $ServerRole.Parent
         }
 
-        Write-Verbose -Message (
-            $script:localizedData.ServerPermission_Grant_ShouldProcessVerboseDescription -f $principalName, $serverObject.InstanceName
-        )
-
-        $verboseDescriptionMessage = $script:localizedData.ServerPermission_Grant_ShouldProcessVerboseDescription -f $principalName, $serverObject.InstanceName
+        $verboseDescriptionMessage = $script:localizedData.ServerPermission_Grant_ShouldProcessVerboseDescription -f $principalName, $serverObject.InstanceName, ($Permission -join ',')
         $verboseWarningMessage = $script:localizedData.ServerPermission_Grant_ShouldProcessVerboseWarning -f $principalName
         $captionMessage = $script:localizedData.ServerPermission_Grant_ShouldProcessCaption
 
@@ -133,10 +129,6 @@ function Grant-SqlDscServerPermission
 
             try
             {
-                Write-Verbose -Message (
-                    $script:localizedData.ServerPermission_GrantPermission -f ($permissionName -join ','), $principalName
-                )
-
                 if ($WithGrant.IsPresent)
                 {
                     $serverObject.Grant($permissionSet, $principalName, $true)

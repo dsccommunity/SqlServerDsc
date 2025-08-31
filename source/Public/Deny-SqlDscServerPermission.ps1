@@ -91,11 +91,7 @@ function Deny-SqlDscServerPermission
             $serverObject = $ServerRole.Parent
         }
 
-        Write-Verbose -Message (
-            $script:localizedData.ServerPermission_Deny_ShouldProcessVerboseDescription -f $principalName, $serverObject.InstanceName
-        )
-
-        $verboseDescriptionMessage = $script:localizedData.ServerPermission_Deny_ShouldProcessVerboseDescription -f $principalName, $serverObject.InstanceName
+        $verboseDescriptionMessage = $script:localizedData.ServerPermission_Deny_ShouldProcessVerboseDescription -f $principalName, $serverObject.InstanceName, ($Permission -join ',')
         $verboseWarningMessage = $script:localizedData.ServerPermission_Deny_ShouldProcessVerboseWarning -f $principalName
         $captionMessage = $script:localizedData.ServerPermission_Deny_ShouldProcessCaption
 
@@ -118,10 +114,6 @@ function Deny-SqlDscServerPermission
 
             try
             {
-                Write-Verbose -Message (
-                    $script:localizedData.ServerPermission_DenyPermission -f ($permissionName -join ','), $principalName
-                )
-
                 $serverObject.Deny($permissionSet, $principalName)
             }
             catch
