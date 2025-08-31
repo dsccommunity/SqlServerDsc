@@ -37,7 +37,7 @@ ConvertFrom-StringData @'
     ServerPermission_DenyPermission = Deny the permissions '{0}' for the principal '{1}'.
     ServerPermission_RevokePermission = Revoke the permissions '{0}' for the principal '{1}'.
 
-    ## New-SqlDscServerPermission
+    ## Grant-SqlDscServerPermission
     ServerPermission_Grant_ShouldProcessVerboseDescription = Granting server permissions for the principal '{0}' on the instance '{1}'.
     ServerPermission_Grant_ShouldProcessVerboseWarning = Are you sure you want to grant server permissions for the principal '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
@@ -56,11 +56,11 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     ServerPermission_Test_ShouldProcessCaption = Test server permissions
 
-    ## Remove-SqlDscServerPermission
-    ServerPermission_Remove_ShouldProcessVerboseDescription = Removing server permissions for the principal '{0}' on the instance '{1}'.
-    ServerPermission_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove server permissions for the principal '{0}'?
+    ## Revoke-SqlDscServerPermission
+    ServerPermission_Revoke_ShouldProcessVerboseDescription = Revoking server permissions for the principal '{0}' on the instance '{1}'.
+    ServerPermission_Revoke_ShouldProcessVerboseWarning = Are you sure you want to revoke server permissions for the principal '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
-    ServerPermission_Remove_ShouldProcessCaption = Remove server permissions
+    ServerPermission_Revoke_ShouldProcessCaption = Revoke server permissions
     ServerPermission_FailedToGrantPermission = Failed to grant server permissions for principal '{0}' on instance '{1}'.
     ServerPermission_FailedToRevokePermission = Failed to revoke server permissions for principal '{0}' on instance '{1}'.
     ServerPermission_TestFailed = Failed to test server permissions for principal '{0}': {1}

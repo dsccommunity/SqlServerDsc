@@ -4,13 +4,16 @@
 
     .DESCRIPTION
         This command tests if server permissions for an existing principal on a SQL Server
-        Database Engine instance are in the desired state.
+        Database Engine instance are in the desired state. The principal can be specified as either
+        a Login object (from Get-SqlDscLogin) or a ServerRole object (from Get-SqlDscRole).
 
-    .PARAMETER ServerObject
-        Specifies current server connection object.
+    .PARAMETER Login
+        Specifies the Login object for which the permissions are tested.
+        This parameter accepts pipeline input.
 
-    .PARAMETER Name
-        Specifies the name of the principal for which the permissions are tested.
+    .PARAMETER ServerRole
+        Specifies the ServerRole object for which the permissions are tested.
+        This parameter accepts pipeline input.
 
     .PARAMETER Grant
         Specifies that the test should verify if the permissions are granted to the principal.
@@ -34,22 +37,25 @@
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
+        $login = $serverInstance | Get-SqlDscLogin -Name 'MyLogin'
 
-        $isInDesiredState = Test-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -Grant -Permission ConnectSql, ViewServerState
+        $isInDesiredState = Test-SqlDscServerPermission -Login $login -Grant -Permission ConnectSql, ViewServerState
 
-        Tests if the specified permissions are granted to the principal 'MyPrincipal'.
+        Tests if the specified permissions are granted to the login 'MyLogin'.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
+        $role = $serverInstance | Get-SqlDscRole -Name 'MyRole'
 
-        $isInDesiredState = $serverInstance | Test-SqlDscServerPermission -Name 'MyPrincipal' -Grant -Permission AlterAnyDatabase -WithGrant
+        $isInDesiredState = $role | Test-SqlDscServerPermission -Grant -Permission AlterAnyDatabase -WithGrant
 
-        Tests if the specified permissions are granted with grant option to the principal 'MyPrincipal'.
+        Tests if the specified permissions are granted with grant option to the role 'MyRole'.
 
     .NOTES
-        If specifying `-ErrorAction 'SilentlyContinue'` then the command will silently
-        ignore if the principal is not present. If specifying `-ErrorAction 'Stop'` the
-        command will throw an error if the principal is missing.
+        The Login or ServerRole object must come from the same SQL Server instance
+        where the permissions will be tested. If specifying `-ErrorAction 'SilentlyContinue'`
+        then the command will silently continue if any errors occur. If specifying
+        `-ErrorAction 'Stop'` the command will throw an error on any failure.
 #>
 function Test-SqlDscServerPermission
 {
@@ -59,19 +65,23 @@ function Test-SqlDscServerPermission
     [OutputType([System.Boolean])]
     param
     (
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
-        [Microsoft.SqlServer.Management.Smo.Server]
-        $ServerObject,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'LoginGrant')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'LoginDeny')]
+        [Microsoft.SqlServer.Management.Smo.Login]
+        $Login,
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'ServerRoleGrant')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'ServerRoleDeny')]
+        [Microsoft.SqlServer.Management.Smo.ServerRole]
+        $ServerRole,
 
-        [Parameter(Mandatory = $true, ParameterSetName = 'Grant')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'LoginGrant')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'ServerRoleGrant')]
         [System.Management.Automation.SwitchParameter]
         $Grant,
 
-        [Parameter(Mandatory = $true, ParameterSetName = 'Deny')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'LoginDeny')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'ServerRoleDeny')]
         [System.Management.Automation.SwitchParameter]
         $Deny,
 
@@ -79,16 +89,32 @@ function Test-SqlDscServerPermission
         [SqlServerPermission[]]
         $Permission,
 
-        [Parameter(ParameterSetName = 'Grant')]
-        [Parameter(ParameterSetName = 'Deny')]
+        [Parameter(ParameterSetName = 'LoginGrant')]
+        [Parameter(ParameterSetName = 'ServerRoleGrant')]
+        [Parameter(ParameterSetName = 'LoginDeny')]
+        [Parameter(ParameterSetName = 'ServerRoleDeny')]
         [System.Management.Automation.SwitchParameter]
         $WithGrant
     )
 
     process
     {
+        # Determine which principal object we're working with
+        if ($Login)
+        {
+            $principalObject = $Login
+            $principalName = $Login.Name
+            $serverObject = $Login.Parent
+        }
+        else
+        {
+            $principalObject = $ServerRole
+            $principalName = $ServerRole.Name
+            $serverObject = $ServerRole.Parent
+        }
+
         Write-Verbose -Message (
-            $script:localizedData.ServerPermission_TestingDesiredState -f $Name, $ServerObject.InstanceName
+            $script:localizedData.ServerPermission_TestingDesiredState -f $principalName, $serverObject.InstanceName
         )
 
         try
@@ -111,8 +137,8 @@ function Test-SqlDscServerPermission
             }
 
             $testParameters = @{
-                ServerObject = $ServerObject
-                Name         = $Name
+                ServerObject = $serverObject
+                Name         = $principalName
                 State        = $state
                 Permission   = $permissionSet
             }
@@ -130,7 +156,7 @@ function Test-SqlDscServerPermission
         {
             # If the principal doesn't exist or there's another error, return false
             Write-Verbose -Message (
-                $script:localizedData.ServerPermission_TestFailed -f $Name, $_.Exception.Message
+                $script:localizedData.ServerPermission_TestFailed -f $principalName, $_.Exception.Message
             )
             
             return $false

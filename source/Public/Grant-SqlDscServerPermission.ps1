@@ -4,16 +4,16 @@
 
     .DESCRIPTION
         This command grants server permissions to an existing principal on a SQL Server
-        Database Engine instance.
+        Database Engine instance. The principal can be specified as either a Login
+        object (from Get-SqlDscLogin) or a ServerRole object (from Get-SqlDscRole).
 
-    .PARAMETER ServerObject
-        Specifies current server connection object.
+    .PARAMETER Login
+        Specifies the Login object for which the permissions are granted.
+        This parameter accepts pipeline input.
 
-    .PARAMETER Name
-        Specifies the name of the principal for which the permissions are granted.
-
-    .PARAMETER State
-        Specifies the state of the permission to be applied.
+    .PARAMETER ServerRole
+        Specifies the ServerRole object for which the permissions are granted.
+        This parameter accepts pipeline input.
 
     .PARAMETER Permission
         Specifies the permissions to be granted. Specify multiple permissions by
@@ -21,9 +21,7 @@
 
     .PARAMETER WithGrant
         Specifies that the principal should also be granted the right to grant
-        other principals the same permission. This parameter is only valid when
-        parameter **State** is set to 'Grant'. When this parameter is used, the
-        effective state will be 'GrantWithGrant'.
+        other principals the same permission.
 
     .PARAMETER Force
         Specifies that the permissions should be granted without any confirmation.
@@ -33,22 +31,32 @@
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
+        $login = $serverInstance | Get-SqlDscLogin -Name 'MyLogin'
 
-        Grant-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -Permission ConnectSql, ViewServerState
+        Grant-SqlDscServerPermission -Login $login -Permission ConnectSql, ViewServerState
 
-        Grants the specified permissions to the principal 'MyPrincipal'.
+        Grants the specified permissions to the login 'MyLogin'.
+
+    .EXAMPLE
+        $serverInstance = Connect-SqlDscDatabaseEngine
+        $role = $serverInstance | Get-SqlDscRole -Name 'MyRole'
+
+        $role | Grant-SqlDscServerPermission -Permission AlterAnyDatabase -WithGrant -Force
+
+        Grants the specified permissions with grant option to the role 'MyRole' without prompting for confirmation.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
 
-        $serverInstance | Grant-SqlDscServerPermission -Name 'MyPrincipal' -Permission AlterAnyDatabase -WithGrant -Force
+        $serverInstance | Get-SqlDscLogin | Grant-SqlDscServerPermission -Permission ConnectSql
 
-        Grants the specified permissions with grant option to the principal 'MyPrincipal' without prompting for confirmation.
+        Grants ConnectSql permission to all logins from the pipeline.
 
     .NOTES
-        If specifying `-ErrorAction 'SilentlyContinue'` then the command will silently
-        ignore if the principal is not present. If specifying `-ErrorAction 'Stop'` the
-        command will throw an error if the principal is missing.
+        The Login or ServerRole object must come from the same SQL Server instance
+        where the permissions will be granted. If specifying `-ErrorAction 'SilentlyContinue'`
+        then the command will silently continue if any errors occur. If specifying
+        `-ErrorAction 'Stop'` the command will throw an error on any failure.
 #>
 function Grant-SqlDscServerPermission
 {
@@ -58,13 +66,13 @@ function Grant-SqlDscServerPermission
     [OutputType()]
     param
     (
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
-        [Microsoft.SqlServer.Management.Smo.Server]
-        $ServerObject,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Login')]
+        [Microsoft.SqlServer.Management.Smo.Login]
+        $Login,
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'ServerRole')]
+        [Microsoft.SqlServer.Management.Smo.ServerRole]
+        $ServerRole,
 
         [Parameter(Mandatory = $true)]
         [SqlServerPermission[]]
@@ -86,39 +94,30 @@ function Grant-SqlDscServerPermission
             $ConfirmPreference = 'None'
         }
 
+        # Determine which principal object we're working with
+        if ($PSCmdlet.ParameterSetName -eq 'Login')
+        {
+            $principalObject = $Login
+            $principalName = $Login.Name
+            $serverObject = $Login.Parent
+        }
+        else
+        {
+            $principalObject = $ServerRole
+            $principalName = $ServerRole.Name
+            $serverObject = $ServerRole.Parent
+        }
+
         Write-Verbose -Message (
-            $script:localizedData.ServerPermission_Grant_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
+            $script:localizedData.ServerPermission_Grant_ShouldProcessVerboseDescription -f $principalName, $serverObject.InstanceName
         )
 
-        $verboseDescriptionMessage = $script:localizedData.ServerPermission_Grant_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
-        $verboseWarningMessage = $script:localizedData.ServerPermission_Grant_ShouldProcessVerboseWarning -f $Name
+        $verboseDescriptionMessage = $script:localizedData.ServerPermission_Grant_ShouldProcessVerboseDescription -f $principalName, $serverObject.InstanceName
+        $verboseWarningMessage = $script:localizedData.ServerPermission_Grant_ShouldProcessVerboseWarning -f $principalName
         $captionMessage = $script:localizedData.ServerPermission_Grant_ShouldProcessCaption
 
         if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
-            # Validate that the principal exists
-            $testSqlDscIsPrincipalParameters = @{
-                ServerObject = $ServerObject
-                Name         = $Name
-            }
-
-            $isLogin = Test-SqlDscIsLogin @testSqlDscIsPrincipalParameters
-            $isRole = Test-SqlDscIsRole @testSqlDscIsPrincipalParameters
-
-            if (-not ($isLogin -or $isRole))
-            {
-                $missingPrincipalMessage = $script:localizedData.ServerPermission_MissingPrincipal -f $Name, $ServerObject.InstanceName
-
-                $PSCmdlet.ThrowTerminatingError(
-                    [System.Management.Automation.ErrorRecord]::new(
-                        $missingPrincipalMessage,
-                        'GSSP0001', # cSpell: disable-line
-                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                        $Name
-                    )
-                )
-            }
-
             # Convert enum array to ServerPermissionSet object
             $permissionSet = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]::new()
             foreach ($permissionName in $Permission)
@@ -137,21 +136,21 @@ function Grant-SqlDscServerPermission
             try
             {
                 Write-Verbose -Message (
-                    $script:localizedData.ServerPermission_GrantPermission -f ($permissionName -join ','), $Name
+                    $script:localizedData.ServerPermission_GrantPermission -f ($permissionName -join ','), $principalName
                 )
 
                 if ($WithGrant.IsPresent)
                 {
-                    $ServerObject.Grant($permissionSet, $Name, $true)
+                    $serverObject.Grant($permissionSet, $principalName, $true)
                 }
                 else
                 {
-                    $ServerObject.Grant($permissionSet, $Name)
+                    $serverObject.Grant($permissionSet, $principalName)
                 }
             }
             catch
             {
-                $errorMessage = $script:localizedData.ServerPermission_FailedToGrantPermission -f $Name, $ServerObject.InstanceName
+                $errorMessage = $script:localizedData.ServerPermission_FailedToGrantPermission -f $principalName, $serverObject.InstanceName
 
                                 New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
             }

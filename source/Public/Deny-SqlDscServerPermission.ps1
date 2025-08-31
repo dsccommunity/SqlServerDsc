@@ -4,13 +4,16 @@
 
     .DESCRIPTION
         This command denies server permissions to an existing principal on a SQL Server
-        Database Engine instance.
+        Database Engine instance. The principal can be specified as either a Login
+        object (from Get-SqlDscLogin) or a ServerRole object (from Get-SqlDscRole).
 
-    .PARAMETER ServerObject
-        Specifies current server connection object.
+    .PARAMETER Login
+        Specifies the Login object for which the permissions are denied.
+        This parameter accepts pipeline input.
 
-    .PARAMETER Name
-        Specifies the name of the principal for which the permissions are denied.
+    .PARAMETER ServerRole
+        Specifies the ServerRole object for which the permissions are denied.
+        This parameter accepts pipeline input.
 
     .PARAMETER Permission
         Specifies the permissions to be denied. Specify multiple permissions by
@@ -24,22 +27,25 @@
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
+        $login = $serverInstance | Get-SqlDscLogin -Name 'MyLogin'
 
-        Deny-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -Permission ConnectSql, ViewServerState
+        Deny-SqlDscServerPermission -Login $login -Permission ConnectSql, ViewServerState
 
-        Denies the specified permissions to the principal 'MyPrincipal'.
+        Denies the specified permissions to the login 'MyLogin'.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
+        $role = $serverInstance | Get-SqlDscRole -Name 'MyRole'
 
-        $serverInstance | Deny-SqlDscServerPermission -Name 'MyPrincipal' -Permission AlterAnyDatabase -Force
+        $role | Deny-SqlDscServerPermission -Permission AlterAnyDatabase -Force
 
-        Denies the specified permissions to the principal 'MyPrincipal' without prompting for confirmation.
+        Denies the specified permissions to the role 'MyRole' without prompting for confirmation.
 
     .NOTES
-        If specifying `-ErrorAction 'SilentlyContinue'` then the command will silently
-        ignore if the principal is not present. If specifying `-ErrorAction 'Stop'` the
-        command will throw an error if the principal is missing.
+        The Login or ServerRole object must come from the same SQL Server instance
+        where the permissions will be denied. If specifying `-ErrorAction 'SilentlyContinue'`
+        then the command will silently continue if any errors occur. If specifying
+        `-ErrorAction 'Stop'` the command will throw an error on any failure.
 #>
 function Deny-SqlDscServerPermission
 {
@@ -49,13 +55,13 @@ function Deny-SqlDscServerPermission
     [OutputType()]
     param
     (
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
-        [Microsoft.SqlServer.Management.Smo.Server]
-        $ServerObject,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Login')]
+        [Microsoft.SqlServer.Management.Smo.Login]
+        $Login,
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'ServerRole')]
+        [Microsoft.SqlServer.Management.Smo.ServerRole]
+        $ServerRole,
 
         [Parameter(Mandatory = $true)]
         [SqlServerPermission[]]
@@ -73,39 +79,30 @@ function Deny-SqlDscServerPermission
             $ConfirmPreference = 'None'
         }
 
+        # Determine which principal object we're working with
+        if ($PSCmdlet.ParameterSetName -eq 'Login')
+        {
+            $principalObject = $Login
+            $principalName = $Login.Name
+            $serverObject = $Login.Parent
+        }
+        else
+        {
+            $principalObject = $ServerRole
+            $principalName = $ServerRole.Name
+            $serverObject = $ServerRole.Parent
+        }
+
         Write-Verbose -Message (
-            $script:localizedData.ServerPermission_Deny_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
+            $script:localizedData.ServerPermission_Deny_ShouldProcessVerboseDescription -f $principalName, $serverObject.InstanceName
         )
 
-        $verboseDescriptionMessage = $script:localizedData.ServerPermission_Deny_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
-        $verboseWarningMessage = $script:localizedData.ServerPermission_Deny_ShouldProcessVerboseWarning -f $Name
+        $verboseDescriptionMessage = $script:localizedData.ServerPermission_Deny_ShouldProcessVerboseDescription -f $principalName, $serverObject.InstanceName
+        $verboseWarningMessage = $script:localizedData.ServerPermission_Deny_ShouldProcessVerboseWarning -f $principalName
         $captionMessage = $script:localizedData.ServerPermission_Deny_ShouldProcessCaption
 
         if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
-            # Validate that the principal exists
-            $testSqlDscIsPrincipalParameters = @{
-                ServerObject = $ServerObject
-                Name         = $Name
-            }
-
-            $isLogin = Test-SqlDscIsLogin @testSqlDscIsPrincipalParameters
-            $isRole = Test-SqlDscIsRole @testSqlDscIsPrincipalParameters
-
-            if (-not ($isLogin -or $isRole))
-            {
-                $missingPrincipalMessage = $script:localizedData.ServerPermission_MissingPrincipal -f $Name, $ServerObject.InstanceName
-
-                $PSCmdlet.ThrowTerminatingError(
-                    [System.Management.Automation.ErrorRecord]::new(
-                        $missingPrincipalMessage,
-                        'DSSP0001', # cSpell: disable-line
-                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                        $Name
-                    )
-                )
-            }
-
             # Convert enum array to ServerPermissionSet object
             $permissionSet = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]::new()
             foreach ($permissionName in $Permission)
@@ -124,14 +121,14 @@ function Deny-SqlDscServerPermission
             try
             {
                 Write-Verbose -Message (
-                    $script:localizedData.ServerPermission_DenyPermission -f ($permissionName -join ','), $Name
+                    $script:localizedData.ServerPermission_DenyPermission -f ($permissionName -join ','), $principalName
                 )
 
-                $ServerObject.Deny($permissionSet, $Name)
+                $serverObject.Deny($permissionSet, $principalName)
             }
             catch
             {
-                $errorMessage = $script:localizedData.ServerPermission_FailedToDenyPermission -f $Name, $ServerObject.InstanceName
+                $errorMessage = $script:localizedData.ServerPermission_FailedToDenyPermission -f $principalName, $serverObject.InstanceName
 
                                 New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
             }

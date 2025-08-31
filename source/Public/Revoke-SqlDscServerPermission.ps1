@@ -4,13 +4,16 @@
 
     .DESCRIPTION
         This command removes (revokes) server permissions from an existing principal on
-        a SQL Server Database Engine instance.
+        a SQL Server Database Engine instance. The principal can be specified as either
+        a Login object (from Get-SqlDscLogin) or a ServerRole object (from Get-SqlDscRole).
 
-    .PARAMETER ServerObject
-        Specifies current server connection object.
+    .PARAMETER Login
+        Specifies the Login object for which the permissions are revoked.
+        This parameter accepts pipeline input.
 
-    .PARAMETER Name
-        Specifies the name of the principal for which the permissions are revoked.
+    .PARAMETER ServerRole
+        Specifies the ServerRole object for which the permissions are revoked.
+        This parameter accepts pipeline input.
 
     .PARAMETER Permission
         Specifies the permissions to revoke. Specify multiple permissions by
@@ -29,26 +32,27 @@
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
+        $login = $serverInstance | Get-SqlDscLogin -Name 'MyLogin'
 
-        Revoke-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -Permission ConnectSql, ViewServerState
+        Revoke-SqlDscServerPermission -Login $login -Permission ConnectSql, ViewServerState
 
-        Revokes the specified permissions from the principal 'MyPrincipal'.
+        Revokes the specified permissions from the login 'MyLogin'.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
+        $role = $serverInstance | Get-SqlDscRole -Name 'MyRole'
 
-        $serverInstance | Revoke-SqlDscServerPermission -Name 'MyPrincipal' -Permission AlterAnyDatabase -WithGrant -Force
+        $role | Revoke-SqlDscServerPermission -Permission AlterAnyDatabase -WithGrant -Force
 
-        Revokes the specified permissions and the right to grant them from the principal 'MyPrincipal' with cascading effect, without prompting for confirmation.
-
-        Revokes the specified permissions (including grant options) from the principal 'MyPrincipal' without prompting for confirmation.
+        Revokes the specified permissions and the right to grant them from the role 'MyRole' with cascading effect, without prompting for confirmation.
 
     .NOTES
-        If specifying `-ErrorAction 'SilentlyContinue'` then the command will silently
-        ignore if the principal is not present. If specifying `-ErrorAction 'Stop'` the
-        command will throw an error if the principal is missing.
+        The Login or ServerRole object must come from the same SQL Server instance
+        where the permissions will be revoked. If specifying `-ErrorAction 'SilentlyContinue'`
+        then the command will silently continue if any errors occur. If specifying
+        `-ErrorAction 'Stop'` the command will throw an error on any failure.
 
-        When revoking permission with State 'GrantWithGrant', both the
+        When revoking permission with -WithGrant, both the
         grantee and all the other users the grantee has granted the same permission
         to, will also get their permission revoked.
 #>
@@ -60,13 +64,13 @@ function Revoke-SqlDscServerPermission
     [OutputType()]
     param
     (
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
-        [Microsoft.SqlServer.Management.Smo.Server]
-        $ServerObject,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Login')]
+        [Microsoft.SqlServer.Management.Smo.Login]
+        $Login,
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'ServerRole')]
+        [Microsoft.SqlServer.Management.Smo.ServerRole]
+        $ServerRole,
 
         [Parameter(Mandatory = $true)]
         [SqlServerPermission[]]
@@ -88,39 +92,30 @@ function Revoke-SqlDscServerPermission
             $ConfirmPreference = 'None'
         }
 
+        # Determine which principal object we're working with
+        if ($PSCmdlet.ParameterSetName -eq 'Login')
+        {
+            $principalObject = $Login
+            $principalName = $Login.Name
+            $serverObject = $Login.Parent
+        }
+        else
+        {
+            $principalObject = $ServerRole
+            $principalName = $ServerRole.Name
+            $serverObject = $ServerRole.Parent
+        }
+
         Write-Verbose -Message (
-            $script:localizedData.ServerPermission_Remove_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
+            $script:localizedData.ServerPermission_Revoke_ShouldProcessVerboseDescription -f $principalName, $serverObject.InstanceName
         )
 
-        $verboseDescriptionMessage = $script:localizedData.ServerPermission_Remove_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
-        $verboseWarningMessage = $script:localizedData.ServerPermission_Remove_ShouldProcessVerboseWarning -f $Name
-        $captionMessage = $script:localizedData.ServerPermission_Remove_ShouldProcessCaption
+        $verboseDescriptionMessage = $script:localizedData.ServerPermission_Revoke_ShouldProcessVerboseDescription -f $principalName, $serverObject.InstanceName
+        $verboseWarningMessage = $script:localizedData.ServerPermission_Revoke_ShouldProcessVerboseWarning -f $principalName
+        $captionMessage = $script:localizedData.ServerPermission_Revoke_ShouldProcessCaption
 
         if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
-            # Validate that the principal exists
-            $testSqlDscIsPrincipalParameters = @{
-                ServerObject = $ServerObject
-                Name         = $Name
-            }
-
-            $isLogin = Test-SqlDscIsLogin @testSqlDscIsPrincipalParameters
-            $isRole = Test-SqlDscIsRole @testSqlDscIsPrincipalParameters
-
-            if (-not ($isLogin -or $isRole))
-            {
-                $missingPrincipalMessage = $script:localizedData.ServerPermission_MissingPrincipal -f $Name, $ServerObject.InstanceName
-
-                $PSCmdlet.ThrowTerminatingError(
-                    [System.Management.Automation.ErrorRecord]::new(
-                        $missingPrincipalMessage,
-                        'RSSP0001', # cSpell: disable-line
-                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                        $Name
-                    )
-                )
-            }
-
             # Convert enum array to ServerPermissionSet object
             $permissionSet = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]::new()
             foreach ($permissionName in $Permission)
@@ -139,21 +134,21 @@ function Revoke-SqlDscServerPermission
             try
             {
                 Write-Verbose -Message (
-                    $script:localizedData.ServerPermission_RevokePermission -f ($permissionName -join ','), $Name
+                    $script:localizedData.ServerPermission_RevokePermission -f ($permissionName -join ','), $principalName
                 )
 
                 if ($WithGrant.IsPresent)
                 {
-                    $ServerObject.Revoke($permissionSet, $Name, $false, $true)
+                    $serverObject.Revoke($permissionSet, $principalName, $false, $true)
                 }
                 else
                 {
-                    $ServerObject.Revoke($permissionSet, $Name)
+                    $serverObject.Revoke($permissionSet, $principalName)
                 }
             }
             catch
             {
-                $errorMessage = $script:localizedData.ServerPermission_FailedToRevokePermission -f $Name, $ServerObject.InstanceName
+                $errorMessage = $script:localizedData.ServerPermission_FailedToRevokePermission -f $principalName, $serverObject.InstanceName
 
                                 New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
             }
