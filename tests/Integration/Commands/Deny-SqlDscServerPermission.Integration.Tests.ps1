@@ -94,8 +94,10 @@ Describe 'Deny-SqlDscServerPermission' -Tag 'IntegrationTest' {
 
     Context 'When denying server permissions to login' {
         BeforeEach {
-            Revoke-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
-            Revoke-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName -Permission 'ViewAnyDefinition' -Force -ErrorAction 'SilentlyContinue'
+        BeforeEach {
+            $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
+            Revoke-SqlDscServerPermission -Login $loginObject -Permission ViewServerState -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -Login $loginObject -Permission ViewAnyDefinition -Force -ErrorAction 'SilentlyContinue'
         }
 
         It 'Should deny ViewServerState permission' {
