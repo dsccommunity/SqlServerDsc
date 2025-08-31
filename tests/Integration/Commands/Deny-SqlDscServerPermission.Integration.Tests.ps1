@@ -33,16 +33,6 @@ AfterAll {
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:moduleName -All | Remove-Module -Force
 }
-AfterAll {
-    $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
-    $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
-
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:moduleName -All | Remove-Module -Force
-
-    Remove-Module -Name SqlServer -Force
-}
 
 Describe 'Deny-SqlDscServerPermission' -Tag 'IntegrationTest' {
     BeforeAll {
@@ -93,7 +83,6 @@ Describe 'Deny-SqlDscServerPermission' -Tag 'IntegrationTest' {
     }
 
     Context 'When denying server permissions to login' {
-        BeforeEach {
         BeforeEach {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
             Revoke-SqlDscServerPermission -Login $loginObject -Permission ViewServerState -Force -ErrorAction 'SilentlyContinue'
