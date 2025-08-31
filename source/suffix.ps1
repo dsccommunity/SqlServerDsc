@@ -13,17 +13,7 @@ if (-not $env:SqlServerDscCI)
             Import SQL commands and types into the session, so that types used
             by commands can be parsed.
         #>
-        $originalErrorActionPreference = $ErrorActionPreference
-        $ErrorActionPreference = 'Stop'
-
-        try
-        {
-            Import-SqlDscPreferredModule -ErrorAction 'Stop'
-        }
-        finally
-        {
-            $ErrorActionPreference = $originalErrorActionPreference
-        }
+        Import-SqlDscPreferredModule -ErrorAction 'Stop'
     }
     catch
     {

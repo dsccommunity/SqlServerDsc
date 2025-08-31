@@ -137,16 +137,12 @@ function Add-SqlDscTraceFlag
             $setSqlDscTraceFlagParameters.TraceFLag = $desiredTraceFlags
 
             $originalErrorActionPreference = $ErrorActionPreference
+
             $ErrorActionPreference = 'Stop'
 
-            try
-            {
-                Set-SqlDscTraceFlag @setSqlDscTraceFlagParameters -ErrorAction 'Stop'
-            }
-            finally
-            {
-                $ErrorActionPreference = $originalErrorActionPreference
-            }
+            Set-SqlDscTraceFlag @setSqlDscTraceFlagParameters -ErrorAction 'Stop'
+
+            $ErrorActionPreference = $originalErrorActionPreference
         }
     }
 }

@@ -1372,7 +1372,7 @@ function Invoke-SetupAction
         $Force
     )
 
-    $previousErrorActionPreference = $ErrorActionPreference
+    $originalErrorActionPreference = $ErrorActionPreference
 
     $ErrorActionPreference = 'Stop'
 
@@ -1381,13 +1381,7 @@ function Invoke-SetupAction
         $ConfirmPreference = 'None'
     }
 
-    $originalErrorActionPreference = $ErrorActionPreference
-
-    $ErrorActionPreference = 'Stop'
-
     Assert-ElevatedUser -ErrorAction 'Stop'
-
-    $ErrorActionPreference = $originalErrorActionPreference
 
     switch ($PSCmdlet.ParameterSetName)
     {
@@ -1419,19 +1413,9 @@ function Invoke-SetupAction
         }
     }
 
-    $originalErrorActionPreference2 = $ErrorActionPreference
-    $ErrorActionPreference = 'Stop'
+    Assert-SetupActionProperties -Property $PSBoundParameters -SetupAction $setupAction -ErrorAction 'Stop'
 
-    try
-    {
-        Assert-SetupActionProperties -Property $PSBoundParameters -SetupAction $setupAction -ErrorAction 'Stop'
-    }
-    finally
-    {
-        $ErrorActionPreference = $originalErrorActionPreference2
-    }
-
-    $ErrorActionPreference = $previousErrorActionPreference
+    $ErrorActionPreference = $originalErrorActionPreference
 
     $setupArgument = '/QUIET /ACTION={0}' -f $setupAction
 

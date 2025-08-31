@@ -109,6 +109,9 @@ function Remove-SqlDscLogin
             try
             {
                 $originalErrorActionPreference = $ErrorActionPreference
+
+                $ErrorActionPreference = 'Stop'
+
                 $LoginObject.Drop()
             }
             catch

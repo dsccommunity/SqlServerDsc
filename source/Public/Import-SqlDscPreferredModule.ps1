@@ -73,6 +73,7 @@ function Import-SqlDscPreferredModule
     $availableModule = $null
 
     $originalErrorActionPreference = $ErrorActionPreference
+
     $ErrorActionPreference = 'Stop'
 
     try
@@ -140,21 +141,17 @@ function Import-SqlDscPreferredModule
 
         Push-Location
 
+        $originalErrorActionPreference = $ErrorActionPreference
+
+        $ErrorActionPreference = 'Stop'
+
         <#
             SQLPS has unapproved verbs, disable checking to ignore Warnings.
             Suppressing verbose so all cmdlet is not listed.
         #>
-        $originalErrorActionPreference2 = $ErrorActionPreference
-        $ErrorActionPreference = 'Stop'
+        $importedModule = Import-Module -ModuleInfo $availableModule -DisableNameChecking -Verbose:$false -Force:$Force -Global -PassThru -ErrorAction 'Stop'
 
-        try
-        {
-            $importedModule = Import-Module -ModuleInfo $availableModule -DisableNameChecking -Verbose:$false -Force:$Force -Global -PassThru -ErrorAction 'Stop'
-        }
-        finally
-        {
-            $ErrorActionPreference = $originalErrorActionPreference2
-        }
+        $ErrorActionPreference = $originalErrorActionPreference
 
         <#
             SQLPS returns two entries, one with module type 'Script' and another with module type 'Manifest'.
