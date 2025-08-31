@@ -82,10 +82,6 @@ function Remove-SqlDscAgentAlert
         $Refresh
     )
 
-    begin
-    {
-         }
-
     # cSpell: ignore RSAA
     process
     {

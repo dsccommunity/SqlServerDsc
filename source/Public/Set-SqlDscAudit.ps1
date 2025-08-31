@@ -243,10 +243,6 @@ function Set-SqlDscAudit
         $MaximumRolloverFiles
     )
 
-    begin
-    {
-         }
-
     process
     {
         if ($Force.IsPresent -and -not $Confirm)

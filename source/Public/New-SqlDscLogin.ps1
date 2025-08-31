@@ -253,10 +253,6 @@ function New-SqlDscLogin
         $PassThru
     )
 
-    begin
-    {
-         }
-
     process
     {
         if ($Force.IsPresent -and -not $Confirm)

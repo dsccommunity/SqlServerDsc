@@ -36,8 +36,6 @@ function Get-SMOModuleCalculatedVersion
         $PSModuleInfo
     )
 
-
-
     process
     {
         $version = $null

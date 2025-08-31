@@ -36,7 +36,7 @@ function Get-SqlDscInstalledInstance
         $ServiceType
     )
 
-        if ($PSBoundParameters.ContainsKey('InstanceName'))
+    if ($PSBoundParameters.ContainsKey('InstanceName'))
     {
         $InstanceName = $InstanceName.ToUpper()
     }

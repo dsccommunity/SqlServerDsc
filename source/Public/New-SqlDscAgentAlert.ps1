@@ -83,10 +83,6 @@ function New-SqlDscAgentAlert
         $PassThru
     )
 
-    begin
-    {
-         }
-
     # cSpell: ignore NSAA
     process
     {

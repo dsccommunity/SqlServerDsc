@@ -55,10 +55,6 @@ function Get-SqlDscRole
         $Refresh
     )
 
-    begin
-    {
-         }
-
     process
     {
         if ($Refresh.IsPresent)

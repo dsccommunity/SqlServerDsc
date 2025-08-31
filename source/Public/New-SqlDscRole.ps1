@@ -70,10 +70,6 @@ function New-SqlDscRole
         $Refresh
     )
 
-    begin
-    {
-         }
-
     process
     {
         if ($Refresh.IsPresent)

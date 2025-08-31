@@ -68,10 +68,6 @@ function Disable-SqlDscAudit
         $Refresh
     )
 
-    begin
-    {
-         }
-
     process
     {
         if ($Force.IsPresent -and -not $Confirm)

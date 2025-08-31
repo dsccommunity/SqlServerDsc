@@ -95,10 +95,6 @@ function Test-SqlDscDatabase
         $Refresh
     )
 
-    begin
-    {
-         }
-
     process
     {
         if ($Refresh.IsPresent)

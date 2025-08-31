@@ -117,10 +117,6 @@ function Set-SqlDscAgentAlert
         $Force
     )
 
-    begin
-    {
-         }
-
     # cSpell: ignore SSAA
     process
     {

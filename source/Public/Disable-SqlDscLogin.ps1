@@ -88,10 +88,6 @@ function Disable-SqlDscLogin
         $Refresh
     )
 
-    begin
-    {
-         }
-
     process
     {
         if ($Force.IsPresent -and -not $Confirm)

@@ -97,10 +97,6 @@ function Test-SqlDscIsDatabasePrincipal
         $ExcludeApplicationRoles
     )
 
-    begin
-    {
-         }
-
     process
     {
         $principalExist = $false

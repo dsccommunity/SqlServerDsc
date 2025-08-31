@@ -75,8 +75,6 @@ function Enable-SqlDscLogin
         $Refresh
     )
 
-
-
     process
     {
         if ($Force.IsPresent -and -not $Confirm)

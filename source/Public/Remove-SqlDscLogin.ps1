@@ -77,10 +77,6 @@ function Remove-SqlDscLogin
         $Refresh
     )
 
-    begin
-    {
-         }
-
     process
     {
         if ($Force.IsPresent -and -not $Confirm)

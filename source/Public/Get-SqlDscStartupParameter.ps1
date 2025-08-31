@@ -66,16 +66,12 @@ function Get-SqlDscStartupParameter
     )
 
     $originalErrorActionPreference = $ErrorActionPreference
+
     $ErrorActionPreference = 'Stop'
 
-    try
-    {
-        Assert-ElevatedUser -ErrorAction 'Stop'
-    }
-    finally
-    {
-        $ErrorActionPreference = $originalErrorActionPreference
-    }
+    Assert-ElevatedUser -ErrorAction 'Stop'
+
+    $ErrorActionPreference = $originalErrorActionPreference
 
     if ($PSCmdlet.ParameterSetName -eq 'ByServiceObject')
     {

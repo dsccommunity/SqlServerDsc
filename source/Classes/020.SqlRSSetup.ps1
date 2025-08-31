@@ -311,16 +311,12 @@ class SqlRSSetup : ResourceBase
             if ($this.VersionUpgrade)
             {
                 $originalErrorActionPreference = $ErrorActionPreference
+
                 $ErrorActionPreference = 'Stop'
 
-                try
-                {
-                    $fileVersion = Get-FileProductVersion -Path $this.MediaPath -ErrorAction 'Stop'
-                }
-                finally
-                {
-                    $ErrorActionPreference = $originalErrorActionPreference
-                }
+                $fileVersion = Get-FileProductVersion -Path $this.MediaPath -ErrorAction 'Stop'
+
+                $ErrorActionPreference = $originalErrorActionPreference
 
                 if ($fileVersion)
                 {
@@ -453,16 +449,12 @@ class SqlRSSetup : ResourceBase
                     Write-Verbose -Message $this.localizedData.Installing_ReportingServices
 
                     $originalErrorActionPreference = $ErrorActionPreference
+
                     $ErrorActionPreference = 'Stop'
 
-                    try
-                    {
-                        $exitCode = Install-SqlDscReportingService @commandParameters -PassThru -Force -ErrorAction 'Stop'
-                    }
-                    finally
-                    {
-                        $ErrorActionPreference = $originalErrorActionPreference
-                    }
+                    $exitCode = Install-SqlDscReportingService @commandParameters -PassThru -Force -ErrorAction 'Stop'
+
+                    $ErrorActionPreference = $originalErrorActionPreference
 
                     break
                 }
@@ -471,17 +463,13 @@ class SqlRSSetup : ResourceBase
                 {
                     Write-Verbose -Message $this.localizedData.Repairing_ReportingServices
 
-                    $originalErrorActionPreference2 = $ErrorActionPreference
+                    $originalErrorActionPreference = $ErrorActionPreference
+
                     $ErrorActionPreference = 'Stop'
 
-                    try
-                    {
-                        $exitCode = Repair-SqlDscReportingService @commandParameters -PassThru -Force -ErrorAction 'Stop'
-                    }
-                    finally
-                    {
-                        $ErrorActionPreference = $originalErrorActionPreference2
-                    }
+                    $exitCode = Repair-SqlDscReportingService @commandParameters -PassThru -Force -ErrorAction 'Stop'
+
+                    $ErrorActionPreference = $originalErrorActionPreference
 
                     break
                 }
@@ -490,17 +478,13 @@ class SqlRSSetup : ResourceBase
                 {
                     Write-Verbose -Message $this.localizedData.Uninstalling_ReportingServices
 
-                    $originalErrorActionPreference3 = $ErrorActionPreference
+                    $originalErrorActionPreference = $ErrorActionPreference
+
                     $ErrorActionPreference = 'Stop'
 
-                    try
-                    {
-                        $exitCode = Uninstall-SqlDscReportingService @commandParameters -PassThru -Force -ErrorAction 'Stop'
-                    }
-                    finally
-                    {
-                        $ErrorActionPreference = $originalErrorActionPreference3
-                    }
+                    $exitCode = Uninstall-SqlDscReportingService @commandParameters -PassThru -Force -ErrorAction 'Stop'
+
+                    $ErrorActionPreference = $originalErrorActionPreference
 
                     break
                 }
@@ -514,17 +498,13 @@ class SqlRSSetup : ResourceBase
                 {
                     Write-Verbose -Message $this.localizedData.Installing_PowerBIReportServer
 
-                    $originalErrorActionPreference4 = $ErrorActionPreference
+                    $originalErrorActionPreference = $ErrorActionPreference
+
                     $ErrorActionPreference = 'Stop'
 
-                    try
-                    {
-                        $exitCode = Install-SqlDscBIReportServer @commandParameters -PassThru -Force -ErrorAction 'Stop'
-                    }
-                    finally
-                    {
-                        $ErrorActionPreference = $originalErrorActionPreference4
-                    }
+                    $exitCode = Install-SqlDscBIReportServer @commandParameters -PassThru -Force -ErrorAction 'Stop'
+
+                    $ErrorActionPreference = $originalErrorActionPreference
 
                     break
                 }
@@ -533,17 +513,13 @@ class SqlRSSetup : ResourceBase
                 {
                     Write-Verbose -Message $this.localizedData.Repairing_PowerBIReportServer
 
-                    $originalErrorActionPreference5 = $ErrorActionPreference
+                    $originalErrorActionPreference = $ErrorActionPreference
+
                     $ErrorActionPreference = 'Stop'
 
-                    try
-                    {
-                        $exitCode = Repair-SqlDscBIReportServer @commandParameters -PassThru -Force -ErrorAction 'Stop'
-                    }
-                    finally
-                    {
-                        $ErrorActionPreference = $originalErrorActionPreference5
-                    }
+                    $exitCode = Repair-SqlDscBIReportServer @commandParameters -PassThru -Force -ErrorAction 'Stop'
+
+                    $ErrorActionPreference = $originalErrorActionPreference
 
                     break
                 }
@@ -552,17 +528,13 @@ class SqlRSSetup : ResourceBase
                 {
                     Write-Verbose -Message $this.localizedData.Uninstalling_PowerBIReportServer
 
-                    $originalErrorActionPreference6 = $ErrorActionPreference
+                    $originalErrorActionPreference = $ErrorActionPreference
+
                     $ErrorActionPreference = 'Stop'
 
-                    try
-                    {
-                        $exitCode = Uninstall-SqlDscBIReportServer @commandParameters -PassThru -Force -ErrorAction 'Stop'
-                    }
-                    finally
-                    {
-                        $ErrorActionPreference = $originalErrorActionPreference6
-                    }
+                    $exitCode = Uninstall-SqlDscBIReportServer @commandParameters -PassThru -Force -ErrorAction 'Stop'
+
+                    $ErrorActionPreference = $originalErrorActionPreference
 
                     break
                 }

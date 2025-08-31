@@ -67,7 +67,7 @@ function Get-SqlDscRSSetupConfiguration
         $InstanceName
     )
 
-        $reportingServicesInstances = @()
+    $reportingServicesInstances = @()
 
     # Get all Reporting Services instances or filter by specified instance name
     $getInstalledInstanceParams = @{

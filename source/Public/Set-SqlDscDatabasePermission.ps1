@@ -93,10 +93,6 @@ function Set-SqlDscDatabasePermission
         $Force
     )
 
-    begin
-    {
-         }
-
     process
     {
         if ($State -eq 'Deny' -and $WithGrant.IsPresent)

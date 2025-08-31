@@ -108,10 +108,6 @@ function Set-SqlDscDatabase
         $PassThru
     )
 
-    begin
-    {
-         }
-
     process
     {
         if ($PSCmdlet.ParameterSetName -eq 'ServerObject')

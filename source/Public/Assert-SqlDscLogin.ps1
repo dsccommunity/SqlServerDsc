@@ -44,8 +44,6 @@ function Assert-SqlDscLogin
         $Name
     )
 
-
-
     process
     {
         Write-Verbose -Message ($script:localizedData.Assert_Login_CheckingLogin -f $Name, $ServerObject.InstanceName)

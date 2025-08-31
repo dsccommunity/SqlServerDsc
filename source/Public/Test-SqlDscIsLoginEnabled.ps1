@@ -87,10 +87,6 @@ function Test-SqlDscIsLoginEnabled
         $Refresh
     )
 
-    begin
-    {
-         }
-
     process
     {
         if ($PSCmdlet.ParameterSetName -eq 'ServerObject')

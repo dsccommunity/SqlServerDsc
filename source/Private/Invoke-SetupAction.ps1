@@ -1378,16 +1378,12 @@ function Invoke-SetupAction
     }
 
     $originalErrorActionPreference = $ErrorActionPreference
+
     $ErrorActionPreference = 'Stop'
 
-    try
-    {
-        Assert-ElevatedUser -ErrorAction 'Stop'
-    }
-    finally
-    {
-        $ErrorActionPreference = $originalErrorActionPreference
-    }
+    Assert-ElevatedUser -ErrorAction 'Stop'
+
+    $ErrorActionPreference = $originalErrorActionPreference
 
     switch ($PSCmdlet.ParameterSetName)
     {

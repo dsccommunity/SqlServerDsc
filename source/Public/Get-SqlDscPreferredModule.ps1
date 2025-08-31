@@ -60,7 +60,7 @@ function Get-SqlDscPreferredModule
         $Refresh
     )
 
-        if (-not $PSBoundParameters.ContainsKey('Name'))
+    if (-not $PSBoundParameters.ContainsKey('Name'))
     {
         if ($env:SMODefaultModuleName)
         {

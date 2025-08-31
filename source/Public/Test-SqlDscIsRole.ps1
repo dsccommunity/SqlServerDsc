@@ -36,10 +36,6 @@ function Test-SqlDscIsRole
         $Name
     )
 
-    begin
-    {
-         }
-
     process
     {
         $principalExist = $false

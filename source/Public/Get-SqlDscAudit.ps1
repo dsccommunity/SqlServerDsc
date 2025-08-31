@@ -48,10 +48,6 @@ function Get-SqlDscAudit
         $Refresh
     )
 
-    begin
-    {
-         }
-
     process
     {
         if ($Refresh.IsPresent)

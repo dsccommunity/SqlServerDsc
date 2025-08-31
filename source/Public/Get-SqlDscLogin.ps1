@@ -57,10 +57,6 @@ function Get-SqlDscLogin
         $Refresh
     )
 
-    begin
-    {
-         }
-
     process
     {
         if ($Refresh.IsPresent)

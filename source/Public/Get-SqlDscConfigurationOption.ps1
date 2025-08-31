@@ -53,10 +53,6 @@ function Get-SqlDscConfigurationOption
         $Refresh
     )
 
-    begin
-    {
-         }
-
     process
     {
         if ($Refresh.IsPresent)

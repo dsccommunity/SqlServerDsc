@@ -73,10 +73,6 @@ function Test-SqlDscAgentAlert
         $MessageId
     )
 
-    begin
-    {
-         }
-
     # cSpell: ignore TSAA
     process
     {

@@ -133,7 +133,7 @@ function Repair-SqlDscBIReportServer
         $PassThru
     )
 
-        $exitCode = Invoke-ReportServerSetupAction -Repair @PSBoundParameters
+    $exitCode = Invoke-ReportServerSetupAction -Repair @PSBoundParameters
 
     if ($PassThru.IsPresent)
     {

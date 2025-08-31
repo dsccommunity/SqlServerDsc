@@ -102,7 +102,7 @@ function Save-SqlDscSqlServerMediaFile
         $SkipExecution
     )
 
-        if ($Force.IsPresent -and -not $Confirm)
+    if ($Force.IsPresent -and -not $Confirm)
     {
         $ConfirmPreference = 'None'
     }

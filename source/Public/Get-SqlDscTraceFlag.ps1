@@ -66,7 +66,7 @@ function Get-SqlDscTraceFlag
         $InstanceName = 'MSSQLSERVER'
     )
 
-        Write-Verbose -Message (
+    Write-Verbose -Message (
         $script:localizedData.TraceFlag_Get_ReturnTraceFlags -f $InstanceName, $ServerName
     )
 

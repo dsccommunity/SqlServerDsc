@@ -75,10 +75,6 @@ function Remove-SqlDscDatabase
         $Refresh
     )
 
-    begin
-    {
-         }
-
     process
     {
         if ($PSCmdlet.ParameterSetName -eq 'ServerObject')

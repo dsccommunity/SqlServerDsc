@@ -46,8 +46,6 @@ function ConvertTo-RedactedText
         $RedactWith = '*******'
     )
 
-
-
     process
     {
         $redactedText = $Text

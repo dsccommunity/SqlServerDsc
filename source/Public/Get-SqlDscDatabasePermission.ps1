@@ -56,10 +56,6 @@ function Get-SqlDscDatabasePermission
         $Name
     )
 
-    begin
-    {
-         }
-
     # cSpell: ignore GSDDP
     process
     {

@@ -56,7 +56,7 @@ function Import-SqlDscPreferredModule
         $Force
     )
 
-        $getSqlDscPreferredModuleParameters = @{
+    $getSqlDscPreferredModuleParameters = @{
         Refresh = $true
     }
 

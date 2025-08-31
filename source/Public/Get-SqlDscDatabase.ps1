@@ -55,10 +55,6 @@ function Get-SqlDscDatabase
         $Refresh
     )
 
-    begin
-    {
-         }
-
     process
     {
         if ($Refresh.IsPresent)

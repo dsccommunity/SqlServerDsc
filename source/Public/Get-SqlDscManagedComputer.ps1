@@ -33,7 +33,7 @@ function Get-SqlDscManagedComputer
         $ServerName = (Get-ComputerName)
     )
 
-        Write-Verbose -Message (
+    Write-Verbose -Message (
         $script:localizedData.ManagedComputer_GetState -f $ServerName
     )
 

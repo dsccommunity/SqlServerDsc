@@ -44,8 +44,6 @@ function Assert-ManagedServiceType
         $ServiceType
     )
 
-
-
     process
     {
         $normalizedServiceType = ConvertFrom-ManagedServiceType -ServiceType $ServiceObject.Type

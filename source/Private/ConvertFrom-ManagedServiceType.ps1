@@ -26,8 +26,6 @@ function ConvertFrom-ManagedServiceType
         $ServiceType
     )
 
-
-
     process
     {
         # Map the normalized service type to a valid value from the managed service type.

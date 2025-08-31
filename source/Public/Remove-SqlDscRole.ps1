@@ -75,10 +75,6 @@ function Remove-SqlDscRole
         $Refresh
     )
 
-    begin
-    {
-         }
-
     process
     {
         if ($PSCmdlet.ParameterSetName -eq 'ServerObject')
