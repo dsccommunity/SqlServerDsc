@@ -80,7 +80,7 @@ applyTo: "**/*.ps?(m|d)1"
   - Place ShouldProcess check immediately before each state-change
   - `$PSCmdlet.ShouldProcess` must use required pattern
 - Never use backtick as line continuation in production code.
-- When calling commands with `-ErrorAction 'Stop'`, temporarily set `$ErrorActionPreference = 'Stop'` and restore after the call.
+- Set `$ErrorActionPreference = 'Stop'` before commands using `-ErrorAction 'Stop'`; restore after
 
 ## Output streams
 
