@@ -205,7 +205,13 @@ function Invoke-ReportServerSetupAction
         $ConfirmPreference = 'None'
     }
 
+    $originalErrorActionPreference = $ErrorActionPreference
+
+    $ErrorActionPreference = 'Stop'
+
     Assert-ElevatedUser -ErrorAction 'Stop'
+
+    $ErrorActionPreference = $originalErrorActionPreference
 
     $assertBoundParameters = @{
         BoundParameterList     = $PSBoundParameters
