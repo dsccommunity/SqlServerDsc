@@ -51,11 +51,6 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'IntegrationTest' {
 
         Write-Verbose -Message ('Integration tests will run using computer name ''{0}'' and instance name ''{1}''.' -f $script:computerName, $script:sqlServerInstanceName) -Verbose
 
-        # Setup default parameter values to reduce verbosity in the tests
-        $PSDefaultParameterValues['*:ServerName'] = $script:computerName
-        $PSDefaultParameterValues['*:InstanceName'] = $script:sqlServerInstanceName
-        $PSDefaultParameterValues['*:ErrorAction'] = 'Stop'
-
         $script:serverObject = Connect-SqlDscDatabaseEngine -ServerName $script:computerName -InstanceName $script:sqlServerInstanceName -Force
 
         # Use persistent test login and role created by earlier integration tests
@@ -78,50 +73,46 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'IntegrationTest' {
 
     AfterAll {
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
-
-        $PSDefaultParameterValues.Remove('*:ServerName')
-        $PSDefaultParameterValues.Remove('*:InstanceName')
-        $PSDefaultParameterValues.Remove('*:ErrorAction')
     }
 
     Context 'When revoking server permissions from login' {
         BeforeEach {
             # Grant a known permission for testing
-            $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
-            $null = Grant-SqlDscServerPermission -Login $loginObject -Permission @('ViewServerState') -Force
+            $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
+            $null = Grant-SqlDscServerPermission -Login $loginObject -Permission @('ViewServerState') -Force -ErrorAction 'Stop'
         }
 
         It 'Should revoke permissions' {
-            $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
+            $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
-            $null = Revoke-SqlDscServerPermission -Login $loginObject -Permission @('ViewServerState') -Force
+            $null = Revoke-SqlDscServerPermission -Login $loginObject -Permission @('ViewServerState') -Force -ErrorAction 'Stop'
         }
 
         It 'Should show the permissions as no longer granted' {
-            $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
+            $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
             # First grant the permission
-            $null = Grant-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDatabase') -Force
+            $null = Grant-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDatabase') -Force -ErrorAction 'Stop'
 
             # Then revoke it
-            $null = Revoke-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDatabase') -Force
+            $null = Revoke-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDatabase') -Force -ErrorAction 'Stop'
 
             # Test that it's no longer granted
-            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('ViewAnyDatabase')
+            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @([SqlServerPermission]::ViewAnyDatabase) -ErrorAction 'Stop'
 
             $result | Should -BeFalse
         }
 
         It 'Should accept Login from pipeline' {
-            $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
+            $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
             # First grant a permission to revoke
-            $null = Grant-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDefinition') -Force
+            $null = Grant-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDefinition') -Force -ErrorAction 'Stop'
 
-            $null = $loginObject | Revoke-SqlDscServerPermission -Permission @('ViewAnyDefinition') -Force
+            $null = $loginObject | Revoke-SqlDscServerPermission -Permission @('ViewAnyDefinition') -Force -ErrorAction 'Stop'
 
             # Verify the permission was revoked
-            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('ViewAnyDefinition')
+            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @([SqlServerPermission]::ViewAnyDefinition) -ErrorAction 'Stop'
             $result | Should -BeFalse
         }
     }
@@ -129,17 +120,17 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'IntegrationTest' {
     Context 'When revoking server permissions from role' {
         BeforeEach {
             # Grant a known permission for testing
-            $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName
-            $null = Grant-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force
+            $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
+            $null = Grant-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force -ErrorAction 'Stop'
         }
 
         It 'Should revoke permissions from role' {
-            $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName
+            $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
 
-            $null = Revoke-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force
+            $null = Revoke-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force -ErrorAction 'Stop'
 
             # Test that it's no longer granted
-            $result = Test-SqlDscServerPermission -ServerRole $roleObject -Grant -Permission @('ViewServerState')
+            $result = Test-SqlDscServerPermission -ServerRole $roleObject -Grant -Permission @([SqlServerPermission]::ViewServerState) -ErrorAction 'Stop'
 
             $result | Should -BeFalse
         }

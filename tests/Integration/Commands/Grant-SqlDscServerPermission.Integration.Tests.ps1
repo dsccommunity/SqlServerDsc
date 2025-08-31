@@ -51,11 +51,6 @@ Describe 'Grant-SqlDscServerPermission Integration Tests' -Tag 'Integration' {
 
         Write-Verbose -Message ('Integration tests will run using computer name ''{0}'' and instance name ''{1}''.' -f $script:computerName, $script:sqlServerInstanceName) -Verbose
 
-        # Setup default parameter values to reduce verbosity in the tests
-        $PSDefaultParameterValues['*:ServerName'] = $script:computerName
-        $PSDefaultParameterValues['*:InstanceName'] = $script:sqlServerInstanceName
-        $PSDefaultParameterValues['*:ErrorAction'] = 'Stop'
-
         $script:serverObject = Connect-SqlDscDatabaseEngine -ServerName $script:computerName -InstanceName $script:sqlServerInstanceName -Force
 
         # Use existing persistent principals created by earlier integration tests
@@ -81,16 +76,12 @@ Describe 'Grant-SqlDscServerPermission Integration Tests' -Tag 'Integration' {
         # Do not remove $script:testLoginName and $script:testRoleName as they are managed by New-SqlDscLogin and New-SqlDscRole tests
 
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
-
-        $PSDefaultParameterValues.Remove('*:ServerName')
-        $PSDefaultParameterValues.Remove('*:InstanceName')
-        $PSDefaultParameterValues.Remove('*:ErrorAction')
     }
 
     Context 'When granting server permissions to login' {
         BeforeEach {
             # Get the login object for testing
-            $script:loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
+            $script:loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
             Revoke-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
             Revoke-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewAnyDatabase' -Force -ErrorAction 'SilentlyContinue'
@@ -98,39 +89,39 @@ Describe 'Grant-SqlDscServerPermission Integration Tests' -Tag 'Integration' {
         }
 
         It 'Should grant ViewServerState permission successfully' {
-            $null = Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('ViewServerState') -Force
+            $null = Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('ViewServerState') -Force -ErrorAction 'Stop'
 
             # Verify the permission was granted
-            $grantedPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName
+            $grantedPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
             $grantedPermissions | Should -Not -BeNullOrEmpty
             $grantedPermissions.PermissionType.ViewServerState | Should -BeTrue
         }
 
         It 'Should grant multiple permissions successfully' {
-            $null = Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('ViewServerState', 'ViewAnyDatabase') -Force
+            $null = Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('ViewServerState', 'ViewAnyDatabase') -Force -ErrorAction 'Stop'
 
             # Verify the permissions were granted
-            $grantedPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName
+            $grantedPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
             $grantedPermissions | Should -Not -BeNullOrEmpty
             $grantedPermissions.PermissionType.ViewServerState | Should -BeTrue
             $grantedPermissions.PermissionType.ViewAnyDatabase | Should -BeTrue
         }
 
         It 'Should grant permissions with WithGrant option' {
-            $null = Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('ViewServerState') -WithGrant -Force
+            $null = Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('ViewServerState') -WithGrant -Force -ErrorAction 'Stop'
 
             # Verify the permission was granted with grant option
-            $grantedPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName
+            $grantedPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
             $grantedPermissions | Should -Not -BeNullOrEmpty
             $grantWithGrantPermission = $grantedPermissions | Where-Object { $_.PermissionState -eq 'GrantWithGrant' }
             $grantWithGrantPermission.PermissionType.ViewServerState | Should -BeTrue
         }
 
         It 'Should accept Login from pipeline' {
-            $null = $script:loginObject | Grant-SqlDscServerPermission -Permission @('ViewAnyDefinition') -Force
+            $null = $script:loginObject | Grant-SqlDscServerPermission -Permission @('ViewAnyDefinition') -Force -ErrorAction 'Stop'
 
             # Verify the permission was granted
-            $grantedPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName
+            $grantedPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
             $grantedPermissions | Should -Not -BeNullOrEmpty
             $grantedPermissions.PermissionType.ViewAnyDefinition | Should -BeTrue
         }
@@ -139,29 +130,29 @@ Describe 'Grant-SqlDscServerPermission Integration Tests' -Tag 'Integration' {
     Context 'When granting server permissions to role' {
         BeforeEach {
             # Get the role object for testing
-            $script:roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName
+            $script:roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
 
             Revoke-SqlDscServerPermission -ServerRole $roleObject -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
         }
 
         It 'Should grant ViewServerState permission to role successfully' {
-            $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName
+            $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
 
-            $null = Grant-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force
+            $null = Grant-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force -ErrorAction 'Stop'
 
             # Verify the permission was granted
-            $grantedPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testRoleName
+            $grantedPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
             $grantedPermissions | Should -Not -BeNullOrEmpty
             $grantedPermissions.PermissionType.ViewServerState | Should -BeTrue
         }
 
         It 'Should grant persistent CreateEndpoint permission to role for other tests' {
-            $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName
+            $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
 
-            $null = Grant-SqlDscServerPermission -ServerRole $roleObject -Permission @('CreateEndpoint') -Force
+            $null = Grant-SqlDscServerPermission -ServerRole $roleObject -Permission @('CreateEndpoint') -Force -ErrorAction 'Stop'
 
             # Verify the permission was granted - this permission will remain persistent for other integration tests
-            $grantedPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testRoleName
+            $grantedPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
             $grantedPermissions | Should -Not -BeNullOrEmpty
             $grantedPermissions.PermissionType.CreateEndpoint | Should -BeTrue
         }
