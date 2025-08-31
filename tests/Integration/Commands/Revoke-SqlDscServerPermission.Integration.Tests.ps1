@@ -53,7 +53,7 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'IntegrationTest' {
         $mockServerName = $env:COMPUTERNAME
 
         $mockSqlCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @(
-            'SqlAdmin', 
+            'SqlAdmin',
             (ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force)
         )
 

@@ -55,7 +55,7 @@ Describe 'Deny-SqlDscServerPermission' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'TestInstance'
-            
+
             $mockPermissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
             $mockPermissionSet.ConnectSql = $true
 
@@ -77,8 +77,8 @@ Describe 'Deny-SqlDscServerPermission' {
             Deny-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestUser' -Permission @('ConnectSql') -Force
 
             Should -Invoke -CommandName Invoke-SqlDscServerPermissionOperation -Times 1 -Exactly -ParameterFilter {
-                $State -eq 'Deny' -and 
-                $ServerObject -eq $mockServerObject -and 
+                $State -eq 'Deny' -and
+                $ServerObject -eq $mockServerObject -and
                 $Name -eq 'TestUser'
             }
         }
