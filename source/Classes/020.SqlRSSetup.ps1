@@ -310,13 +310,7 @@ class SqlRSSetup : ResourceBase
 
             if ($this.VersionUpgrade)
             {
-                $originalErrorActionPreference = $ErrorActionPreference
-
-                $ErrorActionPreference = 'Stop'
-
                 $fileVersion = Get-FileProductVersion -Path $this.MediaPath -ErrorAction 'Stop'
-
-                $ErrorActionPreference = $originalErrorActionPreference
 
                 if ($fileVersion)
                 {
@@ -448,13 +442,7 @@ class SqlRSSetup : ResourceBase
                 {
                     Write-Verbose -Message $this.localizedData.Installing_ReportingServices
 
-                    $originalErrorActionPreference = $ErrorActionPreference
-
-                    $ErrorActionPreference = 'Stop'
-
                     $exitCode = Install-SqlDscReportingService @commandParameters -PassThru -Force -ErrorAction 'Stop'
-
-                    $ErrorActionPreference = $originalErrorActionPreference
 
                     break
                 }
@@ -463,13 +451,7 @@ class SqlRSSetup : ResourceBase
                 {
                     Write-Verbose -Message $this.localizedData.Repairing_ReportingServices
 
-                    $originalErrorActionPreference = $ErrorActionPreference
-
-                    $ErrorActionPreference = 'Stop'
-
                     $exitCode = Repair-SqlDscReportingService @commandParameters -PassThru -Force -ErrorAction 'Stop'
-
-                    $ErrorActionPreference = $originalErrorActionPreference
 
                     break
                 }
@@ -478,13 +460,7 @@ class SqlRSSetup : ResourceBase
                 {
                     Write-Verbose -Message $this.localizedData.Uninstalling_ReportingServices
 
-                    $originalErrorActionPreference = $ErrorActionPreference
-
-                    $ErrorActionPreference = 'Stop'
-
                     $exitCode = Uninstall-SqlDscReportingService @commandParameters -PassThru -Force -ErrorAction 'Stop'
-
-                    $ErrorActionPreference = $originalErrorActionPreference
 
                     break
                 }
@@ -498,13 +474,7 @@ class SqlRSSetup : ResourceBase
                 {
                     Write-Verbose -Message $this.localizedData.Installing_PowerBIReportServer
 
-                    $originalErrorActionPreference = $ErrorActionPreference
-
-                    $ErrorActionPreference = 'Stop'
-
                     $exitCode = Install-SqlDscBIReportServer @commandParameters -PassThru -Force -ErrorAction 'Stop'
-
-                    $ErrorActionPreference = $originalErrorActionPreference
 
                     break
                 }
@@ -513,13 +483,7 @@ class SqlRSSetup : ResourceBase
                 {
                     Write-Verbose -Message $this.localizedData.Repairing_PowerBIReportServer
 
-                    $originalErrorActionPreference = $ErrorActionPreference
-
-                    $ErrorActionPreference = 'Stop'
-
                     $exitCode = Repair-SqlDscBIReportServer @commandParameters -PassThru -Force -ErrorAction 'Stop'
-
-                    $ErrorActionPreference = $originalErrorActionPreference
 
                     break
                 }
@@ -528,13 +492,7 @@ class SqlRSSetup : ResourceBase
                 {
                     Write-Verbose -Message $this.localizedData.Uninstalling_PowerBIReportServer
 
-                    $originalErrorActionPreference = $ErrorActionPreference
-
-                    $ErrorActionPreference = 'Stop'
-
                     $exitCode = Uninstall-SqlDscBIReportServer @commandParameters -PassThru -Force -ErrorAction 'Stop'
-
-                    $ErrorActionPreference = $originalErrorActionPreference
 
                     break
                 }

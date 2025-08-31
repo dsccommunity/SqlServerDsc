@@ -315,13 +315,7 @@ class SqlAgentAlert : SqlResourceBase
         {
             Write-Verbose -Message ($this.localizedData.SqlAgentAlert_RemovingAlert -f $this.Name)
 
-            $originalErrorActionPreference = $ErrorActionPreference
-
-            $ErrorActionPreference = 'Stop'
-
             $null = $serverObject | Remove-SqlDscAgentAlert -Name $this.Name -Force -ErrorAction 'Stop'
-
-            $ErrorActionPreference = $originalErrorActionPreference
         }
     }
 }
