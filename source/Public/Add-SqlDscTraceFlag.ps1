@@ -106,7 +106,17 @@ function Add-SqlDscTraceFlag
                 $getSqlDscTraceFlagParameters.Remove($_)
             }
 
-        $currentTraceFlags = Get-SqlDscTraceFlag @getSqlDscTraceFlagParameters -ErrorAction 'Stop'
+        $originalErrorActionPreference = $ErrorActionPreference
+        $ErrorActionPreference = 'Stop'
+
+        try
+        {
+            $currentTraceFlags = Get-SqlDscTraceFlag @getSqlDscTraceFlagParameters -ErrorAction 'Stop'
+        }
+        finally
+        {
+            $ErrorActionPreference = $originalErrorActionPreference
+        }
 
         $desiredTraceFlags = [System.UInt32[]] $currentTraceFlags + @(
             $TraceFlag |
@@ -130,7 +140,17 @@ function Add-SqlDscTraceFlag
 
             $setSqlDscTraceFlagParameters.TraceFLag = $desiredTraceFlags
 
-            Set-SqlDscTraceFlag @setSqlDscTraceFlagParameters -ErrorAction 'Stop'
+            $originalErrorActionPreference = $ErrorActionPreference
+            $ErrorActionPreference = 'Stop'
+
+            try
+            {
+                Set-SqlDscTraceFlag @setSqlDscTraceFlagParameters -ErrorAction 'Stop'
+            }
+            finally
+            {
+                $ErrorActionPreference = $originalErrorActionPreference
+            }
         }
     }
 }

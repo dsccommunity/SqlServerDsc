@@ -352,8 +352,18 @@ class SqlAudit : SqlResourceBase
             #>
             if ($this.Ensure -eq [Ensure]::Present)
             {
-                $auditObjectArray = $serverObject |
-                    Get-SqlDscAudit -Name $this.Name -ErrorAction 'Stop'
+                $originalErrorActionPreference = $ErrorActionPreference
+                $ErrorActionPreference = 'Stop'
+
+                try
+                {
+                    $auditObjectArray = $serverObject |
+                        Get-SqlDscAudit -Name $this.Name -ErrorAction 'Stop'
+                }
+                finally
+                {
+                    $ErrorActionPreference = $originalErrorActionPreference
+                }
 
                 # Pick the only object in the array.
                 $auditObject = $auditObjectArray | Select-Object -First 1

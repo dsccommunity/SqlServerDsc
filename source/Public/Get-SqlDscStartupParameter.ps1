@@ -65,7 +65,17 @@ function Get-SqlDscStartupParameter
         $InstanceName = 'MSSQLSERVER'
     )
 
-    Assert-ElevatedUser -ErrorAction 'Stop'
+    $originalErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = 'Stop'
+
+    try
+    {
+        Assert-ElevatedUser -ErrorAction 'Stop'
+    }
+    finally
+    {
+        $ErrorActionPreference = $originalErrorActionPreference
+    }
 
     if ($PSCmdlet.ParameterSetName -eq 'ByServiceObject')
     {

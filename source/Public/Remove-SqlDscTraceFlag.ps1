@@ -106,7 +106,17 @@ function Remove-SqlDscTraceFlag
                 $getSqlDscTraceFlagParameters.Remove($_)
             }
 
-        $currentTraceFlags = Get-SqlDscTraceFlag @getSqlDscTraceFlagParameters -ErrorAction 'Stop'
+        $originalErrorActionPreference = $ErrorActionPreference
+        $ErrorActionPreference = 'Stop'
+
+        try
+        {
+            $currentTraceFlags = Get-SqlDscTraceFlag @getSqlDscTraceFlagParameters -ErrorAction 'Stop'
+        }
+        finally
+        {
+            $ErrorActionPreference = $originalErrorActionPreference
+        }
 
         if ($currentTraceFlags)
         {
@@ -133,7 +143,17 @@ function Remove-SqlDscTraceFlag
 
                 $setSqlDscTraceFlagParameters.TraceFLag = $desiredTraceFlags
 
-                Set-SqlDscTraceFlag @setSqlDscTraceFlagParameters -ErrorAction 'Stop'
+                $originalErrorActionPreference = $ErrorActionPreference
+                $ErrorActionPreference = 'Stop'
+
+                try
+                {
+                    Set-SqlDscTraceFlag @setSqlDscTraceFlagParameters -ErrorAction 'Stop'
+                }
+                finally
+                {
+                    $ErrorActionPreference = $originalErrorActionPreference
+                }
             }
         }
         else

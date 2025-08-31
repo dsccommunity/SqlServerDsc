@@ -91,7 +91,17 @@ function Set-SqlDscStartupParameter
 
     begin
     {
-         Assert-ElevatedUser -ErrorAction 'Stop'
+         $originalErrorActionPreference = $ErrorActionPreference
+         $ErrorActionPreference = 'Stop'
+
+         try
+         {
+             Assert-ElevatedUser -ErrorAction 'Stop'
+         }
+         finally
+         {
+             $ErrorActionPreference = $originalErrorActionPreference
+         }
 
         if ($Force.IsPresent -and -not $Confirm)
         {
