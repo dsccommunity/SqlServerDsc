@@ -196,6 +196,10 @@ function Invoke-ReportServerSetupAction
         $PassThru
     )
 
+    $previousErrorActionPreference = $ErrorActionPreference
+
+    $ErrorActionPreference = 'Stop'
+
     if ($Force.IsPresent -and -not $Confirm)
     {
         $ConfirmPreference = 'None'
@@ -225,6 +229,8 @@ function Invoke-ReportServerSetupAction
     }
 
     Assert-BoundParameter @assertBoundParameters
+
+    $ErrorActionPreference = $previousErrorActionPreference
 
     # Sensitive values.
     $sensitiveValue = @()
