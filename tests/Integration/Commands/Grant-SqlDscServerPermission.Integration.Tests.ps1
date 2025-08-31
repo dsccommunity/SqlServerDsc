@@ -32,8 +32,6 @@ BeforeAll {
 AfterAll {
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:moduleName -All | Remove-Module -Force
-
-    Remove-Module -Name SqlServer -Force
 }
 
 Describe 'Grant-SqlDscServerPermission Integration Tests' -Tag 'Integration' {
