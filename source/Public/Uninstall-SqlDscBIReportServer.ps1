@@ -85,9 +85,7 @@ function Uninstall-SqlDscBIReportServer
         $PassThru
     )
 
-    $ErrorActionPreference = 'Stop'
-
-    $exitCode = Invoke-ReportServerSetupAction -Uninstall @PSBoundParameters
+        $exitCode = Invoke-ReportServerSetupAction -Uninstall @PSBoundParameters
 
     if ($PassThru.IsPresent)
     {

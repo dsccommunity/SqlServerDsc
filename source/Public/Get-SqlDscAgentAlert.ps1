@@ -69,8 +69,7 @@ function Get-SqlDscAgentAlert
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-    }
+         }
 
     # cSpell: ignore GSAA
     process

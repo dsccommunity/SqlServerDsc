@@ -36,8 +36,6 @@ function ConvertFrom-SqlDscServerPermission
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-
         $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
     }
 

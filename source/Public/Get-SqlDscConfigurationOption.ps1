@@ -55,8 +55,7 @@ function Get-SqlDscConfigurationOption
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-    }
+         }
 
     process
     {

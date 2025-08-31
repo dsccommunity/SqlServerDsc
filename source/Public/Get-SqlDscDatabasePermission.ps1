@@ -58,8 +58,7 @@ function Get-SqlDscDatabasePermission
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-    }
+         }
 
     # cSpell: ignore GSDDP
     process

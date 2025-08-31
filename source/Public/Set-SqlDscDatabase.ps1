@@ -110,8 +110,7 @@ function Set-SqlDscDatabase
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-    }
+         }
 
     process
     {

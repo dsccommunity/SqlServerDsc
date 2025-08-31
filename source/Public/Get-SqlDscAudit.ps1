@@ -50,8 +50,7 @@ function Get-SqlDscAudit
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-    }
+         }
 
     process
     {

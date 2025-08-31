@@ -70,8 +70,7 @@ function Remove-SqlDscAudit
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-    }
+         }
 
     process
     {

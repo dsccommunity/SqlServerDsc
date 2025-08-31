@@ -255,8 +255,7 @@ function New-SqlDscLogin
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-    }
+         }
 
     process
     {

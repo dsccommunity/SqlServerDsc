@@ -245,8 +245,7 @@ function Set-SqlDscAudit
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-    }
+         }
 
     process
     {

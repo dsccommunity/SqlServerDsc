@@ -39,8 +39,6 @@ function Assert-SetupActionProperties
         $SetupAction
     )
 
-    $ErrorActionPreference = 'Stop'
-
     if ($Property.ContainsKey('Features'))
     {
         $setupExecutableFileVersion = $Property.MediaPath |

@@ -37,8 +37,6 @@ function Test-SqlDscIsSupportedFeature
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-
         $targetMajorVersion = ($ProductVersion -split '\.')[0]
 
         <#

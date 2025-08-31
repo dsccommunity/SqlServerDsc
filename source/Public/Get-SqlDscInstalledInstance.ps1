@@ -36,9 +36,7 @@ function Get-SqlDscInstalledInstance
         $ServiceType
     )
 
-    $ErrorActionPreference = 'Stop'
-
-    if ($PSBoundParameters.ContainsKey('InstanceName'))
+        if ($PSBoundParameters.ContainsKey('InstanceName'))
     {
         $InstanceName = $InstanceName.ToUpper()
     }

@@ -77,8 +77,7 @@ function Remove-SqlDscDatabase
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-    }
+         }
 
     process
     {

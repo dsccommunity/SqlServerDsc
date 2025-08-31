@@ -70,8 +70,7 @@ function Enable-SqlDscAudit
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-    }
+         }
 
     process
     {

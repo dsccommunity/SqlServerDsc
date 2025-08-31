@@ -42,8 +42,6 @@ function Get-AgentAlertObject
         $Name
     )
 
-    $ErrorActionPreference = 'Stop'
-
     Write-Verbose -Message ($script:localizedData.Get_AgentAlertObject_GettingAlert -f $Name)
 
     $alertObject = $ServerObject.JobServer.Alerts | Where-Object -FilterScript { $_.Name -eq $Name }

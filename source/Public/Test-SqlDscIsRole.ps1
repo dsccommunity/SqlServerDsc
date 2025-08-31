@@ -38,8 +38,7 @@ function Test-SqlDscIsRole
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-    }
+         }
 
     process
     {

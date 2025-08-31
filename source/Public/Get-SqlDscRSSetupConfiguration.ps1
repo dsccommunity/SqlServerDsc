@@ -67,9 +67,7 @@ function Get-SqlDscRSSetupConfiguration
         $InstanceName
     )
 
-    $ErrorActionPreference = 'Stop'
-
-    $reportingServicesInstances = @()
+        $reportingServicesInstances = @()
 
     # Get all Reporting Services instances or filter by specified instance name
     $getInstalledInstanceParams = @{

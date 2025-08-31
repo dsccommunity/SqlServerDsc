@@ -72,8 +72,7 @@ function New-SqlDscRole
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-    }
+         }
 
     process
     {

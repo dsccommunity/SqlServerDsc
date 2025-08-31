@@ -82,9 +82,7 @@ function Remove-SqlDscTraceFlag
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-
-        if ($Force.IsPresent -and -not $Confirm)
+         if ($Force.IsPresent -and -not $Confirm)
         {
             $ConfirmPreference = 'None'
         }

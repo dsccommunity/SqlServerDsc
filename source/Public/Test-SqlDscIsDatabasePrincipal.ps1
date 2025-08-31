@@ -99,8 +99,7 @@ function Test-SqlDscIsDatabasePrincipal
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-    }
+         }
 
     process
     {

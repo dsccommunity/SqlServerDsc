@@ -97,8 +97,7 @@ function Test-SqlDscDatabase
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-    }
+         }
 
     process
     {

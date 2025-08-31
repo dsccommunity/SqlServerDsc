@@ -59,8 +59,7 @@ function Get-SqlDscLogin
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-    }
+         }
 
     process
     {

@@ -79,8 +79,7 @@ function Remove-SqlDscLogin
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-    }
+         }
 
     process
     {
@@ -114,9 +113,6 @@ function Remove-SqlDscLogin
             try
             {
                 $originalErrorActionPreference = $ErrorActionPreference
-
-                $ErrorActionPreference = 'Stop'
-
                 $LoginObject.Drop()
             }
             catch

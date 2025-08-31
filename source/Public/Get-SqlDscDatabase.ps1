@@ -57,8 +57,7 @@ function Get-SqlDscDatabase
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-    }
+         }
 
     process
     {

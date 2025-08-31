@@ -90,8 +90,7 @@ function Disable-SqlDscLogin
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-    }
+         }
 
     process
     {

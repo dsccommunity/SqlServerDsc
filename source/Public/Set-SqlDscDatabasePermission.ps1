@@ -95,8 +95,7 @@ function Set-SqlDscDatabasePermission
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-    }
+         }
 
     process
     {

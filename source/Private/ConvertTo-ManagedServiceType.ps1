@@ -26,10 +26,7 @@ function ConvertTo-ManagedServiceType
         $ServiceType
     )
 
-    begin
-    {
-        $ErrorActionPreference = 'Stop'
-    }
+
 
     process
     {

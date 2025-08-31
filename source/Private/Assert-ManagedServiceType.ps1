@@ -44,10 +44,7 @@ function Assert-ManagedServiceType
         $ServiceType
     )
 
-    begin
-    {
-        $ErrorActionPreference = 'Stop'
-    }
+
 
     process
     {

@@ -89,8 +89,7 @@ function Test-SqlDscIsLoginEnabled
 
     begin
     {
-        $ErrorActionPreference = 'Stop'
-    }
+         }
 
     process
     {
