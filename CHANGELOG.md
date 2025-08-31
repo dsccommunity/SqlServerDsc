@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed Azure DevOps pipeline conditions that were preventing DSC resource
   integration tests from running when they should by removing incorrect quotes
   around boolean values.
+- Refactored error handling by removing global `$ErrorActionPreference = 'Stop'`
+  from 64 PowerShell files and implementing targeted error control for specific
+  command calls that use `-ErrorAction 'Stop'`.
 - `SqlAgentAlert`
   - Minor fix in `source/Classes/020.SqlAgentAlert.ps1` to correct `ExcludeDscProperties`
     formatting (added missing delimiter).

@@ -91,18 +91,18 @@ function Set-SqlDscStartupParameter
 
     begin
     {
-        $previousErrorActionPreference = $ErrorActionPreference
+        $originalErrorActionPreference = $ErrorActionPreference
 
         $ErrorActionPreference = 'Stop'
 
         Assert-ElevatedUser -ErrorAction 'Stop'
 
+        $ErrorActionPreference = $originalErrorActionPreference
+
         if ($Force.IsPresent -and -not $Confirm)
         {
             $ConfirmPreference = 'None'
         }
-
-        $ErrorActionPreference = $previousErrorActionPreference
     }
 
     process
@@ -120,7 +120,7 @@ function Set-SqlDscStartupParameter
                 ServerName   = $ServerName
                 InstanceName = $InstanceName
                 ServiceType  = 'DatabaseEngine'
-                ErrorAction  = 'Stop'
+                ErrorAction  = 'SilentlyContinue'
             }
 
             $ServiceObject = Get-SqlDscManagedComputerService @getSqlDscManagedComputerServiceParameters

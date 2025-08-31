@@ -1372,7 +1372,7 @@ function Invoke-SetupAction
         $Force
     )
 
-    $previousErrorActionPreference = $ErrorActionPreference
+    $originalErrorActionPreference = $ErrorActionPreference
 
     $ErrorActionPreference = 'Stop'
 
@@ -1415,7 +1415,7 @@ function Invoke-SetupAction
 
     Assert-SetupActionProperties -Property $PSBoundParameters -SetupAction $setupAction -ErrorAction 'Stop'
 
-    $ErrorActionPreference = $previousErrorActionPreference
+    $ErrorActionPreference = $originalErrorActionPreference
 
     $setupArgument = '/QUIET /ACTION={0}' -f $setupAction
 
