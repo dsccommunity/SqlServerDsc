@@ -49,73 +49,114 @@ AfterAll {
 
 Describe 'Revoke-SqlDscServerPermission' -Tag 'IntegrationTest' {
     BeforeAll {
-        $mockInstanceName = 'DSCSQLTEST'
-        $mockServerName = $env:COMPUTERNAME
+        # Check if there is a CI database instance to use for testing
+        $script:sqlServerInstanceName = $env:SqlServerInstanceName
 
-        $mockSqlCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @(
-            'SqlAdmin',
-            (ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force)
-        )
-
-        $mockConnectSqlParameters = @{
-            ServerName   = $mockServerName
-            InstanceName = $mockInstanceName
-            Credential   = $mockSqlCredential
-            ErrorAction  = 'Stop'
+        if (-not $script:sqlServerInstanceName)
+        {
+            $script:sqlServerInstanceName = 'DSCSQLTEST'
         }
 
-        $script:mockServerObject = Connect-SqlDscDatabaseEngine @mockConnectSqlParameters
+        # Get a computer name that will work in the CI environment
+        $script:computerName = Get-ComputerName
 
-        # Define test permission sets
-        $script:testPermissionSet = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-            ConnectSql = $true
+        Write-Verbose -Message ('Integration tests will run using computer name ''{0}'' and instance name ''{1}''.' -f $script:computerName, $script:sqlServerInstanceName) -Verbose
+
+        # Setup default parameter values to reduce verbosity in the tests
+        $PSDefaultParameterValues['*:ServerName'] = $script:computerName
+        $PSDefaultParameterValues['*:InstanceName'] = $script:sqlServerInstanceName
+        $PSDefaultParameterValues['*:ErrorAction'] = 'Stop'
+
+        $script:serverObject = Connect-SqlDscDatabaseEngine -ServerName $script:computerName -InstanceName $script:sqlServerInstanceName -Force
+
+        # Use persistent test login and role created by earlier integration tests
+        $script:testLoginName = 'IntegrationTestSqlLogin'
+        $script:testRoleName = 'SqlDscIntegrationTestRole_Persistent'
+
+        # Verify the persistent principals exist (should be created by New-SqlDscLogin and New-SqlDscRole integration tests)
+        $existingLogin = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'SilentlyContinue'
+        if (-not $existingLogin)
+        {
+            throw ('Test login {0} does not exist. Please run New-SqlDscLogin integration tests first to create persistent test principals.' -f $script:testLoginName)
         }
 
-        $script:testPrincipalName = 'TestUser2'
-
-        # Clean up any existing test user
-        InModuleScope -ScriptBlock {
-            if ($script:mockServerObject.Logins[$script:testPrincipalName])
-            {
-                $script:mockServerObject.Logins[$script:testPrincipalName].Drop()
-            }
+        $existingRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'SilentlyContinue'
+        if (-not $existingRole)
+        {
+            throw ('Test role {0} does not exist. Please run New-SqlDscRole integration tests first to create persistent test principals.' -f $script:testRoleName)
         }
-
-        # Create test user for permission testing
-        InModuleScope -ScriptBlock {
-            $testLogin = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList @(
-                $script:mockServerObject,
-                $script:testPrincipalName
-            )
-            $testLogin.LoginType = 'SqlLogin'
-            $testLogin.Create('P@ssw0rd1')
-        }
-
-        # Grant permission first so we can revoke it
-        $script:mockServerObject | Grant-SqlDscServerPermission -Name $script:testPrincipalName -Permission $script:testPermissionSet -Force
     }
 
     AfterAll {
-        # Clean up the test user
-        InModuleScope -ScriptBlock {
-            if ($script:mockServerObject.Logins[$script:testPrincipalName])
-            {
-                $script:mockServerObject.Logins[$script:testPrincipalName].Drop()
-            }
-        }
+        Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
 
-        $script:mockServerObject | Disconnect-SqlDscDatabaseEngine
+        $PSDefaultParameterValues.Remove('*:ServerName')
+        $PSDefaultParameterValues.Remove('*:InstanceName')
+        $PSDefaultParameterValues.Remove('*:ErrorAction')
     }
 
-    Context 'When revoking server permissions from a principal' {
+    Context 'When revoking server permissions from login' {
+        BeforeEach {
+            # Grant a known permission for testing
+            $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
+            Grant-SqlDscServerPermission -Login $loginObject -Permission @('ViewServerState') -Force
+        }
+
         It 'Should revoke permissions without throwing an error' {
+            $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
+
             {
-                $script:mockServerObject | Revoke-SqlDscServerPermission -Name $script:testPrincipalName -Permission $script:testPermissionSet -Force
+                Revoke-SqlDscServerPermission -Login $loginObject -Permission @('ViewServerState') -Force
             } | Should -Not -Throw
         }
 
         It 'Should show the permissions as no longer granted' {
-            $result = $script:mockServerObject | Test-SqlDscServerPermission -Name $script:testPrincipalName -Grant -Permission $script:testPermissionSet
+            $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
+
+            # First grant the permission
+            Grant-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDatabase') -Force
+
+            # Then revoke it
+            Revoke-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDatabase') -Force
+
+            # Test that it's no longer granted
+            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('ViewAnyDatabase')
+
+            $result | Should -BeFalse
+        }
+
+        It 'Should accept Login from pipeline' {
+            $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
+
+            # First grant a permission to revoke
+            Grant-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDefinition') -Force
+
+            {
+                $loginObject | Revoke-SqlDscServerPermission -Permission @('ViewAnyDefinition') -Force
+            } | Should -Not -Throw
+
+            # Verify the permission was revoked
+            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('ViewAnyDefinition')
+            $result | Should -BeFalse
+        }
+    }
+
+    Context 'When revoking server permissions from role' {
+        BeforeEach {
+            # Grant a known permission for testing
+            $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName
+            Grant-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force
+        }
+
+        It 'Should revoke permissions from role without throwing an error' {
+            $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName
+
+            {
+                Revoke-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force
+            } | Should -Not -Throw
+
+            # Test that it's no longer granted
+            $result = Test-SqlDscServerPermission -ServerRole $roleObject -Grant -Permission @('ViewServerState')
 
             $result | Should -BeFalse
         }
