@@ -114,21 +114,19 @@ Describe 'Grant-SqlDscServerPermission' -Tag 'Public' {
             } -Force
         }
 
-        It 'Should grant permissions to a login without throwing' {
+        It 'Should grant permissions to a login' {
             InModuleScope -Parameters @{
                 mockLogin = $mockLogin
             } -ScriptBlock {
-                { Grant-SqlDscServerPermission -Login $mockLogin -Permission ConnectSql -Force } |
-                    Should -Not -Throw
+                $null = Grant-SqlDscServerPermission -Login $mockLogin -Permission ConnectSql -Force
             }
         }
 
-        It 'Should grant permissions to a server role without throwing' {
+        It 'Should grant permissions to a server role' {
             InModuleScope -Parameters @{
                 mockServerRole = $mockServerRole
             } -ScriptBlock {
-                { Grant-SqlDscServerPermission -ServerRole $mockServerRole -Permission ConnectSql -Force } |
-                    Should -Not -Throw
+                $null = Grant-SqlDscServerPermission -ServerRole $mockServerRole -Permission ConnectSql -Force
             }
         }
 
@@ -136,8 +134,7 @@ Describe 'Grant-SqlDscServerPermission' -Tag 'Public' {
             InModuleScope -Parameters @{
                 mockLogin = $mockLogin
             } -ScriptBlock {
-                { Grant-SqlDscServerPermission -Login $mockLogin -Permission ConnectSql -WithGrant -Force } |
-                    Should -Not -Throw
+                $null = Grant-SqlDscServerPermission -Login $mockLogin -Permission ConnectSql -WithGrant -Force
             }
         }
     }
@@ -185,8 +182,7 @@ Describe 'Grant-SqlDscServerPermission' -Tag 'Public' {
             InModuleScope -Parameters @{
                 mockLogin = $mockLogin
             } -ScriptBlock {
-                { $mockLogin | Grant-SqlDscServerPermission -Permission ConnectSql -Force } |
-                    Should -Not -Throw
+                $null = $mockLogin | Grant-SqlDscServerPermission -Permission ConnectSql -Force
             }
         }
 
@@ -194,8 +190,7 @@ Describe 'Grant-SqlDscServerPermission' -Tag 'Public' {
             InModuleScope -Parameters @{
                 mockServerRole = $mockServerRole
             } -ScriptBlock {
-                { $mockServerRole | Grant-SqlDscServerPermission -Permission ConnectSql -Force } |
-                    Should -Not -Throw
+                $null = $mockServerRole | Grant-SqlDscServerPermission -Permission ConnectSql -Force
             }
         }
     }

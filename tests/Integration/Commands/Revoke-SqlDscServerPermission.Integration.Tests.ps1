@@ -99,25 +99,23 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'IntegrationTest' {
         BeforeEach {
             # Grant a known permission for testing
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
-            Grant-SqlDscServerPermission -Login $loginObject -Permission @('ViewServerState') -Force
+            $null = Grant-SqlDscServerPermission -Login $loginObject -Permission @('ViewServerState') -Force
         }
 
-        It 'Should revoke permissions without throwing an error' {
+        It 'Should revoke permissions' {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
 
-            {
-                Revoke-SqlDscServerPermission -Login $loginObject -Permission @('ViewServerState') -Force
-            } | Should -Not -Throw
+            $null = Revoke-SqlDscServerPermission -Login $loginObject -Permission @('ViewServerState') -Force
         }
 
         It 'Should show the permissions as no longer granted' {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
 
             # First grant the permission
-            Grant-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDatabase') -Force
+            $null = Grant-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDatabase') -Force
 
             # Then revoke it
-            Revoke-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDatabase') -Force
+            $null = Revoke-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDatabase') -Force
 
             # Test that it's no longer granted
             $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('ViewAnyDatabase')
@@ -129,11 +127,9 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'IntegrationTest' {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
 
             # First grant a permission to revoke
-            Grant-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDefinition') -Force
+            $null = Grant-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDefinition') -Force
 
-            {
-                $loginObject | Revoke-SqlDscServerPermission -Permission @('ViewAnyDefinition') -Force
-            } | Should -Not -Throw
+            $null = $loginObject | Revoke-SqlDscServerPermission -Permission @('ViewAnyDefinition') -Force
 
             # Verify the permission was revoked
             $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('ViewAnyDefinition')
@@ -145,15 +141,13 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'IntegrationTest' {
         BeforeEach {
             # Grant a known permission for testing
             $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName
-            Grant-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force
+            $null = Grant-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force
         }
 
-        It 'Should revoke permissions from role without throwing an error' {
+        It 'Should revoke permissions from role' {
             $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName
 
-            {
-                Revoke-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force
-            } | Should -Not -Throw
+            $null = Revoke-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force
 
             # Test that it's no longer granted
             $result = Test-SqlDscServerPermission -ServerRole $roleObject -Grant -Permission @('ViewServerState')

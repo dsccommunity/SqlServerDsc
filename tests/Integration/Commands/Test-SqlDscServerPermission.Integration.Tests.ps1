@@ -99,12 +99,12 @@ Describe 'Test-SqlDscServerPermission Integration Tests' -Tag 'Integration' {
         BeforeAll {
             # Set up known permissions for testing
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
-            Grant-SqlDscServerPermission -Login $loginObject -Permission @('ViewServerState') -Force
+            $null = Grant-SqlDscServerPermission -Login $loginObject -Permission @('ViewServerState') -Force
         }
 
         AfterAll {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
-            Revoke-SqlDscServerPermission -Login $loginObject -Permission @('ViewServerState') -Force -ErrorAction 'SilentlyContinue'
+            $null = Revoke-SqlDscServerPermission -Login $loginObject -Permission @('ViewServerState') -Force -ErrorAction 'SilentlyContinue'
         }
 
         It 'Should return true when permissions match desired state' {
@@ -201,12 +201,12 @@ Describe 'Test-SqlDscServerPermission Integration Tests' -Tag 'Integration' {
         BeforeAll {
             # Set up known permissions for testing
             $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName
-            Grant-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force
+            $null = Grant-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force
         }
 
         AfterAll {
             $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName
-            Revoke-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force -ErrorAction 'SilentlyContinue'
+            $null = Revoke-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force -ErrorAction 'SilentlyContinue'
         }
 
         It 'Should return true when role permissions match desired state' {
@@ -295,12 +295,12 @@ Describe 'Test-SqlDscServerPermission Integration Tests' -Tag 'Integration' {
         BeforeAll {
             # Set up grant with grant permissions for testing
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
-            Grant-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDatabase') -WithGrant -Force
+            $null = Grant-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDatabase') -WithGrant -Force
         }
 
         AfterAll {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
-            Revoke-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDatabase') -WithGrant -Force -ErrorAction 'SilentlyContinue'
+            $null = Revoke-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDatabase') -WithGrant -Force -ErrorAction 'SilentlyContinue'
         }
 
         It 'Should return true when testing for grant with grant permission that exists' {

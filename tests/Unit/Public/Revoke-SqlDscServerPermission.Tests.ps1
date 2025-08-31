@@ -114,21 +114,19 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'Public' {
             } -Force
         }
 
-        It 'Should revoke permissions from a login without throwing' {
+        It 'Should revoke permissions from a login' {
             InModuleScope -Parameters @{
                 mockLogin = $mockLogin
             } -ScriptBlock {
-                { Revoke-SqlDscServerPermission -Login $mockLogin -Permission ConnectSql -Force } |
-                    Should -Not -Throw
+                $null = Revoke-SqlDscServerPermission -Login $mockLogin -Permission ConnectSql -Force
             }
         }
 
-        It 'Should revoke permissions from a server role without throwing' {
+        It 'Should revoke permissions from a server role' {
             InModuleScope -Parameters @{
                 mockServerRole = $mockServerRole
             } -ScriptBlock {
-                { Revoke-SqlDscServerPermission -ServerRole $mockServerRole -Permission ConnectSql -Force } |
-                    Should -Not -Throw
+                $null = Revoke-SqlDscServerPermission -ServerRole $mockServerRole -Permission ConnectSql -Force
             }
         }
 
@@ -136,8 +134,7 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'Public' {
             InModuleScope -Parameters @{
                 mockLogin = $mockLogin
             } -ScriptBlock {
-                { Revoke-SqlDscServerPermission -Login $mockLogin -Permission ConnectSql -WithGrant -Force } |
-                    Should -Not -Throw
+                $null = Revoke-SqlDscServerPermission -Login $mockLogin -Permission ConnectSql -WithGrant -Force
             }
         }
     }
@@ -185,8 +182,7 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'Public' {
             InModuleScope -Parameters @{
                 mockLogin = $mockLogin
             } -ScriptBlock {
-                { $mockLogin | Revoke-SqlDscServerPermission -Permission ConnectSql -Force } |
-                    Should -Not -Throw
+                $null = $mockLogin | Revoke-SqlDscServerPermission -Permission ConnectSql -Force
             }
         }
 
@@ -194,8 +190,7 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'Public' {
             InModuleScope -Parameters @{
                 mockServerRole = $mockServerRole
             } -ScriptBlock {
-                { $mockServerRole | Revoke-SqlDscServerPermission -Permission ConnectSql -Force } |
-                    Should -Not -Throw
+                $null = $mockServerRole | Revoke-SqlDscServerPermission -Permission ConnectSql -Force
             }
         }
     }

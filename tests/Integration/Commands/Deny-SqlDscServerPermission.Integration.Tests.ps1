@@ -101,19 +101,17 @@ Describe 'Deny-SqlDscServerPermission' -Tag 'IntegrationTest' {
             Revoke-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName -Permission 'ViewAnyDefinition' -Force -ErrorAction 'SilentlyContinue'
         }
 
-        It 'Should deny ViewServerState permission without throwing an error' {
+        It 'Should deny ViewServerState permission' {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
 
-            {
-                Deny-SqlDscServerPermission -Login $loginObject -Permission @('ViewServerState') -Force
-            } | Should -Not -Throw
+            $null = Deny-SqlDscServerPermission -Login $loginObject -Permission @('ViewServerState') -Force
         }
 
         It 'Should show the permissions as denied' {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
 
             # First deny the permission
-            Deny-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDatabase') -Force
+            $null = Deny-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDatabase') -Force
 
             # Then test if it's denied
             $result = Test-SqlDscServerPermission -Login $loginObject -Deny -Permission @('ViewAnyDatabase')
@@ -124,9 +122,7 @@ Describe 'Deny-SqlDscServerPermission' -Tag 'IntegrationTest' {
         It 'Should accept Login from pipeline' {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
 
-            {
-                $loginObject | Deny-SqlDscServerPermission -Permission @('ViewAnyDefinition') -Force
-            } | Should -Not -Throw
+            $null = $loginObject | Deny-SqlDscServerPermission -Permission @('ViewAnyDefinition') -Force
 
             # Verify the permission was denied
             $result = Test-SqlDscServerPermission -Login $loginObject -Deny -Permission @('ViewAnyDefinition')
@@ -139,12 +135,10 @@ Describe 'Deny-SqlDscServerPermission' -Tag 'IntegrationTest' {
             Revoke-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testRoleName -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
         }
 
-        It 'Should deny ViewServerState permission to role without throwing an error' {
+        It 'Should deny ViewServerState permission to role' {
             $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName
 
-            {
-                Deny-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force
-            } | Should -Not -Throw
+            $null = Deny-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force
 
             # Verify the permission was denied
             $result = Test-SqlDscServerPermission -ServerRole $roleObject -Deny -Permission @('ViewServerState')
@@ -154,9 +148,7 @@ Describe 'Deny-SqlDscServerPermission' -Tag 'IntegrationTest' {
         It 'Should deny persistent AlterTrace permission to login for other tests' {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
 
-            {
-                Deny-SqlDscServerPermission -Login $loginObject -Permission @('AlterTrace') -Force
-            } | Should -Not -Throw
+            $null = Deny-SqlDscServerPermission -Login $loginObject -Permission @('AlterTrace') -Force
 
             # Verify the permission was denied - this denial will remain persistent for other integration tests
             $result = Test-SqlDscServerPermission -Login $loginObject -Deny -Permission @('AlterTrace')

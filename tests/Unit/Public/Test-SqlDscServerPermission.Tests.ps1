@@ -221,7 +221,7 @@ Describe 'Test-SqlDscServerPermission' -Tag 'Public' {
             InModuleScope -Parameters @{
                 mockLogin = $mockLogin
             } -ScriptBlock {
-                Test-SqlDscServerPermission -Login $mockLogin -Grant -Permission ConnectSql
+                $null = Test-SqlDscServerPermission -Login $mockLogin -Grant -Permission ConnectSql
 
                 Should -Invoke -CommandName Get-SqlDscServerPermission -Times 1 -ParameterFilter {
                     $ServerObject -ne $null -and

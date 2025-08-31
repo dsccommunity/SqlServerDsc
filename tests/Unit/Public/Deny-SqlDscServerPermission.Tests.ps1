@@ -110,21 +110,19 @@ Describe 'Deny-SqlDscServerPermission' -Tag 'Public' {
             } -Force
         }
 
-        It 'Should deny permissions to a login without throwing' {
+        It 'Should deny permissions to a login' {
             InModuleScope -Parameters @{
                 mockLogin = $mockLogin
             } -ScriptBlock {
-                { Deny-SqlDscServerPermission -Login $mockLogin -Permission ConnectSql -Force } |
-                    Should -Not -Throw
+                $null = Deny-SqlDscServerPermission -Login $mockLogin -Permission ConnectSql -Force
             }
         }
 
-        It 'Should deny permissions to a server role without throwing' {
+        It 'Should deny permissions to a server role' {
             InModuleScope -Parameters @{
                 mockServerRole = $mockServerRole
             } -ScriptBlock {
-                { Deny-SqlDscServerPermission -ServerRole $mockServerRole -Permission ConnectSql -Force } |
-                    Should -Not -Throw
+                $null = Deny-SqlDscServerPermission -ServerRole $mockServerRole -Permission ConnectSql -Force
             }
         }
     }
@@ -172,8 +170,7 @@ Describe 'Deny-SqlDscServerPermission' -Tag 'Public' {
             InModuleScope -Parameters @{
                 mockLogin = $mockLogin
             } -ScriptBlock {
-                { $mockLogin | Deny-SqlDscServerPermission -Permission ConnectSql -Force } |
-                    Should -Not -Throw
+                $null = $mockLogin | Deny-SqlDscServerPermission -Permission ConnectSql -Force
             }
         }
 
@@ -181,8 +178,7 @@ Describe 'Deny-SqlDscServerPermission' -Tag 'Public' {
             InModuleScope -Parameters @{
                 mockServerRole = $mockServerRole
             } -ScriptBlock {
-                { $mockServerRole | Deny-SqlDscServerPermission -Permission ConnectSql -Force } |
-                    Should -Not -Throw
+                $null = $mockServerRole | Deny-SqlDscServerPermission -Permission ConnectSql -Force
             }
         }
     }

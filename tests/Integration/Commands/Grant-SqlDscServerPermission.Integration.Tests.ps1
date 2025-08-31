@@ -109,8 +109,7 @@ Describe 'Grant-SqlDscServerPermission Integration Tests' -Tag 'Integration' {
         }
 
         It 'Should grant ViewServerState permission successfully' {
-            { Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('ViewServerState') -Force } |
-                Should -Not -Throw
+            $null = Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('ViewServerState') -Force
 
             # Verify the permission was granted
             $grantedPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName
@@ -119,8 +118,7 @@ Describe 'Grant-SqlDscServerPermission Integration Tests' -Tag 'Integration' {
         }
 
         It 'Should grant multiple permissions successfully' {
-            { Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('ViewServerState', 'ViewAnyDatabase') -Force } |
-                Should -Not -Throw
+            $null = Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('ViewServerState', 'ViewAnyDatabase') -Force
 
             # Verify the permissions were granted
             $grantedPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName
@@ -130,8 +128,7 @@ Describe 'Grant-SqlDscServerPermission Integration Tests' -Tag 'Integration' {
         }
 
         It 'Should grant permissions with WithGrant option' {
-            { Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('ViewServerState') -WithGrant -Force } |
-                Should -Not -Throw
+            $null = Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('ViewServerState') -WithGrant -Force
 
             # Verify the permission was granted with grant option
             $grantedPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName
@@ -141,8 +138,7 @@ Describe 'Grant-SqlDscServerPermission Integration Tests' -Tag 'Integration' {
         }
 
         It 'Should accept Login from pipeline' {
-            { $script:loginObject | Grant-SqlDscServerPermission -Permission @('ViewAnyDefinition') -Force } |
-                Should -Not -Throw
+            $null = $script:loginObject | Grant-SqlDscServerPermission -Permission @('ViewAnyDefinition') -Force
 
             # Verify the permission was granted
             $grantedPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName
@@ -162,8 +158,7 @@ Describe 'Grant-SqlDscServerPermission Integration Tests' -Tag 'Integration' {
         It 'Should grant ViewServerState permission to role successfully' {
             $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName
 
-            { Grant-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force } |
-                Should -Not -Throw
+            $null = Grant-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force
 
             # Verify the permission was granted
             $grantedPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testRoleName
@@ -174,8 +169,7 @@ Describe 'Grant-SqlDscServerPermission Integration Tests' -Tag 'Integration' {
         It 'Should grant persistent CreateEndpoint permission to role for other tests' {
             $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName
 
-            { Grant-SqlDscServerPermission -ServerRole $roleObject -Permission @('CreateEndpoint') -Force } |
-                Should -Not -Throw
+            $null = Grant-SqlDscServerPermission -ServerRole $roleObject -Permission @('CreateEndpoint') -Force
 
             # Verify the permission was granted - this permission will remain persistent for other integration tests
             $grantedPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testRoleName
