@@ -78,8 +78,6 @@ function Get-SqlDscStartupParameter
         $ServiceObject | Assert-ManagedServiceType -ServiceType 'DatabaseEngine'
     }
 
-    $ErrorActionPreference = $previousErrorActionPreference
-
     if ($PSCmdlet.ParameterSetName -eq 'ByServerName')
     {
         $getSqlDscManagedComputerServiceParameters = @{
