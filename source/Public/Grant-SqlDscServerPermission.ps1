@@ -150,9 +150,9 @@ function Grant-SqlDscServerPermission
             }
             catch
             {
-                $errorMessage = $script:localizedData.ServerPermission_FailedToGrantPermission -f $principalName, $serverObject.InstanceName
+                $errorMessage = $script:localizedData.ServerPermission_Grant_FailedToGrantPermission -f $principalName, $serverObject.InstanceName
 
-                                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
             }
         }
     }

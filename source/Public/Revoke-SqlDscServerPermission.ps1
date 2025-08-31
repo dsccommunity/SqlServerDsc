@@ -148,9 +148,9 @@ function Revoke-SqlDscServerPermission
             }
             catch
             {
-                $errorMessage = $script:localizedData.ServerPermission_FailedToRevokePermission -f $principalName, $serverObject.InstanceName
+                $errorMessage = $script:localizedData.ServerPermission_Revoke_FailedToRevokePermission -f $principalName, $serverObject.InstanceName
 
-                                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
             }
         }
     }

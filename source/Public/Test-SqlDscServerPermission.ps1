@@ -156,9 +156,9 @@ function Test-SqlDscServerPermission
         {
             # If the principal doesn't exist or there's another error, return false
             Write-Verbose -Message (
-                $script:localizedData.ServerPermission_TestFailed -f $principalName, $_.Exception.Message
+                $script:localizedData.ServerPermission_Test_TestFailed -f $principalName, $_.Exception.Message
             )
-            
+
             return $false
         }
     }
