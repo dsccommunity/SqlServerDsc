@@ -125,7 +125,6 @@ Describe 'Get-SqlDscStartupParameter' -Tag 'Public' {
     Context 'When passing server name but an Managed Computer Service object is not returned' {
         BeforeAll {
             Mock -CommandName Assert-ElevatedUser
-
             Mock -CommandName Get-SqlDscManagedComputerService -MockWith {
                 return $null
             }

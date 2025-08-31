@@ -103,6 +103,8 @@ function Set-SqlDscStartupParameter
         {
             $ConfirmPreference = 'None'
         }
+
+        $ErrorActionPreference = $previousErrorActionPreference
     }
 
     process

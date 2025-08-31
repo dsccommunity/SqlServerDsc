@@ -1372,6 +1372,10 @@ function Invoke-SetupAction
         $Force
     )
 
+    $previousErrorActionPreference = $ErrorActionPreference
+
+    $ErrorActionPreference = 'Stop'
+
     if ($Force.IsPresent -and -not $Confirm)
     {
         $ConfirmPreference = 'None'
@@ -1426,6 +1430,8 @@ function Invoke-SetupAction
     {
         $ErrorActionPreference = $originalErrorActionPreference2
     }
+
+    $ErrorActionPreference = $previousErrorActionPreference
 
     $setupArgument = '/QUIET /ACTION={0}' -f $setupAction
 
