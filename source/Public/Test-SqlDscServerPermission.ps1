@@ -102,13 +102,11 @@ function Test-SqlDscServerPermission
         # Determine which principal object we're working with
         if ($Login)
         {
-            $principalObject = $Login
             $principalName = $Login.Name
             $serverObject = $Login.Parent
         }
         else
         {
-            $principalObject = $ServerRole
             $principalName = $ServerRole.Name
             $serverObject = $ServerRole.Parent
         }

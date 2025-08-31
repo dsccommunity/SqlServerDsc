@@ -97,13 +97,11 @@ function Grant-SqlDscServerPermission
         # Determine which principal object we're working with
         if ($PSCmdlet.ParameterSetName -eq 'Login')
         {
-            $principalObject = $Login
             $principalName = $Login.Name
             $serverObject = $Login.Parent
         }
         else
         {
-            $principalObject = $ServerRole
             $principalName = $ServerRole.Name
             $serverObject = $ServerRole.Parent
         }
