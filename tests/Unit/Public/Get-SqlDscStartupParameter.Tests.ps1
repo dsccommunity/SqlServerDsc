@@ -125,17 +125,12 @@ Describe 'Get-SqlDscStartupParameter' -Tag 'Public' {
     Context 'When passing server name but an Managed Computer Service object is not returned' {
         BeforeAll {
             Mock -CommandName Assert-ElevatedUser
-
             Mock -CommandName Get-SqlDscManagedComputerService -MockWith {
                 return $null
             }
         }
 
         Context 'When passing SilentlyContinue to ErrorAction' {
-            BeforeAll {
-                Mock -CommandName Assert-ElevatedUser
-            }
-
             It 'Should not throw and return an empty array' {
                 $result = Get-SqlDscStartupParameter -ServerName 'localhost' -ErrorAction 'SilentlyContinue'
 
@@ -146,10 +141,6 @@ Describe 'Get-SqlDscStartupParameter' -Tag 'Public' {
         }
 
         Context 'When passing Stop to ErrorAction' {
-            BeforeAll {
-                Mock -CommandName Assert-ElevatedUser
-            }
-
             It 'Should throw the correct error' {
                 $mockErrorMessage = InModuleScope -ScriptBlock {
                     $script:localizedData.TraceFlag_Get_FailedToFindServiceObject

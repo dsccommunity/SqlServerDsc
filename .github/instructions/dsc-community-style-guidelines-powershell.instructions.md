@@ -80,6 +80,7 @@ applyTo: "**/*.ps?(m|d)1"
   - Place ShouldProcess check immediately before each state-change
   - `$PSCmdlet.ShouldProcess` must use required pattern
 - Never use backtick as line continuation in production code.
+- When calling commands with `-ErrorAction 'Stop'`, temporarily set `$ErrorActionPreference = 'Stop'` and restore after the call.
 
 ## Output streams
 
@@ -181,6 +182,7 @@ function Get-Something
 - Limit piping to one pipe per line
 - Assign function results to variables rather than inline calls
 - Return a single, consistent object type per function
+  - return `$null` for no objects/non-terminating errors
 
 ### Security & Safety
 

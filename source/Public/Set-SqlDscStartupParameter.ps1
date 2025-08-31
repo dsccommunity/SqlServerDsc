@@ -91,6 +91,8 @@ function Set-SqlDscStartupParameter
 
     begin
     {
+        $previousErrorActionPreference = $ErrorActionPreference
+
         $ErrorActionPreference = 'Stop'
 
         Assert-ElevatedUser -ErrorAction 'Stop'
@@ -99,6 +101,8 @@ function Set-SqlDscStartupParameter
         {
             $ConfirmPreference = 'None'
         }
+
+        $ErrorActionPreference = $previousErrorActionPreference
     }
 
     process
