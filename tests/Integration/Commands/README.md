@@ -40,14 +40,44 @@ to each other. Dependencies are made to speed up the testing.**
 <!-- markdownlint-disable MD013 -->
 Command | Run order # | Depends on # | Use instance | Creates persistent objects
 --- | --- | --- | --- | ---
-Install-SqlDscServer | 1 | - | - | -
-New-SqlDscLogin | 2 | 1 (Install-SqlDscServer), Prerequisites | DSCSQLTEST | IntegrationTestSqlLogin, SqlIntegrationTestGroup login
-New-SqlDscRole | 3 | 1 (Install-SqlDscServer), Prerequisites | DSCSQLTEST | SqlDscIntegrationTestRole_Persistent role
-Grant-SqlDscServerPermission | 4 | 2 (New-SqlDscLogin), 3 (New-SqlDscRole) | DSCSQLTEST | Grants ConnectSql permissions to existing persistent principals, CreateEndpoint to role
-Get-SqlDscServerPermission | 5 | 4 (Grant-SqlDscServerPermission) | DSCSQLTEST | -
-Test-SqlDscServerPermission | 6 | 4 (Grant-SqlDscServerPermission) | DSCSQLTEST | -
-Deny-SqlDscServerPermission | 7 | 4 (Grant-SqlDscServerPermission) | DSCSQLTEST | Denies AlterTrace permission to login (persistent)
-Revoke-SqlDscServerPermission | 8 | 4 (Grant-SqlDscServerPermission) | DSCSQLTEST | -
+Prerequisites | 0 | - | - | Sets up dependencies
+Install-SqlDscServer | 1 | 0 (Prerequisites) | - | DSCSQLTEST instance
+Connect-SqlDscDatabaseEngine | 1 | 0 (Prerequisites) | DSCSQLTEST | -
+Assert-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+New-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | IntegrationTestSqlLogin, SqlIntegrationTestGroup login
+Get-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Disable-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Enable-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscIsLoginEnabled | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+New-SqlDscRole | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | SqlDscIntegrationTestRole_Persistent role
+Get-SqlDscRole | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Grant-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Grants ConnectSql permissions to existing persistent principals, CreateEndpoint to role
+Get-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Deny-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Denies AlterTrace permission to login (persistent)
+Revoke-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscDatabase | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+New-SqlDscDatabase | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test databases
+Set-SqlDscDatabase | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscDatabase | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+New-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test alerts
+Set-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Remove-SqlDscAgentAlert | 8 | 2 (New-SqlDscAgentAlert) | DSCSQLTEST | -
+Remove-SqlDscDatabase | 8 | 2 (New-SqlDscDatabase) | DSCSQLTEST | -
+Remove-SqlDscRole | 8 | 2 (New-SqlDscRole) | DSCSQLTEST | -
+Remove-SqlDscLogin | 8 | 2 (New-SqlDscLogin) | DSCSQLTEST | -
+Uninstall-SqlDscServer | 9 | 8 (Remove commands) | - | -
+Install-SqlDscReportingService | 1 | 0 (Prerequisites) | - | SSRS instance
+Get-SqlDscInstalledInstance | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Get-SqlDscRSSetupConfiguration | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Test-SqlDscRSInstalled | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Repair-SqlDscReportingService | 8 | 1 (Install-SqlDscReportingService) | SSRS | -
+Uninstall-SqlDscReportingService | 9 | 8 (Repair-SqlDscReportingService) | - | -
+Install-SqlDscBIReportServer | 1 | 0 (Prerequisites) | - | PBIRS instance
+Repair-SqlDscBIReportServer | 8 | 1 (Install-SqlDscBIReportServer) | PBIRS | -
+Uninstall-SqlDscBIReportServer | 9 | 8 (Repair-SqlDscBIReportServer) | - | -
 <!-- markdownlint-enable MD013 -->
 
 ## Integration Tests
