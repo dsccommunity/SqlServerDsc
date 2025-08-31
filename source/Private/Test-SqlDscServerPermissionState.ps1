@@ -54,10 +54,6 @@ function Test-SqlDscServerPermissionState
         $WithGrant
     )
 
-    Write-Verbose -Message (
-        $script:localizedData.ServerPermission_TestingDesiredState -f $Name, $ServerObject.InstanceName
-    )
-
     # Handle WithGrant parameter by adjusting the effective state
     $effectiveState = $State
     if ($WithGrant.IsPresent -and $State -eq 'Grant')
@@ -71,9 +67,6 @@ function Test-SqlDscServerPermissionState
 
     if (-not $serverPermissionInfo)
     {
-        Write-Verbose -Message (
-            $script:localizedData.ServerPermission_PermissionNotInDesiredState -f 'All', $effectiveState, $Name
-        )
         return $false
     }
 
@@ -111,9 +104,6 @@ function Test-SqlDscServerPermissionState
     {
         if ($desiredPermissionName -notin $currentPermissionForState.Permission)
         {
-            Write-Verbose -Message (
-                $script:localizedData.ServerPermission_PermissionNotInDesiredState -f $desiredPermissionName, $effectiveState, $Name
-            )
             return $false
         }
     }
@@ -125,9 +115,6 @@ function Test-SqlDscServerPermissionState
         {
             if ($currentPermissionName -notin $desiredPermissionNames)
             {
-                Write-Verbose -Message (
-                    $script:localizedData.ServerPermission_PermissionNotInDesiredState -f $currentPermissionName, $effectiveState, $Name
-                )
                 return $false
             }
         }
@@ -137,16 +124,9 @@ function Test-SqlDscServerPermissionState
         # If no permissions are desired, current should also be empty
         if ($currentPermissionForState.Permission.Count -gt 0)
         {
-            Write-Verbose -Message (
-                $script:localizedData.ServerPermission_PermissionNotInDesiredState -f ($currentPermissionForState.Permission -join ', '), $effectiveState, $Name
-            )
             return $false
         }
     }
-
-    Write-Verbose -Message (
-        $script:localizedData.ServerPermission_InDesiredState -f $Name
-    )
 
     return $true
 }

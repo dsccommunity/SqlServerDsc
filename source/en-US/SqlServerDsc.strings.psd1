@@ -36,9 +36,6 @@ ConvertFrom-StringData @'
     ServerPermission_GrantPermission = Grant the permissions '{0}' for the principal '{1}'.
     ServerPermission_DenyPermission = Deny the permissions '{0}' for the principal '{1}'.
     ServerPermission_RevokePermission = Revoke the permissions '{0}' for the principal '{1}'.
-    ServerPermission_TestingDesiredState = Testing if server permissions for principal '{0}' are in desired state on instance '{1}'.
-    ServerPermission_PermissionNotInDesiredState = The permission '{0}' in state '{1}' for principal '{2}' is not in desired state.
-    ServerPermission_InDesiredState = Server permissions for principal '{0}' are in desired state.
 
     ## New-SqlDscServerPermission
     ServerPermission_Grant_ShouldProcessVerboseDescription = Granting server permissions for the principal '{0}' on the instance '{1}'.

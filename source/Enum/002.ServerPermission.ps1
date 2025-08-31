@@ -1,0 +1,41 @@
+<#
+    .SYNOPSIS
+        The possible server permissions that can be granted, denied, or revoked.
+#>
+enum SqlServerPermission
+{
+    AdministerBulkOperations = 1
+    AlterAnyServerAudit
+    AlterAnyCredential
+    AlterAnyConnection
+    AlterAnyDatabase
+    AlterAnyEventNotification
+    AlterAnyEndpoint
+    AlterAnyLogin
+    AlterAnyLinkedServer
+    AlterResources
+    AlterServerState
+    AlterSettings
+    AlterTrace
+    AuthenticateServer
+    ControlServer
+    ConnectSql
+    CreateAnyDatabase
+    CreateDdlEventNotification
+    CreateEndpoint
+    CreateTraceEventNotification
+    Shutdown
+    ViewAnyDefinition
+    ViewAnyDatabase
+    ViewServerState
+    ExternalAccessAssembly
+    UnsafeAssembly
+    AlterAnyServerRole
+    CreateServerRole
+    AlterAnyAvailabilityGroup
+    CreateAvailabilityGroup
+    AlterAnyEventSession
+    SelectAllUserSecurables
+    ConnectAnyDatabase
+    ImpersonateAnyLogin
+}

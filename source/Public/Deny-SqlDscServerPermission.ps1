@@ -14,7 +14,7 @@
 
     .PARAMETER Permission
         Specifies the permissions to be denied. Specify multiple permissions by
-        providing an array of permission names.
+        providing an array of SqlServerPermission enum values.
 
     .PARAMETER Force
         Specifies that the permissions should be denied without any confirmation.
@@ -25,14 +25,14 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
 
-        Deny-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -Permission 'ConnectSql', 'ViewServerState'
+        Deny-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -Permission ConnectSql, ViewServerState
 
         Denies the specified permissions to the principal 'MyPrincipal'.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
 
-        $serverInstance | Deny-SqlDscServerPermission -Name 'MyPrincipal' -Permission 'AlterAnyDatabase' -Force
+        $serverInstance | Deny-SqlDscServerPermission -Name 'MyPrincipal' -Permission AlterAnyDatabase -Force
 
         Denies the specified permissions to the principal 'MyPrincipal' without prompting for confirmation.
 
@@ -58,43 +58,7 @@ function Deny-SqlDscServerPermission
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet(
-            'AdministerBulkOperations',
-            'AlterAnyServerAudit',
-            'AlterAnyCredential',
-            'AlterAnyConnection',
-            'AlterAnyDatabase',
-            'AlterAnyEventNotification',
-            'AlterAnyEndpoint',
-            'AlterAnyLogin',
-            'AlterAnyLinkedServer',
-            'AlterResources',
-            'AlterServerState',
-            'AlterSettings',
-            'AlterTrace',
-            'AuthenticateServer',
-            'ControlServer',
-            'ConnectSql',
-            'CreateAnyDatabase',
-            'CreateDdlEventNotification',
-            'CreateEndpoint',
-            'CreateTraceEventNotification',
-            'Shutdown',
-            'ViewAnyDefinition',
-            'ViewAnyDatabase',
-            'ViewServerState',
-            'ExternalAccessAssembly',
-            'UnsafeAssembly',
-            'AlterAnyServerRole',
-            'CreateServerRole',
-            'AlterAnyAvailabilityGroup',
-            'CreateAvailabilityGroup',
-            'AlterAnyEventSession',
-            'SelectAllUserSecurables',
-            'ConnectAnyDatabase',
-            'ImpersonateAnyLogin'
-        )]
-        [System.String[]]
+        [SqlServerPermission[]]
         $Permission,
 
         [Parameter()]
@@ -119,29 +83,57 @@ function Deny-SqlDscServerPermission
 
         if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
-            # Convert string array to ServerPermissionSet object
+            # Validate that the principal exists
+            $testSqlDscIsPrincipalParameters = @{
+                ServerObject = $ServerObject
+                Name         = $Name
+            }
+
+            $isLogin = Test-SqlDscIsLogin @testSqlDscIsPrincipalParameters
+            $isRole = Test-SqlDscIsRole @testSqlDscIsPrincipalParameters
+
+            if (-not ($isLogin -or $isRole))
+            {
+                $missingPrincipalMessage = $script:localizedData.ServerPermission_MissingPrincipal -f $Name, $ServerObject.InstanceName
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        $missingPrincipalMessage,
+                        'DSSP0001', # cSpell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $Name
+                    )
+                )
+            }
+
+            # Convert enum array to ServerPermissionSet object
             $permissionSet = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]::new()
             foreach ($permissionName in $Permission)
             {
                 $permissionSet.$permissionName = $true
             }
 
-            $invokeParameters = @{
-                ServerObject = $ServerObject
-                Name         = $Name
-                Permission   = $permissionSet
-                State        = 'Deny'
-            }
+            # Get the permissions names that are set to $true in the ServerPermissionSet.
+            $permissionName = $permissionSet |
+                Get-Member -MemberType 'Property' |
+                Select-Object -ExpandProperty 'Name' |
+                Where-Object -FilterScript {
+                    $permissionSet.$_
+                }
 
             try
             {
-                Invoke-SqlDscServerPermissionOperation @invokeParameters
+                Write-Verbose -Message (
+                    $script:localizedData.ServerPermission_DenyPermission -f ($permissionName -join ','), $Name
+                )
+
+                $ServerObject.Deny($permissionSet, $Name)
             }
             catch
             {
                 $errorMessage = $script:localizedData.ServerPermission_FailedToDenyPermission -f $Name, $ServerObject.InstanceName
 
-                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
             }
         }
     }

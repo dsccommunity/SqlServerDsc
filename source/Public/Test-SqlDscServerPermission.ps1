@@ -20,7 +20,7 @@
 
     .PARAMETER Permission
         Specifies the desired permissions. Specify multiple permissions by
-        providing an array of permission names that should be present in the
+        providing an array of SqlServerPermission enum values that should be present in the
         specified state.
 
     .PARAMETER WithGrant
@@ -35,14 +35,14 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
 
-        $isInDesiredState = Test-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -Grant -Permission 'ConnectSql', 'ViewServerState'
+        $isInDesiredState = Test-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -Grant -Permission ConnectSql, ViewServerState
 
         Tests if the specified permissions are granted to the principal 'MyPrincipal'.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
 
-        $isInDesiredState = $serverInstance | Test-SqlDscServerPermission -Name 'MyPrincipal' -Grant -Permission 'AlterAnyDatabase' -WithGrant
+        $isInDesiredState = $serverInstance | Test-SqlDscServerPermission -Name 'MyPrincipal' -Grant -Permission AlterAnyDatabase -WithGrant
 
         Tests if the specified permissions are granted with grant option to the principal 'MyPrincipal'.
 
@@ -76,43 +76,7 @@ function Test-SqlDscServerPermission
         $Deny,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet(
-            'AdministerBulkOperations',
-            'AlterAnyServerAudit',
-            'AlterAnyCredential',
-            'AlterAnyConnection',
-            'AlterAnyDatabase',
-            'AlterAnyEventNotification',
-            'AlterAnyEndpoint',
-            'AlterAnyLogin',
-            'AlterAnyLinkedServer',
-            'AlterResources',
-            'AlterServerState',
-            'AlterSettings',
-            'AlterTrace',
-            'AuthenticateServer',
-            'ControlServer',
-            'ConnectSql',
-            'CreateAnyDatabase',
-            'CreateDdlEventNotification',
-            'CreateEndpoint',
-            'CreateTraceEventNotification',
-            'Shutdown',
-            'ViewAnyDefinition',
-            'ViewAnyDatabase',
-            'ViewServerState',
-            'ExternalAccessAssembly',
-            'UnsafeAssembly',
-            'AlterAnyServerRole',
-            'CreateServerRole',
-            'AlterAnyAvailabilityGroup',
-            'CreateAvailabilityGroup',
-            'AlterAnyEventSession',
-            'SelectAllUserSecurables',
-            'ConnectAnyDatabase',
-            'ImpersonateAnyLogin'
-        )]
-        [System.String[]]
+        [SqlServerPermission[]]
         $Permission,
 
         [Parameter(ParameterSetName = 'Grant')]
@@ -139,7 +103,7 @@ function Test-SqlDscServerPermission
                 $state = 'Deny'
             }
 
-            # Convert string array to ServerPermissionSet object
+            # Convert enum array to ServerPermissionSet object
             $permissionSet = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]::new()
             foreach ($permissionName in $Permission)
             {
