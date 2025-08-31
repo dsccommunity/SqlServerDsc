@@ -128,7 +128,14 @@ function Deny-SqlDscServerPermission
             {
                 $errorMessage = $script:localizedData.ServerPermission_Deny_FailedToDenyPermission -f $principalName, $serverObject.InstanceName
 
-                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        $errorMessage,
+                        'DSDSP0001', # cSpell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $principalName
+                    )
+                )
             }
         }
     }
