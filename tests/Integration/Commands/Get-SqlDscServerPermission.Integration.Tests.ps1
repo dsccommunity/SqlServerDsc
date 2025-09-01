@@ -103,6 +103,11 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2016', 'Integration
 
                 $result | Should -Not -BeNullOrEmpty
                 $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+                
+                # Verify that the CreateEndpoint permission granted by Grant-SqlDscServerPermission test is present
+                $createEndpointPermission = $result | Where-Object { $_.PermissionType.CreateEndpoint -eq $true }
+                $createEndpointPermission | Should -Not -BeNullOrEmpty -Because 'CreateEndpoint permission should have been granted by Grant-SqlDscServerPermission integration test'
+                $createEndpointPermission.PermissionState | Should -Be 'Grant'
             }
         }
 
