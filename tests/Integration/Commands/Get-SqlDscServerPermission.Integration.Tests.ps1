@@ -34,29 +34,24 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
         # Starting the named instance SQL Server service prior to running tests.
         Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
 
-        $script:instanceName = 'DSCSQLTEST'
-        $script:computerName = Get-ComputerName
+        $script:mockInstanceName = 'DSCSQLTEST'
+
+        $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+        $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+        $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
+
+        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
     }
 
     AfterAll {
+        Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
+
         # Stop the named instance SQL Server service to save memory on the build worker.
         Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
     }
 
     Context 'When connecting to SQL Server instance' {
-        BeforeAll {
-            $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
-            $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-
-            $script:sqlAdminCredential = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
-
-            $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:instanceName -Credential $script:sqlAdminCredential
-        }
-
-        AfterAll {
-            Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
-        }
-
         Context 'When getting permissions for valid SQL logins' {
             It 'Should return permissions for sa login' {
                 $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sa'
