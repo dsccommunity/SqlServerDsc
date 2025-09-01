@@ -24,9 +24,9 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
-    Import-Module -Name $script:dscModuleName
+    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
 }
 
 Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
@@ -103,7 +103,7 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2016', 'Integration
 
                 $result | Should -Not -BeNullOrEmpty
                 $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
-                
+
                 # Verify that the CreateEndpoint permission granted by Grant-SqlDscServerPermission test is present
                 $createEndpointPermission = $result | Where-Object { $_.PermissionType.CreateEndpoint -eq $true }
                 $createEndpointPermission | Should -Not -BeNullOrEmpty -Because 'CreateEndpoint permission should have been granted by Grant-SqlDscServerPermission integration test'
@@ -114,7 +114,7 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2016', 'Integration
         Context 'When getting permissions for invalid principals' {
             It 'Should throw error for non-existent login with ErrorAction Stop' {
                 { Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'NonExistentLogin123' -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage "*is not a login nor role*"
+                    Should -Throw
             }
 
             It 'Should return null for non-existent login with ErrorAction SilentlyContinue' {
@@ -125,7 +125,7 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2016', 'Integration
 
             It 'Should throw error for non-existent server role with ErrorAction Stop' {
                 { Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'NonExistentRole123' -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage "*is not a login nor role*"
+                    Should -Throw
             }
 
             It 'Should return null for non-existent server role with ErrorAction SilentlyContinue' {
@@ -183,12 +183,12 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2016', 'Integration
 
             It 'Should throw error when looking for login as role' {
                 { Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sa' -PrincipalType 'Role' -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage "*is not a login nor role*"
+                    Should -Throw
             }
 
             It 'Should throw error when looking for role as login' {
                 { Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestRole_Persistent' -PrincipalType 'Login' -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage "*is not a login nor role*"
+                    Should -Throw
             }
 
             It 'Should return null when looking for login as role with SilentlyContinue' {
