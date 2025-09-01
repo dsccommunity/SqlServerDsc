@@ -28,7 +28,7 @@
     Sampler                        = 'latest'
     'Sampler.GitHubTasks'          = 'latest'
     MarkdownLinkCheck              = 'latest'
-    'DscResource.Test'             = 'latest'
+    'DscResource.Test'             = '0.17.2'
     xDscResourceDesigner           = 'latest'
 
     # Build dependencies needed for using the module
