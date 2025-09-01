@@ -91,13 +91,6 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2016', 'Integration
         }
 
         Context 'When getting permissions for valid server roles' {
-            It 'Should return permissions for sysadmin server role' {
-                $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sysadmin'
-
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
-            }
-
             It 'Should return permissions for public server role' {
                 $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'public'
 
@@ -105,15 +98,8 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2016', 'Integration
                 $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
             }
 
-            It 'Should return permissions for serveradmin server role' {
-                $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'serveradmin'
-
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
-            }
-
-            It 'Should return permissions for securityadmin server role' {
-                $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'securityadmin'
+            It 'Should return permissions for SqlDscIntegrationTestRole_Persistent server role' {
+                $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestRole_Persistent'
 
                 $result | Should -Not -BeNullOrEmpty
                 $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
@@ -147,7 +133,7 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2016', 'Integration
         Context 'When verifying permission properties' {
             BeforeAll {
                 # Get permissions for a known principal that should have permissions
-                $script:testPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sysadmin'
+                $script:testPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestRole_Persistent'
             }
 
             It 'Should return ServerPermissionInfo objects with PermissionState property' {
@@ -176,8 +162,8 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2016', 'Integration
                 $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
             }
 
-            It 'Should return permissions for sysadmin role when PrincipalType is Role' {
-                $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sysadmin' -PrincipalType 'Role'
+            It 'Should return permissions for SqlDscIntegrationTestRole_Persistent role when PrincipalType is Role' {
+                $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestRole_Persistent' -PrincipalType 'Role'
 
                 $result | Should -Not -BeNullOrEmpty
                 $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
@@ -196,7 +182,7 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2016', 'Integration
             }
 
             It 'Should throw error when looking for role as login' {
-                { Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sysadmin' -PrincipalType 'Login' -ErrorAction 'Stop' } |
+                { Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestRole_Persistent' -PrincipalType 'Login' -ErrorAction 'Stop' } |
                     Should -Throw -ExpectedMessage "*is not a login nor role*"
             }
 
@@ -207,7 +193,7 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2016', 'Integration
             }
 
             It 'Should return null when looking for role as login with SilentlyContinue' {
-                $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sysadmin' -PrincipalType 'Login' -ErrorAction 'SilentlyContinue'
+                $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestRole_Persistent' -PrincipalType 'Login' -ErrorAction 'SilentlyContinue'
 
                 $result | Should -BeNullOrEmpty
             }
@@ -253,16 +239,16 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2016', 'Integration
         }
 
         Context 'When using ServerRole parameter set' {
-            It 'Should return permissions for sysadmin role using ServerRole object' {
-                $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name 'sysadmin'
+            It 'Should return permissions for SqlDscIntegrationTestRole_Persistent role using ServerRole object' {
+                $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestRole_Persistent'
                 $result = Get-SqlDscServerPermission -ServerRole $roleObject
 
                 $result | Should -Not -BeNullOrEmpty
                 $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
             }
 
-            It 'Should return permissions for sysadmin role using ServerRole object from pipeline' {
-                $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name 'sysadmin'
+            It 'Should return permissions for SqlDscIntegrationTestRole_Persistent role using ServerRole object from pipeline' {
+                $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestRole_Persistent'
                 $result = $roleObject | Get-SqlDscServerPermission
 
                 $result | Should -Not -BeNullOrEmpty
@@ -279,9 +265,8 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2016', 'Integration
 
             It 'Should return permissions for multiple server roles using pipeline' {
                 $roleObjects = @(
-                    Get-SqlDscRole -ServerObject $script:serverObject -Name 'sysadmin'
+                    Get-SqlDscRole -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestRole_Persistent'
                     Get-SqlDscRole -ServerObject $script:serverObject -Name 'public'
-                    Get-SqlDscRole -ServerObject $script:serverObject -Name 'serveradmin'
                 )
                 $result = $roleObjects | Get-SqlDscServerPermission
 
@@ -310,12 +295,12 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2016', 'Integration
                 }
             }
 
-            It 'Should return same permissions for sysadmin role using different parameter sets' {
+            It 'Should return same permissions for SqlDscIntegrationTestRole_Persistent role using different parameter sets' {
                 # Get permissions using ByName parameter set
-                $resultByName = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sysadmin'
+                $resultByName = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestRole_Persistent'
 
                 # Get permissions using ServerRole parameter set
-                $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name 'sysadmin'
+                $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestRole_Persistent'
                 $resultByRole = Get-SqlDscServerPermission -ServerRole $roleObject
 
                 # Compare results
