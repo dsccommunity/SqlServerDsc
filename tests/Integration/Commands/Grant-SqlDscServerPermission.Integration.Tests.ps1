@@ -152,6 +152,7 @@ Describe 'Grant-SqlDscServerPermission Integration Tests' -Tag 'Integration' {
             # Verify the permission was granted - this permission will remain persistent for other integration tests
             $grantedPermissions = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
             $grantedPermissions | Should -Not -BeNullOrEmpty
+            $grantedPermissions.PermissionType.PermissionState | Should -Be 'Grant'
             $grantedPermissions.PermissionType.CreateEndpoint | Should -BeTrue
         }
     }
