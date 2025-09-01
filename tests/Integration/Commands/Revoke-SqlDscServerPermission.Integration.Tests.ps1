@@ -29,12 +29,7 @@ BeforeAll {
     Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
 }
 
-AfterAll {
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:moduleName -All | Remove-Module -Force
-}
-
-Describe 'Revoke-SqlDscServerPermission' -Tag 'IntegrationTest' {
+Describe 'Revoke-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         # Check if there is a CI database instance to use for testing
         $script:sqlServerInstanceName = $env:SqlServerInstanceName
