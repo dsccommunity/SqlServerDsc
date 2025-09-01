@@ -458,11 +458,105 @@ Describe 'Get-SqlDscServerPermission' -Tag 'Public' {
         }
     }
 
+    Context 'When using Login parameter set' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'ScriptMethod' -Name 'EnumServerPermissions' -Value {
+                    param
+                    (
+                        [Parameter()]
+                        [System.String]
+                        $SqlServerLogin
+                    )
+
+                    $mockEnumServerPermissions = [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[]] @()
+
+                    $mockEnumServerPermissions += [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo] @{
+                        PermissionType  =  [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
+                            ConnectSql = $true
+                        }
+                        PermissionState = 'Grant'
+                    }
+
+                    return $mockEnumServerPermissions
+                } -PassThru -Force
+
+            $mockLoginObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList $mockServerObject, 'TestLogin'
+        }
+
+        It 'Should return the correct values when using Login object' {
+            $mockResult = Get-SqlDscServerPermission -Login $mockLoginObject -ErrorAction 'Stop'
+
+            $mockResult | Should -HaveCount 1
+            $mockResult[0].PermissionState | Should -Be 'Grant'
+            $mockResult[0].PermissionType.ConnectSql | Should -BeTrue
+        }
+
+        It 'Should accept Login from pipeline' {
+            $mockResult = $mockLoginObject | Get-SqlDscServerPermission -ErrorAction 'Stop'
+
+            $mockResult | Should -HaveCount 1
+            $mockResult[0].PermissionState | Should -Be 'Grant'
+            $mockResult[0].PermissionType.ConnectSql | Should -BeTrue
+        }
+    }
+
+    Context 'When using ServerRole parameter set' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'ScriptMethod' -Name 'EnumServerPermissions' -Value {
+                    param
+                    (
+                        [Parameter()]
+                        [System.String]
+                        $SqlServerRole
+                    )
+
+                    $mockEnumServerPermissions = [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[]] @()
+
+                    $mockEnumServerPermissions += [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo] @{
+                        PermissionType  =  [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
+                            ViewServerState = $true
+                        }
+                        PermissionState = 'Grant'
+                    }
+
+                    return $mockEnumServerPermissions
+                } -PassThru -Force
+
+            $mockServerRoleObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList $mockServerObject, 'TestRole'
+        }
+
+        It 'Should return the correct values when using ServerRole object' {
+            $mockResult = Get-SqlDscServerPermission -ServerRole $mockServerRoleObject -ErrorAction 'Stop'
+
+            $mockResult | Should -HaveCount 1
+            $mockResult[0].PermissionState | Should -Be 'Grant'
+            $mockResult[0].PermissionType.ViewServerState | Should -BeTrue
+        }
+
+        It 'Should accept ServerRole from pipeline' {
+            $mockResult = $mockServerRoleObject | Get-SqlDscServerPermission -ErrorAction 'Stop'
+
+            $mockResult | Should -HaveCount 1
+            $mockResult[0].PermissionState | Should -Be 'Grant'
+            $mockResult[0].PermissionType.ViewServerState | Should -BeTrue
+        }
+    }
+
     Context 'When validating parameters' {
         It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
             @{
-                MockParameterSetName = '__AllParameterSets'
-                MockExpectedParameters = '[-ServerObject] <Server> [-Name] <string> [[-PrincipalType] <string[]>] [<CommonParameters>]'
+                MockParameterSetName = 'ByName'
+                MockExpectedParameters = '-ServerObject <Server> -Name <string> [-PrincipalType <string[]>] [<CommonParameters>]'
+            }
+            @{
+                MockParameterSetName = 'Login'
+                MockExpectedParameters = '-Login <Login> [<CommonParameters>]'
+            }
+            @{
+                MockParameterSetName = 'ServerRole'
+                MockExpectedParameters = '-ServerRole <ServerRole> [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Get-SqlDscServerPermission').ParameterSets |
@@ -484,22 +578,22 @@ Describe 'Get-SqlDscServerPermission' -Tag 'Public' {
             $result.ParameterListAsString | Should -Be $MockExpectedParameters
         }
 
-        It 'Should have ServerObject as a mandatory parameter' {
+        It 'Should have ServerObject as a mandatory parameter in ByName parameter set' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscServerPermission').Parameters['ServerObject']
             $parameterInfo.Attributes.Mandatory | Should -Contain $true
         }
 
-        It 'Should accept ServerObject from pipeline' {
+        It 'Should accept ServerObject from pipeline in ByName parameter set' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscServerPermission').Parameters['ServerObject']
             $parameterInfo.Attributes.ValueFromPipeline | Should -Contain $true
         }
 
-        It 'Should have Name as a mandatory parameter' {
+        It 'Should have Name as a mandatory parameter in ByName parameter set' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscServerPermission').Parameters['Name']
             $parameterInfo.Attributes.Mandatory | Should -Contain $true
         }
 
-        It 'Should have PrincipalType as an optional parameter' {
+        It 'Should have PrincipalType as an optional parameter in ByName parameter set' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscServerPermission').Parameters['PrincipalType']
             $parameterInfo.Attributes.Mandatory | Should -Not -Contain $true
         }
@@ -510,6 +604,26 @@ Describe 'Get-SqlDscServerPermission' -Tag 'Public' {
             $validateSetAttribute.ValidValues | Should -Contain 'Login'
             $validateSetAttribute.ValidValues | Should -Contain 'Role'
             $validateSetAttribute.ValidValues | Should -HaveCount 2
+        }
+
+        It 'Should have Login as a mandatory parameter in Login parameter set' {
+            $parameterInfo = (Get-Command -Name 'Get-SqlDscServerPermission').Parameters['Login']
+            $parameterInfo.Attributes.Mandatory | Should -Contain $true
+        }
+
+        It 'Should accept Login from pipeline in Login parameter set' {
+            $parameterInfo = (Get-Command -Name 'Get-SqlDscServerPermission').Parameters['Login']
+            $parameterInfo.Attributes.ValueFromPipeline | Should -Contain $true
+        }
+
+        It 'Should have ServerRole as a mandatory parameter in ServerRole parameter set' {
+            $parameterInfo = (Get-Command -Name 'Get-SqlDscServerPermission').Parameters['ServerRole']
+            $parameterInfo.Attributes.Mandatory | Should -Contain $true
+        }
+
+        It 'Should accept ServerRole from pipeline in ServerRole parameter set' {
+            $parameterInfo = (Get-Command -Name 'Get-SqlDscServerPermission').Parameters['ServerRole']
+            $parameterInfo.Attributes.ValueFromPipeline | Should -Contain $true
         }
     }
 }
