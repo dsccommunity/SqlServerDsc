@@ -44,7 +44,7 @@ Describe 'Grant-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integrati
 
         Write-Verbose -Message ('Integration tests will run using computer name ''{0}'' and instance name ''{1}''.' -f $script:computerName, $script:sqlServerInstanceName) -Verbose
 
-        $script:serverObject = Connect-SqlDscDatabaseEngine -ServerName $script:computerName -InstanceName $script:sqlServerInstanceName -Force
+        $script:serverObject = Connect-SqlDscDatabaseEngine -ServerName $script:computerName -InstanceName $script:sqlServerInstanceName -ErrorAction 'Stop'
 
         # Use existing persistent principals created by earlier integration tests
         $script:testLoginName = 'IntegrationTestSqlLogin'
