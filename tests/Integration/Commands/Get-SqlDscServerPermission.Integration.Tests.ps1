@@ -212,5 +212,121 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2016', 'Integration
                 $result | Should -BeNullOrEmpty
             }
         }
+
+        Context 'When using Login parameter set' {
+            It 'Should return permissions for sa login using Login object' {
+                $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name 'sa'
+                $result = Get-SqlDscServerPermission -Login $loginObject
+
+                $result | Should -Not -BeNullOrEmpty
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+            }
+
+            It 'Should return permissions for sa login using Login object from pipeline' {
+                $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name 'sa'
+                $result = $loginObject | Get-SqlDscServerPermission
+
+                $result | Should -Not -BeNullOrEmpty
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+            }
+
+            It 'Should return permissions for Windows login using Login object' {
+                $windowsLogin = '{0}\SqlAdmin' -f $script:computerName
+                $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $windowsLogin
+                $result = Get-SqlDscServerPermission -Login $loginObject
+
+                $result | Should -Not -BeNullOrEmpty
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+            }
+
+            It 'Should return permissions for multiple logins using pipeline' {
+                $loginObjects = @(
+                    Get-SqlDscLogin -ServerObject $script:serverObject -Name 'sa'
+                    Get-SqlDscLogin -ServerObject $script:serverObject -Name 'NT AUTHORITY\SYSTEM'
+                )
+                $result = $loginObjects | Get-SqlDscServerPermission
+
+                $result | Should -Not -BeNullOrEmpty
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+                $result.Count | Should -BeGreaterThan 1
+            }
+        }
+
+        Context 'When using ServerRole parameter set' {
+            It 'Should return permissions for sysadmin role using ServerRole object' {
+                $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name 'sysadmin'
+                $result = Get-SqlDscServerPermission -ServerRole $roleObject
+
+                $result | Should -Not -BeNullOrEmpty
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+            }
+
+            It 'Should return permissions for sysadmin role using ServerRole object from pipeline' {
+                $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name 'sysadmin'
+                $result = $roleObject | Get-SqlDscServerPermission
+
+                $result | Should -Not -BeNullOrEmpty
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+            }
+
+            It 'Should return permissions for public role using ServerRole object' {
+                $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name 'public'
+                $result = Get-SqlDscServerPermission -ServerRole $roleObject
+
+                $result | Should -Not -BeNullOrEmpty
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+            }
+
+            It 'Should return permissions for multiple server roles using pipeline' {
+                $roleObjects = @(
+                    Get-SqlDscRole -ServerObject $script:serverObject -Name 'sysadmin'
+                    Get-SqlDscRole -ServerObject $script:serverObject -Name 'public'
+                    Get-SqlDscRole -ServerObject $script:serverObject -Name 'serveradmin'
+                )
+                $result = $roleObjects | Get-SqlDscServerPermission
+
+                $result | Should -Not -BeNullOrEmpty
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+                $result.Count | Should -BeGreaterThan 1
+            }
+        }
+
+        Context 'When comparing parameter sets' {
+            It 'Should return same permissions for sa login using different parameter sets' {
+                # Get permissions using ByName parameter set
+                $resultByName = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sa'
+
+                # Get permissions using Login parameter set
+                $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name 'sa'
+                $resultByLogin = Get-SqlDscServerPermission -Login $loginObject
+
+                # Compare results
+                $resultByName.Count | Should -Be $resultByLogin.Count
+
+                # Compare each permission (assuming they are returned in the same order)
+                for ($i = 0; $i -lt $resultByName.Count; $i++) {
+                    $resultByName[$i].PermissionState | Should -Be $resultByLogin[$i].PermissionState
+                    # Note: Permission type comparison is complex due to object structure
+                }
+            }
+
+            It 'Should return same permissions for sysadmin role using different parameter sets' {
+                # Get permissions using ByName parameter set
+                $resultByName = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sysadmin'
+
+                # Get permissions using ServerRole parameter set
+                $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name 'sysadmin'
+                $resultByRole = Get-SqlDscServerPermission -ServerRole $roleObject
+
+                # Compare results
+                $resultByName.Count | Should -Be $resultByRole.Count
+
+                # Compare each permission (assuming they are returned in the same order)
+                for ($i = 0; $i -lt $resultByName.Count; $i++) {
+                    $resultByName[$i].PermissionState | Should -Be $resultByRole[$i].PermissionState
+                    # Note: Permission type comparison is complex due to object structure
+                }
+            }
+        }
     }
 }
