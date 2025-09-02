@@ -70,7 +70,7 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should return true when permissions match desired state' {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
-            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @([SqlServerPermission]::ConnectSql, [SqlServerPermission]::ViewServerState) -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('ConnectSql', 'ViewServerState') -ErrorAction 'Stop'
 
             $result | Should -BeTrue
         }
@@ -78,7 +78,7 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should return false when permissions do not match desired state' {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
-            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @([SqlServerPermission]::AlterAnyDatabase) -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('AlterAnyDatabase') -ErrorAction 'Stop'
 
             $result | Should -BeFalse
         }
@@ -86,7 +86,7 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should accept Login object from pipeline' {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
-            $result = $loginObject | Test-SqlDscServerPermission -Grant -Permission @([SqlServerPermission]::ConnectSql, [SqlServerPermission]::ViewServerState) -ErrorAction 'Stop'
+            $result = $loginObject | Test-SqlDscServerPermission -Grant -Permission @('ConnectSql', 'ViewServerState') -ErrorAction 'Stop'
 
             $result | Should -BeTrue
         }
@@ -94,7 +94,7 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should return true when only testing specific grant permission that exists' {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
-            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @([SqlServerPermission]::ConnectSql) -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('ConnectSql') -ErrorAction 'Stop'
 
             $result | Should -BeTrue
         }
@@ -102,7 +102,7 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should return false when testing for permission that does not exist' {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
-            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @([SqlServerPermission]::AlterAnyCredential) -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('AlterAnyCredential') -ErrorAction 'Stop'
 
             $result | Should -BeFalse
         }
@@ -128,7 +128,7 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
             # Test with ExactMatch - should fail because ViewServerState is also granted
-            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @([SqlServerPermission]::ConnectSql) -ExactMatch -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('ConnectSql') -ExactMatch -ErrorAction 'Stop'
 
             $result | Should -BeFalse
         }
@@ -137,7 +137,7 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
             # Test with ExactMatch - should pass because both ConnectSql and ViewServerState are granted
-            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @([SqlServerPermission]::ConnectSql, [SqlServerPermission]::ViewServerState) -ExactMatch -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('ConnectSql', 'ViewServerState') -ExactMatch -ErrorAction 'Stop'
 
             $result | Should -BeTrue
         }
@@ -158,7 +158,7 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should return true when role permissions match desired state' {
             $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
 
-            $result = Test-SqlDscServerPermission -ServerRole $roleObject -Grant -Permission @([SqlServerPermission]::ConnectSql, [SqlServerPermission]::ViewServerState) -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -ServerRole $roleObject -Grant -Permission @('ConnectSql', 'ViewServerState') -ErrorAction 'Stop'
 
             $result | Should -BeTrue
         }
@@ -166,7 +166,7 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should return false when role permissions do not match desired state' {
             $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
 
-            $result = Test-SqlDscServerPermission -ServerRole $roleObject -Grant -Permission @([SqlServerPermission]::CreateAnyDatabase) -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -ServerRole $roleObject -Grant -Permission @('CreateAnyDatabase') -ErrorAction 'Stop'
 
             $result | Should -BeFalse
         }
@@ -187,7 +187,7 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should return true when testing for denied permission that exists' {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
-            $result = Test-SqlDscServerPermission -Login $loginObject -Deny -Permission @([SqlServerPermission]::ViewAnyDefinition) -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $loginObject -Deny -Permission @('ViewAnyDefinition') -ErrorAction 'Stop'
 
             $result | Should -BeTrue
         }
@@ -195,7 +195,7 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should return false when testing for denied permission that does not exist' {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
-            $result = Test-SqlDscServerPermission -Login $loginObject -Deny -Permission @([SqlServerPermission]::AlterServerState) -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $loginObject -Deny -Permission @('AlterServerState') -ErrorAction 'Stop'
 
             $result | Should -BeFalse
         }
@@ -216,7 +216,7 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should return true when testing for grant with grant permission that exists' {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
-            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @([SqlServerPermission]::ViewAnyDatabase) -WithGrant -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('ViewAnyDatabase') -WithGrant -ErrorAction 'Stop'
 
             $result | Should -BeTrue
         }
@@ -224,7 +224,7 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should return false when testing for grant with grant permission that does not exist' {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
-            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @([SqlServerPermission]::CreateEndpoint) -WithGrant -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('CreateEndpoint') -WithGrant -ErrorAction 'Stop'
 
             $result | Should -BeFalse
         }
@@ -236,7 +236,7 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
             # We need to use a real server object but with a non-existent login name
             $mockLogin = [Microsoft.SqlServer.Management.Smo.Login]::new($script:serverObject, 'NonExistentLogin')
 
-            $result = Test-SqlDscServerPermission -Login $mockLogin -Grant -Permission @([SqlServerPermission]::ConnectSql) -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $mockLogin -Grant -Permission @('ConnectSql') -ErrorAction 'Stop'
 
             $result | Should -BeFalse
         }

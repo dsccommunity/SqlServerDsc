@@ -70,7 +70,7 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
 
         Context 'When getting permissions for valid Windows logins' {
             It 'Should return permissions for SqlAdmin Windows login' {
-                $windowsLogin = '{0}\SqlAdmin' -f $script:computerName
+                $windowsLogin = '{0}\SqlAdmin' -f (Get-ComputerName)
                 $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $windowsLogin
 
                 $result | Should -Not -BeNullOrEmpty
@@ -217,7 +217,7 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
             }
 
             It 'Should return permissions for Windows login using Login object' {
-                $windowsLogin = '{0}\SqlAdmin' -f $script:computerName
+                $windowsLogin = '{0}\SqlAdmin' -f (Get-ComputerName)
                 $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $windowsLogin
                 $result = Get-SqlDscServerPermission -Login $loginObject
 
@@ -233,7 +233,7 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
                 $result = $loginObjects | Get-SqlDscServerPermission
 
                 $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[]]
                 $result.Count | Should -BeGreaterThan 1
             }
         }
@@ -271,7 +271,7 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
                 $result = $roleObjects | Get-SqlDscServerPermission
 
                 $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[]]
                 $result.Count | Should -BeGreaterThan 1
             }
         }
