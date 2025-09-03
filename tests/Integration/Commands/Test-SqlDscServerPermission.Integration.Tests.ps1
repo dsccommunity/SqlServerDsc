@@ -110,15 +110,17 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should return true when testing for empty permission collection on principal with no additional permissions' {
             # Create a temporary login for this test to ensure it has no additional permissions
             $tempLoginName = 'TempTestLogin_' + (Get-Random)
-            $tempLoginObject = New-SqlDscLogin -ServerObject $script:serverObject -Name $tempLoginName -LoginType SqlLogin -SecureString (ConvertTo-SecureString -String 'TempPassword123!' -AsPlainText -Force) -Force -ErrorAction 'Stop'
+            $tempLoginObject = New-SqlDscLogin -ServerObject $script:serverObject -Name $tempLoginName -SqlLogin -SecurePassword (ConvertTo-SecureString -String 'TempPassword123!' -AsPlainText -Force) -Force -ErrorAction 'Stop'
 
-            try {
+            try
+            {
                 # Test that empty permission collection returns true when no permissions are set
                 $result = Test-SqlDscServerPermission -Login $tempLoginObject -Grant -Permission @() -ErrorAction 'Stop'
 
                 $result | Should -BeTrue
             }
-            finally {
+            finally
+            {
                 # Clean up temporary login
                 Remove-SqlDscLogin -Login $tempLoginObject -Force -ErrorAction 'SilentlyContinue'
             }
