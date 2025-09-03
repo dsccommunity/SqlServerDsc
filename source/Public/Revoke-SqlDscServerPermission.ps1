@@ -138,11 +138,13 @@ function Revoke-SqlDscServerPermission
             }
             catch
             {
-                $errorMessage = $script:localizedData.ServerPermission_Revoke_FailedToRevokePermission -f $principalName, $serverObject.InstanceName
+                $errorMessage = $script:localizedData.ServerPermission_Revoke_FailedToRevokePermission -f $principalName, $serverObject.InstanceName, ($Permission -join ',')
+
+                $exception = [System.InvalidOperationException]::new($errorMessage, $_.Exception)
 
                 $PSCmdlet.ThrowTerminatingError(
                     [System.Management.Automation.ErrorRecord]::new(
-                        $errorMessage,
+                        $exception,
                         'RSDSP0001', # cSpell: disable-line
                         [System.Management.Automation.ErrorCategory]::InvalidOperation,
                         $principalName

@@ -60,7 +60,7 @@ ConvertFrom-StringData @'
     ServerPermission_Revoke_ShouldProcessVerboseWarning = Are you sure you want to revoke server permissions for the principal '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     ServerPermission_Revoke_ShouldProcessCaption = Revoke server permissions
-    ServerPermission_Revoke_FailedToRevokePermission = Failed to revoke server permissions for principal '{0}' on instance '{1}'.
+    ServerPermission_Revoke_FailedToRevokePermission = Failed to revoke server permissions '{2}' for principal '{0}' on instance '{1}'.
 
     ## Class DatabasePermission
     InvalidTypeForCompare = Invalid type in comparison. Expected type [{0}], but the type was [{1}]. (DP0001)
