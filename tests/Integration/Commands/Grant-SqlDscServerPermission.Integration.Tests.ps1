@@ -63,6 +63,7 @@ Describe 'Grant-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integrati
             Revoke-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
             Revoke-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewAnyDatabase' -Force -ErrorAction 'SilentlyContinue'
             Revoke-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewAnyDefinition' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -Login $script:loginObject -Permission 'CreateAnyDatabase' -WithGrant -Force -ErrorAction 'SilentlyContinue'
         }
 
         It 'Should grant ViewServerState permission successfully' {
@@ -98,7 +99,7 @@ Describe 'Grant-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integrati
         }
 
         It 'Should grant permissions with WithGrant option' {
-            $null = Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('ViewServerState') -WithGrant -Force -ErrorAction 'Stop'
+            $null = Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('CreateAnyDatabase') -WithGrant -Force -ErrorAction 'Stop'
 
             # Verify the permission was granted with grant option
             $permission = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
@@ -106,9 +107,9 @@ Describe 'Grant-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integrati
             $permission | Should -Not -BeNullOrEmpty
             $grantedPermissions = $permission | Where-Object { $_.PermissionState -eq 'GrantWithGrant' }
 
-            $expectedPermission = $grantedPermissions | Where-Object { $_.PermissionType.ViewServerState -eq $true }
+            $expectedPermission = $grantedPermissions | Where-Object { $_.PermissionType.CreateAnyDatabase -eq $true }
             $expectedPermission | Should -HaveCount 1
-            $expectedPermission.PermissionType.ViewServerState | Should -BeTrue
+            $expectedPermission.PermissionType.CreateAnyDatabase | Should -BeTrue
         }
 
         It 'Should accept Login from pipeline' {
