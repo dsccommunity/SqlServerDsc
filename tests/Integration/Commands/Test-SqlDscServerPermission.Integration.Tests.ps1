@@ -107,23 +107,15 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
             $result | Should -BeFalse
         }
 
+        # cSpell:ignore securityadmin
         It 'Should return true when testing for empty permission collection on principal with no additional permissions' {
-            # Create a temporary login for this test to ensure it has no additional permissions
-            $tempLoginName = 'TempTestLogin_' + (Get-Random)
-            $tempLoginObject = New-SqlDscLogin -ServerObject $script:serverObject -Name $tempLoginName -SqlLogin -SecurePassword (ConvertTo-SecureString -String 'TempPassword123!' -AsPlainText -Force) -Force -PassThru -ErrorAction 'Stop'
+            # Get the built-in securityadmin server role which should have no explicit permissions
+            $securityAdminRole = Get-SqlDscRole -ServerObject $script:serverObject -Name 'securityadmin' -ErrorAction 'Stop'
 
-            try
-            {
-                # Test that empty permission collection returns true when no permissions are set
-                $result = Test-SqlDscServerPermission -Login $tempLoginObject -Grant -Permission @() -ErrorAction 'Stop'
+            # Test that empty permission collection returns true when no permissions are set
+            $result = Test-SqlDscServerPermission -ServerRole $securityAdminRole -Grant -Permission @() -ErrorAction 'Stop'
 
-                $result | Should -BeTrue
-            }
-            finally
-            {
-                # Clean up temporary login
-                Remove-SqlDscLogin -Login $tempLoginObject -Force -ErrorAction 'SilentlyContinue'
-            }
+            $result | Should -BeTrue
         }
 
         It 'Should return false when using ExactMatch and additional permissions exist' {
