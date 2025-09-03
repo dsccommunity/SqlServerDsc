@@ -117,14 +117,6 @@ function Revoke-SqlDscServerPermission
                 $permissionSet.$permissionName = $true
             }
 
-            # Get the permissions names that are set to $true in the ServerPermissionSet.
-            $permissionName = $permissionSet |
-                Get-Member -MemberType 'Property' |
-                Select-Object -ExpandProperty 'Name' |
-                Where-Object -FilterScript {
-                    $permissionSet.$_
-                }
-
             try
             {
                 if ($WithGrant.IsPresent)
