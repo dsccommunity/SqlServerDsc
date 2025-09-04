@@ -173,8 +173,7 @@ function Test-SqlDscServerPermission
 
             if (-not $serverPermissionInfo)
             {
-                # TODO: Make this a debug message
-                Write-Verbose -Message (
+                Write-Debug -Message (
                     $script:localizedData.ServerPermission_Test_NoPermissionsFound -f $principalName
                 )
 
@@ -194,8 +193,8 @@ function Test-SqlDscServerPermission
 
             # Output verbose information about current permissions as compressed JSON
             $currentPermissionsJson = $currentPermissions | ConvertTo-Json -Compress
-            # TODO: Make this a debug message
-            Write-Verbose -Message (
+
+            Write-Debug -Message (
                 $script:localizedData.ServerPermission_Test_CurrentPermissions -f $principalName, $currentPermissionsJson
             )
 
