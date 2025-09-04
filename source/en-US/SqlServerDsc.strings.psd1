@@ -54,6 +54,8 @@ ConvertFrom-StringData @'
     ## Test-SqlDscServerPermission
     ServerPermission_TestingDesiredState = Testing desired state for server permissions for principal '{0}' on instance '{1}'.
     ServerPermission_Test_TestFailed = Failed to test server permissions for principal '{0}': {1}
+    ServerPermission_Test_CurrentPermissions = Current server permissions for principal '{0}': {1}
+    ServerPermission_Test_NoPermissionsFound = No server permissions found for principal '{0}'.
 
     ## Revoke-SqlDscServerPermission
     ServerPermission_Revoke_ShouldProcessVerboseDescription = Revoking server permissions '{2}' for the principal '{0}' on the instance '{1}'.
