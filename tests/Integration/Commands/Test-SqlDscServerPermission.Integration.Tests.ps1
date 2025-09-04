@@ -122,7 +122,7 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
             # Test with ExactMatch - should fail because ViewServerState and ViewAnyDefinition is also granted
-            $result = Test-SqlDscServerPermission -Verbose -Login $loginObject -Grant -Permission @('ConnectSql') -ExactMatch -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('ConnectSql') -ExactMatch -ErrorAction 'Stop'
 
             $result | Should -BeFalse
         }
@@ -130,8 +130,8 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should return true when using ExactMatch and permissions exactly match' {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
-            # Test with ExactMatch - should pass because both ConnectSql and ViewServerState are granted
-            $result = Test-SqlDscServerPermission -Verbose -Login $loginObject -Grant -Permission @('ConnectSql', 'ViewServerState', 'ViewAnyDefinition') -ExactMatch -ErrorAction 'Stop'
+            # Test with ExactMatch - should pass because both ConnectSql, ViewAnyDefinition and ViewServerState are granted
+            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('ConnectSql', 'ViewServerState', 'ViewAnyDefinition') -ExactMatch -ErrorAction 'Stop'
 
             $result | Should -BeTrue
         }
@@ -152,7 +152,7 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should return true when role permissions match desired state' {
             $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
 
-            $result = Test-SqlDscServerPermission -Verbose -ServerRole $roleObject -Grant -Permission @('ConnectSql', 'ViewServerState') -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -ServerRole $roleObject -Grant -Permission @('ConnectSql', 'ViewServerState') -ErrorAction 'Stop'
 
             $result | Should -BeTrue
         }
@@ -160,7 +160,7 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should return true when role permissions exact match desired state' {
             $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
 
-            $result = Test-SqlDscServerPermission -Verbose -ServerRole $roleObject -Grant -Permission @('ConnectSql', 'ViewServerState', 'CreateEndpoint', 'CreateAnyDatabase') -ExactMatch -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -ServerRole $roleObject -Grant -Permission @('ConnectSql', 'ViewServerState', 'CreateEndpoint', 'CreateAnyDatabase') -ExactMatch -ErrorAction 'Stop'
 
             $result | Should -BeTrue
         }
@@ -168,7 +168,7 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should return false when role permissions do not match desired state' {
             $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
 
-            $result = Test-SqlDscServerPermission -Verbose -ServerRole $roleObject -Grant -Permission @('AlterAnyEndpoint') -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -ServerRole $roleObject -Grant -Permission @('AlterAnyEndpoint') -ErrorAction 'Stop'
 
             $result | Should -BeFalse
         }
@@ -176,7 +176,7 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should return false when role permissions do not exact match desired state' {
             $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
 
-            $result = Test-SqlDscServerPermission -Verbose -ServerRole $roleObject -Grant -Permission @('ViewServerState') -ExactMatch -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -ServerRole $roleObject -Grant -Permission @('ViewServerState') -ExactMatch -ErrorAction 'Stop'
 
             $result | Should -BeFalse
         }
