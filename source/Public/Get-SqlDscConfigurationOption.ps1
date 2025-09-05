@@ -57,12 +57,12 @@ function Get-SqlDscConfigurationOption
         if ($Refresh.IsPresent)
         {
             # Make sure the configuration option values are up-to-date.
-            $serverObject.Configuration.Refresh()
+            $ServerObject.Configuration.Refresh()
         }
 
         if ($PSBoundParameters.ContainsKey('Name'))
         {
-            $configurationOption = $serverObject.Configuration.Properties |
+            $configurationOption = $ServerObject.Configuration.Properties |
                 Where-Object -FilterScript {
                     $_.DisplayName -like $Name
                 }
@@ -83,7 +83,7 @@ function Get-SqlDscConfigurationOption
         }
         else
         {
-            $configurationOption = $serverObject.Configuration.Properties.ForEach({ $_ })
+            $configurationOption = $ServerObject.Configuration.Properties.ForEach({ $_ })
         }
 
         return [Microsoft.SqlServer.Management.Smo.ConfigProperty[]] (
