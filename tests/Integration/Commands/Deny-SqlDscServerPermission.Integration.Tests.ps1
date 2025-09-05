@@ -75,7 +75,7 @@ Describe 'Deny-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
             $null = Deny-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDatabase') -Force -ErrorAction 'Stop'
 
             # Then test if it's denied
-            $result = Test-SqlDscServerPermission -Login $loginObject -Deny -Permission @([SqlServerPermission]::ViewAnyDatabase) -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $loginObject -Deny -Permission @('ViewAnyDatabase') -ErrorAction 'Stop'
 
             $result | Should -BeTrue
         }
@@ -86,7 +86,7 @@ Describe 'Deny-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
             $null = $loginObject | Deny-SqlDscServerPermission -Permission @('ViewAnyDefinition') -Force -ErrorAction 'Stop'
 
             # Verify the permission was denied
-            $result = Test-SqlDscServerPermission -Login $loginObject -Deny -Permission @([SqlServerPermission]::ViewAnyDefinition) -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $loginObject -Deny -Permission @('ViewAnyDefinition') -ErrorAction 'Stop'
             $result | Should -BeTrue
         }
     }
@@ -103,7 +103,7 @@ Describe 'Deny-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
             $null = Deny-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force -ErrorAction 'Stop'
 
             # Verify the permission was denied
-            $result = Test-SqlDscServerPermission -ServerRole $roleObject -Deny -Permission @([SqlServerPermission]::ViewServerState) -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -ServerRole $roleObject -Deny -Permission @('ViewServerState') -ErrorAction 'Stop'
             $result | Should -BeTrue
         }
 
@@ -113,7 +113,7 @@ Describe 'Deny-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
             $null = Deny-SqlDscServerPermission -Login $loginObject -Permission @('AlterTrace') -Force -ErrorAction 'Stop'
 
             # Verify the permission was denied - this denial will remain persistent for other integration tests
-            $result = Test-SqlDscServerPermission -Login $loginObject -Deny -Permission @([SqlServerPermission]::AlterTrace) -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $loginObject -Deny -Permission @('AlterTrace') -ErrorAction 'Stop'
             $result | Should -BeTrue
         }
     }
