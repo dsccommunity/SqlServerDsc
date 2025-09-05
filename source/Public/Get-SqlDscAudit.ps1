@@ -25,7 +25,7 @@
         Get the audit named **MyFileAudit**.
 
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Audit]`
+        `[Microsoft.SqlServer.Management.Smo.Audit[]]`
 #>
 function Get-SqlDscAudit
 {
@@ -61,7 +61,7 @@ function Get-SqlDscAudit
         {
             $auditObject = $ServerObject.Audits[$Name]
 
-            if (-not $AuditObject)
+            if (-not $auditObject)
             {
                 $missingAuditMessage = $script:localizedData.Audit_Missing -f $Name
 
