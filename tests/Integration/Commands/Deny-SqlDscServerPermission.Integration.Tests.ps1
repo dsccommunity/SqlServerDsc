@@ -41,7 +41,7 @@ Describe 'Deny-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
 
         $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
 
-        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
+        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
 
         # Use persistent test login and role created by earlier integration tests
         $script:testLoginName = 'IntegrationTestSqlLogin'
