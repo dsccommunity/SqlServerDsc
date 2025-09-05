@@ -58,6 +58,7 @@ Describe 'Deny-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
     Context 'When denying server permissions to login' {
         BeforeEach {
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
+
             Revoke-SqlDscServerPermission -Login $loginObject -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
             Revoke-SqlDscServerPermission -Login $loginObject -Permission 'ViewAnyDefinition' -Force -ErrorAction 'SilentlyContinue'
         }
@@ -94,6 +95,7 @@ Describe 'Deny-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
     Context 'When denying server permissions to role' {
         BeforeEach {
             $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
+
             Revoke-SqlDscServerPermission -ServerRole $roleObject -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
         }
 
@@ -114,6 +116,15 @@ Describe 'Deny-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
 
             # Verify the permission was denied - this denial will remain persistent for other integration tests
             $result = Test-SqlDscServerPermission -Login $loginObject -Deny -Permission @('AlterTrace') -ErrorAction 'Stop'
+            $result | Should -BeTrue
+        }
+
+        It 'Should accept ServerRole from pipeline' {
+            $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
+
+            $null = $roleObject | Deny-SqlDscServerPermission -Permission @('ViewServerState') -Force -ErrorAction 'Stop'
+
+            $result = Test-SqlDscServerPermission -ServerRole $roleObject -Deny -Permission @('ViewServerState') -ErrorAction 'Stop'
             $result | Should -BeTrue
         }
     }
