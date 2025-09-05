@@ -73,6 +73,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- SqlServerDsc
+  - Updated GitVersion.yml feature branch regex pattern to use anchor `^f(eature(s)?)?[\/-]`
+    for more precise branch name matching.
 - Refactored GitHub Copilot workflow setup to be module-agnostic via MODULE_NAME
   environment variable, includes full-history detection, uses idempotent .NET
   tool install, and adds Linux dependency handling ([issue #2127](https://github.com/dsccommunity/SqlServerDsc/issues/2127)).
