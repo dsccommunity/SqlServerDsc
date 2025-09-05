@@ -36,18 +36,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed environment variable persistence by using $GITHUB_ENV instead of
     job-level env declaration.
 - `Grant-SqlDscServerPermission`
-  - Added new public command to grant server permissions to a principal (Login or ServerRole) on a SQL Server Database Engine instance.
+  - Added new public command to grant server permissions to a principal
+    (Login or ServerRole) on a SQL Server Database Engine instance.
 - `Deny-SqlDscServerPermission`
-  - Added new public command to deny server permissions to a principal (Login or ServerRole).
+  - Added new public command to deny server permissions to a principal
+    (Login or ServerRole).
 - `Revoke-SqlDscServerPermission`
-  - Added new public command to revoke server permissions from a principal (Login or ServerRole).
+  - Added new public command to revoke server permissions from a principal
+    (Login or ServerRole).
 - `Test-SqlDscServerPermission`
-  - Added new public command with Grant/Deny parameter sets (and `-WithGrant`) to test server permissions for a principal.
+  - Added new public command with Grant/Deny parameter sets (and `-WithGrant`)
+    to test server permissions for a principal.
 - `Assert-SqlDscLogin`
   - Added new public command to validate that a specified SQL Server principal
     is a login.
 - `Enable-SqlDscLogin`
   - Added new public command to enable a SQL Server login.
+- `Get-SqlDscServerPermission`
+  - Enhanced command to support pipeline input for Login and ServerRole
+    objects while maintaining backward compatibility with the original
+    parameter set.
 - `Disable-SqlDscLogin`
   - Added new public command to disable a SQL Server login.
 - `Test-SqlDscIsLoginEnabled`
@@ -88,6 +96,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added documentation for `SqlIntegrationTest` user and
     `IntegrationTestSqlLogin` login.
   - Added run order information for `New-SqlDscLogin` integration test.
+- `Get-SqlDscServerPermission`
+  - Enhanced the command to support server roles in addition to logins by
+    utilizing `Test-SqlDscIsRole` alongside the existing `Test-SqlDscIsLogin`
+    check.
+  - The command now accepts both login principals and server role principals
+    as the `Name` parameter (issue [#2063](https://github.com/dsccommunity/SqlServerDsc/issues/2063)).
 - `azure-pipelines.yml`
   - Remove `windows-2019` images fixes [#2106](https://github.com/dsccommunity/SqlServerDsc/issues/2106).
   - Move individual tasks to `windows-latest`.

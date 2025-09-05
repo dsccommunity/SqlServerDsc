@@ -24,12 +24,12 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
-    Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
+    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
 }
 
-Describe 'Assert-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'Assert-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         # Starting the named instance SQL Server service prior to running tests.
         Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
@@ -51,6 +51,10 @@ Describe 'Assert-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
             $script:sqlAdminCredential = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
 
             $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:instanceName -Credential $script:sqlAdminCredential
+        }
+
+        AfterAll {
+            Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
         }
 
         Context 'When a login exists' {

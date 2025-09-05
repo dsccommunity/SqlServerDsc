@@ -117,14 +117,6 @@ function Revoke-SqlDscServerPermission
                 $permissionSet.$permissionName = $true
             }
 
-            # Get the permissions names that are set to $true in the ServerPermissionSet.
-            $permissionName = $permissionSet |
-                Get-Member -MemberType 'Property' |
-                Select-Object -ExpandProperty 'Name' |
-                Where-Object -FilterScript {
-                    $permissionSet.$_
-                }
-
             try
             {
                 if ($WithGrant.IsPresent)
@@ -138,11 +130,13 @@ function Revoke-SqlDscServerPermission
             }
             catch
             {
-                $errorMessage = $script:localizedData.ServerPermission_Revoke_FailedToRevokePermission -f $principalName, $serverObject.InstanceName
+                $errorMessage = $script:localizedData.ServerPermission_Revoke_FailedToRevokePermission -f $principalName, $serverObject.InstanceName, ($Permission -join ',')
+
+                $exception = [System.InvalidOperationException]::new($errorMessage, $_.Exception)
 
                 $PSCmdlet.ThrowTerminatingError(
                     [System.Management.Automation.ErrorRecord]::new(
-                        $errorMessage,
+                        $exception,
                         'RSDSP0001', # cSpell: disable-line
                         [System.Management.Automation.ErrorCategory]::InvalidOperation,
                         $principalName

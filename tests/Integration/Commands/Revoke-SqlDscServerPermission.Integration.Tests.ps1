@@ -29,48 +29,30 @@ BeforeAll {
     Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
 }
 
-AfterAll {
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:moduleName -All | Remove-Module -Force
-}
-
-Describe 'Revoke-SqlDscServerPermission' -Tag 'IntegrationTest' {
+Describe 'Revoke-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Check if there is a CI database instance to use for testing
-        $script:sqlServerInstanceName = $env:SqlServerInstanceName
+        # Starting the named instance SQL Server service prior to running tests.
+        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
 
-        if (-not $script:sqlServerInstanceName)
-        {
-            $script:sqlServerInstanceName = 'DSCSQLTEST'
-        }
+        $script:mockInstanceName = 'DSCSQLTEST'
 
-        # Get a computer name that will work in the CI environment
-        $script:computerName = Get-ComputerName
+        $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+        $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
 
-        Write-Verbose -Message ('Integration tests will run using computer name ''{0}'' and instance name ''{1}''.' -f $script:computerName, $script:sqlServerInstanceName) -Verbose
+        $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
 
-        $script:serverObject = Connect-SqlDscDatabaseEngine -ServerName $script:computerName -InstanceName $script:sqlServerInstanceName -Force
+        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
 
         # Use persistent test login and role created by earlier integration tests
         $script:testLoginName = 'IntegrationTestSqlLogin'
         $script:testRoleName = 'SqlDscIntegrationTestRole_Persistent'
-
-        # Verify the persistent principals exist (should be created by New-SqlDscLogin and New-SqlDscRole integration tests)
-        $existingLogin = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'SilentlyContinue'
-        if (-not $existingLogin)
-        {
-            throw ('Test login {0} does not exist. Please run New-SqlDscLogin integration tests first to create persistent test principals.' -f $script:testLoginName)
-        }
-
-        $existingRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'SilentlyContinue'
-        if (-not $existingRole)
-        {
-            throw ('Test role {0} does not exist. Please run New-SqlDscRole integration tests first to create persistent test principals.' -f $script:testRoleName)
-        }
     }
 
     AfterAll {
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
+
+        # Stop the named instance SQL Server service to save memory on the build worker.
+        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
     }
 
     Context 'When revoking server permissions from login' {
@@ -96,7 +78,7 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'IntegrationTest' {
             $null = Revoke-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDatabase') -Force -ErrorAction 'Stop'
 
             # Test that it's no longer granted
-            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @([SqlServerPermission]::ViewAnyDatabase) -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('ViewAnyDatabase') -ErrorAction 'Stop'
 
             $result | Should -BeFalse
         }
@@ -110,7 +92,7 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'IntegrationTest' {
             $null = $loginObject | Revoke-SqlDscServerPermission -Permission @('ViewAnyDefinition') -Force -ErrorAction 'Stop'
 
             # Verify the permission was revoked
-            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @([SqlServerPermission]::ViewAnyDefinition) -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('ViewAnyDefinition') -ErrorAction 'Stop'
             $result | Should -BeFalse
         }
     }
@@ -128,7 +110,7 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'IntegrationTest' {
             $null = Revoke-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force -ErrorAction 'Stop'
 
             # Test that it's no longer granted
-            $result = Test-SqlDscServerPermission -ServerRole $roleObject -Grant -Permission @([SqlServerPermission]::ViewServerState) -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -ServerRole $roleObject -Grant -Permission @('ViewServerState') -ErrorAction 'Stop'
 
             $result | Should -BeFalse
         }

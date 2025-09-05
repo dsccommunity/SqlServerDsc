@@ -23,6 +23,12 @@ BeforeDiscovery {
     }
 }
 
+BeforeAll {
+    $script:moduleName = 'SqlServerDsc'
+
+    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
+}
+
 Describe 'Repair-SqlDscBIReportServer' -Tag @('Integration_PowerBI') {
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose

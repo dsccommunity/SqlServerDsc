@@ -51,7 +51,7 @@ Enable-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTES
 Test-SqlDscIsLoginEnabled | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 New-SqlDscRole | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | SqlDscIntegrationTestRole_Persistent role
 Get-SqlDscRole | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Grant-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Grants ConnectSql permissions to existing persistent principals, CreateEndpoint to role
+Grant-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Grants CreateEndpoint permission to role
 Get-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Test-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Deny-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Denies AlterTrace permission to login (persistent)
@@ -104,8 +104,7 @@ with sa owner that remains on the instance for other tests to use.
 
 ### `Grant-SqlDscServerPermission`
 
-Grants `ConnectSql` permission to persistent login `IntegrationTestSqlLogin`
-and `CreateEndpoint` permission to the role `SqlDscIntegrationTestRole_Persistent`
+Grants `CreateEndpoint` permission to the role `SqlDscIntegrationTestRole_Persistent`
 
 ### `Deny-SqlDscServerPermission`
 
@@ -181,14 +180,14 @@ Group | Description
 Login | Password | Permission | Description
 --- | --- | --- | ---
 sa | P@ssw0rd1 | sysadmin | Administrator of all the Database Engine instances.
-IntegrationTestSqlLogin | P@ssw0rd123! | ConnectSql (Grant), AlterTrace (Deny) | SQL Server login created by New-SqlDscLogin integration tests. ConnectSql permission granted by Grant-SqlDscServerPermission, AlterTrace permission denied by Deny-SqlDscServerPermission integration tests for server permission testing.
+IntegrationTestSqlLogin | P@ssw0rd123! | AlterTrace (Deny) | SQL Server login created by New-SqlDscLogin integration tests. AlterTrace permission denied by Deny-SqlDscServerPermission integration tests for server permission testing.
 .\SqlIntegrationTestGroup | - | - | Windows group login created by New-SqlDscLogin integration tests for testing purposes.
 
 ### SQL Server Roles
 
 Role | Owner | Permission | Description
 --- | --- | --- | ---
-SqlDscIntegrationTestRole_Persistent | sa | ConnectSql, CreateEndpoint | Server role created by New-SqlDscRole integration tests. ConnectSql and CreateEndpoint permissions granted by Grant-SqlDscServerPermission integration tests for server permission testing.
+SqlDscIntegrationTestRole_Persistent | sa | CreateEndpoint | Server role created by New-SqlDscRole integration tests. CreateEndpoint permission granted by Grant-SqlDscServerPermission integration tests for server permission testing.
 <!-- markdownlint-enable MD013 -->
 
 ### Image media (ISO)
