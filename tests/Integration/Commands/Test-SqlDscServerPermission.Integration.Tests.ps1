@@ -180,6 +180,14 @@ Describe 'Test-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
 
             $result | Should -BeFalse
         }
+
+        It 'Should accept ServerRole object from pipeline' {
+            $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
+
+            $result = $roleObject | Test-SqlDscServerPermission -Grant -Permission @('ConnectSql', 'ViewServerState') -ErrorAction 'Stop'
+
+            $result | Should -BeTrue
+        }
     }
 
     Context 'When testing deny permissions' {

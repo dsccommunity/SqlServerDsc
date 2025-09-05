@@ -78,7 +78,7 @@ Describe 'Revoke-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integrat
             $null = Revoke-SqlDscServerPermission -Login $loginObject -Permission @('ViewAnyDatabase') -Force -ErrorAction 'Stop'
 
             # Test that it's no longer granted
-            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @([SqlServerPermission]::ViewAnyDatabase) -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('ViewAnyDatabase') -ErrorAction 'Stop'
 
             $result | Should -BeFalse
         }
@@ -92,7 +92,7 @@ Describe 'Revoke-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integrat
             $null = $loginObject | Revoke-SqlDscServerPermission -Permission @('ViewAnyDefinition') -Force -ErrorAction 'Stop'
 
             # Verify the permission was revoked
-            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @([SqlServerPermission]::ViewAnyDefinition) -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('ViewAnyDefinition') -ErrorAction 'Stop'
             $result | Should -BeFalse
         }
     }
@@ -110,7 +110,7 @@ Describe 'Revoke-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integrat
             $null = Revoke-SqlDscServerPermission -ServerRole $roleObject -Permission @('ViewServerState') -Force -ErrorAction 'Stop'
 
             # Test that it's no longer granted
-            $result = Test-SqlDscServerPermission -ServerRole $roleObject -Grant -Permission @([SqlServerPermission]::ViewServerState) -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -ServerRole $roleObject -Grant -Permission @('ViewServerState') -ErrorAction 'Stop'
 
             $result | Should -BeFalse
         }
