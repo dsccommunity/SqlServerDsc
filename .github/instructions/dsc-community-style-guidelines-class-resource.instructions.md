@@ -86,9 +86,9 @@ Add to .DESCRIPTION section:
 - `## Requirements`: List minimum requirements
 - `## Known issues`: Critical issues + pattern: `All issues are not listed here, see [all open issues](https://github.com/{owner}/{repo}/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+{ResourceName}).`
 
-## Error Handling
+## Error Handling for classes
 - Use `try/catch` blocks to handle exceptions
-- Do not use `throw` for terminating errors, use `New-*Exception` commands:
+- Do not use `throw` for terminating errors, use `New-*Exception` commands (never for functions):
   - [`New‑InvalidDataException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91InvalidDataException)
   - [`New-ArgumentException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91ArgumentException)
   - [`New-InvalidOperationException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91InvalidOperationException)

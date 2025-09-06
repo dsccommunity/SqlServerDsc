@@ -25,11 +25,11 @@
         Get the audit named **MyFileAudit**.
 
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Audit]`
+        `[Microsoft.SqlServer.Management.Smo.Audit[]]`
+        Array of SMO Audit objects from the target SQL Server instance.
 #>
 function Get-SqlDscAudit
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Justification = 'Because the rule does not understands that the command returns [System.String[]] when using , (comma) in the return statement')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
     [OutputType([Microsoft.SqlServer.Management.Smo.Audit[]])]
     [CmdletBinding()]
@@ -62,7 +62,7 @@ function Get-SqlDscAudit
         {
             $auditObject = $ServerObject.Audits[$Name]
 
-            if (-not $AuditObject)
+            if (-not $auditObject)
             {
                 $missingAuditMessage = $script:localizedData.Audit_Missing -f $Name
 
@@ -81,6 +81,6 @@ function Get-SqlDscAudit
             $auditObject = $ServerObject.Audits
         }
 
-        return , [Microsoft.SqlServer.Management.Smo.Audit[]] $auditObject
+        return [Microsoft.SqlServer.Management.Smo.Audit[]] $auditObject
     }
 }

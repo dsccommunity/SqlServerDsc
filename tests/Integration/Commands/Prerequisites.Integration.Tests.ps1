@@ -23,6 +23,12 @@ BeforeDiscovery {
     }
 }
 
+BeforeAll {
+    $script:moduleName = 'SqlServerDsc'
+
+    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
+}
+
 # CSpell: ignore Remoting
 Describe 'Prerequisites' {
     Context 'Create required local Windows users' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {

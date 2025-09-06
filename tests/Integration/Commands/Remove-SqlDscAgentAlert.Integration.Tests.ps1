@@ -24,25 +24,16 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
-    Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
-
-    $env:SqlServerDscCI = $true
-
-    # Integration tests are run on the DSCSQLTEST instance
-    $script:sqlServerInstance = 'DSCSQLTEST'
+    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
 }
 
-AfterAll {
-    $env:SqlServerDscCI = $null
-
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
-}
-
-Describe 'Remove-SqlDscAgentAlert' -Tag 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022' {
+Describe 'Remove-SqlDscAgentAlert' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
+        # Integration tests are run on the DSCSQLTEST instance
+        $script:sqlServerInstance = 'DSCSQLTEST'
+
         # Starting the named instance SQL Server service prior to running tests.
         Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
 

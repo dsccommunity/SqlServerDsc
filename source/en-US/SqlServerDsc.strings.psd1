@@ -37,6 +37,33 @@ ConvertFrom-StringData @'
     ServerPermission_DenyPermission = Deny the permissions '{0}' for the principal '{1}'.
     ServerPermission_RevokePermission = Revoke the permissions '{0}' for the principal '{1}'.
 
+    ## Grant-SqlDscServerPermission
+    ServerPermission_Grant_ShouldProcessVerboseDescription = Granting server permissions '{2}' for the principal '{0}' on the instance '{1}'.
+    ServerPermission_Grant_ShouldProcessVerboseWarning = Are you sure you want to grant server permissions for the principal '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    ServerPermission_Grant_ShouldProcessCaption = Grant server permissions
+    ServerPermission_Grant_FailedToGrantPermission = Failed to grant server permissions '{2}' for principal '{0}' on instance '{1}'.
+
+    ## Deny-SqlDscServerPermission
+    ServerPermission_Deny_ShouldProcessVerboseDescription = Denying server permissions '{2}' for the principal '{0}' on the instance '{1}'.
+    ServerPermission_Deny_ShouldProcessVerboseWarning = Are you sure you want to deny server permissions for the principal '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    ServerPermission_Deny_ShouldProcessCaption = Deny server permissions
+    ServerPermission_Deny_FailedToDenyPermission = Failed to deny server permissions '{2}' for principal '{0}' on instance '{1}'.
+
+    ## Test-SqlDscServerPermission
+    ServerPermission_TestingDesiredState = Testing desired state for server permissions for principal '{0}' on instance '{1}'.
+    ServerPermission_Test_TestFailed = Failed to test server permissions for principal '{0}': {1}
+    ServerPermission_Test_CurrentPermissions = Current server permissions for principal '{0}': {1}
+    ServerPermission_Test_NoPermissionsFound = No server permissions found for principal '{0}'.
+
+    ## Revoke-SqlDscServerPermission
+    ServerPermission_Revoke_ShouldProcessVerboseDescription = Revoking server permissions '{2}' for the principal '{0}' on the instance '{1}'.
+    ServerPermission_Revoke_ShouldProcessVerboseWarning = Are you sure you want to revoke server permissions for the principal '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    ServerPermission_Revoke_ShouldProcessCaption = Revoke server permissions
+    ServerPermission_Revoke_FailedToRevokePermission = Failed to revoke server permissions '{2}' for principal '{0}' on instance '{1}'.
+
     ## Class DatabasePermission
     InvalidTypeForCompare = Invalid type in comparison. Expected type [{0}], but the type was [{1}]. (DP0001)
 
@@ -343,6 +370,23 @@ ConvertFrom-StringData @'
     Database_CompatibilityLevelWrong = The database '{0}' exists and has the compatibility level '{1}', but expected it to have the compatibility level '{2}'.
     Database_RecoveryModelWrong = The database '{0}' exists and has the recovery model '{1}', but expected it to have the recovery model '{2}'.
     Database_OwnerNameWrong = The database '{0}' exists and has the owner '{1}', but expected it to have the owner '{2}'.
+
+    ## Set-SqlDscDatabaseDefault
+    DatabaseDefault_Set = Setting default objects of database '{0}' on instance '{1}'. (SSDDD0001)
+    DatabaseDefault_Updated = Database '{0}' default objects were updated successfully. (SSDDD0002)
+    DatabaseDefault_SetFailed = Failed to set default objects of database '{0}' on instance '{1}'. (SSDDD0003)
+    DatabaseDefault_SetFileGroup_ShouldProcessVerboseDescription = Setting the default filegroup of database '{0}' to '{1}' on instance '{2}'.
+    DatabaseDefault_SetFileGroup_ShouldProcessVerboseWarning = Are you sure you want to set the default filegroup of database '{0}' to '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    DatabaseDefault_SetFileGroup_ShouldProcessCaption = Set database default filegroup
+    DatabaseDefault_SetFileStreamFileGroup_ShouldProcessVerboseDescription = Setting the default FILESTREAM filegroup of database '{0}' to '{1}' on instance '{2}'.
+    DatabaseDefault_SetFileStreamFileGroup_ShouldProcessVerboseWarning = Are you sure you want to set the default FILESTREAM filegroup of database '{0}' to '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    DatabaseDefault_SetFileStreamFileGroup_ShouldProcessCaption = Set database default FILESTREAM filegroup
+    DatabaseDefault_SetFullTextCatalog_ShouldProcessVerboseDescription = Setting the default Full-Text catalog of database '{0}' to '{1}' on instance '{2}'.
+    DatabaseDefault_SetFullTextCatalog_ShouldProcessVerboseWarning = Are you sure you want to set the default Full-Text catalog of database '{0}' to '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    DatabaseDefault_SetFullTextCatalog_ShouldProcessCaption = Set database default Full-Text catalog
 
     ## Get-AgentAlertObject
     Get_AgentAlertObject_GettingAlert = Getting SQL Agent Alert '{0}'. (GAAO0001)

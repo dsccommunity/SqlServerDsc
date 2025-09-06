@@ -37,10 +37,48 @@ integration tests.
 **Below are the integration tests listed in the run order, and with the dependency
 to each other. Dependencies are made to speed up the testing.**
 
-Command | Run order # | Depends on # | Use instance
---- | --- | --- | ---
-Install-SqlDscServer | 1 | - | -
-New-SqlDscLogin | 2 | 1 (Install-SqlDscServer), Prerequisites | DSCSQLTEST
+<!-- markdownlint-disable MD013 -->
+Command | Run order # | Depends on # | Use instance | Creates persistent objects
+--- | --- | --- | --- | ---
+Prerequisites | 0 | - | - | Sets up dependencies
+Install-SqlDscServer | 1 | 0 (Prerequisites) | - | DSCSQLTEST instance
+Connect-SqlDscDatabaseEngine | 1 | 0 (Prerequisites) | DSCSQLTEST | -
+Assert-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+New-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | IntegrationTestSqlLogin, SqlIntegrationTestGroup login
+Get-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Disable-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Enable-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscIsLoginEnabled | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+New-SqlDscRole | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | SqlDscIntegrationTestRole_Persistent role
+Get-SqlDscRole | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Grant-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Grants CreateEndpoint permission to role
+Get-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Deny-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Denies AlterTrace permission to login (persistent)
+Revoke-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscDatabase | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+New-SqlDscDatabase | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test databases
+Set-SqlDscDatabase | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscDatabase | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+New-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test alerts
+Set-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Remove-SqlDscAgentAlert | 8 | 2 (New-SqlDscAgentAlert) | DSCSQLTEST | -
+Remove-SqlDscDatabase | 8 | 2 (New-SqlDscDatabase) | DSCSQLTEST | -
+Remove-SqlDscRole | 8 | 2 (New-SqlDscRole) | DSCSQLTEST | -
+Remove-SqlDscLogin | 8 | 2 (New-SqlDscLogin) | DSCSQLTEST | -
+Uninstall-SqlDscServer | 9 | 8 (Remove commands) | - | -
+Install-SqlDscReportingService | 1 | 0 (Prerequisites) | - | SSRS instance
+Get-SqlDscInstalledInstance | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Get-SqlDscRSSetupConfiguration | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Test-SqlDscRSInstalled | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Repair-SqlDscReportingService | 8 | 1 (Install-SqlDscReportingService) | SSRS | -
+Uninstall-SqlDscReportingService | 9 | 8 (Repair-SqlDscReportingService) | - | -
+Install-SqlDscBIReportServer | 1 | 0 (Prerequisites) | - | PBIRS instance
+Repair-SqlDscBIReportServer | 8 | 1 (Install-SqlDscBIReportServer) | PBIRS | -
+Uninstall-SqlDscBIReportServer | 9 | 8 (Repair-SqlDscBIReportServer) | - | -
+<!-- markdownlint-enable MD013 -->
 
 ## Integration Tests
 
@@ -55,18 +93,24 @@ Installs all the [instances](#instances).
 
 ### `New-SqlDscLogin`
 
-Creates test logins on the DSCSQLTEST instance for use by other
-integration tests. Tests SQL Server logins, Windows user logins,
-and Windows group logins (using the local SqlIntegrationTestGroup).
-The main test login `IntegrationTestSqlLogin` and the Windows group
-login for `.\SqlIntegrationTestGroup` are left in place after the
-test completes so other tests can use them for validation.
+Creates the test login `IntegrationTestSqlLogin` and the Windows group
+login `.\SqlIntegrationTestGroup` that remains on the instance for other
+tests to use.
 
 ### `New-SqlDscRole`
 
-Creates test server roles on the DSCSQLTEST instance for use by other
-integration tests. Creates a persistent role `SqlDscIntegrationTestRole_Persistent` 
+Creates a persistent role `SqlDscIntegrationTestRole_Persistent`
 with sa owner that remains on the instance for other tests to use.
+
+### `Grant-SqlDscServerPermission`
+
+Grants `CreateEndpoint` permission to the role `SqlDscIntegrationTestRole_Persistent`
+
+### `Deny-SqlDscServerPermission`
+
+Creates a persistent `AlterTrace` denial on the persistent principals `IntegrationTestSqlLogin`
+that remains for other tests to validate against.
+
 ## Dependencies
 
 ### SqlServer module
@@ -136,14 +180,14 @@ Group | Description
 Login | Password | Permission | Description
 --- | --- | --- | ---
 sa | P@ssw0rd1 | sysadmin | Administrator of all the Database Engine instances.
-IntegrationTestSqlLogin | P@ssw0rd123! | - | SQL Server login created by New-SqlDscLogin integration tests for testing purposes.
+IntegrationTestSqlLogin | P@ssw0rd123! | AlterTrace (Deny) | SQL Server login created by New-SqlDscLogin integration tests. AlterTrace permission denied by Deny-SqlDscServerPermission integration tests for server permission testing.
 .\SqlIntegrationTestGroup | - | - | Windows group login created by New-SqlDscLogin integration tests for testing purposes.
 
 ### SQL Server Roles
 
 Role | Owner | Permission | Description
 --- | --- | --- | ---
-SqlDscIntegrationTestRole_Persistent | sa | - | Server role created by New-SqlDscRole integration tests that remains on the instance for testing purposes.
+SqlDscIntegrationTestRole_Persistent | sa | CreateEndpoint | Server role created by New-SqlDscRole integration tests. CreateEndpoint permission granted by Grant-SqlDscServerPermission integration tests for server permission testing.
 <!-- markdownlint-enable MD013 -->
 
 ### Image media (ISO)

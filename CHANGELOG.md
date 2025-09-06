@@ -12,26 +12,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed Azure DevOps pipeline conditions that were preventing DSC resource
   integration tests from running when they should by removing incorrect quotes
   around boolean values.
+- Refactored error handling by removing global `$ErrorActionPreference = 'Stop'`
+  from 64 PowerShell files and implementing targeted error control for specific
+  command calls that use `-ErrorAction 'Stop'`.
 - `SqlAgentAlert`
   - Minor fix in `source/Classes/020.SqlAgentAlert.ps1` to correct `ExcludeDscProperties`
     formatting (added missing delimiter).
+- `SqlRSSetup`
+  - Re-added `ReportServerEdition` enum and updated class to use enum instead of
+    ValidateSet for the Edition property.
+- Fixed commands continuing execution after `Assert-ElevatedUser` elevation
+  errors by setting `$ErrorActionPreference = 'Stop'` [issue #2070](https://github.com/dsccommunity/SqlServerDsc/issues/2070)
+- Fixed incorrect array-return syntax in several public `Get-*` commands by
+  removing a leading comma in return statements which could cause incorrect
+  output and ScriptAnalyzer warnings: `Get-SqlDscAudit`,
+  `Get-SqlDscConfigurationOption`, `Get-SqlDscDatabasePermission`,
+  `Get-SqlDscServerPermission`, and `Get-SqlDscTraceFlag`.
+- New-SqlDscDatabase: use `New-ArgumentException` instead of
+  `New-InvalidArgumentException` for parameter validation errors.
 
 ### Added
 
 - Added setup workflow for GitHub Copilot.
   - Switch the workflow to use Linux.
-  - Attempt to unshallow the Copilot branch
+- `Set-SqlDscDatabaseDefault`
+  - Added new command to set default objects of a database in a SQL Server
+    Database Engine instance (issue [#2178](https://github.com/dsccommunity/SqlServerDsc/issues/2178)).
+  - The command can set the default filegroup, default FILESTREAM filegroup,
+    and default Full-Text catalog using SMO methods SetDefaultFileGroup,
+    SetDefaultFileStreamFileGroup, and SetDefaultFullTextCatalog.
 - `SqlAgentAlert`
   - Added new DSC resource to manage SQL Server Agent alerts.
   - Improved AI instructions.
   - Enhanced workflow with proper environment variable configuration and DSCv3 verification.
   - Fixed environment variable persistence by using $GITHUB_ENV instead of
     job-level env declaration.
+- `Grant-SqlDscServerPermission`
+  - Added new public command to grant server permissions to a principal
+    (Login or ServerRole) on a SQL Server Database Engine instance.
+- `Deny-SqlDscServerPermission`
+  - Added new public command to deny server permissions to a principal
+    (Login or ServerRole).
+- `Revoke-SqlDscServerPermission`
+  - Added new public command to revoke server permissions from a principal
+    (Login or ServerRole).
+- `Test-SqlDscServerPermission`
+  - Added new public command with Grant/Deny parameter sets (and `-WithGrant`)
+    to test server permissions for a principal.
 - `Assert-SqlDscLogin`
   - Added new public command to validate that a specified SQL Server principal
     is a login.
 - `Enable-SqlDscLogin`
   - Added new public command to enable a SQL Server login.
+- `Get-SqlDscServerPermission`
+  - Enhanced command to support pipeline input for Login and ServerRole
+    objects while maintaining backward compatibility with the original
+    parameter set.
 - `Disable-SqlDscLogin`
   - Added new public command to disable a SQL Server login.
 - `Test-SqlDscIsLoginEnabled`
@@ -59,12 +95,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Set-SqlDscDatabase` - Modify properties of an existing database
   - `Remove-SqlDscDatabase` - Remove a database from SQL Server instance
   - `Test-SqlDscDatabase` - Test if a database is in the desired state
-  - All commands support pipeline input with ServerObject and follow established patterns
+  - All commands support pipeline input with ServerObject and follow established
+    patterns
   - Database objects can also be used as pipeline input for Set and Remove operations
   - Commands include comprehensive validation, localization, and ShouldProcess support
 
 ### Changed
 
+- SqlServerDsc
+  - Updated GitVersion.yml feature branch regex pattern to use anchor `^f(eature(s)?)?[\/-]`
+    for more precise branch name matching.
 - Refactored GitHub Copilot workflow setup to be module-agnostic via MODULE_NAME
   environment variable, includes full-history detection, uses idempotent .NET
   tool install, and adds Linux dependency handling ([issue #2127](https://github.com/dsccommunity/SqlServerDsc/issues/2127)).
@@ -80,6 +120,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added documentation for `SqlIntegrationTest` user and
     `IntegrationTestSqlLogin` login.
   - Added run order information for `New-SqlDscLogin` integration test.
+- `Get-SqlDscServerPermission`
+  - Enhanced the command to support server roles in addition to logins by
+    utilizing `Test-SqlDscIsRole` alongside the existing `Test-SqlDscIsLogin`
+    check.
+  - The command now accepts both login principals and server role principals
+    as the `Name` parameter (issue [#2063](https://github.com/dsccommunity/SqlServerDsc/issues/2063)).
 - `azure-pipelines.yml`
   - Remove `windows-2019` images fixes [#2106](https://github.com/dsccommunity/SqlServerDsc/issues/2106).
   - Move individual tasks to `windows-latest`.
@@ -109,6 +155,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved markdown, pester, powershell, and changelog instructions.
   - Fixed `Ignore` that seems in edge-cases fail.
   - Improved markdown and changelog instructions.
+- `RequiredModules.psd1`
+  - Updated `DscResource.Test` dependency to `latest` (was pinned to `0.17.2`).
+- Examples
+  - `source/Examples/Resources/SqlSetup/5-InstallNamedInstanceInFailoverClusterSecondNode.ps1`
+    - Removed redundant `$SqlAdministratorCredential` parameter from example
+      configuration.
 
 ## [17.1.0] - 2025-05-22
 

@@ -25,7 +25,6 @@ jobs:
         shell: powershell
         run: |
           dotnet tool install --global GitVersion.Tool --version 5.*
-          dotnet-gitversion
       - name: Run GitVersion
         shell: powershell
         run: |

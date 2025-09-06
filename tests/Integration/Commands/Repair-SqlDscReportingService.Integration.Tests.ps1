@@ -23,6 +23,12 @@ BeforeDiscovery {
     }
 }
 
+BeforeAll {
+    $script:moduleName = 'SqlServerDsc'
+
+    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
+}
+
 Describe 'Repair-SqlDscReportingService' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose

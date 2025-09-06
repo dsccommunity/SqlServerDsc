@@ -1372,6 +1372,10 @@ function Invoke-SetupAction
         $Force
     )
 
+    $originalErrorActionPreference = $ErrorActionPreference
+
+    $ErrorActionPreference = 'Stop'
+
     if ($Force.IsPresent -and -not $Confirm)
     {
         $ConfirmPreference = 'None'
@@ -1410,6 +1414,8 @@ function Invoke-SetupAction
     }
 
     Assert-SetupActionProperties -Property $PSBoundParameters -SetupAction $setupAction -ErrorAction 'Stop'
+
+    $ErrorActionPreference = $originalErrorActionPreference
 
     $setupArgument = '/QUIET /ACTION={0}' -f $setupAction
 

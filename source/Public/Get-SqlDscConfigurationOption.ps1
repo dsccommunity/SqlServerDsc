@@ -31,10 +31,10 @@
 
     .OUTPUTS
         `[Microsoft.SqlServer.Management.Smo.ConfigProperty[]]`
+        Array of SMO ConfigProperty objects representing server configuration options.
 #>
 function Get-SqlDscConfigurationOption
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Justification = 'Because the rule does not understands that the command returns [System.String[]] when using , (comma) in the return statement')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
     [OutputType([Microsoft.SqlServer.Management.Smo.ConfigProperty[]])]
     [CmdletBinding()]
@@ -58,12 +58,12 @@ function Get-SqlDscConfigurationOption
         if ($Refresh.IsPresent)
         {
             # Make sure the configuration option values are up-to-date.
-            $serverObject.Configuration.Refresh()
+            $ServerObject.Configuration.Refresh()
         }
 
         if ($PSBoundParameters.ContainsKey('Name'))
         {
-            $configurationOption = $serverObject.Configuration.Properties |
+            $configurationOption = $ServerObject.Configuration.Properties |
                 Where-Object -FilterScript {
                     $_.DisplayName -like $Name
                 }
@@ -84,10 +84,10 @@ function Get-SqlDscConfigurationOption
         }
         else
         {
-            $configurationOption = $serverObject.Configuration.Properties.ForEach({ $_ })
+            $configurationOption = $ServerObject.Configuration.Properties.ForEach({ $_ })
         }
 
-        return , [Microsoft.SqlServer.Management.Smo.ConfigProperty[]] (
+        return [Microsoft.SqlServer.Management.Smo.ConfigProperty[]] (
             $configurationOption |
                 Sort-Object -Property 'DisplayName'
         )

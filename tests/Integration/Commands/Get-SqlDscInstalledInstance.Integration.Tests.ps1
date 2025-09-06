@@ -23,6 +23,12 @@ BeforeDiscovery {
     }
 }
 
+BeforeAll {
+    $script:moduleName = 'SqlServerDsc'
+
+    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
+}
+
 Describe 'Get-SqlDscInstalledInstance' {
     Context 'When getting all SQL Server instances' -Tag @('Integration_PowerBI') {
         It 'Should not throw an exception' {

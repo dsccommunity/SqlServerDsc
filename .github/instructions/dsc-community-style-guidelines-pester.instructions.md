@@ -14,6 +14,13 @@ applyTo: "**/*.[Tt]ests.ps1"
 - Never test verbose messages, debug messages or parameter binding behavior
 - Pass all mandatory parameters to avoid prompts
 
+## Requirements
+- Inside `It` blocks, assign unused return objects to `$null` (unless part of pipeline)
+- Tested entity must be called from within the `It` blocks
+- Keep results and assertions in same `It` block
+- Avoid try-catch-finally for cleanup, use `AfterAll` or `AfterEach`
+- Avoid unnecessary remove/recreate cycles
+
 ## Naming
 - One `Describe` block per file matching the tested entity name
 - `Context` descriptions start with 'When'
@@ -51,10 +58,6 @@ applyTo: "**/*.[Tt]ests.ps1"
 - Keep scope close to usage context
 
 ## Best Practices
-- Inside `It` blocks, assign unused return objects to `$null` (unless part of pipeline)
-- Tested entity must be called from within the `It` blocks
-- Keep results and assertions in same `It` block
 - Cover all scenarios and code paths
 - Use `BeforeEach` and `AfterEach` sparingly
-- Avoid try-catch-finally for cleanup, use `AfterAll` or `AfterEach`
-- Avoid unnecessary remove/recreate cycles
+- Use `$PSDefaultParameterValues` only for Pester commands (`Describe`, `Context`, `It`, `Mock`, `Should`, `InModuleScope`)
