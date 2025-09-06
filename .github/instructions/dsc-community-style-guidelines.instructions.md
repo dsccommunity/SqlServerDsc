@@ -23,8 +23,7 @@ applyTo: "**"
 
 ## Requirements
 - Follow instructions over existing code patterns
-- Follow PowerShell style guideline instructions strictly
-- Follow test instructions strictly
+- Follow PowerShell style and test guideline instructions strictly
 - Always update CHANGELOG.md Unreleased section
 - Localize all strings using string keys; remove any orphaned string keys
 - Check DscResource.Common before creating private functions
