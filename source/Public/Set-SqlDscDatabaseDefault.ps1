@@ -143,11 +143,11 @@ function Set-SqlDscDatabaseDefault
             $ConfirmPreference = 'None'
         }
 
-        $verboseDescriptionMessage = $script:localizedData.DatabaseDefault_Set_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
-        $verboseWarningMessage = $script:localizedData.DatabaseDefault_Set_ShouldProcessVerboseWarning -f $Name
+        $descriptionMessage = $script:localizedData.DatabaseDefault_Set_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
+        $confirmationMessage = $script:localizedData.DatabaseDefault_Set_ShouldProcessVerboseWarning -f $Name
         $captionMessage = $script:localizedData.DatabaseDefault_Set_ShouldProcessCaption
 
-        if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
         {
             try
             {
