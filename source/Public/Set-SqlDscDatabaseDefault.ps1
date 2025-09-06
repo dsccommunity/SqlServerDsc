@@ -143,62 +143,76 @@ function Set-SqlDscDatabaseDefault
             $ConfirmPreference = 'None'
         }
 
-        $descriptionMessage = $script:localizedData.DatabaseDefault_Set_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
-        $confirmationMessage = $script:localizedData.DatabaseDefault_Set_ShouldProcessVerboseWarning -f $Name
-        $captionMessage = $script:localizedData.DatabaseDefault_Set_ShouldProcessCaption
-
-        if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
+        try
         {
-            try
-            {
-                $wasUpdate = $false
+            $wasUpdate = $false
 
-                if ($PSBoundParameters.ContainsKey('DefaultFileGroup'))
+            if ($PSBoundParameters.ContainsKey('DefaultFileGroup'))
+            {
+                $descriptionMessage = $script:localizedData.DatabaseDefault_SetFileGroup_ShouldProcessVerboseDescription -f $Name, $DefaultFileGroup, $ServerObject.InstanceName
+                $confirmationMessage = $script:localizedData.DatabaseDefault_SetFileGroup_ShouldProcessVerboseWarning -f $Name, $DefaultFileGroup
+                $captionMessage = $script:localizedData.DatabaseDefault_SetFileGroup_ShouldProcessCaption
+
+                if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
                 {
                     Write-Verbose -Message ($script:localizedData.DatabaseDefault_UpdatingDefaultFileGroup -f $DefaultFileGroup)
                     $DatabaseObject.SetDefaultFileGroup($DefaultFileGroup)
                     $wasUpdate = $true
                 }
+            }
 
-                if ($PSBoundParameters.ContainsKey('DefaultFileStreamFileGroup'))
+            if ($PSBoundParameters.ContainsKey('DefaultFileStreamFileGroup'))
+            {
+                $descriptionMessage = $script:localizedData.DatabaseDefault_SetFileStreamFileGroup_ShouldProcessVerboseDescription -f $Name, $DefaultFileStreamFileGroup, $ServerObject.InstanceName
+                $confirmationMessage = $script:localizedData.DatabaseDefault_SetFileStreamFileGroup_ShouldProcessVerboseWarning -f $Name, $DefaultFileStreamFileGroup
+                $captionMessage = $script:localizedData.DatabaseDefault_SetFileStreamFileGroup_ShouldProcessCaption
+
+                if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
                 {
                     Write-Verbose -Message ($script:localizedData.DatabaseDefault_UpdatingDefaultFileStreamFileGroup -f $DefaultFileStreamFileGroup)
                     $DatabaseObject.SetDefaultFileStreamFileGroup($DefaultFileStreamFileGroup)
                     $wasUpdate = $true
                 }
+            }
 
-                if ($PSBoundParameters.ContainsKey('DefaultFullTextCatalog'))
+            if ($PSBoundParameters.ContainsKey('DefaultFullTextCatalog'))
+            {
+                $descriptionMessage = $script:localizedData.DatabaseDefault_SetFullTextCatalog_ShouldProcessVerboseDescription -f $Name, $DefaultFullTextCatalog, $ServerObject.InstanceName
+                $confirmationMessage = $script:localizedData.DatabaseDefault_SetFullTextCatalog_ShouldProcessVerboseWarning -f $Name, $DefaultFullTextCatalog
+                $captionMessage = $script:localizedData.DatabaseDefault_SetFullTextCatalog_ShouldProcessCaption
+
+                if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
                 {
                     Write-Verbose -Message ($script:localizedData.DatabaseDefault_UpdatingDefaultFullTextCatalog -f $DefaultFullTextCatalog)
                     $DatabaseObject.SetDefaultFullTextCatalog($DefaultFullTextCatalog)
                     $wasUpdate = $true
                 }
-
-                if ($wasUpdate)
-                {
-                    Write-Verbose -Message ($script:localizedData.DatabaseDefault_Updated -f $Name)
-                }
-
-                if ($PassThru.IsPresent)
-                {
-                    return $DatabaseObject
-                }
             }
-            catch
+
+            if ($wasUpdate)
             {
-                $errorMessage = $script:localizedData.DatabaseDefault_SetFailed -f $Name, $ServerObject.InstanceName
-
-                $exception = [System.InvalidOperationException]::new($errorMessage, $_.Exception)
-
-                $PSCmdlet.ThrowTerminatingError(
-                    [System.Management.Automation.ErrorRecord]::new(
-                        $exception,
-                        'SSDDD0001', # cSpell: disable-line
-                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                        $Name
-                    )
-                )
+                Write-Verbose -Message ($script:localizedData.DatabaseDefault_Updated -f $Name)
             }
+
+            if ($PassThru.IsPresent)
+            {
+                return $DatabaseObject
+            }
+        }
+        catch
+        {
+            $errorMessage = $script:localizedData.DatabaseDefault_SetFailed -f $Name, $ServerObject.InstanceName
+
+            $exception = [System.InvalidOperationException]::new($errorMessage, $_.Exception)
+
+            $PSCmdlet.ThrowTerminatingError(
+                [System.Management.Automation.ErrorRecord]::new(
+                    $exception,
+                    'SSDDD0001', # cSpell: disable-line
+                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                    $Name
+                )
+            )
         }
     }
 }

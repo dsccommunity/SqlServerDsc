@@ -382,6 +382,18 @@ ConvertFrom-StringData @'
     DatabaseDefault_Set_ShouldProcessVerboseWarning = Are you sure you want to modify the default objects of the database '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     DatabaseDefault_Set_ShouldProcessCaption = Set database default objects on instance
+    DatabaseDefault_SetFileGroup_ShouldProcessVerboseDescription = Setting the default filegroup of database '{0}' to '{1}' on instance '{2}'.
+    DatabaseDefault_SetFileGroup_ShouldProcessVerboseWarning = Are you sure you want to set the default filegroup of database '{0}' to '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    DatabaseDefault_SetFileGroup_ShouldProcessCaption = Set database default filegroup
+    DatabaseDefault_SetFileStreamFileGroup_ShouldProcessVerboseDescription = Setting the default FILESTREAM filegroup of database '{0}' to '{1}' on instance '{2}'.
+    DatabaseDefault_SetFileStreamFileGroup_ShouldProcessVerboseWarning = Are you sure you want to set the default FILESTREAM filegroup of database '{0}' to '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    DatabaseDefault_SetFileStreamFileGroup_ShouldProcessCaption = Set database default FILESTREAM filegroup
+    DatabaseDefault_SetFullTextCatalog_ShouldProcessVerboseDescription = Setting the default Full-Text catalog of database '{0}' to '{1}' on instance '{2}'.
+    DatabaseDefault_SetFullTextCatalog_ShouldProcessVerboseWarning = Are you sure you want to set the default Full-Text catalog of database '{0}' to '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    DatabaseDefault_SetFullTextCatalog_ShouldProcessCaption = Set database default Full-Text catalog
 
     ## Get-AgentAlertObject
     Get_AgentAlertObject_GettingAlert = Getting SQL Agent Alert '{0}'. (GAAO0001)
