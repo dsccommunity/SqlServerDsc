@@ -53,10 +53,14 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag @('Integration_SQL2017', 'Integration_
         # Create additional filegroup for testing (needed for setting default filegroup)
         $script:testFileGroupName = 'TestFileGroup_' + (Get-Random)
         $script:serverObject.Databases[$script:testDatabaseName].Query("ALTER DATABASE [$script:testDatabaseName] ADD FILEGROUP [$script:testFileGroupName]")
-        
+
         # Add a file to the filegroup so it can be set as default
         $script:testFileName = 'TestFile_' + (Get-Random)
-        $script:serverObject.Databases[$script:testDatabaseName].Query("ALTER DATABASE [$script:testDatabaseName] ADD FILE (NAME = '$script:testFileName', FILENAME = 'C:\Program Files\Microsoft SQL Server\MSSQL15.DSCSQLTEST\MSSQL\DATA\$script:testFileName.ndf') TO FILEGROUP [$script:testFileGroupName]")
+        # Resolve instance default data path in a version-agnostic way
+        $dataRoot = $script:serverObject.Settings.DefaultFile
+        if (-not $dataRoot) { $dataRoot = $script:serverObject.Information.MasterDBPath }
+        $script:testFilePath = Join-Path -Path $dataRoot -ChildPath "$script:testFileName.ndf"
+        $script:serverObject.Databases[$script:testDatabaseName].Query("ALTER DATABASE [$script:testDatabaseName] ADD FILE (NAME = '$script:testFileName', FILENAME = '$script:testFilePath') TO FILEGROUP [$script:testFileGroupName]")
     }
 
     AfterAll {
