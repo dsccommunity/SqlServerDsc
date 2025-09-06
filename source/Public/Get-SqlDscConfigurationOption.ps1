@@ -31,6 +31,7 @@
 
     .OUTPUTS
         `[Microsoft.SqlServer.Management.Smo.ConfigProperty[]]`
+        Array of SMO ConfigProperty objects representing server configuration options.
 #>
 function Get-SqlDscConfigurationOption
 {
