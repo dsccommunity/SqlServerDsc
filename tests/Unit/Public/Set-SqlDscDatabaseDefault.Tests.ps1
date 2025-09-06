@@ -114,7 +114,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                         }
                     } -Force
 
-                    { Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'TestDatabase' -DefaultFileGroup 'NewFileGroup' -Force } | Should -Not -Throw
+                    $null = Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'TestDatabase' -DefaultFileGroup 'NewFileGroup' -Force
                     $mockDatabaseObject.DefaultFileGroup | Should -Be 'NewFileGroup'
                 }
             }
@@ -137,7 +137,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                         }
                     } -Force
 
-                    { Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'TestDatabase' -DefaultFileStreamFileGroup 'NewFileStreamGroup' -Force } | Should -Not -Throw
+                    $null = Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'TestDatabase' -DefaultFileStreamFileGroup 'NewFileStreamGroup' -Force
                     $mockDatabaseObject.DefaultFileStreamFileGroup | Should -Be 'NewFileStreamGroup'
                 }
             }
@@ -160,7 +160,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                         }
                     } -Force
 
-                    { Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'TestDatabase' -DefaultFullTextCatalog 'NewFTCatalog' -Force } | Should -Not -Throw
+                    $null = Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'TestDatabase' -DefaultFullTextCatalog 'NewFTCatalog' -Force
                     $mockDatabaseObject.DefaultFullTextCatalog | Should -Be 'NewFTCatalog'
                 }
             }
@@ -223,7 +223,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                     return $mockParent
                 } -Force
 
-                { Set-SqlDscDatabaseDefault -DatabaseObject $mockDatabaseObject -DefaultFileGroup 'DirectFileGroup' -Force } | Should -Not -Throw
+                $null = Set-SqlDscDatabaseDefault -DatabaseObject $mockDatabaseObject -DefaultFileGroup 'DirectFileGroup' -Force
                 $mockDatabaseObject.DefaultFileGroup | Should -Be 'DirectFileGroup'
             }
         }
@@ -243,7 +243,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                     return $mockParent
                 } -Force
 
-                { Set-SqlDscDatabaseDefault -DatabaseObject $mockDatabaseObject -DefaultFileStreamFileGroup 'DirectStreamGroup' -Force } | Should -Not -Throw
+                $null = Set-SqlDscDatabaseDefault -DatabaseObject $mockDatabaseObject -DefaultFileStreamFileGroup 'DirectStreamGroup' -Force
                 $mockDatabaseObject.DefaultFileStreamFileGroup | Should -Be 'DirectStreamGroup'
             }
         }
@@ -263,7 +263,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                     return $mockParent
                 } -Force
 
-                { Set-SqlDscDatabaseDefault -DatabaseObject $mockDatabaseObject -DefaultFullTextCatalog 'DirectFTCatalog' -Force } | Should -Not -Throw
+                $null = Set-SqlDscDatabaseDefault -DatabaseObject $mockDatabaseObject -DefaultFullTextCatalog 'DirectFTCatalog' -Force
                 $mockDatabaseObject.DefaultFullTextCatalog | Should -Be 'DirectFTCatalog'
             }
         }

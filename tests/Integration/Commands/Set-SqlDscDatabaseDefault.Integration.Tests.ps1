@@ -69,7 +69,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag @('Integration_SQL2017', 'Integration_
 
     Context 'When using the DatabaseObject parameter' {
         It 'Should set the default filegroup without throwing an error' {
-            { Set-SqlDscDatabaseDefault -DatabaseObject $script:testDatabaseObject -DefaultFileGroup $script:testFileGroupName -Force } | Should -Not -Throw
+            $null = Set-SqlDscDatabaseDefault -DatabaseObject $script:testDatabaseObject -DefaultFileGroup $script:testFileGroupName -Force
 
             # Verify the change was applied
             $script:testDatabaseObject.Refresh()
@@ -77,7 +77,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag @('Integration_SQL2017', 'Integration_
         }
 
         It 'Should reset the default filegroup back to PRIMARY' {
-            { Set-SqlDscDatabaseDefault -DatabaseObject $script:testDatabaseObject -DefaultFileGroup 'PRIMARY' -Force } | Should -Not -Throw
+            $null = Set-SqlDscDatabaseDefault -DatabaseObject $script:testDatabaseObject -DefaultFileGroup 'PRIMARY' -Force
 
             # Verify the change was applied
             $script:testDatabaseObject.Refresh()
@@ -87,7 +87,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag @('Integration_SQL2017', 'Integration_
 
     Context 'When using the ServerObject parameter' {
         It 'Should set the default filegroup using server object and database name' {
-            { Set-SqlDscDatabaseDefault -ServerObject $script:serverObject -Name $script:testDatabaseName -DefaultFileGroup $script:testFileGroupName -Force } | Should -Not -Throw
+            $null = Set-SqlDscDatabaseDefault -ServerObject $script:serverObject -Name $script:testDatabaseName -DefaultFileGroup $script:testFileGroupName -Force
 
             # Verify the change was applied by refreshing the database object
             $script:testDatabaseObject.Refresh()
@@ -115,7 +115,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag @('Integration_SQL2017', 'Integration_
 
     Context 'After all tests are completed' {
         It 'Should clean up the test database' {
-            { Remove-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force } | Should -Not -Throw
+            $null = Remove-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force
         }
     }
 }
