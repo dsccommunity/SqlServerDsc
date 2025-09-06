@@ -205,8 +205,6 @@ jobs:
       - name: Verify GitVersion
         shell: pwsh
         run: |
-          Write-Host 'Running GitVersion to determine semantic version...'
-          dotnet-gitversion
           Write-Host 'Running GitVersion to determine semantic version (parsing to PowerShell object)...'
           dotnet-gitversion | ConvertFrom-Json
 
