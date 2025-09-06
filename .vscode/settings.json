@@ -90,7 +90,8 @@
         "SOURCEBRANCH",
         "SOURCEBRANCHNAME",
         "setvariable",
-        "RAISERROR"
+        "RAISERROR",
+        "filegroup"
     ],
     "cSpell.ignorePaths": [
         ".git"

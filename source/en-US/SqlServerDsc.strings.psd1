@@ -371,6 +371,23 @@ ConvertFrom-StringData @'
     Database_RecoveryModelWrong = The database '{0}' exists and has the recovery model '{1}', but expected it to have the recovery model '{2}'.
     Database_OwnerNameWrong = The database '{0}' exists and has the owner '{1}', but expected it to have the owner '{2}'.
 
+    ## Set-SqlDscDatabaseDefault
+    DatabaseDefault_Set = Setting default objects of database '{0}' on instance '{1}'. (SSDDD0001)
+    DatabaseDefault_Updated = Database '{0}' default objects were updated successfully. (SSDDD0002)
+    DatabaseDefault_SetFailed = Failed to set default objects of database '{0}' on instance '{1}'. (SSDDD0003)
+    DatabaseDefault_SetFileGroup_ShouldProcessVerboseDescription = Setting the default filegroup of database '{0}' to '{1}' on instance '{2}'.
+    DatabaseDefault_SetFileGroup_ShouldProcessVerboseWarning = Are you sure you want to set the default filegroup of database '{0}' to '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    DatabaseDefault_SetFileGroup_ShouldProcessCaption = Set database default filegroup
+    DatabaseDefault_SetFileStreamFileGroup_ShouldProcessVerboseDescription = Setting the default FILESTREAM filegroup of database '{0}' to '{1}' on instance '{2}'.
+    DatabaseDefault_SetFileStreamFileGroup_ShouldProcessVerboseWarning = Are you sure you want to set the default FILESTREAM filegroup of database '{0}' to '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    DatabaseDefault_SetFileStreamFileGroup_ShouldProcessCaption = Set database default FILESTREAM filegroup
+    DatabaseDefault_SetFullTextCatalog_ShouldProcessVerboseDescription = Setting the default Full-Text catalog of database '{0}' to '{1}' on instance '{2}'.
+    DatabaseDefault_SetFullTextCatalog_ShouldProcessVerboseWarning = Are you sure you want to set the default Full-Text catalog of database '{0}' to '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    DatabaseDefault_SetFullTextCatalog_ShouldProcessCaption = Set database default Full-Text catalog
+
     ## Get-AgentAlertObject
     Get_AgentAlertObject_GettingAlert = Getting SQL Agent Alert '{0}'. (GAAO0001)
 

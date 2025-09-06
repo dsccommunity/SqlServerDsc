@@ -79,6 +79,7 @@ applyTo: "**/*.ps?(m|d)1"
 - For state-changing functions, use `SupportsShouldProcess`
   - Place ShouldProcess check immediately before each state-change
   - `$PSCmdlet.ShouldProcess` must use required pattern
+  - Inside `$PSCmdlet.ShouldProcess`-block, avoid using `Write-Verbose`
 - Never use backtick as line continuation in production code.
 - Set `$ErrorActionPreference = 'Stop'` before commands using `-ErrorAction 'Stop'`; restore after
 
@@ -89,7 +90,7 @@ applyTo: "**/*.ps?(m|d)1"
 - Use `Write-Verbose` for: High-level execution flow only; User-actionable information
 - Use `Write-Information` for: User-facing status updates; Important operational messages; Non-error state changes
 - Use `Write-Warning` for: Non-fatal issues requiring attention; Deprecated functionality usage; Configuration problems that don't block execution
-- Use `$PSCmdlet.ThrowTerminatingError()` for terminating errors (except for classes), use relevant error category
+- Use `$PSCmdlet.ThrowTerminatingError()` for terminating errors (except for classes), use relevant error category, in try-catch include exception
 - Use `Write-Error` for non-terminating errors, use relevant error category
 
 ## ShouldProcess Required Pattern
