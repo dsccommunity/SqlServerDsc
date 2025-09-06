@@ -28,10 +28,9 @@ applyTo: "source/DSCResources/**/*.psm1"
 - Use localized strings for all messages (Write-Verbose, Write-Error, etc.)
 - Import localized strings using `Get-LocalizedData` at module top
 
-## Error Handling
-- Do not use `throw` for terminating errors
+## Error Handling for MOF-based resources
 - Use `try/catch` blocks to handle exceptions
-- Throw localized exceptions using the appropriate `New-*Exception` cmdlet:
+- Do not use `throw` for terminating errors, use `New-*Exception` commands (never for functions):
   - [`New‑InvalidDataException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91InvalidDataException)
   - [`New-ArgumentException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91ArgumentException)
   - [`New-InvalidOperationException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91InvalidOperationException)
