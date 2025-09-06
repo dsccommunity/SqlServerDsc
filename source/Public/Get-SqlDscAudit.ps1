@@ -26,6 +26,7 @@
 
     .OUTPUTS
         `[Microsoft.SqlServer.Management.Smo.Audit[]]`
+        Array of SMO Audit objects from the target SQL Server instance.
 #>
 function Get-SqlDscAudit
 {
