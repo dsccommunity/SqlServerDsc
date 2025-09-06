@@ -372,9 +372,9 @@ ConvertFrom-StringData @'
     Database_OwnerNameWrong = The database '{0}' exists and has the owner '{1}', but expected it to have the owner '{2}'.
 
     ## Set-SqlDscDatabaseDefault
-    DatabaseDefault_Set = Setting default objects of database '{0}' on instance '{1}'. (SSDD0001)
-    DatabaseDefault_Updated = Database '{0}' default objects were updated successfully. (SSDD0002)
-    DatabaseDefault_SetFailed = Failed to set default objects of database '{0}' on instance '{1}'. (SSDD0003)
+    DatabaseDefault_Set = Setting default objects of database '{0}' on instance '{1}'. (SSDDD0001)
+    DatabaseDefault_Updated = Database '{0}' default objects were updated successfully. (SSDDD0002)
+    DatabaseDefault_SetFailed = Failed to set default objects of database '{0}' on instance '{1}'. (SSDDD0003)
     DatabaseDefault_SetFileGroup_ShouldProcessVerboseDescription = Setting the default filegroup of database '{0}' to '{1}' on instance '{2}'.
     DatabaseDefault_SetFileGroup_ShouldProcessVerboseWarning = Are you sure you want to set the default filegroup of database '{0}' to '{1}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
