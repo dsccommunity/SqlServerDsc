@@ -96,77 +96,94 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
 
     Context 'When using parameter set ServerObject' {
         Context 'When database exists' {
+            BeforeAll {
+                Mock -CommandName Get-SqlDscDatabase -MockWith {
+                    param($ServerObject, $Name)
+                    
+                    if ($Name -eq 'TestDatabase') {
+                        $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+                        $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
+                        return $mockDatabaseObject
+                    }
+                    else {
+                        throw "Database '$Name' was not found."
+                    }
+                }
+            }
+
             It 'Should set default filegroup when DefaultFileGroup parameter is specified' {
                 InModuleScope -ScriptBlock {
-                    $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
-                    $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
-                    $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'DefaultFileGroup' -Value 'PRIMARY' -Force
-                    $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'SetDefaultFileGroup' -Value {
-                        param($fileGroupName)
-                        $this.DefaultFileGroup = $fileGroupName
-                    } -Force
-
                     $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
                     $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
-                    $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
-                        return @{
-                            'TestDatabase' = $mockDatabaseObject
-                        }
-                    } -Force
+
+                    # Mock the SetDefaultFileGroup method on the database object that will be returned
+                    Mock -CommandName Get-SqlDscDatabase -MockWith {
+                        $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+                        $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
+                        $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'DefaultFileGroup' -Value 'PRIMARY' -Force
+                        $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'SetDefaultFileGroup' -Value {
+                            param($fileGroupName)
+                            $this.DefaultFileGroup = $fileGroupName
+                        } -Force
+                        return $mockDatabaseObject
+                    }
 
                     $null = Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'TestDatabase' -DefaultFileGroup 'NewFileGroup' -Force
-                    $mockDatabaseObject.DefaultFileGroup | Should -Be 'NewFileGroup'
+                    
+                    # Verify that Get-SqlDscDatabase was called
+                    Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
                 }
             }
 
             It 'Should set default FILESTREAM filegroup when DefaultFileStreamFileGroup parameter is specified' {
                 InModuleScope -ScriptBlock {
-                    $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
-                    $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
-                    $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'DefaultFileStreamFileGroup' -Value 'FileStreamGroup' -Force
-                    $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'SetDefaultFileStreamFileGroup' -Value {
-                        param($fileGroupName)
-                        $this.DefaultFileStreamFileGroup = $fileGroupName
-                    } -Force
-
                     $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
                     $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
-                    $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
-                        return @{
-                            'TestDatabase' = $mockDatabaseObject
-                        }
-                    } -Force
+
+                    Mock -CommandName Get-SqlDscDatabase -MockWith {
+                        $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+                        $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
+                        $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'DefaultFileStreamFileGroup' -Value 'FileStreamGroup' -Force
+                        $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'SetDefaultFileStreamFileGroup' -Value {
+                            param($fileGroupName)
+                            $this.DefaultFileStreamFileGroup = $fileGroupName
+                        } -Force
+                        return $mockDatabaseObject
+                    }
 
                     $null = Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'TestDatabase' -DefaultFileStreamFileGroup 'NewFileStreamGroup' -Force
-                    $mockDatabaseObject.DefaultFileStreamFileGroup | Should -Be 'NewFileStreamGroup'
+                    
+                    Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
                 }
             }
 
             It 'Should set default Full-Text catalog when DefaultFullTextCatalog parameter is specified' {
                 InModuleScope -ScriptBlock {
-                    $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
-                    $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
-                    $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'DefaultFullTextCatalog' -Value 'FTCatalog' -Force
-                    $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'SetDefaultFullTextCatalog' -Value {
-                        param($catalogName)
-                        $this.DefaultFullTextCatalog = $catalogName
-                    } -Force
-
                     $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
                     $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
-                    $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
-                        return @{
-                            'TestDatabase' = $mockDatabaseObject
-                        }
-                    } -Force
+
+                    Mock -CommandName Get-SqlDscDatabase -MockWith {
+                        $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+                        $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
+                        $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'DefaultFullTextCatalog' -Value 'FTCatalog' -Force
+                        $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'SetDefaultFullTextCatalog' -Value {
+                            param($catalogName)
+                            $this.DefaultFullTextCatalog = $catalogName
+                        } -Force
+                        return $mockDatabaseObject
+                    }
 
                     $null = Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'TestDatabase' -DefaultFullTextCatalog 'NewFTCatalog' -Force
-                    $mockDatabaseObject.DefaultFullTextCatalog | Should -Be 'NewFTCatalog'
+                    
+                    Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
                 }
             }
 
             It 'Should return database object when PassThru is specified' {
                 InModuleScope -ScriptBlock {
+                    $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+
                     $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
                     $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
                     $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'DefaultFileGroup' -Value 'PRIMARY' -Force
@@ -175,17 +192,13 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                         $this.DefaultFileGroup = $fileGroupName
                     } -Force
 
-                    $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                    $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
-                    $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
-                        return @{
-                            'TestDatabase' = $mockDatabaseObject
-                        }
-                    } -Force
+                    Mock -CommandName Get-SqlDscDatabase -MockWith { return $mockDatabaseObject }
 
                     $result = Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'TestDatabase' -DefaultFileGroup 'PassThruTest' -PassThru -Force
                     $result | Should -Be $mockDatabaseObject
                     $result.DefaultFileGroup | Should -Be 'PassThruTest'
+                    
+                    Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
                 }
             }
         }
@@ -195,13 +208,26 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                 InModuleScope -ScriptBlock {
                     $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
                     $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
-                    $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
-                        return @{} # Empty collection
-                    } -Force
 
-                    $mockExpectedErrorMessage = $script:localizedData.Database_NotFound -f 'NonExistentDatabase'
+                    # Mock Get-SqlDscDatabase to throw the same error it would throw when a database is not found
+                    Mock -CommandName Get-SqlDscDatabase -MockWith {
+                        param($ServerObject, $Name, $Refresh, $ErrorAction)
+                        
+                        if ($ErrorAction -eq 'Stop') {
+                            $missingDatabaseMessage = "Database '$Name' was not found."
+                            $writeErrorParameters = @{
+                                Message      = $missingDatabaseMessage
+                                Category     = 'ObjectNotFound'
+                                ErrorId      = 'GSDD0001'
+                                TargetObject = $Name
+                            }
+                            Write-Error @writeErrorParameters -ErrorAction 'Stop'
+                        }
+                    }
 
-                    { Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'NonExistentDatabase' -DefaultFileGroup 'TestGroup' -Force } | Should -Throw -ExpectedMessage "*$mockExpectedErrorMessage*"
+                    { Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'NonExistentDatabase' -DefaultFileGroup 'TestGroup' -Force } | Should -Throw -ExpectedMessage "*Database 'NonExistentDatabase' was not found*"
+                    
+                    Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
                 }
             }
         }

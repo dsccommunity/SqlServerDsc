@@ -120,29 +120,21 @@ function Set-SqlDscDatabaseDefault
     {
         if ($PSCmdlet.ParameterSetName -eq 'ServerObject')
         {
-            if ($Refresh.IsPresent)
-            {
-                # Refresh the server object's databases collection
-                $ServerObject.Databases.Refresh()
-            }
-
-            Write-Verbose -Message ($script:localizedData.DatabaseDefault_Set -f $Name, $ServerObject.InstanceName)
-
             # Get the database object
-            $DatabaseObject = $ServerObject.Databases[$Name]
+            $previousErrorActionPreference = $ErrorActionPreference
+            $ErrorActionPreference = 'Stop'
 
-            if (-not $DatabaseObject)
-            {
-                $errorMessage = $script:localizedData.Database_NotFound -f $Name
-                New-InvalidOperationException -Message $errorMessage
-            }
+            $DatabaseObject = $ServerObject | Get-SqlDscDatabase -Name $Name -Refresh:$Refresh.IsPresent -ErrorAction 'Stop'
+
+            $ErrorActionPreference = $previousErrorActionPreference
         }
         else
         {
             $Name = $DatabaseObject.Name
             $ServerObject = $DatabaseObject.Parent
-            Write-Verbose -Message ($script:localizedData.DatabaseDefault_Set -f $Name, $ServerObject.InstanceName)
         }
+
+        Write-Verbose -Message ($script:localizedData.DatabaseDefault_Set -f $Name, $ServerObject.InstanceName)
 
         if ($Force.IsPresent -and -not $Confirm)
         {
