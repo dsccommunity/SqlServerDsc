@@ -28,6 +28,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added setup workflow for GitHub Copilot.
   - Switch the workflow to use Linux.
+- `Set-SqlDscDatabaseDefault`
+  - Added new command to set default objects of a database in a SQL Server Database Engine instance.
+  - The command can set the default filegroup, default FILESTREAM filegroup, and default Full-Text catalog
+    using SMO methods SetDefaultFileGroup, SetDefaultFileStreamFileGroup, and SetDefaultFullTextCatalog.
+  - Supports both ServerObject with Name parameter set and DatabaseObject parameter set.
+  - Includes comprehensive unit tests and integration tests.
   - Attempt to unshallow the Copilot branch
 - `SqlAgentAlert`
   - Added new DSC resource to manage SQL Server Agent alerts.

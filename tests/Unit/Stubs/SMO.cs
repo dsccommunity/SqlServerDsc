@@ -567,6 +567,8 @@ namespace Microsoft.SqlServer.Management.Smo
         public DateTime CreateDate;
         public DatabaseEncryptionKey DatabaseEncryptionKey;
         public string DefaultFileStreamFileGroup;
+        public string DefaultFileGroup = "PRIMARY";
+        public string DefaultFullTextCatalog;
         public bool EncryptionEnabled = false;
         public Hashtable FileGroups;
         public string FilestreamDirectoryName;
@@ -616,6 +618,33 @@ namespace Microsoft.SqlServer.Management.Smo
 
         public void Deny( Microsoft.SqlServer.Management.Smo.DatabasePermissionSet permission, string granteeName )
         {
+        }
+
+        public void SetDefaultFileGroup( string fileGroupName )
+        {
+            if (fileGroupName == "ThrowException")
+            {
+                throw new System.Exception("Failed to set default filegroup");
+            }
+            this.DefaultFileGroup = fileGroupName;
+        }
+
+        public void SetDefaultFileStreamFileGroup( string fileGroupName )
+        {
+            if (fileGroupName == "ThrowException")
+            {
+                throw new System.Exception("Failed to set default FILESTREAM filegroup");
+            }
+            this.DefaultFileStreamFileGroup = fileGroupName;
+        }
+
+        public void SetDefaultFullTextCatalog( string catalogName )
+        {
+            if (catalogName == "ThrowException")
+            {
+                throw new System.Exception("Failed to set default Full-Text catalog");
+            }
+            this.DefaultFullTextCatalog = catalogName;
         }
     }
 

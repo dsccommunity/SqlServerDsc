@@ -371,6 +371,18 @@ ConvertFrom-StringData @'
     Database_RecoveryModelWrong = The database '{0}' exists and has the recovery model '{1}', but expected it to have the recovery model '{2}'.
     Database_OwnerNameWrong = The database '{0}' exists and has the owner '{1}', but expected it to have the owner '{2}'.
 
+    ## Set-SqlDscDatabaseDefault
+    DatabaseDefault_Set = Setting default objects of database '{0}' on instance '{1}'. (SSDD0001)
+    DatabaseDefault_Updated = Database '{0}' default objects were updated successfully. (SSDD0002)
+    DatabaseDefault_SetFailed = Failed to set default objects of database '{0}' on instance '{1}'. (SSDD0003)
+    DatabaseDefault_UpdatingDefaultFileGroup = Setting the default filegroup to '{0}'. (SSDD0004)
+    DatabaseDefault_UpdatingDefaultFileStreamFileGroup = Setting the default FILESTREAM filegroup to '{0}'. (SSDD0005)
+    DatabaseDefault_UpdatingDefaultFullTextCatalog = Setting the default Full-Text catalog to '{0}'. (SSDD0006)
+    DatabaseDefault_Set_ShouldProcessVerboseDescription = Setting default objects of the database '{0}' on the instance '{1}'.
+    DatabaseDefault_Set_ShouldProcessVerboseWarning = Are you sure you want to modify the default objects of the database '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    DatabaseDefault_Set_ShouldProcessCaption = Set database default objects on instance
+
     ## Get-AgentAlertObject
     Get_AgentAlertObject_GettingAlert = Getting SQL Agent Alert '{0}'. (GAAO0001)
 
