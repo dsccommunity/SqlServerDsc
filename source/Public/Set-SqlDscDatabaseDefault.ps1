@@ -58,6 +58,13 @@
 
         Sets multiple default objects for the database named **MyDatabase**.
 
+    .INPUTS
+        Microsoft.SqlServer.Management.Smo.Server
+        Server object accepted from the pipeline (ServerObject parameter set).
+
+        Microsoft.SqlServer.Management.Smo.Database
+        Database object accepted from the pipeline (DatabaseObject parameter set).
+
     .OUTPUTS
         None. But when **PassThru** is specified the output is `[Microsoft.SqlServer.Management.Smo.Database]`.
 #>
