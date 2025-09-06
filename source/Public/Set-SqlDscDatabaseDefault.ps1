@@ -203,7 +203,7 @@ function Set-SqlDscDatabaseDefault
             $PSCmdlet.ThrowTerminatingError(
                 [System.Management.Automation.ErrorRecord]::new(
                     $exception,
-                    'SSDDD0001', # cSpell: disable-line
+                    'SSDDD0003', # cSpell: disable-line
                     [System.Management.Automation.ErrorCategory]::InvalidOperation,
                     $Name
                 )

@@ -98,8 +98,6 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
         Context 'When database exists' {
             BeforeAll {
                 Mock -CommandName Get-SqlDscDatabase -MockWith {
-                    param($ServerObject, $Name)
-                    
                     if ($Name -eq 'TestDatabase') {
                         $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
                         $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
@@ -129,7 +127,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                     }
 
                     $null = Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'TestDatabase' -DefaultFileGroup 'NewFileGroup' -Force
-                    
+
                     # Verify that Get-SqlDscDatabase was called
                     Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
                 }
@@ -152,7 +150,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                     }
 
                     $null = Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'TestDatabase' -DefaultFileStreamFileGroup 'NewFileStreamGroup' -Force
-                    
+
                     Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
                 }
             }
@@ -174,7 +172,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                     }
 
                     $null = Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'TestDatabase' -DefaultFullTextCatalog 'NewFTCatalog' -Force
-                    
+
                     Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
                 }
             }
@@ -197,7 +195,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                     $result = Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'TestDatabase' -DefaultFileGroup 'PassThruTest' -PassThru -Force
                     $result | Should -Be $mockDatabaseObject
                     $result.DefaultFileGroup | Should -Be 'PassThruTest'
-                    
+
                     Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
                 }
             }
@@ -211,8 +209,6 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
 
                     # Mock Get-SqlDscDatabase to throw the same error it would throw when a database is not found
                     Mock -CommandName Get-SqlDscDatabase -MockWith {
-                        param($ServerObject, $Name, $Refresh, $ErrorAction)
-                        
                         if ($ErrorAction -eq 'Stop') {
                             $missingDatabaseMessage = "Database '$Name' was not found."
                             $writeErrorParameters = @{
@@ -225,8 +221,8 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                         }
                     }
 
-                    { Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'NonExistentDatabase' -DefaultFileGroup 'TestGroup' -Force } | Should -Throw -ExpectedMessage "*Database 'NonExistentDatabase' was not found*"
-                    
+                    { Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'NonExistentDatabase' -DefaultFileGroup 'TestGroup' -Force } | Should -Throw -ExpectedMessage "*Database 'NonExistentDatabase' on instance 'TestInstance'*"
+
                     Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
                 }
             }
