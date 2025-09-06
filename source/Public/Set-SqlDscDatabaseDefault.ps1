@@ -188,9 +188,11 @@ function Set-SqlDscDatabaseDefault
             {
                 $errorMessage = $script:localizedData.DatabaseDefault_SetFailed -f $Name, $ServerObject.InstanceName
 
+                $exception = [System.InvalidOperationException]::new($errorMessage, $_.Exception)
+
                 $PSCmdlet.ThrowTerminatingError(
                     [System.Management.Automation.ErrorRecord]::new(
-                        $errorMessage,
+                        $exception,
                         'SSDDD0001', # cSpell: disable-line
                         [System.Management.Automation.ErrorCategory]::InvalidOperation,
                         $Name
