@@ -233,7 +233,7 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
                 $result = $loginObjects | Get-SqlDscServerPermission
 
                 $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[]]
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
                 $result.Count | Should -BeGreaterThan 1
             }
         }
@@ -271,7 +271,7 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
                 $result = $roleObjects | Get-SqlDscServerPermission
 
                 $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[]]
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
                 $result.Count | Should -BeGreaterThan 1
             }
         }

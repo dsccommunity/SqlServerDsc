@@ -23,6 +23,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     ValidateSet for the Edition property.
 - Fixed commands continuing execution after `Assert-ElevatedUser` elevation
   errors by setting `$ErrorActionPreference = 'Stop'` [issue #2070](https://github.com/dsccommunity/SqlServerDsc/issues/2070)
+- Fixed incorrect array-return syntax in several public `Get-*` commands by
+  removing a leading comma in return statements which could cause incorrect
+  output and ScriptAnalyzer warnings: `Get-SqlDscAudit`,
+  `Get-SqlDscConfigurationOption`, `Get-SqlDscDatabasePermission`,
+  `Get-SqlDscServerPermission`, and `Get-SqlDscTraceFlag`.
+- New-SqlDscDatabase: use `New-ArgumentException` instead of
+  `New-InvalidArgumentException` for parameter validation errors.
 
 ### Added
 
@@ -131,6 +138,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved markdown, pester, powershell, and changelog instructions.
   - Fixed `Ignore` that seems in edge-cases fail.
   - Improved markdown and changelog instructions.
+- `RequiredModules.psd1`
+  - Updated `DscResource.Test` dependency to `latest` (was pinned to `0.17.2`).
+- Examples
+  - `source/Examples/Resources/SqlSetup/5-InstallNamedInstanceInFailoverClusterSecondNode.ps1`
+    - Removed redundant `$SqlAdministratorCredential` parameter from example
+      configuration.
 
 ## [17.1.0] - 2025-05-22
 
