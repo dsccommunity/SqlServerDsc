@@ -162,7 +162,6 @@ function Set-SqlDscDatabaseDefault
 
                 if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
                 {
-                    Write-Verbose -Message ($script:localizedData.DatabaseDefault_UpdatingDefaultFileGroup -f $DefaultFileGroup)
                     $DatabaseObject.SetDefaultFileGroup($DefaultFileGroup)
                     $wasUpdate = $true
                 }
@@ -176,7 +175,6 @@ function Set-SqlDscDatabaseDefault
 
                 if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
                 {
-                    Write-Verbose -Message ($script:localizedData.DatabaseDefault_UpdatingDefaultFileStreamFileGroup -f $DefaultFileStreamFileGroup)
                     $DatabaseObject.SetDefaultFileStreamFileGroup($DefaultFileStreamFileGroup)
                     $wasUpdate = $true
                 }
@@ -190,7 +188,6 @@ function Set-SqlDscDatabaseDefault
 
                 if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
                 {
-                    Write-Verbose -Message ($script:localizedData.DatabaseDefault_UpdatingDefaultFullTextCatalog -f $DefaultFullTextCatalog)
                     $DatabaseObject.SetDefaultFullTextCatalog($DefaultFullTextCatalog)
                     $wasUpdate = $true
                 }
