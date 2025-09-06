@@ -79,6 +79,7 @@ applyTo: "**/*.ps?(m|d)1"
 - For state-changing functions, use `SupportsShouldProcess`
   - Place ShouldProcess check immediately before each state-change
   - `$PSCmdlet.ShouldProcess` must use required pattern
+  - Inside `$PSCmdlet.ShouldProcess`-block, avoid using `Write-Verbose`
 - Never use backtick as line continuation in production code.
 - Set `$ErrorActionPreference = 'Stop'` before commands using `-ErrorAction 'Stop'`; restore after
 
