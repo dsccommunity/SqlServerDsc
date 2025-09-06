@@ -173,6 +173,10 @@ function Test-SqlDscServerPermission
 
             if (-not $serverPermissionInfo)
             {
+                Write-Debug -Message (
+                    $script:localizedData.ServerPermission_Test_NoPermissionsFound -f $principalName
+                )
+
                 # If no permissions exist and none are desired, that's the desired state
                 if ($Permission.Count -eq 0)
                 {
@@ -186,6 +190,13 @@ function Test-SqlDscServerPermission
 
             # Convert current permissions to ServerPermission objects
             $currentPermissions = $serverPermissionInfo | ConvertTo-SqlDscServerPermission
+
+            # Output verbose information about current permissions as compressed JSON
+            $currentPermissionsJson = $currentPermissions | ConvertTo-Json -Compress
+
+            Write-Debug -Message (
+                $script:localizedData.ServerPermission_Test_CurrentPermissions -f $principalName, $currentPermissionsJson
+            )
 
             # Handle empty Permission collection - check that no permissions are set
             if ($Permission.Count -eq 0)

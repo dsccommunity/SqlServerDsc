@@ -23,6 +23,12 @@ BeforeDiscovery {
     }
 }
 
+BeforeAll {
+    $script:moduleName = 'SqlServerDsc'
+
+    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
+}
+
 Describe 'Test-SqlDscRSInstalled' {
     Context 'When testing if a specific Reporting Services instance exists' -Tag @('Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS', 'Integration_PowerBI') {
         It 'Should return $false for a non-existing instance' {

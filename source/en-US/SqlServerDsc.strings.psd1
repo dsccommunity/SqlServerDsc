@@ -42,25 +42,27 @@ ConvertFrom-StringData @'
     ServerPermission_Grant_ShouldProcessVerboseWarning = Are you sure you want to grant server permissions for the principal '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     ServerPermission_Grant_ShouldProcessCaption = Grant server permissions
-    ServerPermission_Grant_FailedToGrantPermission = Failed to grant server permissions for principal '{0}' on instance '{1}'.
+    ServerPermission_Grant_FailedToGrantPermission = Failed to grant server permissions '{2}' for principal '{0}' on instance '{1}'.
 
     ## Deny-SqlDscServerPermission
     ServerPermission_Deny_ShouldProcessVerboseDescription = Denying server permissions '{2}' for the principal '{0}' on the instance '{1}'.
     ServerPermission_Deny_ShouldProcessVerboseWarning = Are you sure you want to deny server permissions for the principal '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     ServerPermission_Deny_ShouldProcessCaption = Deny server permissions
-    ServerPermission_Deny_FailedToDenyPermission = Failed to deny server permissions for principal '{0}' on instance '{1}'.
+    ServerPermission_Deny_FailedToDenyPermission = Failed to deny server permissions '{2}' for principal '{0}' on instance '{1}'.
 
     ## Test-SqlDscServerPermission
     ServerPermission_TestingDesiredState = Testing desired state for server permissions for principal '{0}' on instance '{1}'.
     ServerPermission_Test_TestFailed = Failed to test server permissions for principal '{0}': {1}
+    ServerPermission_Test_CurrentPermissions = Current server permissions for principal '{0}': {1}
+    ServerPermission_Test_NoPermissionsFound = No server permissions found for principal '{0}'.
 
     ## Revoke-SqlDscServerPermission
     ServerPermission_Revoke_ShouldProcessVerboseDescription = Revoking server permissions '{2}' for the principal '{0}' on the instance '{1}'.
     ServerPermission_Revoke_ShouldProcessVerboseWarning = Are you sure you want to revoke server permissions for the principal '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     ServerPermission_Revoke_ShouldProcessCaption = Revoke server permissions
-    ServerPermission_Revoke_FailedToRevokePermission = Failed to revoke server permissions for principal '{0}' on instance '{1}'.
+    ServerPermission_Revoke_FailedToRevokePermission = Failed to revoke server permissions '{2}' for principal '{0}' on instance '{1}'.
 
     ## Class DatabasePermission
     InvalidTypeForCompare = Invalid type in comparison. Expected type [{0}], but the type was [{1}]. (DP0001)

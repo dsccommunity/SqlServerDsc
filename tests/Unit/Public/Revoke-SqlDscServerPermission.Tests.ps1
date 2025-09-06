@@ -104,8 +104,8 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'Public' {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'MockInstance'
 
-            $mockLogin = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList $mockServerObject, 'TestUser'
-            $mockServerRole = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList $mockServerObject, 'TestRole'
+            $script:mockLogin = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList $mockServerObject, 'TestUser'
+            $script:mockServerRole = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList $mockServerObject, 'TestRole'
 
             # Mock the Revoke method on the server object
             $mockServerObject | Add-Member -MemberType ScriptMethod -Name 'Revoke' -Value {
@@ -115,27 +115,15 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'Public' {
         }
 
         It 'Should revoke permissions from a login' {
-            InModuleScope -Parameters @{
-                mockLogin = $mockLogin
-            } -ScriptBlock {
-                $null = Revoke-SqlDscServerPermission -Login $mockLogin -Permission ConnectSql -Force
-            }
+            $null = Revoke-SqlDscServerPermission -Login $script:mockLogin -Permission 'ConnectSql' -Force
         }
 
         It 'Should revoke permissions from a server role' {
-            InModuleScope -Parameters @{
-                mockServerRole = $mockServerRole
-            } -ScriptBlock {
-                $null = Revoke-SqlDscServerPermission -ServerRole $mockServerRole -Permission ConnectSql -Force
-            }
+            $null = Revoke-SqlDscServerPermission -ServerRole $script:mockServerRole -Permission 'ConnectSql' -Force
         }
 
         It 'Should handle WithGrant parameter correctly' {
-            InModuleScope -Parameters @{
-                mockLogin = $mockLogin
-            } -ScriptBlock {
-                $null = Revoke-SqlDscServerPermission -Login $mockLogin -Permission ConnectSql -WithGrant -Force
-            }
+            $null = Revoke-SqlDscServerPermission -Login $script:mockLogin -Permission 'ConnectSql' -WithGrant -Force
         }
     }
 
@@ -144,7 +132,7 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'Public' {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'MockInstance'
 
-            $mockLogin = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList $mockServerObject, 'TestUser'
+            $script:mockLogin = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList $mockServerObject, 'TestUser'
 
             # Mock the Revoke method to throw an error
             $mockServerObject | Add-Member -MemberType ScriptMethod -Name 'Revoke' -Value {
@@ -154,12 +142,8 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'Public' {
         }
 
         It 'Should throw a descriptive error when operation fails' {
-            InModuleScope -Parameters @{
-                mockLogin = $mockLogin
-            } -ScriptBlock {
-                { Revoke-SqlDscServerPermission -Login $mockLogin -Permission ConnectSql -Force } |
-                    Should -Throw -ExpectedMessage '*Failed to revoke server permissions*'
-            }
+            { Revoke-SqlDscServerPermission -Login $script:mockLogin -Permission 'ConnectSql' -Force } |
+                Should -Throw -ExpectedMessage '*Failed to revoke server permissions*'
         }
     }
 
@@ -168,8 +152,8 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'Public' {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'MockInstance'
 
-            $mockLogin = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList $mockServerObject, 'TestUser'
-            $mockServerRole = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList $mockServerObject, 'TestRole'
+            $script:mockLogin = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList $mockServerObject, 'TestUser'
+            $script:mockServerRole = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList $mockServerObject, 'TestRole'
 
             # Mock the Revoke method on the server object
             $mockServerObject | Add-Member -MemberType ScriptMethod -Name 'Revoke' -Value {
@@ -179,19 +163,11 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'Public' {
         }
 
         It 'Should accept Login from pipeline' {
-            InModuleScope -Parameters @{
-                mockLogin = $mockLogin
-            } -ScriptBlock {
-                $null = $mockLogin | Revoke-SqlDscServerPermission -Permission ConnectSql -Force
-            }
+            $null = $script:mockLogin | Revoke-SqlDscServerPermission -Permission 'ConnectSql' -Force
         }
 
         It 'Should accept ServerRole from pipeline' {
-            InModuleScope -Parameters @{
-                mockServerRole = $mockServerRole
-            } -ScriptBlock {
-                $null = $mockServerRole | Revoke-SqlDscServerPermission -Permission ConnectSql -Force
-            }
+            $null = $script:mockServerRole | Revoke-SqlDscServerPermission -Permission 'ConnectSql' -Force
         }
     }
 }
