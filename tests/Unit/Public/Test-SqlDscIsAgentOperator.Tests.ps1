@@ -54,7 +54,7 @@ Describe 'Test-SqlDscIsAgentOperator' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-ServerObject] <Server> [-Name] <string> [[-EmailAddress] <string>] [-Refresh] [<CommonParameters>]'
+                ExpectedParameters = '[-ServerObject] <Server> [-Name] <string> [-Refresh] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Test-SqlDscIsAgentOperator').ParameterSets |
