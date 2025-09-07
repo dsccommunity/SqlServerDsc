@@ -68,7 +68,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
 
             # Update the email address
             $newEmailAddress = 'updated@example.com'
-            Set-SqlDscAgentOperator -OperatorObject $operatorObject -EmailAddress $newEmailAddress -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscAgentOperator -OperatorObject $operatorObject -EmailAddress $newEmailAddress -Force -ErrorAction 'Stop'
 
             # Verify the email address was updated
             $operatorObject.Refresh()
@@ -84,7 +84,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
             $newNetSendAddress = 'COMPUTER\User'
             $newPagerAddress = '555-1234'
 
-            Set-SqlDscAgentOperator -OperatorObject $operatorObject -EmailAddress $newEmailAddress -NetSendAddress $newNetSendAddress -PagerAddress $newPagerAddress -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscAgentOperator -OperatorObject $operatorObject -EmailAddress $newEmailAddress -NetSendAddress $newNetSendAddress -PagerAddress $newPagerAddress -Force -ErrorAction 'Stop'
 
             # Verify all properties were updated
             $operatorObject.Refresh()
@@ -99,7 +99,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
             $newEmailAddress = 'serverset@example.com'
 
             # Update using ServerObject parameter set
-            Set-SqlDscAgentOperator -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestOperator_Persistent' -EmailAddress $newEmailAddress -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscAgentOperator -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestOperator_Persistent' -EmailAddress $newEmailAddress -Force -ErrorAction 'Stop'
 
             # Verify the email address was updated
             $operatorObject = Get-SqlDscAgentOperator -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestOperator_Persistent' -ErrorAction 'Stop'

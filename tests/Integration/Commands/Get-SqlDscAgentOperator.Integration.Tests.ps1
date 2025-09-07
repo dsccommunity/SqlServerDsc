@@ -55,8 +55,8 @@ Describe 'Get-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
         $script:sqlServerObject = Connect-SqlDscDatabaseEngine -InstanceName $script:sqlServerInstance -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
 
         # Create test operators for getting
-        $script:sqlServerObject | New-SqlDscAgentOperator -Name 'IntegrationTest_GetOperator1' -EmailAddress 'operator1@contoso.com' -ErrorAction Stop
-        $script:sqlServerObject | New-SqlDscAgentOperator -Name 'IntegrationTest_GetOperator2' -ErrorAction Stop
+        $script:sqlServerObject | New-SqlDscAgentOperator -Name 'IntegrationTest_GetOperator1' -EmailAddress 'operator1@contoso.com' -Force -ErrorAction 'Stop'
+        $script:sqlServerObject | New-SqlDscAgentOperator -Name 'IntegrationTest_GetOperator2' -Force -ErrorAction 'Stop'
     }
 
     AfterAll {

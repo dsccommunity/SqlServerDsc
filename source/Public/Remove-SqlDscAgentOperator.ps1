@@ -17,6 +17,10 @@
     .PARAMETER Force
         Specifies that the operator should be removed without any confirmation.
 
+    .PARAMETER Refresh
+        Specifies that the SQL Agent Operator object should be refreshed before removal.
+        This is only used when specifying the operator by name.
+
     .INPUTS
         Microsoft.SqlServer.Management.Smo.Server
 
@@ -47,6 +51,12 @@
         $operatorObject | Remove-SqlDscAgentOperator
 
         Removes the SQL Agent Operator using operator object pipeline input.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        Remove-SqlDscAgentOperator -ServerObject $serverObject -Name 'MyOperator' -Refresh
+
+        Removes the SQL Agent Operator named 'MyOperator' with explicit refresh of the operator object.
 #>
 function Remove-SqlDscAgentOperator
 {
@@ -70,7 +80,11 @@ function Remove-SqlDscAgentOperator
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $Force
+        $Force,
+
+        [Parameter(ParameterSetName = 'ByName')]
+        [System.Management.Automation.SwitchParameter]
+        $Refresh
     )
 
     # cSpell: ignore RSAO
@@ -85,7 +99,7 @@ function Remove-SqlDscAgentOperator
             $previousErrorActionPreference = $ErrorActionPreference
             $ErrorActionPreference = 'Stop'
 
-            $OperatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name -Refresh -ErrorAction 'Stop'
+            $OperatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name -Refresh:$Refresh -ErrorAction 'Stop'
 
             $ErrorActionPreference = $previousErrorActionPreference
         }

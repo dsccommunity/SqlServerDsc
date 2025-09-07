@@ -1,4 +1,3 @@
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
@@ -133,7 +132,7 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should remove operator when it exists' {
             $script:mockMethodDropCallCount = 0
 
-            Remove-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator'
+            $null = Remove-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator'
 
             $script:mockMethodDropCallCount | Should -Be 1
         }
@@ -147,7 +146,7 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
             It 'Should not call Drop method when using WhatIf' {
                 $script:mockMethodDropCallCount = 0
 
-                Remove-SqlDscAgentOperator -WhatIf -ServerObject $script:mockServerObject -Name 'TestOperator'
+                $null = Remove-SqlDscAgentOperator -WhatIf -ServerObject $script:mockServerObject -Name 'TestOperator'
 
                 $script:mockMethodDropCallCount | Should -Be 0
             }
@@ -191,7 +190,7 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should remove operator when using operator object' {
             $script:mockMethodDropCallCount = 0
 
-            Remove-SqlDscAgentOperator -Force -OperatorObject $script:mockOperator
+            $null = Remove-SqlDscAgentOperator -Force -OperatorObject $script:mockOperator
 
             $script:mockMethodDropCallCount | Should -Be 1
         }

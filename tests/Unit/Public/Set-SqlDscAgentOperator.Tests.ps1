@@ -1,4 +1,3 @@
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
@@ -172,7 +171,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
             $script:mockMethodAlterCallCount = 0
             $script:mockOperator.EmailAddress = 'old@contoso.com'
 
-            Set-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'new@contoso.com'
+            $null = Set-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'new@contoso.com'
 
             $script:mockOperator.EmailAddress | Should -Be 'new@contoso.com'
             $script:mockMethodAlterCallCount | Should -Be 1
@@ -182,7 +181,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
             $script:mockMethodAlterCallCount = 0
             $script:mockOperator.EmailAddress = 'correct@contoso.com'
 
-            Set-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'correct@contoso.com'
+            $null = Set-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'correct@contoso.com'
 
             $script:mockMethodAlterCallCount | Should -Be 1
         }
@@ -197,7 +196,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
                 $script:mockMethodAlterCallCount = 0
                 $script:mockOperator.EmailAddress = 'old@contoso.com'
 
-                Set-SqlDscAgentOperator -WhatIf -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'new@contoso.com'
+                $null = Set-SqlDscAgentOperator -WhatIf -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'new@contoso.com'
 
                 $script:mockMethodAlterCallCount | Should -Be 0
             }
@@ -244,7 +243,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
             $script:mockMethodAlterCallCount = 0
             $script:mockOperator.EmailAddress = 'old@contoso.com'
 
-            Set-SqlDscAgentOperator -Force -OperatorObject $script:mockOperator -EmailAddress 'new@contoso.com'
+            $null = Set-SqlDscAgentOperator -Force -OperatorObject $script:mockOperator -EmailAddress 'new@contoso.com'
 
             $script:mockOperator.EmailAddress | Should -Be 'new@contoso.com'
             $script:mockMethodAlterCallCount | Should -Be 1

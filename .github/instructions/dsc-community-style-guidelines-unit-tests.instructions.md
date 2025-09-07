@@ -15,7 +15,6 @@ applyTo: "tests/[u]Unit/**/*.[Tt]ests.ps1"
 Use this exact setup block before `Describe`:
 
 ```powershell
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
