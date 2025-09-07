@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added private function `Get-CommandParameters` to filter command parameters
+  by excluding specified parameter names and common parameters, providing a
+  reusable way to determine settable properties on objects.
+
 ### Fixed
 
 - Make sure tests forcibly imports the module being tested to avoid AI failing
