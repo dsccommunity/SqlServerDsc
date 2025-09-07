@@ -52,7 +52,7 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Public' {
 
     Context 'When operator exists' {
         BeforeAll {
-            Mock -CommandName Get-SqlDscAgentOperator -MockWith {
+            Mock -CommandName Get-AgentOperatorObject -MockWith {
                 $mockOperatorObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
                 return $mockOperatorObject
             }
@@ -62,10 +62,11 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Public' {
             { Assert-SqlDscAgentOperator -ServerObject $mockServerObject -Name $mockOperatorName } | Should -Not -Throw
         }
 
-        It 'Should call Get-SqlDscAgentOperator with correct parameters' {
+        It 'Should call Get-AgentOperatorObject with correct parameters' {
             Assert-SqlDscAgentOperator -ServerObject $mockServerObject -Name $mockOperatorName
 
-            Should -Invoke -CommandName Get-SqlDscAgentOperator -ParameterFilter {
+            Should -Invoke -CommandName Get-AgentOperatorObject -ParameterFilter {
+                $ServerObject -eq $mockServerObject -and
                 $Name -eq $mockOperatorName -and
                 $ErrorAction -eq 'Stop'
             } -Exactly -Times 1
@@ -74,16 +75,24 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Public' {
 
     Context 'When operator does not exist' {
         BeforeAll {
-            Mock -CommandName Get-SqlDscAgentOperator -MockWith {
-                return $null
+            Mock -CommandName Get-AgentOperatorObject -MockWith {
+                $errorMessage = "The operator 'NonExistentOperator' does not exist on the instance 'TestInstance'."
+                $exception = [System.InvalidOperationException]::new($errorMessage)
+                $errorRecord = [System.Management.Automation.ErrorRecord]::new(
+                    $exception,
+                    'GAOO0001',
+                    [System.Management.Automation.ErrorCategory]::ObjectNotFound,
+                    'NonExistentOperator'
+                )
+                $PSCmdlet.ThrowTerminatingError($errorRecord)
             }
         }
 
         It 'Should throw a terminating error when operator not found' {
-            { Assert-SqlDscAgentOperator -ServerObject $mockServerObject -Name 'NonExistentOperator' } | Should -Throw -ExpectedMessage "*NonExistentOperator*not found*"
+            { Assert-SqlDscAgentOperator -ServerObject $mockServerObject -Name 'NonExistentOperator' } | Should -Throw -ExpectedMessage "*NonExistentOperator*does not exist*"
         }
 
-        It 'Should call Get-SqlDscAgentOperator once before throwing error' {
+        It 'Should call Get-AgentOperatorObject once before throwing error' {
             try
             {
                 Assert-SqlDscAgentOperator -ServerObject $mockServerObject -Name 'NonExistentOperator'
@@ -93,7 +102,7 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Public' {
                 # Expected to throw
             }
 
-            Should -Invoke -CommandName Get-SqlDscAgentOperator -Exactly -Times 1
+            Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1
         }
     }
 }

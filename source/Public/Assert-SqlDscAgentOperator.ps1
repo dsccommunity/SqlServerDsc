@@ -41,28 +41,13 @@ function Assert-SqlDscAgentOperator
         $Name
     )
 
-    $getSqlDscAgentOperatorParameters = @{
-        ServerObject = $ServerObject
-        Name         = $Name
-        ErrorAction  = 'Stop'
-    }
+    $originalErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = 'Stop'
 
-    # If this command does not find the operator it will return $null.
-    $operatorObject = Get-SqlDscAgentOperator @getSqlDscAgentOperatorParameters
+    # This will throw a terminating error if the operator is not found
+    $null = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name -ErrorAction 'Stop'
 
-    if (-not $operatorObject)
-    {
-        $errorMessage = $script:localizedData.AgentOperator_NotFound -f $Name
-        $exception = [System.InvalidOperationException]::new($errorMessage)
-        $errorRecord = [System.Management.Automation.ErrorRecord]::new(
-            $exception,
-            'ASAO0001',
-            [System.Management.Automation.ErrorCategory]::ObjectNotFound,
-            $Name
-        )
-
-        $PSCmdlet.ThrowTerminatingError($errorRecord)
-    }
+    $ErrorActionPreference = $originalErrorActionPreference
 
     # This command does not return anything if the operator exists
 }
