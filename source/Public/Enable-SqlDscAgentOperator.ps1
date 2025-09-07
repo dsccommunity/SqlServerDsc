@@ -87,15 +87,9 @@ function Enable-SqlDscAgentOperator
 
         if ($PSCmdlet.ParameterSetName -eq 'ServerObject')
         {
-            if ($Refresh.IsPresent)
-            {
-                Write-Verbose -Message ($script:localizedData.Enable_SqlDscAgentOperator_RefreshingServerObject)
-                $ServerObject.JobServer.Operators.Refresh()
-            }
-
             $originalErrorActionPreference = $ErrorActionPreference
             $ErrorActionPreference = 'Stop'
-            $OperatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name -ErrorAction 'Stop'
+            $OperatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name -Refresh:$Refresh -ErrorAction 'Stop'
             $ErrorActionPreference = $originalErrorActionPreference
         }
 

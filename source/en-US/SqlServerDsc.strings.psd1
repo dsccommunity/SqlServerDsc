@@ -485,7 +485,6 @@ ConvertFrom-StringData @'
     Test_SqlDscAgentOperator_AllTestsPassed = All tests passed for SQL Agent Operator '{0}'. (TSAO0007)
 
     ## Enable-SqlDscAgentOperator
-    Enable_SqlDscAgentOperator_RefreshingServerObject = Refreshing server object's operators collection. (ESAO0001)
     Enable_SqlDscAgentOperator_EnableFailed = Failed to enable SQL Agent Operator '{0}'. (ESAO0005)
     Enable_SqlDscAgentOperator_ShouldProcessVerboseDescription = Enabling the SQL Agent Operator '{0}' on the instance '{1}'.
     Enable_SqlDscAgentOperator_ShouldProcessVerboseWarning = Are you sure you want to enable the SQL Agent Operator '{0}'?
@@ -493,7 +492,6 @@ ConvertFrom-StringData @'
     Enable_SqlDscAgentOperator_ShouldProcessCaption = Enable SQL Agent Operator on instance
 
     ## Disable-SqlDscAgentOperator
-    Disable_SqlDscAgentOperator_RefreshingServerObject = Refreshing server object's operators collection. (DSAO0001)
     Disable_SqlDscAgentOperator_DisableFailed = Failed to disable SQL Agent Operator '{0}'. (DSAO0005)
     Disable_SqlDscAgentOperator_ShouldProcessVerboseDescription = Disabling the SQL Agent Operator '{0}' on the instance '{1}'.
     Disable_SqlDscAgentOperator_ShouldProcessVerboseWarning = Are you sure you want to disable the SQL Agent Operator '{0}'?
