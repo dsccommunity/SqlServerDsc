@@ -55,11 +55,11 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = 'ByName'
-                ExpectedParameters = '-ServerObject <Server> -Name <string> [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-ServerObject <Server> -Name <string> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
             @{
                 ExpectedParameterSetName = 'ByObject'
-                ExpectedParameters = '-OperatorObject <Operator> [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-OperatorObject <Operator> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Remove-SqlDscAgentOperator').ParameterSets |

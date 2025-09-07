@@ -55,11 +55,11 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = 'ByName'
-                ExpectedParameters = '-ServerObject <Server> -Name <string> [-EmailAddress <string>] [-CategoryName <string>] [-NetSendAddress <string>] [-PagerAddress <string>] [-PagerDays <WeekDays>] [-SaturdayPagerEndTime <timespan>] [-SaturdayPagerStartTime <timespan>] [-SundayPagerEndTime <timespan>] [-SundayPagerStartTime <timespan>] [-WeekdayPagerEndTime <timespan>] [-WeekdayPagerStartTime <timespan>] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-ServerObject <Server> -Name <string> [-EmailAddress <string>] [-CategoryName <string>] [-NetSendAddress <string>] [-PagerAddress <string>] [-PagerDays <WeekDays>] [-SaturdayPagerEndTime <timespan>] [-SaturdayPagerStartTime <timespan>] [-SundayPagerEndTime <timespan>] [-SundayPagerStartTime <timespan>] [-WeekdayPagerEndTime <timespan>] [-WeekdayPagerStartTime <timespan>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
             @{
                 ExpectedParameterSetName = 'ByObject'
-                ExpectedParameters = '-OperatorObject <Operator> [-EmailAddress <string>] [-CategoryName <string>] [-NetSendAddress <string>] [-PagerAddress <string>] [-PagerDays <WeekDays>] [-SaturdayPagerEndTime <timespan>] [-SaturdayPagerStartTime <timespan>] [-SundayPagerEndTime <timespan>] [-SundayPagerStartTime <timespan>] [-WeekdayPagerEndTime <timespan>] [-WeekdayPagerStartTime <timespan>] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-OperatorObject <Operator> [-EmailAddress <string>] [-CategoryName <string>] [-NetSendAddress <string>] [-PagerAddress <string>] [-PagerDays <WeekDays>] [-SaturdayPagerEndTime <timespan>] [-SaturdayPagerStartTime <timespan>] [-SundayPagerEndTime <timespan>] [-SundayPagerStartTime <timespan>] [-WeekdayPagerEndTime <timespan>] [-WeekdayPagerStartTime <timespan>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Set-SqlDscAgentOperator').ParameterSets |
@@ -100,6 +100,33 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscAgentOperator').Parameters['Name']
             $byNameParameterSet = $parameterInfo.ParameterSets['ByName']
             $byNameParameterSet.IsMandatory | Should -BeTrue
+        }
+    }
+
+    Context 'When parameter validation is performed' {
+        It 'Should throw when no settable parameters are provided' {
+            $mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
+            
+            { Set-SqlDscAgentOperator -ServerObject $mockServerObject -Name 'TestOperator' -Confirm:$false } | Should -Throw -ExpectedMessage '*At least one*'
+        }
+
+        It 'Should not throw when at least one settable parameter is provided' {
+            # Create proper mock structure
+            $mockOperator = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
+            $mockOperator.Name = 'TestOperator'
+            
+            $mockOperatorCollection = [Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection]::CreateTypeInstance()
+            $mockOperatorCollection.Add($mockOperator)
+            $mockOperatorCollection | Add-Member -MemberType ScriptMethod -Name 'Refresh' -Value { } -Force
+
+            $mockJobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
+            $mockJobServer.Operators = $mockOperatorCollection
+
+            $mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
+            $mockServerObject.JobServer = $mockJobServer
+            $mockServerObject.InstanceName = 'TestInstance'
+            
+            { Set-SqlDscAgentOperator -ServerObject $mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com' -WhatIf } | Should -Not -Throw
         }
     }
 

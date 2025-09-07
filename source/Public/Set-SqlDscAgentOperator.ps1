@@ -47,6 +47,9 @@
     .PARAMETER WeekdayPagerStartTime
         Specifies the weekday pager start time for the SQL Agent Operator.
 
+    .PARAMETER Force
+        Specifies that the operator should be updated without any confirmation.
+
     .INPUTS
         Microsoft.SqlServer.Management.Smo.Server
 
@@ -140,12 +143,40 @@ function Set-SqlDscAgentOperator
 
         [Parameter()]
         [System.TimeSpan]
-        $WeekdayPagerStartTime
+        $WeekdayPagerStartTime,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Force
     )
+
+    begin
+    {
+        # List of settable properties (excluding ServerObject, OperatorObject, Name, and Force)
+        $settableProperties = @(
+            'EmailAddress',
+            'CategoryName', 
+            'NetSendAddress',
+            'PagerAddress',
+            'PagerDays',
+            'SaturdayPagerEndTime',
+            'SaturdayPagerStartTime',
+            'SundayPagerEndTime',
+            'SundayPagerStartTime',
+            'WeekdayPagerEndTime',
+            'WeekdayPagerStartTime'
+        )
+
+        Assert-BoundParameter -BoundParameterList $PSBoundParameters -AtLeastOneList $settableProperties
+    }
 
     # cSpell: ignore SSAO
     process
     {
+        if ($Force.IsPresent -and -not $Confirm)
+        {
+            $ConfirmPreference = 'None'
+        }
         if ($PSCmdlet.ParameterSetName -eq 'ByName')
         {
             Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_RefreshingServerObject)
@@ -157,24 +188,8 @@ function Set-SqlDscAgentOperator
         }
 
         # Build description of parameters being set for ShouldProcess
-        $parameterDescriptions = @()
-        if ($PSBoundParameters.ContainsKey('EmailAddress')) { $parameterDescriptions += "EmailAddress: '$EmailAddress'" }
-        if ($PSBoundParameters.ContainsKey('CategoryName')) { $parameterDescriptions += "CategoryName: '$CategoryName'" }
-        if ($PSBoundParameters.ContainsKey('NetSendAddress')) { $parameterDescriptions += "NetSendAddress: '$NetSendAddress'" }
-        if ($PSBoundParameters.ContainsKey('PagerAddress')) { $parameterDescriptions += "PagerAddress: '$PagerAddress'" }
-        if ($PSBoundParameters.ContainsKey('PagerDays')) { $parameterDescriptions += "PagerDays: '$PagerDays'" }
-        if ($PSBoundParameters.ContainsKey('SaturdayPagerEndTime')) { $parameterDescriptions += "SaturdayPagerEndTime: '$SaturdayPagerEndTime'" }
-        if ($PSBoundParameters.ContainsKey('SaturdayPagerStartTime')) { $parameterDescriptions += "SaturdayPagerStartTime: '$SaturdayPagerStartTime'" }
-        if ($PSBoundParameters.ContainsKey('SundayPagerEndTime')) { $parameterDescriptions += "SundayPagerEndTime: '$SundayPagerEndTime'" }
-        if ($PSBoundParameters.ContainsKey('SundayPagerStartTime')) { $parameterDescriptions += "SundayPagerStartTime: '$SundayPagerStartTime'" }
-        if ($PSBoundParameters.ContainsKey('WeekdayPagerEndTime')) { $parameterDescriptions += "WeekdayPagerEndTime: '$WeekdayPagerEndTime'" }
-        if ($PSBoundParameters.ContainsKey('WeekdayPagerStartTime')) { $parameterDescriptions += "WeekdayPagerStartTime: '$WeekdayPagerStartTime'" }
-        
-        $parametersText = if ($parameterDescriptions.Count -gt 0) { 
-            "`r`n    " + ($parameterDescriptions -join "`r`n    ") 
-        } else { 
-            " (no parameters to update)" 
-        }
+        $excludeParameters = @('ServerObject', 'OperatorObject', 'Name', 'Force')
+        $parametersText = ConvertTo-FormattedParameterDescription -BoundParameters $PSBoundParameters -ExcludeParameters $excludeParameters
 
         $verboseDescriptionMessage = $script:localizedData.Set_SqlDscAgentOperator_UpdateShouldProcessVerboseDescription -f $OperatorObject.Name, $OperatorObject.Parent.Parent.InstanceName, $parametersText
         $verboseWarningMessage = $script:localizedData.Set_SqlDscAgentOperator_UpdateShouldProcessVerboseWarning -f $OperatorObject.Name

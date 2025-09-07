@@ -14,6 +14,9 @@
     .PARAMETER Name
         Specifies the name of the SQL Agent Operator to remove.
 
+    .PARAMETER Force
+        Specifies that the operator should be removed without any confirmation.
+
     .INPUTS
         Microsoft.SqlServer.Management.Smo.Server
 
@@ -63,12 +66,20 @@ function Remove-SqlDscAgentOperator
         [Parameter(Mandatory = $true, ParameterSetName = 'ByName')]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $Name
+        $Name,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Force
     )
 
     # cSpell: ignore RSAO
     process
     {
+        if ($Force.IsPresent -and -not $Confirm)
+        {
+            $ConfirmPreference = 'None'
+        }
         if ($PSCmdlet.ParameterSetName -eq 'ByName')
         {
             Write-Verbose -Message ($script:localizedData.Remove_SqlDscAgentOperator_RefreshingServerObject)
