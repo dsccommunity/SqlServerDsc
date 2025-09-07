@@ -123,7 +123,7 @@ function Disable-SqlDscAgentOperator
                 $PSCmdlet.ThrowTerminatingError(
                     [System.Management.Automation.ErrorRecord]::new(
                         [System.InvalidOperationException]::new($errorMessage, $_.Exception),
-                        'DSAO0001', # cspell: disable-line
+                        'DSAO0005', # Align with Disable_SqlDscAgentOperator_DisableFailed
                         [System.Management.Automation.ErrorCategory]::InvalidOperation,
                         $OperatorObject
                     )
