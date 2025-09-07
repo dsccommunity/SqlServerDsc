@@ -49,7 +49,7 @@ function Get-CommandParameters
 
     $parametersWithoutCommon = Remove-CommonParameter -Hashtable $Command.Parameters
 
-    $settableProperties = $parametersWithoutCommon.Keys | Where-Object { $_ -notin $Exclude }
+    $settableProperties = $parametersWithoutCommon.Keys | Where-Object -FilterScript { $_ -notin $Exclude }
 
     return $settableProperties
 }

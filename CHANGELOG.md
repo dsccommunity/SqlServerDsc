@@ -108,6 +108,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Improved code quality by ensuring all function invocations in the private
+  and public functions use named parameters instead of positional parameters.
 - SqlServerDsc
   - Updated GitVersion.yml feature branch regex pattern to use anchor `^f(eature(s)?)?[\/-]`
     for more precise branch name matching.
