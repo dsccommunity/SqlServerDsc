@@ -149,7 +149,7 @@ function New-SqlDscAgentOperator
     begin
     {
         # Dynamically get settable properties by filtering out common parameters and control parameters
-        $settableProperties = Get-CommandParameters -Command $MyInvocation.MyCommand -Exclude @('ServerObject', 'Name', 'PassThru', 'Force')
+        $settableProperties = Get-CommandParameter -Command $MyInvocation.MyCommand -Exclude @('ServerObject', 'Name', 'PassThru', 'Force')
 
         Assert-BoundParameter -BoundParameterList $PSBoundParameters -AtLeastOneList $settableProperties
     }

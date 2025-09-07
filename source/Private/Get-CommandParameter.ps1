@@ -23,16 +23,16 @@
         Returns an array of parameter names that are not excluded.
 
     .EXAMPLE
-        $settableProperties = Get-CommandParameters -Command $MyInvocation.MyCommand -Exclude @('ServerObject', 'Name', 'PassThru', 'Force')
+        $settableProperties = Get-CommandParameter -Command $MyInvocation.MyCommand -Exclude @('ServerObject', 'Name', 'PassThru', 'Force')
 
         Returns all parameters except the excluded ones and common parameters.
 
     .EXAMPLE
-        $settableProperties = Get-CommandParameters -Command $MyInvocation.MyCommand
+        $settableProperties = Get-CommandParameter -Command $MyInvocation.MyCommand
 
         Returns all parameters except common parameters and optional common parameters.
 #>
-function Get-CommandParameters
+function Get-CommandParameter
 {
     [CmdletBinding()]
     [OutputType([System.String[]])]

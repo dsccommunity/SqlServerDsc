@@ -43,7 +43,7 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'Get-CommandParameters' -Tag 'Private' {
+Describe 'Get-CommandParameter' -Tag 'Private' {
     Context 'When getting command parameters' {
         It 'Should return all parameters excluding common parameters when no exclude list is provided' {
             InModuleScope -ScriptBlock {
@@ -75,7 +75,7 @@ Describe 'Get-CommandParameters' -Tag 'Private' {
                 }
 
                 $commandInfo = Get-Command Test-Function
-                $result = Get-CommandParameters -Command $commandInfo
+                $result = Get-CommandParameter -Command $commandInfo
 
                 $result | Should -Contain 'RequiredParam'
                 $result | Should -Contain 'OptionalParam1'
@@ -118,7 +118,7 @@ Describe 'Get-CommandParameters' -Tag 'Private' {
                 }
 
                 $commandInfo = Get-Command Test-Function
-                $result = Get-CommandParameters -Command $commandInfo -Exclude @('RequiredParam', 'PassThru', 'Force')
+                $result = Get-CommandParameter -Command $commandInfo -Exclude @('RequiredParam', 'PassThru', 'Force')
 
                 $result | Should -Not -Contain 'RequiredParam'
                 $result | Should -Contain 'OptionalParam1'
@@ -160,7 +160,7 @@ Describe 'Get-CommandParameters' -Tag 'Private' {
                 }
 
                 $commandInfo = Get-Command Test-Function
-                $result = Get-CommandParameters -Command $commandInfo -Exclude @('RequiredParam', 'OptionalParam1', 'OptionalParam2', 'PassThru', 'Force')
+                $result = Get-CommandParameter -Command $commandInfo -Exclude @('RequiredParam', 'OptionalParam1', 'OptionalParam2', 'PassThru', 'Force')
 
                 $result | Should -BeNullOrEmpty
             }
@@ -171,7 +171,7 @@ Describe 'Get-CommandParameters' -Tag 'Private' {
                 # Create a mock function with no parameters
                 function Test-EmptyFunction { }
                 $commandInfo = Get-Command Test-EmptyFunction
-                $result = Get-CommandParameters -Command $commandInfo
+                $result = Get-CommandParameter -Command $commandInfo
 
                 $result | Should -BeNullOrEmpty
             }
