@@ -68,9 +68,9 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        New-SqlDscAgentOperator -ServerObject $serverObject -Name 'MyOperator'
+        New-SqlDscAgentOperator -ServerObject $serverObject -Name 'MyOperator' -EmailAddress 'admin@example.com'
 
-        Creates a new SQL Agent Operator named 'MyOperator'.
+        Creates a new SQL Agent Operator named 'MyOperator' with an email address.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
@@ -80,9 +80,9 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $operatorObject = $serverObject | New-SqlDscAgentOperator -Name 'MyOperator' -PassThru
+        $operatorObject = $serverObject | New-SqlDscAgentOperator -Name 'MyOperator' -EmailAddress 'admin@example.com' -PassThru
 
-        Creates a new SQL Agent Operator and returns the created object.
+        Creates a new SQL Agent Operator with an email address and returns the created object.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
