@@ -56,6 +56,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
     }
 
     AfterAll {
+        # Remove temporary test operators (but keep the persistent one)
         $script:sqlServerObject | Remove-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator1' -Force -ErrorAction 'SilentlyContinue'
         $script:sqlServerObject | Remove-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator2' -Force -ErrorAction 'SilentlyContinue'
         $script:sqlServerObject | Remove-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator3' -Force -ErrorAction 'SilentlyContinue'
@@ -65,6 +66,22 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
 
         # Stop the named instance SQL Server service to save memory on the build worker.
         Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
+    }
+
+    It 'Should create the persistent operator for other tests to use' {
+        # Remove the persistent operator if it already exists
+        $script:sqlServerObject | Remove-SqlDscAgentOperator -Name 'SqlDscIntegrationTestOperator_Persistent' -Force -ErrorAction 'SilentlyContinue'
+
+        # Create the persistent operator with comprehensive properties
+        $script:sqlServerObject | New-SqlDscAgentOperator -Name 'SqlDscIntegrationTestOperator_Persistent' -EmailAddress 'persistent@example.com' -NetSendAddress 'SERVER\User' -PagerAddress '555-0123' -Force -ErrorAction 'Stop'
+
+        # Verify the operator was created
+        $operator = $script:sqlServerObject | Get-SqlDscAgentOperator -Name 'SqlDscIntegrationTestOperator_Persistent'
+        $operator | Should -Not -BeNullOrEmpty
+        $operator.Name | Should -Be 'SqlDscIntegrationTestOperator_Persistent'
+        $operator.EmailAddress | Should -Be 'persistent@example.com'
+        $operator.NetSendAddress | Should -Be 'SERVER\User'
+        $operator.PagerAddress | Should -Be '555-0123'
     }
 
     It 'Should create a new operator with just name' {
