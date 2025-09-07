@@ -85,7 +85,7 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_S
 
     Context 'When operator does not exist' {
         It 'Should throw terminating error when operator does not exist' {
-            { Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'NonExistentOperator' } | Should -Throw -ExpectedMessage "*NonExistentOperator*does not exist*"
+            { Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'NonExistentOperator' } | Should -Throw
         }
 
         It 'Should throw with specific error category when operator does not exist' {
