@@ -4,7 +4,7 @@
 
     .DESCRIPTION
         This private function retrieves a SQL Server Agent Operator object using the provided
-        parameters. If the operator is not found, it throws a terminating error with a 
+        parameters. If the operator is not found, it throws a terminating error with a
         generic localized error message.
 
     .PARAMETER ServerObject

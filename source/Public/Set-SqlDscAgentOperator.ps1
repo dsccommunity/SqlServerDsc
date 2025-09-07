@@ -155,7 +155,7 @@ function Set-SqlDscAgentOperator
         # List of settable properties (excluding ServerObject, OperatorObject, Name, and Force)
         $settableProperties = @(
             'EmailAddress',
-            'CategoryName', 
+            'CategoryName',
             'NetSendAddress',
             'PagerAddress',
             'PagerDays',

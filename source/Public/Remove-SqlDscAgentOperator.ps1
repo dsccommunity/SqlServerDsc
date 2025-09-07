@@ -121,4 +121,3 @@ function Remove-SqlDscAgentOperator
         }
     }
 }
-

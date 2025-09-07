@@ -43,7 +43,7 @@ function ConvertTo-FormattedParameterDescription
     )
 
     $parameterDescriptions = @()
-    
+
     foreach ($parameter in $BoundParameters.Keys)
     {
         if ($parameter -notin $ExcludeParameters)
@@ -52,7 +52,7 @@ function ConvertTo-FormattedParameterDescription
             $parameterDescriptions += "$parameter`: '$value'"
         }
     }
-    
+
     if ($parameterDescriptions.Count -gt 0)
     {
         return "`r`n    " + ($parameterDescriptions -join "`r`n    ")

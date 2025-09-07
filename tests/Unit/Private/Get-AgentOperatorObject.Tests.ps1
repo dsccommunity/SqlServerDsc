@@ -94,11 +94,11 @@ Describe 'Get-AgentOperatorObject' -Tag 'Private' {
         It 'Should call Get-SqlDscAgentOperator once before throwing error' {
             InModuleScope -ScriptBlock {
                 $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                try 
+                try
                 {
                     Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'NonExistentOperator'
                 }
-                catch 
+                catch
                 {
                     # Expected to throw
                 }

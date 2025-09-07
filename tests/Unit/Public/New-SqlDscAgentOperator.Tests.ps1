@@ -116,7 +116,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
                 $mockOperatorObject | Add-Member -MemberType 'ScriptMethod' -Name 'Create' -Value {
                     $script:mockMethodCreateCallCount++
                 } -Force
-                
+
                 # Store the created object for verification
                 $script:mockCreatedOperator = $mockOperatorObject
                 return $mockOperatorObject
@@ -128,7 +128,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should call the mocked method and have correct values in the object' {
             New-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com'
 
-            Should -Invoke -CommandName 'New-Object' -ParameterFilter { 
+            Should -Invoke -CommandName 'New-Object' -ParameterFilter {
                 $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator' -and $ArgumentList[1] -eq 'TestOperator'
             } -Exactly -Times 1
 
@@ -141,7 +141,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
             New-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com'
 
             # Verify the mock was called with correct parameters
-            Should -Invoke -CommandName 'New-Object' -ParameterFilter { 
+            Should -Invoke -CommandName 'New-Object' -ParameterFilter {
                 $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator' -and $ArgumentList[1] -eq 'TestOperator'
             } -Exactly -Times 1
 
@@ -180,7 +180,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
                 $script:mockServerObject | New-SqlDscAgentOperator -Force -Name 'TestOperator' -EmailAddress 'test@contoso.com'
 
                 # Verify the mock was called with correct parameters
-                Should -Invoke -CommandName 'New-Object' -ParameterFilter { 
+                Should -Invoke -CommandName 'New-Object' -ParameterFilter {
                     $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator' -and $ArgumentList[1] -eq 'TestOperator'
                 } -Exactly -Times 1
 

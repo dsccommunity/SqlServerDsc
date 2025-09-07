@@ -106,7 +106,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
     Context 'When parameter validation is performed' {
         It 'Should throw when no settable parameters are provided' {
             $mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
-            
+
             { Set-SqlDscAgentOperator -ServerObject $mockServerObject -Name 'TestOperator' -Force } | Should -Throw -ExpectedMessage '*At least one*'
         }
 
@@ -114,7 +114,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
             # Create proper mock structure
             $mockOperator = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
             $mockOperator.Name = 'TestOperator'
-            
+
             $mockOperatorCollection = [Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection]::CreateTypeInstance()
             $mockOperatorCollection.Add($mockOperator)
             $mockOperatorCollection | Add-Member -MemberType ScriptMethod -Name 'Refresh' -Value { } -Force
@@ -125,7 +125,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
             $mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
             $mockServerObject.JobServer = $mockJobServer
             $mockServerObject.InstanceName = 'TestInstance'
-            
+
             { Set-SqlDscAgentOperator -ServerObject $mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com' -WhatIf } | Should -Not -Throw
         }
     }

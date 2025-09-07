@@ -84,11 +84,11 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Public' {
         }
 
         It 'Should call Get-SqlDscAgentOperator once before throwing error' {
-            try 
+            try
             {
                 Assert-SqlDscAgentOperator -ServerObject $mockServerObject -Name 'NonExistentOperator'
             }
-            catch 
+            catch
             {
                 # Expected to throw
             }

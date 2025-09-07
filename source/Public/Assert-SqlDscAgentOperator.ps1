@@ -4,7 +4,7 @@
 
     .DESCRIPTION
         This command asserts that a SQL Server Agent Operator exists using the provided
-        parameters. If the operator is not found, it throws a terminating error with a 
+        parameters. If the operator is not found, it throws a terminating error with a
         generic localized error message.
 
     .PARAMETER ServerObject
