@@ -49,61 +49,86 @@ AfterAll {
 Describe 'Get-AgentOperatorObject' -Tag 'Private' {
     Context 'When operator exists' {
         BeforeAll {
-            Mock -CommandName Get-SqlDscAgentOperator -MockWith {
-                $mockOperatorObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
-                return $mockOperatorObject
-            }
+            # Create a mock operator object
+            $mockOperatorObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
+            $mockOperatorObject.Name = 'TestOperator'
+
+            # Create a mock server object with a JobServer that contains operators
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockJobServer = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Agent.JobServer'
+            $mockOperators = New-Object -TypeName 'System.Collections.ArrayList'
+            $null = $mockOperators.Add($mockOperatorObject)
+
+            $mockJobServer | Add-Member -MemberType NoteProperty -Name 'Operators' -Value $mockOperators -Force
+            $mockServerObject | Add-Member -MemberType NoteProperty -Name 'JobServer' -Value $mockJobServer -Force
         }
 
         It 'Should return the operator object when found' {
-            InModuleScope -ScriptBlock {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            InModuleScope -Parameters @{ mockServerObject = $mockServerObject } -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $result = Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'TestOperator'
                 $result | Should -Not -BeNullOrEmpty
-                $result.GetType().Name | Should -Be 'Operator'
+                $result.Name | Should -Be 'TestOperator'
             }
         }
 
-        It 'Should call Get-SqlDscAgentOperator with correct parameters' {
-            InModuleScope -ScriptBlock {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'TestOperator'
+        It 'Should write verbose message when getting operator' {
+            InModuleScope -Parameters @{ mockServerObject = $mockServerObject } -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-                Should -Invoke -CommandName Get-SqlDscAgentOperator -ParameterFilter {
-                    $Name -eq 'TestOperator' -and
-                    $ErrorAction -eq 'Stop'
-                } -Exactly -Times 1
+                $verboseOutput = @()
+                Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'TestOperator' -Verbose 4>&1 |
+                    ForEach-Object { $verboseOutput += $_ }
+
+                $verboseOutput -join ' ' | Should -Match "Getting SQL Agent Operator 'TestOperator' from server object"
             }
         }
     }
 
     Context 'When operator does not exist' {
         BeforeAll {
-            Mock -CommandName Get-SqlDscAgentOperator -MockWith {
-                return $null
+            # Create a mock server object with an empty JobServer operators collection
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockJobServer = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Agent.JobServer'
+            $mockOperators = New-Object -TypeName 'System.Collections.ArrayList'
+
+            $mockJobServer | Add-Member -MemberType NoteProperty -Name 'Operators' -Value $mockOperators -Force
+            $mockServerObject | Add-Member -MemberType NoteProperty -Name 'JobServer' -Value $mockJobServer -Force
+        }
+
+        It 'Should return null when operator not found and IgnoreNotFound is specified' {
+            InModuleScope -Parameters @{ mockServerObject = $mockServerObject } -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'NonExistentOperator' -IgnoreNotFound
+                $result | Should -BeNull
             }
         }
 
-        It 'Should throw a terminating error when operator not found' {
-            InModuleScope -ScriptBlock {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                { Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'NonExistentOperator' } | Should -Throw -ExpectedMessage "*NonExistentOperator*not found*"
+        It 'Should throw a terminating error when operator not found and IgnoreNotFound is not specified' {
+            InModuleScope -Parameters @{ mockServerObject = $mockServerObject } -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                { Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'NonExistentOperator' } |
+                    Should -Throw -ExpectedMessage "*NonExistentOperator*not found*"
             }
         }
 
-        It 'Should call Get-SqlDscAgentOperator once before throwing error' {
-            InModuleScope -ScriptBlock {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+        It 'Should throw an error with the correct error record when IgnoreNotFound is not specified' {
+            InModuleScope -Parameters @{ mockServerObject = $mockServerObject } -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 try
                 {
                     Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'NonExistentOperator'
                 }
                 catch
                 {
-                    # Expected to throw
+                    $_.FullyQualifiedErrorId | Should -Be 'GAOO0001,Get-AgentOperatorObject'
+                    $_.CategoryInfo.Category | Should -Be 'ObjectNotFound'
+                    $_.TargetObject | Should -Be 'NonExistentOperator'
                 }
-
-                Should -Invoke -CommandName Get-SqlDscAgentOperator -Exactly -Times 1
             }
         }
     }
