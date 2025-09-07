@@ -187,7 +187,7 @@ function New-SqlDscAgentOperator
             $PSCmdlet.ThrowTerminatingError(
                 [System.Management.Automation.ErrorRecord]::new(
                     [System.InvalidOperationException]::new($errorMessage),
-                    'NSAO0002', # cspell: disable-line
+                    'NSAO0001', # cspell: disable-line
                     [System.Management.Automation.ErrorCategory]::ResourceExists,
                     $Name
                 )
@@ -274,7 +274,7 @@ function New-SqlDscAgentOperator
                 $PSCmdlet.ThrowTerminatingError(
                     [System.Management.Automation.ErrorRecord]::new(
                         [System.InvalidOperationException]::new($errorMessage, $_.Exception),
-                        'NSAO0001', # cspell: disable-line
+                        'NSAO0004', # cspell: disable-line
                         [System.Management.Automation.ErrorCategory]::InvalidOperation,
                         $Name
                     )

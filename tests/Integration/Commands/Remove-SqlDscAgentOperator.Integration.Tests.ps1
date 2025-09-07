@@ -35,7 +35,7 @@ BeforeAll {
 }
 
 AfterAll {
-    $env:SqlServerDscCI = $null
+    Remove-Item -Path 'Env:\SqlServerDscCI' -ErrorAction 'SilentlyContinue'
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:moduleName -All | Remove-Module -Force

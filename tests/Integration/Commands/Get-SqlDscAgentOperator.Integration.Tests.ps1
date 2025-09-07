@@ -24,9 +24,9 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
-    Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
+    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
 
     $env:SqlServerDscCI = $true
 
@@ -35,10 +35,10 @@ BeforeAll {
 }
 
 AfterAll {
-    $env:SqlServerDscCI = $null
+    Remove-Item -Path 'Env:\SqlServerDscCI' -ErrorAction 'SilentlyContinue'
 
     # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
+    Get-Module -Name $script:moduleName -All | Remove-Module -Force
 }
 
 Describe 'Get-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022' {
@@ -87,13 +87,13 @@ Describe 'Get-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
     }
 
     It 'Should return nothing when operator does not exist' {
-        $operator = $script:sqlServerObject | Get-SqlDscAgentOperator -Name 'NonExistentOperator' -ErrorAction Stop
+        $operator = $script:sqlServerObject | Get-SqlDscAgentOperator -Name 'NonExistentOperator' -ErrorAction 'Stop'
 
         $operator | Should -BeNullOrEmpty
     }
 
     It 'Should get operator using ServerObject parameter directly' {
-        $operator = Get-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'IntegrationTest_GetOperator2' -ErrorAction Stop
+        $operator = Get-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'IntegrationTest_GetOperator2' -ErrorAction 'Stop'
 
         $operator | Should -Not -BeNullOrEmpty
         $operator | Should -BeOfType [Microsoft.SqlServer.Management.Smo.Agent.Operator]
