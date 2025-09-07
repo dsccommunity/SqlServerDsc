@@ -71,14 +71,14 @@ Describe 'Get-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
     }
 
     It 'Should get all operators' {
-        $operators = $script:sqlServerObject | Get-SqlDscAgentOperator
+        $operators = $script:sqlServerObject | Get-SqlDscAgentOperator -ErrorAction 'Stop'
 
         $operators | Should -Not -BeNullOrEmpty
-        $operators | Should -BeOfType [Microsoft.SqlServer.Management.Smo.Agent.Operator]
+        @($operators)[0] | Should -BeOfType [Microsoft.SqlServer.Management.Smo.Agent.Operator]
     }
 
     It 'Should get specific operator by name' {
-        $operator = $script:sqlServerObject | Get-SqlDscAgentOperator -Name 'IntegrationTest_GetOperator1'
+        $operator = $script:sqlServerObject | Get-SqlDscAgentOperator -Name 'IntegrationTest_GetOperator1' -ErrorAction 'Stop'
 
         $operator | Should -Not -BeNullOrEmpty
         $operator | Should -BeOfType [Microsoft.SqlServer.Management.Smo.Agent.Operator]
