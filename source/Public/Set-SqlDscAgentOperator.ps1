@@ -176,7 +176,7 @@ function Set-SqlDscAgentOperator
 
         # Build description of parameters being set for ShouldProcess
         $excludeParameters = @('ServerObject', 'OperatorObject', 'Name', 'Force')
-        $parametersText = ConvertTo-FormattedParameterDescription -BoundParameters $PSBoundParameters -ExcludeParameters $excludeParameters
+        $parametersText = ConvertTo-FormattedParameterDescription -BoundParameters $PSBoundParameters -Exclude $excludeParameters
 
         $verboseDescriptionMessage = $script:localizedData.Set_SqlDscAgentOperator_UpdateShouldProcessVerboseDescription -f $OperatorObject.Name, $OperatorObject.Parent.Parent.InstanceName, $parametersText
         $verboseWarningMessage = $script:localizedData.Set_SqlDscAgentOperator_UpdateShouldProcessVerboseWarning -f $OperatorObject.Name

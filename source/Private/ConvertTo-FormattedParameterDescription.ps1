@@ -10,7 +10,7 @@
     .PARAMETER BoundParameters
         Hashtable of bound parameters (typically $PSBoundParameters).
 
-    .PARAMETER ExcludeParameters
+    .PARAMETER Exclude
         Array of parameter names to exclude from the formatted output.
 
     .OUTPUTS
@@ -19,7 +19,7 @@
         Returns a formatted string with parameters and their values.
 
     .EXAMPLE
-        $formattedText = ConvertTo-FormattedParameterDescription -BoundParameters $PSBoundParameters -ExcludeParameters @('ServerObject', 'Name', 'Force')
+        $formattedText = ConvertTo-FormattedParameterDescription -BoundParameters $PSBoundParameters -Exclude @('ServerObject', 'Name', 'Force')
 
         Returns a formatted string like:
         "
@@ -39,14 +39,14 @@ function ConvertTo-FormattedParameterDescription
 
         [Parameter()]
         [System.String[]]
-        $ExcludeParameters = @()
+        $Exclude = @()
     )
 
     $parameterDescriptions = @()
 
     foreach ($parameter in $BoundParameters.Keys)
     {
-        if ($parameter -notin $ExcludeParameters)
+        if ($parameter -notin $Exclude)
         {
             $value = $BoundParameters[$parameter]
             $parameterDescriptions += "$parameter`: '$value'"

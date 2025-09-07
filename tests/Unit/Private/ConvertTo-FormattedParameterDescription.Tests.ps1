@@ -57,9 +57,11 @@ Describe 'ConvertTo-FormattedParameterDescription' -Tag 'Private' {
 
                 $excludeParameters = @('ServerObject', 'Name', 'Force')
 
-                $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -ExcludeParameters $excludeParameters
+                $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude $excludeParameters
 
-                $result | Should -Be "`r`n    EmailAddress: 'test@contoso.com'`r`n    CategoryName: 'TestCategory'"
+                # Check that both parameters are included (order may vary)
+                $result | Should -Match "EmailAddress: 'test@contoso.com'"
+                $result | Should -Match "CategoryName: 'TestCategory'"
             }
         }
 
@@ -73,7 +75,7 @@ Describe 'ConvertTo-FormattedParameterDescription' -Tag 'Private' {
 
                 $excludeParameters = @('ServerObject', 'Name', 'Force')
 
-                $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -ExcludeParameters $excludeParameters
+                $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude $excludeParameters
 
                 $result | Should -Be ' (no parameters to update)'
             }
@@ -88,7 +90,7 @@ Describe 'ConvertTo-FormattedParameterDescription' -Tag 'Private' {
 
                 $excludeParameters = @('ServerObject')
 
-                $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -ExcludeParameters $excludeParameters
+                $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude $excludeParameters
 
                 $result | Should -Be "`r`n    EmailAddress: 'admin@company.com'"
             }
@@ -101,7 +103,7 @@ Describe 'ConvertTo-FormattedParameterDescription' -Tag 'Private' {
                     CategoryName = 'TestCategory'
                 }
 
-                $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -ExcludeParameters @()
+                $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude @()
 
                 # Check that both parameters are included (order may vary)
                 $result | Should -Match "EmailAddress: 'test@contoso.com'"
@@ -120,7 +122,7 @@ Describe 'ConvertTo-FormattedParameterDescription' -Tag 'Private' {
 
                 $excludeParameters = @('Force')
 
-                $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -ExcludeParameters $excludeParameters
+                $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude $excludeParameters
 
                 # Check that all expected parameters are included (order may vary)
                 $result | Should -Match "EmailAddress: 'test@contoso.com'"
