@@ -163,12 +163,18 @@ function New-SqlDscAgentOperator
         }
 
         # Check if operator already exists
-        $existingOperator = Get-SqlDscAgentOperator -ServerObject $ServerObject -Name $Name
-
-        if ($existingOperator)
+        if (Test-SqlDscAgentOperator -ServerObject $ServerObject -Name $Name)
         {
             $errorMessage = $script:localizedData.New_SqlDscAgentOperator_OperatorAlreadyExists -f $Name
-            New-InvalidOperationException -Message $errorMessage
+
+            $PSCmdlet.ThrowTerminatingError(
+                [System.Management.Automation.ErrorRecord]::new(
+                    [System.InvalidOperationException]::new($errorMessage),
+                    'NSAO0002', # cspell: disable-line
+                    [System.Management.Automation.ErrorCategory]::ResourceExists,
+                    $Name
+                )
+            )
         }
 
         $verboseDescriptionMessage = $script:localizedData.New_SqlDscAgentOperator_CreateShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
