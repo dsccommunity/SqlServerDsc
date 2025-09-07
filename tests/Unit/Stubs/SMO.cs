@@ -1606,6 +1606,11 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
         public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
         public Microsoft.SqlServer.Management.Smo.Server Parent { get; set; }
 
+        // Mock property counters for tracking method calls
+        public System.Int32 MockOperatorMethodCreateCalled { get; set; } = 0;
+        public System.Int32 MockOperatorMethodDropCalled { get; set; } = 0;
+        public System.Int32 MockOperatorMethodAlterCalled { get; set; } = 0;
+
         // Fabricated constructor
         private JobServer(Microsoft.SqlServer.Management.Smo.Server server) { }
         public static JobServer CreateTypeInstance()
@@ -1780,9 +1785,33 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
         public Microsoft.SqlServer.Management.Smo.Agent.JobServer Parent { get; set; }
 
         // Method
-        public void Create() { /* Not implemented for stub */ }
-        public void Drop() { /* Not implemented for stub */ }
-        public void Alter() { /* Not implemented for stub */ }
+        public void Create() 
+        { 
+            if (this.Parent != null)
+            {
+                this.Parent.MockOperatorMethodCreateCalled++;
+            }
+            
+            // Mock failure for specific operator name used in testing
+            if (this.Name == "MockFailMethodCreateOperator")
+            {
+                throw new System.Exception("Simulated Create() method failure for testing purposes.");
+            }
+        }
+        public void Drop() 
+        { 
+            if (this.Parent != null)
+            {
+                this.Parent.MockOperatorMethodDropCalled++;
+            }
+        }
+        public void Alter() 
+        { 
+            if (this.Parent != null)
+            {
+                this.Parent.MockOperatorMethodAlterCalled++;
+            }
+        }
 
         // Fabricated constructor
         private Operator(Microsoft.SqlServer.Management.Smo.Agent.JobServer jobServer, System.String name, System.Boolean dummyParam) { }

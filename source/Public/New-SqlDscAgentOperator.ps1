@@ -186,7 +186,7 @@ function New-SqlDscAgentOperator
             try
             {
                 # Create the new operator SMO object
-                $newOperatorObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Agent.Operator -ArgumentList $ServerObject.JobServer, $Name
+                $newOperatorObject = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::new($ServerObject.JobServer, $Name)
 
                 if ($PSBoundParameters.ContainsKey('EmailAddress'))
                 {
