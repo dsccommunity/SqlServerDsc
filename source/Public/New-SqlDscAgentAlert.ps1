@@ -90,12 +90,18 @@ function New-SqlDscAgentAlert
         Assert-BoundParameter -BoundParameterList $PSBoundParameters -MutuallyExclusiveList1 @('Severity') -MutuallyExclusiveList2 @('MessageId')
 
         # Check if alert already exists
-        $existingAlert = Get-AgentAlertObject -ServerObject $ServerObject -Name $Name
-
-        if ($existingAlert)
+        if (Test-SqlDscAgentAlert -ServerObject $ServerObject -Name $Name)
         {
             $errorMessage = $script:localizedData.New_SqlDscAgentAlert_AlertAlreadyExists -f $Name
-            New-InvalidOperationException -Message $errorMessage
+
+            $PSCmdlet.ThrowTerminatingError(
+                [System.Management.Automation.ErrorRecord]::new(
+                    [System.InvalidOperationException]::new($errorMessage),
+                    'NSAA0001', # cspell: disable-line
+                    [System.Management.Automation.ErrorCategory]::ResourceExists,
+                    $Name
+                )
+            )
         }
 
         $verboseDescriptionMessage = $script:localizedData.New_SqlDscAgentAlert_CreateShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
@@ -135,7 +141,15 @@ function New-SqlDscAgentAlert
             catch
             {
                 $errorMessage = $script:localizedData.New_SqlDscAgentAlert_CreateFailed -f $Name
-                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.InvalidOperationException]::new($errorMessage, $_.Exception),
+                        'NSAA0002', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $Name
+                    )
+                )
             }
         }
     }
