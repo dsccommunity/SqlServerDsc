@@ -93,8 +93,7 @@ function Enable-SqlDscAgentOperator
                 $ServerObject.JobServer.Operators.Refresh()
             }
 
-            $errorMessage = $script:localizedData.Enable_SqlDscAgentOperator_OperatorNotFound -f $Name
-            $OperatorObject = Assert-SqlDscAgentOperatorExists -ServerObject $ServerObject -Name $Name -ErrorMessage $errorMessage -ErrorId 'ESAO0002'
+            $OperatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name
         }
 
         $verboseDescriptionMessage = $script:localizedData.Enable_SqlDscAgentOperator_ShouldProcessVerboseDescription -f $OperatorObject.Name, $OperatorObject.Parent.Parent.InstanceName

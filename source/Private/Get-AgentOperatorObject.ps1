@@ -5,19 +5,13 @@
     .DESCRIPTION
         This private function retrieves a SQL Server Agent Operator object using the provided
         parameters. If the operator is not found, it throws a terminating error with a 
-        localized error message.
+        generic localized error message.
 
     .PARAMETER ServerObject
         Specifies the server object on which to retrieve the operator.
 
     .PARAMETER Name
         Specifies the name of the operator to retrieve.
-
-    .PARAMETER ErrorMessage
-        Specifies the localized error message to use if the operator is not found.
-
-    .PARAMETER ErrorId
-        Specifies the error ID to use if the operator is not found.
 
     .INPUTS
         None.
@@ -26,8 +20,13 @@
         Microsoft.SqlServer.Management.Smo.Agent.Operator
 
         Returns the operator object if found.
+
+    .EXAMPLE
+        $operatorObject = Get-AgentOperatorObject -ServerObject $serverObject -Name 'TestOperator'
+
+        Returns the SQL Agent Operator object for 'TestOperator'.
 #>
-function Assert-SqlDscAgentOperatorExists
+function Get-AgentOperatorObject
 {
     [CmdletBinding()]
     [OutputType([Microsoft.SqlServer.Management.Smo.Agent.Operator])]
@@ -39,15 +38,7 @@ function Assert-SqlDscAgentOperatorExists
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Name,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $ErrorMessage,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $ErrorId
+        $Name
     )
 
     $getSqlDscAgentOperatorParameters = @{
@@ -61,11 +52,12 @@ function Assert-SqlDscAgentOperatorExists
 
     if (-not $operatorObject)
     {
-        $exception = [System.InvalidOperationException]::new($ErrorMessage)
+        $errorMessage = $script:localizedData.AgentOperator_NotFound -f $Name
+        $exception = [System.InvalidOperationException]::new($errorMessage)
         $errorRecord = [System.Management.Automation.ErrorRecord]::new(
             $exception,
-            $ErrorId,
-            [System.Management.Automation.ErrorCategory]::InvalidOperation,
+            'GAOO0001',
+            [System.Management.Automation.ErrorCategory]::ObjectNotFound,
             $Name
         )
 
