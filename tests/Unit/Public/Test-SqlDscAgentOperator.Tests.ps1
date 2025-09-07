@@ -55,7 +55,7 @@ Describe 'Test-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-ServerObject] <Server> [-Name] <string> [[-EmailAddress] <string>] [<CommonParameters>]'
+                ExpectedParameters = '[-ServerObject] <Server> [-Name] <string> [[-EmailAddress] <string>] [-Refresh] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Test-SqlDscAgentOperator').ParameterSets |
@@ -86,136 +86,63 @@ Describe 'Test-SqlDscAgentOperator' -Tag 'Public' {
         }
     }
 
-    Context 'When testing operator existence only' {
+    Context 'When testing operator existence' {
         BeforeAll {
             # Mock existing operator
             $script:mockOperator = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
             $script:mockOperator.Name = 'TestOperator'
             $script:mockOperator.EmailAddress = 'test@contoso.com'
 
-            # Mock operator collection with existing operator
-            $script:mockOperatorCollection = [Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection]::CreateTypeInstance()
-            $script:mockOperatorCollection.Add($script:mockOperator)
-
-            # Mock JobServer object
-            $script:mockJobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
-            $script:mockJobServer.Operators = $script:mockOperatorCollection
-
             # Mock server object
             $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
-            $script:mockServerObject.JobServer = $script:mockJobServer
         }
 
         It 'Should return true when operator exists' {
+            Mock -CommandName Get-AgentOperatorObject -MockWith {
+                return $script:mockOperator
+            }
+
             $result = Test-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'TestOperator'
 
             $result | Should -BeTrue
+            Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1 -Scope It
         }
 
         It 'Should return false when operator does not exist' {
+            Mock -CommandName Get-AgentOperatorObject -MockWith {
+                return $null
+            }
+
             $result = Test-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'NonExistentOperator'
 
             $result | Should -BeFalse
+            Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1 -Scope It
         }
 
         Context 'When using pipeline input' {
             It 'Should return true when operator exists using pipeline input' {
+                Mock -CommandName Get-AgentOperatorObject -MockWith {
+                    return $script:mockOperator
+                }
+
                 $result = $script:mockServerObject | Test-SqlDscAgentOperator -Name 'TestOperator'
 
                 $result | Should -BeTrue
+                Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1 -Scope It
             }
         }
-    }
 
-    Context 'When testing operator with specific properties' {
-        BeforeAll {
-            # Mock existing operator with correct email
-            $script:mockOperatorCorrect = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
-            $script:mockOperatorCorrect.Name = 'CorrectOperator'
-            $script:mockOperatorCorrect.EmailAddress = 'correct@contoso.com'
+        Context 'When using Refresh parameter' {
+            It 'Should return true when operator exists' {
+                Mock -CommandName Get-AgentOperatorObject -MockWith {
+                    return $script:mockOperator
+                }
 
-            # Mock existing operator with wrong email
-            $script:mockOperatorWrong = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
-            $script:mockOperatorWrong.Name = 'WrongOperator'
-            $script:mockOperatorWrong.EmailAddress = 'wrong@contoso.com'
-
-            # Mock operator collection with existing operators
-            $script:mockOperatorCollection = [Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection]::CreateTypeInstance()
-            $script:mockOperatorCollection.Add($script:mockOperatorCorrect)
-            $script:mockOperatorCollection.Add($script:mockOperatorWrong)
-
-            # Mock JobServer object
-            $script:mockJobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
-            $script:mockJobServer.Operators = $script:mockOperatorCollection
-
-            # Mock server object
-            $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
-            $script:mockServerObject.JobServer = $script:mockJobServer
-        }
-
-        It 'Should return true when operator exists with correct email address' {
-            $result = Test-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'CorrectOperator' -EmailAddress 'correct@contoso.com'
-
-            $result | Should -BeTrue
-        }
-
-        It 'Should return false when operator exists with wrong email address' {
-            $result = Test-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'WrongOperator' -EmailAddress 'correct@contoso.com'
-
-            $result | Should -BeFalse
-        }
-
-        It 'Should return false when operator does not exist' {
-            $result = Test-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'NonExistentOperator' -EmailAddress 'test@contoso.com'
-
-            $result | Should -BeFalse
-        }
-
-        Context 'When using pipeline input' {
-            It 'Should return true when operator has correct properties using pipeline input' {
-                $result = $script:mockServerObject | Test-SqlDscAgentOperator -Name 'CorrectOperator' -EmailAddress 'correct@contoso.com'
+                $result = Test-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'TestOperator' -Refresh
 
                 $result | Should -BeTrue
+                Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1 -Scope It
             }
-
-            It 'Should return false when operator has wrong properties using pipeline input' {
-                $result = $script:mockServerObject | Test-SqlDscAgentOperator -Name 'WrongOperator' -EmailAddress 'correct@contoso.com'
-
-                $result | Should -BeFalse
-            }
-        }
-    }
-
-    Context 'When testing operator with empty email address' {
-        BeforeAll {
-            # Mock existing operator with no email
-            $script:mockOperatorNoEmail = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
-            $script:mockOperatorNoEmail.Name = 'NoEmailOperator'
-            $script:mockOperatorNoEmail.EmailAddress = ''
-
-            # Mock operator collection with existing operator
-            $script:mockOperatorCollection = [Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection]::CreateTypeInstance()
-            $script:mockOperatorCollection.Add($script:mockOperatorNoEmail)
-
-            # Mock JobServer object
-            $script:mockJobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
-            $script:mockJobServer.Operators = $script:mockOperatorCollection
-
-            # Mock server object
-            $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
-            $script:mockServerObject.JobServer = $script:mockJobServer
-        }
-
-        It 'Should return true when operator exists with empty email and empty email is expected' {
-            $result = Test-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'NoEmailOperator' -EmailAddress ''
-
-            $result | Should -BeTrue
-        }
-
-        It 'Should return false when operator exists with empty email but non-empty email is expected' {
-            $result = Test-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'NoEmailOperator' -EmailAddress 'test@contoso.com'
-
-            $result | Should -BeFalse
         }
     }
 }

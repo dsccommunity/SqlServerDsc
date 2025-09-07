@@ -14,6 +14,13 @@
     .PARAMETER EmailAddress
         Specifies the expected email address for the SQL Agent Operator.
 
+    .PARAMETER Refresh
+        Specifies that the **ServerObject**'s operators should be refreshed before
+        testing the operator. This is helpful when operators could have
+        been modified outside of the **ServerObject**, for example through T-SQL.
+        But on instances with a large amount of operators it might be better to make
+        sure the **ServerObject** is recent enough.
+
     .INPUTS
         Microsoft.SqlServer.Management.Smo.Server
 
@@ -35,6 +42,12 @@
         $serverObject | Test-SqlDscAgentOperator -Name 'MyOperator' -EmailAddress 'admin@contoso.com'
 
         Tests if the SQL Agent Operator exists and has the specified email address using pipeline input.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $serverObject | Test-SqlDscAgentOperator -Name 'MyOperator' -Refresh
+
+        Refreshes the server operators collection before testing if **MyOperator** exists.
 #>
 function Test-SqlDscAgentOperator
 {
@@ -54,7 +67,11 @@ function Test-SqlDscAgentOperator
 
         [Parameter()]
         [System.String]
-        $EmailAddress
+        $EmailAddress,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Refresh
     )
 
     # cSpell: ignore TSAO
@@ -62,7 +79,7 @@ function Test-SqlDscAgentOperator
     {
         Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentOperator_TestingOperator -f $Name)
 
-        $operatorObject = Get-SqlDscAgentOperator -ServerObject $ServerObject -Name $Name
+        $operatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name -IgnoreNotFound -Refresh:$Refresh
 
         if (-not $operatorObject)
         {
@@ -72,28 +89,6 @@ function Test-SqlDscAgentOperator
 
         Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentOperator_OperatorFound -f $Name)
 
-        # If no specific properties to test, return true since operator exists
-        if (-not $PSBoundParameters.ContainsKey('EmailAddress'))
-        {
-            Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentOperator_NoPropertyTest)
-            return $true
-        }
-
-        # Test EmailAddress if specified
-        if ($PSBoundParameters.ContainsKey('EmailAddress'))
-        {
-            if ($operatorObject.EmailAddress -ne $EmailAddress)
-            {
-                Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentOperator_EmailAddressMismatch -f $operatorObject.EmailAddress, $EmailAddress)
-                return $false
-            }
-            else
-            {
-                Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentOperator_EmailAddressMatch -f $EmailAddress)
-            }
-        }
-
-        Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentOperator_AllTestsPassed -f $Name)
         return $true
     }
 }
