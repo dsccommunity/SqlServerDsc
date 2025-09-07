@@ -84,7 +84,7 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Public' {
                     [System.Management.Automation.ErrorCategory]::ObjectNotFound,
                     'NonExistentOperator'
                 )
-                $PSCmdlet.ThrowTerminatingError($errorRecord)
+                throw $errorRecord
             }
         }
 
