@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="12" errors="0" failures="7" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2025-09-07" time="07:32:11">
+  <environment user-domain="" machine-name="pkrvm7jw40e0xgp" platform="Linux" user="runner" os-version="6.11.0-1018-azure" clr-version="8.0.17" nunit-version="2.5.8.0" cwd="/home/runner/work/SqlServerDsc/SqlServerDsc" />
+  <culture-info current-culture="" current-uiculture="" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Failure" success="False" time="15.7334" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/home/runner/work/SqlServerDsc/SqlServerDsc/tests/Unit/Public/New-SqlDscAgentOperator.Tests.ps1" executed="True" result="Failure" success="False" time="15.7334" asserts="0" description="/home/runner/work/SqlServerDsc/SqlServerDsc/tests/Unit/Public/New-SqlDscAgentOperator.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="New-SqlDscAgentOperator" executed="True" result="Failure" success="False" time="0.8097" asserts="0" description="New-SqlDscAgentOperator">
+            <results>
+              <test-suite type="TestFixture" name="New-SqlDscAgentOperator.When command has correct parameter sets" executed="True" result="Failure" success="False" time="0.28" asserts="0" description="New-SqlDscAgentOperator.When command has correct parameter sets">
+                <results>
+                  <test-suite type="ParameterizedTest" name="New-SqlDscAgentOperator.When command has correct parameter sets.Should have the correct parameters in parameter set &lt;ExpectedParameterSetName&gt;" executed="True" result="Failure" success="False" time="0.2521" asserts="0" description="Should have the correct parameters in parameter set &lt;ExpectedParameterSetName&gt;">
+                    <results>
+                      <test-case description="Should have the correct parameters in parameter set __AllParameterSets" name="New-SqlDscAgentOperator.When command has correct parameter sets.Should have the correct parameters in parameter set __AllParameterSets" time="0.2521" asserts="0" success="False" result="Failure" executed="True">
+                        <failure>
+                          <message>Expected strings to be the same, but they were different.
+Expected length: 116
+Actual length:   453
+Strings differ at index 0.
+Expected: '-ServerObject &lt;Server&gt; -Name &lt;string&gt; [-EmailAddress &lt;string&gt;] [-PassThru] [-WhatIf] [-Confirm] [&lt;C...'
+But was:  '[-ServerObject] &lt;Server&gt; [-Name] &lt;string&gt; [[-EmailAddress] &lt;string&gt;] [[-CategoryName] &lt;string&gt;] [[-...'
+           ^</message>
+                          <stack-trace>at $result.ParameterListAsString | Should -Be $ExpectedParameters, /home/runner/work/SqlServerDsc/SqlServerDsc/tests/Unit/Public/New-SqlDscAgentOperator.Tests.ps1:68
+at &lt;ScriptBlock&gt;, /home/runner/work/SqlServerDsc/SqlServerDsc/tests/Unit/Public/New-SqlDscAgentOperator.Tests.ps1:68</stack-trace>
+                        </failure>
+                      </test-case>
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-SqlDscAgentOperator.When command has correct parameter properties" executed="True" result="Success" success="True" time="0.335" asserts="0" description="New-SqlDscAgentOperator.When command has correct parameter properties">
+                <results>
+                  <test-case description="Should have ServerObject as a mandatory parameter" name="New-SqlDscAgentOperator.When command has correct parameter properties.Should have ServerObject as a mandatory parameter" time="0.0305" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have ServerObject accept pipeline input" name="New-SqlDscAgentOperator.When command has correct parameter properties.Should have ServerObject accept pipeline input" time="0.01" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have Name as a mandatory parameter" name="New-SqlDscAgentOperator.When command has correct parameter properties.Should have Name as a mandatory parameter" time="0.0091" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-SqlDscAgentOperator.When creating a new operator successfully" executed="True" result="Failure" success="False" time="0.693" asserts="0" description="New-SqlDscAgentOperator.When creating a new operator successfully">
+                <results>
+                  <test-suite type="TestFixture" name="New-SqlDscAgentOperator.When creating a new operator successfully.When using parameter Force" executed="True" result="Failure" success="False" time="0.1598" asserts="0" description="New-SqlDscAgentOperator.When creating a new operator successfully.When using parameter Force">
+                    <results>
+                      <test-case description="Should call the mocked method and have correct values in the object" name="New-SqlDscAgentOperator.When creating a new operator successfully.When using parameter Force.Should call the mocked method and have correct values in the object" time="0.0182" asserts="0" success="False" result="Failure" executed="True">
+                        <failure>
+                          <message>ParameterBindingException: A parameter cannot be found that matches parameter name 'Force'.</message>
+                          <stack-trace>at &lt;ScriptBlock&gt;, /home/runner/work/SqlServerDsc/SqlServerDsc/tests/Unit/Public/New-SqlDscAgentOperator.Tests.ps1:154</stack-trace>
+                        </failure>
+                      </test-case>
+                    </results>
+                  </test-suite>
+                  <test-suite type="TestFixture" name="New-SqlDscAgentOperator.When creating a new operator successfully.When using parameter WhatIf" executed="True" result="Success" success="True" time="0.1876" asserts="0" description="New-SqlDscAgentOperator.When creating a new operator successfully.When using parameter WhatIf">
+                    <results>
+                      <test-case description="Should not call the mocked method when using WhatIf" name="New-SqlDscAgentOperator.When creating a new operator successfully.When using parameter WhatIf.Should not call the mocked method when using WhatIf" time="0.0217" asserts="0" success="True" result="Success" executed="True" />
+                    </results>
+                  </test-suite>
+                  <test-suite type="TestFixture" name="New-SqlDscAgentOperator.When creating a new operator successfully.When passing parameter ServerObject over the pipeline" executed="True" result="Failure" success="False" time="0.2262" asserts="0" description="New-SqlDscAgentOperator.When creating a new operator successfully.When passing parameter ServerObject over the pipeline">
+                    <results>
+                      <test-case description="Should call the mocked method and have correct values in the object" name="New-SqlDscAgentOperator.When creating a new operator successfully.When passing parameter ServerObject over the pipeline.Should call the mocked method and have correct values in the object" time="0.0296" asserts="0" success="False" result="Failure" executed="True">
+                        <failure>
+                          <message>Expected 'TestOperator', but got $null.</message>
+                          <stack-trace>at $script:mockCreateOperatorObject.Name | Should -Be 'TestOperator', /home/runner/work/SqlServerDsc/SqlServerDsc/tests/Unit/Public/New-SqlDscAgentOperator.Tests.ps1:180
+at &lt;ScriptBlock&gt;, /home/runner/work/SqlServerDsc/SqlServerDsc/tests/Unit/Public/New-SqlDscAgentOperator.Tests.ps1:180</stack-trace>
+                        </failure>
+                      </test-case>
+                    </results>
+                  </test-suite>
+                  <test-case description="Should call the mocked method and have correct values in the object" name="New-SqlDscAgentOperator.When creating a new operator successfully.Should call the mocked method and have correct values in the object" time="0.0584" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Expected 'TestOperator', but got $null.</message>
+                      <stack-trace>at $script:mockCreateOperatorObject.Name | Should -Be 'TestOperator', /home/runner/work/SqlServerDsc/SqlServerDsc/tests/Unit/Public/New-SqlDscAgentOperator.Tests.ps1:122
+at &lt;ScriptBlock&gt;, /home/runner/work/SqlServerDsc/SqlServerDsc/tests/Unit/Public/New-SqlDscAgentOperator.Tests.ps1:122</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="Should set email address when specified" name="New-SqlDscAgentOperator.When creating a new operator successfully.Should set email address when specified" time="0.0424" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Expected 'TestOperator', but got $null.</message>
+                      <stack-trace>at $script:mockCreateOperatorObject.Name | Should -Be 'TestOperator', /home/runner/work/SqlServerDsc/SqlServerDsc/tests/Unit/Public/New-SqlDscAgentOperator.Tests.ps1:133
+at &lt;ScriptBlock&gt;, /home/runner/work/SqlServerDsc/SqlServerDsc/tests/Unit/Public/New-SqlDscAgentOperator.Tests.ps1:133</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="Should return operator object when PassThru is specified" name="New-SqlDscAgentOperator.When creating a new operator successfully.Should return operator object when PassThru is specified" time="0.0331" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Expected 1, but got 0.</message>
+                      <stack-trace>at $script:mockMethodCreateCallCount | Should -Be 1, /home/runner/work/SqlServerDsc/SqlServerDsc/tests/Unit/Public/New-SqlDscAgentOperator.Tests.ps1:147
+at &lt;ScriptBlock&gt;, /home/runner/work/SqlServerDsc/SqlServerDsc/tests/Unit/Public/New-SqlDscAgentOperator.Tests.ps1:147</stack-trace>
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-SqlDscAgentOperator.When operator already exists" executed="True" result="Success" success="True" time="0.7523" asserts="0" description="New-SqlDscAgentOperator.When operator already exists">
+                <results>
+                  <test-case description="Should throw when operator already exists" name="New-SqlDscAgentOperator.When operator already exists.Should throw when operator already exists" time="0.0469" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-SqlDscAgentOperator.When create operation fails" executed="True" result="Failure" success="False" time="0.7956" asserts="0" description="New-SqlDscAgentOperator.When create operation fails">
+                <results>
+                  <test-case description="Should throw when create operation fails" name="New-SqlDscAgentOperator.When create operation fails.Should throw when create operation fails" time="0.0222" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Expected an exception with message like '*Failed to create SQL Agent Operator 'FailOperator'*' to be thrown, but no exception was thrown.</message>
+                      <stack-trace>at Should -Throw -ExpectedMessage '*Failed to create SQL Agent Operator ''FailOperator''*', /home/runner/work/SqlServerDsc/SqlServerDsc/tests/Unit/Public/New-SqlDscAgentOperator.Tests.ps1:241
+at &lt;ScriptBlock&gt;, /home/runner/work/SqlServerDsc/SqlServerDsc/tests/Unit/Public/New-SqlDscAgentOperator.Tests.ps1:240</stack-trace>
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>
