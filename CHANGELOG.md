@@ -5,12 +5,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-
-- Added private function `Get-CommandParameter` to filter command parameters
-  by excluding specified parameter names and common parameters, providing a
-  reusable way to determine settable properties on objects.
-
 ### Fixed
 
 - Make sure tests forcibly imports the module being tested to avoid AI failing
@@ -88,10 +82,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Set-SqlDscAgentAlert`, `Remove-SqlDscAgentAlert`, and `Test-SqlDscAgentAlert`
   to manage SQL Agent alerts on a Database Engine instance.
 - Added new public commands for SQL Agent Operator management:
-  - `Get-SqlDscAgentOperator` - Get SQL Agent Operators from a SQL Server Database Engine instance
+  - `Get-SqlDscAgentOperator` - Get SQL Agent Operators from a SQL Server
+     Database Engine instance
   - `New-SqlDscAgentOperator` - Create a new SQL Agent Operator with specified properties
   - `Set-SqlDscAgentOperator` - Update existing SQL Agent Operator properties
   - `Remove-SqlDscAgentOperator` - Remove a SQL Agent Operator from the instance
+  - `Enable-SqlDscAgentOperator` - Enable a SQL Agent Operator
+  - `Disable-SqlDscAgentOperator` - Disable a SQL Agent Operator
   - `Test-SqlDscIsAgentOperator` - Test if a SQL Agent Operator exists
   - Supports pipeline input for both ServerObject and OperatorObject where applicable
   - Includes comprehensive unit tests and follows ShouldProcess patterns
@@ -105,6 +102,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     patterns
   - Database objects can also be used as pipeline input for Set and Remove operations
   - Commands include comprehensive validation, localization, and ShouldProcess support
+- Added private function `Get-CommandParameter` to filter command parameters
+  by excluding specified parameter names and common parameters, providing a
+  reusable way to determine settable properties on objects.
 
 ### Changed
 
