@@ -55,7 +55,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '-ServerObject <Server> -Name <string> [-EmailAddress <string>] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '[-ServerObject] <Server> [-Name] <string> [[-EmailAddress] <string>] [[-CategoryName] <string>] [[-NetSendAddress] <string>] [[-PagerAddress] <string>] [[-PagerDays] <WeekDays>] [[-SaturdayPagerEndTime] <timespan>] [[-SaturdayPagerStartTime] <timespan>] [[-SundayPagerEndTime] <timespan>] [[-SundayPagerStartTime] <timespan>] [[-WeekdayPagerEndTime] <timespan>] [[-WeekdayPagerStartTime] <timespan>] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'New-SqlDscAgentOperator').ParameterSets |
@@ -103,10 +103,16 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
             # Mock the creation of new operator object
             $script:mockCreateOperatorObject = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
 
-            Mock -CommandName 'New-Object' -MockWith {
+            # Track method calls
+            $script:mockMethodCreateCallCount = 0
+
+            # Mock the ::new() constructor
+            Mock -CommandName 'Microsoft.SqlServer.Management.Smo.Agent.Operator' -MockWith {
+                $script:mockCreateOperatorObject.Name = $args[1]  # Second argument is the name
+                $script:mockMethodCreateCallCount++
                 return $script:mockCreateOperatorObject
             } -ParameterFilter {
-                $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
+                $args[0] -and $args[1]
             }
 
             $script:mockMethodCreateCallCount = 0
@@ -145,19 +151,6 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
             $result.Name | Should -Be 'TestOperator'
 
             $script:mockMethodCreateCallCount | Should -Be 1
-        }
-
-        Context 'When using parameter Force' {
-            It 'Should call the mocked method and have correct values in the object' {
-                $script:mockMethodCreateCallCount = 0
-
-                New-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator'
-
-                # This is the object created by the mock and modified by the command.
-                $script:mockCreateOperatorObject.Name | Should -Be 'TestOperator'
-
-                $script:mockMethodCreateCallCount | Should -Be 1
-            }
         }
 
         Context 'When using parameter WhatIf' {
