@@ -55,11 +55,11 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = 'ByName'
-                ExpectedParameters = '-ServerObject <Server> -Name <string> [-EmailAddress <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-ServerObject <Server> -Name <string> [-EmailAddress <string>] [-CategoryName <string>] [-NetSendAddress <string>] [-PagerAddress <string>] [-PagerDays <WeekDays>] [-SaturdayPagerEndTime <timespan>] [-SaturdayPagerStartTime <timespan>] [-SundayPagerEndTime <timespan>] [-SundayPagerStartTime <timespan>] [-WeekdayPagerEndTime <timespan>] [-WeekdayPagerStartTime <timespan>] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
             @{
                 ExpectedParameterSetName = 'ByObject'
-                ExpectedParameters = '-OperatorObject <Operator> [-EmailAddress <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-OperatorObject <Operator> [-EmailAddress <string>] [-CategoryName <string>] [-NetSendAddress <string>] [-PagerAddress <string>] [-PagerDays <WeekDays>] [-SaturdayPagerEndTime <timespan>] [-SaturdayPagerStartTime <timespan>] [-SundayPagerEndTime <timespan>] [-SundayPagerStartTime <timespan>] [-WeekdayPagerEndTime <timespan>] [-WeekdayPagerStartTime <timespan>] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Set-SqlDscAgentOperator').ParameterSets |

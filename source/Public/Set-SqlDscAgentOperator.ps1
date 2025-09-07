@@ -161,148 +161,27 @@ function Set-SqlDscAgentOperator
             }
         }
 
-        # Check if any changes are needed
-        $changesNeeded = $false
-
-        if ($PSBoundParameters.ContainsKey('EmailAddress'))
-        {
-            if ($OperatorObject.EmailAddress -ne $EmailAddress)
-            {
-                $changesNeeded = $true
-            }
-            else
-            {
-                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_EmailAddressAlreadyCorrect -f $EmailAddress, $OperatorObject.Name)
-            }
+        # Build description of parameters being set for ShouldProcess
+        $parameterDescriptions = @()
+        if ($PSBoundParameters.ContainsKey('EmailAddress')) { $parameterDescriptions += "EmailAddress: '$EmailAddress'" }
+        if ($PSBoundParameters.ContainsKey('CategoryName')) { $parameterDescriptions += "CategoryName: '$CategoryName'" }
+        if ($PSBoundParameters.ContainsKey('NetSendAddress')) { $parameterDescriptions += "NetSendAddress: '$NetSendAddress'" }
+        if ($PSBoundParameters.ContainsKey('PagerAddress')) { $parameterDescriptions += "PagerAddress: '$PagerAddress'" }
+        if ($PSBoundParameters.ContainsKey('PagerDays')) { $parameterDescriptions += "PagerDays: '$PagerDays'" }
+        if ($PSBoundParameters.ContainsKey('SaturdayPagerEndTime')) { $parameterDescriptions += "SaturdayPagerEndTime: '$SaturdayPagerEndTime'" }
+        if ($PSBoundParameters.ContainsKey('SaturdayPagerStartTime')) { $parameterDescriptions += "SaturdayPagerStartTime: '$SaturdayPagerStartTime'" }
+        if ($PSBoundParameters.ContainsKey('SundayPagerEndTime')) { $parameterDescriptions += "SundayPagerEndTime: '$SundayPagerEndTime'" }
+        if ($PSBoundParameters.ContainsKey('SundayPagerStartTime')) { $parameterDescriptions += "SundayPagerStartTime: '$SundayPagerStartTime'" }
+        if ($PSBoundParameters.ContainsKey('WeekdayPagerEndTime')) { $parameterDescriptions += "WeekdayPagerEndTime: '$WeekdayPagerEndTime'" }
+        if ($PSBoundParameters.ContainsKey('WeekdayPagerStartTime')) { $parameterDescriptions += "WeekdayPagerStartTime: '$WeekdayPagerStartTime'" }
+        
+        $parametersText = if ($parameterDescriptions.Count -gt 0) { 
+            "`r`n    " + ($parameterDescriptions -join "`r`n    ") 
+        } else { 
+            " (no parameters to update)" 
         }
 
-        if ($PSBoundParameters.ContainsKey('CategoryName'))
-        {
-            if ($OperatorObject.CategoryName -ne $CategoryName)
-            {
-                $changesNeeded = $true
-            }
-            else
-            {
-                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_CategoryNameAlreadyCorrect -f $CategoryName, $OperatorObject.Name)
-            }
-        }
-
-        if ($PSBoundParameters.ContainsKey('NetSendAddress'))
-        {
-            if ($OperatorObject.NetSendAddress -ne $NetSendAddress)
-            {
-                $changesNeeded = $true
-            }
-            else
-            {
-                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_NetSendAddressAlreadyCorrect -f $NetSendAddress, $OperatorObject.Name)
-            }
-        }
-
-        if ($PSBoundParameters.ContainsKey('PagerAddress'))
-        {
-            if ($OperatorObject.PagerAddress -ne $PagerAddress)
-            {
-                $changesNeeded = $true
-            }
-            else
-            {
-                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_PagerAddressAlreadyCorrect -f $PagerAddress, $OperatorObject.Name)
-            }
-        }
-
-        if ($PSBoundParameters.ContainsKey('PagerDays'))
-        {
-            if ($OperatorObject.PagerDays -ne $PagerDays)
-            {
-                $changesNeeded = $true
-            }
-            else
-            {
-                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_PagerDaysAlreadyCorrect -f $PagerDays, $OperatorObject.Name)
-            }
-        }
-
-        if ($PSBoundParameters.ContainsKey('SaturdayPagerEndTime'))
-        {
-            if ($OperatorObject.SaturdayPagerEndTime -ne $SaturdayPagerEndTime)
-            {
-                $changesNeeded = $true
-            }
-            else
-            {
-                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SaturdayPagerEndTimeAlreadyCorrect -f $SaturdayPagerEndTime, $OperatorObject.Name)
-            }
-        }
-
-        if ($PSBoundParameters.ContainsKey('SaturdayPagerStartTime'))
-        {
-            if ($OperatorObject.SaturdayPagerStartTime -ne $SaturdayPagerStartTime)
-            {
-                $changesNeeded = $true
-            }
-            else
-            {
-                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SaturdayPagerStartTimeAlreadyCorrect -f $SaturdayPagerStartTime, $OperatorObject.Name)
-            }
-        }
-
-        if ($PSBoundParameters.ContainsKey('SundayPagerEndTime'))
-        {
-            if ($OperatorObject.SundayPagerEndTime -ne $SundayPagerEndTime)
-            {
-                $changesNeeded = $true
-            }
-            else
-            {
-                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SundayPagerEndTimeAlreadyCorrect -f $SundayPagerEndTime, $OperatorObject.Name)
-            }
-        }
-
-        if ($PSBoundParameters.ContainsKey('SundayPagerStartTime'))
-        {
-            if ($OperatorObject.SundayPagerStartTime -ne $SundayPagerStartTime)
-            {
-                $changesNeeded = $true
-            }
-            else
-            {
-                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SundayPagerStartTimeAlreadyCorrect -f $SundayPagerStartTime, $OperatorObject.Name)
-            }
-        }
-
-        if ($PSBoundParameters.ContainsKey('WeekdayPagerEndTime'))
-        {
-            if ($OperatorObject.WeekdayPagerEndTime -ne $WeekdayPagerEndTime)
-            {
-                $changesNeeded = $true
-            }
-            else
-            {
-                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_WeekdayPagerEndTimeAlreadyCorrect -f $WeekdayPagerEndTime, $OperatorObject.Name)
-            }
-        }
-
-        if ($PSBoundParameters.ContainsKey('WeekdayPagerStartTime'))
-        {
-            if ($OperatorObject.WeekdayPagerStartTime -ne $WeekdayPagerStartTime)
-            {
-                $changesNeeded = $true
-            }
-            else
-            {
-                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_WeekdayPagerStartTimeAlreadyCorrect -f $WeekdayPagerStartTime, $OperatorObject.Name)
-            }
-        }
-
-        if (-not $changesNeeded)
-        {
-            Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_NoChangesNeeded -f $OperatorObject.Name)
-            return
-        }
-
-        $verboseDescriptionMessage = $script:localizedData.Set_SqlDscAgentOperator_UpdateShouldProcessVerboseDescription -f $OperatorObject.Name, $OperatorObject.Parent.Parent.InstanceName
+        $verboseDescriptionMessage = $script:localizedData.Set_SqlDscAgentOperator_UpdateShouldProcessVerboseDescription -f $OperatorObject.Name, $OperatorObject.Parent.Parent.InstanceName, $parametersText
         $verboseWarningMessage = $script:localizedData.Set_SqlDscAgentOperator_UpdateShouldProcessVerboseWarning -f $OperatorObject.Name
         $captionMessage = $script:localizedData.Set_SqlDscAgentOperator_UpdateShouldProcessCaption
 
@@ -370,7 +249,7 @@ function Set-SqlDscAgentOperator
             catch
             {
                 $errorMessage = $script:localizedData.Set_SqlDscAgentOperator_UpdateFailed -f $OperatorObject.Name
-                $PSCmdlet.ThrowTerminatingError((New-Object -TypeName System.Management.Automation.ErrorRecord -ArgumentList $_, 'OperatorUpdateFailed', [System.Management.Automation.ErrorCategory]::InvalidOperation, $OperatorObject))
+                $PSCmdlet.ThrowTerminatingError([System.Management.Automation.ErrorRecord]::new($_, 'OperatorUpdateFailed', [System.Management.Automation.ErrorCategory]::InvalidOperation, $OperatorObject))
             }
         }
     }

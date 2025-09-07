@@ -135,7 +135,7 @@ function Disable-SqlDscAgentOperator
             catch
             {
                 $errorMessage = $script:localizedData.Disable_SqlDscAgentOperator_DisableFailed -f $OperatorObject.Name
-                $PSCmdlet.ThrowTerminatingError((New-Object -TypeName System.Management.Automation.ErrorRecord -ArgumentList $_, 'OperatorDisableFailed', [System.Management.Automation.ErrorCategory]::InvalidOperation, $OperatorObject))
+                $PSCmdlet.ThrowTerminatingError([System.Management.Automation.ErrorRecord]::new($_, 'OperatorDisableFailed', [System.Management.Automation.ErrorCategory]::InvalidOperation, $OperatorObject))
             }
         }
     }

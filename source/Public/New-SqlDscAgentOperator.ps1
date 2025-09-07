@@ -47,6 +47,9 @@
     .PARAMETER PassThru
         If specified, the created operator object will be returned.
 
+    .PARAMETER Force
+        Specifies that the operator should be created without any confirmation.
+
     .INPUTS
         Microsoft.SqlServer.Management.Smo.Server
 
@@ -136,12 +139,21 @@ function New-SqlDscAgentOperator
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $PassThru
+        $PassThru,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Force
     )
 
     # cSpell: ignore NSAO
     process
     {
+        if ($Force.IsPresent -and -not $Confirm)
+        {
+            $ConfirmPreference = 'None'
+        }
+
         # Check if operator already exists
         $existingOperator = Get-SqlDscAgentOperator -ServerObject $ServerObject -Name $Name
 
@@ -160,7 +172,7 @@ function New-SqlDscAgentOperator
             try
             {
                 # Create the new operator SMO object
-                $newOperatorObject = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::new($ServerObject.JobServer, $Name)
+                $newOperatorObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Agent.Operator -ArgumentList $ServerObject.JobServer, $Name
 
                 if ($PSBoundParameters.ContainsKey('EmailAddress'))
                 {
@@ -227,7 +239,7 @@ function New-SqlDscAgentOperator
             catch
             {
                 $errorMessage = $script:localizedData.New_SqlDscAgentOperator_CreateFailed -f $Name
-                $PSCmdlet.ThrowTerminatingError((New-Object -TypeName System.Management.Automation.ErrorRecord -ArgumentList $_, 'OperatorCreateFailed', [System.Management.Automation.ErrorCategory]::InvalidOperation, $Name))
+                $PSCmdlet.ThrowTerminatingError([System.Management.Automation.ErrorRecord]::new($_, 'OperatorCreateFailed', [System.Management.Automation.ErrorCategory]::InvalidOperation, $Name))
             }
         }
     }

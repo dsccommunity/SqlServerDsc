@@ -461,20 +461,8 @@ ConvertFrom-StringData @'
     ## Set-SqlDscAgentOperator
     Set_SqlDscAgentOperator_RefreshingServerObject = Refreshing server object's operators collection. (SSAO0001)
     Set_SqlDscAgentOperator_OperatorNotFound = SQL Agent Operator '{0}' was not found. (SSAO0002)
-    Set_SqlDscAgentOperator_NoChangesNeeded = No changes needed for SQL Agent Operator '{0}'. (SSAO0006)
     Set_SqlDscAgentOperator_UpdateFailed = Failed to update SQL Agent Operator '{0}'. (SSAO0007)
-    Set_SqlDscAgentOperator_EmailAddressAlreadyCorrect = Email address '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0008)
-    Set_SqlDscAgentOperator_CategoryNameAlreadyCorrect = Category name '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0019)
-    Set_SqlDscAgentOperator_NetSendAddressAlreadyCorrect = Net send address '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0020)
-    Set_SqlDscAgentOperator_PagerAddressAlreadyCorrect = Pager address '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0021)
-    Set_SqlDscAgentOperator_PagerDaysAlreadyCorrect = Pager days '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0022)
-    Set_SqlDscAgentOperator_SaturdayPagerEndTimeAlreadyCorrect = Saturday pager end time '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0023)
-    Set_SqlDscAgentOperator_SaturdayPagerStartTimeAlreadyCorrect = Saturday pager start time '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0024)
-    Set_SqlDscAgentOperator_SundayPagerEndTimeAlreadyCorrect = Sunday pager end time '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0025)
-    Set_SqlDscAgentOperator_SundayPagerStartTimeAlreadyCorrect = Sunday pager start time '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0026)
-    Set_SqlDscAgentOperator_WeekdayPagerEndTimeAlreadyCorrect = Weekday pager end time '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0027)
-    Set_SqlDscAgentOperator_WeekdayPagerStartTimeAlreadyCorrect = Weekday pager start time '{0}' for SQL Agent Operator '{1}' is already correct. (SSAO0028)
-    Set_SqlDscAgentOperator_UpdateShouldProcessVerboseDescription = Updating the SQL Agent Operator '{0}' on the instance '{1}'.
+    Set_SqlDscAgentOperator_UpdateShouldProcessVerboseDescription = Updating the SQL Agent Operator '{0}' on the instance '{1}' with parameters:{2}
     Set_SqlDscAgentOperator_UpdateShouldProcessVerboseWarning = Are you sure you want to update the SQL Agent Operator '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Set_SqlDscAgentOperator_UpdateShouldProcessCaption = Update SQL Agent Operator on instance

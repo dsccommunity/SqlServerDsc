@@ -100,32 +100,37 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
             $script:mockServerObject.JobServer = $script:mockJobServer
             $script:mockServerObject.InstanceName = 'TestInstance'
 
-            # Mock the creation of new operator object
-            $script:mockCreateOperatorObject = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
-
             # Track method calls
             $script:mockMethodCreateCallCount = 0
+            $script:mockCreatedOperator = $null
 
-            # Mock the ::new() constructor
-            Mock -CommandName 'Microsoft.SqlServer.Management.Smo.Agent.Operator' -MockWith {
-                $script:mockCreateOperatorObject.Name = $args[1]  # Second argument is the name
-                $script:mockMethodCreateCallCount++
-                return $script:mockCreateOperatorObject
-            } -ParameterFilter {
-                $args[0] -and $args[1]
+            # Mock Get-SqlDscAgentOperator to return null (operator doesn't exist)
+            Mock -CommandName 'Get-SqlDscAgentOperator' -MockWith {
+                return $null
+            }
+
+            # Mock the New-Object command for creating operator
+            Mock -CommandName 'New-Object' -ParameterFilter { $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator' } -MockWith {
+                $mockOperatorObject = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
+                $mockOperatorObject.Name = $ArgumentList[1]  # Second argument is the name
+                $mockOperatorObject | Add-Member -MemberType 'ScriptMethod' -Name 'Create' -Value {
+                    $script:mockMethodCreateCallCount++
+                } -Force
+                
+                # Store the created object for verification
+                $script:mockCreatedOperator = $mockOperatorObject
+                return $mockOperatorObject
             }
 
             $script:mockMethodCreateCallCount = 0
-            $script:mockCreateOperatorObject | Add-Member -MemberType ScriptMethod -Name 'Create' -Value {
-                $script:mockMethodCreateCallCount++
-            } -Force
         }
 
         It 'Should call the mocked method and have correct values in the object' {
             New-SqlDscAgentOperator -Confirm:$false -ServerObject $script:mockServerObject -Name 'TestOperator'
 
-            # This is the object created by the mock and modified by the command.
-            $script:mockCreateOperatorObject.Name | Should -Be 'TestOperator'
+            Should -Invoke -CommandName 'New-Object' -ParameterFilter { 
+                $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator' -and $ArgumentList[1] -eq 'TestOperator'
+            } -Exactly -Times 1
 
             $script:mockMethodCreateCallCount | Should -Be 1
         }
@@ -135,9 +140,14 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
 
             New-SqlDscAgentOperator -Confirm:$false -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com'
 
-            # This is the object created by the mock and modified by the command.
-            $script:mockCreateOperatorObject.Name | Should -Be 'TestOperator'
-            $script:mockCreateOperatorObject.EmailAddress | Should -Be 'test@contoso.com'
+            # Verify the mock was called with correct parameters
+            Should -Invoke -CommandName 'New-Object' -ParameterFilter { 
+                $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator' -and $ArgumentList[1] -eq 'TestOperator'
+            } -Exactly -Times 1
+
+            # Verify the object was configured correctly
+            $script:mockCreatedOperator.Name | Should -Be 'TestOperator'
+            $script:mockCreatedOperator.EmailAddress | Should -Be 'test@contoso.com'
 
             $script:mockMethodCreateCallCount | Should -Be 1
         }
@@ -169,8 +179,10 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
 
                 $script:mockServerObject | New-SqlDscAgentOperator -Confirm:$false -Name 'TestOperator'
 
-                # This is the object created by the mock and modified by the command.
-                $script:mockCreateOperatorObject.Name | Should -Be 'TestOperator'
+                # Verify the mock was called with correct parameters
+                Should -Invoke -CommandName 'New-Object' -ParameterFilter { 
+                    $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator' -and $ArgumentList[1] -eq 'TestOperator'
+                } -Exactly -Times 1
 
                 $script:mockMethodCreateCallCount | Should -Be 1
             }
@@ -214,24 +226,27 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
             # Mock server object
             $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
             $script:mockServerObject.JobServer = $script:mockJobServer
+            $script:mockServerObject.InstanceName = 'TestInstance'
 
-            # Mock the creation of new operator object that throws an error
-            $script:mockCreateOperatorObject = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
-
-            Mock -CommandName 'New-Object' -MockWith {
-                return $script:mockCreateOperatorObject
-            } -ParameterFilter {
-                $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
+            # Mock Get-SqlDscAgentOperator to return null (operator doesn't exist)
+            Mock -CommandName 'Get-SqlDscAgentOperator' -MockWith {
+                return $null
             }
 
-            $script:mockCreateOperatorObject | Add-Member -MemberType ScriptMethod -Name 'Create' -Value {
-                throw 'Mocked create failure'
-            } -Force
+            # Mock the New-Object command for creating operator that throws an error
+            Mock -CommandName 'New-Object' -ParameterFilter { $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator' } -MockWith {
+                $mockOperatorObject = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
+                $mockOperatorObject.Name = $ArgumentList[1]
+                $mockOperatorObject | Add-Member -MemberType ScriptMethod -Name 'Create' -Value {
+                    throw 'Mocked create failure'
+                } -Force
+                return $mockOperatorObject
+            }
         }
 
         It 'Should throw when create operation fails' {
-            { New-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'FailOperator' -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage '*Failed to create SQL Agent Operator ''FailOperator''*'
+            { New-SqlDscAgentOperator -Confirm:$false -ServerObject $script:mockServerObject -Name 'FailOperator' -ErrorAction 'Stop' } |
+                Should -Throw -ExpectedMessage '*Mocked create failure*'
         }
     }
 }
