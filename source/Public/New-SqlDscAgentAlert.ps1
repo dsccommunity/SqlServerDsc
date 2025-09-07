@@ -80,8 +80,20 @@ function New-SqlDscAgentAlert
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $PassThru
+        $PassThru,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Force
     )
+
+    begin
+    {
+        if ($Force.IsPresent -and -not $Confirm)
+        {
+            $ConfirmPreference = 'None'
+        }
+    }
 
     # cSpell: ignore NSAA
     process
