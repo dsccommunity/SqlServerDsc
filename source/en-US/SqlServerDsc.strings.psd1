@@ -502,4 +502,7 @@ ConvertFrom-StringData @'
 
     ## Agent Operator common
     AgentOperator_NotFound = The SQL Agent Operator '{0}' was not found. (AO0001)
+
+    ## Get-AgentOperatorObject
+    Get_AgentOperatorObject_GettingOperator = Getting SQL Agent Operator '{0}' from server object. (GAOO0002)
 '@
