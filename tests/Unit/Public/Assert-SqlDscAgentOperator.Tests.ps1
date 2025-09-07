@@ -25,6 +25,8 @@ BeforeDiscovery {
 }
 
 BeforeAll {
+    $env:SqlServerDscCI = $true
+
     $script:moduleName = 'SqlServerDsc'
 
     Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
@@ -42,6 +44,8 @@ AfterAll {
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:moduleName -All | Remove-Module -Force
+
+    Remove-Item -Path 'Env:\SqlServerDscCI' -ErrorAction 'SilentlyContinue'
 }
 
 Describe 'Assert-SqlDscAgentOperator' -Tag 'Public' {
