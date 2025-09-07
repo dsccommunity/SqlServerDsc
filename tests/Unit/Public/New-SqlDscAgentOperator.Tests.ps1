@@ -55,7 +55,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-ServerObject] <Server> [-Name] <string> [[-EmailAddress] <string>] [[-CategoryName] <string>] [[-NetSendAddress] <string>] [[-PagerAddress] <string>] [[-PagerDays] <WeekDays>] [[-SaturdayPagerEndTime] <timespan>] [[-SaturdayPagerStartTime] <timespan>] [[-SundayPagerEndTime] <timespan>] [[-SundayPagerStartTime] <timespan>] [[-WeekdayPagerEndTime] <timespan>] [[-WeekdayPagerStartTime] <timespan>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '[-ServerObject] <Server> [-Name] <string> [[-EmailAddress] <string>] [[-CategoryName] <string>] [[-NetSendAddress] <string>] [[-PagerAddress] <string>] [[-PagerDays] <WeekDays>] [[-SaturdayPagerEndTime] <timespan>] [[-SaturdayPagerStartTime] <timespan>] [[-SundayPagerEndTime] <timespan>] [[-SundayPagerStartTime] <timespan>] [[-WeekdayPagerEndTime] <timespan>] [[-WeekdayPagerStartTime] <timespan>] [-PassThru] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'New-SqlDscAgentOperator').ParameterSets |
@@ -113,25 +113,25 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should call Create method on operator when creating new operator' {
             # Reset counter
             $script:mockJobServer.MockOperatorMethodCreateCalled = 0
-            
+
             New-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com'
-            
+
             $script:mockJobServer.MockOperatorMethodCreateCalled | Should -Be 1
         }
 
         It 'Should create operator with email address when specified' {
             # Reset counter
             $script:mockJobServer.MockOperatorMethodCreateCalled = 0
-            
+
             { New-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com' } | Should -Not -Throw
-            
+
             $script:mockJobServer.MockOperatorMethodCreateCalled | Should -Be 1
         }
 
         It 'Should return operator object when PassThru is specified' {
             # Reset counter
             $script:mockJobServer.MockOperatorMethodCreateCalled = 0
-            
+
             $result = New-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com' -PassThru
 
             $result | Should -Not -BeNullOrEmpty
@@ -143,9 +143,9 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
             It 'Should not perform any action when using WhatIf' {
                 # Reset counter
                 $script:mockJobServer.MockOperatorMethodCreateCalled = 0
-                
+
                 { New-SqlDscAgentOperator -WhatIf -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com' } | Should -Not -Throw
-                
+
                 # Create method should not be called when using WhatIf
                 $script:mockJobServer.MockOperatorMethodCreateCalled | Should -Be 0
             }
@@ -155,9 +155,9 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
             It 'Should create operator via pipeline without throwing an error' {
                 # Reset counter
                 $script:mockJobServer.MockOperatorMethodCreateCalled = 0
-                
+
                 { $script:mockServerObject | New-SqlDscAgentOperator -Force -Name 'TestOperator' -EmailAddress 'test@contoso.com' } | Should -Not -Throw
-                
+
                 $script:mockJobServer.MockOperatorMethodCreateCalled | Should -Be 1
             }
         }
@@ -216,10 +216,10 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should increment Create method counter even when create operation fails' {
             # Reset counter
             $script:mockJobServer.MockOperatorMethodCreateCalled = 0
-            
+
             { New-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'MockFailMethodCreateOperator' -EmailAddress 'test@contoso.com' -ErrorAction 'Stop' } |
                 Should -Throw
-            
+
             # Counter should be incremented since Create() method was called, even though it failed
             $script:mockJobServer.MockOperatorMethodCreateCalled | Should -Be 1
         }
