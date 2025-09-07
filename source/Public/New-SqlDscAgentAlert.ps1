@@ -22,6 +22,9 @@
     .PARAMETER PassThru
         If specified, the created alert object will be returned.
 
+    .PARAMETER Force
+        Forces the action without prompting for confirmation.
+
     .INPUTS
         Microsoft.SqlServer.Management.Smo.Server
 
