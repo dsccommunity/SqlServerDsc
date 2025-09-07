@@ -70,28 +70,28 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_S
 
     Context 'When operator exists' {
         It 'Should not throw when asserting existing operator' {
-            { Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'IntegrationTest_AssertOperator' } | Should -Not -Throw
+            { Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'IntegrationTest_AssertOperator' -ErrorAction Stop } | Should -Not -Throw
         }
 
         It 'Should not throw when asserting persistent operator created by New-SqlDscAgentOperator' {
-            { Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'SqlDscIntegrationTestOperator_Persistent' } | Should -Not -Throw
+            { Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'SqlDscIntegrationTestOperator_Persistent' -ErrorAction Stop } | Should -Not -Throw
         }
 
         It 'Should not return anything when operator exists' {
-            $result = Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'IntegrationTest_AssertOperator'
+            $result = Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'IntegrationTest_AssertOperator' -ErrorAction Stop
             $result | Should -BeNullOrEmpty
         }
     }
 
     Context 'When operator does not exist' {
         It 'Should throw terminating error when operator does not exist' {
-            { Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'NonExistentOperator' } | Should -Throw
+            { Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'NonExistentOperator' -ErrorAction Stop } | Should -Throw
         }
 
         It 'Should throw with specific error category when operator does not exist' {
             try
             {
-                Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'NonExistentOperator'
+                Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'NonExistentOperator' -ErrorAction Stop
                 # Should not reach this line
                 $false | Should -Be $true
             }
@@ -105,7 +105,7 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_S
 
     Context 'When using pipeline input' {
         It 'Should accept ServerObject from pipeline' {
-            { $script:sqlServerObject | Assert-SqlDscAgentOperator -Name 'IntegrationTest_AssertOperator' } | Should -Not -Throw
+            { $script:sqlServerObject | Assert-SqlDscAgentOperator -Name 'IntegrationTest_AssertOperator' -ErrorAction Stop } | Should -Not -Throw
         }
     }
 }
