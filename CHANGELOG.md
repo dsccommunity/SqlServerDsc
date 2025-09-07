@@ -92,7 +92,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `New-SqlDscAgentOperator` - Create a new SQL Agent Operator with specified properties
   - `Set-SqlDscAgentOperator` - Update existing SQL Agent Operator properties
   - `Remove-SqlDscAgentOperator` - Remove a SQL Agent Operator from the instance
-  - `Test-SqlDscAgentOperator` - Test if a SQL Agent Operator exists with desired properties
+  - `Test-SqlDscIsAgentOperator` - Test if a SQL Agent Operator exists
   - Supports pipeline input for both ServerObject and OperatorObject where applicable
   - Includes comprehensive unit tests and follows ShouldProcess patterns
 - Added new public commands for database management:

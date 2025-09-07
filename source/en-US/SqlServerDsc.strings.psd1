@@ -475,14 +475,14 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Remove_SqlDscAgentOperator_RemoveShouldProcessCaption = Remove SQL Agent Operator on instance
 
-    ## Test-SqlDscAgentOperator
-    Test_SqlDscAgentOperator_TestingOperator = Testing if the SQL Agent Operator '{0}' exists and has the desired properties. (TSAO0001)
-    Test_SqlDscAgentOperator_OperatorNotFound = SQL Agent Operator '{0}' was not found. (TSAO0002)
-    Test_SqlDscAgentOperator_OperatorFound = SQL Agent Operator '{0}' was found. (TSAO0003)
-    Test_SqlDscAgentOperator_NoPropertyTest = No specific properties to test, operator exists. (TSAO0004)
-    Test_SqlDscAgentOperator_EmailAddressMismatch = Email address mismatch: current '{0}', expected '{1}'. (TSAO0005)
-    Test_SqlDscAgentOperator_EmailAddressMatch = Email address matches expected value '{0}'. (TSAO0006)
-    Test_SqlDscAgentOperator_AllTestsPassed = All tests passed for SQL Agent Operator '{0}'. (TSAO0007)
+    ## Test-SqlDscIsAgentOperator
+    Test_SqlDscIsAgentOperator_TestingOperator = Testing if the SQL Agent Operator '{0}' exists and has the desired properties. (TISAO0001)
+    Test_SqlDscIsAgentOperator_OperatorNotFound = SQL Agent Operator '{0}' was not found. (TISAO0002)
+    Test_SqlDscIsAgentOperator_OperatorFound = SQL Agent Operator '{0}' was found. (TISAO0003)
+    Test_SqlDscIsAgentOperator_NoPropertyTest = No specific properties to test, operator exists. (TISAO0004)
+    Test_SqlDscIsAgentOperator_EmailAddressMismatch = Email address mismatch: current '{0}', expected '{1}'. (TISAO0005)
+    Test_SqlDscIsAgentOperator_EmailAddressMatch = Email address matches expected value '{0}'. (TISAO0006)
+    Test_SqlDscIsAgentOperator_AllTestsPassed = All tests passed for SQL Agent Operator '{0}'. (TISAO0007)
 
     ## Enable-SqlDscAgentOperator
     Enable_SqlDscAgentOperator_EnableFailed = Failed to enable SQL Agent Operator '{0}'. (ESAO0005)

@@ -41,7 +41,7 @@ AfterAll {
     Get-Module -Name $script:moduleName -All | Remove-Module -Force
 }
 
-Describe 'Test-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022' {
+Describe 'Test-SqlDscIsAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022' {
     BeforeAll {
         # Starting the named instance SQL Server service prior to running tests.
         Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
@@ -63,20 +63,20 @@ Describe 'Test-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL
     Context 'When testing for an existing agent operator' {
         It 'Should return true for existing operator' {
             # Test for the persistent operator created by New-SqlDscAgentOperator integration test
-            $result = Test-SqlDscAgentOperator -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestOperator_Persistent' -ErrorAction 'Stop'
+            $result = Test-SqlDscIsAgentOperator -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestOperator_Persistent' -ErrorAction 'Stop'
             $result | Should -BeTrue
         }
 
         It 'Should return false for non-existing operator' {
             # Test for a non-existing operator
-            $result = Test-SqlDscAgentOperator -ServerObject $script:serverObject -Name 'NonExistentOperator' -ErrorAction 'Stop'
+            $result = Test-SqlDscIsAgentOperator -ServerObject $script:serverObject -Name 'NonExistentOperator' -ErrorAction 'Stop'
             $result | Should -BeFalse
         }
     }
 
     Context 'When using pipeline input' {
         It 'Should accept ServerObject from pipeline' {
-            $result = $script:serverObject | Test-SqlDscAgentOperator -Name 'SqlDscIntegrationTestOperator_Persistent' -ErrorAction 'Stop'
+            $result = $script:serverObject | Test-SqlDscIsAgentOperator -Name 'SqlDscIntegrationTestOperator_Persistent' -ErrorAction 'Stop'
             $result | Should -BeTrue
         }
     }

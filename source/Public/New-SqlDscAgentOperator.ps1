@@ -180,7 +180,7 @@ function New-SqlDscAgentOperator
         }
 
         # Check if operator already exists
-        if (Test-SqlDscAgentOperator -ServerObject $ServerObject -Name $Name -Refresh:$Refresh)
+        if (Test-SqlDscIsAgentOperator -ServerObject $ServerObject -Name $Name -Refresh:$Refresh)
         {
             $errorMessage = $script:localizedData.New_SqlDscAgentOperator_OperatorAlreadyExists -f $Name
 

@@ -67,14 +67,14 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_S
             New-SqlDscAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -EmailAddress 'temp@example.com' -Force -ErrorAction 'Stop'
 
             # Verify it was created
-            $operatorExists = Test-SqlDscAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -ErrorAction 'Stop'
+            $operatorExists = Test-SqlDscIsAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -ErrorAction 'Stop'
             $operatorExists | Should -BeTrue
 
             # Remove the operator
             Remove-SqlDscAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -Force -ErrorAction 'Stop'
 
             # Verify it was removed
-            $operatorExists = Test-SqlDscAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -ErrorAction 'Stop'
+            $operatorExists = Test-SqlDscIsAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -ErrorAction 'Stop'
             $operatorExists | Should -BeFalse
         }
 
@@ -91,7 +91,7 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_S
             Remove-SqlDscAgentOperator -OperatorObject $operatorObject -Force -ErrorAction 'Stop'
 
             # Verify it was removed
-            $operatorExists = Test-SqlDscAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -ErrorAction 'Stop'
+            $operatorExists = Test-SqlDscIsAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -ErrorAction 'Stop'
             $operatorExists | Should -BeFalse
         }
     }

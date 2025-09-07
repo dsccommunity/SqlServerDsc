@@ -50,7 +50,7 @@ AfterAll {
     Get-Module -Name $script:moduleName -All | Remove-Module -Force
 }
 
-Describe 'Test-SqlDscAgentOperator' -Tag 'Public' {
+Describe 'Test-SqlDscIsAgentOperator' -Tag 'Public' {
     Context 'When command has correct parameter sets' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
@@ -58,7 +58,7 @@ Describe 'Test-SqlDscAgentOperator' -Tag 'Public' {
                 ExpectedParameters = '[-ServerObject] <Server> [-Name] <string> [[-EmailAddress] <string>] [-Refresh] [<CommonParameters>]'
             }
         ) {
-            $result = (Get-Command -Name 'Test-SqlDscAgentOperator').ParameterSets |
+            $result = (Get-Command -Name 'Test-SqlDscIsAgentOperator').ParameterSets |
                 Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
                 Select-Object -Property @(
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
@@ -71,17 +71,17 @@ Describe 'Test-SqlDscAgentOperator' -Tag 'Public' {
 
     Context 'When command has correct parameter properties' {
         It 'Should have ServerObject as a mandatory parameter' {
-            $parameterInfo = (Get-Command -Name 'Test-SqlDscAgentOperator').Parameters['ServerObject']
+            $parameterInfo = (Get-Command -Name 'Test-SqlDscIsAgentOperator').Parameters['ServerObject']
             $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
 
         It 'Should have ServerObject accept pipeline input' {
-            $parameterInfo = (Get-Command -Name 'Test-SqlDscAgentOperator').Parameters['ServerObject']
+            $parameterInfo = (Get-Command -Name 'Test-SqlDscIsAgentOperator').Parameters['ServerObject']
             $parameterInfo.Attributes.ValueFromPipeline | Should -BeTrue
         }
 
         It 'Should have Name as a mandatory parameter' {
-            $parameterInfo = (Get-Command -Name 'Test-SqlDscAgentOperator').Parameters['Name']
+            $parameterInfo = (Get-Command -Name 'Test-SqlDscIsAgentOperator').Parameters['Name']
             $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
     }
@@ -102,7 +102,7 @@ Describe 'Test-SqlDscAgentOperator' -Tag 'Public' {
                 return $script:mockOperator
             }
 
-            $result = Test-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'TestOperator'
+            $result = Test-SqlDscIsAgentOperator -ServerObject $script:mockServerObject -Name 'TestOperator'
 
             $result | Should -BeTrue
             Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1 -Scope It
@@ -113,7 +113,7 @@ Describe 'Test-SqlDscAgentOperator' -Tag 'Public' {
                 return $null
             }
 
-            $result = Test-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'NonExistentOperator'
+            $result = Test-SqlDscIsAgentOperator -ServerObject $script:mockServerObject -Name 'NonExistentOperator'
 
             $result | Should -BeFalse
             Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1 -Scope It
@@ -125,7 +125,7 @@ Describe 'Test-SqlDscAgentOperator' -Tag 'Public' {
                     return $script:mockOperator
                 }
 
-                $result = $script:mockServerObject | Test-SqlDscAgentOperator -Name 'TestOperator'
+                $result = $script:mockServerObject | Test-SqlDscIsAgentOperator -Name 'TestOperator'
 
                 $result | Should -BeTrue
                 Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1 -Scope It
@@ -138,7 +138,7 @@ Describe 'Test-SqlDscAgentOperator' -Tag 'Public' {
                     return $script:mockOperator
                 }
 
-                $result = Test-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'TestOperator' -Refresh
+                $result = Test-SqlDscIsAgentOperator -ServerObject $script:mockServerObject -Name 'TestOperator' -Refresh
 
                 $result | Should -BeTrue
                 Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1 -Scope It
