@@ -239,7 +239,15 @@ function New-SqlDscAgentOperator
             catch
             {
                 $errorMessage = $script:localizedData.New_SqlDscAgentOperator_CreateFailed -f $Name
-                $PSCmdlet.ThrowTerminatingError([System.Management.Automation.ErrorRecord]::new($_, 'OperatorCreateFailed', [System.Management.Automation.ErrorCategory]::InvalidOperation, $Name))
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.InvalidOperationException]::new($errorMessage, $_.Exception),
+                        'NSAO0001', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $Name
+                    )
+                )
             }
         }
     }

@@ -249,7 +249,15 @@ function Set-SqlDscAgentOperator
             catch
             {
                 $errorMessage = $script:localizedData.Set_SqlDscAgentOperator_UpdateFailed -f $OperatorObject.Name
-                $PSCmdlet.ThrowTerminatingError([System.Management.Automation.ErrorRecord]::new($_, 'OperatorUpdateFailed', [System.Management.Automation.ErrorCategory]::InvalidOperation, $OperatorObject))
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.InvalidOperationException]::new($errorMessage, $_.Exception),
+                        'SSAO0001', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $OperatorObject
+                    )
+                )
             }
         }
     }

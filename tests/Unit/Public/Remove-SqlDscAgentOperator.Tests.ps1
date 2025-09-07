@@ -238,7 +238,7 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
         }
 
         It 'Should throw when drop operation fails' {
-            { Remove-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'TestOperator' -ErrorAction 'Stop' } |
+            { Remove-SqlDscAgentOperator -Confirm:$false -ServerObject $script:mockServerObject -Name 'TestOperator' -ErrorAction 'Stop' } |
                 Should -Throw -ExpectedMessage '*Failed to remove SQL Agent Operator ''TestOperator''*'
         }
     }

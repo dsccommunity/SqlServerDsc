@@ -140,13 +140,13 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
             $script:mockMethodAlterCallCount | Should -Be 1
         }
 
-        It 'Should not update when email address is already correct' {
+        It 'Should update when email address is already correct (always set user-specified properties)' {
             $script:mockMethodAlterCallCount = 0
             $script:mockOperator.EmailAddress = 'correct@contoso.com'
 
             Set-SqlDscAgentOperator -Confirm:$false -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'correct@contoso.com'
 
-            $script:mockMethodAlterCallCount | Should -Be 0
+            $script:mockMethodAlterCallCount | Should -Be 1
         }
 
         It 'Should throw when operator does not exist' {

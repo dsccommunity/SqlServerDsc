@@ -97,7 +97,15 @@ function Remove-SqlDscAgentOperator
             catch
             {
                 $errorMessage = $script:localizedData.Remove_SqlDscAgentOperator_RemoveFailed -f $OperatorObject.Name
-                $PSCmdlet.ThrowTerminatingError([System.Management.Automation.ErrorRecord]::new($_, 'OperatorRemoveFailed', [System.Management.Automation.ErrorCategory]::InvalidOperation, $OperatorObject))
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.InvalidOperationException]::new($errorMessage, $_.Exception),
+                        'RSAO0001', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $OperatorObject
+                    )
+                )
             }
         }
     }

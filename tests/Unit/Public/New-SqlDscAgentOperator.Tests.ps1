@@ -55,7 +55,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-ServerObject] <Server> [-Name] <string> [[-EmailAddress] <string>] [[-CategoryName] <string>] [[-NetSendAddress] <string>] [[-PagerAddress] <string>] [[-PagerDays] <WeekDays>] [[-SaturdayPagerEndTime] <timespan>] [[-SaturdayPagerStartTime] <timespan>] [[-SundayPagerEndTime] <timespan>] [[-SundayPagerStartTime] <timespan>] [[-WeekdayPagerEndTime] <timespan>] [[-WeekdayPagerStartTime] <timespan>] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '[-ServerObject] <Server> [-Name] <string> [[-EmailAddress] <string>] [[-CategoryName] <string>] [[-NetSendAddress] <string>] [[-PagerAddress] <string>] [[-PagerDays] <WeekDays>] [[-SaturdayPagerEndTime] <timespan>] [[-SaturdayPagerStartTime] <timespan>] [[-SundayPagerEndTime] <timespan>] [[-SundayPagerStartTime] <timespan>] [[-WeekdayPagerEndTime] <timespan>] [[-WeekdayPagerStartTime] <timespan>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'New-SqlDscAgentOperator').ParameterSets |
@@ -246,7 +246,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
 
         It 'Should throw when create operation fails' {
             { New-SqlDscAgentOperator -Confirm:$false -ServerObject $script:mockServerObject -Name 'FailOperator' -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage '*Mocked create failure*'
+                Should -Throw -ExpectedMessage "*Failed to create SQL Agent Operator 'FailOperator'*"
         }
     }
 }
