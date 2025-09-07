@@ -105,7 +105,10 @@ function Disable-SqlDscAgentOperator
                 $ServerObject.JobServer.Operators.Refresh()
             }
 
-            $OperatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name
+            $originalErrorActionPreference = $ErrorActionPreference
+            $ErrorActionPreference = 'Stop'
+            $OperatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name -ErrorAction 'Stop'
+            $ErrorActionPreference = $originalErrorActionPreference
         }
 
         $verboseDescriptionMessage = $script:localizedData.Disable_SqlDscAgentOperator_ShouldProcessVerboseDescription -f $OperatorObject.Name, $OperatorObject.Parent.Parent.InstanceName

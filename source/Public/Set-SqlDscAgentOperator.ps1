@@ -171,7 +171,10 @@ function Set-SqlDscAgentOperator
 
             $ServerObject.JobServer.Operators.Refresh()
 
-            $OperatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name
+            $originalErrorActionPreference = $ErrorActionPreference
+            $ErrorActionPreference = 'Stop'
+            $OperatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name -ErrorAction 'Stop'
+            $ErrorActionPreference = $originalErrorActionPreference
         }
 
         # Build description of parameters being set for ShouldProcess
