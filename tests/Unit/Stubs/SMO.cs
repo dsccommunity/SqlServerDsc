@@ -1607,9 +1607,9 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
         public Microsoft.SqlServer.Management.Smo.Server Parent { get; set; }
 
         // Mock property counters for tracking method calls
-        public System.Int32 MockOperatorMethodCreateCalled { get; set; } = 0;
-        public System.Int32 MockOperatorMethodDropCalled { get; set; } = 0;
-        public System.Int32 MockOperatorMethodAlterCalled { get; set; } = 0;
+        public System.Int32 MockOperatorMethodCreateCalled { get; set; }
+        public System.Int32 MockOperatorMethodDropCalled { get; set; }
+        public System.Int32 MockOperatorMethodAlterCalled { get; set; }
 
         // Fabricated constructor
         private JobServer(Microsoft.SqlServer.Management.Smo.Server server) { }
