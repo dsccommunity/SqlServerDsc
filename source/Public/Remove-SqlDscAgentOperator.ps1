@@ -92,16 +92,12 @@ function Remove-SqlDscAgentOperator
         {
             try
             {
-                Write-Verbose -Message ($script:localizedData.Remove_SqlDscAgentOperator_RemovingOperator -f $OperatorObject.Name)
-
                 $OperatorObject.Drop()
-
-                Write-Verbose -Message ($script:localizedData.Remove_SqlDscAgentOperator_OperatorRemoved -f $OperatorObject.Name)
             }
             catch
             {
                 $errorMessage = $script:localizedData.Remove_SqlDscAgentOperator_RemoveFailed -f $OperatorObject.Name
-                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                $PSCmdlet.ThrowTerminatingError((New-Object -TypeName System.Management.Automation.ErrorRecord -ArgumentList $_, 'OperatorRemoveFailed', [System.Management.Automation.ErrorCategory]::InvalidOperation, $OperatorObject))
             }
         }
     }

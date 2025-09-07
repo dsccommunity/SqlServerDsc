@@ -310,82 +310,67 @@ function Set-SqlDscAgentOperator
         {
             try
             {
-                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_UpdatingOperator -f $OperatorObject.Name)
-
                 if ($PSBoundParameters.ContainsKey('EmailAddress'))
                 {
-                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingEmailAddress -f $EmailAddress, $OperatorObject.Name)
                     $OperatorObject.EmailAddress = $EmailAddress
                 }
 
                 if ($PSBoundParameters.ContainsKey('CategoryName'))
                 {
-                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingCategoryName -f $CategoryName, $OperatorObject.Name)
                     $OperatorObject.CategoryName = $CategoryName
                 }
 
                 if ($PSBoundParameters.ContainsKey('NetSendAddress'))
                 {
-                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingNetSendAddress -f $NetSendAddress, $OperatorObject.Name)
                     $OperatorObject.NetSendAddress = $NetSendAddress
                 }
 
                 if ($PSBoundParameters.ContainsKey('PagerAddress'))
                 {
-                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingPagerAddress -f $PagerAddress, $OperatorObject.Name)
                     $OperatorObject.PagerAddress = $PagerAddress
                 }
 
                 if ($PSBoundParameters.ContainsKey('PagerDays'))
                 {
-                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingPagerDays -f $PagerDays, $OperatorObject.Name)
                     $OperatorObject.PagerDays = $PagerDays
                 }
 
                 if ($PSBoundParameters.ContainsKey('SaturdayPagerEndTime'))
                 {
-                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingSaturdayPagerEndTime -f $SaturdayPagerEndTime, $OperatorObject.Name)
                     $OperatorObject.SaturdayPagerEndTime = $SaturdayPagerEndTime
                 }
 
                 if ($PSBoundParameters.ContainsKey('SaturdayPagerStartTime'))
                 {
-                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingSaturdayPagerStartTime -f $SaturdayPagerStartTime, $OperatorObject.Name)
                     $OperatorObject.SaturdayPagerStartTime = $SaturdayPagerStartTime
                 }
 
                 if ($PSBoundParameters.ContainsKey('SundayPagerEndTime'))
                 {
-                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingSundayPagerEndTime -f $SundayPagerEndTime, $OperatorObject.Name)
                     $OperatorObject.SundayPagerEndTime = $SundayPagerEndTime
                 }
 
                 if ($PSBoundParameters.ContainsKey('SundayPagerStartTime'))
                 {
-                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingSundayPagerStartTime -f $SundayPagerStartTime, $OperatorObject.Name)
                     $OperatorObject.SundayPagerStartTime = $SundayPagerStartTime
                 }
 
                 if ($PSBoundParameters.ContainsKey('WeekdayPagerEndTime'))
                 {
-                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingWeekdayPagerEndTime -f $WeekdayPagerEndTime, $OperatorObject.Name)
                     $OperatorObject.WeekdayPagerEndTime = $WeekdayPagerEndTime
                 }
 
                 if ($PSBoundParameters.ContainsKey('WeekdayPagerStartTime'))
                 {
-                    Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_SettingWeekdayPagerStartTime -f $WeekdayPagerStartTime, $OperatorObject.Name)
                     $OperatorObject.WeekdayPagerStartTime = $WeekdayPagerStartTime
                 }
 
                 $OperatorObject.Alter()
-
-                Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_OperatorUpdated -f $OperatorObject.Name)
             }
             catch
             {
                 $errorMessage = $script:localizedData.Set_SqlDscAgentOperator_UpdateFailed -f $OperatorObject.Name
-                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                $PSCmdlet.ThrowTerminatingError((New-Object -TypeName System.Management.Automation.ErrorRecord -ArgumentList $_, 'OperatorUpdateFailed', [System.Management.Automation.ErrorCategory]::InvalidOperation, $OperatorObject))
             }
         }
     }

@@ -117,17 +117,13 @@ function Enable-SqlDscAgentOperator
         {
             try
             {
-                Write-Verbose -Message ($script:localizedData.Enable_SqlDscAgentOperator_EnablingOperator -f $OperatorObject.Name)
-
                 $OperatorObject.Enabled = $true
                 $OperatorObject.Alter()
-
-                Write-Verbose -Message ($script:localizedData.Enable_SqlDscAgentOperator_OperatorEnabled -f $OperatorObject.Name)
             }
             catch
             {
                 $errorMessage = $script:localizedData.Enable_SqlDscAgentOperator_EnableFailed -f $OperatorObject.Name
-                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                $PSCmdlet.ThrowTerminatingError((New-Object -TypeName System.Management.Automation.ErrorRecord -ArgumentList $_, 'OperatorEnableFailed', [System.Management.Automation.ErrorCategory]::InvalidOperation, $OperatorObject))
             }
         }
     }
