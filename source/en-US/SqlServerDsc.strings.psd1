@@ -467,8 +467,6 @@ ConvertFrom-StringData @'
     Set_SqlDscAgentOperator_UpdateShouldProcessCaption = Update SQL Agent Operator on instance
 
     ## Remove-SqlDscAgentOperator
-    Remove_SqlDscAgentOperator_RefreshingServerObject = Refreshing server object's operators collection. (RSAO0001)
-    Remove_SqlDscAgentOperator_OperatorNotFound = SQL Agent Operator '{0}' was not found. (RSAO0002)
     Remove_SqlDscAgentOperator_RemoveFailed = Failed to remove SQL Agent Operator '{0}'. (RSAO0005)
     Remove_SqlDscAgentOperator_RemoveShouldProcessVerboseDescription = Removing the SQL Agent Operator '{0}' on the instance '{1}'.
     Remove_SqlDscAgentOperator_RemoveShouldProcessVerboseWarning = Are you sure you want to remove the SQL Agent Operator '{0}'?
@@ -479,10 +477,6 @@ ConvertFrom-StringData @'
     Test_SqlDscIsAgentOperator_TestingOperator = Testing if the SQL Agent Operator '{0}' exists and has the desired properties. (TISAO0001)
     Test_SqlDscIsAgentOperator_OperatorNotFound = SQL Agent Operator '{0}' was not found. (TISAO0002)
     Test_SqlDscIsAgentOperator_OperatorFound = SQL Agent Operator '{0}' was found. (TISAO0003)
-    Test_SqlDscIsAgentOperator_NoPropertyTest = No specific properties to test, operator exists. (TISAO0004)
-    Test_SqlDscIsAgentOperator_EmailAddressMismatch = Email address mismatch: current '{0}', expected '{1}'. (TISAO0005)
-    Test_SqlDscIsAgentOperator_EmailAddressMatch = Email address matches expected value '{0}'. (TISAO0006)
-    Test_SqlDscIsAgentOperator_AllTestsPassed = All tests passed for SQL Agent Operator '{0}'. (TISAO0007)
 
     ## Enable-SqlDscAgentOperator
     Enable_SqlDscAgentOperator_EnableFailed = Failed to enable SQL Agent Operator '{0}'. (ESAO0005)
