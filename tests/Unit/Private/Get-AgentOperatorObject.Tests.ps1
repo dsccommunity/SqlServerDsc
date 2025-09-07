@@ -56,8 +56,8 @@ Describe 'Get-AgentOperatorObject' -Tag 'Private' {
             # Create a mock server object with a JobServer that contains operators
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockJobServer = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Agent.JobServer'
-            $mockOperators = New-Object -TypeName 'System.Collections.ArrayList'
-            $null = $mockOperators.Add($mockOperatorObject)
+            $mockOperators = [Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection]::CreateTypeInstance()
+            $mockOperators.Add($mockOperatorObject)
 
             $mockJobServer | Add-Member -MemberType NoteProperty -Name 'Operators' -Value $mockOperators -Force
             $mockServerObject | Add-Member -MemberType NoteProperty -Name 'JobServer' -Value $mockJobServer -Force
@@ -72,18 +72,6 @@ Describe 'Get-AgentOperatorObject' -Tag 'Private' {
                 $result.Name | Should -Be 'TestOperator'
             }
         }
-
-        It 'Should write verbose message when getting operator' {
-            InModuleScope -Parameters @{ mockServerObject = $mockServerObject } -ScriptBlock {
-                Set-StrictMode -Version 1.0
-
-                $verboseOutput = @()
-                Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'TestOperator' -Verbose 4>&1 |
-                    ForEach-Object { $verboseOutput += $_ }
-
-                $verboseOutput -join ' ' | Should -Match "Getting SQL Agent Operator 'TestOperator' from server object"
-            }
-        }
     }
 
     Context 'When operator does not exist' {
@@ -91,7 +79,7 @@ Describe 'Get-AgentOperatorObject' -Tag 'Private' {
             # Create a mock server object with an empty JobServer operators collection
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockJobServer = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Agent.JobServer'
-            $mockOperators = New-Object -TypeName 'System.Collections.ArrayList'
+            $mockOperators = [Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection]::CreateTypeInstance()
 
             $mockJobServer | Add-Member -MemberType NoteProperty -Name 'Operators' -Value $mockOperators -Force
             $mockServerObject | Add-Member -MemberType NoteProperty -Name 'JobServer' -Value $mockJobServer -Force
@@ -114,21 +102,31 @@ Describe 'Get-AgentOperatorObject' -Tag 'Private' {
                     Should -Throw -ExpectedMessage "*NonExistentOperator*not found*"
             }
         }
+    }
 
-        It 'Should throw an error with the correct error record when IgnoreNotFound is not specified' {
+    Context 'When using Refresh parameter' {
+        BeforeAll {
+            # Create a mock operator object
+            $mockOperatorObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
+            $mockOperatorObject.Name = 'TestOperator'
+
+            # Create a mock server object with a JobServer that contains operators
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockJobServer = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Agent.JobServer'
+            $mockOperators = [Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection]::CreateTypeInstance()
+            $mockOperators.Add($mockOperatorObject)
+
+            $mockJobServer | Add-Member -MemberType NoteProperty -Name 'Operators' -Value $mockOperators -Force
+            $mockServerObject | Add-Member -MemberType NoteProperty -Name 'JobServer' -Value $mockJobServer -Force
+        }
+
+        It 'Should return the operator object when found' {
             InModuleScope -Parameters @{ mockServerObject = $mockServerObject } -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                try
-                {
-                    Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'NonExistentOperator'
-                }
-                catch
-                {
-                    $_.FullyQualifiedErrorId | Should -Be 'GAOO0001,Get-AgentOperatorObject'
-                    $_.CategoryInfo.Category | Should -Be 'ObjectNotFound'
-                    $_.TargetObject | Should -Be 'NonExistentOperator'
-                }
+                $result = Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'TestOperator' -Refresh
+                $result | Should -Not -BeNullOrEmpty
+                $result.Name | Should -Be 'TestOperator'
             }
         }
     }

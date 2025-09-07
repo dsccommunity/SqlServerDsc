@@ -18,6 +18,10 @@
         When specified, the function returns $null if the operator doesn't exist.
         When not specified (default), the function throws an error if the operator doesn't exist.
 
+    .PARAMETER Refresh
+        Specifies whether to refresh the operators collection before retrieving the operator.
+        When specified, the function calls Refresh() on the JobServer.Operators collection.
+
     .INPUTS
         None.
 
@@ -40,6 +44,11 @@
         $operatorObject = Get-AgentOperatorObject -ServerObject $serverObject -Name 'TestOperator' -IgnoreNotFound
 
         Returns the SQL Agent Operator object for 'TestOperator', returns $null if not found.
+
+    .EXAMPLE
+        $operatorObject = Get-AgentOperatorObject -ServerObject $serverObject -Name 'TestOperator' -Refresh
+
+        Returns the SQL Agent Operator object for 'TestOperator' after refreshing the operators collection.
 #>
 function Get-AgentOperatorObject
 {
@@ -57,10 +66,20 @@ function Get-AgentOperatorObject
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $IgnoreNotFound
+        $IgnoreNotFound,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Refresh
     )
 
     Write-Verbose -Message ($script:localizedData.Get_AgentOperatorObject_GettingOperator -f $Name)
+
+    if ($Refresh)
+    {
+        Write-Verbose -Message $script:localizedData.Get_AgentOperatorObject_RefreshingOperators
+        $ServerObject.JobServer.Operators.Refresh()
+    }
 
     $operatorObject = $ServerObject.JobServer.Operators | Where-Object -FilterScript { $_.Name -eq $Name }
 
