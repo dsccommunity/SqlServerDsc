@@ -44,7 +44,7 @@ function ConvertTo-FormattedParameterDescription
 
     $parameterDescriptions = @()
 
-    foreach ($parameter in $BoundParameters.Keys)
+    foreach ($parameter in ($BoundParameters.Keys | Sort-Object))
     {
         if ($parameter -notin $Exclude)
         {
@@ -59,6 +59,6 @@ function ConvertTo-FormattedParameterDescription
     }
     else
     {
-        return " (no parameters to update)"
+        return " $($script:localizedData.ConvertTo_FormattedParameterDescription_NoParametersToUpdate)"
     }
 }

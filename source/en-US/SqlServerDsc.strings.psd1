@@ -504,4 +504,7 @@ ConvertFrom-StringData @'
     ## Get-AgentOperatorObject
     Get_AgentOperatorObject_GettingOperator = Getting SQL Agent Operator '{0}' from server object. (GAOO0002)
     Get_AgentOperatorObject_RefreshingOperators = Refreshing SQL Agent Operators collection. (GAOO0003)
+
+    ## ConvertTo-FormattedParameterDescription
+    ConvertTo_FormattedParameterDescription_NoParametersToUpdate = (no parameters to update)
 '@

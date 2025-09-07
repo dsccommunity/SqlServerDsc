@@ -63,9 +63,8 @@ Describe 'ConvertTo-FormattedParameterDescription' -Tag 'Private' {
 
                 $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude $excludeParameters
 
-                # Check that both parameters are included (order may vary)
-                $result | Should -Match "EmailAddress: 'test@contoso.com'"
-                $result | Should -Match "CategoryName: 'TestCategory'"
+                # Check that parameters are sorted alphabetically
+                $result | Should -Be "`r`n    CategoryName: 'TestCategory'`r`n    EmailAddress: 'test@contoso.com'"
             }
         }
 
@@ -81,7 +80,7 @@ Describe 'ConvertTo-FormattedParameterDescription' -Tag 'Private' {
 
                 $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude $excludeParameters
 
-                $result | Should -Be ' (no parameters to update)'
+                $result | Should -Be " $($script:localizedData.ConvertTo_FormattedParameterDescription_NoParametersToUpdate)"
             }
         }
 
@@ -109,9 +108,8 @@ Describe 'ConvertTo-FormattedParameterDescription' -Tag 'Private' {
 
                 $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude @()
 
-                # Check that both parameters are included (order may vary)
-                $result | Should -Match "EmailAddress: 'test@contoso.com'"
-                $result | Should -Match "CategoryName: 'TestCategory'"
+                # Check that parameters are sorted alphabetically
+                $result | Should -Be "`r`n    CategoryName: 'TestCategory'`r`n    EmailAddress: 'test@contoso.com'"
             }
         }
 
@@ -128,11 +126,8 @@ Describe 'ConvertTo-FormattedParameterDescription' -Tag 'Private' {
 
                 $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude $excludeParameters
 
-                # Check that all expected parameters are included (order may vary)
-                $result | Should -Match "EmailAddress: 'test@contoso.com'"
-                $result | Should -Match "PagerDays: 'Monday'"
-                $result | Should -Match "SaturdayPagerEndTime: '17:00:00'"
-                $result | Should -Not -Match "Force:"
+                # Check that parameters are sorted alphabetically
+                $result | Should -Be "`r`n    EmailAddress: 'test@contoso.com'`r`n    PagerDays: 'Monday'`r`n    SaturdayPagerEndTime: '17:00:00'"
             }
         }
     }
