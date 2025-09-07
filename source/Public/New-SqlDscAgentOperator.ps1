@@ -50,6 +50,13 @@
     .PARAMETER Force
         Specifies that the operator should be created without any confirmation.
 
+    .PARAMETER Refresh
+        Specifies that the **ServerObject**'s operators should be refreshed before
+        testing if the operator already exists. This is helpful when operators could have
+        been modified outside of the **ServerObject**, for example through T-SQL.
+        But on instances with a large amount of operators it might be better to make
+        sure the **ServerObject** is recent enough.
+
     .INPUTS
         Microsoft.SqlServer.Management.Smo.Server
 
@@ -76,6 +83,12 @@
         $operatorObject = $serverObject | New-SqlDscAgentOperator -Name 'MyOperator' -PassThru
 
         Creates a new SQL Agent Operator and returns the created object.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $serverObject | New-SqlDscAgentOperator -Name 'MyOperator' -EmailAddress 'admin@contoso.com' -Refresh
+
+        Creates a new SQL Agent Operator, refreshing the operators collection before checking if it already exists.
 #>
 function New-SqlDscAgentOperator
 {
@@ -143,7 +156,11 @@ function New-SqlDscAgentOperator
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $Force
+        $Force,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Refresh
     )
 
     begin
@@ -163,7 +180,7 @@ function New-SqlDscAgentOperator
         }
 
         # Check if operator already exists
-        if (Test-SqlDscAgentOperator -ServerObject $ServerObject -Name $Name)
+        if (Test-SqlDscAgentOperator -ServerObject $ServerObject -Name $Name -Refresh:$Refresh)
         {
             $errorMessage = $script:localizedData.New_SqlDscAgentOperator_OperatorAlreadyExists -f $Name
 
