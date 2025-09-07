@@ -81,7 +81,7 @@ function Get-AgentOperatorObject
         $ServerObject.JobServer.Operators.Refresh()
     }
 
-    $operatorObject = $ServerObject.JobServer.Operators | Where-Object -FilterScript { $_.Name -eq $Name }
+    $operatorObject = $ServerObject.JobServer.Operators[$Name]
 
     if (-not $operatorObject -and -not $IgnoreNotFound)
     {
