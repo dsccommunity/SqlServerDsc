@@ -11,9 +11,6 @@
     .PARAMETER Name
         Specifies the name of the SQL Agent Operator to test.
 
-    .PARAMETER EmailAddress
-        Specifies the expected email address for the SQL Agent Operator.
-
     .PARAMETER Refresh
         Specifies that the **ServerObject**'s operators should be refreshed before
         testing the operator. This is helpful when operators could have
@@ -64,10 +61,6 @@ function Test-SqlDscAgentOperator
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
-
-        [Parameter()]
-        [System.String]
-        $EmailAddress,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
