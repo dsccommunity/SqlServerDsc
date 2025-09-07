@@ -138,9 +138,9 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
             $script:mockMethodDropCallCount | Should -Be 1
         }
 
-        It 'Should not throw when operator does not exist' {
+        It 'Should throw when operator does not exist' {
             { Remove-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'NonExistentOperator' } |
-                Should -Not -Throw
+                Should -Throw -ExpectedMessage "*NonExistentOperator*not found*"
         }
 
         Context 'When using parameter WhatIf' {
