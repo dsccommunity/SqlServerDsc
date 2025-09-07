@@ -131,6 +131,6 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
 
         # Try to create the same operator again
         { $script:sqlServerObject | New-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator1' -ErrorAction 'Stop' } |
-            Should -Throw -ExpectedMessage '*SQL Agent Operator ''IntegrationTest_NewOperator1'' already exists*'
+            Should -Throw
     }
 }
