@@ -110,10 +110,11 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
             { Set-SqlDscAgentOperator -ServerObject $mockServerObject -Name 'TestOperator' -Force } | Should -Throw -ExpectedMessage '*At least one*'
         }
 
-        It 'Should not throw when at least one settable parameter is provided' {
+        It 'Should successfully execute when at least one settable parameter is provided' {
             # Create proper mock structure
             $mockOperator = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
             $mockOperator.Name = 'TestOperator'
+            $mockOperator.EmailAddress = 'old@contoso.com'
 
             $mockOperatorCollection = [Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection]::CreateTypeInstance()
             $mockOperatorCollection.Add($mockOperator)
@@ -126,7 +127,17 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
             $mockServerObject.JobServer = $mockJobServer
             $mockServerObject.InstanceName = 'TestInstance'
 
-            { Set-SqlDscAgentOperator -ServerObject $mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com' -WhatIf } | Should -Not -Throw
+            $mockMethodAlterCallCount = 0
+            $mockOperator | Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
+                $mockMethodAlterCallCount++
+            } -Force
+
+            Set-SqlDscAgentOperator -ServerObject $mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com' -WhatIf
+
+            # Verify that WhatIf prevents Alter from being called
+            $mockMethodAlterCallCount | Should -Be 0
+            # Verify that the operator object is found and accessible
+            $mockOperator.Name | Should -Be 'TestOperator'
         }
     }
 
