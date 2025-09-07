@@ -207,6 +207,7 @@ function Get-Something
 - End files with only one blank line
 - Use CR+LF line endings
 - Maximum two consecutive newlines
+- No line shall have trailing whitespace
 
 ## File Encoding
 

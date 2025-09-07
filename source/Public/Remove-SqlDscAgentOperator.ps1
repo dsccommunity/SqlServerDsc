@@ -72,9 +72,9 @@ function Remove-SqlDscAgentOperator
         if ($PSCmdlet.ParameterSetName -eq 'ByName')
         {
             Write-Verbose -Message ($script:localizedData.Remove_SqlDscAgentOperator_RefreshingServerObject)
-            
+
             $ServerObject.JobServer.Operators.Refresh()
-            
+
             $OperatorObject = Get-SqlDscAgentOperator -ServerObject $ServerObject -Name $Name
 
             if (-not $OperatorObject)

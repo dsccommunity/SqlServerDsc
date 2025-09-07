@@ -109,7 +109,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
             $script:mockOperator = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
             $script:mockOperator.Name = 'TestOperator'
             $script:mockOperator.EmailAddress = 'old@contoso.com'
-            
+
             # Mock operator collection with existing operator
             $script:mockOperatorCollection = [Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection]::CreateTypeInstance()
             $script:mockOperatorCollection.Add($script:mockOperator)
@@ -188,7 +188,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
             # Mock JobServer object
             $script:mockJobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
 
-            # Mock server object  
+            # Mock server object
             $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
             $script:mockServerObject.InstanceName = 'TestInstance'
 
@@ -231,7 +231,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
             $script:mockOperator = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
             $script:mockOperator.Name = 'TestOperator'
             $script:mockOperator.EmailAddress = 'old@contoso.com'
-            
+
             # Mock operator collection with existing operator
             $script:mockOperatorCollection = [Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection]::CreateTypeInstance()
             $script:mockOperatorCollection.Add($script:mockOperator)

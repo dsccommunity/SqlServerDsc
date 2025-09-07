@@ -149,9 +149,9 @@ function Set-SqlDscAgentOperator
         if ($PSCmdlet.ParameterSetName -eq 'ByName')
         {
             Write-Verbose -Message ($script:localizedData.Set_SqlDscAgentOperator_RefreshingServerObject)
-            
+
             $ServerObject.JobServer.Operators.Refresh()
-            
+
             $OperatorObject = Get-SqlDscAgentOperator -ServerObject $ServerObject -Name $Name
 
             if (-not $OperatorObject)

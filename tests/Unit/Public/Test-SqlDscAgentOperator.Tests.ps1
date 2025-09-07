@@ -92,7 +92,7 @@ Describe 'Test-SqlDscAgentOperator' -Tag 'Public' {
             $script:mockOperator = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
             $script:mockOperator.Name = 'TestOperator'
             $script:mockOperator.EmailAddress = 'test@contoso.com'
-            
+
             # Mock operator collection with existing operator
             $script:mockOperatorCollection = [Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection]::CreateTypeInstance()
             $script:mockOperatorCollection.Add($script:mockOperator)
@@ -138,7 +138,7 @@ Describe 'Test-SqlDscAgentOperator' -Tag 'Public' {
             $script:mockOperatorWrong = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
             $script:mockOperatorWrong.Name = 'WrongOperator'
             $script:mockOperatorWrong.EmailAddress = 'wrong@contoso.com'
-            
+
             # Mock operator collection with existing operators
             $script:mockOperatorCollection = [Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection]::CreateTypeInstance()
             $script:mockOperatorCollection.Add($script:mockOperatorCorrect)
@@ -192,7 +192,7 @@ Describe 'Test-SqlDscAgentOperator' -Tag 'Public' {
             $script:mockOperatorNoEmail = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
             $script:mockOperatorNoEmail.Name = 'NoEmailOperator'
             $script:mockOperatorNoEmail.EmailAddress = ''
-            
+
             # Mock operator collection with existing operator
             $script:mockOperatorCollection = [Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection]::CreateTypeInstance()
             $script:mockOperatorCollection.Add($script:mockOperatorNoEmail)

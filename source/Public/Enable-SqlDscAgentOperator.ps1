@@ -118,10 +118,10 @@ function Enable-SqlDscAgentOperator
             try
             {
                 Write-Verbose -Message ($script:localizedData.Enable_SqlDscAgentOperator_EnablingOperator -f $OperatorObject.Name)
-                
+
                 $OperatorObject.Enabled = $true
                 $OperatorObject.Alter()
-                
+
                 Write-Verbose -Message ($script:localizedData.Enable_SqlDscAgentOperator_OperatorEnabled -f $OperatorObject.Name)
             }
             catch

@@ -102,7 +102,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
 
             # Mock the creation of new operator object
             $script:mockCreateOperatorObject = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
-            
+
             Mock -CommandName 'New-Object' -MockWith {
                 return $script:mockCreateOperatorObject
             } -ParameterFilter {
@@ -224,7 +224,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
 
             # Mock the creation of new operator object that throws an error
             $script:mockCreateOperatorObject = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
-            
+
             Mock -CommandName 'New-Object' -MockWith {
                 return $script:mockCreateOperatorObject
             } -ParameterFilter {

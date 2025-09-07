@@ -130,10 +130,10 @@ function Disable-SqlDscAgentOperator
             try
             {
                 Write-Verbose -Message ($script:localizedData.Disable_SqlDscAgentOperator_DisablingOperator -f $OperatorObject.Name)
-                
+
                 $OperatorObject.Enabled = $false
                 $OperatorObject.Alter()
-                
+
                 Write-Verbose -Message ($script:localizedData.Disable_SqlDscAgentOperator_OperatorDisabled -f $OperatorObject.Name)
             }
             catch
