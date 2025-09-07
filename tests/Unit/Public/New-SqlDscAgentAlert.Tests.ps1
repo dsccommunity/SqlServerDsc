@@ -125,7 +125,6 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
             $script:mockNewAlert.MessageID = 0
 
             # Mock the private functions
-            Mock -CommandName 'Test-SqlDscAgentAlert' -MockWith { return $true}
             Mock -CommandName 'Get-AgentAlertObject'
             Mock -CommandName 'Assert-BoundParameter'
         }
