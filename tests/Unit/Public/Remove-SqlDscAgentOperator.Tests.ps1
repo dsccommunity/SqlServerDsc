@@ -54,7 +54,7 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = 'ByName'
-                ExpectedParameters = '-ServerObject <Server> -Name <string> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-ServerObject <Server> -Name <string> [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
             @{
                 ExpectedParameterSetName = 'ByObject'
