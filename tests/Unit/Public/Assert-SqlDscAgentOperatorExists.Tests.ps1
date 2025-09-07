@@ -25,32 +25,26 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
-    $env:SqlServerDscCI = $true
-
-    Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
+    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
 
     # Loading mocked classes
     Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../../Unit') -ChildPath 'Stubs/SMO.cs')
 
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
-    $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
 
     # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
-
-    Remove-Item -Path 'Env:SqlServerDscCI'
+    Get-Module -Name $script:moduleName -All | Remove-Module -Force
 }
 
-Describe 'Assert-SqlDscAgentOperatorExists' -Tag 'Private' {
+Describe 'Assert-SqlDscAgentOperatorExists' -Tag 'Public' {
     Context 'When operator exists' {
         BeforeAll {
             Mock -CommandName Get-SqlDscAgentOperator -MockWith {
@@ -60,19 +54,15 @@ Describe 'Assert-SqlDscAgentOperatorExists' -Tag 'Private' {
         }
 
         It 'Should return the operator object when found' {
-            InModuleScope -ScriptBlock {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                $result = Assert-SqlDscAgentOperatorExists -ServerObject $mockServerObject -Name 'TestOperator' -ErrorMessage 'Operator not found' -ErrorId 'TEST0001'
-                $result | Should -Not -BeNullOrEmpty
-                $result.GetType().Name | Should -Be 'Operator'
-            }
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $result = Assert-SqlDscAgentOperatorExists -ServerObject $mockServerObject -Name 'TestOperator' -ErrorMessage 'Operator not found' -ErrorId 'TEST0001'
+            $result | Should -Not -BeNullOrEmpty
+            $result.GetType().Name | Should -Be 'Operator'
         }
 
         It 'Should call Get-SqlDscAgentOperator with correct parameters' {
-            InModuleScope -ScriptBlock {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                Assert-SqlDscAgentOperatorExists -ServerObject $mockServerObject -Name 'TestOperator' -ErrorMessage 'Operator not found' -ErrorId 'TEST0001'
-            }
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            Assert-SqlDscAgentOperatorExists -ServerObject $mockServerObject -Name 'TestOperator' -ErrorMessage 'Operator not found' -ErrorId 'TEST0001'
 
             Should -Invoke -CommandName Get-SqlDscAgentOperator -ParameterFilter {
                 $Name -eq 'TestOperator' -and
@@ -89,23 +79,19 @@ Describe 'Assert-SqlDscAgentOperatorExists' -Tag 'Private' {
         }
 
         It 'Should throw a terminating error when operator not found' {
-            InModuleScope -ScriptBlock {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                { Assert-SqlDscAgentOperatorExists -ServerObject $mockServerObject -Name 'NonExistentOperator' -ErrorMessage 'Operator not found' -ErrorId 'TEST0001' } | Should -Throw -ExpectedMessage 'Operator not found'
-            }
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            { Assert-SqlDscAgentOperatorExists -ServerObject $mockServerObject -Name 'NonExistentOperator' -ErrorMessage 'Operator not found' -ErrorId 'TEST0001' } | Should -Throw -ExpectedMessage 'Operator not found'
         }
 
         It 'Should call Get-SqlDscAgentOperator once before throwing error' {
-            InModuleScope -ScriptBlock {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                try 
-                {
-                    Assert-SqlDscAgentOperatorExists -ServerObject $mockServerObject -Name 'NonExistentOperator' -ErrorMessage 'Operator not found' -ErrorId 'TEST0001'
-                }
-                catch 
-                {
-                    # Expected to throw
-                }
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            try 
+            {
+                Assert-SqlDscAgentOperatorExists -ServerObject $mockServerObject -Name 'NonExistentOperator' -ErrorMessage 'Operator not found' -ErrorId 'TEST0001'
+            }
+            catch 
+            {
+                # Expected to throw
             }
 
             Should -Invoke -CommandName Get-SqlDscAgentOperator -Exactly -Times 1
