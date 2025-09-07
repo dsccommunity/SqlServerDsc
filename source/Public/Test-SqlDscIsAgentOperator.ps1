@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-        Tests the state of a SQL Agent Operator.
+        Tests for the existence of a SQL Agent Operator.
 
     .DESCRIPTION
-        This command tests if a SQL Agent Operator exists and has the desired properties on a SQL Server Database Engine instance.
+        This command tests if a SQL Agent Operator exists on a SQL Server Database Engine instance.
 
     .PARAMETER ServerObject
         Specifies current server connection object.
@@ -26,7 +26,7 @@
     .OUTPUTS
         System.Boolean
 
-        Returns $true if the operator exists and has the desired properties, $false otherwise.
+        Returns $true if the operator exists, $false otherwise.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
@@ -36,9 +36,9 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $serverObject | Test-SqlDscIsAgentOperator -Name 'MyOperator' -EmailAddress 'admin@contoso.com'
+        $serverObject | Test-SqlDscIsAgentOperator -Name 'MyOperator'
 
-        Tests if the SQL Agent Operator exists and has the specified email address using pipeline input.
+        Tests if the SQL Agent Operator named 'MyOperator' exists using pipeline input.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
