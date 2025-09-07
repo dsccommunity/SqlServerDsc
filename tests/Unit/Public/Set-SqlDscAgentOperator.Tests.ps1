@@ -107,7 +107,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should throw when no settable parameters are provided' {
             $mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
             
-            { Set-SqlDscAgentOperator -ServerObject $mockServerObject -Name 'TestOperator' -Confirm:$false } | Should -Throw -ExpectedMessage '*At least one*'
+            { Set-SqlDscAgentOperator -ServerObject $mockServerObject -Name 'TestOperator' -Force } | Should -Throw -ExpectedMessage '*At least one*'
         }
 
         It 'Should not throw when at least one settable parameter is provided' {
@@ -161,7 +161,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
             $script:mockMethodAlterCallCount = 0
             $script:mockOperator.EmailAddress = 'old@contoso.com'
 
-            Set-SqlDscAgentOperator -Confirm:$false -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'new@contoso.com'
+            Set-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'new@contoso.com'
 
             $script:mockOperator.EmailAddress | Should -Be 'new@contoso.com'
             $script:mockMethodAlterCallCount | Should -Be 1
@@ -171,13 +171,13 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
             $script:mockMethodAlterCallCount = 0
             $script:mockOperator.EmailAddress = 'correct@contoso.com'
 
-            Set-SqlDscAgentOperator -Confirm:$false -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'correct@contoso.com'
+            Set-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'correct@contoso.com'
 
             $script:mockMethodAlterCallCount | Should -Be 1
         }
 
         It 'Should throw when operator does not exist' {
-            { Set-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'NonExistentOperator' -EmailAddress 'test@contoso.com' -ErrorAction 'Stop' } |
+            { Set-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'NonExistentOperator' -EmailAddress 'test@contoso.com' -ErrorAction 'Stop' } |
                 Should -Throw -ExpectedMessage '*SQL Agent Operator ''NonExistentOperator'' was not found*'
         }
 
@@ -197,7 +197,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
                 $script:mockMethodAlterCallCount = 0
                 $script:mockOperator.EmailAddress = 'old@contoso.com'
 
-                $script:mockServerObject | Set-SqlDscAgentOperator -Confirm:$false -Name 'TestOperator' -EmailAddress 'new@contoso.com'
+                $script:mockServerObject | Set-SqlDscAgentOperator -Force -Name 'TestOperator' -EmailAddress 'new@contoso.com'
 
                 $script:mockOperator.EmailAddress | Should -Be 'new@contoso.com'
                 $script:mockMethodAlterCallCount | Should -Be 1
@@ -233,7 +233,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
             $script:mockMethodAlterCallCount = 0
             $script:mockOperator.EmailAddress = 'old@contoso.com'
 
-            Set-SqlDscAgentOperator -Confirm:$false -OperatorObject $script:mockOperator -EmailAddress 'new@contoso.com'
+            Set-SqlDscAgentOperator -Force -OperatorObject $script:mockOperator -EmailAddress 'new@contoso.com'
 
             $script:mockOperator.EmailAddress | Should -Be 'new@contoso.com'
             $script:mockMethodAlterCallCount | Should -Be 1
@@ -244,7 +244,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
                 $script:mockMethodAlterCallCount = 0
                 $script:mockOperator.EmailAddress = 'old@contoso.com'
 
-                $script:mockOperator | Set-SqlDscAgentOperator -Confirm:$false -EmailAddress 'new@contoso.com'
+                $script:mockOperator | Set-SqlDscAgentOperator -Force -EmailAddress 'new@contoso.com'
 
                 $script:mockOperator.EmailAddress | Should -Be 'new@contoso.com'
                 $script:mockMethodAlterCallCount | Should -Be 1
@@ -278,7 +278,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
         }
 
         It 'Should throw when alter operation fails' {
-            { Set-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'new@contoso.com' -ErrorAction 'Stop' } |
+            { Set-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'new@contoso.com' -ErrorAction 'Stop' } |
                 Should -Throw -ExpectedMessage '*Failed to update SQL Agent Operator ''TestOperator''*'
         }
     }

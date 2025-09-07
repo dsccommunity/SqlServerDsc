@@ -133,13 +133,13 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should remove operator when it exists' {
             $script:mockMethodDropCallCount = 0
 
-            Remove-SqlDscAgentOperator -Confirm:$false -ServerObject $script:mockServerObject -Name 'TestOperator'
+            Remove-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator'
 
             $script:mockMethodDropCallCount | Should -Be 1
         }
 
         It 'Should not throw when operator does not exist' {
-            { Remove-SqlDscAgentOperator -Confirm:$false -ServerObject $script:mockServerObject -Name 'NonExistentOperator' } |
+            { Remove-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'NonExistentOperator' } |
                 Should -Not -Throw
         }
 
@@ -157,7 +157,7 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
             It 'Should remove operator using pipeline input' {
                 $script:mockMethodDropCallCount = 0
 
-                $script:mockServerObject | Remove-SqlDscAgentOperator -Confirm:$false -Name 'TestOperator'
+                $script:mockServerObject | Remove-SqlDscAgentOperator -Force -Name 'TestOperator'
 
                 $script:mockMethodDropCallCount | Should -Be 1
             }
@@ -191,7 +191,7 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should remove operator when using operator object' {
             $script:mockMethodDropCallCount = 0
 
-            Remove-SqlDscAgentOperator -Confirm:$false -OperatorObject $script:mockOperator
+            Remove-SqlDscAgentOperator -Force -OperatorObject $script:mockOperator
 
             $script:mockMethodDropCallCount | Should -Be 1
         }
@@ -200,7 +200,7 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
             It 'Should remove operator using pipeline input' {
                 $script:mockMethodDropCallCount = 0
 
-                $script:mockOperator | Remove-SqlDscAgentOperator -Confirm:$false
+                $script:mockOperator | Remove-SqlDscAgentOperator -Force
 
                 $script:mockMethodDropCallCount | Should -Be 1
             }
@@ -238,7 +238,7 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
         }
 
         It 'Should throw when drop operation fails' {
-            { Remove-SqlDscAgentOperator -Confirm:$false -ServerObject $script:mockServerObject -Name 'TestOperator' -ErrorAction 'Stop' } |
+            { Remove-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -ErrorAction 'Stop' } |
                 Should -Throw -ExpectedMessage '*Failed to remove SQL Agent Operator ''TestOperator''*'
         }
     }

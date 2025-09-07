@@ -146,6 +146,26 @@ function New-SqlDscAgentOperator
         $Force
     )
 
+    begin
+    {
+        # List of settable properties (excluding ServerObject, Name, PassThru, and Force)
+        $settableProperties = @(
+            'EmailAddress',
+            'CategoryName', 
+            'NetSendAddress',
+            'PagerAddress',
+            'PagerDays',
+            'SaturdayPagerEndTime',
+            'SaturdayPagerStartTime',
+            'SundayPagerEndTime',
+            'SundayPagerStartTime',
+            'WeekdayPagerEndTime',
+            'WeekdayPagerStartTime'
+        )
+
+        Assert-BoundParameter -BoundParameterList $PSBoundParameters -AtLeastOneList $settableProperties
+    }
+
     # cSpell: ignore NSAO
     process
     {

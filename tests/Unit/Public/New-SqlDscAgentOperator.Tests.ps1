@@ -126,7 +126,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
         }
 
         It 'Should call the mocked method and have correct values in the object' {
-            New-SqlDscAgentOperator -Confirm:$false -ServerObject $script:mockServerObject -Name 'TestOperator'
+            New-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com'
 
             Should -Invoke -CommandName 'New-Object' -ParameterFilter { 
                 $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator' -and $ArgumentList[1] -eq 'TestOperator'
@@ -138,7 +138,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should set email address when specified' {
             $script:mockMethodCreateCallCount = 0
 
-            New-SqlDscAgentOperator -Confirm:$false -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com'
+            New-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com'
 
             # Verify the mock was called with correct parameters
             Should -Invoke -CommandName 'New-Object' -ParameterFilter { 
@@ -155,7 +155,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should return operator object when PassThru is specified' {
             $script:mockMethodCreateCallCount = 0
 
-            $result = New-SqlDscAgentOperator -Confirm:$false -ServerObject $script:mockServerObject -Name 'TestOperator' -PassThru
+            $result = New-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com' -PassThru
 
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'TestOperator'
@@ -167,7 +167,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
             It 'Should not call the mocked method when using WhatIf' {
                 $script:mockMethodCreateCallCount = 0
 
-                New-SqlDscAgentOperator -WhatIf -ServerObject $script:mockServerObject -Name 'TestOperator'
+                New-SqlDscAgentOperator -WhatIf -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com'
 
                 $script:mockMethodCreateCallCount | Should -Be 0
             }
@@ -177,7 +177,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 $script:mockMethodCreateCallCount = 0
 
-                $script:mockServerObject | New-SqlDscAgentOperator -Confirm:$false -Name 'TestOperator'
+                $script:mockServerObject | New-SqlDscAgentOperator -Force -Name 'TestOperator' -EmailAddress 'test@contoso.com'
 
                 # Verify the mock was called with correct parameters
                 Should -Invoke -CommandName 'New-Object' -ParameterFilter { 
@@ -209,7 +209,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
         }
 
         It 'Should throw when operator already exists' {
-            { New-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'ExistingOperator' -ErrorAction 'Stop' } |
+            { New-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'ExistingOperator' -EmailAddress 'test@contoso.com' -ErrorAction 'Stop' } |
                 Should -Throw -ExpectedMessage '*SQL Agent Operator ''ExistingOperator'' already exists*'
         }
     }
@@ -245,7 +245,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
         }
 
         It 'Should throw when create operation fails' {
-            { New-SqlDscAgentOperator -Confirm:$false -ServerObject $script:mockServerObject -Name 'FailOperator' -ErrorAction 'Stop' } |
+            { New-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'FailOperator' -EmailAddress 'test@contoso.com' -ErrorAction 'Stop' } |
                 Should -Throw -ExpectedMessage "*Failed to create SQL Agent Operator 'FailOperator'*"
         }
     }
