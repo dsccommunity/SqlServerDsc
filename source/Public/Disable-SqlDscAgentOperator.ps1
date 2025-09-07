@@ -105,20 +105,8 @@ function Disable-SqlDscAgentOperator
                 $ServerObject.JobServer.Operators.Refresh()
             }
 
-            $getSqlDscAgentOperatorParameters = @{
-                ServerObject = $ServerObject
-                Name         = $Name
-                ErrorAction  = 'Stop'
-            }
-
-            # If this command does not find the operator it will return $null.
-            $OperatorObject = Get-SqlDscAgentOperator @getSqlDscAgentOperatorParameters
-
-            if (-not $OperatorObject)
-            {
-                $errorMessage = $script:localizedData.Disable_SqlDscAgentOperator_OperatorNotFound -f $Name
-                New-ObjectNotFoundException -Message $errorMessage
-            }
+            $errorMessage = $script:localizedData.Disable_SqlDscAgentOperator_OperatorNotFound -f $Name
+            $OperatorObject = Assert-SqlDscAgentOperatorExists -ServerObject $ServerObject -Name $Name -ErrorMessage $errorMessage -ErrorId 'DSAO0002'
         }
 
         $verboseDescriptionMessage = $script:localizedData.Disable_SqlDscAgentOperator_ShouldProcessVerboseDescription -f $OperatorObject.Name, $OperatorObject.Parent.Parent.InstanceName

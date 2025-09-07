@@ -152,13 +152,8 @@ function Set-SqlDscAgentOperator
 
             $ServerObject.JobServer.Operators.Refresh()
 
-            $OperatorObject = Get-SqlDscAgentOperator -ServerObject $ServerObject -Name $Name
-
-            if (-not $OperatorObject)
-            {
-                $errorMessage = $script:localizedData.Set_SqlDscAgentOperator_OperatorNotFound -f $Name
-                New-ObjectNotFoundException -Message $errorMessage
-            }
+            $errorMessage = $script:localizedData.Set_SqlDscAgentOperator_OperatorNotFound -f $Name
+            $OperatorObject = Assert-SqlDscAgentOperatorExists -ServerObject $ServerObject -Name $Name -ErrorMessage $errorMessage -ErrorId 'SSAO0002'
         }
 
         # Build description of parameters being set for ShouldProcess
