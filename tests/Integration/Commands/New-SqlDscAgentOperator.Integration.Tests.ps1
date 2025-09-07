@@ -69,9 +69,6 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
     }
 
     It 'Should create the persistent operator for other tests to use' {
-        # Remove the persistent operator if it already exists
-        $script:sqlServerObject | Remove-SqlDscAgentOperator -Name 'SqlDscIntegrationTestOperator_Persistent' -Force -ErrorAction 'SilentlyContinue'
-
         # Create the persistent operator with comprehensive properties
         $script:sqlServerObject | New-SqlDscAgentOperator -Name 'SqlDscIntegrationTestOperator_Persistent' -EmailAddress 'persistent@example.com' -NetSendAddress 'SERVER\User' -PagerAddress '555-0123' -Force -ErrorAction 'Stop'
 
@@ -82,15 +79,6 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
         $operator.EmailAddress | Should -Be 'persistent@example.com'
         $operator.NetSendAddress | Should -Be 'SERVER\User'
         $operator.PagerAddress | Should -Be '555-0123'
-    }
-
-    It 'Should create a new operator with just name' {
-        $script:sqlServerObject | New-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator1' -Force -ErrorAction 'Stop'
-
-        # Verify the operator was created
-        $operator = $script:sqlServerObject | Get-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator1'
-        $operator | Should -Not -BeNullOrEmpty
-        $operator.Name | Should -Be 'IntegrationTest_NewOperator1'
     }
 
     It 'Should create a new operator with email address' {
@@ -126,7 +114,6 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
 
     It 'Should throw an error when trying to create an operator that already exists' {
         # Create the operator first
-        $script:sqlServerObject | Remove-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator1' -Force -ErrorAction 'SilentlyContinue'
         $script:sqlServerObject | New-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator1' -Force -ErrorAction 'Stop'
 
         # Try to create the same operator again
