@@ -130,5 +130,68 @@ Describe 'ConvertTo-FormattedParameterDescription' -Tag 'Private' {
                 $result | Should -Be "`r`n    EmailAddress: 'test@contoso.com'`r`n    PagerDays: 'Monday'`r`n    SaturdayPagerEndTime: '17:00:00'"
             }
         }
+
+        It 'Should mask SecureString values' {
+            InModuleScope -ScriptBlock {
+                $securePassword = ConvertTo-SecureString 'P@ssw0rd' -AsPlainText -Force
+                $boundParameters = @{
+                    EmailAddress = 'test@contoso.com'
+                    Password = $securePassword
+                }
+
+                $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude @()
+
+                $result | Should -Be "`r`n    EmailAddress: 'test@contoso.com'`r`n    Password: '***'"
+            }
+        }
+
+        It 'Should show only username for PSCredential objects' {
+            InModuleScope -ScriptBlock {
+                $securePassword = ConvertTo-SecureString 'P@ssw0rd' -AsPlainText -Force
+                $credential = [System.Management.Automation.PSCredential]::new('TestUser', $securePassword)
+                $boundParameters = @{
+                    EmailAddress = 'test@contoso.com'
+                    Credential = $credential
+                }
+
+                $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude @()
+
+                $result | Should -Be "`r`n    Credential: 'TestUser'`r`n    EmailAddress: 'test@contoso.com'"
+            }
+        }
+
+        It 'Should format arrays as comma-separated values' {
+            InModuleScope -ScriptBlock {
+                $boundParameters = @{
+                    EmailAddress = 'test@contoso.com'
+                    Categories = @('Category1', 'Category2', 'Category3')
+                    Numbers = @(1, 2, 3)
+                }
+
+                $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude @()
+
+                $result | Should -Be "`r`n    Categories: 'Category1, Category2, Category3'`r`n    EmailAddress: 'test@contoso.com'`r`n    Numbers: '1, 2, 3'"
+            }
+        }
+
+        It 'Should handle mixed sensitive and non-sensitive parameters' {
+            InModuleScope -ScriptBlock {
+                $securePassword = ConvertTo-SecureString 'P@ssw0rd' -AsPlainText -Force
+                $credential = [System.Management.Automation.PSCredential]::new('TestUser', $securePassword)
+                $boundParameters = @{
+                    EmailAddress = 'test@contoso.com'
+                    Password = $securePassword
+                    Credential = $credential
+                    Categories = @('Cat1', 'Cat2')
+                    Force = $true
+                }
+
+                $excludeParameters = @('Force')
+
+                $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude $excludeParameters
+
+                $result | Should -Be "`r`n    Categories: 'Cat1, Cat2'`r`n    Credential: 'TestUser'`r`n    EmailAddress: 'test@contoso.com'`r`n    Password: '***'"
+            }
+        }
     }
 }

@@ -48,7 +48,25 @@ function ConvertTo-FormattedParameterDescription
     {
         if ($parameter -notin $Exclude)
         {
-            $value = $BoundParameters[$parameter]
+            $raw = $BoundParameters[$parameter]
+
+            $value = if ($raw -is [System.Security.SecureString])
+            {
+                '***'
+            }
+            elseif ($raw -is [System.Management.Automation.PSCredential])
+            {
+                $raw.UserName
+            }
+            elseif ($raw -is [System.Array])
+            {
+                ($raw -join ', ')
+            }
+            else
+            {
+                $raw
+            }
+
             $parameterDescriptions += "$parameter`: '$value'"
         }
     }
