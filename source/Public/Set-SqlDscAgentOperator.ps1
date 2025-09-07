@@ -152,20 +152,8 @@ function Set-SqlDscAgentOperator
 
     begin
     {
-        # List of settable properties (excluding ServerObject, OperatorObject, Name, and Force)
-        $settableProperties = @(
-            'EmailAddress',
-            'CategoryName',
-            'NetSendAddress',
-            'PagerAddress',
-            'PagerDays',
-            'SaturdayPagerEndTime',
-            'SaturdayPagerStartTime',
-            'SundayPagerEndTime',
-            'SundayPagerStartTime',
-            'WeekdayPagerEndTime',
-            'WeekdayPagerStartTime'
-        )
+        # Dynamically get settable properties by filtering out common parameters and control parameters
+        $settableProperties = Get-CommandParameters -Command $MyInvocation.MyCommand -Exclude @('ServerObject', 'OperatorObject', 'Name', 'Force')
 
         Assert-BoundParameter -BoundParameterList $PSBoundParameters -AtLeastOneList $settableProperties
     }
