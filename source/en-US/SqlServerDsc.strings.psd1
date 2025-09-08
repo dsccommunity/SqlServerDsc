@@ -472,6 +472,7 @@ ConvertFrom-StringData @'
     Remove_SqlDscAgentOperator_RemoveShouldProcessVerboseWarning = Are you sure you want to remove the SQL Agent Operator '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Remove_SqlDscAgentOperator_RemoveShouldProcessCaption = Remove SQL Agent Operator on instance
+    Remove_SqlDscAgentOperator_OperatorNotFound = SQL Agent Operator '{0}' was not found. (RSAO0002)
 
     ## Test-SqlDscIsAgentOperator
     Test_SqlDscIsAgentOperator_TestingOperator = Testing if the SQL Agent Operator '{0}' exists and has the desired properties. (TISAO0001)

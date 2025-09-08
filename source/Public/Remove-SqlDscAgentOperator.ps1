@@ -96,7 +96,14 @@ function Remove-SqlDscAgentOperator
         }
         if ($PSCmdlet.ParameterSetName -eq 'ByName')
         {
-            $OperatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name -Refresh:$Refresh -ErrorAction $ErrorActionPreference
+            $OperatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name -Refresh:$Refresh -ErrorAction 'SilentlyContinue'
+
+            if (-not $OperatorObject)
+            {
+                Write-Verbose -Message ($script:localizedData.Remove_SqlDscAgentOperator_OperatorNotFound -f $Name)
+
+                return
+            }
         }
 
         $verboseDescriptionMessage = $script:localizedData.Remove_SqlDscAgentOperator_RemoveShouldProcessVerboseDescription -f $OperatorObject.Name, $OperatorObject.Parent.Parent.InstanceName
