@@ -96,6 +96,7 @@ function Remove-SqlDscAgentOperator
         }
         if ($PSCmdlet.ParameterSetName -eq 'ByName')
         {
+            # Get the operator by name, throws when ErrorAction preference is Stop.
             $OperatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name -Refresh:$Refresh -ErrorAction $ErrorActionPreference
 
             if (-not $OperatorObject)
