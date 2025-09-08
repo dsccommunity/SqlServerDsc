@@ -153,6 +153,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `source/Examples/Resources/SqlSetup/5-InstallNamedInstanceInFailoverClusterSecondNode.ps1`
     - Removed redundant `$SqlAdministratorCredential` parameter from example
       configuration.
+- `New-SqlDscAgentAlert`
+  - Updated the command to use `Test-SqlDscIsAgentAlert` instead of directly
+    calling `Get-AgentAlertObject` when checking if an alert already exists
+    (issue [#2202](https://github.com/dsccommunity/SqlServerDsc/issues/2202)).
 
 ## [17.1.0] - 2025-05-22
 
