@@ -91,7 +91,7 @@ applyTo: "**/*.ps?(m|d)1"
 - Use `Write-Information` for: User-facing status updates; Important operational messages; Non-error state changes
 - Use `Write-Warning` for: Non-fatal issues requiring attention; Deprecated functionality usage; Configuration problems that don't block execution
 - Use `$PSCmdlet.ThrowTerminatingError()` for terminating errors (except for classes), use relevant error category, in try-catch include exception with localized message
-- Use `Write-Error` for non-terminating errors, use relevant error category
+- Use `Write-Error` for non-terminating errors, use relevant error category; always use `return` after `Write-Error` to avoid further processing
 
 ## ShouldProcess Required Pattern
 
