@@ -96,7 +96,7 @@ function Remove-SqlDscAgentOperator
         }
         if ($PSCmdlet.ParameterSetName -eq 'ByName')
         {
-            $OperatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name -Refresh:$Refresh -ErrorAction 'SilentlyContinue'
+            $OperatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name -Refresh:$Refresh -ErrorAction $ErrorActionPreference
 
             if (-not $OperatorObject)
             {
