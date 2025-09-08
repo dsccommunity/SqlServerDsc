@@ -310,7 +310,7 @@ stages:
                   'tests/Integration/Commands/Get-SqlDscAgentAlert.Integration.Tests.ps1'
                   'tests/Integration/Commands/New-SqlDscAgentAlert.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscAgentAlert.Integration.Tests.ps1'
-                  'tests/Integration/Commands/Test-SqlDscAgentAlert.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Test-SqlDscIsAgentAlert.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Remove-SqlDscAgentAlert.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscDatabase.Integration.Tests.ps1'

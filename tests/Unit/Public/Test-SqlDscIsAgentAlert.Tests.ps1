@@ -44,7 +44,7 @@ AfterAll {
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 }
 
-Describe 'Test-SqlDscAgentAlert' -Tag 'Public' {
+Describe 'Test-SqlDscIsAgentAlert' -Tag 'Public' {
     Context 'When command has correct parameter sets' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
@@ -52,7 +52,7 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Public' {
                 ExpectedParameters = '[-ServerObject] <Server> [-Name] <String> [[-Severity] <int>] [[-MessageId] <int>] [<CommonParameters>]'
             }
         ) {
-            $result = (Get-Command -Name 'Test-SqlDscAgentAlert').ParameterSets |
+            $result = (Get-Command -Name 'Test-SqlDscIsAgentAlert').ParameterSets |
                 Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
                 Select-Object -Property @(
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
@@ -65,34 +65,34 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Public' {
 
     Context 'When command has correct parameter properties' {
         It 'Should have ServerObject as a mandatory parameter' {
-            $parameterInfo = (Get-Command -Name 'Test-SqlDscAgentAlert').Parameters['ServerObject']
+            $parameterInfo = (Get-Command -Name 'Test-SqlDscIsAgentAlert').Parameters['ServerObject']
             $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
 
         It 'Should have ServerObject accept pipeline input' {
-            $parameterInfo = (Get-Command -Name 'Test-SqlDscAgentAlert').Parameters['ServerObject']
+            $parameterInfo = (Get-Command -Name 'Test-SqlDscIsAgentAlert').Parameters['ServerObject']
             $parameterInfo.Attributes.ValueFromPipeline | Should -BeTrue
         }
 
         It 'Should have Name as a mandatory parameter' {
-            $parameterInfo = (Get-Command -Name 'Test-SqlDscAgentAlert').Parameters['Name']
+            $parameterInfo = (Get-Command -Name 'Test-SqlDscIsAgentAlert').Parameters['Name']
             $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
 
         It 'Should have Severity as an optional parameter' {
-            $parameterInfo = (Get-Command -Name 'Test-SqlDscAgentAlert').Parameters['Severity']
+            $parameterInfo = (Get-Command -Name 'Test-SqlDscIsAgentAlert').Parameters['Severity']
             $parameterInfo.Attributes.Mandatory | Should -BeFalse
         }
 
         It 'Should have MessageId as an optional parameter' {
-            $parameterInfo = (Get-Command -Name 'Test-SqlDscAgentAlert').Parameters['MessageId']
+            $parameterInfo = (Get-Command -Name 'Test-SqlDscIsAgentAlert').Parameters['MessageId']
             $parameterInfo.Attributes.Mandatory | Should -BeFalse
         }
     }
 
     Context 'When validating parameter ranges' {
         It 'Should accept valid Severity values (0-25)' {
-            $command = Get-Command -Name 'Test-SqlDscAgentAlert'
+            $command = Get-Command -Name 'Test-SqlDscIsAgentAlert'
             $severityParam = $command.Parameters['Severity']
             $validateRangeAttribute = $severityParam.Attributes | Where-Object { $_ -is [System.Management.Automation.ValidateRangeAttribute] }
 
@@ -101,7 +101,7 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should accept valid MessageId values (0-2147483647)' {
-            $command = Get-Command -Name 'Test-SqlDscAgentAlert'
+            $command = Get-Command -Name 'Test-SqlDscIsAgentAlert'
             $messageIdParam = $command.Parameters['MessageId']
             $validateRangeAttribute = $messageIdParam.Attributes | Where-Object { $_ -is [System.Management.Automation.ValidateRangeAttribute] }
 
@@ -126,7 +126,7 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should return true when alert exists and no properties are specified' {
-            $result = Test-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert'
+            $result = Test-SqlDscIsAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert'
 
             $result | Should -BeTrue
             Should -Invoke -CommandName 'Assert-BoundParameter' -ModuleName $script:dscModuleName -Times 1 -Exactly
@@ -150,13 +150,13 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should return true when alert exists and severity matches' {
-            $result = Test-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
+            $result = Test-SqlDscIsAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
 
             $result | Should -BeTrue
         }
 
         It 'Should return false when alert exists but severity does not match' {
-            $result = Test-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 14
+            $result = Test-SqlDscIsAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 14
 
             $result | Should -BeFalse
         }
@@ -178,13 +178,13 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should return true when alert exists and message ID matches' {
-            $result = Test-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001
+            $result = Test-SqlDscIsAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001
 
             $result | Should -BeTrue
         }
 
         It 'Should return false when alert exists but message ID does not match' {
-            $result = Test-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50002
+            $result = Test-SqlDscIsAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50002
 
             $result | Should -BeFalse
         }
@@ -200,7 +200,7 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should return false when alert does not exist' {
-            $result = Test-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'NonExistentAlert'
+            $result = Test-SqlDscIsAgentAlert -ServerObject $script:mockServerObject -Name 'NonExistentAlert'
 
             $result | Should -BeFalse
             Should -Invoke -CommandName 'Get-AgentAlertObject' -ModuleName $script:dscModuleName -Times 1 -Exactly
@@ -217,7 +217,7 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should call parameter validation with both severity and message ID' {
-            $null = Test-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -MessageId 50001
+            $null = Test-SqlDscIsAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -MessageId 50001
 
             Should -Invoke -CommandName 'Assert-BoundParameter' -ModuleName $script:dscModuleName -ParameterFilter {
                 $BoundParameterList.ContainsKey('Severity') -and $BoundParameterList.ContainsKey('MessageId')
@@ -225,11 +225,33 @@ Describe 'Test-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should call parameter validation with only severity' {
-            $null = Test-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
+            $null = Test-SqlDscIsAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
 
             Should -Invoke -CommandName 'Assert-BoundParameter' -ModuleName $script:dscModuleName -ParameterFilter {
                 $BoundParameterList.ContainsKey('Severity') -and -not $BoundParameterList.ContainsKey('MessageId')
             } -Times 1 -Exactly
+        }
+    }
+
+    Context 'When using the alias Test-SqlDscAgentAlert' {
+        BeforeAll {
+            # Mock the alert object using SMO stub types
+            $script:mockAlert = [Microsoft.SqlServer.Management.Smo.Agent.Alert]::CreateTypeInstance()
+            $script:mockAlert.Name = 'TestAlert'
+
+            # Mock the server object using SMO stub types
+            $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
+
+            Mock -CommandName 'Assert-BoundParameter' -ModuleName $script:dscModuleName
+            Mock -CommandName 'Get-AgentAlertObject' -ModuleName $script:dscModuleName -MockWith { return $script:mockAlert }
+        }
+
+        It 'Should work with alias Test-SqlDscAgentAlert' {
+            $result = Test-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert'
+
+            $result | Should -BeTrue
+            Should -Invoke -CommandName 'Assert-BoundParameter' -ModuleName $script:dscModuleName -Times 1 -Exactly
+            Should -Invoke -CommandName 'Get-AgentAlertObject' -ModuleName $script:dscModuleName -Times 1 -Exactly
         }
     }
 }

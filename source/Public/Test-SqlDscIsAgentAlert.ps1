@@ -30,25 +30,26 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        Test-SqlDscAgentAlert -ServerObject $serverObject -Name 'MyAlert'
+        Test-SqlDscIsAgentAlert -ServerObject $serverObject -Name 'MyAlert'
 
         Tests if the SQL Agent Alert named 'MyAlert' exists.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $serverObject | Test-SqlDscAgentAlert -Name 'MyAlert' -Severity 16
+        $serverObject | Test-SqlDscIsAgentAlert -Name 'MyAlert' -Severity 16
 
         Tests if the SQL Agent Alert named 'MyAlert' exists and has severity level 16.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $serverObject | Test-SqlDscAgentAlert -Name 'MyAlert' -MessageId 50001
+        $serverObject | Test-SqlDscIsAgentAlert -Name 'MyAlert' -MessageId 50001
 
         Tests if the SQL Agent Alert named 'MyAlert' exists and has message ID 50001.
 #>
-function Test-SqlDscAgentAlert
+function Test-SqlDscIsAgentAlert
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
+    [Alias('Test-SqlDscAgentAlert')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -79,23 +80,23 @@ function Test-SqlDscAgentAlert
         # Validate that both Severity and MessageId are not specified
         Assert-BoundParameter -BoundParameterList $PSBoundParameters -MutuallyExclusiveList1 @('Severity') -MutuallyExclusiveList2 @('MessageId')
 
-        Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_TestingAlert -f $Name)
+        Write-Verbose -Message ($script:localizedData.Test_SqlDscIsAgentAlert_TestingAlert -f $Name)
 
         $alertObject = Get-AgentAlertObject -ServerObject $ServerObject -Name $Name
 
         if ($null -eq $alertObject)
         {
-            Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_AlertNotFound -f $Name)
+            Write-Verbose -Message ($script:localizedData.Test_SqlDscIsAgentAlert_AlertNotFound -f $Name)
 
             return $false
         }
 
-        Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_AlertFound -f $Name)
+        Write-Verbose -Message ($script:localizedData.Test_SqlDscIsAgentAlert_AlertFound -f $Name)
 
         # If no specific properties are specified, just return true (alert exists)
         if (-not $PSBoundParameters.ContainsKey('Severity') -and -not $PSBoundParameters.ContainsKey('MessageId'))
         {
-            Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_NoPropertyTest)
+            Write-Verbose -Message ($script:localizedData.Test_SqlDscIsAgentAlert_NoPropertyTest)
 
             return $true
         }
@@ -105,13 +106,13 @@ function Test-SqlDscAgentAlert
         {
             if ($alertObject.Severity -ne $Severity)
             {
-                Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_SeverityMismatch -f $alertObject.Severity, $Severity)
+                Write-Verbose -Message ($script:localizedData.Test_SqlDscIsAgentAlert_SeverityMismatch -f $alertObject.Severity, $Severity)
 
                 return $false
             }
             else
             {
-                Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_SeverityMatch -f $Severity)
+                Write-Verbose -Message ($script:localizedData.Test_SqlDscIsAgentAlert_SeverityMatch -f $Severity)
             }
         }
 
@@ -120,17 +121,17 @@ function Test-SqlDscAgentAlert
         {
             if ($alertObject.MessageId -ne $MessageId)
             {
-                Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_MessageIdMismatch -f $alertObject.MessageId, $MessageId)
+                Write-Verbose -Message ($script:localizedData.Test_SqlDscIsAgentAlert_MessageIdMismatch -f $alertObject.MessageId, $MessageId)
 
                 return $false
             }
             else
             {
-                Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_MessageIdMatch -f $MessageId)
+                Write-Verbose -Message ($script:localizedData.Test_SqlDscIsAgentAlert_MessageIdMatch -f $MessageId)
             }
         }
 
-        Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_AllTestsPassed -f $Name)
+        Write-Verbose -Message ($script:localizedData.Test_SqlDscIsAgentAlert_AllTestsPassed -f $Name)
 
         return $true
     }
