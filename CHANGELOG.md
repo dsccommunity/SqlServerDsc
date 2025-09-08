@@ -79,7 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Remove-SqlDscRole`, and `Remove-SqlDscLogin` commands for retrieving and managing
    SQL Server logins and roles with support for refresh, pipeline input, and ShouldProcess.
 - Added `Get-SqlDscAgentAlert`, `New-SqlDscAgentAlert`,
-  `Set-SqlDscAgentAlert`, `Remove-SqlDscAgentAlert`, and `Test-SqlDscAgentAlert`
+  `Set-SqlDscAgentAlert`, `Remove-SqlDscAgentAlert`, and `Test-SqlDscIsAgentAlert`
   to manage SQL Agent alerts on a Database Engine instance.
 - Added new public commands for database management:
   - `Get-SqlDscDatabase` - Get databases from a SQL Server Database Engine instance
