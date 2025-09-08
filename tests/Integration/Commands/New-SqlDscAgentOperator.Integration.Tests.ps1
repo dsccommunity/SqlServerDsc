@@ -104,7 +104,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
         # Remove operator first if it exists
         $script:sqlServerObject | Remove-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator1' -Force -ErrorAction 'SilentlyContinue'
 
-        New-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'IntegrationTest_NewOperator1' -Force -ErrorAction 'Stop'
+        New-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'IntegrationTest_NewOperator1' -EmailAddress 'operator3@contoso.com' -Force -ErrorAction 'Stop'
 
         # Verify the operator was created
         $operator = $script:sqlServerObject | Get-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator1'
@@ -114,10 +114,10 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
 
     It 'Should throw an error when trying to create an operator that already exists' {
         # Create the operator first
-        $script:sqlServerObject | New-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator1' -Force -ErrorAction 'Stop'
+        $script:sqlServerObject | New-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator10' -EmailAddress 'operator10@contoso.com' -Force -ErrorAction 'Stop'
 
         # Try to create the same operator again
-        { $script:sqlServerObject | New-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator1' -ErrorAction 'Stop' } |
+        { $script:sqlServerObject | New-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator10' -ErrorAction 'Stop' } |
             Should -Throw
     }
 }
