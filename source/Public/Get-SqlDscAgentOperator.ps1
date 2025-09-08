@@ -76,7 +76,7 @@ function Get-SqlDscAgentOperator
             {
                 Write-Verbose -Message ($script:localizedData.Get_SqlDscAgentOperator_GettingOperator -f $Name)
 
-                $operatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name -IgnoreNotFound
+                $operatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name -ErrorAction 'SilentlyContinue'
 
                 return $operatorObject
             }

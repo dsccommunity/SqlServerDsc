@@ -89,20 +89,20 @@ Describe 'Get-AgentOperatorObject' -Tag 'Private' {
             $mockServerObject | Add-Member -MemberType NoteProperty -Name 'JobServer' -Value $mockJobServer -Force
         }
 
-        It 'Should return null when operator not found and IgnoreNotFound is specified' {
+        It 'Should return null when operator not found and ErrorAction is SilentlyContinue' {
             InModuleScope -Parameters @{ mockServerObject = $mockServerObject } -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $result = Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'NonExistentOperator' -IgnoreNotFound
+                $result = Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'NonExistentOperator' -ErrorAction 'SilentlyContinue'
                 $result | Should -BeNull
             }
         }
 
-        It 'Should throw a terminating error when operator not found and IgnoreNotFound is not specified' {
+        It 'Should throw a terminating error when operator not found and ErrorAction is Stop' {
             InModuleScope -Parameters @{ mockServerObject = $mockServerObject } -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'NonExistentOperator' } |
+                { Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'NonExistentOperator' -ErrorAction 'Stop' } |
                     Should -Throw -ExpectedMessage "*NonExistentOperator*not found*"
             }
         }

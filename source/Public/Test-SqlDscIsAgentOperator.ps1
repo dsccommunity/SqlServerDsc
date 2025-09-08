@@ -72,7 +72,7 @@ function Test-SqlDscIsAgentOperator
     {
         Write-Verbose -Message ($script:localizedData.Test_SqlDscIsAgentOperator_TestingOperator -f $Name)
 
-        $operatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name -IgnoreNotFound -Refresh:$Refresh
+        $operatorObject = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name -Refresh:$Refresh -ErrorAction 'SilentlyContinue'
 
         if (-not $operatorObject)
         {
