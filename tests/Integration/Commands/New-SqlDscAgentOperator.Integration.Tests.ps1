@@ -60,6 +60,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
         $script:sqlServerObject | Remove-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator1' -Force -ErrorAction 'SilentlyContinue'
         $script:sqlServerObject | Remove-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator2' -Force -ErrorAction 'SilentlyContinue'
         $script:sqlServerObject | Remove-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator3' -Force -ErrorAction 'SilentlyContinue'
+        $script:sqlServerObject | Remove-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator10' -Force -ErrorAction 'SilentlyContinue'
 
         # Disconnect from the SQL Server
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:sqlServerObject
