@@ -11,7 +11,7 @@ applyTo: "**"
 - **Resource**: DSC class-based resource
 
 ## Build & Test Workflow
-- Run in PowerShell, from repository root
+- Run scripts in `pwsh`; always from repository root
 - Build before running tests: `.\build.ps1 -Tasks build`
 - Always run tests in new PowerShell session: `Invoke-Pester -Path @({test paths}) -Output Detailed`
 
