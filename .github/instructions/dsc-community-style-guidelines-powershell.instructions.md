@@ -65,7 +65,7 @@ applyTo: "**/*.ps?(m|d)1"
 - Comment-based help indentation: keywords 4 spaces, text 8 spaces
 - Include examples for all parameter sets and combinations
 - INPUTS: List each pipeline‑accepted type (one per line) with a 1‑line description.
-- OUTPUTS: List each return type (one per line) with a 1‑line description. Must match both [OutputType()] and actual returns.
+- OUTPUTS: List each return type (one per line) with a 1‑line description. Must match both `[OutputType()]` and actual returns.
 - .NOTES: Include only if it conveys critical info (constraints, side effects, security, version compatibility, breaking behavior). Keep to ≤2 short sentences.
 
 ## Functions
@@ -82,6 +82,7 @@ applyTo: "**/*.ps?(m|d)1"
   - Inside `$PSCmdlet.ShouldProcess`-block, avoid using `Write-Verbose`
 - Never use backtick as line continuation in production code.
 - Set `$ErrorActionPreference = 'Stop'` before commands using `-ErrorAction 'Stop'`; restore after
+- Use `[Alias()]` attribute for function aliases, never `Set-Alias` or `New-Alias`
 
 ## Output streams
 
