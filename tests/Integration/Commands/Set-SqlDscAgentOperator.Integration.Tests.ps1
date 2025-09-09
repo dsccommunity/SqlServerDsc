@@ -51,9 +51,15 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
         $mockSqlAdministratorCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlAdministratorUserName, $mockSqlAdministratorPassword
 
         $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:sqlServerInstance -Credential $mockSqlAdministratorCredential -ErrorAction 'Stop'
+
+        # Enable Agent XPs component for SQL Server Agent functionality
+        Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -OptionValue 1 -Verbose
     }
 
     AfterAll {
+        # Disable Agent XPs component to clean up test environment
+        Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -OptionValue 0 -Verbose
+
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
 
         # Stopping the named instance SQL Server service after running tests.
