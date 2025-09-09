@@ -78,6 +78,7 @@ applyTo: "**/*.ps?(m|d)1"
 - Include a `Force` parameter for functions that uses `$PSCmdlet.ShouldContinue` or `$PSCmdlet.ShouldProcess`
 - For state-changing functions, use `SupportsShouldProcess`
   - Place ShouldProcess check immediately before each state-change
+  - Set `ConfirmImpact` to 'Low', 'Medium', or 'High' depending on risk
   - `$PSCmdlet.ShouldProcess` must use required pattern
   - Inside `$PSCmdlet.ShouldProcess`-block, avoid using `Write-Verbose`
 - Never use backtick as line continuation in production code.
