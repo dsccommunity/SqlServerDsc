@@ -228,6 +228,14 @@ function Set-SqlDscConfigurationOption
         $Force
     )
 
+    begin
+    {
+        if ($Force.IsPresent -and -not $Confirm)
+        {
+            $ConfirmPreference = 'None'
+        }
+    }
+
     process
     {
         # Find the configuration option by name
