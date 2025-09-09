@@ -64,13 +64,13 @@ Describe 'Test-SqlDscAgentAlertProperty' -Tag @('Integration_SQL2017', 'Integrat
 
     Context 'When checking severity' {
         It 'Should return true for matching severity' {
-            $result = $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'IntegrationTest_SeverityAlert' -Severity 16
+            $result = $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'IntegrationTest_SeverityAlert' -Severity 16 -ErrorAction 'Stop'
 
             $result | Should -BeTrue
         }
 
         It 'Should return false for non-matching severity' {
-            $result = $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'IntegrationTest_SeverityAlert' -Severity 14
+            $result = $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'IntegrationTest_SeverityAlert' -Severity 14 -ErrorAction 'Stop'
 
             $result | Should -BeFalse
         }
@@ -78,13 +78,13 @@ Describe 'Test-SqlDscAgentAlertProperty' -Tag @('Integration_SQL2017', 'Integrat
 
     Context 'When checking message ID' {
         It 'Should return true for matching message ID' {
-            $result = $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'IntegrationTest_MessageIdAlert' -MessageId 50001
+            $result = $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'IntegrationTest_MessageIdAlert' -MessageId 50001 -ErrorAction 'Stop'
 
             $result | Should -BeTrue
         }
 
         It 'Should return false for non-matching message ID' {
-            $result = $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'IntegrationTest_MessageIdAlert' -MessageId 50002
+            $result = $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'IntegrationTest_MessageIdAlert' -MessageId 50002 -ErrorAction 'Stop'
 
             $result | Should -BeFalse
         }
@@ -101,6 +101,11 @@ Describe 'Test-SqlDscAgentAlertProperty' -Tag @('Integration_SQL2017', 'Integrat
             $result = $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'NonExistentAlert' -MessageId 50001
 
             $result | Should -BeFalse
+        }
+
+        It 'Should throw an exception for a non-existent alert' {
+            { $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'NonExistentAlert' -ErrorAction 'Stop' } |
+                Should -Throw
         }
     }
 
