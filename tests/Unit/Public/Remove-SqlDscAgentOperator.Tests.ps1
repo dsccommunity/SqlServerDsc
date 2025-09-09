@@ -127,10 +127,16 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
             $script:mockOperator | Add-Member -MemberType ScriptMethod -Name 'Drop' -Value {
                 $script:mockMethodDropCallCount++
             } -Force
+
+            # Add Parent properties to establish the hierarchy
+            $script:mockOperator | Add-Member -MemberType NoteProperty -Name 'Parent' -Value $script:mockJobServer -Force
+            $script:mockJobServer | Add-Member -MemberType NoteProperty -Name 'Parent' -Value $script:mockServerObject -Force
         }
 
         It 'Should remove operator when it exists' {
             $script:mockMethodDropCallCount = 0
+
+            Mock -CommandName 'Get-AgentOperatorObject' -MockWith { return $script:mockOperator }
 
             $null = Remove-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator'
 
