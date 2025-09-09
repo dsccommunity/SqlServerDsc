@@ -111,7 +111,7 @@ Describe 'Test-SqlDscAgentAlertProperty' -Tag @('Integration_SQL2017', 'Integrat
 
     Context 'When no properties are specified' {
         It 'Should throw error when no property parameters are specified' {
-            { $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'IntegrationTest_SeverityAlert' } |
+            { $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'IntegrationTest_SeverityAlert' -ErrorAction 'Stop' } |
                 Should -Throw
         }
     }
@@ -141,7 +141,7 @@ Describe 'Test-SqlDscAgentAlertProperty' -Tag @('Integration_SQL2017', 'Integrat
 
     Context 'When both Severity and MessageId are specified' {
         It 'Should throw error for both Severity and MessageId parameters' {
-            { $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'IntegrationTest_SeverityAlert' -Severity 16 -MessageId 50001 } |
+            { $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'IntegrationTest_SeverityAlert' -Severity 16 -MessageId 50001 -ErrorAction 'Stop' } |
                 Should -Throw
         }
     }
