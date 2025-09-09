@@ -16,6 +16,10 @@
     .PARAMETER OptionValue
         Specifies the value to set for the configuration option.
 
+    .PARAMETER Force
+        Suppresses prompts and overrides restrictions that would normally prevent the command from completing.
+        When specified, the command will not prompt for confirmation before making changes.
+
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $serverObject | Set-SqlDscConfigurationOption -Name "Agent XPs" -OptionValue 1
@@ -34,6 +38,12 @@
 
         Shows what would happen if the "max degree of parallelism" option was set to 4, without actually making the change.
 
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $serverObject | Set-SqlDscConfigurationOption -Name "cost threshold for parallelism" -OptionValue 25 -Force
+
+        Sets the "cost threshold for parallelism" configuration option to 25 without prompting for confirmation.
+
     .INPUTS
         Microsoft.SqlServer.Management.Smo.Server
         SQL Server Management Objects (SMO) Server object representing a SQL Server instance.
@@ -44,7 +54,7 @@
 function Set-SqlDscConfigurationOption
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
@@ -211,7 +221,11 @@ function Set-SqlDscConfigurationOption
                 }
             })]
         [System.Int32]
-        $OptionValue
+        $OptionValue,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Force
     )
 
     process
@@ -268,7 +282,7 @@ function Set-SqlDscConfigurationOption
                 # Apply the configuration change
                 $ServerObject.Configuration.Alter()
 
-                Write-Information -MessageData ($script:localizedData.ConfigurationOption_Set_Success -f $Name, $OptionValue, $ServerObject.Name) -InformationAction Continue
+                Write-Information -MessageData ($script:localizedData.ConfigurationOption_Set_Success -f $Name, $OptionValue, $ServerObject.Name)
             }
             catch
             {
