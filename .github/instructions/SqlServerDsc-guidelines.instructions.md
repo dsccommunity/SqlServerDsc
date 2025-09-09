@@ -3,7 +3,16 @@ description: SqlServerDsc-specific guidelines for AI development.
 applyTo: "**"
 ---
 
-# SqlServerDsc Guidelines
+# SqlServerDsc Requirements
+
+## Build & Test Workflow Requirements
+- Run in `pwsh`
+- Run scripts from project root
+- Setup build environment (once per `pwsh` session): `.build.ps1 -Task noop`
+- Build project: `.build.ps1 -Task build`
+- Run tests without coverage (wildcards allowed): `Invoke-PesterJob -Path '{tests filepath}' -SkipCodeCoverage`
+- Run QA tests: `Invoke-PesterJob -Path 'tests/QA' -SkipCodeCoverage`
+- Never run integration tests locally
 
 ## Naming
 - Public commands: `{Verb}-SqlDsc{Noun}` format
@@ -25,7 +34,7 @@ applyTo: "**"
 - Reporting Services: instance `SSRS`
 - Power BI Report Server: instance `PBIRS`
 
-## Test Requirements
+## Tests Requirements
 - Unit tests: Add `$env:SqlServerDscCI = $true` in `BeforeAll`, remove in `AfterAll`
 - Integration tests:
   - If requiring SQL Server DB, start the Windows service in `BeforeAll`, stop it in `AfterAll`.
