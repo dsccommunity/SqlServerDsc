@@ -91,6 +91,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     patterns
   - Database objects can also be used as pipeline input for Set and Remove operations
   - Commands include comprehensive validation, localization, and ShouldProcess support
+- `Test-SqlDscAgentAlertProperty`
+  - New command to test specific properties of SQL Agent alerts.
+  - Supports testing severity and message ID properties.
+  - Requires at least one property parameter to be specified.
+  - Supports pipeline input of
+    `[Microsoft.SqlServer.Management.Smo.Agent.Alert]` objects.
 
 ### Changed
 
@@ -157,6 +163,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated the command to use `Test-SqlDscIsAgentAlert` instead of directly
     calling `Get-AgentAlertObject` when checking if an alert already exists
     (issue [#2202](https://github.com/dsccommunity/SqlServerDsc/issues/2202)).
+- `Test-SqlDscIsAgentAlert`
+  - Removed optional `Severity` and `MessageId` parameters - use
+    `Test-SqlDscAgentAlertProperty` instead for property testing.
+  - Now only tests for alert existence.
+  - Added support for pipeline input of
+    `[Microsoft.SqlServer.Management.Smo.Agent.Alert]` objects.
+  - Updated examples and documentation to reflect the simplified functionality.
 
 ## [17.1.0] - 2025-05-22
 
