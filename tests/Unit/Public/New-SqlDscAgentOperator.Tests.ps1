@@ -105,10 +105,6 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
             }
         }
 
-        It 'Should create a new operator without throwing an error' {
-            { New-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com' } | Should -Not -Throw
-        }
-
         It 'Should call Create method on operator when creating new operator' {
             # Reset counter
             $script:mockJobServer.MockOperatorMethodCreateCalled = 0
