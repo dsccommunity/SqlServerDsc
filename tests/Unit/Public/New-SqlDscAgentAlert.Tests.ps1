@@ -26,6 +26,8 @@ BeforeDiscovery {
 BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
 
+    $env:SqlServerDscCI = $true
+
     Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
 
     # Load SMO stub types
@@ -41,6 +43,8 @@ AfterAll {
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
+
+    Remove-Item -Path 'env:SqlServerDscCI' -ErrorAction 'SilentlyContinue'
 }
 
 Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
