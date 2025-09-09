@@ -197,7 +197,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
             }
         }
 
-        Context 'When using PassThru parameter' {
+        Context 'When Refresh is not specified' {
             It 'Should not refresh server object when Refresh is not specified' {
                 $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -Force
 
