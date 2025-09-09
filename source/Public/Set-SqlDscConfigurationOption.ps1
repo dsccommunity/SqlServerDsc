@@ -268,7 +268,7 @@ function Set-SqlDscConfigurationOption
                 # Apply the configuration change
                 $ServerObject.Configuration.Alter()
 
-                Write-Verbose -Message ($script:localizedData.ConfigurationOption_Set_Success -f $Name, $OptionValue, $ServerObject.Name)
+                Write-Information -MessageData ($script:localizedData.ConfigurationOption_Set_Success -f $Name, $OptionValue, $ServerObject.Name) -InformationAction Continue
             }
             catch
             {
