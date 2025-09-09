@@ -321,6 +321,7 @@ function Set-SqlDscConfigurationOption
                 }
 
                 Write-Error @writeErrorParameters
+                return
             }
         }
     }
