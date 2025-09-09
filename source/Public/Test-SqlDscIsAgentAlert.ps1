@@ -50,7 +50,6 @@ function Test-SqlDscIsAgentAlert
         $Name
     )
 
-    # cSpell: ignore TSIAA
     process
     {
         Write-Verbose -Message ($script:localizedData.Test_SqlDscIsAgentAlert_TestingAlert -f $Name)
