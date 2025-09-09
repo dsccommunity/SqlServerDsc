@@ -122,7 +122,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
             # Reset counter
             $script:mockJobServer.MockOperatorMethodCreateCalled = 0
 
-            { New-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com' } | Should -Not -Throw
+            $null = New-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com'
 
             $script:mockJobServer.MockOperatorMethodCreateCalled | Should -Be 1
         }
@@ -143,7 +143,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
                 # Reset counter
                 $script:mockJobServer.MockOperatorMethodCreateCalled = 0
 
-                { New-SqlDscAgentOperator -WhatIf -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com' } | Should -Not -Throw
+                $null = New-SqlDscAgentOperator -WhatIf -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com'
 
                 # Create method should not be called when using WhatIf
                 $script:mockJobServer.MockOperatorMethodCreateCalled | Should -Be 0
@@ -155,7 +155,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
                 # Reset counter
                 $script:mockJobServer.MockOperatorMethodCreateCalled = 0
 
-                { $script:mockServerObject | New-SqlDscAgentOperator -Force -Name 'TestOperator' -EmailAddress 'test@contoso.com' } | Should -Not -Throw
+                $null = $script:mockServerObject | New-SqlDscAgentOperator -Force -Name 'TestOperator' -EmailAddress 'test@contoso.com'
 
                 $script:mockJobServer.MockOperatorMethodCreateCalled | Should -Be 1
             }
