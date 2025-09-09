@@ -62,7 +62,6 @@
 function Get-SqlDscConfigurationOption
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Because we pass parameters in the argument completer that are not yet used.')]
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingEmptyCatchBlock', '', Justification = 'Because we need to handle errors gracefully in the argument completer without terminating the pipeline.')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
     [OutputType([PSCustomObject[]], ParameterSetName = 'Metadata')]
     [OutputType([Microsoft.SqlServer.Management.Smo.ConfigProperty[]], ParameterSetName = 'Raw')]
@@ -93,30 +92,12 @@ function Get-SqlDscConfigurationOption
                     $fakeBoundParameters
                 )
 
-                # Get ServerObject from pipeline or bound parameters
+                # Get ServerObject from bound parameters only
                 $serverObject = $null
+
                 if ($FakeBoundParameters.ContainsKey('ServerObject'))
                 {
                     $serverObject = $FakeBoundParameters['ServerObject']
-                }
-                else
-                {
-                    # Try to get from pipeline input
-                    $pipelineInput = $CommandAst.Parent.Extent.Text
-                    if ($pipelineInput -match '\$\w+\s*\|')
-                    {
-                        try
-                        {
-                            # This is a best-effort attempt to get server object for tab completion
-                            # In practice, tab completion works best when ServerObject is explicitly bound
-                            $variableName = ($matches[0] -replace '\s*\|', '').Trim('$')
-                            $serverObject = Get-Variable -Name $variableName -ValueOnly -ErrorAction SilentlyContinue
-                        }
-                        catch
-                        {
-                            # Silently continue if we can't get the server object
-                        }
-                    }
                 }
 
                 if ($serverObject -and $serverObject -is [Microsoft.SqlServer.Management.Smo.Server])
