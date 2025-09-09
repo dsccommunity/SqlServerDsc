@@ -53,6 +53,8 @@
 #>
 function Set-SqlDscConfigurationOption
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Because we pass parameters in the argument completer that are not yet used.')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingEmptyCatchBlock', '', Justification = 'Because we need to handle errors gracefully in the argument completer without terminating the pipeline.')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
     [OutputType()]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
