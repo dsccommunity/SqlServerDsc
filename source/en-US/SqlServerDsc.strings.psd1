@@ -246,6 +246,15 @@ ConvertFrom-StringData @'
     ## Get-SqlDscConfigurationOption
     ConfigurationOption_Get_Missing = There is no configuration option with the name '{0}'.
 
+    ## Set-SqlDscConfigurationOption
+    ConfigurationOption_Set_Missing = There is no configuration option with the name '{0}'.
+    ConfigurationOption_Set_InvalidValue = The value '{1}' for configuration option '{0}' is outside the valid range of {2} to {3}.
+    ConfigurationOption_Set_ShouldProcessDescription = Set configuration option '{0}' to '{1}' on server '{2}'.
+    ConfigurationOption_Set_ShouldProcessConfirmation = Are you sure you want to set configuration option '{0}' to '{1}'?
+    ConfigurationOption_Set_ShouldProcessCaption = Set configuration option
+    ConfigurationOption_Set_Success = Successfully set configuration option '{0}' to '{1}' on server '{2}'.
+    ConfigurationOption_Set_Failed = Failed to set configuration option '{0}' to '{1}'. {2}
+
     ## Save-SqlDscSqlServerMediaFile
     SqlServerMediaFile_Save_ShouldProcessVerboseDescription = The existing destination file '{0}' already exists and will be replaced.
     SqlServerMediaFile_Save_ShouldProcessVerboseWarning = Are you sure you want to replace existing file '{0}'?

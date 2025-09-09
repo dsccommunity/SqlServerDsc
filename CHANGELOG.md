@@ -38,6 +38,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Set-SqlDscDatabaseDefault`
   - Added new command to set default objects of a database in a SQL Server
     Database Engine instance (issue [#2178](https://github.com/dsccommunity/SqlServerDsc/issues/2178)).
+- `Set-SqlDscConfigurationOption`
+  - Added new command to set SQL Server Database Engine configuration options
+    using SMO with validation, ShouldProcess support, and dynamic tab completion.
+- `Get-SqlDscConfigurationOption`
+  - Enhanced existing command to return user-friendly metadata objects by default
+    with properties Name, RunValue, ConfigValue, Minimum, Maximum, and IsDynamic.
+  - Added `-Raw` switch to return original SMO ConfigProperty objects for
+    backward compatibility.
+  - Added dynamic tab completion for the `-Name` parameter.
   - The command can set the default filegroup, default FILESTREAM filegroup,
     and default Full-Text catalog using SMO methods SetDefaultFileGroup,
     SetDefaultFileStreamFileGroup, and SetDefaultFullTextCatalog.
