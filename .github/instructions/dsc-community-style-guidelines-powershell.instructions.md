@@ -64,8 +64,8 @@ applyTo: "**/*.ps?(m|d)1"
 - Comment-based help: SYNOPSIS, DESCRIPTION (40+ chars), PARAMETER, EXAMPLE sections before function/class
 - Comment-based help indentation: keywords 4 spaces, text 8 spaces
 - Include examples for all parameter sets and combinations
-- INPUTS: List each pipeline‑accepted type (one per line) with a 1‑line description.
-- OUTPUTS: List each return type (one per line) with a 1‑line description. Must match both `[OutputType()]` and actual returns.
+- INPUTS: List each pipeline‑accepted type (one per line) with a 1‑line description. Repeat keyword for each input type.
+- OUTPUTS: List each return type (one per line) with a 1‑line description. Repeat keyword for each output type. Must match both `[OutputType()]` and actual returns.
 - .NOTES: Include only if it conveys critical info (constraints, side effects, security, version compatibility, breaking behavior). Keep to ≤2 short sentences.
 
 ## Functions
@@ -136,14 +136,25 @@ if ($Force.IsPresent -and -not $Confirm)
         Parameter description
 
     .INPUTS
-        TypeName
+        TypeName1
 
-        Description
+        Description1
+
+    .INPUTS
+        TypeName2
+
+        Description2
 
     .OUTPUTS
-        TypeName
+        TypeName1
 
-        Description
+        Description1
+
+    .OUTPUTS
+        TypeName2
+
+        Description2
+
 #>
 function Get-Something
 {
