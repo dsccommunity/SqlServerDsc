@@ -438,10 +438,7 @@ ConvertFrom-StringData @'
     Test_SqlDscIsAgentAlert_TestingAlert = Testing if the SQL Agent Alert '{0}' exists and has the desired properties. (TSIAA0001)
     Test_SqlDscIsAgentAlert_AlertNotFound = SQL Agent Alert '{0}' was not found. (TSIAA0002)
     Test_SqlDscIsAgentAlert_AlertFound = SQL Agent Alert '{0}' was found. (TSIAA0003)
-    Test_SqlDscIsAgentAlert_NoPropertyTest = No specific properties to test, alert exists. (TSIAA0004)
-    Test_SqlDscIsAgentAlert_SeverityMismatch = Severity mismatch: current '{0}', expected '{1}'. (TSIAA0005)
-    Test_SqlDscIsAgentAlert_SeverityMatch = Severity matches expected value '{0}'. (TSIAA0006)
-    Test_SqlDscIsAgentAlert_MessageIdMismatch = Message ID mismatch: current '{0}', expected '{1}'. (TSIAA0007)
-    Test_SqlDscIsAgentAlert_MessageIdMatch = Message ID matches expected value '{0}'. (TSIAA0008)
-    Test_SqlDscIsAgentAlert_AllTestsPassed = All tests passed for SQL Agent Alert '{0}'. (TSIAA0009)
+
+    ## Test-SqlDscAgentAlertProperty
+    Test_SqlDscAgentAlertProperty_AlertNotFound = SQL Agent Alert '{0}' was not found. (TSAAP0002)
 '@
