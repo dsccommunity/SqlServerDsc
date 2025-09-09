@@ -62,7 +62,7 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Public' {
         }
 
         It 'Should not throw and not return anything when operator found' {
-            { Assert-SqlDscAgentOperator -ServerObject $mockServerObject -Name $mockOperatorName } | Should -Not -Throw
+            $null = Assert-SqlDscAgentOperator -ServerObject $mockServerObject -Name $mockOperatorName
         }
 
         It 'Should call Get-AgentOperatorObject with correct parameters' {
