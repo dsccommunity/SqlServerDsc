@@ -50,7 +50,7 @@ Describe 'Disable-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_
         $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
         $mockSqlAdministratorCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
 
-        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:sqlServerInstance -Credential $mockSqlAdministratorCredential -ErrorAction Stop
+        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:sqlServerInstance -Credential $mockSqlAdministratorCredential -ErrorAction 'Stop'
 
         # Enable Agent XPs component for SQL Server Agent functionality
         Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -OptionValue 1 -Force -Verbose -ErrorAction 'Stop'
