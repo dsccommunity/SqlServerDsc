@@ -1538,7 +1538,7 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
     //  New-SqlDscAgentAlert.Tests.ps1
     //  Set-SqlDscAgentAlert.Tests.ps1
     //  Remove-SqlDscAgentAlert.Tests.ps1
-    //  Test-SqlDscAgentAlert.Tests.ps1
+    //  Test-SqlDscIsAgentAlert.Tests.ps1
     //  SqlAgentAlert.Tests.ps1
     public enum AlertType
     {
@@ -1636,7 +1636,7 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
     //  New-SqlDscAgentAlert.Tests.ps1
     //  Set-SqlDscAgentAlert.Tests.ps1
     //  Remove-SqlDscAgentAlert.Tests.ps1
-    //  Test-SqlDscAgentAlert.Tests.ps1
+    //  Test-SqlDscIsAgentAlert.Tests.ps1
     public class Alert
     {
         // Constructor
@@ -1683,4 +1683,3 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
 
     #endregion
 }
-
