@@ -440,5 +440,5 @@ ConvertFrom-StringData @'
     Test_SqlDscIsAgentAlert_AlertFound = SQL Agent Alert '{0}' was found. (TSIAA0003)
 
     ## Test-SqlDscAgentAlertProperty
-    Test_SqlDscAgentAlertProperty_AlertNotFound = SQL Agent Alert '{0}' was not found. (TSAAP0002)
+    Test_SqlDscAgentAlertProperty_AlertNotFound = SQL Agent Alert '{0}' was not found. (TSDAAP0001)
 '@

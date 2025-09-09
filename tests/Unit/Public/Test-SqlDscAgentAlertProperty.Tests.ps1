@@ -229,7 +229,7 @@ Describe 'Test-SqlDscAgentAlertProperty' -Tag 'Public' {
 
             $result | Should -BeFalse
             Should -Invoke -CommandName 'Write-Error' -ModuleName $script:dscModuleName -ParameterFilter {
-                $Category -eq 'ObjectNotFound' -and $ErrorId -eq 'TSAAP0002' -and $TargetObject -eq 'NonExistentAlert'
+                $Category -eq 'ObjectNotFound' -and $ErrorId -eq 'TSDAAP0001' -and $TargetObject -eq 'NonExistentAlert'
             } -Times 1 -Exactly
         }
     }

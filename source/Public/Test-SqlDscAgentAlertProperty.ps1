@@ -108,7 +108,7 @@ function Test-SqlDscAgentAlertProperty
             {
                 $errorMessage = $script:localizedData.Test_SqlDscAgentAlertProperty_AlertNotFound -f $Name
 
-                Write-Error -Message $errorMessage -Category 'ObjectNotFound' -ErrorId 'TSAAP0002' -TargetObject $Name
+                Write-Error -Message $errorMessage -Category 'ObjectNotFound' -ErrorId 'TSDAAP0001' -TargetObject $Name
 
                 return $false
             }
