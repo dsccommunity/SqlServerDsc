@@ -64,14 +64,14 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_S
         It 'Should create and remove a temporary operator' {
             # Create a temporary operator for removal testing
             $tempOperatorName = 'SqlDscTempOperator_ToRemove'
-            New-SqlDscAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -EmailAddress 'temp@example.com' -Force -ErrorAction 'Stop'
+            $null = New-SqlDscAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -EmailAddress 'temp@example.com' -Force -ErrorAction 'Stop'
 
             # Verify it was created
             $operatorExists = Test-SqlDscIsAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -ErrorAction 'Stop'
             $operatorExists | Should -BeTrue
 
             # Remove the operator
-            Remove-SqlDscAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -Force -ErrorAction 'Stop'
+            $null = Remove-SqlDscAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -Force -ErrorAction 'Stop'
 
             # Verify it was removed
             $operatorExists = Test-SqlDscIsAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -ErrorAction 'Stop'
@@ -81,14 +81,14 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_S
         It 'Should remove operator using OperatorObject parameter set' {
             # Create a temporary operator
             $tempOperatorName = 'SqlDscTempOperator_ByObject'
-            New-SqlDscAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -EmailAddress 'temp2@example.com' -Force -ErrorAction 'Stop'
+            $null = New-SqlDscAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -EmailAddress 'temp2@example.com' -Force -ErrorAction 'Stop'
 
             # Get the operator object
             $operatorObject = Get-SqlDscAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -ErrorAction 'Stop'
             $operatorObject | Should -Not -BeNullOrEmpty
 
             # Remove using OperatorObject parameter set
-            Remove-SqlDscAgentOperator -OperatorObject $operatorObject -Force -ErrorAction 'Stop'
+            $null = Remove-SqlDscAgentOperator -OperatorObject $operatorObject -Force -ErrorAction 'Stop'
 
             # Verify it was removed
             $operatorExists = Test-SqlDscIsAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -ErrorAction 'Stop'
