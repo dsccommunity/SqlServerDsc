@@ -75,39 +75,4 @@ Describe 'Test-SqlDscIsAgentAlert' -Tag @('Integration_SQL2017', 'Integration_SQ
             $result | Should -BeFalse
         }
     }
-
-    Context 'When checking severity' {
-        It 'Should return true for matching severity' {
-            $result = $script:sqlServerObject | Test-SqlDscIsAgentAlert -Name 'IntegrationTest_SeverityAlert' -Severity 16
-
-            $result | Should -BeTrue
-        }
-
-        It 'Should return false for non-matching severity' {
-            $result = $script:sqlServerObject | Test-SqlDscIsAgentAlert -Name 'IntegrationTest_SeverityAlert' -Severity 14
-
-            $result | Should -BeFalse
-        }
-    }
-
-    Context 'When checking message ID' {
-        It 'Should return true for matching message ID' {
-            $result = $script:sqlServerObject | Test-SqlDscIsAgentAlert -Name 'IntegrationTest_MessageIdAlert' -MessageId 50001
-
-            $result | Should -BeTrue
-        }
-
-        It 'Should return false for non-matching message ID' {
-            $result = $script:sqlServerObject | Test-SqlDscIsAgentAlert -Name 'IntegrationTest_MessageIdAlert' -MessageId 50002
-
-            $result | Should -BeFalse
-        }
-    }
-
-    Context 'When both Severity and MessageId are specified' {
-        It 'Should throw error for both Severity and MessageId parameters' {
-            { $script:sqlServerObject | Test-SqlDscIsAgentAlert -Name 'IntegrationTest_SeverityAlert' -Severity 16 -MessageId 50001 } |
-                Should -Throw
-        }
-    }
 }

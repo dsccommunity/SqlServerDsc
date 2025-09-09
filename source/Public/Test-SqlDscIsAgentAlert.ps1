@@ -1,24 +1,16 @@
 <#
     .SYNOPSIS
-        Tests if a SQL Agent Alert exists and has the desired properties.
+        Tests if a SQL Agent Alert exists.
 
     .DESCRIPTION
         This command tests if a SQL Agent Alert exists on a SQL Server Database Engine
-        instance and optionally validates its properties.
+        instance.
 
     .PARAMETER ServerObject
         Specifies current server connection object.
 
     .PARAMETER Name
         Specifies the name of the SQL Agent Alert to test.
-
-    .PARAMETER Severity
-        Specifies the expected severity level for the SQL Agent Alert. Valid range is 0 to 25.
-        If specified, the command will return $true only if the alert exists and has this severity.
-
-    .PARAMETER MessageId
-        Specifies the expected message ID for the SQL Agent Alert. Valid range is 0 to 2147483647.
-        If specified, the command will return $true only if the alert exists and has this message ID.
 
     .INPUTS
         Microsoft.SqlServer.Management.Smo.Server
@@ -36,15 +28,9 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $serverObject | Test-SqlDscIsAgentAlert -Name 'MyAlert' -Severity 16
+        $serverObject | Test-SqlDscIsAgentAlert -Name 'MyAlert'
 
-        Tests if the SQL Agent Alert named 'MyAlert' exists and has severity level 16.
-
-    .EXAMPLE
-        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $serverObject | Test-SqlDscIsAgentAlert -Name 'MyAlert' -MessageId 50001
-
-        Tests if the SQL Agent Alert named 'MyAlert' exists and has message ID 50001.
+        Tests if the SQL Agent Alert named 'MyAlert' exists using pipeline input.
 #>
 function Test-SqlDscIsAgentAlert
 {
@@ -61,28 +47,15 @@ function Test-SqlDscIsAgentAlert
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $Name,
-
-        [Parameter()]
-        [ValidateRange(0, 25)]
-        [System.Int32]
-        $Severity,
-
-        [Parameter()]
-        [ValidateRange(0, 2147483647)]
-        [System.Int32]
-        $MessageId
+        $Name
     )
 
-    # cSpell: ignore TSAA
+    # cSpell: ignore TSIAA
     process
     {
-        # Validate that both Severity and MessageId are not specified
-        Assert-BoundParameter -BoundParameterList $PSBoundParameters -MutuallyExclusiveList1 @('Severity') -MutuallyExclusiveList2 @('MessageId')
-
         Write-Verbose -Message ($script:localizedData.Test_SqlDscIsAgentAlert_TestingAlert -f $Name)
 
-        $alertObject = Get-AgentAlertObject -ServerObject $ServerObject -Name $Name
+        $alertObject = Get-AgentAlertObject -ServerObject $ServerObject -Name $Name -ErrorAction 'SilentlyContinue'
 
         if ($null -eq $alertObject)
         {
@@ -92,46 +65,6 @@ function Test-SqlDscIsAgentAlert
         }
 
         Write-Verbose -Message ($script:localizedData.Test_SqlDscIsAgentAlert_AlertFound -f $Name)
-
-        # If no specific properties are specified, just return true (alert exists)
-        if (-not $PSBoundParameters.ContainsKey('Severity') -and -not $PSBoundParameters.ContainsKey('MessageId'))
-        {
-            Write-Verbose -Message ($script:localizedData.Test_SqlDscIsAgentAlert_NoPropertyTest)
-
-            return $true
-        }
-
-        # Test severity if specified
-        if ($PSBoundParameters.ContainsKey('Severity'))
-        {
-            if ($alertObject.Severity -ne $Severity)
-            {
-                Write-Verbose -Message ($script:localizedData.Test_SqlDscIsAgentAlert_SeverityMismatch -f $alertObject.Severity, $Severity)
-
-                return $false
-            }
-            else
-            {
-                Write-Verbose -Message ($script:localizedData.Test_SqlDscIsAgentAlert_SeverityMatch -f $Severity)
-            }
-        }
-
-        # Test message ID if specified
-        if ($PSBoundParameters.ContainsKey('MessageId'))
-        {
-            if ($alertObject.MessageId -ne $MessageId)
-            {
-                Write-Verbose -Message ($script:localizedData.Test_SqlDscIsAgentAlert_MessageIdMismatch -f $alertObject.MessageId, $MessageId)
-
-                return $false
-            }
-            else
-            {
-                Write-Verbose -Message ($script:localizedData.Test_SqlDscIsAgentAlert_MessageIdMatch -f $MessageId)
-            }
-        }
-
-        Write-Verbose -Message ($script:localizedData.Test_SqlDscIsAgentAlert_AllTestsPassed -f $Name)
 
         return $true
     }
