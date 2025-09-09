@@ -111,12 +111,12 @@ END
     }
 
     It 'Should throw error when alert does not exist' {
-        { $script:sqlServerObject | Set-SqlDscAgentAlert -Name 'NonExistentAlert' -Severity 16 -Force } |
+        { $script:sqlServerObject | Set-SqlDscAgentAlert -Name 'NonExistentAlert' -Severity 16 -Force -ErrorAction 'Stop' } |
             Should -Throw
     }
 
     It 'Should throw error when both Severity and MessageId are specified' {
-        { $script:sqlServerObject | Set-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -Severity 16 -MessageId 50001 -Force } |
+        { $script:sqlServerObject | Set-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -Severity 16 -MessageId 50001 -Force -ErrorAction 'Stop' } |
             Should -Throw
     }
 }
