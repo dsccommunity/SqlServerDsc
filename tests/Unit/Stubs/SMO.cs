@@ -350,6 +350,9 @@ namespace Microsoft.SqlServer.Management.Smo
         // Property for SQL Agent support
         public Microsoft.SqlServer.Management.Smo.Agent.JobServer JobServer { get; set; }
 
+        // Property for server configuration
+        public Microsoft.SqlServer.Management.Smo.Configuration Configuration { get; set; }
+
         // Fabricated constructor
         private Server(string name, bool dummyParam)
         {
@@ -369,6 +372,8 @@ namespace Microsoft.SqlServer.Management.Smo
 
             server.JobServer.Alerts.Parent = server.JobServer;
             server.JobServer.Operators.Parent = server.JobServer;
+
+            server.Configuration = Microsoft.SqlServer.Management.Smo.Configuration.CreateTypeInstance();
 
             return server;
         }
@@ -1062,7 +1067,7 @@ namespace Microsoft.SqlServer.Management.Smo
         }
     }
 
-    public class ConfigPropertyCollection
+    public class ConfigPropertyCollection : IEnumerable
     {
         // Property
         public System.Int32 Count { get; set; }
@@ -1070,11 +1075,47 @@ namespace Microsoft.SqlServer.Management.Smo
         public System.Object SyncRoot { get; set; }
         public Microsoft.SqlServer.Management.Smo.ConfigProperty Item { get; set; }
 
+        // For enumeration
+        private List<Microsoft.SqlServer.Management.Smo.ConfigProperty> _items = new List<Microsoft.SqlServer.Management.Smo.ConfigProperty>();
+
+        // Implement IEnumerable
+        public IEnumerator GetEnumerator()
+        {
+            return _items.GetEnumerator();
+        }
+
+        // Add method to add items
+        public void Add(Microsoft.SqlServer.Management.Smo.ConfigProperty item)
+        {
+            _items.Add(item);
+        }
+
         // Fabricated constructor
         private ConfigPropertyCollection() { }
         public static ConfigPropertyCollection CreateTypeInstance()
         {
             return new ConfigPropertyCollection();
+        }
+    }
+
+    public class Configuration
+    {
+        // Property
+        public Microsoft.SqlServer.Management.Smo.ConfigPropertyCollection Properties { get; set; }
+
+        // Method
+        public void Alter()
+        {
+        }
+
+        // Fabricated constructor
+        private Configuration() { }
+        public static Configuration CreateTypeInstance()
+        {
+            return new Configuration()
+            {
+                Properties = ConfigPropertyCollection.CreateTypeInstance()
+            };
         }
     }
 
