@@ -105,7 +105,7 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_S
 
     Context 'When using pipeline input' {
         It 'Should accept ServerObject from pipeline' {
-            { $script:sqlServerObject | Assert-SqlDscAgentOperator -Name 'IntegrationTest_AssertOperator' -ErrorAction Stop } | Should -Not -Throw
+            $null = $script:sqlServerObject | Assert-SqlDscAgentOperator -Name 'IntegrationTest_AssertOperator' -ErrorAction 'Stop'
         }
     }
 }

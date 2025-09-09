@@ -14,12 +14,18 @@
         Specifies the name of the operator to check for.
 
     .INPUTS
-        None.
+        [Microsoft.SqlServer.Management.Smo.Server]
 
     .OUTPUTS
         None.
 
         This command does not return anything if the operator exists.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $serverObject | Assert-SqlDscAgentOperator -Name 'TestOperator'
+
+        Asserts that the SQL Agent Operator 'TestOperator' exists, throws error if not found.
 
     .EXAMPLE
         Assert-SqlDscAgentOperator -ServerObject $serverObject -Name 'TestOperator'
@@ -32,7 +38,7 @@ function Assert-SqlDscAgentOperator
     [OutputType()]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [Microsoft.SqlServer.Management.Smo.Server]
         $ServerObject,
 
@@ -41,13 +47,16 @@ function Assert-SqlDscAgentOperator
         $Name
     )
 
-    $originalErrorActionPreference = $ErrorActionPreference
-    $ErrorActionPreference = 'Stop'
+    process
+    {
+        $originalErrorActionPreference = $ErrorActionPreference
+        $ErrorActionPreference = 'Stop'
 
-    # This will throw a terminating error if the operator is not found
-    $null = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name -ErrorAction 'Stop'
+        # This will throw a terminating error if the operator is not found
+        $null = Get-AgentOperatorObject -ServerObject $ServerObject -Name $Name -ErrorAction 'Stop'
 
-    $ErrorActionPreference = $originalErrorActionPreference
+        $ErrorActionPreference = $originalErrorActionPreference
 
-    # This command does not return anything if the operator exists
+        # This command does not return anything if the operator exists
+    }
 }

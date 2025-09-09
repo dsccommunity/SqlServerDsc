@@ -108,4 +108,27 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Public' {
             Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1
         }
     }
+
+    Context 'When using pipeline input' {
+        BeforeAll {
+            Mock -CommandName Get-AgentOperatorObject -MockWith {
+                $mockOperatorObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
+                return $mockOperatorObject
+            }
+        }
+
+        It 'Should accept ServerObject from pipeline' {
+            $null = $mockServerObject | Assert-SqlDscAgentOperator -Name $mockOperatorName
+        }
+
+        It 'Should call Get-AgentOperatorObject with correct parameters when using pipeline' {
+            $mockServerObject | Assert-SqlDscAgentOperator -Name $mockOperatorName
+
+            Should -Invoke -CommandName Get-AgentOperatorObject -ParameterFilter {
+                $ServerObject -eq $mockServerObject -and
+                $Name -eq $mockOperatorName -and
+                $ErrorAction -eq 'Stop'
+            } -Exactly -Times 1
+        }
+    }
 }
