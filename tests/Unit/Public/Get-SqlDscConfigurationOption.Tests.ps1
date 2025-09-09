@@ -79,7 +79,7 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
         $result.ParameterListAsString | Should -Be $MockExpectedParameters
     }
 
-    Context 'When the specified configuration option exist' {
+    Context 'When the specified configuration option does not exist' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
                 Add-Member -MemberType 'ScriptProperty' -Name 'Configuration' -Value {
