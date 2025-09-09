@@ -110,7 +110,7 @@ function Test-SqlDscAgentAlertProperty
 
                 Write-Error -Message $errorMessage -Category 'ObjectNotFound' -ErrorId 'TSAAP0002' -TargetObject $Name
 
-                return
+                return $false
             }
         }
 
