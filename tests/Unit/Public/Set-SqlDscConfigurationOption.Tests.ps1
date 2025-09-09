@@ -24,6 +24,8 @@ BeforeDiscovery {
 }
 
 BeforeAll {
+    $env:SqlServerDscCI = $true
+
     $script:dscModuleName = 'SqlServerDsc'
 
     Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
@@ -41,6 +43,8 @@ AfterAll {
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
+
+    Remove-Item -Path 'Env:\SqlServerDscCI' -ErrorAction 'SilentlyContinue'
 }
 
 Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
