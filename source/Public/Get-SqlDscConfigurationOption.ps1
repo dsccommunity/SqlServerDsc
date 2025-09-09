@@ -75,7 +75,23 @@ function Get-SqlDscConfigurationOption
 
         [Parameter()]
         [ArgumentCompleter({
-                param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
+                param
+                (
+                    [Parameter()]
+                    $commandName,
+
+                    [Parameter()]
+                    $parameterName,
+
+                    [Parameter()]
+                    $wordToComplete,
+
+                    [Parameter()]
+                    $commandAst,
+
+                    [Parameter()]
+                    $fakeBoundParameters
+                )
 
                 # Get ServerObject from pipeline or bound parameters
                 $serverObject = $null
