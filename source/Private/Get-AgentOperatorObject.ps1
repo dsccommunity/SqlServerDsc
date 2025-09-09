@@ -64,11 +64,13 @@ function Get-AgentOperatorObject
 
     $operatorObject = $ServerObject.JobServer.Operators[$Name]
 
-    if (-not $operatorObject)
+    if ($null -eq $operatorObject)
     {
         $errorMessage = $script:localizedData.AgentOperator_NotFound -f $Name
 
         Write-Error -Message $errorMessage -Category 'ObjectNotFound' -ErrorId 'GAOO0001' -TargetObject $Name
+
+        return $null
     }
 
     return $operatorObject
