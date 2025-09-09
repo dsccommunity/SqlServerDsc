@@ -70,11 +70,11 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_S
 
     Context 'When operator exists' {
         It 'Should not throw when asserting existing operator' {
-            { Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'IntegrationTest_AssertOperator' -ErrorAction Stop } | Should -Not -Throw
+            $null = Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'IntegrationTest_AssertOperator' -ErrorAction Stop
         }
 
         It 'Should not throw when asserting persistent operator created by New-SqlDscAgentOperator' {
-            { Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'SqlDscIntegrationTestOperator_Persistent' -ErrorAction Stop } | Should -Not -Throw
+            $null = Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'SqlDscIntegrationTestOperator_Persistent' -ErrorAction Stop
         }
 
         It 'Should not return anything when operator exists' {
