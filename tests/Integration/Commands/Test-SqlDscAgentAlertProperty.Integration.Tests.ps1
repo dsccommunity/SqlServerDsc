@@ -118,22 +118,22 @@ Describe 'Test-SqlDscAgentAlertProperty' -Tag @('Integration_SQL2017', 'Integrat
 
     Context 'When using AlertObject parameter' {
         It 'Should return true when alert object has matching severity' {
-            $alertObject = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert'
-            $result = $alertObject | Test-SqlDscAgentAlertProperty -Severity 16
+            $alertObject = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -ErrorAction 'Stop'
+            $result = $alertObject | Test-SqlDscAgentAlertProperty -Severity 16 -ErrorAction 'Stop'
 
             $result | Should -BeTrue
         }
 
         It 'Should return false when alert object has non-matching severity' {
-            $alertObject = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert'
-            $result = $alertObject | Test-SqlDscAgentAlertProperty -Severity 14
+            $alertObject = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -ErrorAction 'Stop'
+            $result = $alertObject | Test-SqlDscAgentAlertProperty -Severity 14 -ErrorAction 'Stop'
 
             $result | Should -BeFalse
         }
 
         It 'Should return true when alert object has matching message ID' {
-            $alertObject = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_MessageIdAlert'
-            $result = $alertObject | Test-SqlDscAgentAlertProperty -MessageId 50001
+            $alertObject = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_MessageIdAlert' -ErrorAction 'Stop'
+            $result = $alertObject | Test-SqlDscAgentAlertProperty -MessageId 50001 -ErrorAction 'Stop'
 
             $result | Should -BeTrue
         }
