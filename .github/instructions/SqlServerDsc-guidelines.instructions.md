@@ -8,7 +8,7 @@ applyTo: "**"
 ## Build & Test Workflow Requirements
 - Run in `pwsh`
 - Run scripts from project root
-- Setup build environment (once per `pwsh` session): `.build.ps1 -Task noop`
+- Setup build and test environment (once per `pwsh` session): `.build.ps1 -Task noop`
 - Build project: `.build.ps1 -Task build`
 - Run tests without coverage (wildcards allowed): `Invoke-PesterJob -Path '{tests filepath}' -SkipCodeCoverage`
 - Run QA tests: `Invoke-PesterJob -Path 'tests/QA' -SkipCodeCoverage`
