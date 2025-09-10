@@ -156,6 +156,132 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
                 $script:mockJobServer.MockOperatorMethodCreateCalled | Should -Be 1
             }
         }
+
+        Context 'When creating operator with different properties' {
+            It 'Should create operator with property <PropertyName> set correctly' -ForEach @(
+                @{
+                    PropertyName = 'EmailAddress'
+                    PropertyValue = 'test@contoso.com'
+                    Parameters = @{ EmailAddress = 'test@contoso.com' }
+                }
+                @{
+                    PropertyName = 'CategoryName'
+                    PropertyValue = 'TestCategory'
+                    Parameters = @{ CategoryName = 'TestCategory' }
+                }
+                @{
+                    PropertyName = 'NetSendAddress'
+                    PropertyValue = 'COMPUTER01'
+                    Parameters = @{ NetSendAddress = 'COMPUTER01' }
+                }
+                @{
+                    PropertyName = 'PagerAddress'
+                    PropertyValue = '555-123-4567'
+                    Parameters = @{ PagerAddress = '555-123-4567' }
+                }
+                @{
+                    PropertyName = 'PagerDays'
+                    PropertyValue = [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Weekdays
+                    Parameters = @{ PagerDays = [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Weekdays }
+                }
+                @{
+                    PropertyName = 'SaturdayPagerEndTime'
+                    PropertyValue = [System.TimeSpan]::new(18, 0, 0)
+                    Parameters = @{ SaturdayPagerEndTime = [System.TimeSpan]::new(18, 0, 0) }
+                }
+                @{
+                    PropertyName = 'SaturdayPagerStartTime'
+                    PropertyValue = [System.TimeSpan]::new(8, 0, 0)
+                    Parameters = @{ SaturdayPagerStartTime = [System.TimeSpan]::new(8, 0, 0) }
+                }
+                @{
+                    PropertyName = 'SundayPagerEndTime'
+                    PropertyValue = [System.TimeSpan]::new(17, 0, 0)
+                    Parameters = @{ SundayPagerEndTime = [System.TimeSpan]::new(17, 0, 0) }
+                }
+                @{
+                    PropertyName = 'SundayPagerStartTime'
+                    PropertyValue = [System.TimeSpan]::new(9, 0, 0)
+                    Parameters = @{ SundayPagerStartTime = [System.TimeSpan]::new(9, 0, 0) }
+                }
+                @{
+                    PropertyName = 'WeekdayPagerEndTime'
+                    PropertyValue = [System.TimeSpan]::new(17, 30, 0)
+                    Parameters = @{ WeekdayPagerEndTime = [System.TimeSpan]::new(17, 30, 0) }
+                }
+                @{
+                    PropertyName = 'WeekdayPagerStartTime'
+                    PropertyValue = [System.TimeSpan]::new(8, 30, 0)
+                    Parameters = @{ WeekdayPagerStartTime = [System.TimeSpan]::new(8, 30, 0) }
+                }
+            ) {
+                # Reset counter
+                $script:mockJobServer.MockOperatorMethodCreateCalled = 0
+
+                # Create parameters hash with base parameters
+                $testParameters = @{
+                    Force = $true
+                    ServerObject = $script:mockServerObject
+                    Name = "TestOperator_$PropertyName"
+                    PassThru = $true
+                }
+
+                # Add the specific property being tested
+                $testParameters += $Parameters
+
+                $result = New-SqlDscAgentOperator @testParameters
+
+                # Verify the operator was created
+                $script:mockJobServer.MockOperatorMethodCreateCalled | Should -Be 1
+
+                # Verify the property was set correctly
+                $result.$PropertyName | Should -Be $PropertyValue
+            }
+        }
+
+        Context 'When creating operator with multiple properties' {
+            It 'Should create operator with all properties set correctly' {
+                # Reset counter
+                $script:mockJobServer.MockOperatorMethodCreateCalled = 0
+
+                $testParameters = @{
+                    Force = $true
+                    ServerObject = $script:mockServerObject
+                    Name = 'CompleteTestOperator'
+                    EmailAddress = 'admin@contoso.com'
+                    CategoryName = 'DatabaseAdmins'
+                    NetSendAddress = 'SQLSERVER01'
+                    PagerAddress = '555-999-8888'
+                    PagerDays = [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::AllDays
+                    SaturdayPagerStartTime = [System.TimeSpan]::new(8, 0, 0)
+                    SaturdayPagerEndTime = [System.TimeSpan]::new(18, 0, 0)
+                    SundayPagerStartTime = [System.TimeSpan]::new(9, 0, 0)
+                    SundayPagerEndTime = [System.TimeSpan]::new(17, 0, 0)
+                    WeekdayPagerStartTime = [System.TimeSpan]::new(8, 0, 0)
+                    WeekdayPagerEndTime = [System.TimeSpan]::new(17, 0, 0)
+                    PassThru = $true
+                }
+
+                $result = New-SqlDscAgentOperator @testParameters
+
+                # Verify the operator was created
+                $script:mockJobServer.MockOperatorMethodCreateCalled | Should -Be 1
+
+                # Verify all properties were set correctly
+                $result.Name | Should -Be 'CompleteTestOperator'
+                $result.EmailAddress | Should -Be 'admin@contoso.com'
+                $result.CategoryName | Should -Be 'DatabaseAdmins'
+                $result.NetSendAddress | Should -Be 'SQLSERVER01'
+                $result.PagerAddress | Should -Be '555-999-8888'
+                $result.PagerDays | Should -Be ([Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::AllDays)
+                $result.SaturdayPagerStartTime | Should -Be ([System.TimeSpan]::new(8, 0, 0))
+                $result.SaturdayPagerEndTime | Should -Be ([System.TimeSpan]::new(18, 0, 0))
+                $result.SundayPagerStartTime | Should -Be ([System.TimeSpan]::new(9, 0, 0))
+                $result.SundayPagerEndTime | Should -Be ([System.TimeSpan]::new(17, 0, 0))
+                $result.WeekdayPagerStartTime | Should -Be ([System.TimeSpan]::new(8, 0, 0))
+                $result.WeekdayPagerEndTime | Should -Be ([System.TimeSpan]::new(17, 0, 0))
+            }
+        }
     }
 
     Context 'When operator already exists' {
