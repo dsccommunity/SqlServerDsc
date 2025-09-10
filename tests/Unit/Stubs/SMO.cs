@@ -1610,14 +1610,14 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
     //  Set-SqlDscAgentOperator.Tests.ps1
     public enum WeekDays
     {
+        Sunday = 1,
         Monday = 2,
         Tuesday = 4,
         Wednesday = 8,
         Thursday = 16,
         Friday = 32,
-        Saturday = 64,
-        Sunday = 1,
         Weekdays = 62,
+        Saturday = 64,
         WeekEnds = 65,
         EveryDay = 127
     }
@@ -1826,28 +1826,28 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
         public Microsoft.SqlServer.Management.Smo.Agent.JobServer Parent { get; set; }
 
         // Method
-        public void Create() 
-        { 
+        public void Create()
+        {
             if (this.Parent != null)
             {
                 this.Parent.MockOperatorMethodCreateCalled++;
             }
-            
+
             // Mock failure for specific operator name used in testing
             if (this.Name == "MockFailMethodCreateOperator")
             {
                 throw new System.Exception("Simulated Create() method failure for testing purposes.");
             }
         }
-        public void Drop() 
-        { 
+        public void Drop()
+        {
             if (this.Parent != null)
             {
                 this.Parent.MockOperatorMethodDropCalled++;
             }
         }
-        public void Alter() 
-        { 
+        public void Alter()
+        {
             if (this.Parent != null)
             {
                 this.Parent.MockOperatorMethodAlterCalled++;

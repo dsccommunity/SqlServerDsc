@@ -181,8 +181,8 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
                 }
                 @{
                     PropertyName = 'PagerDays'
-                    PropertyValue = [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Weekdays
-                    Parameters = @{ PagerDays = [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Weekdays }
+                    PropertyValue = 'Weekdays'
+                    Parameters = @{ PagerDays = 'Weekdays' }
                 }
                 @{
                     PropertyName = 'SaturdayPagerEndTime'
@@ -252,7 +252,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
                     CategoryName = 'DatabaseAdmins'
                     NetSendAddress = 'SQLSERVER01'
                     PagerAddress = '555-999-8888'
-                    PagerDays = [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::AllDays
+                    PagerDays = 'EveryDay'
                     SaturdayPagerStartTime = [System.TimeSpan]::new(8, 0, 0)
                     SaturdayPagerEndTime = [System.TimeSpan]::new(18, 0, 0)
                     SundayPagerStartTime = [System.TimeSpan]::new(9, 0, 0)
@@ -273,7 +273,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
                 $result.CategoryName | Should -Be 'DatabaseAdmins'
                 $result.NetSendAddress | Should -Be 'SQLSERVER01'
                 $result.PagerAddress | Should -Be '555-999-8888'
-                $result.PagerDays | Should -Be ([Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::AllDays)
+                $result.PagerDays | Should -Be 'EveryDay'
                 $result.SaturdayPagerStartTime | Should -Be ([System.TimeSpan]::new(8, 0, 0))
                 $result.SaturdayPagerEndTime | Should -Be ([System.TimeSpan]::new(18, 0, 0))
                 $result.SundayPagerStartTime | Should -Be ([System.TimeSpan]::new(9, 0, 0))
