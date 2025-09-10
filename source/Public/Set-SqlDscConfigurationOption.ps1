@@ -48,6 +48,9 @@
         Microsoft.SqlServer.Management.Smo.Server
         SQL Server Management Objects (SMO) Server object representing a SQL Server instance.
 
+    .OUTPUTS
+        None.
+
     .NOTES
         This function supports ShouldProcess, allowing the use of -WhatIf and -Confirm parameters.
 #>
