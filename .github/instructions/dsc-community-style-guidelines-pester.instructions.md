@@ -38,7 +38,7 @@ applyTo: "**/*.[Tt]ests.ps1"
 
 ## Syntax Rules
 - PascalCase: `Describe`, `Context`, `It`, `Should`, `BeforeAll`, `BeforeEach`, `AfterAll`, `AfterEach`
-- Prefer `-BeTrue`/`-BeFalse` over `-Be $true`/`-Be $false`
+- Use `-BeTrue`/`-BeFalse` never `-Be $true`/`-Be $false`
 - Never use `Assert-MockCalled`, use `Should -Invoke` instead
 - No `Should -Not -Throw` - invoke commands directly
 - Never add an empty `-MockWith` block
