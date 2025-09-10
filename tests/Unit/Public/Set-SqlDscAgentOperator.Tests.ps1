@@ -213,6 +213,155 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
                 $script:mockMethodAlterCallCount | Should -Be 1
             }
         }
+
+        Context 'When updating operator with different properties' {
+            It 'Should update operator with property <PropertyName> set correctly' -ForEach @(
+                @{
+                    PropertyName = 'EmailAddress'
+                    PropertyValue = 'updated@contoso.com'
+                    Parameters = @{ EmailAddress = 'updated@contoso.com' }
+                }
+                @{
+                    PropertyName = 'CategoryName'
+                    PropertyValue = 'UpdatedCategory'
+                    Parameters = @{ CategoryName = 'UpdatedCategory' }
+                }
+                @{
+                    PropertyName = 'NetSendAddress'
+                    PropertyValue = 'COMPUTER02'
+                    Parameters = @{ NetSendAddress = 'COMPUTER02' }
+                }
+                @{
+                    PropertyName = 'PagerAddress'
+                    PropertyValue = '555-987-6543'
+                    Parameters = @{ PagerAddress = '555-987-6543' }
+                }
+                @{
+                    PropertyName = 'PagerDays'
+                    PropertyValue = [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Saturday -bor [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Sunday
+                    Parameters = @{ PagerDays = [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Saturday -bor [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Sunday }
+                }
+                @{
+                    PropertyName = 'SaturdayPagerEndTime'
+                    PropertyValue = [System.TimeSpan]::new(20, 0, 0)
+                    Parameters = @{ SaturdayPagerEndTime = [System.TimeSpan]::new(20, 0, 0) }
+                }
+                @{
+                    PropertyName = 'SaturdayPagerStartTime'
+                    PropertyValue = [System.TimeSpan]::new(9, 0, 0)
+                    Parameters = @{ SaturdayPagerStartTime = [System.TimeSpan]::new(9, 0, 0) }
+                }
+                @{
+                    PropertyName = 'SundayPagerEndTime'
+                    PropertyValue = [System.TimeSpan]::new(19, 0, 0)
+                    Parameters = @{ SundayPagerEndTime = [System.TimeSpan]::new(19, 0, 0) }
+                }
+                @{
+                    PropertyName = 'SundayPagerStartTime'
+                    PropertyValue = [System.TimeSpan]::new(10, 0, 0)
+                    Parameters = @{ SundayPagerStartTime = [System.TimeSpan]::new(10, 0, 0) }
+                }
+                @{
+                    PropertyName = 'WeekdayPagerEndTime'
+                    PropertyValue = [System.TimeSpan]::new(18, 30, 0)
+                    Parameters = @{ WeekdayPagerEndTime = [System.TimeSpan]::new(18, 30, 0) }
+                }
+                @{
+                    PropertyName = 'WeekdayPagerStartTime'
+                    PropertyValue = [System.TimeSpan]::new(7, 30, 0)
+                    Parameters = @{ WeekdayPagerStartTime = [System.TimeSpan]::new(7, 30, 0) }
+                }
+            ) {
+                # Reset counter and set initial values
+                $script:mockMethodAlterCallCount = 0
+                
+                # Set different initial values to ensure the property is actually being updated
+                switch ($PropertyName) {
+                    'EmailAddress' { $script:mockOperator.EmailAddress = 'old@contoso.com' }
+                    'CategoryName' { $script:mockOperator.CategoryName = 'OldCategory' }
+                    'NetSendAddress' { $script:mockOperator.NetSendAddress = 'OLDCOMPUTER' }
+                    'PagerAddress' { $script:mockOperator.PagerAddress = '555-000-0000' }
+                    'PagerDays' { $script:mockOperator.PagerDays = [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Weekdays }
+                    'SaturdayPagerEndTime' { $script:mockOperator.SaturdayPagerEndTime = [System.TimeSpan]::new(17, 0, 0) }
+                    'SaturdayPagerStartTime' { $script:mockOperator.SaturdayPagerStartTime = [System.TimeSpan]::new(8, 0, 0) }
+                    'SundayPagerEndTime' { $script:mockOperator.SundayPagerEndTime = [System.TimeSpan]::new(16, 0, 0) }
+                    'SundayPagerStartTime' { $script:mockOperator.SundayPagerStartTime = [System.TimeSpan]::new(9, 0, 0) }
+                    'WeekdayPagerEndTime' { $script:mockOperator.WeekdayPagerEndTime = [System.TimeSpan]::new(17, 0, 0) }
+                    'WeekdayPagerStartTime' { $script:mockOperator.WeekdayPagerStartTime = [System.TimeSpan]::new(8, 0, 0) }
+                }
+
+                # Create parameters hash with base parameters
+                $testParameters = @{
+                    Force = $true
+                    ServerObject = $script:mockServerObject
+                    Name = 'TestOperator'
+                }
+
+                # Add the specific property being tested
+                $testParameters += $Parameters
+
+                Set-SqlDscAgentOperator @testParameters
+
+                # Verify the operator was updated
+                $script:mockMethodAlterCallCount | Should -Be 1
+
+                # Verify the property was set correctly
+                $script:mockOperator.$PropertyName | Should -Be $PropertyValue
+            }
+        }
+
+        Context 'When updating operator with multiple properties' {
+            It 'Should update operator with all properties set correctly' {
+                # Reset counter and set initial values
+                $script:mockMethodAlterCallCount = 0
+                $script:mockOperator.EmailAddress = 'old@contoso.com'
+                $script:mockOperator.CategoryName = 'OldCategory'
+                $script:mockOperator.NetSendAddress = 'OLDCOMPUTER'
+                $script:mockOperator.PagerAddress = '555-000-0000'
+                $script:mockOperator.PagerDays = [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Weekdays
+                $script:mockOperator.SaturdayPagerStartTime = [System.TimeSpan]::new(8, 0, 0)
+                $script:mockOperator.SaturdayPagerEndTime = [System.TimeSpan]::new(17, 0, 0)
+                $script:mockOperator.SundayPagerStartTime = [System.TimeSpan]::new(9, 0, 0)
+                $script:mockOperator.SundayPagerEndTime = [System.TimeSpan]::new(16, 0, 0)
+                $script:mockOperator.WeekdayPagerStartTime = [System.TimeSpan]::new(8, 0, 0)
+                $script:mockOperator.WeekdayPagerEndTime = [System.TimeSpan]::new(17, 0, 0)
+
+                $testParameters = @{
+                    Force = $true
+                    ServerObject = $script:mockServerObject
+                    Name = 'TestOperator'
+                    EmailAddress = 'admin@contoso.com'
+                    CategoryName = 'DatabaseAdmins'
+                    NetSendAddress = 'SQLSERVER01'
+                    PagerAddress = '555-999-8888'
+                    PagerDays = [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::AllDays
+                    SaturdayPagerStartTime = [System.TimeSpan]::new(10, 0, 0)
+                    SaturdayPagerEndTime = [System.TimeSpan]::new(20, 0, 0)
+                    SundayPagerStartTime = [System.TimeSpan]::new(11, 0, 0)
+                    SundayPagerEndTime = [System.TimeSpan]::new(19, 0, 0)
+                    WeekdayPagerStartTime = [System.TimeSpan]::new(7, 0, 0)
+                    WeekdayPagerEndTime = [System.TimeSpan]::new(18, 0, 0)
+                }
+
+                Set-SqlDscAgentOperator @testParameters
+
+                # Verify the operator was updated
+                $script:mockMethodAlterCallCount | Should -Be 1
+
+                # Verify all properties were set correctly
+                $script:mockOperator.EmailAddress | Should -Be 'admin@contoso.com'
+                $script:mockOperator.CategoryName | Should -Be 'DatabaseAdmins'
+                $script:mockOperator.NetSendAddress | Should -Be 'SQLSERVER01'
+                $script:mockOperator.PagerAddress | Should -Be '555-999-8888'
+                $script:mockOperator.PagerDays | Should -Be ([Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::AllDays)
+                $script:mockOperator.SaturdayPagerStartTime | Should -Be ([System.TimeSpan]::new(10, 0, 0))
+                $script:mockOperator.SaturdayPagerEndTime | Should -Be ([System.TimeSpan]::new(20, 0, 0))
+                $script:mockOperator.SundayPagerStartTime | Should -Be ([System.TimeSpan]::new(11, 0, 0))
+                $script:mockOperator.SundayPagerEndTime | Should -Be ([System.TimeSpan]::new(19, 0, 0))
+                $script:mockOperator.WeekdayPagerStartTime | Should -Be ([System.TimeSpan]::new(7, 0, 0))
+                $script:mockOperator.WeekdayPagerEndTime | Should -Be ([System.TimeSpan]::new(18, 0, 0))
+            }
+        }
     }
 
     Context 'When updating operator using ByObject parameter set' {
@@ -258,6 +407,101 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
 
                 $script:mockOperator.EmailAddress | Should -Be 'new@contoso.com'
                 $script:mockMethodAlterCallCount | Should -Be 1
+            }
+        }
+
+        Context 'When updating operator with different properties using ByObject parameter set' {
+            It 'Should update operator with property <PropertyName> set correctly using operator object' -ForEach @(
+                @{
+                    PropertyName = 'EmailAddress'
+                    PropertyValue = 'updated@contoso.com'
+                    Parameters = @{ EmailAddress = 'updated@contoso.com' }
+                }
+                @{
+                    PropertyName = 'CategoryName'
+                    PropertyValue = 'UpdatedCategory'
+                    Parameters = @{ CategoryName = 'UpdatedCategory' }
+                }
+                @{
+                    PropertyName = 'NetSendAddress'
+                    PropertyValue = 'COMPUTER02'
+                    Parameters = @{ NetSendAddress = 'COMPUTER02' }
+                }
+                @{
+                    PropertyName = 'PagerAddress'
+                    PropertyValue = '555-987-6543'
+                    Parameters = @{ PagerAddress = '555-987-6543' }
+                }
+                @{
+                    PropertyName = 'PagerDays'
+                    PropertyValue = [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Saturday -bor [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Sunday
+                    Parameters = @{ PagerDays = [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Saturday -bor [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Sunday }
+                }
+                @{
+                    PropertyName = 'SaturdayPagerEndTime'
+                    PropertyValue = [System.TimeSpan]::new(20, 0, 0)
+                    Parameters = @{ SaturdayPagerEndTime = [System.TimeSpan]::new(20, 0, 0) }
+                }
+                @{
+                    PropertyName = 'SaturdayPagerStartTime'
+                    PropertyValue = [System.TimeSpan]::new(9, 0, 0)
+                    Parameters = @{ SaturdayPagerStartTime = [System.TimeSpan]::new(9, 0, 0) }
+                }
+                @{
+                    PropertyName = 'SundayPagerEndTime'
+                    PropertyValue = [System.TimeSpan]::new(19, 0, 0)
+                    Parameters = @{ SundayPagerEndTime = [System.TimeSpan]::new(19, 0, 0) }
+                }
+                @{
+                    PropertyName = 'SundayPagerStartTime'
+                    PropertyValue = [System.TimeSpan]::new(10, 0, 0)
+                    Parameters = @{ SundayPagerStartTime = [System.TimeSpan]::new(10, 0, 0) }
+                }
+                @{
+                    PropertyName = 'WeekdayPagerEndTime'
+                    PropertyValue = [System.TimeSpan]::new(18, 30, 0)
+                    Parameters = @{ WeekdayPagerEndTime = [System.TimeSpan]::new(18, 30, 0) }
+                }
+                @{
+                    PropertyName = 'WeekdayPagerStartTime'
+                    PropertyValue = [System.TimeSpan]::new(7, 30, 0)
+                    Parameters = @{ WeekdayPagerStartTime = [System.TimeSpan]::new(7, 30, 0) }
+                }
+            ) {
+                # Reset counter and set initial values
+                $script:mockMethodAlterCallCount = 0
+                
+                # Set different initial values to ensure the property is actually being updated
+                switch ($PropertyName) {
+                    'EmailAddress' { $script:mockOperator.EmailAddress = 'old@contoso.com' }
+                    'CategoryName' { $script:mockOperator.CategoryName = 'OldCategory' }
+                    'NetSendAddress' { $script:mockOperator.NetSendAddress = 'OLDCOMPUTER' }
+                    'PagerAddress' { $script:mockOperator.PagerAddress = '555-000-0000' }
+                    'PagerDays' { $script:mockOperator.PagerDays = [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Weekdays }
+                    'SaturdayPagerEndTime' { $script:mockOperator.SaturdayPagerEndTime = [System.TimeSpan]::new(17, 0, 0) }
+                    'SaturdayPagerStartTime' { $script:mockOperator.SaturdayPagerStartTime = [System.TimeSpan]::new(8, 0, 0) }
+                    'SundayPagerEndTime' { $script:mockOperator.SundayPagerEndTime = [System.TimeSpan]::new(16, 0, 0) }
+                    'SundayPagerStartTime' { $script:mockOperator.SundayPagerStartTime = [System.TimeSpan]::new(9, 0, 0) }
+                    'WeekdayPagerEndTime' { $script:mockOperator.WeekdayPagerEndTime = [System.TimeSpan]::new(17, 0, 0) }
+                    'WeekdayPagerStartTime' { $script:mockOperator.WeekdayPagerStartTime = [System.TimeSpan]::new(8, 0, 0) }
+                }
+
+                # Create parameters hash with base parameters
+                $testParameters = @{
+                    Force = $true
+                    OperatorObject = $script:mockOperator
+                }
+
+                # Add the specific property being tested
+                $testParameters += $Parameters
+
+                Set-SqlDscAgentOperator @testParameters
+
+                # Verify the operator was updated
+                $script:mockMethodAlterCallCount | Should -Be 1
+
+                # Verify the property was set correctly
+                $script:mockOperator.$PropertyName | Should -Be $PropertyValue
             }
         }
     }
