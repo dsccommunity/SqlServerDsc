@@ -295,6 +295,7 @@ stages:
                   'tests/Integration/Commands/Get-SqlDscLogin.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscConfigurationOption.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscConfigurationOption.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Test-SqlDscConfigurationOption.Integration.Tests.ps1'
                   'tests/Integration/Commands/Disable-SqlDscLogin.Integration.Tests.ps1'
                   'tests/Integration/Commands/Enable-SqlDscLogin.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscIsLoginEnabled.Integration.Tests.ps1'
