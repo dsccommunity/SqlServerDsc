@@ -88,4 +88,133 @@ Describe 'Disable-SqlDscAgentOperator' -Tag 'Public' {
             $parameterInfo.ParameterSets['ServerObject'].IsMandatory | Should -BeTrue
         }
     }
+
+    Context 'When disabling an operator using ServerObject parameter set' {
+        BeforeAll {
+            # Mock operator object
+            $script:mockOperator = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
+            $script:mockOperator.Name = 'TestOperator'
+            $script:mockOperator.EmailAddress = 'test@contoso.com'
+            $script:mockOperator.Enabled = $true
+
+            # Mock parent objects for verbose messages
+            $script:mockJobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
+            $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
+            $script:mockServerObject.InstanceName = 'TestInstance'
+            $script:mockJobServer.Parent = $script:mockServerObject
+            $script:mockOperator.Parent = $script:mockJobServer
+
+            # Mock the Get-AgentOperatorObject function
+            Mock -CommandName Get-AgentOperatorObject -MockWith {
+                return $script:mockOperator
+            }
+        }
+
+        It 'Should disable the operator successfully' {
+            Disable-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'TestOperator' -Force
+
+            $script:mockOperator.Enabled | Should -BeFalse
+            Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should disable the operator with Refresh parameter' {
+            Disable-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'TestOperator' -Refresh -Force
+
+            $script:mockOperator.Enabled | Should -BeFalse
+            Should -Invoke -CommandName Get-AgentOperatorObject -ParameterFilter {
+                $Refresh -eq $true
+            } -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should use pipeline input for ServerObject' {
+            $script:mockServerObject | Disable-SqlDscAgentOperator -Name 'TestOperator' -Force
+
+            $script:mockOperator.Enabled | Should -BeFalse
+            Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should throw when operator cannot be found' {
+            Mock -CommandName Get-AgentOperatorObject -MockWith {
+                throw 'Operator not found'
+            }
+
+            { Disable-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'NonExistentOperator' -Force } |
+                Should -Throw -ExpectedMessage 'Operator not found'
+        }
+
+        It 'Should support WhatIf' {
+            $script:mockOperator.Enabled = $true
+
+            Disable-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'TestOperator' -WhatIf
+
+            $script:mockOperator.Enabled | Should -BeTrue
+            Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When disabling an operator using OperatorObject parameter set' {
+        BeforeAll {
+            # Mock operator object
+            $script:mockOperator = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
+            $script:mockOperator.Name = 'TestOperator'
+            $script:mockOperator.EmailAddress = 'test@contoso.com'
+            $script:mockOperator.Enabled = $true
+
+            # Mock parent objects for verbose messages
+            $script:mockJobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
+            $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
+            $script:mockServerObject.InstanceName = 'TestInstance'
+            $script:mockJobServer.Parent = $script:mockServerObject
+            $script:mockOperator.Parent = $script:mockJobServer
+        }
+
+        It 'Should disable the operator successfully using OperatorObject' {
+            Disable-SqlDscAgentOperator -OperatorObject $script:mockOperator -Force
+
+            $script:mockOperator.Enabled | Should -BeFalse
+        }
+
+        It 'Should use pipeline input for OperatorObject' {
+            $script:mockOperator.Enabled = $true
+
+            $script:mockOperator | Disable-SqlDscAgentOperator -Force
+
+            $script:mockOperator.Enabled | Should -BeFalse
+        }
+
+        It 'Should support WhatIf with OperatorObject' {
+            $script:mockOperator.Enabled = $true
+
+            Disable-SqlDscAgentOperator -OperatorObject $script:mockOperator -WhatIf
+
+            $script:mockOperator.Enabled | Should -BeTrue
+        }
+    }
+
+    Context 'When disabling an operator fails' {
+        BeforeAll {
+            # Mock operator object that will fail to alter
+            $script:mockOperator = [Microsoft.SqlServer.Management.Smo.Agent.Operator]::CreateTypeInstance()
+            $script:mockOperator.Name = 'TestOperator'
+            $script:mockOperator.EmailAddress = 'test@contoso.com'
+            $script:mockOperator.Enabled = $true
+
+            # Mock parent objects for verbose messages
+            $script:mockJobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
+            $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
+            $script:mockServerObject.InstanceName = 'TestInstance'
+            $script:mockJobServer.Parent = $script:mockServerObject
+            $script:mockOperator.Parent = $script:mockJobServer
+
+            # Add a method to throw exception when Alter() is called
+            $script:mockOperator | Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
+                throw 'Failed to alter operator'
+            } -Force
+        }
+
+        It 'Should throw terminating error when disabling fails' {
+            { Disable-SqlDscAgentOperator -OperatorObject $script:mockOperator -Force } |
+                Should -Throw -ExpectedMessage "*Failed to disable SQL Agent Operator 'TestOperator'*"
+        }
+    }
 }
