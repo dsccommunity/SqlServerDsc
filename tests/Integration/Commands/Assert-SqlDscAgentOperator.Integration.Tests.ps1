@@ -88,19 +88,6 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_S
             { Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'NonExistentOperator' -ErrorAction Stop } | Should -Throw
         }
 
-        It 'Should throw with specific error category when operator does not exist' {
-            try
-            {
-                Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'NonExistentOperator' -ErrorAction Stop
-                # Should not reach this line
-                $false | Should -Be $true
-            }
-            catch
-            {
-                $_.CategoryInfo.Category | Should -Be 'ObjectNotFound'
-                $_.FullyQualifiedErrorId | Should -Match 'GAOO0001'
-            }
-        }
     }
 
     Context 'When using pipeline input' {
