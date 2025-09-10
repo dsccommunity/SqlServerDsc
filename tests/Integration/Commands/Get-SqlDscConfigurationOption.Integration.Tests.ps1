@@ -89,7 +89,7 @@ Describe 'Get-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
             $result.ConfigValue | Should -Be 0
             $result.Minimum | Should -Be 0
             $result.Maximum | Should -Be 1
-            $result.IsDynamic | Should -Be $true
+            $result.IsDynamic | Should -BeTrue
         }
 
         It 'Should throw an error when the configuration option does not exist' {
