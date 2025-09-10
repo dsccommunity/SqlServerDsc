@@ -314,10 +314,10 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
             # Test that the function handles exceptions gracefully
             $ErrorActionPreference = 'SilentlyContinue'
             $Global:Error.Clear()
-            
+
             # This should not throw, but should generate an error record via Write-Error
             Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -OptionValue 4 -Confirm:$false -ErrorAction SilentlyContinue
-            
+
             # Should -Invoke doesn't always work with Write-Error, so check error was generated another way
             Should -Invoke -CommandName Write-Error -Times 1 -Exactly
         }
@@ -474,6 +474,161 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
                 $script:localizedData.ConfigurationOption_Set_Failed | Should -Be "Failed to set configuration option '{0}' to '{1}'. {2}"
                 $script:localizedData.ConfigurationOption_Set_Success | Should -Be "Successfully set configuration option '{0}' to '{1}' on server '{2}'."
             }
+        }
+    }
+
+    Context 'When testing argument completers through PowerShell tab completion system' {
+        BeforeAll {
+            # Import module to ensure tab completion is registered
+            Import-Module -Name $script:dscModuleName -Force
+
+            # Create mock server object for testing
+            $script:mockServerForTabCompletion = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
+            $script:mockServerForTabCompletion.Name = 'TestServer'
+
+            # Create test configuration properties
+            $mockConfigProperty1 = [Microsoft.SqlServer.Management.Smo.ConfigProperty]::CreateTypeInstance()
+            $mockConfigProperty1.DisplayName = 'max server memory (MB)'
+            $mockConfigProperty1.ConfigValue = 2048
+            $mockConfigProperty1.RunValue = 2048
+            $mockConfigProperty1.Minimum = 0
+            $mockConfigProperty1.Maximum = 2147483647
+
+            $mockConfigProperty2 = [Microsoft.SqlServer.Management.Smo.ConfigProperty]::CreateTypeInstance()
+            $mockConfigProperty2.DisplayName = 'cost threshold for parallelism'
+            $mockConfigProperty2.ConfigValue = 5
+            $mockConfigProperty2.RunValue = 5
+            $mockConfigProperty2.Minimum = 0
+            $mockConfigProperty2.Maximum = 32767
+
+            # Create configuration properties collection
+            $mockConfigurationProperties = [Microsoft.SqlServer.Management.Smo.ConfigPropertyCollection]::CreateTypeInstance()
+            $mockConfigurationProperties.Add($mockConfigProperty1)
+            $mockConfigurationProperties.Add($mockConfigProperty2)
+
+            # Create configuration object
+            $mockConfiguration = [Microsoft.SqlServer.Management.Smo.Configuration]::CreateTypeInstance()
+            $mockConfiguration.Properties = $mockConfigurationProperties
+
+            $script:mockServerForTabCompletion.Configuration = $mockConfiguration
+
+            # Store the server object in a script variable that can be accessed by tab completion
+            $global:TestServerObject = $script:mockServerForTabCompletion
+        }
+
+        AfterAll {
+            # Clean up global variable
+            if (Get-Variable -Name 'TestServerObject' -Scope Global -ErrorAction SilentlyContinue) {
+                Remove-Variable -Name 'TestServerObject' -Scope Global -Force
+            }
+        }
+
+        It 'Should provide Name parameter completions through TabExpansion2' {
+            # This actually exercises the argument completer code through PowerShell's tab completion system
+            $inputScript = 'Set-SqlDscConfigurationOption -ServerObject $global:TestServerObject -Name max'
+            $result = TabExpansion2 -inputScript $inputScript -cursorColumn $inputScript.Length
+
+            $result | Should -Not -BeNullOrEmpty
+            $result.CompletionMatches | Should -Not -BeNullOrEmpty
+
+            # Should find the max server memory option
+            $maxMemoryMatch = $result.CompletionMatches | Where-Object {
+                $_.CompletionText -eq "'max server memory (MB)'"
+            }
+            $maxMemoryMatch | Should -Not -BeNullOrEmpty
+            $maxMemoryMatch.ToolTip | Should -Match "Current: 2048"
+        }
+
+        It 'Should provide OptionValue parameter completions through TabExpansion2' {
+            # Test OptionValue completion
+            $inputScript = 'Set-SqlDscConfigurationOption -ServerObject $global:TestServerObject -Name "max server memory (MB)" -OptionValue '
+            $result = TabExpansion2 -inputScript $inputScript -cursorColumn $inputScript.Length
+
+            $result | Should -Not -BeNullOrEmpty
+            $result.CompletionMatches | Should -Not -BeNullOrEmpty
+
+            # Should find current value and other suggestions
+            $currentValueMatch = $result.CompletionMatches | Where-Object {
+                $_.CompletionText -eq '2048' -and $_.ToolTip -match "Current ConfigValue"
+            }
+            $currentValueMatch | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Should handle partial Name completions through TabExpansion2' {
+            $inputScript = 'Set-SqlDscConfigurationOption -ServerObject $global:TestServerObject -Name cost'
+            $result = TabExpansion2 -inputScript $inputScript -cursorColumn $inputScript.Length
+
+            $result.CompletionMatches | Should -HaveCount 1
+            $result.CompletionMatches[0].CompletionText | Should -Be "'cost threshold for parallelism'"
+        }
+
+        It 'Should execute Name argument completer code when retrieving command metadata' {
+            # This approach actually executes the argument completer code during command introspection
+            $command = Get-Command -Name 'Set-SqlDscConfigurationOption'
+
+            # Create a mock parameter set to trigger argument completer execution
+            $parameterInfo = $command.Parameters['Name']
+            $completerAttribute = $parameterInfo.Attributes | Where-Object { $_ -is [System.Management.Automation.ArgumentCompleterAttribute] }
+
+            # This executes the completer in the module's context
+            $completions = & $completerAttribute.ScriptBlock 'Set-SqlDscConfigurationOption' 'Name' 'max' $null @{
+                ServerObject = $script:mockServerForTabCompletion
+            }
+
+            $completions | Should -Not -BeNullOrEmpty
+            $completions[0].CompletionText | Should -Be "'max server memory (MB)'"
+        }
+
+        It 'Should execute OptionValue argument completer code when retrieving command metadata' {
+            $command = Get-Command -Name 'Set-SqlDscConfigurationOption'
+            $parameterInfo = $command.Parameters['OptionValue']
+            $completerAttribute = $parameterInfo.Attributes | Where-Object { $_ -is [System.Management.Automation.ArgumentCompleterAttribute] }
+
+            $completions = & $completerAttribute.ScriptBlock 'Set-SqlDscConfigurationOption' 'OptionValue' '' $null @{
+                ServerObject = $script:mockServerForTabCompletion
+                Name = 'max server memory (MB)'
+            }
+
+            $completions | Should -Not -BeNullOrEmpty
+            $completions | Where-Object { $_.ToolTip -match "Current ConfigValue: 2048" } | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Should handle tab completion errors gracefully' {
+            # Create a server object that will cause an error
+            $badServer = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
+            $badServer.Name = 'BadServer'
+            Add-Member -InputObject $badServer -MemberType ScriptProperty -Name 'Configuration' -Value {
+                throw 'Connection failed'
+            } -Force
+            $global:BadTestServerObject = $badServer
+
+            try {
+                $inputScript = 'Set-SqlDscConfigurationOption -ServerObject $global:BadTestServerObject -Name test'
+                $result = TabExpansion2 -inputScript $inputScript -cursorColumn $inputScript.Length
+
+                <#
+                    Should not throw an error and should return empty from argument completer, but then
+                    TabExpansion2 itself returns some default completions (like filesystem paths).
+                #>
+                $result | Should -BeOfType ([System.Management.Automation.CommandCompletion])
+                $result.CompletionMatches.ListItemText | Should -Be 'tests'
+            }
+            finally {
+                Remove-Variable -Name 'BadTestServerObject' -Scope Global -Force -ErrorAction SilentlyContinue
+            }
+        }
+
+        It 'Should handle missing ServerObject in tab completion gracefully' {
+            # Test tab completion without a ServerObject
+            $inputScript = 'Set-SqlDscConfigurationOption -Name test'
+            $result = TabExpansion2 -inputScript $inputScript -cursorColumn $inputScript.Length
+
+            <#
+                Should not throw an error and should return empty from argument completer, but then
+                TabExpansion2 itself returns some default completions (like filesystem paths).
+            #>
+            $result | Should -BeOfType ([System.Management.Automation.CommandCompletion])
+            $result.CompletionMatches.ListItemText | Should -Be 'tests'
         }
     }
 }
