@@ -51,7 +51,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
         # Restore the original Agent XPs value
         if ($script:originalAgentXPsValue)
         {
-            Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -OptionValue $script:originalAgentXPsValue.RunValue -Force -ErrorAction 'SilentlyContinue'
+            Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value $script:originalAgentXPsValue.RunValue -Force -ErrorAction 'SilentlyContinue'
         }
 
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
@@ -63,7 +63,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
     Context 'When setting Agent XPs configuration option' {
         It 'Should set Agent XPs from 0 to 1 and verify the change' {
             # First, ensure Agent XPs is set to 0
-            Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -OptionValue 0 -Force -ErrorAction 'Stop'
+            Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value 0 -Force -ErrorAction 'Stop'
 
             # Verify it's set to 0
             $result = Get-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs'
@@ -71,7 +71,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
             $result.ConfigValue | Should -Be 0
 
             # Now set it to 1
-            Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -OptionValue 1 -Force -ErrorAction 'Stop'
+            Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value 1 -Force -ErrorAction 'Stop'
 
             # Verify it's set to 1
             $result = Get-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs'
@@ -81,7 +81,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
 
         It 'Should set Agent XPs from 1 back to 0 and verify the change' {
             # Ensure Agent XPs is set to 1 first
-            Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -OptionValue 1 -Force -ErrorAction 'Stop'
+            Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value 1 -Force -ErrorAction 'Stop'
 
             # Verify it's set to 1
             $result = Get-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs'
@@ -89,7 +89,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
             $result.ConfigValue | Should -Be 1
 
             # Now set it back to 0
-            Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -OptionValue 0 -Force -ErrorAction 'Stop'
+            Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value 0 -Force -ErrorAction 'Stop'
 
             # Verify it's set to 0
             $result = Get-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs'
@@ -98,17 +98,17 @@ Describe 'Set-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
         }
 
         It 'Should throw an error when setting an invalid value for Agent XPs' {
-            { Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -OptionValue 2 -Force -ErrorAction 'Stop' } |
+            { Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value 2 -Force -ErrorAction 'Stop' } |
                 Should -Throw
         }
 
         It 'Should throw an error when setting a negative value for Agent XPs' {
-            { Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -OptionValue -1 -Force -ErrorAction 'Stop' } |
+            { Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value -1 -Force -ErrorAction 'Stop' } |
                 Should -Throw
         }
 
         It 'Should throw an error when the configuration option does not exist' {
-            { Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'NonExistentOption' -OptionValue 1 -Force -ErrorAction 'Stop' } |
+            { Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'NonExistentOption' -Value 1 -Force -ErrorAction 'Stop' } |
                 Should -Throw
         }
     }
@@ -120,7 +120,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
 
             # Use WhatIf to simulate setting a different value
             $newValue = if ($originalValue.RunValue -eq 0) { 1 } else { 0 }
-            Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -OptionValue $newValue -WhatIf
+            Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value $newValue -WhatIf
 
             # Verify the value hasn't changed
             $currentValue = Get-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs'
@@ -136,7 +136,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
 
             # Set to opposite value using pipeline
             $newValue = if ($originalValue.RunValue -eq 0) { 1 } else { 0 }
-            $script:serverObject | Set-SqlDscConfigurationOption -Name 'Agent XPs' -OptionValue $newValue -Force -ErrorAction 'Stop'
+            $script:serverObject | Set-SqlDscConfigurationOption -Name 'Agent XPs' -Value $newValue -Force -ErrorAction 'Stop'
 
             # Verify the change
             $result = Get-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs'
@@ -144,7 +144,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
             $result.ConfigValue | Should -Be $newValue
 
             # Set back to original value
-            $script:serverObject | Set-SqlDscConfigurationOption -Name 'Agent XPs' -OptionValue $originalValue.RunValue -Force -ErrorAction 'Stop'
+            $script:serverObject | Set-SqlDscConfigurationOption -Name 'Agent XPs' -Value $originalValue.RunValue -Force -ErrorAction 'Stop'
         }
     }
 }

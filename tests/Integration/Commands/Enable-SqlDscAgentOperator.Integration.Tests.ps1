@@ -53,12 +53,12 @@ Describe 'Enable-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_S
         $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:sqlServerInstance -Credential $mockSqlAdministratorCredential -ErrorAction 'Stop'
 
         # Enable Agent XPs component for SQL Server Agent functionality
-        Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -OptionValue 1 -Force -Verbose -ErrorAction 'Stop'
+        Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value 1 -Force -Verbose -ErrorAction 'Stop'
     }
 
     AfterAll {
         # Disable Agent XPs component to clean up test environment
-        Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -OptionValue 0 -Force -Verbose -ErrorAction 'Stop'
+        Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value 0 -Force -Verbose -ErrorAction 'Stop'
 
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
 

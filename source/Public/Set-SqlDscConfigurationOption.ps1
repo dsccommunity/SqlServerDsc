@@ -13,7 +13,7 @@
     .PARAMETER Name
         Specifies the name of the configuration option to set.
 
-    .PARAMETER OptionValue
+    .PARAMETER Value
         Specifies the value to set for the configuration option.
 
     .PARAMETER Force
@@ -22,25 +22,25 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $serverObject | Set-SqlDscConfigurationOption -Name "Agent XPs" -OptionValue 1
+        $serverObject | Set-SqlDscConfigurationOption -Name "Agent XPs" -Value 1
 
         Sets the "Agent XPs" configuration option to enabled (1).
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        Set-SqlDscConfigurationOption -ServerObject $serverObject -Name "cost threshold for parallelism" -OptionValue 50
+        Set-SqlDscConfigurationOption -ServerObject $serverObject -Name "cost threshold for parallelism" -Value 50
 
         Sets the "cost threshold for parallelism" configuration option to 50.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $serverObject | Set-SqlDscConfigurationOption -Name "max degree of parallelism" -OptionValue 4 -WhatIf
+        $serverObject | Set-SqlDscConfigurationOption -Name "max degree of parallelism" -Value 4 -WhatIf
 
         Shows what would happen if the "max degree of parallelism" option was set to 4, without actually making the change.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $serverObject | Set-SqlDscConfigurationOption -Name "cost threshold for parallelism" -OptionValue 25 -Force
+        $serverObject | Set-SqlDscConfigurationOption -Name "cost threshold for parallelism" -Value 25 -Force
 
         Sets the "cost threshold for parallelism" configuration option to 25 without prompting for confirmation.
 
@@ -240,7 +240,7 @@ function Set-SqlDscConfigurationOption
                 }
             })]
         [System.Int32]
-        $OptionValue,
+        $Value,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -279,15 +279,15 @@ function Set-SqlDscConfigurationOption
         }
 
         # Validate that the option value is within the allowed range
-        if ($OptionValue -lt $configurationOption.Minimum -or $OptionValue -gt $configurationOption.Maximum)
+        if ($Value -lt $configurationOption.Minimum -or $Value -gt $configurationOption.Maximum)
         {
-            $invalidValueMessage = $script:localizedData.ConfigurationOption_Set_InvalidValue -f $Name, $OptionValue, $configurationOption.Minimum, $configurationOption.Maximum
+            $invalidValueMessage = $script:localizedData.ConfigurationOption_Set_InvalidValue -f $Name, $Value, $configurationOption.Minimum, $configurationOption.Maximum
 
             $writeErrorParameters = @{
                 Message      = $invalidValueMessage
                 Category     = 'InvalidArgument'
                 ErrorId      = 'SSDCO0002' # cspell: disable-line
-                TargetObject = $OptionValue
+                TargetObject = $Value
             }
 
             Write-Error @writeErrorParameters
@@ -295,8 +295,8 @@ function Set-SqlDscConfigurationOption
         }
 
         # Prepare ShouldProcess messages
-        $descriptionMessage = $script:localizedData.ConfigurationOption_Set_ShouldProcessDescription -f $Name, $OptionValue, $ServerObject.Name
-        $confirmationMessage = $script:localizedData.ConfigurationOption_Set_ShouldProcessConfirmation -f $Name, $OptionValue
+        $descriptionMessage = $script:localizedData.ConfigurationOption_Set_ShouldProcessDescription -f $Name, $Value, $ServerObject.Name
+        $confirmationMessage = $script:localizedData.ConfigurationOption_Set_ShouldProcessConfirmation -f $Name, $Value
         $captionMessage = $script:localizedData.ConfigurationOption_Set_ShouldProcessCaption
 
         if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
@@ -304,16 +304,16 @@ function Set-SqlDscConfigurationOption
             try
             {
                 # Set the new configuration value
-                $configurationOption.ConfigValue = $OptionValue
+                $configurationOption.ConfigValue = $Value
 
                 # Apply the configuration change
                 $ServerObject.Configuration.Alter()
 
-                Write-Information -MessageData ($script:localizedData.ConfigurationOption_Set_Success -f $Name, $OptionValue, $ServerObject.Name)
+                Write-Information -MessageData ($script:localizedData.ConfigurationOption_Set_Success -f $Name, $Value, $ServerObject.Name)
             }
             catch
             {
-                $setConfigurationOptionFailedMessage = $script:localizedData.ConfigurationOption_Set_Failed -f $Name, $OptionValue, $_.Exception.Message
+                $setConfigurationOptionFailedMessage = $script:localizedData.ConfigurationOption_Set_Failed -f $Name, $Value, $_.Exception.Message
 
                 $writeErrorParameters = @{
                     Message      = $setConfigurationOptionFailedMessage

@@ -52,7 +52,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-ServerObject] <Server> [-Name] <string> [-OptionValue] <int> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '[-ServerObject] <Server> [-Name] <string> [-Value] <int> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Set-SqlDscConfigurationOption').ParameterSets |
@@ -77,8 +77,8 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
             $parameterInfo.Attributes.Mandatory | Should -Contain $true
         }
 
-        It 'Should have OptionValue as a mandatory parameter' {
-            $parameterInfo = (Get-Command -Name 'Set-SqlDscConfigurationOption').Parameters['OptionValue']
+        It 'Should have Value as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Set-SqlDscConfigurationOption').Parameters['Value']
             $parameterInfo.Attributes.Mandatory | Should -Contain $true
         }
 
@@ -137,7 +137,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
         }
 
         It 'Should set configuration option value successfully' {
-            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -OptionValue 4 -Confirm:$false
+            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 4 -Confirm:$false
 
             $script:mockConfigurationOption.ConfigValue | Should -Be 4
             Should -Invoke -CommandName Write-Information -Times 1 -Exactly
@@ -148,7 +148,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
             $script:mockAlterCalled = $false
             $script:mockConfiguration | Add-Member -MemberType ScriptMethod -Name 'Alter' -Value { $script:mockAlterCalled = $true } -Force
 
-            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -OptionValue 8 -Confirm:$false
+            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 8 -Confirm:$false
 
             $script:mockAlterCalled | Should -BeTrue
         }
@@ -156,7 +156,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
         It 'Should work with pipeline input' {
             $script:mockConfigurationOption.ConfigValue = 0
 
-            $null = $script:mockServerObject | Set-SqlDscConfigurationOption -Name 'max degree of parallelism' -OptionValue 16 -Confirm:$false
+            $null = $script:mockServerObject | Set-SqlDscConfigurationOption -Name 'max degree of parallelism' -Value 16 -Confirm:$false
 
             $script:mockConfigurationOption.ConfigValue | Should -Be 16
         }
@@ -181,7 +181,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
         }
 
         It 'Should throw error when configuration option does not exist' {
-            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'NonExistentOption' -OptionValue 1 -Confirm:$false
+            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'NonExistentOption' -Value 1 -Confirm:$false
 
             Should -Invoke -CommandName Write-Error -Times 1 -Exactly -ParameterFilter {
                 $Message -match "There is no configuration option with the name 'NonExistentOption'"
@@ -189,7 +189,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
         }
 
         It 'Should use correct error details for missing configuration option' {
-            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'InvalidOption' -OptionValue 1 -Confirm:$false
+            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'InvalidOption' -Value 1 -Confirm:$false
 
             Should -Invoke -CommandName Write-Error -Times 1 -Exactly -ParameterFilter {
                 $Category -eq 'InvalidOperation' -and
@@ -225,7 +225,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
         }
 
         It 'Should throw error when value is below minimum' {
-            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -OptionValue -1 -Confirm:$false
+            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value -1 -Confirm:$false
 
             Should -Invoke -CommandName Write-Error -Times 1 -Exactly -ParameterFilter {
                 $Message -match "The value '-1' for configuration option 'max degree of parallelism' is outside the valid range of 0 to 32767"
@@ -233,7 +233,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
         }
 
         It 'Should throw error when value is above maximum' {
-            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -OptionValue 40000 -Confirm:$false
+            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 40000 -Confirm:$false
 
             Should -Invoke -CommandName Write-Error -Times 1 -Exactly -ParameterFilter {
                 $Message -match "The value '40000' for configuration option 'max degree of parallelism' is outside the valid range of 0 to 32767"
@@ -241,7 +241,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
         }
 
         It 'Should use correct error details for invalid value' {
-            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -OptionValue 50000 -Confirm:$false
+            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 50000 -Confirm:$false
 
             Should -Invoke -CommandName Write-Error -Times 1 -Exactly -ParameterFilter {
                 $Category -eq 'InvalidArgument' -and
@@ -258,7 +258,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
             $script:mockConfigurationOption.ConfigValue = 10
             $script:mockServerObject.Configuration | Add-Member -MemberType ScriptMethod -Name 'Alter' -Value { } -Force
 
-            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -OptionValue 0 -Confirm:$false
+            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 0 -Confirm:$false
 
             Should -Invoke -CommandName Write-Error -Times 0 -Exactly
             $script:mockConfigurationOption.ConfigValue | Should -Be 0
@@ -272,7 +272,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
             $script:mockConfigurationOption.ConfigValue = 10
             $script:mockServerObject.Configuration | Add-Member -MemberType ScriptMethod -Name 'Alter' -Value { } -Force
 
-            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -OptionValue 32767 -Confirm:$false
+            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 32767 -Confirm:$false
 
             Should -Invoke -CommandName Write-Error -Times 0 -Exactly
             $script:mockConfigurationOption.ConfigValue | Should -Be 32767
@@ -316,7 +316,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
             $Global:Error.Clear()
 
             # This should not throw, but should generate an error record via Write-Error
-            Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -OptionValue 4 -Confirm:$false -ErrorAction SilentlyContinue
+            Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 4 -Confirm:$false -ErrorAction SilentlyContinue
 
             # Should -Invoke doesn't always work with Write-Error, so check error was generated another way
             Should -Invoke -CommandName Write-Error -Times 1 -Exactly
@@ -324,7 +324,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
 
         It 'Should use correct error details when Alter fails' {
             try {
-                Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -OptionValue 4 -Confirm:$false -ErrorAction SilentlyContinue
+                Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 4 -Confirm:$false -ErrorAction SilentlyContinue
             }
             catch {
                 # Ignore any exceptions for this test
@@ -371,7 +371,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
             $script:mockAlterCalled = $false
             $originalValue = $script:mockConfigurationOption.ConfigValue
 
-            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -OptionValue 4 -WhatIf
+            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 4 -WhatIf
 
             $script:mockAlterCalled | Should -BeFalse
             $script:mockConfigurationOption.ConfigValue | Should -Be $originalValue
@@ -407,7 +407,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
 
         It 'Should bypass confirmation when Force is specified' {
             # This test ensures Force parameter is handled correctly in the begin block
-            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -OptionValue 4 -Force
+            $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 4 -Force
 
             $script:mockConfigurationOption.ConfigValue | Should -Be 4
             Should -Invoke -CommandName Write-Information -Times 1 -Exactly
@@ -539,9 +539,9 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
             $maxMemoryMatch.ToolTip | Should -Match "Current: 2048"
         }
 
-        It 'Should provide OptionValue parameter completions through TabExpansion2' {
-            # Test OptionValue completion
-            $inputScript = 'Set-SqlDscConfigurationOption -ServerObject $global:TestServerObject -Name "max server memory (MB)" -OptionValue '
+        It 'Should provide Value parameter completions through TabExpansion2' {
+            # Test Value completion
+            $inputScript = 'Set-SqlDscConfigurationOption -ServerObject $global:TestServerObject -Name "max server memory (MB)" -Value '
             $result = TabExpansion2 -inputScript $inputScript -cursorColumn $inputScript.Length
 
             $result | Should -Not -BeNullOrEmpty
@@ -579,12 +579,12 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
             $completions[0].CompletionText | Should -Be "'max server memory (MB)'"
         }
 
-        It 'Should execute OptionValue argument completer code when retrieving command metadata' {
+        It 'Should execute Value argument completer code when retrieving command metadata' {
             $command = Get-Command -Name 'Set-SqlDscConfigurationOption'
-            $parameterInfo = $command.Parameters['OptionValue']
+            $parameterInfo = $command.Parameters['Value']
             $completerAttribute = $parameterInfo.Attributes | Where-Object { $_ -is [System.Management.Automation.ArgumentCompleterAttribute] }
 
-            $completions = & $completerAttribute.ScriptBlock 'Set-SqlDscConfigurationOption' 'OptionValue' '' $null @{
+            $completions = & $completerAttribute.ScriptBlock 'Set-SqlDscConfigurationOption' 'Value' '' $null @{
                 ServerObject = $script:mockServerForTabCompletion
                 Name = 'max server memory (MB)'
             }
