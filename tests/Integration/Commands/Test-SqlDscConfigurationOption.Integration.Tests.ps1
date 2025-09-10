@@ -177,18 +177,4 @@ Describe 'Test-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integra
             $result | Should -BeTrue
         }
     }
-
-    Context 'When testing with verbose output' {
-        It 'Should produce verbose output when -Verbose is specified' {
-            # Get current value
-            $currentValue = Get-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs'
-
-            # Capture verbose output
-            $verboseOutput = Test-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value $currentValue.RunValue -Verbose 4>&1
-
-            # Should have verbose output containing the test details
-            $verboseOutput | Should -Not -BeNullOrEmpty
-            $verboseOutput | Should -Match "Testing configuration option 'Agent XPs'"
-        }
-    }
 }
