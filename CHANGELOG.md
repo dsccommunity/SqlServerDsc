@@ -41,6 +41,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Set-SqlDscConfigurationOption`
   - Added new command to set SQL Server Database Engine configuration options
     using SMO with validation, ShouldProcess support, and dynamic tab completion.
+- `Test-SqlDscConfigurationOption`
+  - Added new command to test if SQL Server Database Engine configuration options
+    have the specified value using SMO with dynamic tab completion for both
+    option names and values.
 - `Get-SqlDscConfigurationOption`
   - Enhanced existing command to return user-friendly metadata objects by default
     with properties Name, RunValue, ConfigValue, Minimum, Maximum, and IsDynamic.

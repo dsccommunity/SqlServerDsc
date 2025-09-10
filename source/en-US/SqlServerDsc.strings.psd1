@@ -255,6 +255,10 @@ ConvertFrom-StringData @'
     ConfigurationOption_Set_Success = Successfully set configuration option '{0}' to '{1}' on server '{2}'.
     ConfigurationOption_Set_Failed = Failed to set configuration option '{0}' to '{1}'. {2}
 
+    ## Test-SqlDscConfigurationOption
+    ConfigurationOption_Test_Missing = There is no configuration option with the name '{0}'.
+    ConfigurationOption_Test_Result = Testing configuration option '{0}': Current value is '{1}', expected value is '{2}', match result is '{3}' on server '{4}'.
+
     ## Save-SqlDscSqlServerMediaFile
     SqlServerMediaFile_Save_ShouldProcessVerboseDescription = The existing destination file '{0}' already exists and will be replaced.
     SqlServerMediaFile_Save_ShouldProcessVerboseWarning = Are you sure you want to replace existing file '{0}'?
