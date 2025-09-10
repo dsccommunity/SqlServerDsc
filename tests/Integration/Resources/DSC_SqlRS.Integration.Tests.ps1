@@ -168,8 +168,8 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
             $resourceCurrentState.DatabaseServerName | Should -Be $ConfigurationData.AllNodes.DatabaseServerName
             $resourceCurrentState.DatabaseInstanceName | Should -Be $ConfigurationData.AllNodes.DatabaseInstanceName
-            $resourceCurrentState.IsInitialized | Should -Be $true
-            $resourceCurrentState.UseSsl | Should -Be $false
+            $resourceCurrentState.IsInitialized | Should -BeTrue
+            $resourceCurrentState.UseSsl | Should -BeFalse
             $resourceCurrentState.ReportServerReservedUrl | Should -Contain 'http://+:80'
         }
 
@@ -276,3 +276,4 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
     }
 }
+
