@@ -238,8 +238,8 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
                 }
                 @{
                     PropertyName = 'PagerDays'
-                    PropertyValue = [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Saturday -bor [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Sunday
-                    Parameters = @{ PagerDays = [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Saturday -bor [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Sunday }
+                    PropertyValue = 64 -bor 1 # Saturday and Sunday
+                    Parameters = @{ PagerDays = 64 -bor 1 } # Saturday and Sunday
                 }
                 @{
                     PropertyName = 'SaturdayPagerEndTime'
@@ -274,7 +274,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
             ) {
                 # Reset counter and set initial values
                 $script:mockMethodAlterCallCount = 0
-                
+
                 # Set different initial values to ensure the property is actually being updated
                 switch ($PropertyName) {
                     'EmailAddress' { $script:mockOperator.EmailAddress = 'old@contoso.com' }
@@ -334,7 +334,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
                     CategoryName = 'DatabaseAdmins'
                     NetSendAddress = 'SQLSERVER01'
                     PagerAddress = '555-999-8888'
-                    PagerDays = [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::AllDays
+                    PagerDays = [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::EveryDay
                     SaturdayPagerStartTime = [System.TimeSpan]::new(10, 0, 0)
                     SaturdayPagerEndTime = [System.TimeSpan]::new(20, 0, 0)
                     SundayPagerStartTime = [System.TimeSpan]::new(11, 0, 0)
@@ -353,7 +353,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
                 $script:mockOperator.CategoryName | Should -Be 'DatabaseAdmins'
                 $script:mockOperator.NetSendAddress | Should -Be 'SQLSERVER01'
                 $script:mockOperator.PagerAddress | Should -Be '555-999-8888'
-                $script:mockOperator.PagerDays | Should -Be ([Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::AllDays)
+                $script:mockOperator.PagerDays | Should -Be ([Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::EveryDay)
                 $script:mockOperator.SaturdayPagerStartTime | Should -Be ([System.TimeSpan]::new(10, 0, 0))
                 $script:mockOperator.SaturdayPagerEndTime | Should -Be ([System.TimeSpan]::new(20, 0, 0))
                 $script:mockOperator.SundayPagerStartTime | Should -Be ([System.TimeSpan]::new(11, 0, 0))
@@ -470,7 +470,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
             ) {
                 # Reset counter and set initial values
                 $script:mockMethodAlterCallCount = 0
-                
+
                 # Set different initial values to ensure the property is actually being updated
                 switch ($PropertyName) {
                     'EmailAddress' { $script:mockOperator.EmailAddress = 'old@contoso.com' }
