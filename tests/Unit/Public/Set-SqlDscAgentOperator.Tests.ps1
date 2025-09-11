@@ -434,8 +434,8 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
                 }
                 @{
                     PropertyName = 'PagerDays'
-                    PropertyValue = [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Saturday -bor [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Sunday
-                    Parameters = @{ PagerDays = [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Saturday -bor [Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::Sunday }
+                    PropertyValue = 64 -bor 1 # Saturday and Sunday
+                    Parameters = @{ PagerDays = 64 -bor 1 } # Saturday and Sunday
                 }
                 @{
                     PropertyName = 'SaturdayPagerEndTime'
