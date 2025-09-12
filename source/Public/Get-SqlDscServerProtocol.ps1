@@ -159,7 +159,7 @@ function Get-SqlDscServerProtocol
 
             if (-not $serverProtocolObject)
             {
-                $errorMessage = $script:localizedData.ServerProtocol_ProtocolNotFound -f $ProtocolName, $InstanceName, $serverInstance.Parent.Name
+                $errorMessage = $script:localizedData.ServerProtocol_ProtocolNotFound -f $protocolMapping.DisplayName, $InstanceName, $serverInstance.Parent.Name
                 $errorRecord = [System.Management.Automation.ErrorRecord]::new(
                     [System.InvalidOperationException]::new($errorMessage),
                     'SqlServerProtocolNotFound',
