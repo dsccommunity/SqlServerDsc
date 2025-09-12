@@ -442,7 +442,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                     )
 
                     return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                        Add-Member -MemberType 'NoteProperty' -Name 'Configuration' -Value $mockConfigurationObject -PassThru |
+                        Add-Member -MemberType 'NoteProperty' -Name 'Configuration' -Value $mockConfigurationObject -PassThru -Force |
                         Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
                             InModuleScope -ScriptBlock {
                                 $script:mockMethodAlterWasRun += 1
@@ -493,7 +493,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                     )
 
                     return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                        Add-Member -MemberType 'NoteProperty' -Name 'Configuration' -Value $mockConfigurationObject -PassThru |
+                        Add-Member -MemberType 'NoteProperty' -Name 'Configuration' -Value $mockConfigurationObject -PassThru -Force |
                         Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
                             InModuleScope -ScriptBlock {
                                 $script:mockMethodAlterWasRun += 1
@@ -548,7 +548,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                     )
 
                     return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                        Add-Member -MemberType 'NoteProperty' -Name 'Configuration' -Value $mockConfigurationObject -PassThru |
+                        Add-Member -MemberType 'NoteProperty' -Name 'Configuration' -Value $mockConfigurationObject -PassThru -Force |
                         Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
                             InModuleScope -ScriptBlock {
                                 $script:mockMethodAlterWasRun += 1
@@ -603,7 +603,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                     )
 
                     return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                        Add-Member -MemberType 'NoteProperty' -Name 'Configuration' -Value $mockConfigurationObject -PassThru |
+                        Add-Member -MemberType 'NoteProperty' -Name 'Configuration' -Value $mockConfigurationObject -PassThru -Force |
                         Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
                             InModuleScope -ScriptBlock {
                                 $script:mockMethodAlterWasRun += 1

@@ -49,7 +49,7 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-ServerObject] <Server> [-Name] <String> [[-Severity] <int>] [[-MessageId] <int>] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '[-ServerObject] <Server> [-Name] <String> [[-Severity] <int>] [[-MessageId] <int>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'New-SqlDscAgentAlert').ParameterSets |
@@ -187,6 +187,50 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
                 Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 2 -Exactly
                 # Verify that Assert-BoundParameter was called for each alert creation
                 Should -Invoke -CommandName 'Assert-BoundParameter' -Times 2 -Exactly
+            }
+        }
+
+        Context 'When using pipeline input' {
+            It 'Should create alert with severity using pipeline input' {
+                $result = $script:mockServerObject | New-SqlDscAgentAlert -Name 'PipelineAlert1' -Severity 16
+
+                $result | Should -BeNullOrEmpty
+                Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
+                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
+            }
+
+            It 'Should create alert with message ID using pipeline input' {
+                $result = $script:mockServerObject | New-SqlDscAgentAlert -Name 'PipelineAlert2' -MessageId 50001
+
+                $result | Should -BeNullOrEmpty
+                Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
+                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
+            }
+
+            It 'Should create alert with PassThru using pipeline input' {
+                $result = $script:mockServerObject | New-SqlDscAgentAlert -Name 'PipelineAlert3' -Severity 16 -PassThru
+
+                $result | Should -Not -BeNullOrEmpty
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.Agent.Alert]
+                $result.Name | Should -Be 'PipelineAlert3'
+                $result.Severity | Should -Be 16
+            }
+
+            It 'Should create alert with Force parameter using pipeline input to cover ConfirmPreference assignment' {
+                $result = $script:mockServerObject | New-SqlDscAgentAlert -Name 'PipelineAlert4' -Severity 16 -Force
+
+                $result | Should -BeNullOrEmpty
+                Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
+                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
+            }
+
+            It 'Should create alert with Force and PassThru using pipeline input' {
+                $result = $script:mockServerObject | New-SqlDscAgentAlert -Name 'PipelineAlert5' -MessageId 60001 -Force -PassThru
+
+                $result | Should -Not -BeNullOrEmpty
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.Agent.Alert]
+                $result.Name | Should -Be 'PipelineAlert5'
+                $result.MessageID | Should -Be 60001
             }
         }
     }

@@ -239,7 +239,7 @@ function Test-SqlDscServerPermission
             # Check that no unexpected permissions are present (only if ExactMatch is specified)
             if ($ExactMatch.IsPresent)
             {
-                $desiredPermissionNames = $Permission | ForEach-Object { $_.ToString() }
+                $desiredPermissionNames = $Permission | ForEach-Object -Process { $_.ToString() }
                 foreach ($currentPermissionName in $currentPermissionForState.Permission)
                 {
                     if ($currentPermissionName -notin $desiredPermissionNames)

@@ -84,7 +84,15 @@ function New-SqlDscRole
         if ($ServerObject.Roles[$Name])
         {
             $errorMessage = $script:localizedData.Role_AlreadyExists -f $Name, $ServerObject.InstanceName
-            New-InvalidOperationException -Message $errorMessage
+
+            $PSCmdlet.ThrowTerminatingError(
+                [System.Management.Automation.ErrorRecord]::new(
+                    [System.InvalidOperationException]::new($errorMessage),
+                    'NSR0001', # cspell: disable-line
+                    [System.Management.Automation.ErrorCategory]::ResourceExists,
+                    $Name
+                )
+            )
         }
 
         $verboseDescriptionMessage = $script:localizedData.Role_Create_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
@@ -113,7 +121,15 @@ function New-SqlDscRole
             catch
             {
                 $errorMessage = $script:localizedData.Role_CreateFailed -f $Name, $ServerObject.InstanceName
-                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.InvalidOperationException]::new($errorMessage, $_.Exception),
+                        'NSR0002', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $Name
+                    )
+                )
             }
         }
     }

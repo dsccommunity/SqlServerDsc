@@ -118,7 +118,15 @@ function New-SqlDscDatabase
         if ($ServerObject.Databases[$Name])
         {
             $errorMessage = $script:localizedData.Database_AlreadyExists -f $Name, $ServerObject.InstanceName
-            New-InvalidOperationException -Message $errorMessage
+
+            $PSCmdlet.ThrowTerminatingError(
+                [System.Management.Automation.ErrorRecord]::new(
+                    [System.InvalidOperationException]::new($errorMessage),
+                    'NSD0001', # cspell: disable-line
+                    [System.Management.Automation.ErrorCategory]::ResourceExists,
+                    $Name
+                )
+            )
         }
 
         # Validate compatibility level if specified
@@ -199,7 +207,15 @@ function New-SqlDscDatabase
             catch
             {
                 $errorMessage = $script:localizedData.Database_CreateFailed -f $Name, $ServerObject.InstanceName
-                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.InvalidOperationException]::new($errorMessage, $_.Exception),
+                        'NSD0002', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $Name
+                    )
+                )
             }
         }
     }
