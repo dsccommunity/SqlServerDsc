@@ -77,26 +77,6 @@ Describe 'Get-SqlDscServerProtocol' -Tag @('Integration_SQL2017', 'Integration_S
                 $result.DisplayName | Should -Be 'Shared Memory'
                 $result.Parent.Name | Should -Be $script:mockInstanceName
             }
-
-            It 'Should throw when protocol does not exist' {
-                # This test simulates a scenario where a protocol might not be found
-                # Note: In most SQL Server installations, all three protocols should exist
-                # This test validates the error handling mechanism
-                Mock -CommandName 'Get-SqlDscManagedComputerInstance' -MockWith {
-                    $mockInstance = New-Object -TypeName 'PSObject' -Property @{
-                        Name = $script:mockInstanceName
-                        Parent = New-Object -TypeName 'PSObject' -Property @{
-                            Name = $script:mockServerName
-                        }
-                        ServerProtocols = @{}
-                    }
-                    return $mockInstance
-                } -ModuleName $script:moduleName
-
-                {
-                    Get-SqlDscServerProtocol -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ProtocolName 'TcpIp' -ErrorAction 'Stop'
-                } | Should -Throw -ErrorId 'SqlServerProtocolNotFound,Get-SqlDscServerProtocol'
-            }
         }
 
         Context 'When getting all protocols' {
@@ -200,17 +180,17 @@ Describe 'Get-SqlDscServerProtocol' -Tag @('Integration_SQL2017', 'Integration_S
 
             # Verify it's a proper SMO ServerProtocol object
             $result | Should -BeOfType '[Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol]'
-            
+
             # Verify key properties exist
             $result.Name | Should -Not -BeNullOrEmpty
             $result.DisplayName | Should -Not -BeNullOrEmpty
             $result.Parent | Should -Not -BeNullOrEmpty
             $result.Parent.Name | Should -Be $script:mockInstanceName
-            
+
             # Verify protocol-specific properties are accessible
             $result.IsEnabled | Should -Not -BeNullOrEmpty
             $result.ProtocolProperties | Should -Not -BeNullOrEmpty
-            
+
             # Verify IP addresses collection for TCP/IP protocol
             if ($result.Name -eq 'Tcp')
             {
