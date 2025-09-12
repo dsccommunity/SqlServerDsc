@@ -2,3 +2,4 @@
 .vs
 output/
 coverage.xml
+testResults.xml

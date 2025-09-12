@@ -78,10 +78,11 @@ applyTo: "**/*.ps?(m|d)1"
 - Include a `Force` parameter for functions that uses `$PSCmdlet.ShouldContinue` or `$PSCmdlet.ShouldProcess`
 - For state-changing functions, use `SupportsShouldProcess`
   - Place ShouldProcess check immediately before each state-change
+  - Set `ConfirmImpact` to 'Low', 'Medium', or 'High' depending on risk
   - `$PSCmdlet.ShouldProcess` must use required pattern
   - Inside `$PSCmdlet.ShouldProcess`-block, avoid using `Write-Verbose`
 - Never use backtick as line continuation in production code.
-- Set `$ErrorActionPreference = 'Stop'` before commands using `-ErrorAction 'Stop'`; restore after
+- Set `$ErrorActionPreference = 'Stop'` before commands using `-ErrorAction 'Stop'`; restore previous value after
 
 ## Output streams
 
@@ -90,8 +91,8 @@ applyTo: "**/*.ps?(m|d)1"
 - Use `Write-Verbose` for: High-level execution flow only; User-actionable information
 - Use `Write-Information` for: User-facing status updates; Important operational messages; Non-error state changes
 - Use `Write-Warning` for: Non-fatal issues requiring attention; Deprecated functionality usage; Configuration problems that don't block execution
-- Use `$PSCmdlet.ThrowTerminatingError()` for terminating errors (except for classes), use relevant error category, in try-catch include exception
-- Use `Write-Error` for non-terminating errors, use relevant error category
+- Use `$PSCmdlet.ThrowTerminatingError()` for terminating errors (except for classes), use relevant error category, in try-catch include exception with localized message
+- Use `Write-Error` for non-terminating errors, use relevant error category; always use `return` after `Write-Error` to avoid further processing
 
 ## ShouldProcess Required Pattern
 
@@ -184,6 +185,7 @@ function Get-Something
 - Assign function results to variables rather than inline calls
 - Return a single, consistent object type per function
   - return `$null` for no objects/non-terminating errors
+- Use `::new()` static method instead of `New-Object` for .NET types, e.g `[System.Management.Automation.ErrorRecord]::new()`
 
 ### Security & Safety
 
@@ -207,6 +209,7 @@ function Get-Something
 - End files with only one blank line
 - Use CR+LF line endings
 - Maximum two consecutive newlines
+- No line shall have trailing whitespace
 
 ## File Encoding
 

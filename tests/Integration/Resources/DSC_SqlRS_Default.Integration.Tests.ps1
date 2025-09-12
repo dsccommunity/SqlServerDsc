@@ -168,8 +168,8 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
             $resourceCurrentState.DatabaseServerName | Should -Be $ConfigurationData.AllNodes.DatabaseServerName
             $resourceCurrentState.DatabaseInstanceName | Should -Be $ConfigurationData.AllNodes.DatabaseInstanceName
-            $resourceCurrentState.IsInitialized | Should -Be $true
-            $resourceCurrentState.UseSsl | Should -Be $false
+            $resourceCurrentState.IsInitialized | Should -BeTrue
+            $resourceCurrentState.UseSsl | Should -BeFalse
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -286,7 +286,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.UseSsl | Should -Be $true
+            $resourceCurrentState.UseSsl | Should -BeTrue
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -360,7 +360,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.UseSsl | Should -Be $false
+            $resourceCurrentState.UseSsl | Should -BeFalse
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -463,3 +463,4 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
     }
 }
+

@@ -138,7 +138,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                         $result.ServerName | Should -Be 'SqlNode.company.local'
                         $result.Protocol | Should -Be 'TCP'
                         $result.TcpPort | Should -BeExactly 1433
-                        $result.UseDynamicTcpPort | Should -Be $false
+                        $result.UseDynamicTcpPort | Should -BeFalse
                         $result.PipeName | Should -Be ''
                     }
                 }
@@ -192,7 +192,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                         $result.ServerName | Should -BeNullOrEmpty
                         $result.Protocol | Should -Be ''
                         $result.TcpPort | Should -BeExactly 0
-                        $result.UseDynamicTcpPort | Should -Be $false
+                        $result.UseDynamicTcpPort | Should -BeFalse
                         $result.PipeName | Should -Be ''
                     }
                 }
@@ -248,7 +248,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                         $result.ServerName | Should -Be 'SqlNode.company.local'
                         $result.Protocol | Should -Be 'TCP'
                         $result.TcpPort | Should -BeExactly 0
-                        $result.UseDynamicTcpPort | Should -Be $true
+                        $result.UseDynamicTcpPort | Should -BeTrue
                         $result.PipeName | Should -Be ''
                     }
                 }
@@ -302,7 +302,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                         $result.ServerName | Should -BeNullOrEmpty
                         $result.Protocol | Should -Be ''
                         $result.TcpPort | Should -BeExactly 0
-                        $result.UseDynamicTcpPort | Should -Be $false
+                        $result.UseDynamicTcpPort | Should -BeFalse
                         $result.PipeName | Should -Be ''
                     }
                 }
@@ -375,7 +375,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                         $result.ServerName | Should -BeNullOrEmpty
                         $result.Protocol | Should -Be 'NP'
                         $result.TcpPort | Should -BeExactly 0
-                        $result.UseDynamicTcpPort | Should -Be $false
+                        $result.UseDynamicTcpPort | Should -BeFalse
                         $result.PipeName | Should -Be '\\SqlNode\PIPE\sql\query'
                     }
                 }
@@ -429,7 +429,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                         $result.ServerName | Should -BeNullOrEmpty
                         $result.Protocol | Should -Be ''
                         $result.TcpPort | Should -BeExactly 0
-                        $result.UseDynamicTcpPort | Should -Be $false
+                        $result.UseDynamicTcpPort | Should -BeFalse
                         $result.PipeName | Should -Be ''
                     }
                 }
@@ -490,7 +490,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                     $result.ServerName | Should -BeNullOrEmpty
                     $result.Protocol | Should -Be ''
                     $result.TcpPort | Should -BeExactly 0
-                    $result.UseDynamicTcpPort | Should -Be $false
+                    $result.UseDynamicTcpPort | Should -BeFalse
                     $result.PipeName | Should -Be ''
                 }
             }
@@ -543,7 +543,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                     $result.ServerName | Should -BeNullOrEmpty
                     $result.Protocol | Should -Be ''
                     $result.TcpPort | Should -BeExactly 0
-                    $result.UseDynamicTcpPort | Should -Be $false
+                    $result.UseDynamicTcpPort | Should -BeFalse
                     $result.PipeName | Should -Be ''
                 }
             }
