@@ -68,8 +68,8 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag @('Integration_SQL2017', 'Inte
                 $result = Get-SqlDscManagedComputerInstance -ServerName $script:mockServerName -ErrorAction 'Stop'
 
                 $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType '[Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance]'
-                
+                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance])
+
                 # Should contain the test instance
                 $testInstance = $result | Where-Object -FilterScript { $_.Name -eq $script:mockInstanceName }
                 $testInstance | Should -Not -BeNullOrEmpty
@@ -114,8 +114,8 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag @('Integration_SQL2017', 'Inte
                 $result = $script:managedComputerObject | Get-SqlDscManagedComputerInstance -ErrorAction 'Stop'
 
                 $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType '[Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance]'
-                
+                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance])
+
                 # Should contain the test instance
                 $testInstance = $result | Where-Object -FilterScript { $_.Name -eq $script:mockInstanceName }
                 $testInstance | Should -Not -BeNullOrEmpty
@@ -129,13 +129,13 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag @('Integration_SQL2017', 'Inte
             $result = Get-SqlDscManagedComputerInstance -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
 
             # Verify it's a proper SMO ServerInstance object
-            $result | Should -BeOfType '[Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance]'
-            
+            $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance])
+
             # Verify key properties exist
             $result.Name | Should -Not -BeNullOrEmpty
             $result.Parent | Should -Not -BeNullOrEmpty
             $result.Parent.Name | Should -Be $script:mockServerName
-            
+
             # Verify ServerProtocols collection is accessible
             $result.ServerProtocols | Should -Not -BeNullOrEmpty
             $result.ServerProtocols.Count | Should -BeGreaterThan 0
