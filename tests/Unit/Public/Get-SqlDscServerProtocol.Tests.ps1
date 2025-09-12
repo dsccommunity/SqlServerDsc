@@ -86,15 +86,26 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
                 }
             }
 
-            # Mock Get-ProtocolNameProperties since it's from SqlServerDsc.Common
-            Mock -CommandName Get-ProtocolNameProperties -MockWith {
-                param($ProtocolName)
+            # Mock Get-SqlDscServerProtocolName since it's the new command
+            Mock -CommandName Get-SqlDscServerProtocolName -MockWith {
+                param($ProtocolName, $All)
                 
-                switch ($ProtocolName)
+                if ($All)
                 {
-                    'TcpIp' { return @{ Name = 'Tcp'; DisplayName = 'TCP/IP' } }
-                    'NamedPipes' { return @{ Name = 'Np'; DisplayName = 'Named Pipes' } }
-                    'SharedMemory' { return @{ Name = 'Sm'; DisplayName = 'Shared Memory' } }
+                    return @(
+                        [PSCustomObject]@{ Name = 'TcpIp'; DisplayName = 'TCP/IP'; ShortName = 'Tcp' },
+                        [PSCustomObject]@{ Name = 'NamedPipes'; DisplayName = 'Named Pipes'; ShortName = 'Np' },
+                        [PSCustomObject]@{ Name = 'SharedMemory'; DisplayName = 'Shared Memory'; ShortName = 'Sm' }
+                    )
+                }
+                else
+                {
+                    switch ($ProtocolName)
+                    {
+                        'TcpIp' { return [PSCustomObject]@{ Name = 'TcpIp'; DisplayName = 'TCP/IP'; ShortName = 'Tcp' } }
+                        'NamedPipes' { return [PSCustomObject]@{ Name = 'NamedPipes'; DisplayName = 'Named Pipes'; ShortName = 'Np' } }
+                        'SharedMemory' { return [PSCustomObject]@{ Name = 'SharedMemory'; DisplayName = 'Shared Memory'; ShortName = 'Sm' } }
+                    }
                 }
             }
         }
@@ -108,7 +119,7 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
             $result.IsEnabled | Should -Be $true
 
             Should -Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-ProtocolNameProperties -ParameterFilter {
+            Should -Invoke -CommandName Get-SqlDscServerProtocolName -ParameterFilter {
                 $ProtocolName -eq 'TcpIp'
             } -Exactly -Times 1 -Scope It
         }
@@ -122,7 +133,7 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
             $result.IsEnabled | Should -Be $false
 
             Should -Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-ProtocolNameProperties -ParameterFilter {
+            Should -Invoke -CommandName Get-SqlDscServerProtocolName -ParameterFilter {
                 $ProtocolName -eq 'NamedPipes'
             } -Exactly -Times 1 -Scope It
         }
@@ -136,8 +147,32 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
             $result.IsEnabled | Should -Be $true
 
             Should -Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-ProtocolNameProperties -ParameterFilter {
+            Should -Invoke -CommandName Get-SqlDscServerProtocolName -ParameterFilter {
                 $ProtocolName -eq 'SharedMemory'
+            } -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return all protocols when ProtocolName is not specified' {
+            $result = Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER'
+
+            $result | Should -Not -BeNullOrEmpty
+            $result | Should -HaveCount 3
+
+            $tcpProtocol = $result | Where-Object -FilterScript { $_.Name -eq 'Tcp' }
+            $tcpProtocol | Should -Not -BeNullOrEmpty
+            $tcpProtocol.DisplayName | Should -Be 'TCP/IP'
+
+            $npProtocol = $result | Where-Object -FilterScript { $_.Name -eq 'Np' }
+            $npProtocol | Should -Not -BeNullOrEmpty
+            $npProtocol.DisplayName | Should -Be 'Named Pipes'
+
+            $smProtocol = $result | Where-Object -FilterScript { $_.Name -eq 'Sm' }
+            $smProtocol | Should -Not -BeNullOrEmpty
+            $smProtocol.DisplayName | Should -Be 'Shared Memory'
+
+            Should -Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-SqlDscServerProtocolName -ParameterFilter {
+                $All -eq $true
             } -Exactly -Times 1 -Scope It
         }
 
@@ -169,8 +204,8 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
                 }
             }
 
-            Mock -CommandName Get-ProtocolNameProperties -MockWith {
-                return @{ Name = 'Tcp'; DisplayName = 'TCP/IP' }
+            Mock -CommandName Get-SqlDscServerProtocolName -MockWith {
+                return [PSCustomObject]@{ Name = 'TcpIp'; DisplayName = 'TCP/IP'; ShortName = 'Tcp' }
             }
         }
 
@@ -195,8 +230,8 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
                 }
             }
 
-            Mock -CommandName Get-ProtocolNameProperties -MockWith {
-                return @{ Name = 'Tcp'; DisplayName = 'TCP/IP' }
+            Mock -CommandName Get-SqlDscServerProtocolName -MockWith {
+                return [PSCustomObject]@{ Name = 'TcpIp'; DisplayName = 'TCP/IP'; ShortName = 'Tcp' }
             }
         }
 
@@ -209,7 +244,7 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set __AllParameterSets' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[[-ServerName] <string>] [-InstanceName] <string> [-ProtocolName] <string> [<CommonParameters>]'
+                ExpectedParameters = '[[-ServerName] <string>] [-InstanceName] <string> [[-ProtocolName] <string>] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Get-SqlDscServerProtocol').ParameterSets |
@@ -227,9 +262,9 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
             $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
 
-        It 'Should have ProtocolName as a mandatory parameter' {
+        It 'Should have ProtocolName as an optional parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscServerProtocol').Parameters['ProtocolName']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should -BeFalse
         }
 
         It 'Should have ServerName as an optional parameter' {

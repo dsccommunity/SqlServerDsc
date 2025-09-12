@@ -5,6 +5,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `Get-SqlDscServerProtocolName`
+  - New public command that provides standardized SQL Server protocol name mappings
+  - Supports parameter sets for protocol name, display name, short name, and all protocols
+- `Get-SqlDscServerProtocol`
+  - Enhanced to optionally return all protocols when ProtocolName parameter is not specified
+  - Updated to use new `Get-SqlDscServerProtocolName` command instead of deprecated `Get-ProtocolNameProperties`
+
 ### Fixed
 
 - Make sure tests forcibly imports the module being tested to avoid AI failing

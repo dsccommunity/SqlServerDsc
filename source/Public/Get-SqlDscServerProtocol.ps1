@@ -6,6 +6,7 @@
         Returns server protocol information for a SQL Server instance using
         SMO (SQL Server Management Objects). The command supports getting
         information for TcpIp, NamedPipes, and SharedMemory protocols.
+        If no protocol is specified, all protocols are returned.
 
     .PARAMETER ServerName
         Specifies the name of the server where the SQL Server instance is running.
@@ -18,6 +19,7 @@
     .PARAMETER ProtocolName
         Specifies the name of the network protocol to return information for.
         Valid values are 'TcpIp', 'NamedPipes', and 'SharedMemory'.
+        If not specified, all protocols are returned.
 
     .EXAMPLE
         Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp'
@@ -32,17 +34,26 @@
         instance on the MyServer computer.
 
     .EXAMPLE
-        Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName 'SharedMemory'
+        Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER'
 
-        Returns SharedMemory protocol information for the default SQL Server
-        instance.
+        Returns all protocol information for the default SQL Server instance
+        on the local computer.
+
+    .INPUTS
+        None
 
     .OUTPUTS
         System.Object
 
+        Returns protocol objects from SMO (SQL Server Management Objects).
+
     .NOTES
         This command uses SMO (SQL Server Management Objects) to retrieve server
         protocol information from the specified SQL Server instance.
+
+        The Get-ProtocolNameProperties function used internally is deprecated
+        and should be removed in the future when existing code has moved to
+        new functionality.
 #>
 function Get-SqlDscServerProtocol
 {
@@ -59,15 +70,24 @@ function Get-SqlDscServerProtocol
         [System.String]
         $InstanceName,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [ValidateSet('TcpIp', 'NamedPipes', 'SharedMemory')]
         [System.String]
         $ProtocolName
     )
 
-    Write-Verbose -Message (
-        $script:localizedData.ServerProtocol_GetState -f $ProtocolName, $InstanceName, $ServerName
-    )
+    if ($PSBoundParameters.ContainsKey('ProtocolName'))
+    {
+        Write-Verbose -Message (
+            $script:localizedData.ServerProtocol_GetState -f $ProtocolName, $InstanceName, $ServerName
+        )
+    }
+    else
+    {
+        Write-Verbose -Message (
+            $script:localizedData.ServerProtocol_GetAllProtocols -f $InstanceName, $ServerName
+        )
+    }
 
     $managedComputerObject = Get-SqlDscManagedComputer -ServerName $ServerName
 
@@ -75,14 +95,38 @@ function Get-SqlDscServerProtocol
 
     if ($serverInstance)
     {
-        $protocolNameProperties = Get-ProtocolNameProperties -ProtocolName $ProtocolName
-
-        $serverProtocolObject = $serverInstance.ServerProtocols[$protocolNameProperties.Name]
-
-        if (-not $serverProtocolObject)
+        if ($PSBoundParameters.ContainsKey('ProtocolName'))
         {
-            $errorMessage = $script:localizedData.ServerProtocol_ProtocolNotFound -f $ProtocolName, $InstanceName, $ServerName
-            New-InvalidOperationException -Message $errorMessage
+            # Get specific protocol
+            $protocolMapping = Get-SqlDscServerProtocolName -ProtocolName $ProtocolName
+
+            $serverProtocolObject = $serverInstance.ServerProtocols[$protocolMapping.ShortName]
+
+            if (-not $serverProtocolObject)
+            {
+                $errorMessage = $script:localizedData.ServerProtocol_ProtocolNotFound -f $ProtocolName, $InstanceName, $ServerName
+                New-InvalidOperationException -Message $errorMessage
+            }
+
+            return $serverProtocolObject
+        }
+        else
+        {
+            # Get all protocols
+            $allProtocolMappings = Get-SqlDscServerProtocolName -All
+            $allServerProtocols = @()
+
+            foreach ($protocolMapping in $allProtocolMappings)
+            {
+                $serverProtocolObject = $serverInstance.ServerProtocols[$protocolMapping.ShortName]
+
+                if ($serverProtocolObject)
+                {
+                    $allServerProtocols += $serverProtocolObject
+                }
+            }
+
+            return $allServerProtocols
         }
     }
     else
@@ -90,6 +134,4 @@ function Get-SqlDscServerProtocol
         $errorMessage = $script:localizedData.ServerProtocol_InstanceNotFound -f $InstanceName, $ServerName
         New-InvalidOperationException -Message $errorMessage
     }
-
-    return $serverProtocolObject
 }

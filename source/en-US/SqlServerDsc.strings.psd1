@@ -289,9 +289,14 @@ ConvertFrom-StringData @'
     ConvertTo_EditionName_UnknownEditionId = The EditionId '{0}' is unknown and could not be converted.
 
     ## Get-SqlDscServerProtocol
+    ## Get-SqlDscServerProtocol
     ServerProtocol_GetState = Getting server protocol '{0}' information for instance '{1}' on server '{2}'.
+    ServerProtocol_GetAllProtocols = Getting all server protocols for instance '{0}' on server '{1}'.
     ServerProtocol_ProtocolNotFound = Could not find server protocol '{0}' for instance '{1}' on server '{2}'.
     ServerProtocol_InstanceNotFound = Could not find SQL Server instance '{0}' on server '{1}'.
+
+    ## Get-SqlDscServerProtocolName
+    ServerProtocolName_GetProtocolMappings = Getting SQL Server protocol name mappings.
 
     ## Assert-SqlDscLogin
     Assert_Login_CheckingLogin = Checking if the principal '{0}' exists as a login on the instance '{1}'.
