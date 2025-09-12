@@ -199,7 +199,7 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
                 return 'LocalComputer'
             }
 
-            $result = Get-SqlDscServerProtocol -ServerName 'TestServer' -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp'
+            $null = Get-SqlDscServerProtocol -ServerName 'TestServer' -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp'
 
             Should -Invoke -CommandName Get-SqlDscManagedComputerInstance -ParameterFilter {
                 $ServerName -eq 'TestServer'
@@ -211,7 +211,7 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
                 return 'LocalComputer'
             }
 
-            $result = Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp'
+            $null = Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp'
 
             Should -Invoke -CommandName Get-SqlDscManagedComputerInstance -ParameterFilter {
                 $ServerName -eq 'LocalComputer'
@@ -223,6 +223,10 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
 
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'Tcp'
+
+            Should -Invoke -CommandName Get-SqlDscManagedComputerInstance -ParameterFilter {
+                $InstanceName -eq 'SQL2019'
+            } -Exactly -Times 1 -Scope It
         }
     }
 
@@ -411,12 +415,12 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
 
         It 'Should have ManagedComputerObject as a pipeline parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscServerProtocol').Parameters['ManagedComputerObject']
-            $parameterInfo.Attributes.ValueFromPipeline | Should -BeTrue
+            $parameterInfo.Attributes.ValueFromPipeline | Should -Not -Contain $false
         }
 
         It 'Should have ManagedComputerInstanceObject as a pipeline parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscServerProtocol').Parameters['ManagedComputerInstanceObject']
-            $parameterInfo.Attributes.ValueFromPipeline | Should -BeTrue
+            $parameterInfo.Attributes.ValueFromPipeline | Should -Not -Contain $false
         }
     }
 }
