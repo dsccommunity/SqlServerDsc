@@ -21,6 +21,15 @@
         Valid values are 'TcpIp', 'NamedPipes', and 'SharedMemory'.
         If not specified, all protocols are returned.
 
+    .PARAMETER ManagedComputerObject
+        Specifies a managed computer object from which to retrieve server protocol
+        information. This parameter accepts pipeline input from Get-SqlDscManagedComputer.
+
+    .PARAMETER ManagedComputerInstanceObject
+        Specifies a managed computer instance object from which to retrieve server
+        protocol information. This parameter accepts pipeline input from 
+        Get-SqlDscManagedComputerInstance.
+
     .EXAMPLE
         Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp'
 
@@ -39,13 +48,31 @@
         Returns all protocol information for the default SQL Server instance
         on the local computer.
 
+    .EXAMPLE
+        Get-SqlDscManagedComputer -ServerName 'MyServer' | Get-SqlDscServerProtocol -InstanceName 'MyInstance'
+
+        Uses pipeline input from Get-SqlDscManagedComputer to retrieve all protocols
+        for the specified instance.
+
+    .EXAMPLE
+        Get-SqlDscManagedComputerInstance -InstanceName 'MyInstance' | Get-SqlDscServerProtocol -ProtocolName 'TcpIp'
+
+        Uses pipeline input from Get-SqlDscManagedComputerInstance to retrieve TcpIp
+        protocol information.
+
     .INPUTS
-        None
+        Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer
+
+        A managed computer object can be piped to this command.
+
+        Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance
+
+        A server instance object can be piped to this command.
 
     .OUTPUTS
-        System.Object
+        Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol
 
-        Returns protocol objects from SMO (SQL Server Management Objects).
+        Returns server protocol objects from SMO (SQL Server Management Objects).
 
     .NOTES
         This command uses SMO (SQL Server Management Objects) to retrieve server

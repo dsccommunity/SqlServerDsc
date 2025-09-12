@@ -83,7 +83,7 @@ function Get-SqlDscManagedComputerInstance
                 $script:localizedData.ManagedComputerInstance_GetFromServer -f $ServerName
             )
 
-            $managedComputerObject = Get-SqlDscManagedComputer -ServerName $ServerName
+            $ManagedComputerObject = Get-SqlDscManagedComputer -ServerName $ServerName
         }
         else
         {
@@ -91,7 +91,7 @@ function Get-SqlDscManagedComputerInstance
                 $script:localizedData.ManagedComputerInstance_GetFromObject
             )
 
-            $managedComputerObject = $ManagedComputerObject
+
         }
 
         if ($PSBoundParameters.ContainsKey('InstanceName'))
@@ -100,11 +100,11 @@ function Get-SqlDscManagedComputerInstance
                 $script:localizedData.ManagedComputerInstance_GetSpecificInstance -f $InstanceName
             )
 
-            $serverInstance = $managedComputerObject.ServerInstances[$InstanceName]
+            $serverInstance = $ManagedComputerObject.ServerInstances[$InstanceName]
 
             if (-not $serverInstance)
             {
-                $errorMessage = $script:localizedData.ManagedComputerInstance_InstanceNotFound -f $InstanceName, $managedComputerObject.Name
+                $errorMessage = $script:localizedData.ManagedComputerInstance_InstanceNotFound -f $InstanceName, $ManagedComputerObject.Name
                 $errorRecord = [System.Management.Automation.ErrorRecord]::new(
                     [System.InvalidOperationException]::new($errorMessage),
                     'SqlServerInstanceNotFound',
@@ -122,7 +122,7 @@ function Get-SqlDscManagedComputerInstance
                 $script:localizedData.ManagedComputerInstance_GetAllInstances
             )
 
-            return $managedComputerObject.ServerInstances
+            return $ManagedComputerObject.ServerInstances
         }
     }
 }

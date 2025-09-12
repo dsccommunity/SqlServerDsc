@@ -300,7 +300,6 @@ ConvertFrom-StringData @'
     ServerProtocol_GetState = Getting server protocol '{0}' information for instance '{1}' on server '{2}'.
     ServerProtocol_GetAllProtocols = Getting all server protocols for instance '{0}' on server '{1}'.
     ServerProtocol_ProtocolNotFound = Could not find server protocol '{0}' for instance '{1}' on server '{2}'.
-    ServerProtocol_InstanceNotFound = Could not find SQL Server instance '{0}' on server '{1}'.
 
     ## Get-SqlDscServerProtocolName
     ServerProtocolName_GetProtocolMappings = Getting SQL Server protocol name mappings.
