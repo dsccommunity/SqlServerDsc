@@ -1980,6 +1980,9 @@ function Find-ExceptionByNumber
         ServerProtocol. The property DisplayName could potentially be localized
         while the property Name must be exactly like it is returned by the
         class ServerProtocol, with the correct casing.
+
+        The Get-ProtocolNameProperties function is deprecated and should be removed
+        in the future when existing code has moved to new public commands.
 #>
 function Get-ProtocolNameProperties
 {
