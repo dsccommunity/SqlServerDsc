@@ -57,44 +57,71 @@
 #>
 function Get-SqlDscServerProtocol
 {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'ByServerName')]
+    [OutputType([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])]
     param
     (
-        [Parameter()]
+        [Parameter(ParameterSetName = 'ByServerName')]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $ServerName = (Get-ComputerName),
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'ByServerName')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'ByManagedComputerObject')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'ByManagedComputerInstanceObject')]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $InstanceName,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'ByServerName')]
+        [Parameter(ParameterSetName = 'ByManagedComputerObject')]
+        [Parameter(ParameterSetName = 'ByManagedComputerInstanceObject')]
         [ValidateSet('TcpIp', 'NamedPipes', 'SharedMemory')]
         [System.String]
-        $ProtocolName
+        $ProtocolName,
+
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'ByManagedComputerObject')]
+        [Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer]
+        $ManagedComputerObject,
+
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'ByManagedComputerInstanceObject')]
+        [Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance]
+        $ManagedComputerInstanceObject
     )
 
-    if ($PSBoundParameters.ContainsKey('ProtocolName'))
+    process
     {
-        Write-Verbose -Message (
-            $script:localizedData.ServerProtocol_GetState -f $ProtocolName, $InstanceName, $ServerName
-        )
-    }
-    else
-    {
-        Write-Verbose -Message (
-            $script:localizedData.ServerProtocol_GetAllProtocols -f $InstanceName, $ServerName
-        )
-    }
+        if ($PSBoundParameters.ContainsKey('ProtocolName'))
+        {
+            Write-Verbose -Message (
+                $script:localizedData.ServerProtocol_GetState -f $ProtocolName, $InstanceName, $ServerName
+            )
+        }
+        else
+        {
+            Write-Verbose -Message (
+                $script:localizedData.ServerProtocol_GetAllProtocols -f $InstanceName, $ServerName
+            )
+        }
 
-    $managedComputerObject = Get-SqlDscManagedComputer -ServerName $ServerName
+        switch ($PSCmdlet.ParameterSetName)
+        {
+            'ByServerName'
+            {
+                $serverInstance = Get-SqlDscManagedComputerInstance -ServerName $ServerName -InstanceName $InstanceName
+            }
 
-    $serverInstance = $managedComputerObject.ServerInstances[$InstanceName]
+            'ByManagedComputerObject'
+            {
+                $serverInstance = $ManagedComputerObject | Get-SqlDscManagedComputerInstance -InstanceName $InstanceName
+            }
 
-    if ($serverInstance)
-    {
+            'ByManagedComputerInstanceObject'
+            {
+                $serverInstance = $ManagedComputerInstanceObject
+            }
+        }
+
         if ($PSBoundParameters.ContainsKey('ProtocolName'))
         {
             # Get specific protocol
@@ -104,8 +131,14 @@ function Get-SqlDscServerProtocol
 
             if (-not $serverProtocolObject)
             {
-                $errorMessage = $script:localizedData.ServerProtocol_ProtocolNotFound -f $ProtocolName, $InstanceName, $ServerName
-                New-InvalidOperationException -Message $errorMessage
+                $errorMessage = $script:localizedData.ServerProtocol_ProtocolNotFound -f $ProtocolName, $InstanceName, $serverInstance.Parent.Name
+                $errorRecord = [System.Management.Automation.ErrorRecord]::new(
+                    [System.InvalidOperationException]::new($errorMessage),
+                    'SqlServerProtocolNotFound',
+                    [System.Management.Automation.ErrorCategory]::ObjectNotFound,
+                    $ProtocolName
+                )
+                $PSCmdlet.ThrowTerminatingError($errorRecord)
             }
 
             return $serverProtocolObject
@@ -128,10 +161,5 @@ function Get-SqlDscServerProtocol
 
             return $allServerProtocols
         }
-    }
-    else
-    {
-        $errorMessage = $script:localizedData.ServerProtocol_InstanceNotFound -f $InstanceName, $ServerName
-        New-InvalidOperationException -Message $errorMessage
     }
 }

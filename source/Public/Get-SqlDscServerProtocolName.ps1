@@ -102,26 +102,32 @@ function Get-SqlDscServerProtocolName
         }
     )
 
-    switch ($PSCmdlet.ParameterSetName)
+    # Check if All parameter is present or if no parameters specified (default case)
+    if ($All.IsPresent -or $PSCmdlet.ParameterSetName -eq 'All')
     {
-        'ByProtocolName'
+        $result = $protocolMappings
+    }
+    else
+    {
+        switch ($PSCmdlet.ParameterSetName)
         {
-            $result = $protocolMappings | Where-Object -FilterScript { $_.Name -eq $ProtocolName }
-        }
+            'ByProtocolName'
+            {
+                $result = $protocolMappings | Where-Object -FilterScript { $_.Name -eq $ProtocolName }
+                break
+            }
 
-        'ByDisplayName'
-        {
-            $result = $protocolMappings | Where-Object -FilterScript { $_.DisplayName -eq $DisplayName }
-        }
+            'ByDisplayName'
+            {
+                $result = $protocolMappings | Where-Object -FilterScript { $_.DisplayName -eq $DisplayName }
+                break
+            }
 
-        'ByShortName'
-        {
-            $result = $protocolMappings | Where-Object -FilterScript { $_.ShortName -eq $ShortName }
-        }
-
-        'All'
-        {
-            $result = $protocolMappings
+            'ByShortName'
+            {
+                $result = $protocolMappings | Where-Object -FilterScript { $_.ShortName -eq $ShortName }
+                break
+            }
         }
     }
 

@@ -165,6 +165,13 @@ ConvertFrom-StringData @'
     ## Get-SqlDscManagedComputerService
     ManagedComputerService_GetState = Returning the managed computer service object(s) for server {0}.
 
+    ## Get-SqlDscManagedComputerInstance
+    ManagedComputerInstance_GetFromServer = Getting managed computer instance information from server '{0}'.
+    ManagedComputerInstance_GetFromObject = Getting managed computer instance information from managed computer object.
+    ManagedComputerInstance_GetSpecificInstance = Getting specific server instance '{0}'.
+    ManagedComputerInstance_GetAllInstances = Getting all server instances.
+    ManagedComputerInstance_InstanceNotFound = Could not find SQL Server instance '{0}' on server '{1}'.
+
     ## StartupParameters
     StartupParameters_DebugFoundTraceFlags = {0}: Found the trace flags: {1}
     StartupParameters_DebugParsingStartupParameters = {0}: Parsing the startup parameters: {1}

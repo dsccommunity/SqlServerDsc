@@ -52,8 +52,8 @@ AfterAll {
 Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
     Context 'When getting server protocol information' {
         BeforeAll {
-            # Mock the Get-SqlDscManagedComputer command
-            Mock -CommandName Get-SqlDscManagedComputer -MockWith {
+            # Mock the Get-SqlDscManagedComputerInstance command
+            Mock -CommandName Get-SqlDscManagedComputerInstance -MockWith {
                 $mockServerInstance = [PSCustomObject]@{
                     ServerProtocols = @{
                         'Tcp' = [PSCustomObject]@{
@@ -76,14 +76,12 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
                             IsEnabled = $true
                         }
                     }
-                }
-
-                return [PSCustomObject]@{
-                    ServerInstances = @{
-                        'MSSQLSERVER' = $mockServerInstance
-                        'SQL2019' = $mockServerInstance
+                    Parent = [PSCustomObject]@{
+                        Name = 'TestServer'
                     }
                 }
+
+                return $mockServerInstance
             }
 
             # Mock Get-SqlDscServerProtocolName since it's the new command
@@ -118,7 +116,7 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
             $result.DisplayName | Should -Be 'TCP/IP'
             $result.IsEnabled | Should -Be $true
 
-            Should -Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-SqlDscManagedComputerInstance -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Get-SqlDscServerProtocolName -ParameterFilter {
                 $ProtocolName -eq 'TcpIp'
             } -Exactly -Times 1 -Scope It
@@ -132,7 +130,7 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
             $result.DisplayName | Should -Be 'Named Pipes'
             $result.IsEnabled | Should -Be $false
 
-            Should -Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-SqlDscManagedComputerInstance -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Get-SqlDscServerProtocolName -ParameterFilter {
                 $ProtocolName -eq 'NamedPipes'
             } -Exactly -Times 1 -Scope It
@@ -146,7 +144,7 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
             $result.DisplayName | Should -Be 'Shared Memory'
             $result.IsEnabled | Should -Be $true
 
-            Should -Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-SqlDscManagedComputerInstance -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Get-SqlDscServerProtocolName -ParameterFilter {
                 $ProtocolName -eq 'SharedMemory'
             } -Exactly -Times 1 -Scope It
@@ -170,7 +168,7 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
             $smProtocol | Should -Not -BeNullOrEmpty
             $smProtocol.DisplayName | Should -Be 'Shared Memory'
 
-            Should -Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-SqlDscManagedComputerInstance -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Get-SqlDscServerProtocolName -ParameterFilter {
                 $All -eq $true
             } -Exactly -Times 1 -Scope It
@@ -179,7 +177,7 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
         It 'Should use specified server name' {
             $result = Get-SqlDscServerProtocol -ServerName 'TestServer' -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp'
 
-            Should -Invoke -CommandName Get-SqlDscManagedComputer -ParameterFilter {
+            Should -Invoke -CommandName Get-SqlDscManagedComputerInstance -ParameterFilter {
                 $ServerName -eq 'TestServer'
             } -Exactly -Times 1 -Scope It
         }
@@ -194,18 +192,9 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
 
     Context 'When the SQL Server instance is not found' {
         BeforeAll {
-            Mock -CommandName Get-SqlDscManagedComputer -MockWith {
-                return [PSCustomObject]@{
-                    ServerInstances = @{
-                        'MSSQLSERVER' = [PSCustomObject]@{
-                            ServerProtocols = @{}
-                        }
-                    }
-                }
-            }
-
-            Mock -CommandName Get-SqlDscServerProtocolName -MockWith {
-                return [PSCustomObject]@{ Name = 'TcpIp'; DisplayName = 'TCP/IP'; ShortName = 'Tcp' }
+            Mock -CommandName Get-SqlDscManagedComputerInstance -MockWith {
+                # Mock Get-SqlDscManagedComputerInstance to throw when instance not found
+                throw "Could not find SQL Server instance 'NONEXISTENT' on server 'TestServer'"
             }
         }
 
@@ -216,18 +205,17 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
 
     Context 'When the protocol is not found' {
         BeforeAll {
-            Mock -CommandName Get-SqlDscManagedComputer -MockWith {
+            Mock -CommandName Get-SqlDscManagedComputerInstance -MockWith {
                 $mockServerInstance = [PSCustomObject]@{
                     ServerProtocols = @{
                         # Missing the Tcp protocol
                     }
-                }
-
-                return [PSCustomObject]@{
-                    ServerInstances = @{
-                        'MSSQLSERVER' = $mockServerInstance
+                    Parent = [PSCustomObject]@{
+                        Name = 'TestServer'
                     }
                 }
+
+                return $mockServerInstance
             }
 
             Mock -CommandName Get-SqlDscServerProtocolName -MockWith {
@@ -241,10 +229,42 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
     }
 
     Context 'When testing parameter sets' {
-        It 'Should have the correct parameters in parameter set __AllParameterSets' -ForEach @(
+        It 'Should have the correct parameters in parameter set ByServerName' -ForEach @(
             @{
-                ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[[-ServerName] <string>] [-InstanceName] <string> [[-ProtocolName] <string>] [<CommonParameters>]'
+                ExpectedParameterSetName = 'ByServerName'
+                ExpectedParameters = '-InstanceName <string> [-ServerName <string>] [-ProtocolName <string>] [<CommonParameters>]'
+            }
+        ) {
+            $result = (Get-Command -Name 'Get-SqlDscServerProtocol').ParameterSets |
+                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
+                Select-Object -Property @(
+                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
+                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
+                )
+            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should -Be $ExpectedParameters
+        }
+
+        It 'Should have the correct parameters in parameter set ByManagedComputerObject' -ForEach @(
+            @{
+                ExpectedParameterSetName = 'ByManagedComputerObject'
+                ExpectedParameters = '-InstanceName <string> -ManagedComputerObject <ManagedComputer> [-ProtocolName <string>] [<CommonParameters>]'
+            }
+        ) {
+            $result = (Get-Command -Name 'Get-SqlDscServerProtocol').ParameterSets |
+                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
+                Select-Object -Property @(
+                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
+                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
+                )
+            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should -Be $ExpectedParameters
+        }
+
+        It 'Should have the correct parameters in parameter set ByManagedComputerInstanceObject' -ForEach @(
+            @{
+                ExpectedParameterSetName = 'ByManagedComputerInstanceObject'
+                ExpectedParameters = '-InstanceName <string> -ManagedComputerInstanceObject <ServerInstance> [-ProtocolName <string>] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Get-SqlDscServerProtocol').ParameterSets |
@@ -267,9 +287,20 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
             $parameterInfo.Attributes.Mandatory | Should -BeFalse
         }
 
-        It 'Should have ServerName as an optional parameter' {
+        It 'Should have ServerName as an optional parameter in ByServerName parameter set' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscServerProtocol').Parameters['ServerName']
-            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+            $parameterSetAttribute = $parameterInfo.Attributes | Where-Object -FilterScript { $_.ParameterSetName -eq 'ByServerName' }
+            $parameterSetAttribute.Mandatory | Should -BeFalse
+        }
+
+        It 'Should have ManagedComputerObject as a pipeline parameter' {
+            $parameterInfo = (Get-Command -Name 'Get-SqlDscServerProtocol').Parameters['ManagedComputerObject']
+            $parameterInfo.Attributes.ValueFromPipeline | Should -BeTrue
+        }
+
+        It 'Should have ManagedComputerInstanceObject as a pipeline parameter' {
+            $parameterInfo = (Get-Command -Name 'Get-SqlDscServerProtocol').Parameters['ManagedComputerInstanceObject']
+            $parameterInfo.Attributes.ValueFromPipeline | Should -BeTrue
         }
     }
 }
