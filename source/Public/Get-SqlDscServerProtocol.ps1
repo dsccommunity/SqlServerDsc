@@ -73,14 +73,6 @@
         Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol
 
         Returns server protocol objects from SMO (SQL Server Management Objects).
-
-    .NOTES
-        This command uses SMO (SQL Server Management Objects) to retrieve server
-        protocol information from the specified SQL Server instance.
-
-        The Get-ProtocolNameProperties function used internally is deprecated
-        and should be removed in the future when existing code has moved to
-        new functionality.
 #>
 function Get-SqlDscServerProtocol
 {
@@ -184,6 +176,11 @@ function Get-SqlDscServerProtocol
                 {
                     $allServerProtocols += $serverProtocolObject
                 }
+            }
+
+            if ($allServerProtocols.Count -eq 0)
+            {
+                return $null
             }
 
             return $allServerProtocols
