@@ -90,8 +90,6 @@ function Get-SqlDscManagedComputerInstance
             Write-Verbose -Message (
                 $script:localizedData.ManagedComputerInstance_GetFromObject
             )
-
-
         }
 
         if ($PSBoundParameters.ContainsKey('InstanceName'))
