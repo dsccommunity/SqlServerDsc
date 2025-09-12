@@ -130,6 +130,7 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag 'Public' {
             $result = Get-SqlDscManagedComputerInstance -ServerName 'TestServer'
 
             $result | Should -Not -BeNullOrEmpty
+            $result | Should -HaveCount 2
             Should -Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 1
         }
 
