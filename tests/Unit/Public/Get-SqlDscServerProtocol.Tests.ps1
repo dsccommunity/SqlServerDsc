@@ -24,18 +24,18 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
     $env:SqlServerDscCI = $true
 
-    Import-Module -Name $script:dscModuleName
+    Import-Module -Name $script:moduleName
 
     # Loading mocked classes
     Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../Stubs') -ChildPath 'SMO.cs')
 
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
@@ -44,12 +44,32 @@ AfterAll {
     $PSDefaultParameterValues.Remove('Should:ModuleName')
 
     # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
+    Get-Module -Name $script:moduleName -All | Remove-Module -Force
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
 Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
+    Context 'When testing localized strings' {
+        It 'Should have localized string for getting specific protocol state' {
+            InModuleScope -ScriptBlock {
+                $script:localizedData.ServerProtocol_GetState | Should -Not -BeNullOrEmpty
+            }
+        }
+
+        It 'Should have localized string for getting all protocols' {
+            InModuleScope -ScriptBlock {
+                $script:localizedData.ServerProtocol_GetAllProtocols | Should -Not -BeNullOrEmpty
+            }
+        }
+
+        It 'Should have localized string for protocol not found error' {
+            InModuleScope -ScriptBlock {
+                $script:localizedData.ServerProtocol_ProtocolNotFound | Should -Not -BeNullOrEmpty
+            }
+        }
+    }
+
     Context 'When getting server protocol information' {
         BeforeAll {
             # Mock the Get-SqlDscManagedComputerInstance command
@@ -175,10 +195,26 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
         }
 
         It 'Should use specified server name' {
+            Mock -CommandName Get-ComputerName -MockWith {
+                return 'LocalComputer'
+            }
+            
             $result = Get-SqlDscServerProtocol -ServerName 'TestServer' -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp'
 
             Should -Invoke -CommandName Get-SqlDscManagedComputerInstance -ParameterFilter {
                 $ServerName -eq 'TestServer'
+            } -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should use local computer name when ServerName is not provided' {
+            Mock -CommandName Get-ComputerName -MockWith {
+                return 'LocalComputer'
+            }
+
+            $result = Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp'
+
+            Should -Invoke -CommandName Get-SqlDscManagedComputerInstance -ParameterFilter {
+                $ServerName -eq 'LocalComputer'
             } -Exactly -Times 1 -Scope It
         }
 
@@ -187,6 +223,82 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
 
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'Tcp'
+        }
+    }
+
+    Context 'When using pipeline with managed computer object' {
+        BeforeAll {
+            Mock -CommandName Get-SqlDscManagedComputerInstance -MockWith {
+                $mockServerInstance = [PSCustomObject]@{
+                    ServerProtocols = @{
+                        'Tcp' = [PSCustomObject]@{
+                            Name = 'Tcp'
+                            DisplayName = 'TCP/IP'
+                            IsEnabled = $true
+                        }
+                    }
+                    Parent = [PSCustomObject]@{
+                        Name = 'TestServer'
+                    }
+                }
+                return $mockServerInstance
+            }
+
+            Mock -CommandName Get-SqlDscServerProtocolName -MockWith {
+                return [PSCustomObject]@{ Name = 'TcpIp'; DisplayName = 'TCP/IP'; ShortName = 'Tcp' }
+            }
+
+            $mockManagedComputerObject = [Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer]::new()
+            $mockManagedComputerObject.Name = 'TestServer'
+        }
+
+        It 'Should work with pipeline input from managed computer object' {
+            $result = $mockManagedComputerObject | Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp'
+
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be 'Tcp'
+
+            Should -Invoke -CommandName Get-SqlDscManagedComputerInstance -ParameterFilter {
+                $ManagedComputerObject -eq $mockManagedComputerObject -and $InstanceName -eq 'MSSQLSERVER'
+            } -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When using pipeline with managed computer instance object' {
+        BeforeAll {
+            # Mock Get-SqlDscManagedComputerInstance - it should not be called in this scenario
+            Mock -CommandName Get-SqlDscManagedComputerInstance
+
+            Mock -CommandName Get-SqlDscServerProtocolName -MockWith {
+                return [PSCustomObject]@{ Name = 'TcpIp'; DisplayName = 'TCP/IP'; ShortName = 'Tcp' }
+            }
+
+            $mockManagedComputerInstanceObject = [Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance]::CreateTypeInstance()
+            
+            # Create a real ServerProtocol object
+            $mockServerProtocol = [Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol]::CreateTypeInstance()
+            $mockServerProtocol.Name = 'Tcp'
+            $mockServerProtocol.DisplayName = 'TCP/IP'
+            $mockServerProtocol.IsEnabled = $true
+            
+            # Create a ServerProtocolCollection with indexer support
+            $mockServerProtocolCollection = [Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocolCollection]::CreateTypeInstance()
+            $mockServerProtocolCollection['Tcp'] = $mockServerProtocol
+            
+            $mockManagedComputerInstanceObject.ServerProtocols = $mockServerProtocolCollection
+            $mockManagedComputerInstanceObject.Parent = [PSCustomObject]@{
+                Name = 'TestServer'
+            }
+        }
+
+        It 'Should work with pipeline input from managed computer instance object' {
+            $result = $mockManagedComputerInstanceObject | Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp'
+
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be 'Tcp'
+
+            # Should not call Get-SqlDscManagedComputerInstance when using instance object
+            Should -Invoke -CommandName Get-SqlDscManagedComputerInstance -Exactly -Times 0 -Scope It
         }
     }
 
@@ -225,6 +337,10 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
 
         It 'Should throw an error when protocol is not found' {
             { Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp' } | Should -Throw '*Could not find server protocol*'
+        }
+
+        It 'Should throw terminating error with correct error record properties when protocol is not found' {
+            { Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp' } | Should -Throw -ErrorId 'SqlServerProtocolNotFound,Get-SqlDscServerProtocol'
         }
     }
 

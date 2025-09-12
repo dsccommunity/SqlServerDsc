@@ -26,6 +26,8 @@ BeforeDiscovery {
 BeforeAll {
     $script:moduleName = 'SqlServerDsc'
 
+    $env:SqlServerDscCI = $true
+
     Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
@@ -40,9 +42,19 @@ AfterAll {
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:moduleName -All | Remove-Module -Force
+
+    Remove-Item -Path 'env:SqlServerDscCI'
 }
 
 Describe 'Get-SqlDscServerProtocolName' -Tag 'Public' {
+    Context 'When testing localized strings' {
+        It 'Should have localized string for getting protocol mappings' {
+            InModuleScope -ScriptBlock {
+                $script:localizedData.ServerProtocolName_GetProtocolMappings | Should -Not -BeNullOrEmpty
+            }
+        }
+    }
+
     Context 'When getting protocol mappings by protocol name' {
         It 'Should return correct mapping for TcpIp protocol' {
             $result = Get-SqlDscServerProtocolName -ProtocolName 'TcpIp'

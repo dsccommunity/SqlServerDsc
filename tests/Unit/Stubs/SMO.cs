@@ -1460,11 +1460,30 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
 
     public class ServerProtocolCollection
     {
-        // Property
-        public Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol Item { get; set; }
+        // Properties
         public System.Int32 Count { get; set; }
         public System.Boolean IsSynchronized { get; set; }
         public System.Object SyncRoot { get; set; }
+
+        // Collection of protocols
+        private System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol> protocols = new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol>();
+
+        // Indexer
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol this[string name]
+        {
+            get
+            {
+                if (protocols.ContainsKey(name))
+                {
+                    return protocols[name];
+                }
+                return null;
+            }
+            set
+            {
+                protocols[name] = value;
+            }
+        }
 
         // Fabricated constructor
         private ServerProtocolCollection() { }
