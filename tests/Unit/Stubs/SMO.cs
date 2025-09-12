@@ -1461,12 +1461,12 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
     public class ServerProtocolCollection
     {
         // Properties
-        public System.Int32 Count { get; set; }
+        public System.Int32 Count { get { return protocols.Count; } }
         public System.Boolean IsSynchronized { get; set; }
         public System.Object SyncRoot { get; set; }
 
         // Collection of protocols
-        private System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol> protocols = new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol>();
+        private System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol> protocols = new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol>(System.StringComparer.OrdinalIgnoreCase);
 
         // Indexer
         public Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol this[string name]
@@ -1481,7 +1481,14 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
             }
             set
             {
-                protocols[name] = value;
+                if (value == null)
+                {
+                    protocols.Remove(name);
+                }
+                else
+                {
+                    protocols[name] = value;
+                }
             }
         }
 
@@ -1512,13 +1519,45 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
         }
     }
 
-    public class ServerInstanceCollection
+    public class ServerInstanceCollection : System.Collections.IEnumerable
     {
-        // Property
-        public Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance Item { get; set; }
-        public System.Int32 Count { get; set; }
+        // Properties
+        public System.Int32 Count { get { return instances.Count; } }
         public System.Boolean IsSynchronized { get; set; }
         public System.Object SyncRoot { get; set; }
+
+        // Collection of instances
+        private System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance> instances = new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance>(System.StringComparer.OrdinalIgnoreCase);
+
+        // Indexer
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance this[string name]
+        {
+            get
+            {
+                if (instances.ContainsKey(name))
+                {
+                    return instances[name];
+                }
+                return null;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    instances.Remove(name);
+                }
+                else
+                {
+                    instances[name] = value;
+                }
+            }
+        }
+
+        // IEnumerable implementation
+        public System.Collections.IEnumerator GetEnumerator()
+        {
+            return instances.Values.GetEnumerator();
+        }
 
         // Fabricated constructor
         private ServerInstanceCollection() { }

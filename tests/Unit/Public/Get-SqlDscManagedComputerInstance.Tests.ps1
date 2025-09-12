@@ -89,16 +89,19 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag 'Public' {
             }
 
             Mock -CommandName Get-SqlDscManagedComputer -MockWith {
-                $mockServerInstance = [Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance]::CreateTypeInstance()
-                $mockServerInstance.Name = 'MSSQLSERVER'
+                $mockServerInstance1 = [Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance]::CreateTypeInstance()
+                $mockServerInstance1.Name = 'MSSQLSERVER'
 
-                $mockManagedComputerObject = [PSCustomObject]@{
-                    Name = 'TestServer'
-                    ServerInstances = @{
-                        'MSSQLSERVER' = $mockServerInstance
-                        'SQL2019' = $mockServerInstance
-                    }
-                }
+                $mockServerInstance2 = [Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance]::CreateTypeInstance()
+                $mockServerInstance2.Name = 'SQL2019'
+
+                $mockServerInstanceCollection = [Microsoft.SqlServer.Management.Smo.Wmi.ServerInstanceCollection]::CreateTypeInstance()
+                $mockServerInstanceCollection['MSSQLSERVER'] = $mockServerInstance1
+                $mockServerInstanceCollection['SQL2019'] = $mockServerInstance2
+
+                $mockManagedComputerObject = [Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer]::new()
+                $mockManagedComputerObject.Name = 'TestServer'
+                $mockManagedComputerObject.ServerInstances = $mockServerInstanceCollection
 
                 return $mockManagedComputerObject
             }
@@ -141,15 +144,19 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag 'Public' {
 
     Context 'When getting server instance by managed computer object' {
         BeforeAll {
-            $mockServerInstance = [Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance]::CreateTypeInstance()
-            $mockServerInstance.Name = 'MSSQLSERVER'
+            $mockServerInstance1 = [Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance]::CreateTypeInstance()
+            $mockServerInstance1.Name = 'MSSQLSERVER'
 
-            $mockManagedComputerObject = [PSCustomObject]@{
-                Name = 'TestServer'
-                ServerInstances = @{
-                    'MSSQLSERVER' = $mockServerInstance
-                }
-            }
+            $mockServerInstance2 = [Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance]::CreateTypeInstance()
+            $mockServerInstance2.Name = 'SQL2019'
+
+            $mockServerInstanceCollection = [Microsoft.SqlServer.Management.Smo.Wmi.ServerInstanceCollection]::CreateTypeInstance()
+            $mockServerInstanceCollection['MSSQLSERVER'] = $mockServerInstance1
+            $mockServerInstanceCollection['SQL2019'] = $mockServerInstance2
+
+            $mockManagedComputerObject = [Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer]::new()
+            $mockManagedComputerObject.Name = 'TestServer'
+            $mockManagedComputerObject.ServerInstances = $mockServerInstanceCollection
         }
 
         It 'Should return specific instance from managed computer object' {
@@ -190,7 +197,7 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set ByManagedComputerObject' -ForEach @(
             @{
                 ExpectedParameterSetName = 'ByManagedComputerObject'
-                ExpectedParameters = '-ManagedComputerObject <Object> [-InstanceName <string>] [<CommonParameters>]'
+                ExpectedParameters = '-ManagedComputerObject <ManagedComputer> [-InstanceName <string>] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Get-SqlDscManagedComputerInstance').ParameterSets |
