@@ -145,6 +145,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Module now outputs a verbose message instead of a warning when the SMO
   dependency module is missing during import to work around a DSC v3 issue.
 - VS Code tasks configuration was improved to support AI.
+- `.vscode/settings.json`
+  - Set `terminal.integrated.defaultProfile.osx` and `terminal.integrated.defaultProfile.linux`
+    to `pwsh` and added terminal profiles for macOS and Linux to ensure the
+    integrated terminal defaults to `pwsh` in developer environments.
 - `Prerequisites` tests
   - Added creation of `SqlIntegrationTest` local Windows user for integration testing.
 - `tests/Integration/Commands/README.md`
@@ -224,6 +228,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       `Developer`.
     - The read-only properties `CurrentVersion`, `ServiceName` and `ErrorDumpDirectory`
       were removed.
+- Bump GitHub Actions Stale to v10
 
 ### Added
 
