@@ -96,7 +96,6 @@ function Get-SqlDscServerProtocol
 
         [Parameter(Mandatory = $true, ParameterSetName = 'ByServerName')]
         [Parameter(Mandatory = $true, ParameterSetName = 'ByManagedComputerObject')]
-        [Parameter(Mandatory = $true, ParameterSetName = 'ByManagedComputerInstanceObject')]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $InstanceName,

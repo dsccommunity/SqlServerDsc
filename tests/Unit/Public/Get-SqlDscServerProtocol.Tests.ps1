@@ -107,7 +107,7 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
             # Mock Get-SqlDscServerProtocolName since it's the new command
             Mock -CommandName Get-SqlDscServerProtocolName -MockWith {
                 param($ProtocolName, $All)
-                
+
                 if ($All)
                 {
                     return @(
@@ -198,7 +198,7 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
             Mock -CommandName Get-ComputerName -MockWith {
                 return 'LocalComputer'
             }
-            
+
             $result = Get-SqlDscServerProtocol -ServerName 'TestServer' -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp'
 
             Should -Invoke -CommandName Get-SqlDscManagedComputerInstance -ParameterFilter {
@@ -274,17 +274,17 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
             }
 
             $mockManagedComputerInstanceObject = [Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance]::CreateTypeInstance()
-            
+
             # Create a real ServerProtocol object
             $mockServerProtocol = [Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol]::CreateTypeInstance()
             $mockServerProtocol.Name = 'Tcp'
             $mockServerProtocol.DisplayName = 'TCP/IP'
             $mockServerProtocol.IsEnabled = $true
-            
+
             # Create a ServerProtocolCollection with indexer support
             $mockServerProtocolCollection = [Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocolCollection]::CreateTypeInstance()
             $mockServerProtocolCollection['Tcp'] = $mockServerProtocol
-            
+
             $mockManagedComputerInstanceObject.ServerProtocols = $mockServerProtocolCollection
             $mockManagedComputerInstanceObject.Parent = [PSCustomObject]@{
                 Name = 'TestServer'
@@ -292,7 +292,7 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
         }
 
         It 'Should work with pipeline input from managed computer instance object' {
-            $result = $mockManagedComputerInstanceObject | Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp'
+            $result = $mockManagedComputerInstanceObject | Get-SqlDscServerProtocol -ProtocolName 'TcpIp'
 
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'Tcp'
@@ -380,7 +380,7 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set ByManagedComputerInstanceObject' -ForEach @(
             @{
                 ExpectedParameterSetName = 'ByManagedComputerInstanceObject'
-                ExpectedParameters = '-InstanceName <string> -ManagedComputerInstanceObject <ServerInstance> [-ProtocolName <string>] [<CommonParameters>]'
+                ExpectedParameters = '-ManagedComputerInstanceObject <ServerInstance> [-ProtocolName <string>] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Get-SqlDscServerProtocol').ParameterSets |
