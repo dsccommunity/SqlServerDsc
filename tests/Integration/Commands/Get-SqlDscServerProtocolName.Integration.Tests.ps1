@@ -182,7 +182,7 @@ Describe 'Get-SqlDscServerProtocolName' -Tag @('Integration_SQL2017', 'Integrati
         It 'Should return PSCustomObject with correct properties' {
             $result = Get-SqlDscServerProtocolName -ProtocolName 'TcpIp' -ErrorAction 'Stop'
 
-            $result | Should -BeOfType '[PSCustomObject]'
+            $result | Should -BeOfType 'Should -BeOfType 'System.Management.Automation.PSCustomObject''
             $result.PSObject.Properties.Name | Should -Contain 'Name'
             $result.PSObject.Properties.Name | Should -Contain 'DisplayName'
             $result.PSObject.Properties.Name | Should -Contain 'ShortName'
