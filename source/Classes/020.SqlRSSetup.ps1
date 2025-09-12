@@ -608,7 +608,7 @@ class SqlRSSetup : ResourceBase
             'InstallFolder'
             'LogPath'
         ) |
-            Where-Object {
+            Where-Object -FilterScript {
                 $properties.ContainsKey($_)
             }
 

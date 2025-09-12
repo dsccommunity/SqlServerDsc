@@ -1842,9 +1842,3 @@ Describe 'SqlLogin\Set-SQLServerLoginPassword' {
         }
     }
 }
-
-# }
-# finally
-# {
-#     Invoke-TestCleanup
-# }
