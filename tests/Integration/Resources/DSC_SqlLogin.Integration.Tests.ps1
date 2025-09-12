@@ -6,14 +6,14 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
@@ -144,7 +144,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser1Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser1Type
-            $resourceCurrentState.Disabled | Should -Be $false
+            $resourceCurrentState.Disabled | Should -BeFalse
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -202,7 +202,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser2Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser2Type
             $resourceCurrentState.DefaultDatabase | Should -Be $ConfigurationData.AllNodes.DefaultDbName
-            $resourceCurrentState.Disabled | Should -Be $false
+            $resourceCurrentState.Disabled | Should -BeFalse
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -259,7 +259,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser3Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser3Type
-            $resourceCurrentState.Disabled | Should -Be $true
+            $resourceCurrentState.Disabled | Should -BeTrue
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -316,10 +316,10 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser4Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser4Type
-            $resourceCurrentState.Disabled | Should -Be $false
-            $resourceCurrentState.LoginMustChangePassword | Should -Be $false
-            $resourceCurrentState.LoginPasswordExpirationEnabled | Should -Be $true
-            $resourceCurrentState.LoginPasswordPolicyEnforced | Should -Be $true
+            $resourceCurrentState.Disabled | Should -BeFalse
+            $resourceCurrentState.LoginMustChangePassword | Should -BeFalse
+            $resourceCurrentState.LoginPasswordExpirationEnabled | Should -BeTrue
+            $resourceCurrentState.LoginPasswordPolicyEnforced | Should -BeTrue
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -422,10 +422,10 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser4Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser4Type
-            $resourceCurrentState.Disabled | Should -Be $false
-            $resourceCurrentState.LoginMustChangePassword | Should -Be $false # Left the same as this cannot be updated
-            $resourceCurrentState.LoginPasswordExpirationEnabled | Should -Be $false
-            $resourceCurrentState.LoginPasswordPolicyEnforced | Should -Be $false
+            $resourceCurrentState.Disabled | Should -BeFalse
+            $resourceCurrentState.LoginMustChangePassword | Should -BeFalse # Left the same as this cannot be updated
+            $resourceCurrentState.LoginPasswordExpirationEnabled | Should -BeFalse
+            $resourceCurrentState.LoginPasswordPolicyEnforced | Should -BeFalse
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -593,7 +593,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser5Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser5Type
-            $resourceCurrentState.Disabled | Should -Be $false
+            $resourceCurrentState.Disabled | Should -BeFalse
             $resourceCurrentState.LoginMustChangePassword | Should -BeFalse
             $resourceCurrentState.LoginPasswordExpirationEnabled | Should -BeFalse
             $resourceCurrentState.LoginPasswordPolicyEnforced | Should -BeFalse
@@ -697,7 +697,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser5Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser5Type
-            $resourceCurrentState.Disabled | Should -Be $false
+            $resourceCurrentState.Disabled | Should -BeFalse
             $resourceCurrentState.LoginMustChangePassword | Should -BeFalse
             $resourceCurrentState.LoginPasswordExpirationEnabled | Should -BeFalse
             $resourceCurrentState.LoginPasswordPolicyEnforced | Should -BeTrue
@@ -841,7 +841,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser5Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser5Type
-            $resourceCurrentState.Disabled | Should -Be $false
+            $resourceCurrentState.Disabled | Should -BeFalse
             $resourceCurrentState.LoginMustChangePassword | Should -BeFalse
             $resourceCurrentState.LoginPasswordExpirationEnabled | Should -BeTrue
             $resourceCurrentState.LoginPasswordPolicyEnforced | Should -BeTrue
@@ -901,7 +901,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser5Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser5Type
-            $resourceCurrentState.Disabled | Should -Be $false
+            $resourceCurrentState.Disabled | Should -BeFalse
             $resourceCurrentState.LoginMustChangePassword | Should -BeFalse
             $resourceCurrentState.LoginPasswordExpirationEnabled | Should -BeFalse
             # This was set to true by the previous test.
@@ -962,7 +962,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser5Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser5Type
-            $resourceCurrentState.Disabled | Should -Be $false
+            $resourceCurrentState.Disabled | Should -BeFalse
             $resourceCurrentState.LoginMustChangePassword | Should -BeFalse
             $resourceCurrentState.LoginPasswordExpirationEnabled | Should -BeFalse
             $resourceCurrentState.LoginPasswordPolicyEnforced | Should -BeFalse
@@ -1022,7 +1022,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscSqlUsers1Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscSqlUsers1Type
-            $resourceCurrentState.Disabled | Should -Be $false
+            $resourceCurrentState.Disabled | Should -BeFalse
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -1202,3 +1202,4 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
     }
 }
+

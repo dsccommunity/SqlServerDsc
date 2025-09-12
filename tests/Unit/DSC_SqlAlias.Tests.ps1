@@ -4,7 +4,7 @@
 #>
 
 # Suppressing this rule because Script Analyzer does not understand Pester's syntax.
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
 BeforeDiscovery {
@@ -12,14 +12,14 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
@@ -138,7 +138,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                         $result.ServerName | Should -Be 'SqlNode.company.local'
                         $result.Protocol | Should -Be 'TCP'
                         $result.TcpPort | Should -BeExactly 1433
-                        $result.UseDynamicTcpPort | Should -Be $false
+                        $result.UseDynamicTcpPort | Should -BeFalse
                         $result.PipeName | Should -Be ''
                     }
                 }
@@ -192,7 +192,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                         $result.ServerName | Should -BeNullOrEmpty
                         $result.Protocol | Should -Be ''
                         $result.TcpPort | Should -BeExactly 0
-                        $result.UseDynamicTcpPort | Should -Be $false
+                        $result.UseDynamicTcpPort | Should -BeFalse
                         $result.PipeName | Should -Be ''
                     }
                 }
@@ -248,7 +248,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                         $result.ServerName | Should -Be 'SqlNode.company.local'
                         $result.Protocol | Should -Be 'TCP'
                         $result.TcpPort | Should -BeExactly 0
-                        $result.UseDynamicTcpPort | Should -Be $true
+                        $result.UseDynamicTcpPort | Should -BeTrue
                         $result.PipeName | Should -Be ''
                     }
                 }
@@ -302,7 +302,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                         $result.ServerName | Should -BeNullOrEmpty
                         $result.Protocol | Should -Be ''
                         $result.TcpPort | Should -BeExactly 0
-                        $result.UseDynamicTcpPort | Should -Be $false
+                        $result.UseDynamicTcpPort | Should -BeFalse
                         $result.PipeName | Should -Be ''
                     }
                 }
@@ -375,7 +375,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                         $result.ServerName | Should -BeNullOrEmpty
                         $result.Protocol | Should -Be 'NP'
                         $result.TcpPort | Should -BeExactly 0
-                        $result.UseDynamicTcpPort | Should -Be $false
+                        $result.UseDynamicTcpPort | Should -BeFalse
                         $result.PipeName | Should -Be '\\SqlNode\PIPE\sql\query'
                     }
                 }
@@ -429,7 +429,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                         $result.ServerName | Should -BeNullOrEmpty
                         $result.Protocol | Should -Be ''
                         $result.TcpPort | Should -BeExactly 0
-                        $result.UseDynamicTcpPort | Should -Be $false
+                        $result.UseDynamicTcpPort | Should -BeFalse
                         $result.PipeName | Should -Be ''
                     }
                 }
@@ -490,7 +490,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                     $result.ServerName | Should -BeNullOrEmpty
                     $result.Protocol | Should -Be ''
                     $result.TcpPort | Should -BeExactly 0
-                    $result.UseDynamicTcpPort | Should -Be $false
+                    $result.UseDynamicTcpPort | Should -BeFalse
                     $result.PipeName | Should -Be ''
                 }
             }
@@ -543,7 +543,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                     $result.ServerName | Should -BeNullOrEmpty
                     $result.Protocol | Should -Be ''
                     $result.TcpPort | Should -BeExactly 0
-                    $result.UseDynamicTcpPort | Should -Be $false
+                    $result.UseDynamicTcpPort | Should -BeFalse
                     $result.PipeName | Should -Be ''
                 }
             }

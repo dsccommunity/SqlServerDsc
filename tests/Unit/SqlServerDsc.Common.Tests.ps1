@@ -22,7 +22,7 @@
 # Suppressing this rule because ConvertTo-SecureString is used to simplify the tests.
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 # Suppressing this rule because Script Analyzer does not understand Pester's syntax.
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
 BeforeDiscovery {
@@ -30,14 +30,14 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
@@ -1889,7 +1889,7 @@ Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEff
             $mockInvokeQueryPermissionsSet = $mockAllServerPermissionsPresent.Clone()
             $testLoginEffectiveServerPermissionsParams.Permissions = $mockAllServerPermissionsPresent.Clone()
 
-            Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should -Be $true
+            Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should -BeTrue
 
             Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
         }
@@ -1898,7 +1898,7 @@ Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEff
             $mockInvokeQueryPermissionsSet = $mockAllLoginPermissionsPresent.Clone()
             $testLoginEffectiveLoginPermissionsParams.Permissions = $mockAllLoginPermissionsPresent.Clone()
 
-            Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should -Be $true
+            Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should -BeTrue
 
             Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
         }
@@ -1909,7 +1909,7 @@ Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEff
             $mockInvokeQueryPermissionsSet = $mockServerPermissionsMissing.Clone()
             $testLoginEffectiveServerPermissionsParams.Permissions = $mockAllServerPermissionsPresent.Clone()
 
-            Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should -Be $false
+            Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should -BeFalse
 
             Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
         }
@@ -1918,7 +1918,7 @@ Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEff
             $mockInvokeQueryPermissionsSet = @()
             $testLoginEffectiveServerPermissionsParams.Permissions = $mockAllServerPermissionsPresent.Clone()
 
-            Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should -Be $false
+            Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should -BeFalse
 
             Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
         }
@@ -1927,7 +1927,7 @@ Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEff
             $mockInvokeQueryPermissionsSet = $mockLoginPermissionsMissing.Clone()
             $testLoginEffectiveLoginPermissionsParams.Permissions = $mockAllLoginPermissionsPresent.Clone()
 
-            Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should -Be $false
+            Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should -BeFalse
 
             Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
         }
@@ -1936,7 +1936,7 @@ Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEff
             $mockInvokeQueryPermissionsSet = @()
             $testLoginEffectiveLoginPermissionsParams.Permissions = $mockAllLoginPermissionsPresent.Clone()
 
-            Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should -Be $false
+            Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should -BeFalse
 
             Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
         }
@@ -2145,7 +2145,7 @@ Describe 'SqlServerDsc.Common\Test-AvailabilityReplicaSeedingModeAutomatic' -Tag
         It 'Should return $false when the instance version is <_>' -ForEach @(11, 12) {
             $mockSqlVersion = $_
 
-            Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should -Be $false
+            Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should -BeFalse
 
             Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly
@@ -2155,7 +2155,7 @@ Describe 'SqlServerDsc.Common\Test-AvailabilityReplicaSeedingModeAutomatic' -Tag
         It 'Should return $false when the instance version is <_> and the replica seeding mode is manual' -ForEach @(13, 14, 15) {
             $mockSqlVersion = $_
 
-            Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should -Be $false
+            Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should -BeFalse
 
             Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
@@ -2173,7 +2173,7 @@ Describe 'SqlServerDsc.Common\Test-AvailabilityReplicaSeedingModeAutomatic' -Tag
             $mockSqlVersion = $_
             $mockDynamic_SeedingMode = 'Automatic'
 
-            Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should -Be $true
+            Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should -BeTrue
 
             Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
@@ -2218,28 +2218,28 @@ Describe 'SqlServerDsc.Common\Test-ImpersonatePermissions' -Tag 'TestImpersonate
     Context 'When impersonate permissions are present for the login' {
         It 'Should return true when the impersonate any login permissions are present for the login' {
             Mock -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateAnyLogin_ParameterFilter -MockWith { $true }
-            Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $true
+            Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -BeTrue
 
             Should -Invoke -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateAnyLogin_ParameterFilter -Scope It -Times 1 -Exactly
         }
 
         It 'Should return true when the control server permissions are present for the login' {
             Mock -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlServer_ParameterFilter -MockWith { $true }
-            Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $true
+            Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -BeTrue
 
             Should -Invoke -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlServer_ParameterFilter -Scope It -Times 1 -Exactly
         }
 
         It 'Should return true when the impersonate login permissions are present for the login' {
             Mock -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateLogin_ParameterFilter -MockWith { $true }
-            Test-ImpersonatePermissions -ServerObject $mockServerObject -SecurableName 'Login1' | Should -Be $true
+            Test-ImpersonatePermissions -ServerObject $mockServerObject -SecurableName 'Login1' | Should -BeTrue
 
             Should -Invoke -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateLogin_ParameterFilter -Scope It -Times 1 -Exactly
         }
 
         It 'Should return true when the control login permissions are present for the login' {
             Mock -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlLogin_ParameterFilter -MockWith { $true }
-            Test-ImpersonatePermissions -ServerObject $mockServerObject -SecurableName 'Login1' | Should -Be $true
+            Test-ImpersonatePermissions -ServerObject $mockServerObject -SecurableName 'Login1' | Should -BeTrue
 
             Should -Invoke -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlLogin_ParameterFilter -Scope It -Times 1 -Exactly
         }
@@ -2247,7 +2247,7 @@ Describe 'SqlServerDsc.Common\Test-ImpersonatePermissions' -Tag 'TestImpersonate
 
     Context 'When impersonate permissions are missing for the login' {
         It 'Should return false when the server permissions are missing for the login' {
-            Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -Be $false
+            Test-ImpersonatePermissions -ServerObject $mockServerObject | Should -BeFalse
 
             Should -Invoke -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateAnyLogin_ParameterFilter -Scope It -Times 1 -Exactly
             Should -Invoke -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlServer_ParameterFilter -Scope It -Times 1 -Exactly
@@ -2256,7 +2256,7 @@ Describe 'SqlServerDsc.Common\Test-ImpersonatePermissions' -Tag 'TestImpersonate
         }
 
         It 'Should return false when the login permissions are missing for the login' {
-            Test-ImpersonatePermissions -ServerObject $mockServerObject -SecurableName 'Login1' | Should -Be $false
+            Test-ImpersonatePermissions -ServerObject $mockServerObject -SecurableName 'Login1' | Should -BeFalse
 
             Should -Invoke -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ImpersonateAnyLogin_ParameterFilter -Scope It -Times 1 -Exactly
             Should -Invoke -CommandName Test-LoginEffectivePermissions -ParameterFilter $mockTestLoginEffectivePermissions_ControlServer_ParameterFilter -Scope It -Times 1 -Exactly
@@ -2393,7 +2393,7 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
 
         It 'Should return the correct service instance' {
             $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -SetupCredential $mockSqlCredential -LoginType 'SqlLogin' -ErrorAction 'Stop'
-            $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $false
+            $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -BeFalse
             $databaseEngineServerObject.ConnectionContext.Login | Should -Be $mockSqlCredentialUserName
             $databaseEngineServerObject.ConnectionContext.SecurePassword | Should -Be $mockSqlCredentialSecurePassword
             $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly $mockExpectedDatabaseEngineServer
@@ -2436,7 +2436,7 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
 
         It 'Should return the correct service instance' {
             $databaseEngineServerObject = Connect-SQL -InstanceName $mockExpectedDatabaseEngineInstance -SetupCredential $mockSqlCredential -LoginType 'SqlLogin' -ErrorAction 'Stop'
-            $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $false
+            $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -BeFalse
             $databaseEngineServerObject.ConnectionContext.Login | Should -Be $mockSqlCredentialUserName
             $databaseEngineServerObject.ConnectionContext.SecurePassword | Should -Be $mockSqlCredentialSecurePassword
             $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
@@ -2488,11 +2488,11 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
             It 'Should return the correct service instance' {
                 $databaseEngineServerObject = Connect-SQL @testParameters -ErrorAction 'Stop'
                 $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
-                $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
+                $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -BeTrue
                 $databaseEngineServerObject.ConnectionContext.ConnectAsUserPassword | Should -BeExactly $mockWinCredential.GetNetworkCredential().Password
                 $databaseEngineServerObject.ConnectionContext.ConnectAsUserName | Should -BeExactly $mockWinCredential.UserName
-                $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
-                $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $true
+                $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -BeTrue
+                $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -BeTrue
 
                 Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
                     -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
@@ -2513,11 +2513,11 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
                 It 'Should return the correct service instance' {
                     $databaseEngineServerObject = Connect-SQL @testParameters -ErrorAction 'Stop'
                     $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
-                    $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
+                    $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -BeTrue
                     $databaseEngineServerObject.ConnectionContext.ConnectAsUserPassword | Should -BeExactly $mockWinCredential.GetNetworkCredential().Password
                     $databaseEngineServerObject.ConnectionContext.ConnectAsUserName | Should -BeExactly $mockWinCredential.UserName
-                    $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
-                    $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $true
+                    $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -BeTrue
+                    $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -BeTrue
 
                     Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
                         -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
@@ -2537,11 +2537,11 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
                 It 'Should return the correct service instance' {
                     $databaseEngineServerObject = Connect-SQL @testParameters -ErrorAction 'Stop'
                     $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
-                    $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
+                    $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -BeTrue
                     $databaseEngineServerObject.ConnectionContext.ConnectAsUserPassword | Should -BeExactly $mockWinFqdnCredential.GetNetworkCredential().Password
                     $databaseEngineServerObject.ConnectionContext.ConnectAsUserName | Should -BeExactly $mockWinFqdnCredential.UserName
-                    $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
-                    $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $true
+                    $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -BeTrue
+                    $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -BeTrue
 
                     Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
                         -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
@@ -2755,7 +2755,7 @@ Describe 'SqlServerDsc.Common\Test-ClusterPermissions' -Tag 'TestClusterPermissi
         It "Should return NullOrEmpty when 'NT SERVICE\ClusSvc' is present and has the permissions to manage availability groups" {
             $mockClusterServicePermissionsPresent = $true
 
-            Test-ClusterPermissions -ServerObject $mockServerObject | Should -Be $true
+            Test-ClusterPermissions -ServerObject $mockServerObject | Should -BeTrue
 
             Should -Invoke -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
                 $LoginName -eq $clusterServiceName
@@ -2768,7 +2768,7 @@ Describe 'SqlServerDsc.Common\Test-ClusterPermissions' -Tag 'TestClusterPermissi
         It "Should return NullOrEmpty when 'NT AUTHORITY\System' is present and has the permissions to manage availability groups" {
             $mockSystemPermissionsPresent = $true
 
-            Test-ClusterPermissions -ServerObject $mockServerObject | Should -Be $true
+            Test-ClusterPermissions -ServerObject $mockServerObject | Should -BeTrue
 
             Should -Invoke -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
                 $LoginName -eq $clusterServiceName
@@ -3224,15 +3224,15 @@ Describe 'SqlServerDsc.Common\Find-ExceptionByNumber' -Tag 'FindExceptionByNumbe
 
     Context 'When searching Exception objects' {
         It 'Should return true for main exception' {
-            Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 1 | Should -Be $true
+            Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 1 | Should -BeTrue
         }
 
         It 'Should return true for inner exception' {
-            Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 2 | Should -Be $true
+            Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 2 | Should -BeTrue
         }
 
         It 'Should return false when message not found' {
-            Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 3 | Should -Be $false
+            Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 3 | Should -BeFalse
         }
     }
 }
@@ -3382,19 +3382,19 @@ Describe 'SqlServerDsc.Common\Get-FilePathMajorVersion' -Tag 'GetFilePathMajorVe
 Describe 'Test-FeatureFlag' -Tag 'TestFeatureFlag' {
     Context 'When no feature flags was provided' {
         It 'Should return $false' {
-            Test-FeatureFlag -FeatureFlag $null -TestFlag 'MyFlag' | Should -Be $false
+            Test-FeatureFlag -FeatureFlag $null -TestFlag 'MyFlag' | Should -BeFalse
         }
     }
 
     Context 'When feature flags was provided' {
         It 'Should return $true' {
-            Test-FeatureFlag -FeatureFlag @('FirstFlag', 'SecondFlag') -TestFlag 'SecondFlag' | Should -Be $true
+            Test-FeatureFlag -FeatureFlag @('FirstFlag', 'SecondFlag') -TestFlag 'SecondFlag' | Should -BeTrue
         }
     }
 
     Context 'When feature flags was provided, but missing' {
         It 'Should return $false' {
-            Test-FeatureFlag -FeatureFlag @('MyFlag2') -TestFlag 'MyFlag' | Should -Be $false
+            Test-FeatureFlag -FeatureFlag @('MyFlag2') -TestFlag 'MyFlag' | Should -BeFalse
         }
     }
 }

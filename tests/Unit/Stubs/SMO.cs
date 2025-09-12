@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using System.Security;
 using System.Runtime.InteropServices;
 
@@ -345,6 +346,37 @@ namespace Microsoft.SqlServer.Management.Smo
         public void Revoke( Microsoft.SqlServer.Management.Smo.ServerPermissionSet permission, string granteeName )
         {
         }
+
+        // Property for SQL Agent support
+        public Microsoft.SqlServer.Management.Smo.Agent.JobServer JobServer { get; set; }
+
+        // Property for server configuration
+        public Microsoft.SqlServer.Management.Smo.Configuration Configuration { get; set; }
+
+        // Fabricated constructor
+        private Server(string name, bool dummyParam)
+        {
+            this.Name = name;
+        }
+
+        public static Server CreateTypeInstance()
+        {
+            var server = new Server();
+
+            server.JobServer = new Microsoft.SqlServer.Management.Smo.Agent.JobServer
+            {
+                Parent = server,
+                Alerts = Microsoft.SqlServer.Management.Smo.Agent.AlertCollection.CreateTypeInstance(),
+                Operators = Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection.CreateTypeInstance()
+            };
+
+            server.JobServer.Alerts.Parent = server.JobServer;
+            server.JobServer.Operators.Parent = server.JobServer;
+
+            server.Configuration = Microsoft.SqlServer.Management.Smo.Configuration.CreateTypeInstance();
+
+            return server;
+        }
     }
 
     // TypeName: Microsoft.SqlServer.Management.Smo.Login
@@ -357,11 +389,13 @@ namespace Microsoft.SqlServer.Management.Smo
 
         public string Name;
         public LoginType LoginType = LoginType.Unknown;
+        public bool MockCreateCalled = false;
         public bool MustChangePassword = false;
         public bool PasswordPolicyEnforced = false;
         public bool PasswordExpirationEnabled = false;
         public bool IsDisabled = false;
         public string DefaultDatabase;
+        public Server Parent;
 
         public Login( string name )
         {
@@ -371,11 +405,16 @@ namespace Microsoft.SqlServer.Management.Smo
         public Login( Server server, string name )
         {
             this.Name = name;
+            this.Parent = server;
         }
 
         public Login( Object server, string name )
         {
             this.Name = name;
+            if (server is Server)
+            {
+                this.Parent = (Server)server;
+            }
         }
 
         public void Alter()
@@ -427,6 +466,8 @@ namespace Microsoft.SqlServer.Management.Smo
             if( this.LoginType == LoginType.SqlLogin && _mockPasswordPassed != true ) {
                 throw new System.Exception( "Called Create() method for the LoginType 'SqlLogin' but called with the wrong overloaded method. Did not pass the password with the Create() method." );
             }
+
+            this.MockCreateCalled = true;
         }
 
         public void Create( SecureString secureString )
@@ -478,6 +519,20 @@ namespace Microsoft.SqlServer.Management.Smo
             }
         }
 
+        public void Disable()
+        {
+            this.IsDisabled = true;
+        }
+
+        public void Enable()
+        {
+            this.IsDisabled = false;
+        }
+
+        public string Certificate;
+        public string AsymmetricKey;
+        public string Language;
+
         public void Drop()
         {
         }
@@ -491,13 +546,16 @@ namespace Microsoft.SqlServer.Management.Smo
     {
         public ServerRole( Server server, string name ) {
             this.Name = name;
+            this.Parent = server;
         }
 
         public ServerRole( Object server, string name ) {
             this.Name = name;
+            this.Parent = (Server)server;
         }
 
         public string Name;
+        public Server Parent;
     }
 
 
@@ -516,6 +574,8 @@ namespace Microsoft.SqlServer.Management.Smo
         public DateTime CreateDate;
         public DatabaseEncryptionKey DatabaseEncryptionKey;
         public string DefaultFileStreamFileGroup;
+        public string DefaultFileGroup = "PRIMARY";
+        public string DefaultFullTextCatalog;
         public bool EncryptionEnabled = false;
         public Hashtable FileGroups;
         public string FilestreamDirectoryName;
@@ -565,6 +625,33 @@ namespace Microsoft.SqlServer.Management.Smo
 
         public void Deny( Microsoft.SqlServer.Management.Smo.DatabasePermissionSet permission, string granteeName )
         {
+        }
+
+        public void SetDefaultFileGroup( string fileGroupName )
+        {
+            if (fileGroupName == "ThrowException")
+            {
+                throw new System.Exception("Failed to set default filegroup");
+            }
+            this.DefaultFileGroup = fileGroupName;
+        }
+
+        public void SetDefaultFileStreamFileGroup( string fileGroupName )
+        {
+            if (fileGroupName == "ThrowException")
+            {
+                throw new System.Exception("Failed to set default FILESTREAM filegroup");
+            }
+            this.DefaultFileStreamFileGroup = fileGroupName;
+        }
+
+        public void SetDefaultFullTextCatalog( string catalogName )
+        {
+            if (catalogName == "ThrowException")
+            {
+                throw new System.Exception("Failed to set default Full-Text catalog");
+            }
+            this.DefaultFullTextCatalog = catalogName;
         }
     }
 
@@ -980,7 +1067,7 @@ namespace Microsoft.SqlServer.Management.Smo
         }
     }
 
-    public class ConfigPropertyCollection
+    public class ConfigPropertyCollection : IEnumerable
     {
         // Property
         public System.Int32 Count { get; set; }
@@ -988,11 +1075,47 @@ namespace Microsoft.SqlServer.Management.Smo
         public System.Object SyncRoot { get; set; }
         public Microsoft.SqlServer.Management.Smo.ConfigProperty Item { get; set; }
 
+        // For enumeration
+        private List<Microsoft.SqlServer.Management.Smo.ConfigProperty> _items = new List<Microsoft.SqlServer.Management.Smo.ConfigProperty>();
+
+        // Implement IEnumerable
+        public IEnumerator GetEnumerator()
+        {
+            return _items.GetEnumerator();
+        }
+
+        // Add method to add items
+        public void Add(Microsoft.SqlServer.Management.Smo.ConfigProperty item)
+        {
+            _items.Add(item);
+        }
+
         // Fabricated constructor
         private ConfigPropertyCollection() { }
         public static ConfigPropertyCollection CreateTypeInstance()
         {
             return new ConfigPropertyCollection();
+        }
+    }
+
+    public class Configuration
+    {
+        // Property
+        public Microsoft.SqlServer.Management.Smo.ConfigPropertyCollection Properties { get; set; }
+
+        // Method
+        public void Alter()
+        {
+        }
+
+        // Fabricated constructor
+        private Configuration() { }
+        public static Configuration CreateTypeInstance()
+        {
+            return new Configuration()
+            {
+                Properties = ConfigPropertyCollection.CreateTypeInstance()
+            };
         }
     }
 
@@ -1443,6 +1566,300 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
         public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
         public System.Object UserData { get; set; }
         public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+    }
+
+    #endregion
+}
+
+namespace Microsoft.SqlServer.Management.Smo.Agent
+{
+    #region Public Enums
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.AlertType
+    // Used by:
+    //  Get-SqlDscAgentAlert.Tests.ps1
+    //  New-SqlDscAgentAlert.Tests.ps1
+    //  Set-SqlDscAgentAlert.Tests.ps1
+    //  Remove-SqlDscAgentAlert.Tests.ps1
+    //  Test-SqlDscAgentAlert.Tests.ps1
+    //  SqlAgentAlert.Tests.ps1
+    public enum AlertType
+    {
+        SqlServerEvent = 1,
+        SqlServerPerformanceCondition = 2,
+        NonSqlServerEvent = 3,
+        WmiEvent = 4
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.CompletionAction
+    // Used by:
+    //  SQL Agent Alert commands unit tests
+    //  SqlAgentAlert.Tests.ps1
+    public enum CompletionAction
+    {
+        Never = 0,
+        OnSuccess = 1,
+        OnFailure = 2,
+        Always = 3
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.WeekDays
+    // Used by:
+    //  SQL Agent Operator commands unit tests
+    //  New-SqlDscAgentOperator.Tests.ps1
+    //  Set-SqlDscAgentOperator.Tests.ps1
+    public enum WeekDays
+    {
+        Sunday = 1,
+        Monday = 2,
+        Tuesday = 4,
+        Wednesday = 8,
+        Thursday = 16,
+        Friday = 32,
+        Weekdays = 62,
+        Saturday = 64,
+        WeekEnds = 65,
+        EveryDay = 127
+    }
+
+    #endregion
+
+    #region Public Classes
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.JobServer
+    // Used by:
+    //  SQL Agent Alert commands unit tests
+    //  SqlAgentAlert.Tests.ps1
+    //  SQL Agent Operator commands unit tests
+    //  SqlAgentOperator.Tests.ps1
+    public class JobServer
+    {
+        // Constructor
+        public JobServer() { }
+
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Agent.AlertCollection Alerts { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection Operators { get; set; }
+        public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
+        public System.String Name { get; set; }
+        public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Server Parent { get; set; }
+
+        // Mock property counters for tracking method calls
+        public System.Int32 MockOperatorMethodCreateCalled { get; set; }
+        public System.Int32 MockOperatorMethodDropCalled { get; set; }
+        public System.Int32 MockOperatorMethodAlterCalled { get; set; }
+
+        // Fabricated constructor
+        private JobServer(Microsoft.SqlServer.Management.Smo.Server server) { }
+        public static JobServer CreateTypeInstance()
+        {
+            return new JobServer();
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.AlertCollection
+    // Used by:
+    //  SQL Agent Alert commands unit tests
+    //  SqlAgentAlert.Tests.ps1
+    public class AlertCollection : ICollection
+    {
+        private System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Agent.Alert> alerts = new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Agent.Alert>();
+
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Agent.Alert this[System.String name]
+        {
+            get { return alerts.ContainsKey(name) ? alerts[name] : null; }
+            set { alerts[name] = value; }
+        }
+        public Microsoft.SqlServer.Management.Smo.Agent.Alert this[System.Int32 index]
+        {
+            get { return alerts.Values.ElementAtOrDefault(index); }
+            set { /* Not implemented for stub */ }
+        }
+        public System.Int32 Count { get { return alerts.Count; } set { } }
+        public System.Boolean IsSynchronized { get; set; }
+        public System.Object SyncRoot { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.JobServer Parent { get; set; }
+
+        // Method
+        public void Add(Microsoft.SqlServer.Management.Smo.Agent.Alert alert) { alerts[alert.Name] = alert; }
+        public void Remove(Microsoft.SqlServer.Management.Smo.Agent.Alert alert) { alerts.Remove(alert.Name); }
+        public void Remove(System.String name) { alerts.Remove(name); }
+        public void CopyTo(System.Array array, System.Int32 index) { }
+        public IEnumerator GetEnumerator() { return alerts.Values.GetEnumerator(); }
+        public void Refresh() { /* Stub implementation for refreshing alerts */ }
+
+        // Fabricated constructor
+        private AlertCollection() { }
+        public static AlertCollection CreateTypeInstance()
+        {
+            return new AlertCollection();
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.Alert
+    // Used by:
+    //  Get-SqlDscAgentAlert.Tests.ps1
+    //  New-SqlDscAgentAlert.Tests.ps1
+    //  Set-SqlDscAgentAlert.Tests.ps1
+    //  Remove-SqlDscAgentAlert.Tests.ps1
+    //  Test-SqlDscAgentAlert.Tests.ps1
+    public class Alert
+    {
+        // Constructor
+        public Alert() { }
+        public Alert(Microsoft.SqlServer.Management.Smo.Agent.JobServer jobServer, System.String name)
+        {
+            this.Name = name;
+        }
+
+        // Property
+        public System.String Name { get; set; }
+        public System.Boolean IsEnabled { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.AlertType AlertType { get; set; }
+        public System.String DatabaseName { get; set; }
+        public System.String DelayBetweenResponses { get; set; }
+        public System.String EventDescriptionKeyword { get; set; }
+        public System.String EventSource { get; set; }
+        public System.Boolean HasNotification { get; set; }
+        public System.Boolean IncludeEventDescription { get; set; }
+        public System.Int32 MessageID { get; set; }
+        public System.String NotificationMessage { get; set; }
+        public System.String PerformanceCondition { get; set; }
+        public System.Int32 Severity { get; set; }
+        public System.String WmiEventNamespace { get; set; }
+        public System.String WmiEventQuery { get; set; }
+        public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
+        public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.JobServer Parent { get; set; }
+
+        // Method
+        public void Create() { }
+        public void Drop() { }
+        public void Alter() { }
+
+        // Fabricated constructor
+        private Alert(Microsoft.SqlServer.Management.Smo.Agent.JobServer jobServer, System.String name, System.Boolean dummyParam) { }
+        public static Alert CreateTypeInstance()
+        {
+            return new Alert();
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection
+    // Used by:
+    //  SQL Agent Operator commands unit tests
+    //  SqlAgentOperator.Tests.ps1
+    public class OperatorCollection : ICollection
+    {
+        private System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Agent.Operator> operators = new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Agent.Operator>();
+
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Agent.Operator this[System.String name]
+        {
+            get { return operators.ContainsKey(name) ? operators[name] : null; }
+            set { operators[name] = value; }
+        }
+        public Microsoft.SqlServer.Management.Smo.Agent.Operator this[System.Int32 index]
+        {
+            get { return operators.Values.ElementAtOrDefault(index); }
+            set { /* Not implemented for stub */ }
+        }
+        public System.Int32 Count { get { return operators.Count; } set { } }
+        public System.Boolean IsSynchronized { get { return false; } set { } }
+        public System.Object SyncRoot { get { return null; } set { } }
+        public Microsoft.SqlServer.Management.Smo.Agent.JobServer Parent { get; set; }
+
+        public void Add(Microsoft.SqlServer.Management.Smo.Agent.Operator operatorObj) { operators[operatorObj.Name] = operatorObj; }
+        public void Remove(Microsoft.SqlServer.Management.Smo.Agent.Operator operatorObj) { operators.Remove(operatorObj.Name); }
+        public void CopyTo(System.Array array, System.Int32 index) { /* Not implemented for stub */ }
+        public System.Collections.IEnumerator GetEnumerator() { return operators.Values.GetEnumerator(); }
+        public void Refresh() { /* Not implemented for stub */ }
+
+        // Fabricated constructor
+        private OperatorCollection() { }
+        public static OperatorCollection CreateTypeInstance()
+        {
+            return new OperatorCollection();
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.Operator
+    // Used by:
+    //  Get-SqlDscAgentOperator.Tests.ps1
+    //  New-SqlDscAgentOperator.Tests.ps1
+    //  Set-SqlDscAgentOperator.Tests.ps1
+    //  Remove-SqlDscAgentOperator.Tests.ps1
+    //  Test-SqlDscAgentOperator.Tests.ps1
+    public class Operator
+    {
+        public Operator() { }
+        public Operator(Microsoft.SqlServer.Management.Smo.Agent.JobServer jobServer, System.String name)
+        {
+            this.Parent = jobServer;
+            this.Name = name;
+        }
+
+        // Property
+        public System.String Name { get; set; }
+        public System.String EmailAddress { get; set; }
+        public System.String CategoryName { get; set; }
+        public System.String NetSendAddress { get; set; }
+        public System.String PagerAddress { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.WeekDays PagerDays { get; set; }
+        public System.TimeSpan SaturdayPagerEndTime { get; set; }
+        public System.TimeSpan SaturdayPagerStartTime { get; set; }
+        public System.TimeSpan SundayPagerEndTime { get; set; }
+        public System.TimeSpan SundayPagerStartTime { get; set; }
+        public System.TimeSpan WeekdayPagerEndTime { get; set; }
+        public System.TimeSpan WeekdayPagerStartTime { get; set; }
+        public System.Boolean Enabled { get; set; }
+        public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
+        public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.JobServer Parent { get; set; }
+
+        // Method
+        public void Create()
+        {
+            if (this.Parent != null)
+            {
+                this.Parent.MockOperatorMethodCreateCalled++;
+            }
+
+            // Mock failure for specific operator name used in testing
+            if (this.Name == "MockFailMethodCreateOperator")
+            {
+                throw new System.Exception("Simulated Create() method failure for testing purposes.");
+            }
+        }
+        public void Drop()
+        {
+            if (this.Parent != null)
+            {
+                this.Parent.MockOperatorMethodDropCalled++;
+            }
+        }
+        public void Alter()
+        {
+            if (this.Parent != null)
+            {
+                this.Parent.MockOperatorMethodAlterCalled++;
+            }
+        }
+
+        // Fabricated constructor
+        private Operator(Microsoft.SqlServer.Management.Smo.Agent.JobServer jobServer, System.String name, System.Boolean dummyParam) { }
+        public static Operator CreateTypeInstance()
+        {
+            return new Operator();
+        }
     }
 
     #endregion

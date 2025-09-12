@@ -77,7 +77,21 @@
         "analyzersettings",
         "sqlcmd",
         "PBIRS",
-        "SSRS"
+        "SSRS",
+        "DSCSQLTEST",
+        "unshallow",
+        "pullrequest",
+        "targetbranch",
+        "hqrm",
+        "sqlps",
+        "securestring",
+        "encryptorname",
+        "wsfc",
+        "SOURCEBRANCH",
+        "SOURCEBRANCHNAME",
+        "setvariable",
+        "RAISERROR",
+        "filegroup"
     ],
     "cSpell.ignorePaths": [
         ".git"
@@ -98,7 +112,7 @@
         "/@prkelly/g",
         "/@glennsarti/g",
         "/tempdb/g",
-        "/sqlcmd\\.exe/g"
+        "/\\b[A-Za-z]{2,}\\d{4}\\b/g"
     ],
     "[markdown]": {
         "files.trimTrailingWhitespace": true,

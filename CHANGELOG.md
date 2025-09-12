@@ -5,11 +5,183 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Make sure tests forcibly imports the module being tested to avoid AI failing
+  when testing changes.
+- Fixed Azure DevOps pipeline conditions that were preventing DSC resource
+  integration tests from running when they should by removing incorrect quotes
+  around boolean values.
+- Refactored error handling by removing global `$ErrorActionPreference = 'Stop'`
+  from 64 PowerShell files and implementing targeted error control for specific
+  command calls that use `-ErrorAction 'Stop'`.
+- `SqlAgentAlert`
+  - Minor fix in `source/Classes/020.SqlAgentAlert.ps1` to correct `ExcludeDscProperties`
+    formatting (added missing delimiter).
+- `SqlRSSetup`
+  - Re-added `ReportServerEdition` enum and updated class to use enum instead of
+    ValidateSet for the Edition property.
+- Fixed commands continuing execution after `Assert-ElevatedUser` elevation
+  errors by setting `$ErrorActionPreference = 'Stop'` [issue #2070](https://github.com/dsccommunity/SqlServerDsc/issues/2070)
+- Fixed incorrect array-return syntax in several public `Get-*` commands by
+  removing a leading comma in return statements which could cause incorrect
+  output and ScriptAnalyzer warnings: `Get-SqlDscAudit`,
+  `Get-SqlDscConfigurationOption`, `Get-SqlDscDatabasePermission`,
+  `Get-SqlDscServerPermission`, and `Get-SqlDscTraceFlag`.
+- New-SqlDscDatabase: use `New-ArgumentException` instead of
+  `New-InvalidArgumentException` for parameter validation errors.
+
+### Added
+
+- Added setup workflow for GitHub Copilot.
+  - Switch the workflow to use Linux.
+- `Set-SqlDscDatabaseDefault`
+  - Added new command to set default objects of a database in a SQL Server
+    Database Engine instance (issue [#2178](https://github.com/dsccommunity/SqlServerDsc/issues/2178)).
+- `Set-SqlDscConfigurationOption`
+  - Added new command to set SQL Server Database Engine configuration options
+    using SMO with validation, ShouldProcess support, and dynamic tab completion.
+- `Test-SqlDscConfigurationOption`
+  - Added new command to test if SQL Server Database Engine configuration options
+    have the specified value using SMO with dynamic tab completion for both
+    option names and values.
+- `Get-SqlDscConfigurationOption`
+  - Enhanced existing command to return user-friendly metadata objects by default
+    with properties Name, RunValue, ConfigValue, Minimum, Maximum, and IsDynamic.
+  - Added `-Raw` switch to return original SMO ConfigProperty objects for
+    backward compatibility.
+  - Added dynamic tab completion for the `-Name` parameter.
+  - The command can set the default filegroup, default FILESTREAM filegroup,
+    and default Full-Text catalog using SMO methods SetDefaultFileGroup,
+    SetDefaultFileStreamFileGroup, and SetDefaultFullTextCatalog.
+- `SqlAgentAlert`
+  - Added new DSC resource to manage SQL Server Agent alerts.
+  - Improved AI instructions.
+  - Enhanced workflow with proper environment variable configuration and DSCv3 verification.
+  - Fixed environment variable persistence by using $GITHUB_ENV instead of
+    job-level env declaration.
+- `Grant-SqlDscServerPermission`
+  - Added new public command to grant server permissions to a principal
+    (Login or ServerRole) on a SQL Server Database Engine instance.
+- `Deny-SqlDscServerPermission`
+  - Added new public command to deny server permissions to a principal
+    (Login or ServerRole).
+- `Revoke-SqlDscServerPermission`
+  - Added new public command to revoke server permissions from a principal
+    (Login or ServerRole).
+- `Test-SqlDscServerPermission`
+  - Added new public command with Grant/Deny parameter sets (and `-WithGrant`)
+    to test server permissions for a principal.
+- `Assert-SqlDscLogin`
+  - Added new public command to validate that a specified SQL Server principal
+    is a login.
+- `Enable-SqlDscLogin`
+  - Added new public command to enable a SQL Server login.
+- `Get-SqlDscServerPermission`
+  - Enhanced command to support pipeline input for Login and ServerRole
+    objects while maintaining backward compatibility with the original
+    parameter set.
+- `Disable-SqlDscLogin`
+  - Added new public command to disable a SQL Server login.
+- `Test-SqlDscIsLoginEnabled`
+  - Added new public command to test whether a SQL Server login is enabled.
+    Throws a terminating error if the specified principal does not exist as a login.
+  - Supports pipeline input and provides detailed error messages with localization.
+  - Uses `Test-SqlDscIsLogin` command for login validation following module patterns.
+- Added `Get-SqlDscLogin`, `Get-SqlDscRole`, `New-SqlDscLogin`, `New-SqlDscRole`,
+  `Remove-SqlDscRole`, and `Remove-SqlDscLogin` commands for retrieving and managing
+   SQL Server logins and roles with support for refresh, pipeline input, and ShouldProcess.
+- Added `Get-SqlDscAgentAlert`, `New-SqlDscAgentAlert`,
+  `Set-SqlDscAgentAlert`, `Remove-SqlDscAgentAlert`, and `Test-SqlDscAgentAlert`
+  to manage SQL Agent alerts on a Database Engine instance.
+- Added new public commands for SQL Agent Operator management:
+  - `Get-SqlDscAgentOperator` - Get SQL Agent Operators from a SQL Server
+     Database Engine instance
+  - `New-SqlDscAgentOperator` - Create a new SQL Agent Operator with specified properties
+  - `Set-SqlDscAgentOperator` - Update existing SQL Agent Operator properties
+  - `Remove-SqlDscAgentOperator` - Remove a SQL Agent Operator from the instance
+  - `Enable-SqlDscAgentOperator` - Enable a SQL Agent Operator
+  - `Disable-SqlDscAgentOperator` - Disable a SQL Agent Operator
+  - `Test-SqlDscIsAgentOperator` - Test if a SQL Agent Operator exists
+  - Supports pipeline input for both ServerObject and OperatorObject where applicable
+  - Includes comprehensive unit tests and follows ShouldProcess patterns
+- Added new public commands for database management:
+  - `Get-SqlDscDatabase` - Get databases from a SQL Server Database Engine instance
+  - `New-SqlDscDatabase` - Create a new database with specified properties
+  - `Set-SqlDscDatabase` - Modify properties of an existing database
+  - `Remove-SqlDscDatabase` - Remove a database from SQL Server instance
+  - `Test-SqlDscDatabase` - Test if a database is in the desired state
+  - All commands support pipeline input with ServerObject and follow established
+    patterns
+  - Database objects can also be used as pipeline input for Set and Remove operations
+  - Commands include comprehensive validation, localization, and ShouldProcess support
+- Added private function `Get-CommandParameter` to filter command parameters
+  by excluding specified parameter names and common parameters, providing a
+  reusable way to determine settable properties on objects.
+
 ### Changed
 
+- Improved code quality by ensuring all function invocations in the private
+  and public functions use named parameters instead of positional parameters.
+- SqlServerDsc
+  - Updated GitVersion.yml feature branch regex pattern to use anchor `^f(eature(s)?)?[\/-]`
+    for more precise branch name matching.
+- Refactored GitHub Copilot workflow setup to be module-agnostic via MODULE_NAME
+  environment variable, includes full-history detection, uses idempotent .NET
+  tool install, and adds Linux dependency handling ([issue #2127](https://github.com/dsccommunity/SqlServerDsc/issues/2127)).
+- `SqlAgentAlert`
+  - Added additional unit tests covering MessageId-based alerts, the hidden
+    `Modify()` method behavior, and `AssertProperties()` validation scenarios.
+- Module now outputs a verbose message instead of a warning when the SMO
+  dependency module is missing during import to work around a DSC v3 issue.
+- VS Code tasks configuration was improved to support AI.
+- `Prerequisites` tests
+  - Added creation of `SqlIntegrationTest` local Windows user for integration testing.
+- `tests/Integration/Commands/README.md`
+  - Added documentation for `SqlIntegrationTest` user and
+    `IntegrationTestSqlLogin` login.
+  - Added run order information for `New-SqlDscLogin` integration test.
+- `Get-SqlDscServerPermission`
+  - Enhanced the command to support server roles in addition to logins by
+    utilizing `Test-SqlDscIsRole` alongside the existing `Test-SqlDscIsLogin`
+    check.
+  - The command now accepts both login principals and server role principals
+    as the `Name` parameter (issue [#2063](https://github.com/dsccommunity/SqlServerDsc/issues/2063)).
 - `azure-pipelines.yml`
   - Remove `windows-2019` images fixes [#2106](https://github.com/dsccommunity/SqlServerDsc/issues/2106).
   - Move individual tasks to `windows-latest`.
+  - Added integration tests for `Assert-SqlDscLogin` command in Group 2.
+  - Added conditional logic to skip DSC resource integration tests when
+    changes don't affect DSC resources, improving CI/CD performance for
+    non-DSC changes.
+- `SqlServerDsc.psd1`
+  - Set `CmdletsToExport` to `*` in module manifest to fix issue [#2109](https://github.com/dsccommunity/SqlServerDsc/issues/2109).
+- Added optimization for DSC resource integration tests
+  - Created `.build/Test-ShouldRunDscResourceIntegrationTests.ps1` to analyze
+    git changes and decide when DSC resource integration tests are needed.
+  - DSC resource integration test stages now run only when changes affect DSC
+    resources, public commands used by resources, or related components.
+  - Unit tests, QA tests, and command integration tests continue to run for
+    all changes.
+- Bump actions/checkout task to v5.
+- `.build/Test-ShouldRunDscResourceIntegrationTests.ps1`
+  - Improved performance by adding an early optimization to check for changes
+    under the configured SourcePath before expensive analysis.
+  - Moved public command discovery to only run when source changes are detected.
+- `.build/README.md`
+  - Added flow diagram showing decision process for DSC resource integration tests.
+  - Improved documentation with optimized analysis workflow description.
+- DSC community style guidelines
+  - Added requirement to follow guidelines over existing code patterns.
+- Improved markdown, pester, powershell, and changelog instructions.
+  - Fixed `Ignore` that seems in edge-cases fail.
+  - Improved markdown and changelog instructions.
+- `RequiredModules.psd1`
+  - Updated `DscResource.Test` dependency to `latest` (was pinned to `0.17.2`).
+- Examples
+  - `source/Examples/Resources/SqlSetup/5-InstallNamedInstanceInFailoverClusterSecondNode.ps1`
+    - Removed redundant `$SqlAdministratorCredential` parameter from example
+      configuration.
 
 ## [17.1.0] - 2025-05-22
 

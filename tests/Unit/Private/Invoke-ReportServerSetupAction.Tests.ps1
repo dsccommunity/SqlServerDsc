@@ -1,4 +1,4 @@
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'because ConvertTo-SecureString is used to simplify the tests.')]
 param ()
 
@@ -7,14 +7,14 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
@@ -29,7 +29,7 @@ BeforeAll {
 
     $env:SqlServerDscCI = $true
 
-    Import-Module -Name $script:dscModuleName
+    Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
@@ -96,6 +96,46 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
 
             $result.ParameterSetName | Should -Be $MockParameterSetName
             $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        }
+    }
+
+    Context 'When user is not elevated' {
+        BeforeAll {
+            # Mock Assert-ElevatedUser to throw the same error it would in a real scenario
+            Mock -CommandName Assert-ElevatedUser -MockWith {
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        'This command must run in an elevated PowerShell session. (DRC0043)',
+                        'UserNotElevated',
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        'Command parameters'
+                    )
+                )
+            }
+
+            # Create a valid executable file for the test
+            New-Item -Path "$TestDrive/ssrs.exe" -ItemType File -Force | Out-Null
+
+            InModuleScope -ScriptBlock {
+                $script:mockDefaultParameters = @{
+                    Install = $true
+                    AcceptLicensingTerms = $true
+                    MediaPath = "$TestDrive/ssrs.exe"
+                    Force = $true
+                }
+            }
+        }
+
+        It 'Should throw a terminating error and not continue execution' {
+            InModuleScope -ScriptBlock {
+                # This test verifies the fix for issue #2070 where Assert-ElevatedUser
+                # would throw an error but the function would continue executing
+                { Invoke-ReportServerSetupAction @mockDefaultParameters } |
+                    Should -Throw -ExpectedMessage '*This command must run in an elevated PowerShell session*'
+            }
+
+            # Ensure Assert-ElevatedUser was called
+            Should -Invoke -CommandName Assert-ElevatedUser -Exactly -Times 1 -Scope It
         }
     }
 

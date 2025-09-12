@@ -37,9 +37,58 @@ integration tests.
 **Below are the integration tests listed in the run order, and with the dependency
 to each other. Dependencies are made to speed up the testing.**
 
-Command | Run order # | Depends on # | Use instance
---- | --- | --- | ---
-Install-SqlDscServer | 1 | - | -
+<!-- markdownlint-disable MD013 -->
+Command | Run order # | Depends on # | Use instance | Creates persistent objects
+--- | --- | --- | --- | ---
+Prerequisites | 0 | - | - | Sets up dependencies
+Install-SqlDscServer | 1 | 0 (Prerequisites) | - | DSCSQLTEST instance
+Connect-SqlDscDatabaseEngine | 1 | 0 (Prerequisites) | DSCSQLTEST | -
+Assert-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+New-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | IntegrationTestSqlLogin, SqlIntegrationTestGroup login
+Get-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscConfigurationOption | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Set-SqlDscConfigurationOption | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Disable-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Enable-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscIsLoginEnabled | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+New-SqlDscRole | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | SqlDscIntegrationTestRole_Persistent role
+Get-SqlDscRole | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Grant-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Grants CreateEndpoint permission to role
+Get-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Deny-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Denies AlterTrace permission to login (persistent)
+Revoke-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscDatabase | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+New-SqlDscDatabase | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test databases
+Set-SqlDscDatabase | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscDatabase | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+New-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test alerts
+Set-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+New-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | SqlDscIntegrationTestOperator_Persistent operator
+Set-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscIsAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Assert-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Enable-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Disable-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Remove-SqlDscAgentAlert | 8 | 2 (New-SqlDscAgentAlert) | DSCSQLTEST | -
+Remove-SqlDscAgentOperator | 8 | 2 (New-SqlDscAgentOperator) | DSCSQLTEST | -
+Remove-SqlDscDatabase | 8 | 2 (New-SqlDscDatabase) | DSCSQLTEST | -
+Remove-SqlDscRole | 8 | 2 (New-SqlDscRole) | DSCSQLTEST | -
+Remove-SqlDscLogin | 8 | 2 (New-SqlDscLogin) | DSCSQLTEST | -
+Uninstall-SqlDscServer | 9 | 8 (Remove commands) | - | -
+Install-SqlDscReportingService | 1 | 0 (Prerequisites) | - | SSRS instance
+Get-SqlDscInstalledInstance | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Get-SqlDscRSSetupConfiguration | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Test-SqlDscRSInstalled | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Repair-SqlDscReportingService | 8 | 1 (Install-SqlDscReportingService) | SSRS | -
+Uninstall-SqlDscReportingService | 9 | 8 (Repair-SqlDscReportingService) | - | -
+Install-SqlDscBIReportServer | 1 | 0 (Prerequisites) | - | PBIRS instance
+Repair-SqlDscBIReportServer | 8 | 1 (Install-SqlDscBIReportServer) | PBIRS | -
+Uninstall-SqlDscBIReportServer | 9 | 8 (Repair-SqlDscBIReportServer) | - | -
+<!-- markdownlint-enable MD013 -->
 
 ## Integration Tests
 
@@ -51,6 +100,31 @@ first.
 ### `Install-SqlDscServer`
 
 Installs all the [instances](#instances).
+
+### `New-SqlDscLogin`
+
+Creates the test login `IntegrationTestSqlLogin` and the Windows group
+login `.\SqlIntegrationTestGroup` that remains on the instance for other
+tests to use.
+
+### `New-SqlDscRole`
+
+Creates a persistent role `SqlDscIntegrationTestRole_Persistent`
+with sa owner that remains on the instance for other tests to use.
+
+### `Grant-SqlDscServerPermission`
+
+Grants `CreateEndpoint` permission to the role `SqlDscIntegrationTestRole_Persistent`
+
+### `Deny-SqlDscServerPermission`
+
+Creates a persistent `AlterTrace` denial on the persistent principals `IntegrationTestSqlLogin`
+that remains for other tests to validate against.
+
+### `New-SqlDscAgentOperator`
+
+Creates a persistent agent operator `SqlDscIntegrationTestOperator_Persistent`
+that remains on the instance for other tests to use.
 
 ## Dependencies
 
@@ -102,14 +176,33 @@ User | Password | Permission | Description
 --- | --- | --- | ---
 .\SqlInstall | P@ssw0rd1 | Local Windows administrator and sysadmin | Runs Setup for all the instances.
 .\SqlAdmin | P@ssw0rd1 | Local Windows user and sysadmin | Administrator of all the SQL Server instances.
+.\SqlIntegrationTest | P@ssw0rd1 | Local Windows user | User for SQL integration testing.
 .\svc-SqlPrimary | yig-C^Equ3 | Local Windows user. | Runs the SQL Server service.
 .\svc-SqlAgentPri | yig-C^Equ3 | Local Windows user. | Runs the SQL Server Agent service.
 .\svc-SqlSecondary | yig-C^Equ3 | Local Windows user. | Runs the SQL Server service in multi node scenarios.
 .\svc-SqlAgentSec | yig-C^Equ3 | Local Windows user. | Runs the SQL Server Agent service in multi node scenarios.
 
+### Groups
+
+The following local groups are created and can be used by integration tests.
+
+Group | Description
+--- | ---
+.\SqlIntegrationTestGroup | Local Windows group for SQL integration testing.
+
+### SQL Server Logins
+
 Login | Password | Permission | Description
 --- | --- | --- | ---
 sa | P@ssw0rd1 | sysadmin | Administrator of all the Database Engine instances.
+IntegrationTestSqlLogin | P@ssw0rd123! | AlterTrace (Deny) | SQL Server login created by New-SqlDscLogin integration tests. AlterTrace permission denied by Deny-SqlDscServerPermission integration tests for server permission testing.
+.\SqlIntegrationTestGroup | - | - | Windows group login created by New-SqlDscLogin integration tests for testing purposes.
+
+### SQL Server Roles
+
+Role | Owner | Permission | Description
+--- | --- | --- | ---
+SqlDscIntegrationTestRole_Persistent | sa | CreateEndpoint | Server role created by New-SqlDscRole integration tests. CreateEndpoint permission granted by Grant-SqlDscServerPermission integration tests for server permission testing.
 <!-- markdownlint-enable MD013 -->
 
 ### Image media (ISO)

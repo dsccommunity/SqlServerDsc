@@ -1,15 +1,22 @@
 <#
     .SYNOPSIS
-        Get server configuration option.
+        Get server configuration option metadata or raw SMO objects.
 
     .DESCRIPTION
-        This command gets the available configuration options from a SQL Server Database Engine instance.
+        This command gets configuration options from a SQL Server Database Engine instance.
+        By default, it returns user-friendly metadata objects with current values, ranges,
+        and dynamic properties. Use the -Raw switch to get the original SMO ConfigProperty objects.
 
     .PARAMETER ServerObject
         Specifies current server connection object.
 
     .PARAMETER Name
-        Specifies the name of the configuration option to get.
+        Specifies the name of the configuration option to get. Supports wildcards.
+        If not specified, all configuration options are returned.
+
+    .PARAMETER Raw
+        Specifies that the original SMO ConfigProperty objects should be returned
+        instead of the enhanced metadata objects.
 
     .PARAMETER Refresh
         Specifies that the **ServerObject**'s configuration property should be
@@ -19,25 +26,46 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $sqlServerObject | Get-SqlDscConfigurationOption
+        $serverObject | Get-SqlDscConfigurationOption
 
-        Get all the available configuration options.
+        Get metadata for all available configuration options.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $sqlServerObject | Get-SqlDscConfigurationOption -Name '*threshold*'
+        $serverObject | Get-SqlDscConfigurationOption -Name '*threshold*'
 
-        Get the configuration options that contains the word **threshold**.
+        Get metadata for configuration options that contain the word "threshold".
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $serverObject | Get-SqlDscConfigurationOption -Name "Agent XPs"
+
+        Get metadata for the specific "Agent XPs" configuration option.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $serverObject | Get-SqlDscConfigurationOption -Raw
+
+        Get all configuration options as raw SMO ConfigProperty objects.
+
+    .INPUTS
+        Microsoft.SqlServer.Management.Smo.Server
+        SQL Server Management Objects (SMO) Server object representing a SQL Server instance.
 
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.ConfigProperty[]]`
+        PSCustomObject[]
+        Returns user-friendly metadata objects with configuration option details (default behavior).
+
+        Microsoft.SqlServer.Management.Smo.ConfigProperty[]
+        Returns raw SMO ConfigProperty objects when using the -Raw parameter.
 #>
 function Get-SqlDscConfigurationOption
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Justification = 'Because the rule does not understands that the command returns [System.String[]] when using , (comma) in the return statement')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Because we pass parameters in the argument completer that are not yet used.')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
-    [OutputType([Microsoft.SqlServer.Management.Smo.ConfigProperty[]])]
-    [CmdletBinding()]
+    [OutputType([PSCustomObject[]], ParameterSetName = 'Metadata')]
+    [OutputType([Microsoft.SqlServer.Management.Smo.ConfigProperty[]], ParameterSetName = 'Raw')]
+    [CmdletBinding(DefaultParameterSetName = 'Metadata')]
     param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
@@ -45,8 +73,70 @@ function Get-SqlDscConfigurationOption
         $ServerObject,
 
         [Parameter()]
+        [ArgumentCompleter({
+                param
+                (
+                    [Parameter()]
+                    $commandName,
+
+                    [Parameter()]
+                    $parameterName,
+
+                    [Parameter()]
+                    $wordToComplete,
+
+                    [Parameter()]
+                    $commandAst,
+
+                    [Parameter()]
+                    $fakeBoundParameters
+                )
+
+                # Get ServerObject from bound parameters only
+                $serverObject = $null
+
+                if ($FakeBoundParameters.ContainsKey('ServerObject'))
+                {
+                    $serverObject = $FakeBoundParameters['ServerObject']
+                }
+
+                if ($serverObject -and $serverObject -is [Microsoft.SqlServer.Management.Smo.Server])
+                {
+                    try
+                    {
+                        $options = $serverObject.Configuration.Properties | Where-Object {
+                            $_.DisplayName -like "*$WordToComplete*"
+                        } | Sort-Object DisplayName
+
+                        foreach ($option in $options)
+                        {
+                            $tooltip = "Current: $($option.ConfigValue), Run: $($option.RunValue), Range: $($option.Minimum)-$($option.Maximum)"
+                            [System.Management.Automation.CompletionResult]::new(
+                                "'$($option.DisplayName)'",
+                                $option.DisplayName,
+                                'ParameterValue',
+                                $tooltip
+                            )
+                        }
+                    }
+                    catch
+                    {
+                        # Return empty if there's an error accessing the server
+                        @()
+                    }
+                }
+                else
+                {
+                    # Return empty array if no server object available
+                    @()
+                }
+            })]
         [System.String]
         $Name,
+
+        [Parameter(ParameterSetName = 'Raw')]
+        [System.Management.Automation.SwitchParameter]
+        $Raw,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -58,17 +148,17 @@ function Get-SqlDscConfigurationOption
         if ($Refresh.IsPresent)
         {
             # Make sure the configuration option values are up-to-date.
-            $serverObject.Configuration.Refresh()
+            $ServerObject.Configuration.Refresh()
         }
 
         if ($PSBoundParameters.ContainsKey('Name'))
         {
-            $configurationOption = $serverObject.Configuration.Properties |
+            $configurationOptions = $ServerObject.Configuration.Properties |
                 Where-Object -FilterScript {
                     $_.DisplayName -like $Name
                 }
 
-            if (-not $configurationOption)
+            if (-not $configurationOptions)
             {
                 $missingConfigurationOptionMessage = $script:localizedData.ConfigurationOption_Get_Missing -f $Name
 
@@ -80,16 +170,42 @@ function Get-SqlDscConfigurationOption
                 }
 
                 Write-Error @writeErrorParameters
+                return
             }
         }
         else
         {
-            $configurationOption = $serverObject.Configuration.Properties.ForEach({ $_ })
+            $configurationOptions = $ServerObject.Configuration.Properties.ForEach({ $_ })
         }
 
-        return , [Microsoft.SqlServer.Management.Smo.ConfigProperty[]] (
-            $configurationOption |
-                Sort-Object -Property 'DisplayName'
-        )
+        # Sort the options by DisplayName
+        $sortedOptions = $configurationOptions | Sort-Object -Property 'DisplayName'
+
+        if ($Raw.IsPresent)
+        {
+            # Return raw SMO ConfigProperty objects
+            return [Microsoft.SqlServer.Management.Smo.ConfigProperty[]] $sortedOptions
+        }
+        else
+        {
+            # Return enhanced metadata objects
+            $metadataObjects = foreach ($option in $sortedOptions)
+            {
+                $metadata = [PSCustomObject]@{
+                    Name        = $option.DisplayName
+                    RunValue    = $option.RunValue
+                    ConfigValue = $option.ConfigValue
+                    Minimum     = $option.Minimum
+                    Maximum     = $option.Maximum
+                    IsDynamic   = $option.IsDynamic
+                }
+
+                # Add custom type name for formatting
+                $metadata.PSTypeNames.Insert(0, 'SqlDsc.ConfigurationOption')
+                $metadata
+            }
+
+            return $metadataObjects
+        }
     }
 }
