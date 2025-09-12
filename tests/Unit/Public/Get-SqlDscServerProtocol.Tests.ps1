@@ -50,31 +50,56 @@ AfterAll {
 }
 
 Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
-    Context 'When using SMO approach' {
+    Context 'When getting server protocol information' {
         BeforeAll {
-            # Mock the private helper functions to avoid complexity
-            Mock -CommandName Get-ServerProtocolObjectBySmo -MockWith {
+            # Mock the Get-SqlDscManagedComputer command
+            Mock -CommandName Get-SqlDscManagedComputer -MockWith {
+                $mockServerInstance = [PSCustomObject]@{
+                    ServerProtocols = @{
+                        'Tcp' = [PSCustomObject]@{
+                            Name = 'Tcp'
+                            DisplayName = 'TCP/IP'
+                            IsEnabled = $true
+                            ProtocolProperties = @{
+                                ListenOnAllIPs = $true
+                                KeepAlive = 30000
+                            }
+                        }
+                        'Np' = [PSCustomObject]@{
+                            Name = 'Np'
+                            DisplayName = 'Named Pipes'
+                            IsEnabled = $false
+                        }
+                        'Sm' = [PSCustomObject]@{
+                            Name = 'Sm'
+                            DisplayName = 'Shared Memory'
+                            IsEnabled = $true
+                        }
+                    }
+                }
+
                 return [PSCustomObject]@{
-                    Name = 'Tcp'
-                    DisplayName = 'TCP/IP'
-                    IsEnabled = $true
-                    ProtocolProperties = @{
-                        ListenOnAllIPs = $true
-                        KeepAlive = 30000
+                    ServerInstances = @{
+                        'MSSQLSERVER' = $mockServerInstance
+                        'SQL2019' = $mockServerInstance
                     }
                 }
             }
 
-            Mock -CommandName Get-ServerProtocolObjectByCim -MockWith {
-                throw 'CIM not available'
-            }
-
-            InModuleScope -ScriptBlock {
-                $script:preferCimOverSmo = $false
+            # Mock Get-ProtocolNameProperties since it's from SqlServerDsc.Common
+            Mock -CommandName Get-ProtocolNameProperties -MockWith {
+                param($ProtocolName)
+                
+                switch ($ProtocolName)
+                {
+                    'TcpIp' { return @{ Name = 'Tcp'; DisplayName = 'TCP/IP' } }
+                    'NamedPipes' { return @{ Name = 'Np'; DisplayName = 'Named Pipes' } }
+                    'SharedMemory' { return @{ Name = 'Sm'; DisplayName = 'Shared Memory' } }
+                }
             }
         }
 
-        It 'Should return server protocol information using SMO approach' {
+        It 'Should return TcpIp protocol information' {
             $result = Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp'
 
             $result | Should -Not -BeNullOrEmpty
@@ -82,142 +107,134 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
             $result.DisplayName | Should -Be 'TCP/IP'
             $result.IsEnabled | Should -Be $true
 
-            Should -Invoke -CommandName Get-ServerProtocolObjectBySmo -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-ServerProtocolObjectByCim -Exactly -Times 0 -Scope It
-        }
-
-        It 'Should use specified server name' {
-            $result = Get-SqlDscServerProtocol -ServerName 'TestServer' -InstanceName 'MSSQLSERVER' -ProtocolName 'NamedPipes'
-
-            Should -Invoke -CommandName Get-ServerProtocolObjectBySmo -ParameterFilter {
-                $ServerName -eq 'TestServer' -and $InstanceName -eq 'MSSQLSERVER' -and $ProtocolName -eq 'NamedPipes'
+            Should -Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-ProtocolNameProperties -ParameterFilter {
+                $ProtocolName -eq 'TcpIp'
             } -Exactly -Times 1 -Scope It
         }
 
-        It 'Should accept all valid protocol names' {
-            $protocols = @('TcpIp', 'NamedPipes', 'SharedMemory')
-
-            foreach ($protocol in $protocols)
-            {
-                $result = Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName $protocol
-
-                $result | Should -Not -BeNullOrEmpty
-                Should -Invoke -CommandName Get-ServerProtocolObjectBySmo -ParameterFilter {
-                    $ProtocolName -eq $protocol
-                } -Exactly -Times 1 -Scope It
-            }
-        }
-    }
-
-    Context 'When using CIM approach' {
-        BeforeAll {
-            Mock -CommandName Get-ServerProtocolObjectByCim -MockWith {
-                return [PSCustomObject]@{
-                    InstanceName = 'MSSQLSERVER'
-                    ProtocolName = 'Tcp'
-                    Enabled = $true
-                    ListenOnAllIPs = $true
-                }
-            }
-
-            Mock -CommandName Get-ServerProtocolObjectBySmo -MockWith {
-                return [PSCustomObject]@{
-                    Name = 'Tcp'
-                    DisplayName = 'TCP/IP'
-                    IsEnabled = $true
-                }
-            }
-
-            InModuleScope -ScriptBlock {
-                $script:preferCimOverSmo = $true
-            }
-        }
-
-        It 'Should return server protocol information using CIM approach when preferred' {
-            $result = Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp'
+        It 'Should return NamedPipes protocol information' {
+            $result = Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName 'NamedPipes'
 
             $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'MSSQLSERVER'
-            $result.ProtocolName | Should -Be 'Tcp'
-            $result.Enabled | Should -Be $true
+            $result.Name | Should -Be 'Np'
+            $result.DisplayName | Should -Be 'Named Pipes'
+            $result.IsEnabled | Should -Be $false
 
-            Should -Invoke -CommandName Get-ServerProtocolObjectByCim -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-ServerProtocolObjectBySmo -Exactly -Times 0 -Scope It
+            Should -Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-ProtocolNameProperties -ParameterFilter {
+                $ProtocolName -eq 'NamedPipes'
+            } -Exactly -Times 1 -Scope It
         }
 
-        It 'Should use CIM approach when UseCim parameter is specified' {
-            InModuleScope -ScriptBlock {
-                $script:preferCimOverSmo = $false
-            }
-
-            $result = Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp' -UseCim
+        It 'Should return SharedMemory protocol information' {
+            $result = Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName 'SharedMemory'
 
             $result | Should -Not -BeNullOrEmpty
-            Should -Invoke -CommandName Get-ServerProtocolObjectByCim -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-ServerProtocolObjectBySmo -Exactly -Times 0 -Scope It
-        }
-    }
+            $result.Name | Should -Be 'Sm'
+            $result.DisplayName | Should -Be 'Shared Memory'
+            $result.IsEnabled | Should -Be $true
 
-    Context 'When CIM approach fails and falls back to SMO' {
-        BeforeAll {
-            Mock -CommandName Get-ServerProtocolObjectByCim -MockWith {
-                throw 'CIM namespace not found'
-            }
-
-            Mock -CommandName Get-ServerProtocolObjectBySmo -MockWith {
-                return [PSCustomObject]@{
-                    Name = 'Tcp'
-                    DisplayName = 'TCP/IP'
-                    IsEnabled = $true
-                }
-            }
-
-            InModuleScope -ScriptBlock {
-                $script:preferCimOverSmo = $true
-            }
+            Should -Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-ProtocolNameProperties -ParameterFilter {
+                $ProtocolName -eq 'SharedMemory'
+            } -Exactly -Times 1 -Scope It
         }
 
-        It 'Should fall back to SMO approach when CIM fails' {
-            $result = Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp'
+        It 'Should use specified server name' {
+            $result = Get-SqlDscServerProtocol -ServerName 'TestServer' -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp'
+
+            Should -Invoke -CommandName Get-SqlDscManagedComputer -ParameterFilter {
+                $ServerName -eq 'TestServer'
+            } -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should work with named instances' {
+            $result = Get-SqlDscServerProtocol -InstanceName 'SQL2019' -ProtocolName 'TcpIp'
 
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'Tcp'
-            $result.DisplayName | Should -Be 'TCP/IP'
-            $result.IsEnabled | Should -Be $true
-
-            Should -Invoke -CommandName Get-ServerProtocolObjectByCim -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-ServerProtocolObjectBySmo -Exactly -Times 1 -Scope It
-        }
-
-        It 'Should fall back to SMO approach when using -UseCim and CIM fails' {
-            InModuleScope -ScriptBlock {
-                $script:preferCimOverSmo = $false
-            }
-
-            $result = Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp' -UseCim
-
-            $result | Should -Not -BeNullOrEmpty
-            Should -Invoke -CommandName Get-ServerProtocolObjectByCim -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-ServerProtocolObjectBySmo -Exactly -Times 1 -Scope It
         }
     }
 
-    Context 'When both approaches fail' {
+    Context 'When the SQL Server instance is not found' {
         BeforeAll {
-            Mock -CommandName Get-ServerProtocolObjectByCim -MockWith {
-                throw 'CIM namespace not found'
+            Mock -CommandName Get-SqlDscManagedComputer -MockWith {
+                return [PSCustomObject]@{
+                    ServerInstances = @{
+                        'MSSQLSERVER' = [PSCustomObject]@{
+                            ServerProtocols = @{}
+                        }
+                    }
+                }
             }
 
-            Mock -CommandName Get-ServerProtocolObjectBySmo -MockWith {
-                throw 'SMO connection failed'
+            Mock -CommandName Get-ProtocolNameProperties -MockWith {
+                return @{ Name = 'Tcp'; DisplayName = 'TCP/IP' }
             }
         }
 
-        It 'Should throw an error when both CIM and SMO approaches fail' {
-            { Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp' -UseCim } | Should -Throw 'SMO connection failed'
+        It 'Should throw an error when instance is not found' {
+            { Get-SqlDscServerProtocol -InstanceName 'NONEXISTENT' -ProtocolName 'TcpIp' } | Should -Throw '*Could not find SQL Server instance*'
+        }
+    }
 
-            Should -Invoke -CommandName Get-ServerProtocolObjectByCim -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-ServerProtocolObjectBySmo -Exactly -Times 1 -Scope It
+    Context 'When the protocol is not found' {
+        BeforeAll {
+            Mock -CommandName Get-SqlDscManagedComputer -MockWith {
+                $mockServerInstance = [PSCustomObject]@{
+                    ServerProtocols = @{
+                        # Missing the Tcp protocol
+                    }
+                }
+
+                return [PSCustomObject]@{
+                    ServerInstances = @{
+                        'MSSQLSERVER' = $mockServerInstance
+                    }
+                }
+            }
+
+            Mock -CommandName Get-ProtocolNameProperties -MockWith {
+                return @{ Name = 'Tcp'; DisplayName = 'TCP/IP' }
+            }
+        }
+
+        It 'Should throw an error when protocol is not found' {
+            { Get-SqlDscServerProtocol -InstanceName 'MSSQLSERVER' -ProtocolName 'TcpIp' } | Should -Throw '*Could not find server protocol*'
+        }
+    }
+
+    Context 'When testing parameter sets' {
+        It 'Should have the correct parameters in parameter set __AllParameterSets' -ForEach @(
+            @{
+                ExpectedParameterSetName = '__AllParameterSets'
+                ExpectedParameters = '[[-ServerName] <string>] [-InstanceName] <string> [-ProtocolName] <string> [<CommonParameters>]'
+            }
+        ) {
+            $result = (Get-Command -Name 'Get-SqlDscServerProtocol').ParameterSets |
+                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
+                Select-Object -Property @(
+                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
+                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
+                )
+            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should -Be $ExpectedParameters
+        }
+
+        It 'Should have InstanceName as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Get-SqlDscServerProtocol').Parameters['InstanceName']
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        }
+
+        It 'Should have ProtocolName as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Get-SqlDscServerProtocol').Parameters['ProtocolName']
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        }
+
+        It 'Should have ServerName as an optional parameter' {
+            $parameterInfo = (Get-Command -Name 'Get-SqlDscServerProtocol').Parameters['ServerName']
+            $parameterInfo.Attributes.Mandatory | Should -BeFalse
         }
     }
 }

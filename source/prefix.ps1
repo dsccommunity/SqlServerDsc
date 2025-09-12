@@ -8,6 +8,3 @@ $script:sqlServerDscCommonModulePath = Join-Path -Path $PSScriptRoot -ChildPath 
 Import-Module -Name $script:sqlServerDscCommonModulePath
 
 $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
-
-# Preference variable for CIM over SMO approach
-$script:preferCimOverSmo = $false
