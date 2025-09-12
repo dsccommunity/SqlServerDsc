@@ -218,6 +218,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       `Developer`.
     - The read-only properties `CurrentVersion`, `ServiceName` and `ErrorDumpDirectory`
       were removed.
+- Bump GitHub Actions Stale to v10
 
 ### Added
 
