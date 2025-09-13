@@ -1458,7 +1458,7 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
         }
     }
 
-    public class ServerProtocolCollection
+    public class ServerProtocolCollection : System.Collections.IEnumerable
     {
         // Properties
         public System.Int32 Count { get { return protocols.Count; } }
@@ -1466,7 +1466,8 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
         public System.Object SyncRoot { get; set; }
 
         // Collection of protocols
-        private System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol> protocols = new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol>(System.StringComparer.OrdinalIgnoreCase);
+        private readonly System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol> protocols =
+            new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol>(System.StringComparer.OrdinalIgnoreCase);
 
         // Indexer
         public Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol this[string name]
@@ -1490,6 +1491,12 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
                     protocols[name] = value;
                 }
             }
+        }
+
+        // IEnumerable implementation
+        public System.Collections.IEnumerator GetEnumerator()
+        {
+            return protocols.Values.GetEnumerator();
         }
 
         // Fabricated constructor
