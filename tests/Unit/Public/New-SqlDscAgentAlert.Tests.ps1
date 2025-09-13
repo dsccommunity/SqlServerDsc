@@ -199,7 +199,7 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
 
                 $result | Should -BeNullOrEmpty
                 Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
-                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
+                Should -Invoke -CommandName 'Test-SqlDscIsAgentAlert' -Times 1 -Exactly
             }
 
             It 'Should create alert with message ID using pipeline input' {
@@ -207,7 +207,7 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
 
                 $result | Should -BeNullOrEmpty
                 Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
-                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
+                Should -Invoke -CommandName 'Test-SqlDscIsAgentAlert' -Times 1 -Exactly
             }
 
             It 'Should create alert with PassThru using pipeline input' {
@@ -224,7 +224,7 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
 
                 $result | Should -BeNullOrEmpty
                 Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
-                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
+                Should -Invoke -CommandName 'Test-SqlDscIsAgentAlert' -Times 1 -Exactly
             }
 
             It 'Should create alert with Force and PassThru using pipeline input' {
