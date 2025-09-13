@@ -131,7 +131,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should update alert severity successfully' {
-            $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
+            $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -Force
 
             Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
             Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
@@ -144,7 +144,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
             $script:mockAlert.Severity = 0
             $script:mockAlert.MessageId = 12345
 
-            $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
+            $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -Force
 
             $script:mockAlert.Severity | Should -Be 16
             $script:mockAlert.MessageId | Should -Be 0
@@ -155,7 +155,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
             $script:mockAlert.Severity = 15
             $script:mockAlert.MessageId = 0
 
-            $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001
+            $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001 -Force
 
             $script:mockAlert.MessageId | Should -Be 50001
             $script:mockAlert.Severity | Should -Be 0
@@ -169,21 +169,21 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
             $script:mockAlert.Severity = 10
             $script:mockAlert.MessageId = 0
 
-            $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
+            $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -Force
 
             $script:alterCalled | Should -BeTrue
         }
 
         Context 'When using PassThru parameter' {
             It 'Should update alert message ID successfully' {
-                $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001
+                $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001 -Force
 
                 $script:mockAlert.MessageId | Should -Be 50001
                 $script:mockAlert.Severity | Should -Be 0  # Should be set to 0 to avoid conflicts
             }
 
             It 'Should return alert object' {
-                $result = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -PassThru
+                $result = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -Force -PassThru
 
                 $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.Agent.Alert]
                 $result.Name | Should -Be 'TestAlert'
@@ -191,15 +191,15 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
             }
 
             It 'Should not return alert object without PassThru' {
-                $result = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
+                $result = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -Force
 
                 $result | Should -BeNullOrEmpty
             }
         }
 
-        Context 'When using PassThru parameter' {
+        Context 'When Refresh is not specified' {
             It 'Should not refresh server object when Refresh is not specified' {
-                $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
+                $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -Force
 
                 $script:refreshCalled | Should -BeFalse
             }
@@ -214,7 +214,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
                 $script:mockAlert.Severity = 10
                 $script:mockAlert.MessageId = 0
 
-                $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
+                $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -Force
 
                 $script:alterCalled | Should -BeTrue
                 $script:mockAlert.Severity | Should -Be 16
@@ -229,7 +229,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
                 $script:mockAlert.Severity = 0
                 $script:mockAlert.MessageId = 12345
 
-                $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001
+                $null = Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001 -Force
 
                 $script:alterCalled | Should -BeTrue
                 $script:mockAlert.MessageId | Should -Be 50001
@@ -250,7 +250,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should update alert using AlertObject parameter' {
-            $null = Set-SqlDscAgentAlert -AlertObject $script:mockAlert -Severity 16
+            $null = Set-SqlDscAgentAlert -AlertObject $script:mockAlert -Severity 16 -Force
 
             Should -Invoke -CommandName 'Assert-BoundParameter' -ModuleName $script:dscModuleName -Times 1 -Exactly
             $script:mockAlert.Severity | Should -Be 16
@@ -262,7 +262,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
             $script:mockAlert.Severity = 10
             $script:mockAlert.MessageId = 12345
 
-            $null = Set-SqlDscAgentAlert -AlertObject $script:mockAlert -Severity 16
+            $null = Set-SqlDscAgentAlert -AlertObject $script:mockAlert -Severity 16 -Force
 
             $script:mockAlert.Severity | Should -Be 16
             $script:mockAlert.MessageId | Should -Be 0
@@ -273,7 +273,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
             $script:mockAlert.Severity = 15
             $script:mockAlert.MessageId = 0
 
-            $null = Set-SqlDscAgentAlert -AlertObject $script:mockAlert -MessageId 50001
+            $null = Set-SqlDscAgentAlert -AlertObject $script:mockAlert -MessageId 50001 -Force
 
             $script:mockAlert.MessageId | Should -Be 50001
             $script:mockAlert.Severity | Should -Be 0
@@ -287,7 +287,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
             $script:mockAlert.Severity = 10
             $script:mockAlert.MessageId = 0
 
-            $null = Set-SqlDscAgentAlert -AlertObject $script:mockAlert -Severity 16
+            $null = Set-SqlDscAgentAlert -AlertObject $script:mockAlert -Severity 16 -Force
 
             $script:alterCalled | Should -BeTrue
         }
@@ -304,7 +304,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should throw error when alert does not exist' {
-            { Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'NonExistentAlert' -Severity 16 } |
+            { Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'NonExistentAlert' -Severity 16 -Force } |
                 Should -Throw -ExpectedMessage '*was not found*'
         }
     }
@@ -333,7 +333,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
             $script:mockAlert.Severity = 14
             $script:mockAlert.MessageId = 0
 
-            Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 14
+            Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 14 -Force
 
             $script:alterCalled | Should -BeFalse
         }
@@ -346,7 +346,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
             $script:mockAlert.Severity = 0
             $script:mockAlert.MessageId = 50001
 
-            Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001
+            Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001 -Force
 
             $script:alterCalled | Should -BeFalse
         }
@@ -359,7 +359,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
             $script:mockAlert.Severity = 14
             $script:mockAlert.MessageId = 0
 
-            Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 14 -MessageId 0
+            Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 14 -MessageId 0 -Force
 
             $script:alterCalled | Should -BeFalse
         }
@@ -384,7 +384,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
         }
 
         It 'Should throw error when update fails' {
-            { Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 } |
+            { Set-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16 -Force } |
                 Should -Throw -ExpectedMessage '*Failed to update*'
         }
     }

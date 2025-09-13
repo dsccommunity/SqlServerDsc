@@ -350,6 +350,9 @@ namespace Microsoft.SqlServer.Management.Smo
         // Property for SQL Agent support
         public Microsoft.SqlServer.Management.Smo.Agent.JobServer JobServer { get; set; }
 
+        // Property for server configuration
+        public Microsoft.SqlServer.Management.Smo.Configuration Configuration { get; set; }
+
         // Fabricated constructor
         private Server(string name, bool dummyParam)
         {
@@ -363,10 +366,14 @@ namespace Microsoft.SqlServer.Management.Smo
             server.JobServer = new Microsoft.SqlServer.Management.Smo.Agent.JobServer
             {
                 Parent = server,
-                Alerts = Microsoft.SqlServer.Management.Smo.Agent.AlertCollection.CreateTypeInstance()
+                Alerts = Microsoft.SqlServer.Management.Smo.Agent.AlertCollection.CreateTypeInstance(),
+                Operators = Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection.CreateTypeInstance()
             };
 
             server.JobServer.Alerts.Parent = server.JobServer;
+            server.JobServer.Operators.Parent = server.JobServer;
+
+            server.Configuration = Microsoft.SqlServer.Management.Smo.Configuration.CreateTypeInstance();
 
             return server;
         }
@@ -1060,7 +1067,7 @@ namespace Microsoft.SqlServer.Management.Smo
         }
     }
 
-    public class ConfigPropertyCollection
+    public class ConfigPropertyCollection : IEnumerable
     {
         // Property
         public System.Int32 Count { get; set; }
@@ -1068,11 +1075,47 @@ namespace Microsoft.SqlServer.Management.Smo
         public System.Object SyncRoot { get; set; }
         public Microsoft.SqlServer.Management.Smo.ConfigProperty Item { get; set; }
 
+        // For enumeration
+        private List<Microsoft.SqlServer.Management.Smo.ConfigProperty> _items = new List<Microsoft.SqlServer.Management.Smo.ConfigProperty>();
+
+        // Implement IEnumerable
+        public IEnumerator GetEnumerator()
+        {
+            return _items.GetEnumerator();
+        }
+
+        // Add method to add items
+        public void Add(Microsoft.SqlServer.Management.Smo.ConfigProperty item)
+        {
+            _items.Add(item);
+        }
+
         // Fabricated constructor
         private ConfigPropertyCollection() { }
         public static ConfigPropertyCollection CreateTypeInstance()
         {
             return new ConfigPropertyCollection();
+        }
+    }
+
+    public class Configuration
+    {
+        // Property
+        public Microsoft.SqlServer.Management.Smo.ConfigPropertyCollection Properties { get; set; }
+
+        // Method
+        public void Alter()
+        {
+        }
+
+        // Fabricated constructor
+        private Configuration() { }
+        public static Configuration CreateTypeInstance()
+        {
+            return new Configuration()
+            {
+                Properties = ConfigPropertyCollection.CreateTypeInstance()
+            };
         }
     }
 
@@ -1415,13 +1458,46 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
         }
     }
 
-    public class ServerProtocolCollection
+    public class ServerProtocolCollection : System.Collections.IEnumerable
     {
-        // Property
-        public Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol Item { get; set; }
-        public System.Int32 Count { get; set; }
+        // Properties
+        public System.Int32 Count { get { return protocols.Count; } }
         public System.Boolean IsSynchronized { get; set; }
         public System.Object SyncRoot { get; set; }
+
+        // Collection of protocols
+        private readonly System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol> protocols =
+            new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol>(System.StringComparer.OrdinalIgnoreCase);
+
+        // Indexer
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol this[string name]
+        {
+            get
+            {
+                if (protocols.ContainsKey(name))
+                {
+                    return protocols[name];
+                }
+                return null;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    protocols.Remove(name);
+                }
+                else
+                {
+                    protocols[name] = value;
+                }
+            }
+        }
+
+        // IEnumerable implementation
+        public System.Collections.IEnumerator GetEnumerator()
+        {
+            return protocols.Values.GetEnumerator();
+        }
 
         // Fabricated constructor
         private ServerProtocolCollection() { }
@@ -1450,13 +1526,45 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
         }
     }
 
-    public class ServerInstanceCollection
+    public class ServerInstanceCollection : System.Collections.IEnumerable
     {
-        // Property
-        public Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance Item { get; set; }
-        public System.Int32 Count { get; set; }
+        // Properties
+        public System.Int32 Count { get { return instances.Count; } }
         public System.Boolean IsSynchronized { get; set; }
         public System.Object SyncRoot { get; set; }
+
+        // Collection of instances
+        private System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance> instances = new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance>(System.StringComparer.OrdinalIgnoreCase);
+
+        // Indexer
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance this[string name]
+        {
+            get
+            {
+                if (instances.ContainsKey(name))
+                {
+                    return instances[name];
+                }
+                return null;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    instances.Remove(name);
+                }
+                else
+                {
+                    instances[name] = value;
+                }
+            }
+        }
+
+        // IEnumerable implementation
+        public System.Collections.IEnumerator GetEnumerator()
+        {
+            return instances.Values.GetEnumerator();
+        }
 
         // Fabricated constructor
         private ServerInstanceCollection() { }
@@ -1560,6 +1668,25 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
         Always = 3
     }
 
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.WeekDays
+    // Used by:
+    //  SQL Agent Operator commands unit tests
+    //  New-SqlDscAgentOperator.Tests.ps1
+    //  Set-SqlDscAgentOperator.Tests.ps1
+    public enum WeekDays
+    {
+        Sunday = 1,
+        Monday = 2,
+        Tuesday = 4,
+        Wednesday = 8,
+        Thursday = 16,
+        Friday = 32,
+        Weekdays = 62,
+        Saturday = 64,
+        WeekEnds = 65,
+        EveryDay = 127
+    }
+
     #endregion
 
     #region Public Classes
@@ -1568,6 +1695,8 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
     // Used by:
     //  SQL Agent Alert commands unit tests
     //  SqlAgentAlert.Tests.ps1
+    //  SQL Agent Operator commands unit tests
+    //  SqlAgentOperator.Tests.ps1
     public class JobServer
     {
         // Constructor
@@ -1575,12 +1704,18 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
 
         // Property
         public Microsoft.SqlServer.Management.Smo.Agent.AlertCollection Alerts { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection Operators { get; set; }
         public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
         public System.String Name { get; set; }
         public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
         public System.Object UserData { get; set; }
         public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
         public Microsoft.SqlServer.Management.Smo.Server Parent { get; set; }
+
+        // Mock property counters for tracking method calls
+        public System.Int32 MockOperatorMethodCreateCalled { get; set; }
+        public System.Int32 MockOperatorMethodDropCalled { get; set; }
+        public System.Int32 MockOperatorMethodAlterCalled { get; set; }
 
         // Fabricated constructor
         private JobServer(Microsoft.SqlServer.Management.Smo.Server server) { }
@@ -1678,6 +1813,117 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
         public static Alert CreateTypeInstance()
         {
             return new Alert();
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection
+    // Used by:
+    //  SQL Agent Operator commands unit tests
+    //  SqlAgentOperator.Tests.ps1
+    public class OperatorCollection : ICollection
+    {
+        private System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Agent.Operator> operators = new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Agent.Operator>();
+
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Agent.Operator this[System.String name]
+        {
+            get { return operators.ContainsKey(name) ? operators[name] : null; }
+            set { operators[name] = value; }
+        }
+        public Microsoft.SqlServer.Management.Smo.Agent.Operator this[System.Int32 index]
+        {
+            get { return operators.Values.ElementAtOrDefault(index); }
+            set { /* Not implemented for stub */ }
+        }
+        public System.Int32 Count { get { return operators.Count; } set { } }
+        public System.Boolean IsSynchronized { get { return false; } set { } }
+        public System.Object SyncRoot { get { return null; } set { } }
+        public Microsoft.SqlServer.Management.Smo.Agent.JobServer Parent { get; set; }
+
+        public void Add(Microsoft.SqlServer.Management.Smo.Agent.Operator operatorObj) { operators[operatorObj.Name] = operatorObj; }
+        public void Remove(Microsoft.SqlServer.Management.Smo.Agent.Operator operatorObj) { operators.Remove(operatorObj.Name); }
+        public void CopyTo(System.Array array, System.Int32 index) { /* Not implemented for stub */ }
+        public System.Collections.IEnumerator GetEnumerator() { return operators.Values.GetEnumerator(); }
+        public void Refresh() { /* Not implemented for stub */ }
+
+        // Fabricated constructor
+        private OperatorCollection() { }
+        public static OperatorCollection CreateTypeInstance()
+        {
+            return new OperatorCollection();
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.Operator
+    // Used by:
+    //  Get-SqlDscAgentOperator.Tests.ps1
+    //  New-SqlDscAgentOperator.Tests.ps1
+    //  Set-SqlDscAgentOperator.Tests.ps1
+    //  Remove-SqlDscAgentOperator.Tests.ps1
+    //  Test-SqlDscAgentOperator.Tests.ps1
+    public class Operator
+    {
+        public Operator() { }
+        public Operator(Microsoft.SqlServer.Management.Smo.Agent.JobServer jobServer, System.String name)
+        {
+            this.Parent = jobServer;
+            this.Name = name;
+        }
+
+        // Property
+        public System.String Name { get; set; }
+        public System.String EmailAddress { get; set; }
+        public System.String CategoryName { get; set; }
+        public System.String NetSendAddress { get; set; }
+        public System.String PagerAddress { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.WeekDays PagerDays { get; set; }
+        public System.TimeSpan SaturdayPagerEndTime { get; set; }
+        public System.TimeSpan SaturdayPagerStartTime { get; set; }
+        public System.TimeSpan SundayPagerEndTime { get; set; }
+        public System.TimeSpan SundayPagerStartTime { get; set; }
+        public System.TimeSpan WeekdayPagerEndTime { get; set; }
+        public System.TimeSpan WeekdayPagerStartTime { get; set; }
+        public System.Boolean Enabled { get; set; }
+        public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
+        public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.JobServer Parent { get; set; }
+
+        // Method
+        public void Create()
+        {
+            if (this.Parent != null)
+            {
+                this.Parent.MockOperatorMethodCreateCalled++;
+            }
+
+            // Mock failure for specific operator name used in testing
+            if (this.Name == "MockFailMethodCreateOperator")
+            {
+                throw new System.Exception("Simulated Create() method failure for testing purposes.");
+            }
+        }
+        public void Drop()
+        {
+            if (this.Parent != null)
+            {
+                this.Parent.MockOperatorMethodDropCalled++;
+            }
+        }
+        public void Alter()
+        {
+            if (this.Parent != null)
+            {
+                this.Parent.MockOperatorMethodAlterCalled++;
+            }
+        }
+
+        // Fabricated constructor
+        private Operator(Microsoft.SqlServer.Management.Smo.Agent.JobServer jobServer, System.String name, System.Boolean dummyParam) { }
+        public static Operator CreateTypeInstance()
+        {
+            return new Operator();
         }
     }
 

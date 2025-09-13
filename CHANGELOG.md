@@ -38,6 +38,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Set-SqlDscDatabaseDefault`
   - Added new command to set default objects of a database in a SQL Server
     Database Engine instance (issue [#2178](https://github.com/dsccommunity/SqlServerDsc/issues/2178)).
+- `Set-SqlDscConfigurationOption`
+  - Added new command to set SQL Server Database Engine configuration options
+    using SMO with validation, ShouldProcess support, and dynamic tab completion.
+- `Test-SqlDscConfigurationOption`
+  - Added new command to test if SQL Server Database Engine configuration options
+    have the specified value using SMO with dynamic tab completion for both
+    option names and values.
+- `Get-SqlDscConfigurationOption`
+  - Enhanced existing command to return user-friendly metadata objects by default
+    with properties Name, RunValue, ConfigValue, Minimum, Maximum, and IsDynamic.
+  - Added `-Raw` switch to return original SMO ConfigProperty objects for
+    backward compatibility.
+  - Added dynamic tab completion for the `-Name` parameter.
   - The command can set the default filegroup, default FILESTREAM filegroup,
     and default Full-Text catalog using SMO methods SetDefaultFileGroup,
     SetDefaultFileStreamFileGroup, and SetDefaultFullTextCatalog.
@@ -81,6 +94,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `Get-SqlDscAgentAlert`, `New-SqlDscAgentAlert`,
   `Set-SqlDscAgentAlert`, `Remove-SqlDscAgentAlert`, and `Test-SqlDscIsAgentAlert`
   to manage SQL Agent alerts on a Database Engine instance.
+- Added new public commands for SQL Agent Operator management:
+  - `Get-SqlDscAgentOperator` - Get SQL Agent Operators from a SQL Server
+     Database Engine instance
+  - `New-SqlDscAgentOperator` - Create a new SQL Agent Operator with specified properties
+  - `Set-SqlDscAgentOperator` - Update existing SQL Agent Operator properties
+  - `Remove-SqlDscAgentOperator` - Remove a SQL Agent Operator from the instance
+  - `Enable-SqlDscAgentOperator` - Enable a SQL Agent Operator
+  - `Disable-SqlDscAgentOperator` - Disable a SQL Agent Operator
+  - `Test-SqlDscIsAgentOperator` - Test if a SQL Agent Operator exists
+  - Supports pipeline input for both ServerObject and OperatorObject where applicable
+  - Includes comprehensive unit tests and follows ShouldProcess patterns
 - Added new public commands for database management:
   - `Get-SqlDscDatabase` - Get databases from a SQL Server Database Engine instance
   - `New-SqlDscDatabase` - Create a new database with specified properties
@@ -97,9 +121,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Requires at least one property parameter to be specified.
   - Supports pipeline input of
     `[Microsoft.SqlServer.Management.Smo.Agent.Alert]` objects.
+- Added private function `Get-CommandParameter` to filter command parameters
+  by excluding specified parameter names and common parameters, providing a
+  reusable way to determine settable properties on objects.
+- `Get-SqlDscServerProtocolName`
+  - New public command for SQL Server protocol name mappings with support
+    for protocol name, display name, and short name parameter sets.
+- `Get-SqlDscManagedComputerInstance`
+  - New public command for retrieving SQL Server managed computer instance
+    information with pipeline support.
+- `Get-SqlDscServerProtocol`
+  - Enhanced to support multiple parameter sets including pipeline input
+    from managed computer and instance objects.
+  - Enhanced to optionally return all protocols when ProtocolName parameter
+    is not specified.
 
 ### Changed
 
+- Improved code quality by ensuring all function invocations in the private
+  and public functions use named parameters instead of positional parameters.
 - SqlServerDsc
   - Updated GitVersion.yml feature branch regex pattern to use anchor `^f(eature(s)?)?[\/-]`
     for more precise branch name matching.
@@ -112,6 +152,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Module now outputs a verbose message instead of a warning when the SMO
   dependency module is missing during import to work around a DSC v3 issue.
 - VS Code tasks configuration was improved to support AI.
+- `.vscode/settings.json`
+  - Set `terminal.integrated.defaultProfile.osx` and `terminal.integrated.defaultProfile.linux`
+    to `pwsh` and added terminal profiles for macOS and Linux to ensure the
+    integrated terminal defaults to `pwsh` in developer environments.
 - `Prerequisites` tests
   - Added creation of `SqlIntegrationTest` local Windows user for integration testing.
 - `tests/Integration/Commands/README.md`
@@ -202,6 +246,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       `Developer`.
     - The read-only properties `CurrentVersion`, `ServiceName` and `ErrorDumpDirectory`
       were removed.
+- Bump GitHub Actions Stale to v10
 
 ### Added
 

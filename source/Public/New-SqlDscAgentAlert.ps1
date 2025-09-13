@@ -22,6 +22,9 @@
     .PARAMETER PassThru
         If specified, the created alert object will be returned.
 
+    .PARAMETER Force
+        Forces the action without prompting for confirmation.
+
     .INPUTS
         Microsoft.SqlServer.Management.Smo.Server
 
@@ -55,7 +58,7 @@
 function New-SqlDscAgentAlert
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
-    [CmdletBinding(SupportsShouldProcess = $true)]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     [OutputType([Microsoft.SqlServer.Management.Smo.Agent.Alert])]
     param
     (
@@ -80,8 +83,20 @@ function New-SqlDscAgentAlert
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $PassThru
+        $PassThru,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Force
     )
+
+    begin
+    {
+        if ($Force.IsPresent -and -not $Confirm)
+        {
+            $ConfirmPreference = 'None'
+        }
+    }
 
     # cSpell: ignore NSAA
     process
@@ -95,7 +110,15 @@ function New-SqlDscAgentAlert
         if ($alertExists)
         {
             $errorMessage = $script:localizedData.New_SqlDscAgentAlert_AlertAlreadyExists -f $Name
-            New-InvalidOperationException -Message $errorMessage
+
+            $PSCmdlet.ThrowTerminatingError(
+                [System.Management.Automation.ErrorRecord]::new(
+                    [System.InvalidOperationException]::new($errorMessage),
+                    'NSAA0001', # cspell: disable-line
+                    [System.Management.Automation.ErrorCategory]::ResourceExists,
+                    $Name
+                )
+            )
         }
 
         $verboseDescriptionMessage = $script:localizedData.New_SqlDscAgentAlert_CreateShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
@@ -135,7 +158,15 @@ function New-SqlDscAgentAlert
             catch
             {
                 $errorMessage = $script:localizedData.New_SqlDscAgentAlert_CreateFailed -f $Name
-                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.InvalidOperationException]::new($errorMessage, $_.Exception),
+                        'NSAA0002', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $Name
+                    )
+                )
             }
         }
     }

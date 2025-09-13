@@ -165,6 +165,13 @@ ConvertFrom-StringData @'
     ## Get-SqlDscManagedComputerService
     ManagedComputerService_GetState = Returning the managed computer service object(s) for server {0}.
 
+    ## Get-SqlDscManagedComputerInstance
+    ManagedComputerInstance_GetFromServer = Getting managed computer instance information from server '{0}'.
+    ManagedComputerInstance_GetFromObject = Getting managed computer instance information from managed computer object.
+    ManagedComputerInstance_GetSpecificInstance = Getting specific server instance '{0}'.
+    ManagedComputerInstance_GetAllInstances = Getting all server instances.
+    ManagedComputerInstance_InstanceNotFound = Could not find SQL Server instance '{0}' on server '{1}'.
+
     ## StartupParameters
     StartupParameters_DebugFoundTraceFlags = {0}: Found the trace flags: {1}
     StartupParameters_DebugParsingStartupParameters = {0}: Parsing the startup parameters: {1}
@@ -246,6 +253,19 @@ ConvertFrom-StringData @'
     ## Get-SqlDscConfigurationOption
     ConfigurationOption_Get_Missing = There is no configuration option with the name '{0}'.
 
+    ## Set-SqlDscConfigurationOption
+    ConfigurationOption_Set_Missing = There is no configuration option with the name '{0}'.
+    ConfigurationOption_Set_InvalidValue = The value '{1}' for configuration option '{0}' is outside the valid range of {2} to {3}.
+    ConfigurationOption_Set_ShouldProcessDescription = Set configuration option '{0}' to '{1}' on server '{2}'.
+    ConfigurationOption_Set_ShouldProcessConfirmation = Are you sure you want to set configuration option '{0}' to '{1}'?
+    ConfigurationOption_Set_ShouldProcessCaption = Set configuration option
+    ConfigurationOption_Set_Success = Successfully set configuration option '{0}' to '{1}' on server '{2}'.
+    ConfigurationOption_Set_Failed = Failed to set configuration option '{0}' to '{1}'. {2}
+
+    ## Test-SqlDscConfigurationOption
+    ConfigurationOption_Test_Missing = There is no configuration option with the name '{0}'.
+    ConfigurationOption_Test_Result = Testing configuration option '{0}': Current value is '{1}', expected value is '{2}', match result is '{3}' on server '{4}'.
+
     ## Save-SqlDscSqlServerMediaFile
     SqlServerMediaFile_Save_ShouldProcessVerboseDescription = The existing destination file '{0}' already exists and will be replaced.
     SqlServerMediaFile_Save_ShouldProcessVerboseWarning = Are you sure you want to replace existing file '{0}'?
@@ -274,6 +294,14 @@ ConvertFrom-StringData @'
     ## ConvertTo-SqlDscEditionName
     ConvertTo_EditionName_ConvertingEditionId = Converting EditionId '{0}' to Edition name.
     ConvertTo_EditionName_UnknownEditionId = The EditionId '{0}' is unknown and could not be converted.
+
+    ## Get-SqlDscServerProtocol
+    ServerProtocol_GetState = Getting server protocol '{0}' information for instance '{1}' on server '{2}'.
+    ServerProtocol_GetAllProtocols = Getting all server protocols for instance '{0}' on server '{1}'.
+    ServerProtocol_ProtocolNotFound = Could not find server protocol '{0}' for instance '{1}' on server '{2}'.
+
+    ## Get-SqlDscServerProtocolName
+    ServerProtocolName_GetProtocolMappings = Getting SQL Server protocol name mappings.
 
     ## Assert-SqlDscLogin
     Assert_Login_CheckingLogin = Checking if the principal '{0}' exists as a login on the instance '{1}'.
@@ -441,4 +469,62 @@ ConvertFrom-StringData @'
 
     ## Test-SqlDscAgentAlertProperty
     Test_SqlDscAgentAlertProperty_AlertNotFound = SQL Agent Alert '{0}' was not found. (TSDAAP0001)
+
+    ## Get-SqlDscAgentOperator
+    Get_SqlDscAgentOperator_GettingOperator = Getting SQL Agent Operator '{0}'. (GSAO0003)
+    Get_SqlDscAgentOperator_GettingOperators = Getting SQL Agent Operators from instance '{0}'. (GSAO0001)
+    Get_SqlDscAgentOperator_ReturningAllOperators = Returning all {0} SQL Agent Operators. (GSAO0002)
+
+    ## New-SqlDscAgentOperator
+    New_SqlDscAgentOperator_OperatorAlreadyExists = SQL Agent Operator '{0}' already exists. (NSAO0001)
+    New_SqlDscAgentOperator_CreateFailed = Failed to create SQL Agent Operator '{0}'. (NSAO0004)
+    New_SqlDscAgentOperator_CreateShouldProcessVerboseDescription = Creating the SQL Agent Operator '{0}' on the instance '{1}'.
+    New_SqlDscAgentOperator_CreateShouldProcessVerboseWarning = Are you sure you want to create the SQL Agent Operator '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    New_SqlDscAgentOperator_CreateShouldProcessCaption = Create SQL Agent Operator on instance
+
+    ## Set-SqlDscAgentOperator
+    Set_SqlDscAgentOperator_RefreshingServerObject = Refreshing server object's operators collection. (SSAO0001)
+    Set_SqlDscAgentOperator_UpdateFailed = Failed to update SQL Agent Operator '{0}'. (SSAO0007)
+    Set_SqlDscAgentOperator_UpdateShouldProcessVerboseDescription = Updating the SQL Agent Operator '{0}' on the instance '{1}' with parameters:{2}
+    Set_SqlDscAgentOperator_UpdateShouldProcessVerboseWarning = Are you sure you want to update the SQL Agent Operator '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Set_SqlDscAgentOperator_UpdateShouldProcessCaption = Update SQL Agent Operator on instance
+
+    ## Remove-SqlDscAgentOperator
+    Remove_SqlDscAgentOperator_RemoveFailed = Failed to remove SQL Agent Operator '{0}'. (RSAO0005)
+    Remove_SqlDscAgentOperator_RemoveShouldProcessVerboseDescription = Removing the SQL Agent Operator '{0}' on the instance '{1}'.
+    Remove_SqlDscAgentOperator_RemoveShouldProcessVerboseWarning = Are you sure you want to remove the SQL Agent Operator '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Remove_SqlDscAgentOperator_RemoveShouldProcessCaption = Remove SQL Agent Operator on instance
+    Remove_SqlDscAgentOperator_OperatorNotFound = SQL Agent Operator '{0}' was not found. (RSAO0002)
+
+    ## Test-SqlDscIsAgentOperator
+    Test_SqlDscIsAgentOperator_TestingOperator = Testing if the SQL Agent Operator '{0}' exists and has the desired properties. (TISAO0001)
+    Test_SqlDscIsAgentOperator_OperatorNotFound = SQL Agent Operator '{0}' was not found. (TISAO0002)
+    Test_SqlDscIsAgentOperator_OperatorFound = SQL Agent Operator '{0}' was found. (TISAO0003)
+
+    ## Enable-SqlDscAgentOperator
+    Enable_SqlDscAgentOperator_EnableFailed = Failed to enable SQL Agent Operator '{0}'. (ESAO0005)
+    Enable_SqlDscAgentOperator_ShouldProcessVerboseDescription = Enabling the SQL Agent Operator '{0}' on the instance '{1}'.
+    Enable_SqlDscAgentOperator_ShouldProcessVerboseWarning = Are you sure you want to enable the SQL Agent Operator '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Enable_SqlDscAgentOperator_ShouldProcessCaption = Enable SQL Agent Operator on instance
+
+    ## Disable-SqlDscAgentOperator
+    Disable_SqlDscAgentOperator_DisableFailed = Failed to disable SQL Agent Operator '{0}'. (DSAO0005)
+    Disable_SqlDscAgentOperator_ShouldProcessVerboseDescription = Disabling the SQL Agent Operator '{0}' on the instance '{1}'.
+    Disable_SqlDscAgentOperator_ShouldProcessVerboseWarning = Are you sure you want to disable the SQL Agent Operator '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Disable_SqlDscAgentOperator_ShouldProcessCaption = Disable SQL Agent Operator on instance
+
+    ## Agent Operator common
+    AgentOperator_NotFound = The SQL Agent Operator '{0}' was not found. (AO0001)
+
+    ## Get-AgentOperatorObject
+    Get_AgentOperatorObject_GettingOperator = Getting SQL Agent Operator '{0}' from server object. (GAOO0002)
+    Get_AgentOperatorObject_RefreshingOperators = Refreshing SQL Agent Operators collection. (GAOO0003)
+
+    ## ConvertTo-FormattedParameterDescription
+    ConvertTo_FormattedParameterDescription_NoParametersToUpdate = (no parameters to update)
 '@
