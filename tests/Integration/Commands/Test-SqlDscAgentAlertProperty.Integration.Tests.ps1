@@ -91,21 +91,18 @@ Describe 'Test-SqlDscAgentAlertProperty' -Tag @('Integration_SQL2017', 'Integrat
     }
 
     Context 'When alert does not exist' {
-        It 'Should return false for non-existent alert with severity' {
-            $result = $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'NonExistentAlert' -Severity 16
-
-            $result | Should -BeFalse
+        It 'Should throw an exception for non-existent alert with severity' {
+            {
+                $null = $script:sqlServerObject |
+                    Test-SqlDscAgentAlertProperty -Name 'NonExistentAlert' -Severity 16 -ErrorAction 'Stop'
+            } | Should -Throw
         }
 
-        It 'Should return false for non-existent alert with message ID' {
-            $result = $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'NonExistentAlert' -MessageId 50001
-
-            $result | Should -BeFalse
-        }
-
-        It 'Should throw an exception for a non-existent alert' {
-            { $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'NonExistentAlert' -ErrorAction 'Stop' } |
-                Should -Throw
+        It 'Should throw an exception for non-existent alert with message ID' {
+            {
+                $null = $script:sqlServerObject |
+                    Test-SqlDscAgentAlertProperty -Name 'NonExistentAlert' -MessageId 50001 -ErrorAction 'Stop'
+            } | Should -Throw
         }
     }
 
