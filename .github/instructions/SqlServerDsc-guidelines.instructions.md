@@ -6,10 +6,9 @@ applyTo: "**"
 # SqlServerDsc Requirements
 
 ## Build & Test Workflow Requirements
-- Run in `pwsh`
-- Run scripts from project root
+- Run PowerShell script files from repository root
 - Setup build and test environment (once per `pwsh` session): `./build.ps1 -Task noop`
-- Build project: `./build.ps1 -Task build`
+- Build project before running tests: `./build.ps1 -Tasks build`
 - Run tests without coverage (wildcards allowed): `Invoke-PesterJob -Path '{tests filepath}' -SkipCodeCoverage`
 - Run QA tests: `Invoke-PesterJob -Path 'tests/QA' -SkipCodeCoverage`
 - Never run integration tests locally
