@@ -12,7 +12,7 @@ applyTo: "**"
 
 ## Build & Test Workflow Requirements
 - Run PowerShell script files from repository root
-- Setup build and test environment (once per `pwsh` session): `./build.ps1 -Task noop`
+- Setup build and test environment (once per `pwsh` session): `./build.ps1 -Tasks noop`
 - Build project before running tests: `./build.ps1 -Tasks build`
 - Always run tests in new `pwsh` session: `Invoke-Pester -Path @({test paths}) -Output Detailed`
 
