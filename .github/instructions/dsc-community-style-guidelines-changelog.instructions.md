@@ -10,4 +10,5 @@ applyTo: "CHANGELOG.md"
 - Describe notable changes briefly, ≤2 items per change type
 - Reference issues using format [issue #<issue_number>](https://github.com/<owner>/<repo>/issues/<issue_number>)
 - No empty lines between list items in same section
-- Do not add item if there are already an existing item for the same change
+- Skip adding entry if same change already exists in Unreleased section
+- No duplicate sections or items in Unreleased section

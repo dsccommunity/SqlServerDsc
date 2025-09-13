@@ -10,10 +10,11 @@ applyTo: "**"
 - **Function**: Private function
 - **Resource**: DSC class-based resource
 
-## Build & Test Workflow
-- Run in PowerShell, from repository root
-- Build before running tests: `.\build.ps1 -Tasks build`
-- Always run tests in new PowerShell session: `Invoke-Pester -Path @({test paths}) -Output Detailed`
+## Build & Test Workflow Requirements
+- Run PowerShell script files from repository root
+- Setup build and test environment (once per `pwsh` session): `./build.ps1 -Tasks noop`
+- Build project before running tests: `./build.ps1 -Tasks build`
+- Always run tests in new `pwsh` session: `Invoke-Pester -Path @({test paths}) -Output Detailed`
 
 ## File Organization
 - Public commands: `source/Public/{CommandName}.ps1`

@@ -1,4 +1,3 @@
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
@@ -27,6 +26,8 @@ BeforeDiscovery {
 BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
 
+    $env:SqlServerDscCI = $true
+
     Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
 
     # Load SMO stub types
@@ -42,6 +43,8 @@ AfterAll {
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
+
+    Remove-Item -Path 'env:SqlServerDscCI' -ErrorAction 'SilentlyContinue'
 }
 
 Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
@@ -125,7 +128,7 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
             $script:mockNewAlert.MessageID = 0
 
             # Mock the private functions
-            Mock -CommandName 'Get-AgentAlertObject'
+            Mock -CommandName 'Test-SqlDscIsAgentAlert' -MockWith { return $false }
             Mock -CommandName 'Assert-BoundParameter'
         }
 
@@ -134,14 +137,14 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
                 $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Severity 16
 
                 Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
-                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
+                Should -Invoke -CommandName 'Test-SqlDscIsAgentAlert' -Times 1 -Exactly
             }
 
             It 'Should create alert with message ID successfully' {
                 $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -MessageId 50001
 
                 Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
-                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
+                Should -Invoke -CommandName 'Test-SqlDscIsAgentAlert' -Times 1 -Exactly
             }
         }
 
@@ -170,8 +173,8 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
                 # Test maximum value (25) - should complete without errors
                 $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert2' -Severity 25
 
-                # Verify that Get-AgentAlertObject was called for each alert creation to check existence
-                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 2 -Exactly
+                # Verify that Test-SqlDscIsAgentAlert was called for each alert creation to check existence
+                Should -Invoke -CommandName 'Test-SqlDscIsAgentAlert' -Times 2 -Exactly
                 # Verify that Assert-BoundParameter was called for each alert creation
                 Should -Invoke -CommandName 'Assert-BoundParameter' -Times 2 -Exactly
             }
@@ -183,8 +186,8 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
                 # Test maximum value (2147483647) - should complete without errors
                 $null = New-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert4' -MessageId 2147483647
 
-                # Verify that Get-AgentAlertObject was called for each alert creation to check existence
-                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 2 -Exactly
+                # Verify that Test-SqlDscIsAgentAlert was called for each alert creation to check existence
+                Should -Invoke -CommandName 'Test-SqlDscIsAgentAlert' -Times 2 -Exactly
                 # Verify that Assert-BoundParameter was called for each alert creation
                 Should -Invoke -CommandName 'Assert-BoundParameter' -Times 2 -Exactly
             }
@@ -196,7 +199,7 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
 
                 $result | Should -BeNullOrEmpty
                 Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
-                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
+                Should -Invoke -CommandName 'Test-SqlDscIsAgentAlert' -Times 1 -Exactly
             }
 
             It 'Should create alert with message ID using pipeline input' {
@@ -204,7 +207,7 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
 
                 $result | Should -BeNullOrEmpty
                 Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
-                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
+                Should -Invoke -CommandName 'Test-SqlDscIsAgentAlert' -Times 1 -Exactly
             }
 
             It 'Should create alert with PassThru using pipeline input' {
@@ -221,7 +224,7 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
 
                 $result | Should -BeNullOrEmpty
                 Should -Invoke -CommandName 'Assert-BoundParameter' -Times 1 -Exactly
-                Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
+                Should -Invoke -CommandName 'Test-SqlDscIsAgentAlert' -Times 1 -Exactly
             }
 
             It 'Should create alert with Force and PassThru using pipeline input' {
@@ -252,7 +255,7 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
             $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
             $script:mockServerObject.JobServer = $script:mockJobServer
 
-            Mock -CommandName 'Get-AgentAlertObject' -MockWith { return $script:mockExistingAlert }
+            Mock -CommandName 'Test-SqlDscIsAgentAlert' -MockWith { return $true }
             Mock -CommandName 'Assert-BoundParameter'
         }
 
@@ -278,7 +281,7 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
             # Mock alert object
             $script:mockAlert = [Microsoft.SqlServer.Management.Smo.Agent.Alert]::CreateTypeInstance()
 
-            Mock -CommandName 'Get-AgentAlertObject'
+            Mock -CommandName 'Test-SqlDscIsAgentAlert' -MockWith { return $false }
             Mock -CommandName 'Assert-BoundParameter'
         }
 

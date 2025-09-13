@@ -64,8 +64,8 @@ applyTo: "**/*.ps?(m|d)1"
 - Comment-based help: SYNOPSIS, DESCRIPTION (40+ chars), PARAMETER, EXAMPLE sections before function/class
 - Comment-based help indentation: keywords 4 spaces, text 8 spaces
 - Include examples for all parameter sets and combinations
-- INPUTS: List each pipeline‑accepted type (one per line) with a 1‑line description.
-- OUTPUTS: List each return type (one per line) with a 1‑line description. Must match both [OutputType()] and actual returns.
+- INPUTS: List each pipeline‑accepted type (one per line) with a 1‑line description. Repeat keyword for each input type.
+- OUTPUTS: List each return type (one per line) with a 1‑line description. Repeat keyword for each output type. Must match both `[OutputType()]` and actual returns.
 - .NOTES: Include only if it conveys critical info (constraints, side effects, security, version compatibility, breaking behavior). Keep to ≤2 short sentences.
 
 ## Functions
@@ -83,6 +83,7 @@ applyTo: "**/*.ps?(m|d)1"
   - Inside `$PSCmdlet.ShouldProcess`-block, avoid using `Write-Verbose`
 - Never use backtick as line continuation in production code.
 - Set `$ErrorActionPreference = 'Stop'` before commands using `-ErrorAction 'Stop'`; restore previous value directly after invocation (do not use try-catch-finally)
+- Use `[Alias()]` attribute for function aliases, never `Set-Alias` or `New-Alias`
 
 ## Output streams
 
@@ -92,7 +93,10 @@ applyTo: "**/*.ps?(m|d)1"
 - Use `Write-Information` for: User-facing status updates; Important operational messages; Non-error state changes
 - Use `Write-Warning` for: Non-fatal issues requiring attention; Deprecated functionality usage; Configuration problems that don't block execution
 - Use `$PSCmdlet.ThrowTerminatingError()` for terminating errors (except for classes), use relevant error category, in try-catch include exception with localized message
-- Use `Write-Error` for non-terminating errors, use relevant error category; always use `return` after `Write-Error` to avoid further processing
+- Use `Write-Error` for non-terminating errors
+  - Always include `-Message` (localized string), `-Category` (relevant error category), `-ErrorId` (unique ID matching localized string ID), `-TargetObject` (object causing error)
+  - In catch blocks, pass original exception using `-Exception`
+  - Always use `return` after `Write-Error` to avoid further processing
 
 ## ShouldProcess Required Pattern
 
@@ -134,14 +138,25 @@ if ($Force.IsPresent -and -not $Confirm)
         Parameter description
 
     .INPUTS
-        TypeName
+        TypeName1
 
-        Description
+        Description1
+
+    .INPUTS
+        TypeName2
+
+        Description2
 
     .OUTPUTS
-        TypeName
+        TypeName1
 
-        Description
+        Description1
+
+    .OUTPUTS
+        TypeName2
+
+        Description2
+
 #>
 function Get-Something
 {
