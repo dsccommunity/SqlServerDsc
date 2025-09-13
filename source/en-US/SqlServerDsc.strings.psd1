@@ -165,6 +165,13 @@ ConvertFrom-StringData @'
     ## Get-SqlDscManagedComputerService
     ManagedComputerService_GetState = Returning the managed computer service object(s) for server {0}.
 
+    ## Get-SqlDscManagedComputerInstance
+    ManagedComputerInstance_GetFromServer = Getting managed computer instance information from server '{0}'.
+    ManagedComputerInstance_GetFromObject = Getting managed computer instance information from managed computer object.
+    ManagedComputerInstance_GetSpecificInstance = Getting specific server instance '{0}'.
+    ManagedComputerInstance_GetAllInstances = Getting all server instances.
+    ManagedComputerInstance_InstanceNotFound = Could not find SQL Server instance '{0}' on server '{1}'.
+
     ## StartupParameters
     StartupParameters_DebugFoundTraceFlags = {0}: Found the trace flags: {1}
     StartupParameters_DebugParsingStartupParameters = {0}: Parsing the startup parameters: {1}
@@ -287,6 +294,14 @@ ConvertFrom-StringData @'
     ## ConvertTo-SqlDscEditionName
     ConvertTo_EditionName_ConvertingEditionId = Converting EditionId '{0}' to Edition name.
     ConvertTo_EditionName_UnknownEditionId = The EditionId '{0}' is unknown and could not be converted.
+
+    ## Get-SqlDscServerProtocol
+    ServerProtocol_GetState = Getting server protocol '{0}' information for instance '{1}' on server '{2}'.
+    ServerProtocol_GetAllProtocols = Getting all server protocols for instance '{0}' on server '{1}'.
+    ServerProtocol_ProtocolNotFound = Could not find server protocol '{0}' for instance '{1}' on server '{2}'.
+
+    ## Get-SqlDscServerProtocolName
+    ServerProtocolName_GetProtocolMappings = Getting SQL Server protocol name mappings.
 
     ## Assert-SqlDscLogin
     Assert_Login_CheckingLogin = Checking if the principal '{0}' exists as a login on the instance '{1}'.

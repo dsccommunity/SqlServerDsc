@@ -118,6 +118,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added private function `Get-CommandParameter` to filter command parameters
   by excluding specified parameter names and common parameters, providing a
   reusable way to determine settable properties on objects.
+- `Get-SqlDscServerProtocolName`
+  - New public command for SQL Server protocol name mappings with support
+    for protocol name, display name, and short name parameter sets.
+- `Get-SqlDscManagedComputerInstance`
+  - New public command for retrieving SQL Server managed computer instance
+    information with pipeline support.
+- `Get-SqlDscServerProtocol`
+  - Enhanced to support multiple parameter sets including pipeline input
+    from managed computer and instance objects.
+  - Enhanced to optionally return all protocols when ProtocolName parameter
+    is not specified.
 
 ### Changed
 
