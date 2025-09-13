@@ -95,6 +95,7 @@ applyTo: "**/*.ps?(m|d)1"
 - Use `$PSCmdlet.ThrowTerminatingError()` for terminating errors (except for classes), use relevant error category, in try-catch include exception with localized message
 - Use `Write-Error` for non-terminating errors
   - Always include `-Message` (localized string), `-Category` (relevant error category), `-ErrorId` (unique ID matching localized string ID), `-TargetObject` (object causing error)
+  - In catch blocks, pass original exception using `-Exception`
   - Always use `return` after `Write-Error` to avoid further processing
 
 ## ShouldProcess Required Pattern
