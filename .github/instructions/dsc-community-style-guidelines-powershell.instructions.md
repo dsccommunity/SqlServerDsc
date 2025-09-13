@@ -82,7 +82,7 @@ applyTo: "**/*.ps?(m|d)1"
   - `$PSCmdlet.ShouldProcess` must use required pattern
   - Inside `$PSCmdlet.ShouldProcess`-block, avoid using `Write-Verbose`
 - Never use backtick as line continuation in production code.
-- Set `$ErrorActionPreference = 'Stop'` before commands using `-ErrorAction 'Stop'`; restore previous value after
+- Set `$ErrorActionPreference = 'Stop'` before commands using `-ErrorAction 'Stop'`; restore previous value directly after invocation (do not use try-catch-finally)
 
 ## Output streams
 
