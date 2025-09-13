@@ -68,7 +68,6 @@ function Test-SqlDscAgentAlertProperty
         $ServerObject,
 
         [Parameter(ParameterSetName = 'ByServerAndName', Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
 
