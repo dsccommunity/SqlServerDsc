@@ -84,7 +84,7 @@ function Get-SqlDscServerProtocol
         [Parameter(ParameterSetName = 'ByServerName')]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = (Get-ComputerName),
+        $ServerName,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'ByServerName')]
         [Parameter(Mandatory = $true, ParameterSetName = 'ByManagedComputerObject')]
@@ -110,6 +110,15 @@ function Get-SqlDscServerProtocol
 
     process
     {
+        $previousErrorActionPreference = $ErrorActionPreference
+        $ErrorActionPreference = 'Stop'
+
+        # Set default value for ServerName if not provided
+        if (-not $PSBoundParameters.ContainsKey('ServerName'))
+        {
+            $ServerName = Get-ComputerName -ErrorAction 'Stop'
+        }
+
         if ($PSBoundParameters.ContainsKey('ProtocolName'))
         {
             Write-Verbose -Message (
@@ -127,12 +136,12 @@ function Get-SqlDscServerProtocol
         {
             'ByServerName'
             {
-                $serverInstance = Get-SqlDscManagedComputerInstance -ServerName $ServerName -InstanceName $InstanceName
+                $serverInstance = Get-SqlDscManagedComputerInstance -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
             }
 
             'ByManagedComputerObject'
             {
-                $serverInstance = $ManagedComputerObject | Get-SqlDscManagedComputerInstance -InstanceName $InstanceName
+                $serverInstance = $ManagedComputerObject | Get-SqlDscManagedComputerInstance -InstanceName $InstanceName -ErrorAction 'Stop'
             }
 
             'ByManagedComputerInstanceObject'
@@ -144,9 +153,11 @@ function Get-SqlDscServerProtocol
         if ($PSBoundParameters.ContainsKey('ProtocolName'))
         {
             # Get specific protocol
-            $protocolMapping = Get-SqlDscServerProtocolName -ProtocolName $ProtocolName
+            $protocolMapping = Get-SqlDscServerProtocolName -ProtocolName $ProtocolName -ErrorAction 'Stop'
 
             $serverProtocolObject = $serverInstance.ServerProtocols[$protocolMapping.ShortName]
+
+            $ErrorActionPreference = $previousErrorActionPreference
 
             if (-not $serverProtocolObject)
             {
@@ -165,7 +176,7 @@ function Get-SqlDscServerProtocol
         else
         {
             # Get all protocols
-            $allProtocolMappings = Get-SqlDscServerProtocolName -All
+            $allProtocolMappings = Get-SqlDscServerProtocolName -All -ErrorAction 'Stop'
             $allServerProtocols = @()
 
             foreach ($protocolMapping in $allProtocolMappings)
@@ -177,6 +188,8 @@ function Get-SqlDscServerProtocol
                     $allServerProtocols += $serverProtocolObject
                 }
             }
+
+            $ErrorActionPreference = $previousErrorActionPreference
 
             if ($allServerProtocols.Count -eq 0)
             {
