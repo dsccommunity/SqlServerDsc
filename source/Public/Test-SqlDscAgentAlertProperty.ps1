@@ -1,16 +1,20 @@
 <#
     .SYNOPSIS
-        Tests if a SQL Agent Alert exists and has the desired properties.
+        Tests if a SQL Agent Alert has the specified properties.
 
     .DESCRIPTION
-        This command tests if a SQL Agent Alert exists on a SQL Server Database Engine
-        instance and optionally validates its properties.
+        This command tests if a SQL Agent Alert on a SQL Server Database Engine
+        instance has the specified properties. At least one property parameter
+        must be specified.
 
     .PARAMETER ServerObject
         Specifies current server connection object.
 
     .PARAMETER Name
         Specifies the name of the SQL Agent Alert to test.
+
+    .PARAMETER AlertObject
+        Specifies the SQL Agent Alert object to test.
 
     .PARAMETER Severity
         Specifies the expected severity level for the SQL Agent Alert. Valid range is 0 to 25.
@@ -25,42 +29,51 @@
 
         SQL Server Database Engine instance object.
 
+    .INPUTS
+        Microsoft.SqlServer.Management.Smo.Agent.Alert
+
+        SQL Agent Alert object.
+
     .OUTPUTS
         [System.Boolean]
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        Test-SqlDscAgentAlert -ServerObject $serverObject -Name 'MyAlert'
-
-        Tests if the SQL Agent Alert named 'MyAlert' exists.
-
-    .EXAMPLE
-        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $serverObject | Test-SqlDscAgentAlert -Name 'MyAlert' -Severity 16
+        Test-SqlDscAgentAlertProperty -ServerObject $serverObject -Name 'MyAlert' -Severity 16
 
         Tests if the SQL Agent Alert named 'MyAlert' exists and has severity level 16.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $serverObject | Test-SqlDscAgentAlert -Name 'MyAlert' -MessageId 50001
+        $serverObject | Test-SqlDscAgentAlertProperty -Name 'MyAlert' -MessageId 50001
 
         Tests if the SQL Agent Alert named 'MyAlert' exists and has message ID 50001.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $alertObject = $serverObject | Get-SqlDscAgentAlert -Name 'MyAlert'
+        $alertObject | Test-SqlDscAgentAlertProperty -Severity 16
+
+        Tests if the SQL Agent Alert has severity level 16 using alert object pipeline input.
 #>
-function Test-SqlDscAgentAlert
+function Test-SqlDscAgentAlertProperty
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'ByServerAndName')]
     [OutputType([System.Boolean])]
     param
     (
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(ParameterSetName = 'ByServerAndName', Mandatory = $true, ValueFromPipeline = $true)]
         [Microsoft.SqlServer.Management.Smo.Server]
         $ServerObject,
 
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
+        [Parameter(ParameterSetName = 'ByServerAndName', Mandatory = $true)]
         [System.String]
         $Name,
+
+        [Parameter(ParameterSetName = 'ByAlertObject', Mandatory = $true, ValueFromPipeline = $true)]
+        [Microsoft.SqlServer.Management.Smo.Agent.Alert]
+        $AlertObject,
 
         [Parameter()]
         [ValidateRange(0, 25)]
@@ -73,31 +86,31 @@ function Test-SqlDscAgentAlert
         $MessageId
     )
 
-    # cSpell: ignore TSAA
+    # cSpell: ignore TSAAP
     process
     {
+        # Ensure at least one property parameter is specified
+        Assert-BoundParameter -BoundParameterList $PSBoundParameters -AtLeastOneList @('Severity', 'MessageId')
+
         # Validate that both Severity and MessageId are not specified
         Assert-BoundParameter -BoundParameterList $PSBoundParameters -MutuallyExclusiveList1 @('Severity') -MutuallyExclusiveList2 @('MessageId')
 
-        Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_TestingAlert -f $Name)
-
-        $alertObject = Get-AgentAlertObject -ServerObject $ServerObject -Name $Name
-
-        if ($null -eq $alertObject)
+        if ($PSCmdlet.ParameterSetName -eq 'ByAlertObject')
         {
-            Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_AlertNotFound -f $Name)
-
-            return $false
+            $alertObject = $AlertObject
         }
-
-        Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_AlertFound -f $Name)
-
-        # If no specific properties are specified, just return true (alert exists)
-        if (-not $PSBoundParameters.ContainsKey('Severity') -and -not $PSBoundParameters.ContainsKey('MessageId'))
+        else
         {
-            Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_NoPropertyTest)
+            $alertObject = Get-AgentAlertObject -ServerObject $ServerObject -Name $Name
 
-            return $true
+            if ($null -eq $alertObject)
+            {
+                $errorMessage = $script:localizedData.Test_SqlDscAgentAlertProperty_AlertNotFound -f $Name
+
+                Write-Error -Message $errorMessage -Category 'ObjectNotFound' -ErrorId 'TSDAAP0001' -TargetObject $Name
+
+                return $false
+            }
         }
 
         # Test severity if specified
@@ -105,13 +118,7 @@ function Test-SqlDscAgentAlert
         {
             if ($alertObject.Severity -ne $Severity)
             {
-                Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_SeverityMismatch -f $alertObject.Severity, $Severity)
-
                 return $false
-            }
-            else
-            {
-                Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_SeverityMatch -f $Severity)
             }
         }
 
@@ -120,17 +127,9 @@ function Test-SqlDscAgentAlert
         {
             if ($alertObject.MessageId -ne $MessageId)
             {
-                Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_MessageIdMismatch -f $alertObject.MessageId, $MessageId)
-
                 return $false
             }
-            else
-            {
-                Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_MessageIdMatch -f $MessageId)
-            }
         }
-
-        Write-Verbose -Message ($script:localizedData.Test_SqlDscAgentAlert_AllTestsPassed -f $Name)
 
         return $true
     }

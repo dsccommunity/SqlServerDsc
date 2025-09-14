@@ -105,9 +105,9 @@ function New-SqlDscAgentAlert
         Assert-BoundParameter -BoundParameterList $PSBoundParameters -MutuallyExclusiveList1 @('Severity') -MutuallyExclusiveList2 @('MessageId')
 
         # Check if alert already exists
-        $existingAlert = Get-AgentAlertObject -ServerObject $ServerObject -Name $Name
+        $alertExists = Test-SqlDscIsAgentAlert -ServerObject $ServerObject -Name $Name
 
-        if ($existingAlert)
+        if ($alertExists)
         {
             $errorMessage = $script:localizedData.New_SqlDscAgentAlert_AlertAlreadyExists -f $Name
 

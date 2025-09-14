@@ -462,16 +462,13 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Remove_SqlDscAgentAlert_RemoveShouldProcessCaption = Remove SQL Agent Alert on instance
 
-    ## Test-SqlDscAgentAlert
-    Test_SqlDscAgentAlert_TestingAlert = Testing if the SQL Agent Alert '{0}' exists and has the desired properties. (TSAA0001)
-    Test_SqlDscAgentAlert_AlertNotFound = SQL Agent Alert '{0}' was not found. (TSAA0002)
-    Test_SqlDscAgentAlert_AlertFound = SQL Agent Alert '{0}' was found. (TSAA0003)
-    Test_SqlDscAgentAlert_NoPropertyTest = No specific properties to test, alert exists. (TSAA0004)
-    Test_SqlDscAgentAlert_SeverityMismatch = Severity mismatch: current '{0}', expected '{1}'. (TSAA0005)
-    Test_SqlDscAgentAlert_SeverityMatch = Severity matches expected value '{0}'. (TSAA0006)
-    Test_SqlDscAgentAlert_MessageIdMismatch = Message ID mismatch: current '{0}', expected '{1}'. (TSAA0007)
-    Test_SqlDscAgentAlert_MessageIdMatch = Message ID matches expected value '{0}'. (TSAA0008)
-    Test_SqlDscAgentAlert_AllTestsPassed = All tests passed for SQL Agent Alert '{0}'. (TSAA0009)
+    ## Test-SqlDscIsAgentAlert
+    Test_SqlDscIsAgentAlert_TestingAlert = Testing if the SQL Agent Alert '{0}' exists. (TSIAA0001)
+    Test_SqlDscIsAgentAlert_AlertNotFound = SQL Agent Alert '{0}' was not found. (TSIAA0002)
+    Test_SqlDscIsAgentAlert_AlertFound = SQL Agent Alert '{0}' was found. (TSIAA0003)
+
+    ## Test-SqlDscAgentAlertProperty
+    Test_SqlDscAgentAlertProperty_AlertNotFound = SQL Agent Alert '{0}' was not found. (TSDAAP0001)
 
     ## Get-SqlDscAgentOperator
     Get_SqlDscAgentOperator_GettingOperator = Getting SQL Agent Operator '{0}'. (GSAO0003)

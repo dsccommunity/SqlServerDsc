@@ -1,2 +1,2 @@
 # Requirements
-- SqlServerDsc-specific guidelines override general project guidelines
+- SqlServerDsc-specific guidelines and requirements override general project guidelines and requirements

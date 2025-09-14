@@ -68,7 +68,8 @@ Test-SqlDscDatabase | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTE
 Get-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 New-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test alerts
 Set-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Test-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscAgentAlertProperty | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscIsAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Get-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 New-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | SqlDscIntegrationTestOperator_Persistent operator
 Set-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -

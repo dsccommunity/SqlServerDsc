@@ -66,4 +66,7 @@
         }
     }
     PlatyPS                        = 'latest'
+
+    # For development
+    'Viscalyx.Common'              = 'latest' # Invoke-PesterJob to run tests
 }
