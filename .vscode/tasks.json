@@ -40,7 +40,7 @@
         {
             "label": "build",
             "type": "shell",
-            "command": "& '${cwd}/build.ps1' -AutoRestore -Tasks build -UseModuleFast",
+            "command": "./build.ps1 -AutoRestore -Tasks build -UseModuleFast",
             "group": {
                 "kind": "build",
                 "isDefault": true
