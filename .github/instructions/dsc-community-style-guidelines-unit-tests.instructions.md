@@ -1,6 +1,6 @@
 ---
 description: Guidelines for writing and maintaining unit tests using Pester.
-applyTo: "tests/[u]Unit/**/*.[Tt]ests.ps1"
+applyTo: "tests/[Uu]nit/**/*.[Tt]ests.ps1"
 ---
 
 # Unit Tests Guidelines
@@ -36,7 +36,7 @@ BeforeDiscovery {
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 

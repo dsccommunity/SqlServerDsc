@@ -40,8 +40,11 @@
         {
             "label": "build",
             "type": "shell",
-            "command": "&${cwd}/build.ps1",
-            "args": ["-AutoRestore", "-UseModuleFast", "-Tasks", "build"],
+            "command": "& '${cwd}/build.ps1' -AutoRestore -Tasks build -UseModuleFast",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -83,17 +86,55 @@
         {
             "label": "test",
             "type": "shell",
-            "command": "&${cwd}/build.ps1",
-            "args": [
-                "-AutoRestore",
-                "-UseModuleFast",
-                "-Tasks",
-                "test",
-                "-PesterPath",
-                "./tests/Unit/Classes,./tests/Unit/Private,./tests/Unit/Public,./tests/QA",
-                "-CodeCoverageThreshold",
-                "0"
-            ],
+            "command": "./build.ps1 -Tasks noop;Invoke-PesterJob -Path './tests/Unit/Classes','./tests/Unit/Private','./tests/Unit/Public','./tests/QA' -SkipCodeCoverage",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "dedicated",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [
+                {
+                    "owner": "powershell",
+                    "fileLocation": [
+                        "absolute"
+                    ],
+                    "severity": "error",
+                    "pattern": [
+                        {
+                            "regexp": "^\\s*(\\[-\\]\\s*.*?)(\\d+)ms\\s*$",
+                            "message": 1
+                        },
+                        {
+                            "regexp": "(.*)",
+                            "code": 1
+                        },
+                        {
+                            "regexp": ""
+                        },
+                        {
+                            "regexp": "^.*,\\s*(.*):\\s*line\\s*(\\d+).*",
+                            "file": 1,
+                            "line": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "test-with-coverage",
+            "type": "shell",
+            "command": "./build.ps1 -Tasks noop;Invoke-PesterJob -Path './tests/Unit/Classes','./tests/Unit/Private','./tests/Unit/Public','./tests/QA'",
+            "group": {
+                "kind": "test",
+                "isDefault": false
+            },
             "presentation": {
                 "echo": true,
                 "reveal": "always",

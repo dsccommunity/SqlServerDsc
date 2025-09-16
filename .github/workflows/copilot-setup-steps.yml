@@ -27,7 +27,8 @@ jobs:
       - name: Set Environment Variables
         shell: bash
         run: |
-          echo "MODULE_NAME=SqlServerDsc" >> "$GITHUB_ENV"
+          echo "Setting MODULE_NAME=$MODULE_NAME to GitHub environment"
+          echo "MODULE_NAME=$MODULE_NAME" >> "$GITHUB_ENV"
 
       - name: Checkout Repository
         uses: actions/checkout@v5

@@ -1,6 +1,16 @@
 # Needed for publishing of examples, build worker defaults to core.autocrlf=input.
 * text eol=crlf
 
+# PowerShell files should use LF (cross-platform standard)
+*.ps1 text eol=lf
+*.psm1 text eol=lf
+*.psd1 text eol=lf
+
+# Common PS ancillary files
+.ps1xml text eol=lf
+.pssc text eol=lf
+.psrc text eol=lf
+
 # YAML files should use LF (YAML standard)
 *.yml text eol=lf
 *.yaml text eol=lf
