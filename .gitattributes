@@ -7,9 +7,9 @@
 *.psd1 text eol=lf
 
 # Common PS ancillary files
-.ps1xml text eol=lf
-.pssc text eol=lf
-.psrc text eol=lf
+*.ps1xml text eol=lf
+*.pssc text eol=lf
+*.psrc text eol=lf
 
 # YAML files should use LF (YAML standard)
 *.yml text eol=lf
