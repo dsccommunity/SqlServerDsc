@@ -1,6 +1,6 @@
 ---
 description: Guidelines for writing PowerShell scripts and modules.
-applyTo: "**/*.ps?(m|d)1"
+applyTo: "{**/*.ps1,**/*.psm1,**/*.psd1}"
 ---
 
 # PowerShell Guidelines
@@ -222,7 +222,7 @@ function Get-Something
 ## File Rules
 
 - End files with only one blank line
-- Use CR+LF line endings
+- Use line endings based on .gitattributes policy
 - Maximum two consecutive newlines
 - No line shall have trailing whitespace
 
