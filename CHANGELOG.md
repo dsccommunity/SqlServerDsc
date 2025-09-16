@@ -32,7 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `New-InvalidArgumentException` for parameter validation errors.
 - Updated `.gitattributes` to enforce LF line endings for PowerShell files to
   ensure cross-platform compatibility.
-- Updated GitHub Copilot setup workflow to fix environment variable assignment.
+- Updated GitHub Copilot setup workflow to fix environment variable assignment
+  in task.
 - Updated VS Code tasks configuration to use proper build and test commands
   with improved task grouping and problem matchers.
 - Updated instruction files to use correct build command (`noop` instead of
