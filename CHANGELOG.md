@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Updated `.gitattributes` to enforce LF line endings for PowerShell files to
+  ensure cross-platform compatibility.
+- Updated GitHub Copilot setup workflow to fix environment variable assignment
+  in task.
+- Updated VS Code tasks configuration to use proper build and test commands
+  with improved task grouping and problem matchers.
+- Updated instruction files to use correct build command (`noop` instead of
+  `build`) and fixed file pattern matching syntax.
+
+## [17.2.0] - 2025-09-16
+
+### Fixed
+
 - Make sure tests forcibly imports the module being tested to avoid AI failing
   when testing changes.
 - Fixed Azure DevOps pipeline conditions that were preventing DSC resource
@@ -30,14 +43,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Get-SqlDscServerPermission`, and `Get-SqlDscTraceFlag`.
 - New-SqlDscDatabase: use `New-ArgumentException` instead of
   `New-InvalidArgumentException` for parameter validation errors.
-- Updated `.gitattributes` to enforce LF line endings for PowerShell files to
-  ensure cross-platform compatibility.
-- Updated GitHub Copilot setup workflow to fix environment variable assignment
-  in task.
-- Updated VS Code tasks configuration to use proper build and test commands
-  with improved task grouping and problem matchers.
-- Updated instruction files to use correct build command (`noop` instead of
-  `build`) and fixed file pattern matching syntax.
 
 ### Added
 
