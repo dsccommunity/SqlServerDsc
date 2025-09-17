@@ -82,6 +82,7 @@ Remove-SqlDscAgentOperator | 8 | 2 (New-SqlDscAgentOperator) | DSCSQLTEST | -
 Remove-SqlDscDatabase | 8 | 2 (New-SqlDscDatabase) | DSCSQLTEST | -
 Remove-SqlDscRole | 8 | 2 (New-SqlDscRole) | DSCSQLTEST | -
 Remove-SqlDscLogin | 8 | 2 (New-SqlDscLogin) | DSCSQLTEST | -
+Remove-SqlDscTraceFlag | 8 | 1 (Install-SqlDscServer) | DSCSQLTEST | -
 Uninstall-SqlDscServer | 9 | 8 (Remove commands) | - | -
 Install-SqlDscReportingService | 1 | 0 (Prerequisites) | - | SSRS instance
 Get-SqlDscInstalledInstance | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
