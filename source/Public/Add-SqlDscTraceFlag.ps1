@@ -96,12 +96,10 @@ function Add-SqlDscTraceFlag
         }
 
         # Copy $PSBoundParameters to keep it intact.
-        $getSqlDscTraceFlagParameters = @{} + $PSBoundParameters
-
-        $commonParameters = [System.Management.Automation.PSCmdlet]::OptionalCommonParameters
+        $getSqlDscTraceFlagParameters = Remove-CommonParameter -Hashtable $PSBoundParameters
 
         # Remove parameters that Get-SqlDscTraceFLag does not have/support.
-        $commonParameters + @('Force', 'TraceFlag') |
+        @('Force', 'TraceFlag') |
             ForEach-Object -Process {
                 $getSqlDscTraceFlagParameters.Remove($_)
             }
@@ -132,7 +130,7 @@ function Add-SqlDscTraceFlag
         if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
             # Copy $PSBoundParameters to keep it intact.
-            $setSqlDscTraceFlagParameters = @{} + $PSBoundParameters
+            $setSqlDscTraceFlagParameters = Remove-CommonParameter -Hashtable $PSBoundParameters
 
             $setSqlDscTraceFlagParameters.TraceFLag = $desiredTraceFlags
 
