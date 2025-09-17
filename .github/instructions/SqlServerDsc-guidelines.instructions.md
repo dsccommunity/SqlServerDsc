@@ -6,8 +6,7 @@ applyTo: "**"
 # SqlServerDsc Requirements
 
 ## Build & Test Workflow Requirements
-- Never run VSCode tasks
-- Run PowerShell script files from repository root
+- Never use VS Code task, always use PowerShell scripts via terminal, from repository root
 - Setup build and test environment (once per `pwsh` session): `./build.ps1 -Tasks noop`
 - Build project before running tests: `./build.ps1 -Tasks build`
 - Run tests without coverage (wildcards allowed): `Invoke-PesterJob -Path '{tests filepath}' -SkipCodeCoverage`
