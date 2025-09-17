@@ -79,6 +79,7 @@ Enable-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | D
 Disable-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Remove-SqlDscAgentAlert | 8 | 2 (New-SqlDscAgentAlert) | DSCSQLTEST | -
 Remove-SqlDscAgentOperator | 8 | 2 (New-SqlDscAgentOperator) | DSCSQLTEST | -
+Remove-SqlDscAudit | 8 | 2 (New-SqlDscAudit) | DSCSQLTEST | -
 Remove-SqlDscDatabase | 8 | 2 (New-SqlDscDatabase) | DSCSQLTEST | -
 Remove-SqlDscRole | 8 | 2 (New-SqlDscRole) | DSCSQLTEST | -
 Remove-SqlDscLogin | 8 | 2 (New-SqlDscLogin) | DSCSQLTEST | -

@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added integration tests for `Remove-SqlDscAudit` command to ensure it functions
+  correctly in real environments
+  [issue #2241](https://github.com/dsccommunity/SqlServerDsc/issues/2241).
+
 ### Fixed
 
 - Updated `.gitattributes` to enforce LF line endings for PowerShell files to
