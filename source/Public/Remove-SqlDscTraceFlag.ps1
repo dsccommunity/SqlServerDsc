@@ -98,7 +98,7 @@ function Remove-SqlDscTraceFlag
         # Copy $PSBoundParameters to keep it intact.
         $getSqlDscTraceFlagParameters = Remove-CommonParameter -Hashtable $PSBoundParameters
 
-        # Remove parameters that Get-SqlDscTraceFLag does not have/support.
+        # Remove parameters that Get-SqlDscTraceFlag does not have/support.
         @('Force', 'TraceFlag') |
             ForEach-Object -Process {
                 $getSqlDscTraceFlagParameters.Remove($_)
@@ -135,7 +135,7 @@ function Remove-SqlDscTraceFlag
                 # Copy $PSBoundParameters to keep it intact.
                 $setSqlDscTraceFlagParameters = Remove-CommonParameter -Hashtable $PSBoundParameters
 
-                $setSqlDscTraceFlagParameters.TraceFLag = $desiredTraceFlags
+                $setSqlDscTraceFlagParameters.TraceFlag = $desiredTraceFlags
 
                 $originalErrorActionPreference = $ErrorActionPreference
 
