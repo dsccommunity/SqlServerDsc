@@ -126,6 +126,13 @@ function Remove-SqlDscTraceFlag
                     }
             )
 
+            # Short-circuit if removal results in no effective change
+            if (-not (Compare-Object -ReferenceObject $currentTraceFlags -DifferenceObject $desiredTraceFlags))
+            {
+                Write-Debug -Message $script:localizedData.TraceFlag_Remove_NoChange
+                return
+            }
+
             $verboseDescriptionMessage = $script:localizedData.TraceFlag_Remove_ShouldProcessVerboseDescription -f $InstanceName, ($TraceFlag -join ', ')
             $verboseWarningMessage = $script:localizedData.TraceFlag_Remove_ShouldProcessVerboseWarning -f $InstanceName
             $captionMessage = $script:localizedData.TraceFlag_Remove_ShouldProcessCaption

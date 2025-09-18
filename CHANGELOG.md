@@ -15,7 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `Add-SqlDscTraceFlag` and `Remove-SqlDscTraceFlag`
-  - Fixed parameter binding error that occurred when ErrorAction was specified both explicitly and via PSBoundParameters by using Remove-CommonParameter instead of manual parameter removal [issue #2239](https://github.com/dsccommunity/SqlServerDsc/issues/2239)
+  - Fixed parameter binding error when `ErrorAction` was specified both
+    explicitly and via `PSBoundParameters` by using `Remove-CommonParameter`
+    instead of manual parameter removal
+    ([issue #2239](https://github.com/dsccommunity/SqlServerDsc/issues/2239)).
+- `Remove-SqlDscTraceFlag`
+  - Optimized to skip unnecessary Set operations when removal results in no
+    effective change
+    ([issue #2239](https://github.com/dsccommunity/SqlServerDsc/issues/2239)).
 - Updated `.gitattributes` to enforce LF line endings for PowerShell files to
   ensure cross-platform compatibility.
 - Updated GitHub Copilot setup workflow to fix environment variable assignment

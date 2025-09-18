@@ -180,13 +180,11 @@ Describe 'Remove-SqlDscTraceFlag' -Tag 'Public' {
                 $mockServiceObject.Name = 'MSSQL$SQL2022'
             }
 
-            It 'Should call the mocked method and have correct value in the object' {
+            It 'Should not call Set-SqlDscTraceFlag when there is no effective change' {
                 { Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 3226 -Force } | Should -Not -Throw
 
-                # Should still re-set the existing trace flag.
-                Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
-                    $TraceFlag -contains 4199
-                } -Exactly -Times 1 -Scope It
+                # Should not call Set since the trace flag to remove doesn't exist (no effective change).
+                Should -Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Times 0 -Scope It
             }
         }
     }
