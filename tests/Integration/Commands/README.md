@@ -56,6 +56,7 @@ Enable-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTES
 Test-SqlDscIsLoginEnabled | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 New-SqlDscRole | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | SqlDscIntegrationTestRole_Persistent role
 Get-SqlDscRole | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscIsRole | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Grant-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Grants CreateEndpoint permission to role
 Get-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Test-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
