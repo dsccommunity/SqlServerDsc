@@ -19,7 +19,7 @@ BeforeDiscovery {
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
@@ -99,12 +99,12 @@ Describe 'Remove-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL
 
             # Assert - Verify correct flags were removed and others preserved
             $currentTraceFlags = Get-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
-            
+
             foreach ($removedFlag in $flagsToRemove)
             {
                 $currentTraceFlags | Should -Not -Contain $removedFlag
             }
-            
+
             foreach ($keptFlag in $flagsToKeep)
             {
                 $currentTraceFlags | Should -Contain $keptFlag
