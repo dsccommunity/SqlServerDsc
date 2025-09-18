@@ -325,6 +325,7 @@ stages:
                   'tests/Integration/Commands/Assert-SqlDscAgentOperator.Integration.Tests.ps1'
                   'tests/Integration/Commands/Enable-SqlDscAgentOperator.Integration.Tests.ps1'
                   'tests/Integration/Commands/Disable-SqlDscAgentOperator.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Disable-SqlDscAudit.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Remove-SqlDscAgentAlert.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscAgentOperator.Integration.Tests.ps1'
