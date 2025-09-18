@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added missing integration test to ensure command reliability ([issue #2239](https://github.com/dsccommunity/SqlServerDsc/issues/2239)).
 - `Remove-SqlDscAudit`
   - Added missing integration test to ensure command reliability ([issue #2241](https://github.com/dsccommunity/SqlServerDsc/issues/2241)).
+- Added integration tests for `Test-SqlDscIsRole` command to ensure it functions
+  correctly in real environments
+  [issue #2229](https://github.com/dsccommunity/SqlServerDsc/issues/2229).
 
 ### Fixed
 

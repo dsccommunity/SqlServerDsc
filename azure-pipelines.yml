@@ -304,6 +304,7 @@ stages:
                   'tests/Integration/Commands/Test-SqlDscIsLoginEnabled.Integration.Tests.ps1'
                   'tests/Integration/Commands/New-SqlDscRole.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRole.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Test-SqlDscIsRole.Integration.Tests.ps1'
                   'tests/Integration/Commands/Grant-SqlDscServerPermission.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscServerPermission.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscServerPermission.Integration.Tests.ps1'
