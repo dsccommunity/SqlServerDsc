@@ -296,6 +296,7 @@ stages:
                   'tests/Integration/Commands/Get-SqlDscConfigurationOption.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscConfigurationOption.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscConfigurationOption.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscManagedComputer.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscTraceFlag.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscManagedComputerInstance.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscServerProtocolName.Integration.Tests.ps1'
