@@ -155,7 +155,7 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'I
         }
 
         Context 'When processing multiple DatabasePermission objects through pipeline' {
-            It 'Should process each permission object and return multiple DatabasePermissionSet objects' {
+            It 'Should process each permission object and combine them into single DatabasePermissionSet object' {
                 $databasePermissions = & (Get-Module -Name $script:moduleName) {
                     @(
                         [DatabasePermission] @{
@@ -169,21 +169,19 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'I
                     )
                 }
 
-                $results = $databasePermissions | ConvertFrom-SqlDscDatabasePermission -ErrorAction 'Stop'
+                $result = $databasePermissions | ConvertFrom-SqlDscDatabasePermission -ErrorAction 'Stop'
 
-                $results | Should -Not -BeNullOrEmpty
-                $results.Count | Should -Be 2
-                $results[0] | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]
-                $results[1] | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]
+                # The command combines all permissions into a single DatabasePermissionSet
+                $result | Should -Not -BeNullOrEmpty
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]
 
-                # First permission set should have Connect
-                $results[0].Connect | Should -BeTrue
-                $results[0].Select | Should -BeFalse
-
-                # Second permission set should have Select and Update
-                $results[1].Connect | Should -BeFalse
-                $results[1].Select | Should -BeTrue
-                $results[1].Update | Should -BeTrue
+                # All permissions from both objects should be set to true
+                $result.Connect | Should -BeTrue
+                $result.Select | Should -BeTrue
+                $result.Update | Should -BeTrue
+                $result.Insert | Should -BeFalse
+                $result.Delete | Should -BeFalse
+            }
             }
         }
 
