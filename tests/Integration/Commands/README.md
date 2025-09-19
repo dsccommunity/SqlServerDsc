@@ -41,6 +41,7 @@ to each other. Dependencies are made to speed up the testing.**
 Command | Run order # | Depends on # | Use instance | Creates persistent objects
 --- | --- | --- | --- | ---
 Prerequisites | 0 | - | - | Sets up dependencies
+ConvertTo-SqlDscEditionName | 0 | - | - | -
 Import-SqlDscPreferredModule | 0 | - | - | -
 Install-SqlDscServer | 1 | 0 (Prerequisites) | - | DSCSQLTEST instance
 Connect-SqlDscDatabaseEngine | 1 | 0 (Prerequisites) | DSCSQLTEST | -
@@ -84,6 +85,7 @@ Test-SqlDscIsAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | D
 Assert-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Enable-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Disable-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Add-SqlDscTraceFlag | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Remove-SqlDscAgentAlert | 8 | 2 (New-SqlDscAgentAlert) | DSCSQLTEST | -
 Remove-SqlDscAgentOperator | 8 | 2 (New-SqlDscAgentOperator) | DSCSQLTEST | -
 Remove-SqlDscAudit | 8 | - | DSCSQLTEST | -
