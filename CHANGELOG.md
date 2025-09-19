@@ -13,9 +13,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added integration tests for `Set-SqlDscTraceFlag` command to ensure it functions
   correctly in real environments
   [issue #2232](https://github.com/dsccommunity/SqlServerDsc/issues/2232).
+- Added integration tests for `ConvertFrom-SqlDscServerPermission` command to
+  ensure it functions correctly in real environments
+  [issue #2210](https://github.com/dsccommunity/SqlServerDsc/issues/2210).
+- `Remove-SqlDscTraceFlag`
+  - Added missing integration test to ensure command reliability ([issue #2239](https://github.com/dsccommunity/SqlServerDsc/issues/2239)).
+- `Remove-SqlDscAudit`
+  - Added missing integration test to ensure command reliability ([issue #2241](https://github.com/dsccommunity/SqlServerDsc/issues/2241)).
+- Added integration tests for `Test-SqlDscIsRole` command to ensure it functions
+  correctly in real environments
+  [issue #2229](https://github.com/dsccommunity/SqlServerDsc/issues/2229).
 
 ### Fixed
 
+- `Add-SqlDscTraceFlag` and `Remove-SqlDscTraceFlag`
+  - Fixed parameter binding error when `ErrorAction` was specified both
+    explicitly and via `PSBoundParameters` by using `Remove-CommonParameter`
+    instead of manual parameter removal
+    ([issue #2239](https://github.com/dsccommunity/SqlServerDsc/issues/2239)).
+- `Remove-SqlDscTraceFlag`
+  - Optimized to skip unnecessary Set operations when removal results in no
+    effective change
+    ([issue #2239](https://github.com/dsccommunity/SqlServerDsc/issues/2239)).
 - Updated `.gitattributes` to enforce LF line endings for PowerShell files to
   ensure cross-platform compatibility.
 - Updated GitHub Copilot setup workflow to fix environment variable assignment
