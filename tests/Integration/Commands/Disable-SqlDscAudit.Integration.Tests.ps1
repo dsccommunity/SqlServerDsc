@@ -61,10 +61,15 @@ Describe 'Disable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL201
         }
 
         AfterEach {
-            # Clean up: Remove the test audit if it still exists
+            # Clean up: Disable and remove the test audit if it still exists
             $existingAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'SilentlyContinue'
             if ($existingAudit)
             {
+                # Disable the audit first if it's enabled (required before removal)
+                if ($existingAudit.Enabled)
+                {
+                    $null = Disable-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Force -ErrorAction 'SilentlyContinue'
+                }
                 $null = Remove-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Force -ErrorAction 'SilentlyContinue'
             }
         }
@@ -114,10 +119,15 @@ Describe 'Disable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL201
         }
 
         AfterEach {
-            # Clean up: Remove the test audit if it still exists
+            # Clean up: Disable and remove the test audit if it still exists
             $existingAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction 'SilentlyContinue'
             if ($existingAudit)
             {
+                # Disable the audit first if it's enabled (required before removal)
+                if ($existingAudit.Enabled)
+                {
+                    $null = Disable-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -Force -ErrorAction 'SilentlyContinue'
+                }
                 $null = Remove-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -Force -ErrorAction 'SilentlyContinue'
             }
         }
@@ -160,10 +170,15 @@ Describe 'Disable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL201
         }
 
         AfterEach {
-            # Clean up: Remove the test audit if it still exists
+            # Clean up: Disable and remove the test audit if it still exists
             $existingAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForPipeline -ErrorAction 'SilentlyContinue'
             if ($existingAudit)
             {
+                # Disable the audit first if it's enabled (required before removal)
+                if ($existingAudit.Enabled)
+                {
+                    $null = Disable-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForPipeline -Force -ErrorAction 'SilentlyContinue'
+                }
                 $null = Remove-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForPipeline -Force -ErrorAction 'SilentlyContinue'
             }
         }
@@ -200,12 +215,17 @@ Describe 'Disable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL201
         }
 
         AfterAll {
-            # Clean up: Remove all test audits
+            # Clean up: Disable and remove all test audits
             foreach ($auditName in $script:testAuditNames)
             {
                 $existingAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $auditName -ErrorAction 'SilentlyContinue'
                 if ($existingAudit)
                 {
+                    # Disable the audit first if it's enabled (required before removal)
+                    if ($existingAudit.Enabled)
+                    {
+                        $null = Disable-SqlDscAudit -ServerObject $script:serverObject -Name $auditName -Force -ErrorAction 'SilentlyContinue'
+                    }
                     $null = Remove-SqlDscAudit -ServerObject $script:serverObject -Name $auditName -Force -ErrorAction 'SilentlyContinue'
                 }
             }
