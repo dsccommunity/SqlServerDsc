@@ -34,6 +34,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added integration tests for `Test-SqlDscIsRole` command to ensure it functions
   correctly in real environments
   [issue #2229](https://github.com/dsccommunity/SqlServerDsc/issues/2229).
+- Added integration tests for `Add-SqlDscTraceFlag` command to ensure it functions
+  correctly in real environments
+  [issue #2214](https://github.com/dsccommunity/SqlServerDsc/issues/2214).
 
 ### Fixed
 
