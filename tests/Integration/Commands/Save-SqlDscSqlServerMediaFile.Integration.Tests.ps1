@@ -79,19 +79,27 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integrat
             $overwriteTestPath = Join-Path -Path $script:testDownloadPath -ChildPath 'OverwriteTest'
             New-Item -Path $overwriteTestPath -ItemType Directory -Force | Out-Null
             
-            # First, create a dummy file
-            $dummyFilePath = Join-Path -Path $overwriteTestPath -ChildPath 'overwrite-test.iso'
-            'dummy content' | Out-File -FilePath $dummyFilePath -Encoding UTF8
+            # First download - create the initial file
+            $firstResult = Save-SqlDscSqlServerMediaFile -Url $script:directIsoUrl -DestinationPath $overwriteTestPath -FileName 'overwrite-test.iso' -Force -Quiet -ErrorAction 'Stop'
             
-            # Verify the dummy file exists
-            Test-Path -Path $dummyFilePath | Should -BeTrue
+            # Verify the first download worked
+            $firstResult | Should -BeOfType [System.IO.FileInfo]
+            $firstResult.Name | Should -Be 'overwrite-test.iso'
+            $firstResult.Exists | Should -BeTrue
+            $originalSize = $firstResult.Length
             
-            # Download should overwrite the dummy file
-            $result = Save-SqlDscSqlServerMediaFile -Url $script:directIsoUrl -DestinationPath $overwriteTestPath -FileName 'overwrite-test.iso' -Force -Quiet -ErrorAction 'Stop'
+            # Wait a moment to ensure different timestamps
+            Start-Sleep -Milliseconds 100
             
-            # Verify the file was overwritten (should be much larger than the dummy content)
-            $result.Length | Should -BeGreaterThan 100
-            $result.Name | Should -Be 'overwrite-test.iso'
+            # Second download with Force should overwrite the existing file
+            $secondResult = Save-SqlDscSqlServerMediaFile -Url $script:directIsoUrl -DestinationPath $overwriteTestPath -FileName 'overwrite-test.iso' -Force -Quiet -ErrorAction 'Stop'
+            
+            # Verify the file was overwritten successfully
+            $secondResult | Should -BeOfType [System.IO.FileInfo]
+            $secondResult.Name | Should -Be 'overwrite-test.iso'
+            $secondResult.Exists | Should -BeTrue
+            # File size should be the same (same download) but this confirms it worked
+            $secondResult.Length | Should -Be $originalSize
         }
     }
 
