@@ -7,9 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added integration tests for `Get-SqlDscManagedComputer` command to ensure it
+  functions correctly in real environments
+  [issue #2220](https://github.com/dsccommunity/SqlServerDsc/issues/2220).
 - Added integration tests for `Remove-SqlDscAudit` command to ensure it functions
   correctly in real environments
   [issue #2241](https://github.com/dsccommunity/SqlServerDsc/issues/2241).
+- Added integration tests for `Import-SqlDscPreferredModule` command to ensure
+  proper module import functionality in real environments
+  [issue #2225](https://github.com/dsccommunity/SqlServerDsc/issues/2225).
+- Added integration tests for `Test-SqlDscIsSupportedFeature` command to ensure
+  it functions correctly in real environments
+  [issue #2228](https://github.com/dsccommunity/SqlServerDsc/issues/2228).
+- Added integration test for `Get-SqlDscManagedComputerService` command to ensure
+  command reliability [issue #2219](https://github.com/dsccommunity/SqlServerDsc/issues/2219).
+- Added integration tests for `Set-SqlDscTraceFlag` command to ensure it functions
+  correctly in real environments
+  [issue #2232](https://github.com/dsccommunity/SqlServerDsc/issues/2232).
 - Added integration tests for `ConvertFrom-SqlDscServerPermission` command to
   ensure it functions correctly in real environments
   [issue #2210](https://github.com/dsccommunity/SqlServerDsc/issues/2210).
