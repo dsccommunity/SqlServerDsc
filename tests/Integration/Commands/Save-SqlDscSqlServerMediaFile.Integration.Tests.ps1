@@ -19,7 +19,7 @@ BeforeDiscovery {
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
@@ -52,10 +52,14 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integrat
             # Use SQL Server 2017 ISO URL for testing direct ISO download
             $script:directIsoUrl = 'https://download.microsoft.com/download/E/F/2/EF23C21D-7860-4F05-88CE-39AA114B014B/SQLServer2017-x64-ENU.iso'
             $script:expectedFileName = 'SQLServer2017-test.iso'
+            
+            # Create separate subdirectory for this context to avoid ISO file conflicts
+            $script:directIsoTestPath = Join-Path -Path $script:testDownloadPath -ChildPath 'DirectIso'
+            New-Item -Path $script:directIsoTestPath -ItemType Directory -Force | Out-Null
         }
 
         It 'Should download the ISO file directly and return a FileInfo object' {
-            $result = Save-SqlDscSqlServerMediaFile -Url $script:directIsoUrl -DestinationPath $script:testDownloadPath -FileName $script:expectedFileName -Force -Quiet -ErrorAction 'Stop'
+            $result = Save-SqlDscSqlServerMediaFile -Url $script:directIsoUrl -DestinationPath $script:directIsoTestPath -FileName $script:expectedFileName -Force -Quiet -ErrorAction 'Stop'
 
             # Verify the result is a FileInfo object
             $result | Should -BeOfType [System.IO.FileInfo]
@@ -66,20 +70,24 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integrat
             $result.Length | Should -BeGreaterThan 0
             
             # Verify the file is in the expected location
-            $expectedPath = Join-Path -Path $script:testDownloadPath -ChildPath $script:expectedFileName
+            $expectedPath = Join-Path -Path $script:directIsoTestPath -ChildPath $script:expectedFileName
             Test-Path -Path $expectedPath | Should -BeTrue
         }
 
         It 'Should overwrite existing file when Force parameter is used' {
+            # Create separate subdirectory for this test to avoid conflicts
+            $overwriteTestPath = Join-Path -Path $script:testDownloadPath -ChildPath 'OverwriteTest'
+            New-Item -Path $overwriteTestPath -ItemType Directory -Force | Out-Null
+            
             # First, create a dummy file
-            $dummyFilePath = Join-Path -Path $script:testDownloadPath -ChildPath 'overwrite-test.iso'
+            $dummyFilePath = Join-Path -Path $overwriteTestPath -ChildPath 'overwrite-test.iso'
             'dummy content' | Out-File -FilePath $dummyFilePath -Encoding UTF8
             
             # Verify the dummy file exists
             Test-Path -Path $dummyFilePath | Should -BeTrue
             
             # Download should overwrite the dummy file
-            $result = Save-SqlDscSqlServerMediaFile -Url $script:directIsoUrl -DestinationPath $script:testDownloadPath -FileName 'overwrite-test.iso' -Force -Quiet -ErrorAction 'Stop'
+            $result = Save-SqlDscSqlServerMediaFile -Url $script:directIsoUrl -DestinationPath $overwriteTestPath -FileName 'overwrite-test.iso' -Force -Quiet -ErrorAction 'Stop'
             
             # Verify the file was overwritten (should be much larger than the dummy content)
             $result.Length | Should -BeGreaterThan 100
@@ -92,11 +100,15 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integrat
             # Use SQL Server 2022 executable URL for testing executable download and extraction
             $script:executableUrl = 'https://download.microsoft.com/download/c/c/9/cc9c6797-383c-4b24-8920-dc057c1de9d3/SQL2022-SSEI-Dev.exe'
             $script:expectedIsoFileName = 'SQL2022-media.iso'
+            
+            # Create separate subdirectory for this context to avoid ISO file conflicts
+            $script:executableTestPath = Join-Path -Path $script:testDownloadPath -ChildPath 'ExecutableTest'
+            New-Item -Path $script:executableTestPath -ItemType Directory -Force | Out-Null
         }
 
         It 'Should download executable, extract ISO, and clean up executable' -Skip:($env:CI -eq 'true' -and $env:RUNNER_OS -eq 'Linux') {
             # Note: This test is skipped on Linux CI as SQL Server executables are Windows-specific
-            $result = Save-SqlDscSqlServerMediaFile -Url $script:executableUrl -DestinationPath $script:testDownloadPath -FileName $script:expectedIsoFileName -Language 'en-US' -Force -Quiet -ErrorAction 'Stop'
+            $result = Save-SqlDscSqlServerMediaFile -Url $script:executableUrl -DestinationPath $script:executableTestPath -FileName $script:expectedIsoFileName -Language 'en-US' -Force -Quiet -ErrorAction 'Stop'
 
             # Verify the result is a FileInfo object pointing to the ISO
             $result | Should -BeOfType [System.IO.FileInfo]
@@ -110,7 +122,7 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integrat
             Test-Path -Path $executablePath | Should -BeFalse
             
             # Verify only one ISO file exists in the directory
-            $isoFiles = Get-ChildItem -Path $script:testDownloadPath -Filter '*.iso'
+            $isoFiles = Get-ChildItem -Path $script:executableTestPath -Filter '*.iso'
             $isoFiles.Count | Should -Be 1
         }
     }
@@ -120,10 +132,14 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integrat
             # Use SQL Server Reporting Services executable for testing SkipExecution
             $script:rsExecutableUrl = 'https://download.microsoft.com/download/e/6/4/e6477a2a-9b58-40f7-8ad6-62bb8491ea78/SQLServerReportingServices.exe'
             $script:expectedExecutableFileName = 'SSRS-Test.exe'
+            
+            # Create separate subdirectory for this context to avoid file conflicts
+            $script:skipExecutionTestPath = Join-Path -Path $script:testDownloadPath -ChildPath 'SkipExecutionTest'
+            New-Item -Path $script:skipExecutionTestPath -ItemType Directory -Force | Out-Null
         }
 
         It 'Should download executable without extracting when SkipExecution is specified' {
-            $result = Save-SqlDscSqlServerMediaFile -Url $script:rsExecutableUrl -DestinationPath $script:testDownloadPath -FileName $script:expectedExecutableFileName -SkipExecution -Force -Quiet -ErrorAction 'Stop'
+            $result = Save-SqlDscSqlServerMediaFile -Url $script:rsExecutableUrl -DestinationPath $script:skipExecutionTestPath -FileName $script:expectedExecutableFileName -SkipExecution -Force -Quiet -ErrorAction 'Stop'
 
             # Verify the result is a FileInfo object pointing to the executable
             $result | Should -BeOfType [System.IO.FileInfo]
@@ -133,20 +149,26 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integrat
             $result.Length | Should -BeGreaterThan 0
 
             # Verify no ISO files were created
-            $isoFiles = Get-ChildItem -Path $script:testDownloadPath -Filter '*.iso' -ErrorAction SilentlyContinue
+            $isoFiles = Get-ChildItem -Path $script:skipExecutionTestPath -Filter '*.iso' -ErrorAction SilentlyContinue
             $isoFiles.Count | Should -Be 0
         }
     }
 
     Context 'When testing error conditions' {
+        BeforeAll {
+            # Create separate subdirectory for error testing to avoid conflicts
+            $script:errorTestPath = Join-Path -Path $script:testDownloadPath -ChildPath 'ErrorTest'
+            New-Item -Path $script:errorTestPath -ItemType Directory -Force | Out-Null
+        }
+        
         It 'Should throw error when ISO files already exist in destination and SkipExecution is not used' {
             # Create a dummy ISO file to trigger the error condition
-            $dummyIsoPath = Join-Path -Path $script:testDownloadPath -ChildPath 'existing.iso'
+            $dummyIsoPath = Join-Path -Path $script:errorTestPath -ChildPath 'existing.iso'
             'dummy iso content' | Out-File -FilePath $dummyIsoPath -Encoding UTF8
 
             # This should throw an error due to existing ISO file
             {
-                Save-SqlDscSqlServerMediaFile -Url $script:directIsoUrl -DestinationPath $script:testDownloadPath -FileName 'new-download.iso' -Quiet -ErrorAction 'Stop'
+                Save-SqlDscSqlServerMediaFile -Url $script:directIsoUrl -DestinationPath $script:errorTestPath -FileName 'new-download.iso' -Quiet -ErrorAction 'Stop'
             } | Should -Throw -ExpectedMessage '*InvalidDestinationFolder*'
 
             # Clean up
@@ -156,7 +178,7 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integrat
         It 'Should handle invalid URL gracefully' {
             # Test with an invalid URL
             {
-                Save-SqlDscSqlServerMediaFile -Url 'https://invalid.example.com/nonexistent.iso' -DestinationPath $script:testDownloadPath -FileName 'invalid-test.iso' -Force -Quiet -ErrorAction 'Stop'
+                Save-SqlDscSqlServerMediaFile -Url 'https://invalid.example.com/nonexistent.iso' -DestinationPath $script:errorTestPath -FileName 'invalid-test.iso' -Force -Quiet -ErrorAction 'Stop'
             } | Should -Throw
         }
     }
@@ -165,11 +187,15 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integrat
         BeforeAll {
             # Use SQL Server 2019 executable for language testing
             $script:sql2019Url = 'https://download.microsoft.com/download/d/a/2/da259851-b941-459d-989c-54a18a5d44dd/SQL2019-SSEI-Dev.exe'
+            
+            # Create separate subdirectory for language testing to avoid conflicts
+            $script:languageTestPath = Join-Path -Path $script:testDownloadPath -ChildPath 'LanguageTest'
+            New-Item -Path $script:languageTestPath -ItemType Directory -Force | Out-Null
         }
 
         It 'Should accept different language codes' -Skip:($env:CI -eq 'true' -and $env:RUNNER_OS -eq 'Linux') {
             # Test with French language (this will skip execution due to CI limitations, but validates parameter acceptance)
-            $result = Save-SqlDscSqlServerMediaFile -Url $script:sql2019Url -DestinationPath $script:testDownloadPath -FileName 'SQL2019-fr.iso' -Language 'fr-FR' -Force -Quiet -ErrorAction 'Stop'
+            $result = Save-SqlDscSqlServerMediaFile -Url $script:sql2019Url -DestinationPath $script:languageTestPath -FileName 'SQL2019-fr.iso' -Language 'fr-FR' -Force -Quiet -ErrorAction 'Stop'
 
             # On Windows, this should work. On Linux/CI, it will be skipped.
             if ($result) {
