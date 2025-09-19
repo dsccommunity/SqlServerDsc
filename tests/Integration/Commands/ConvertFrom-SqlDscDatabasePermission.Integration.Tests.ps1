@@ -54,9 +54,11 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'I
     Context 'When converting DatabasePermission objects' {
         Context 'When converting a single permission Grant state' {
             It 'Should return a DatabasePermissionSet with correct permissions set' {
-                $databasePermission = [DatabasePermission] @{
-                    State      = 'Grant'
-                    Permission = @('Connect', 'Select')
+                $databasePermission = & (Get-Module -Name $script:moduleName) {
+                    [DatabasePermission] @{
+                        State      = 'Grant'
+                        Permission = @('Connect', 'Select')
+                    }
                 }
 
                 $result = ConvertFrom-SqlDscDatabasePermission -Permission $databasePermission -ErrorAction 'Stop'
@@ -73,9 +75,11 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'I
 
         Context 'When converting multiple permissions' {
             It 'Should return a DatabasePermissionSet with all specified permissions set' {
-                $databasePermission = [DatabasePermission] @{
-                    State      = 'Grant'
-                    Permission = @('Connect', 'Select', 'Update', 'Insert')
+                $databasePermission = & (Get-Module -Name $script:moduleName) {
+                    [DatabasePermission] @{
+                        State      = 'Grant'
+                        Permission = @('Connect', 'Select', 'Update', 'Insert')
+                    }
                 }
 
                 $result = ConvertFrom-SqlDscDatabasePermission -Permission $databasePermission -ErrorAction 'Stop'
@@ -93,9 +97,11 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'I
 
         Context 'When converting permission with GrantWithGrant state' {
             It 'Should return a DatabasePermissionSet with correct permissions set regardless of state' {
-                $databasePermission = [DatabasePermission] @{
-                    State      = 'GrantWithGrant'
-                    Permission = @('Alter', 'CreateTable')
+                $databasePermission = & (Get-Module -Name $script:moduleName) {
+                    [DatabasePermission] @{
+                        State      = 'GrantWithGrant'
+                        Permission = @('Alter', 'CreateTable')
+                    }
                 }
 
                 $result = ConvertFrom-SqlDscDatabasePermission -Permission $databasePermission -ErrorAction 'Stop'
@@ -111,9 +117,11 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'I
 
         Context 'When converting permission with Deny state' {
             It 'Should return a DatabasePermissionSet with correct permissions set regardless of state' {
-                $databasePermission = [DatabasePermission] @{
-                    State      = 'Deny'
-                    Permission = @('Delete', 'Execute')
+                $databasePermission = & (Get-Module -Name $script:moduleName) {
+                    [DatabasePermission] @{
+                        State      = 'Deny'
+                        Permission = @('Delete', 'Execute')
+                    }
                 }
 
                 $result = ConvertFrom-SqlDscDatabasePermission -Permission $databasePermission -ErrorAction 'Stop'
@@ -129,9 +137,11 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'I
 
         Context 'When using pipeline input' {
             It 'Should accept DatabasePermission objects from the pipeline' {
-                $databasePermission = [DatabasePermission] @{
-                    State      = 'Grant'
-                    Permission = @('Connect', 'ViewDefinition')
+                $databasePermission = & (Get-Module -Name $script:moduleName) {
+                    [DatabasePermission] @{
+                        State      = 'Grant'
+                        Permission = @('Connect', 'ViewDefinition')
+                    }
                 }
 
                 $result = $databasePermission | ConvertFrom-SqlDscDatabasePermission -ErrorAction 'Stop'
@@ -146,16 +156,18 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'I
 
         Context 'When processing multiple DatabasePermission objects through pipeline' {
             It 'Should process each permission object and return multiple DatabasePermissionSet objects' {
-                $databasePermissions = @(
-                    [DatabasePermission] @{
-                        State      = 'Grant'
-                        Permission = @('Connect')
-                    },
-                    [DatabasePermission] @{
-                        State      = 'Grant'
-                        Permission = @('Select', 'Update')
-                    }
-                )
+                $databasePermissions = & (Get-Module -Name $script:moduleName) {
+                    @(
+                        [DatabasePermission] @{
+                            State      = 'Grant'
+                            Permission = @('Connect')
+                        },
+                        [DatabasePermission] @{
+                            State      = 'Grant'
+                            Permission = @('Select', 'Update')
+                        }
+                    )
+                }
 
                 $results = $databasePermissions | ConvertFrom-SqlDscDatabasePermission -ErrorAction 'Stop'
 
@@ -177,9 +189,11 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'I
 
         Context 'When converting with empty permission array' {
             It 'Should return a DatabasePermissionSet with no permissions set' {
-                $databasePermission = [DatabasePermission] @{
-                    State      = 'Grant'
-                    Permission = @()
+                $databasePermission = & (Get-Module -Name $script:moduleName) {
+                    [DatabasePermission] @{
+                        State      = 'Grant'
+                        Permission = @()
+                    }
                 }
 
                 $result = ConvertFrom-SqlDscDatabasePermission -Permission $databasePermission -ErrorAction 'Stop'
@@ -196,9 +210,11 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'I
 
         Context 'When verifying SMO object compatibility' {
             It 'Should return a DatabasePermissionSet that can be used with SMO database operations' {
-                $databasePermission = [DatabasePermission] @{
-                    State      = 'Grant'
-                    Permission = @('Connect', 'Select')
+                $databasePermission = & (Get-Module -Name $script:moduleName) {
+                    [DatabasePermission] @{
+                        State      = 'Grant'
+                        Permission = @('Connect', 'Select')
+                    }
                 }
 
                 $result = ConvertFrom-SqlDscDatabasePermission -Permission $databasePermission -ErrorAction 'Stop'
