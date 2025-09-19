@@ -47,6 +47,7 @@ Assert-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTES
 New-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | IntegrationTestSqlLogin, SqlIntegrationTestGroup login
 Get-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Get-SqlDscConfigurationOption | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscManagedComputer | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Get-SqlDscManagedComputerInstance | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Get-SqlDscServerProtocolName | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Get-SqlDscServerProtocol | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
