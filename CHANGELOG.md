@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added integration tests for `Remove-SqlDscAudit` command to ensure it functions
   correctly in real environments
   [issue #2241](https://github.com/dsccommunity/SqlServerDsc/issues/2241).
+- Added integration test for `Get-SqlDscManagedComputerService` command to ensure
+  command reliability [issue #2219](https://github.com/dsccommunity/SqlServerDsc/issues/2219).
 - Added integration tests for `Set-SqlDscTraceFlag` command to ensure it functions
   correctly in real environments
   [issue #2232](https://github.com/dsccommunity/SqlServerDsc/issues/2232).

@@ -299,6 +299,7 @@ stages:
                   'tests/Integration/Commands/Get-SqlDscManagedComputer.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscTraceFlag.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscManagedComputerInstance.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscManagedComputerService.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscServerProtocolName.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscServerProtocol.Integration.Tests.ps1'
                   'tests/Integration/Commands/Disable-SqlDscLogin.Integration.Tests.ps1'
