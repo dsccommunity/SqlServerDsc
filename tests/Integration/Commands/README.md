@@ -41,6 +41,7 @@ to each other. Dependencies are made to speed up the testing.**
 Command | Run order # | Depends on # | Use instance | Creates persistent objects
 --- | --- | --- | --- | ---
 Prerequisites | 0 | - | - | Sets up dependencies
+ConvertTo-SqlDscEditionName | 0 | - | - | -
 Import-SqlDscPreferredModule | 0 | - | - | -
 Install-SqlDscServer | 1 | 0 (Prerequisites) | - | DSCSQLTEST instance
 Connect-SqlDscDatabaseEngine | 1 | 0 (Prerequisites) | DSCSQLTEST | -

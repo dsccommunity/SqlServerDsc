@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added integration tests for `Remove-SqlDscAudit` command to ensure it functions
   correctly in real environments
   [issue #2241](https://github.com/dsccommunity/SqlServerDsc/issues/2241).
+- Added integration test for `ConvertTo-SqlDscEditionName` command to ensure
+  command reliability in real environments
+  [issue #2208](https://github.com/dsccommunity/SqlServerDsc/issues/2208).
 - Added integration tests for `Import-SqlDscPreferredModule` command to ensure
   proper module import functionality in real environments
   [issue #2225](https://github.com/dsccommunity/SqlServerDsc/issues/2225).
