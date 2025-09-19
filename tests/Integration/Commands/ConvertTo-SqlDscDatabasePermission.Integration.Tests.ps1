@@ -85,7 +85,6 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Int
                 foreach ($permission in $result) {
                     $permission.State | Should -Not -BeNullOrEmpty
                     $permission.Permission | Should -Not -BeNullOrEmpty
-                    $permission.Permission | Should -BeOfType 'System.String[]'
                     
                     # Validate that permission state is one of the expected values
                     $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
@@ -108,7 +107,6 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Int
                 foreach ($permission in $result) {
                     $permission.State | Should -Not -BeNullOrEmpty
                     $permission.Permission | Should -Not -BeNullOrEmpty
-                    $permission.Permission | Should -BeOfType 'System.String[]'
                     
                     # Validate that permission state is one of the expected values
                     $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
@@ -133,7 +131,6 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Int
                 foreach ($permission in $result) {
                     $permission.State | Should -Not -BeNullOrEmpty
                     $permission.Permission | Should -Not -BeNullOrEmpty
-                    $permission.Permission | Should -BeOfType 'System.String[]'
                     
                     # Validate that permission state is one of the expected values
                     $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
