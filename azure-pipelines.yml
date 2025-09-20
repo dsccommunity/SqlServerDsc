@@ -286,6 +286,7 @@ stages:
                   # Run the integration tests in a specific group order.
                   # Group 0
                   'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Save-SqlDscSqlServerMediaFile.Integration.Tests.ps1'
                   'tests/Integration/Commands/Import-SqlDscPreferredModule.Integration.Tests.ps1'
                   # Group 1
                   'tests/Integration/Commands/Install-SqlDscServer.Integration.Tests.ps1'
@@ -409,6 +410,7 @@ stages:
                   # Run the integration tests in a specific group order.
                   # Group 0
                   'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Save-SqlDscSqlServerMediaFile.Integration.Tests.ps1'
                   'tests/Integration/Commands/Import-SqlDscPreferredModule.Integration.Tests.ps1'
                   # Group 1
                   'tests/Integration/Commands/Install-SqlDscReportingService.Integration.Tests.ps1'
@@ -473,6 +475,7 @@ stages:
                   # Run the integration tests in a specific group order.
                   # Group 0
                   'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Save-SqlDscSqlServerMediaFile.Integration.Tests.ps1'
                   'tests/Integration/Commands/Import-SqlDscPreferredModule.Integration.Tests.ps1'
                   # Group 1
                   'tests/Integration/Commands/Install-SqlDscBIReportServer.Integration.Tests.ps1'
