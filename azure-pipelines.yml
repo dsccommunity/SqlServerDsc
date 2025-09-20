@@ -322,6 +322,7 @@ stages:
                   'tests/Integration/Commands/New-SqlDscDatabase.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscDatabase.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscDatabase.Integration.Tests.ps1'
+                  'tests/Integration/Commands/ConvertTo-SqlDscDatabasePermission.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscAgentAlert.Integration.Tests.ps1'
                   'tests/Integration/Commands/New-SqlDscAgentAlert.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscAgentAlert.Integration.Tests.ps1'
@@ -334,6 +335,7 @@ stages:
                   'tests/Integration/Commands/Assert-SqlDscAgentOperator.Integration.Tests.ps1'
                   'tests/Integration/Commands/Enable-SqlDscAgentOperator.Integration.Tests.ps1'
                   'tests/Integration/Commands/Disable-SqlDscAgentOperator.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Disable-SqlDscAudit.Integration.Tests.ps1'
                   'tests/Integration/Commands/Add-SqlDscTraceFlag.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Remove-SqlDscAgentAlert.Integration.Tests.ps1'
