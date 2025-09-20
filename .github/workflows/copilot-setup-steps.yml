@@ -155,6 +155,194 @@ jobs:
 
           echo "Linux dependencies installed successfully"
 
+      - name: Setup Docker
+        shell: bash
+        run: |
+          echo "Setting up Docker for SQL Server Linux containers..."
+
+          echo "::group::Setup Docker"
+          echo "Verifying Docker installation..."
+          if ! command -v docker &> /dev/null; then
+            echo "Docker not found, installing..."
+            sudo apt-get update
+            sudo apt-get install -y docker.io
+          fi
+
+          # Start Docker service if not running
+          if ! sudo systemctl is-active --quiet docker; then
+            echo "Starting Docker service..."
+            sudo systemctl start docker
+            sudo systemctl enable docker
+          fi
+
+          # Add current user to docker group for permissions
+          sudo usermod -aG docker $USER
+
+          # Verify Docker is working
+          docker --version
+          sudo docker run --rm hello-world
+          echo "Docker setup completed successfully"
+          echo "::endgroup::"
+
+      - name: Setup SQL Server on Linux Container
+        shell: bash
+        run: |
+          echo "Setting up SQL Server Linux container..."
+
+          # Set SQL Server environment variables
+          SQLSERVER_SA_PASSWORD="MyStr0ng!Passw0rd123"
+          SQLSERVER_CONTAINER_NAME="sqlserver-linux-ci"
+          SQLSERVER_PORT="1433"
+
+          echo "::group::Pull SQL Server Linux container image"
+          echo "Pulling SQL Server 2022 Linux container image..."
+          sudo docker pull mcr.microsoft.com/mssql/server:2022-latest
+          echo "Container image pulled successfully"
+          echo "::endgroup::"
+
+          echo "::group::Run SQL Server Linux container"
+          echo "Starting SQL Server Linux container..."
+
+          # Create volume for SQL Server data persistence
+          sudo docker volume create sqlserver-data
+
+          # Run SQL Server container with proper configuration
+          sudo docker run -e 'ACCEPT_EULA=Y' \
+            -e "MSSQL_SA_PASSWORD=${SQLSERVER_SA_PASSWORD}" \
+            -e 'MSSQL_PID=Developer' \
+            -p "${SQLSERVER_PORT}:1433" \
+            --name "${SQLSERVER_CONTAINER_NAME}" \
+            --hostname sqlserver-linux \
+            -v sqlserver-data:/var/opt/mssql \
+            -d mcr.microsoft.com/mssql/server:2022-latest
+
+          echo "Waiting for SQL Server container to start..."
+          sleep 30
+
+          # Check if container is running
+          if sudo docker ps | grep -q "${SQLSERVER_CONTAINER_NAME}"; then
+            echo "SQL Server Linux container started successfully"
+
+            # Display container information
+            echo "Container status:"
+            sudo docker ps --filter "name=${SQLSERVER_CONTAINER_NAME}" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+
+            # Check SQL Server logs for startup confirmation
+            echo "Checking SQL Server startup logs..."
+            sudo docker logs "${SQLSERVER_CONTAINER_NAME}" 2>&1 | tail -10
+
+            # Set environment variables for later steps
+            echo "SQLSERVER_SA_PASSWORD=${SQLSERVER_SA_PASSWORD}" >> "$GITHUB_ENV"
+            echo "SQLSERVER_CONTAINER_NAME=${SQLSERVER_CONTAINER_NAME}" >> "$GITHUB_ENV"
+            echo "SQLSERVER_PORT=${SQLSERVER_PORT}" >> "$GITHUB_ENV"
+            echo "SQLSERVER_CONNECTION_STRING=Server=localhost,${SQLSERVER_PORT};User Id=sa;Password=${SQLSERVER_SA_PASSWORD};TrustServerCertificate=true" >> "$GITHUB_ENV"
+          else
+            echo "::error::Failed to start SQL Server Linux container"
+            sudo docker logs "${SQLSERVER_CONTAINER_NAME}" || true
+            exit 1
+          fi
+          echo "::endgroup::"
+
+      - name: Install SQL Server Command Line Tools
+        shell: bash
+        run: |
+          echo "Installing SQL Server command line tools (sqlcmd)..."
+
+          echo "::group::Install mssql-tools"
+          # Install the Microsoft SQL Server command-line tools
+          if ! grep -q "packages.microsoft.com" /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null; then
+            echo "Microsoft repository not found, adding it..."
+            sudo install -m 0755 -d /etc/apt/keyrings
+            curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/keyrings/microsoft.gpg >/dev/null
+            sudo chmod a+r /etc/apt/keyrings/microsoft.gpg
+            DISTRO_CODENAME="$(lsb_release -cs)"
+            echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/microsoft-ubuntu-${DISTRO_CODENAME}-prod ${DISTRO_CODENAME} main" | sudo tee "/etc/apt/sources.list.d/microsoft-${DISTRO_CODENAME}-prod.list" >/dev/null
+            sudo apt-get update
+          fi
+
+          # Accept EULA for mssql-tools (required for non-interactive installation)
+          echo 'mssql-tools accept-eula/accept-eula-license boolean true' | sudo debconf-set-selections
+
+          # Install mssql-tools18 (latest version with enhanced security)
+          if sudo apt-get install -y mssql-tools18; then
+            echo "mssql-tools18 installed successfully"
+            # Add sqlcmd to PATH for current session
+            export PATH="$PATH:/opt/mssql-tools18/bin"
+            echo "/opt/mssql-tools18/bin" | sudo tee -a /etc/environment
+            echo "PATH=$PATH:/opt/mssql-tools18/bin" >> "$GITHUB_ENV"
+          else
+            echo "::warning::mssql-tools18 installation failed, trying mssql-tools"
+            # Fallback to older version if needed
+            sudo apt-get install -y mssql-tools
+            export PATH="$PATH:/opt/mssql-tools/bin"
+            echo "/opt/mssql-tools/bin" | sudo tee -a /etc/environment
+            echo "PATH=$PATH:/opt/mssql-tools/bin" >> "$GITHUB_ENV"
+          fi
+
+          # Verify sqlcmd installation
+          which sqlcmd || echo "::warning::sqlcmd not found in PATH"
+          echo "::endgroup::"
+
+      - name: Verify SQL Server Linux Container Connection
+        shell: bash
+        run: |
+          echo "Testing connection to SQL Server Linux container..."
+
+          echo "::group::Test SQL Server connection"
+          # Wait a bit more for SQL Server to be fully ready
+          echo "Waiting for SQL Server to be fully ready..."
+          sleep 15
+
+          # Test connection using sqlcmd with retry logic
+          max_retries=5
+          retry_count=0
+
+          while [ $retry_count -lt $max_retries ]; do
+            echo "Connection attempt $((retry_count + 1)) of $max_retries..."
+
+            if sqlcmd -S localhost,"$SQLSERVER_PORT" -U sa -P "$SQLSERVER_SA_PASSWORD" -C -Q "SELECT @@VERSION, @@SERVERNAME, GETDATE() AS CurrentDateTime;" -o /tmp/sqltest.out; then
+              echo "✅ Successfully connected to SQL Server Linux container!"
+              echo "Query results:"
+              cat /tmp/sqltest.out
+              break
+            else
+              echo "❌ Connection attempt failed"
+              retry_count=$((retry_count + 1))
+              if [ $retry_count -lt $max_retries ]; then
+                echo "Retrying in 10 seconds..."
+                sleep 10
+              fi
+            fi
+          done
+
+          if [ $retry_count -eq $max_retries ]; then
+            echo "::error::Failed to connect to SQL Server after $max_retries attempts"
+            echo "Container logs:"
+            sudo docker logs "$SQLSERVER_CONTAINER_NAME" | tail -20
+            exit 1
+          fi
+
+          # Test creating a simple database
+          echo "Testing database creation..."
+          if sqlcmd -S localhost,"$SQLSERVER_PORT" -U sa -P "$SQLSERVER_SA_PASSWORD" -C -Q "CREATE DATABASE TestDB; SELECT name FROM sys.databases WHERE name = 'TestDB';" -o /tmp/dbtest.out; then
+            echo "✅ Successfully created test database!"
+            cat /tmp/dbtest.out
+          else
+            echo "::warning::Failed to create test database"
+          fi
+
+          # Display container resource usage
+          echo "Container resource usage:"
+          sudo docker stats "$SQLSERVER_CONTAINER_NAME" --no-stream --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.MemPerc}}"
+
+          echo "::endgroup::"
+
+          echo "✅ SQL Server Linux container setup completed successfully!"
+          echo "Connection details:"
+          echo "  Server: localhost,$SQLSERVER_PORT"
+          echo "  User: sa"
+          echo "  Connection String: $SQLSERVER_CONNECTION_STRING"
+
       - name: Configure PowerShell Environment
         shell: pwsh
         run: |

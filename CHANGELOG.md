@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added SQL Server on Linux container support to AI workflow for cross-platform
+  testing and development assistance with Docker containerized SQL Server 2022
+  instances.
 - Added integration tests for `Get-SqlDscManagedComputer` command to ensure it
   functions correctly in real environments
   [issue #2220](https://github.com/dsccommunity/SqlServerDsc/issues/2220).
