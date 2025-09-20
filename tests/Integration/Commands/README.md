@@ -86,6 +86,7 @@ Test-SqlDscIsAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | D
 Assert-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Enable-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Disable-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Disable-SqlDscAudit | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Add-SqlDscTraceFlag | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Remove-SqlDscAgentAlert | 8 | 2 (New-SqlDscAgentAlert) | DSCSQLTEST | -
 Remove-SqlDscAgentOperator | 8 | 2 (New-SqlDscAgentOperator) | DSCSQLTEST | -
