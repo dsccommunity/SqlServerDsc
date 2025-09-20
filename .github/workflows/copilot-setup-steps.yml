@@ -189,6 +189,129 @@ jobs:
           Write-Host "Running DSCv3 to validate correct operation..."
           dsc --version
 
+      - name: Install SQL Server on Ubuntu
+        shell: bash
+        run: |
+          echo "Installing SQL Server 2022 on Ubuntu..."
+          
+          # Import the public repository GPG keys
+          echo "::group::Import Microsoft GPG keys"
+          curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc > /dev/null
+          echo "::endgroup::"
+          
+          # Register the SQL Server Ubuntu repository
+          echo "::group::Register SQL Server repository"
+          sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/20.04/mssql-server-2022.list)" -y
+          echo "::endgroup::"
+          
+          # Update package list and install SQL Server
+          echo "::group::Install SQL Server package"
+          sudo apt-get update
+          sudo apt-get install -y mssql-server
+          echo "::endgroup::"
+          
+          # Configure SQL Server with mssql-conf (unattended setup)
+          echo "::group::Configure SQL Server"
+          sudo MSSQL_SA_PASSWORD='P@ssw0rd1' \
+               MSSQL_PID='Developer' \
+               MSSQL_TCP_PORT=1433 \
+               ACCEPT_EULA='Y' \
+               /opt/mssql/bin/mssql-conf -n setup
+          echo "::endgroup::"
+          
+          # Verify SQL Server is running
+          echo "::group::Verify SQL Server status"
+          sudo systemctl status mssql-server --no-pager --lines=5
+          echo "::endgroup::"
+          
+          echo "SQL Server 2022 installation completed successfully"
+
+      - name: Install SQL Server Command Line Tools
+        shell: bash
+        run: |
+          echo "Installing SQL Server command line tools..."
+          
+          # Import Microsoft GPG keys (if not already done)
+          echo "::group::Import Microsoft GPG keys for tools"
+          curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc > /dev/null
+          echo "::endgroup::"
+          
+          # Register Microsoft Ubuntu repository for tools
+          echo "::group::Register Microsoft tools repository"
+          curl -fsSL https://packages.microsoft.com/config/ubuntu/20.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
+          echo "::endgroup::"
+          
+          # Install mssql-tools18 and unixODBC
+          echo "::group::Install mssql-tools18"
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc-dev
+          echo "::endgroup::"
+          
+          # Add tools to PATH
+          echo "::group::Configure PATH for SQL tools"
+          echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
+          echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bash_profile
+          echo "/opt/mssql-tools18/bin" >> $GITHUB_PATH
+          echo "::endgroup::"
+          
+          # Test sqlcmd connectivity
+          echo "::group::Test SQL Server connectivity"
+          /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'P@ssw0rd1' -Q "SELECT @@VERSION" -b
+          echo "::endgroup::"
+          
+          echo "SQL Server command line tools installed successfully"
+
+      - name: Configure SQL Server Environment for Integration Tests
+        shell: pwsh
+        run: |
+          Write-Host "Configuring SQL Server environment for SqlServerDsc integration tests..."
+          
+          # Set SqlServerDsc CI environment variable
+          Write-Host "Setting SqlServerDsc CI environment variable..."
+          $env:SqlServerDscCI = $true
+          echo "SqlServerDscCI=true" >> $env:GITHUB_ENV
+          
+          # Configure SQL Server connection parameters for Linux
+          Write-Host "Setting SQL Server connection parameters for integration tests..."
+          
+          # Set SA password for integration tests
+          $env:SQL_SA_PASSWORD = 'P@ssw0rd1'
+          echo "SQL_SA_PASSWORD=P@ssw0rd1" >> $env:GITHUB_ENV
+          
+          Write-Host "SQL Server will use the default instance (MSSQLSERVER)"
+          Write-Host "This is because SQL Server on Linux does not support named instances"
+          
+          # Test SQL Server connectivity using SqlServer module
+          Write-Host "Testing SQL Server connectivity using PowerShell SqlServer module..."
+          try {
+              # Connect to default instance on localhost
+              $connectionString = "Server=localhost;Database=master;User Id=sa;Password=P@ssw0rd1;TrustServerCertificate=true;Encrypt=false;"
+              $connection = New-Object System.Data.SqlClient.SqlConnection($connectionString)
+              $connection.Open()
+              
+              $command = $connection.CreateCommand()
+              $command.CommandText = "SELECT @@VERSION, @@SERVERNAME, SERVERPROPERTY('Edition')"
+              $reader = $command.ExecuteReader()
+              
+              if ($reader.Read()) {
+                  Write-Host "SQL Server Version: $($reader[0])"
+                  Write-Host "Server Name: $($reader[1])"
+                  Write-Host "Edition: $($reader[2])"
+              }
+              
+              $reader.Close()
+              $connection.Close()
+              
+              Write-Host "SQL Server connectivity test successful!"
+              Write-Host "Integration tests will use the default instance (MSSQLSERVER)"
+          }
+          catch {
+              Write-Error "Failed to connect to SQL Server: $($_.Exception.Message)"
+              exit 1
+          }
+          
+          Write-Host "SQL Server environment configuration complete"
+
       - name: Install .NET Tools
         shell: pwsh
         run: |

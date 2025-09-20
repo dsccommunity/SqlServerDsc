@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added GitHub Actions workflow for Copilot development environment setup
+  including SQL Server 2022 on Ubuntu for integration testing support.
 - Added integration tests for `Get-SqlDscManagedComputer` command to ensure it
   functions correctly in real environments
   [issue #2220](https://github.com/dsccommunity/SqlServerDsc/issues/2220).
