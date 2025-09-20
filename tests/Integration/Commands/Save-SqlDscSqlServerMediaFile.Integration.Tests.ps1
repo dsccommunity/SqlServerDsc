@@ -79,27 +79,27 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integrat
             $overwriteTestPath = Join-Path -Path $script:testDownloadPath -ChildPath 'OverwriteTest'
             New-Item -Path $overwriteTestPath -ItemType Directory -Force | Out-Null
             
-            # First download - create the initial file
-            $firstResult = Save-SqlDscSqlServerMediaFile -Url $script:directIsoUrl -DestinationPath $overwriteTestPath -FileName 'overwrite-test.iso' -Force -Quiet -ErrorAction 'Stop'
+            # Use SkipExecution to avoid the safety check while still testing Force parameter
+            $executableUrl = 'https://download.microsoft.com/download/e/6/4/e6477a2a-9b58-40f7-8ad6-62bb8491ea78/SQLServerReportingServices.exe'
+            $targetFileName = 'overwrite-test.exe'
             
-            # Verify the first download worked
-            $firstResult | Should -BeOfType [System.IO.FileInfo]
-            $firstResult.Name | Should -Be 'overwrite-test.iso'
-            $firstResult.Exists | Should -BeTrue
-            $originalSize = $firstResult.Length
+            # First, create a dummy file with the target name
+            $dummyFilePath = Join-Path -Path $overwriteTestPath -ChildPath $targetFileName
+            'dummy content for overwrite test' | Out-File -FilePath $dummyFilePath -Encoding UTF8
             
-            # Wait a moment to ensure different timestamps
-            Start-Sleep -Milliseconds 100
+            # Verify the dummy file exists and get its original size
+            Test-Path -Path $dummyFilePath | Should -BeTrue
+            $originalSize = (Get-Item -Path $dummyFilePath).Length
             
-            # Second download with Force should overwrite the existing file
-            $secondResult = Save-SqlDscSqlServerMediaFile -Url $script:directIsoUrl -DestinationPath $overwriteTestPath -FileName 'overwrite-test.iso' -Force -Quiet -ErrorAction 'Stop'
+            # Download with SkipExecution and Force should overwrite the dummy file
+            $result = Save-SqlDscSqlServerMediaFile -Url $executableUrl -DestinationPath $overwriteTestPath -FileName $targetFileName -SkipExecution -Force -Quiet -ErrorAction 'Stop'
             
-            # Verify the file was overwritten successfully
-            $secondResult | Should -BeOfType [System.IO.FileInfo]
-            $secondResult.Name | Should -Be 'overwrite-test.iso'
-            $secondResult.Exists | Should -BeTrue
-            # File size should be the same (same download) but this confirms it worked
-            $secondResult.Length | Should -Be $originalSize
+            # Verify the file was overwritten (should be much larger than the dummy content)
+            $result | Should -BeOfType [System.IO.FileInfo]
+            $result.Name | Should -Be $targetFileName
+            $result.Exists | Should -BeTrue
+            $result.Length | Should -BeGreaterThan $originalSize
+            $result.Length | Should -BeGreaterThan 1000000  # Executable should be at least 1MB
         }
     }
 
