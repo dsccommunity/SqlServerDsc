@@ -58,6 +58,7 @@ New-SqlDscRole | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | 
 Get-SqlDscRole | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Grant-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Grants CreateEndpoint permission to role
 Get-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Set-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Test-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Deny-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Denies AlterTrace permission to login (persistent)
 Revoke-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -

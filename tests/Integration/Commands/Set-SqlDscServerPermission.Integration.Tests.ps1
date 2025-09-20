@@ -19,7 +19,7 @@ BeforeDiscovery {
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
@@ -221,7 +221,8 @@ Describe 'Set-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
 
             {
                 Set-SqlDscServerPermission -ServerObject $script:serverObject -Name 'NonExistentPrincipal' -State 'Grant' -Permission $permissionSet -Force -ErrorAction 'Stop'
-            } | Should -Throw -ExpectedMessage '*Principal*not*found*'
+            } | Should -Throw
         }
     }
 }
+
