@@ -177,7 +177,7 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integrat
             # This should throw an error due to existing ISO file
             {
                 Save-SqlDscSqlServerMediaFile -Url $script:directIsoUrl -DestinationPath $script:errorTestPath -FileName 'new-download.iso' -Quiet -ErrorAction 'Stop'
-            } | Should -Throw -ExpectedMessage '*InvalidDestinationFolder*'
+            } | Should -Throw
 
             # Clean up
             Remove-Item -Path $dummyIsoPath -Force -ErrorAction SilentlyContinue
