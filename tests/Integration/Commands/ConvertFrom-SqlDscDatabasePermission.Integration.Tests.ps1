@@ -30,27 +30,6 @@ BeforeAll {
 }
 
 Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
-    BeforeAll {
-        # Starting the named instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-
-        $script:mockInstanceName = 'DSCSQLTEST'
-
-        $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
-        $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-
-        $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
-
-        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
-    }
-
-    AfterAll {
-        Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
-
-        # Stop the named instance SQL Server service to save memory on the build worker.
-        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-    }
-
     Context 'When converting DatabasePermission objects' {
         Context 'When converting a single permission Grant state' {
             It 'Should return a DatabasePermissionSet with correct permissions set' {
