@@ -193,6 +193,11 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'I
                     }
                 }
 
+                # Verify the DatabasePermission object was created successfully
+                $databasePermission | Should -Not -BeNullOrEmpty
+                $databasePermission.State | Should -Be 'Grant'
+                $databasePermission.Permission | Should -Be @()
+
                 $result = ConvertFrom-SqlDscDatabasePermission -Permission $databasePermission -ErrorAction 'Stop'
 
                 $result | Should -Not -BeNullOrEmpty
