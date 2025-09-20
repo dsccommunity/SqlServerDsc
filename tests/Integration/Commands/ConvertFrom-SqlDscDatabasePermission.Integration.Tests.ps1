@@ -182,7 +182,6 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'I
                 $result.Insert | Should -BeFalse
                 $result.Delete | Should -BeFalse
             }
-            }
         }
 
         Context 'When converting with empty permission array' {
