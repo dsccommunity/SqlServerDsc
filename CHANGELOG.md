@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added integration tests for `Save-SqlDscSqlServerMediaFile` command to ensure
   it functions correctly in real environments
   [issue #2237](https://github.com/dsccommunity/SqlServerDsc/issues/2237).
+- Added integration tests for `ConvertTo-SqlDscDatabasePermission` command to
+  ensure command reliability
+  [issue #2209](https://github.com/dsccommunity/SqlServerDsc/issues/2209).
 - Added integration test for `ConvertTo-SqlDscEditionName` command to ensure
   command reliability in real environments
   [issue #2208](https://github.com/dsccommunity/SqlServerDsc/issues/2208).
