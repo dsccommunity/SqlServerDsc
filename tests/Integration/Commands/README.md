@@ -95,6 +95,7 @@ Add-SqlDscTraceFlag | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTE
 Remove-SqlDscAgentAlert | 8 | 2 (New-SqlDscAgentAlert) | DSCSQLTEST | -
 Remove-SqlDscAgentOperator | 8 | 2 (New-SqlDscAgentOperator) | DSCSQLTEST | -
 Remove-SqlDscAudit | 8 | - | DSCSQLTEST | -
+Set-SqlDscAudit | 8 | - | DSCSQLTEST | -
 Remove-SqlDscDatabase | 8 | 2 (New-SqlDscDatabase) | DSCSQLTEST | -
 Remove-SqlDscRole | 8 | 2 (New-SqlDscRole) | DSCSQLTEST | -
 Remove-SqlDscLogin | 8 | 2 (New-SqlDscLogin) | DSCSQLTEST | -
