@@ -278,6 +278,63 @@ Describe 'Set-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         }
     }
 
+    Context 'When modifying file audit properties' {
+        BeforeAll {
+            # Create a temporary directory for file audits
+            $script:tempAuditPath = Join-Path -Path $env:TEMP -ChildPath "SqlDscAuditTest_$(Get-Random)"
+            New-Item -Path $script:tempAuditPath -ItemType Directory -Force | Out-Null
+        }
+
+        BeforeEach {
+            # Create a test file audit for each test
+            $script:testFileAuditName = 'SqlDscTestFileAudit_' + (Get-Random)
+            $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testFileAuditName -Path $script:tempAuditPath -Force -ErrorAction Stop
+        }
+
+        AfterEach {
+            # Clean up the test audit
+            Remove-SqlDscAudit -ServerObject $script:serverObject -Name $script:testFileAuditName -Force -ErrorAction 'SilentlyContinue'
+        }
+
+        AfterAll {
+            # Clean up the temporary directory
+            if (Test-Path -Path $script:tempAuditPath)
+            {
+                Remove-Item -Path $script:tempAuditPath -Recurse -Force -ErrorAction 'SilentlyContinue'
+            }
+        }
+
+        It 'Should modify file audit Path property successfully' {
+            # Create another temporary directory for the new path
+            $newTempPath = Join-Path -Path $env:TEMP -ChildPath "SqlDscAuditTest2_$(Get-Random)"
+            New-Item -Path $newTempPath -ItemType Directory -Force | Out-Null
+
+            try {
+                # Verify audit exists before modification
+                $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testFileAuditName -ErrorAction Stop
+                $originalAudit | Should -Not -BeNullOrEmpty
+                $originalAudit.DestinationType | Should -Be 'File'
+
+                $originalPath = $originalAudit.FilePath
+
+                # Modify the audit path
+                $null = Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testFileAuditName -Path $newTempPath -Force -ErrorAction Stop
+
+                # Verify audit was modified
+                $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testFileAuditName -ErrorAction Stop
+                $modifiedAudit.FilePath | Should -Be $newTempPath
+                $modifiedAudit.FilePath | Should -Not -Be $originalPath
+            }
+            finally {
+                # Clean up the new temp directory
+                if (Test-Path -Path $newTempPath)
+                {
+                    Remove-Item -Path $newTempPath -Recurse -Force -ErrorAction 'SilentlyContinue'
+                }
+            }
+        }
+    }
+
     Context 'When modifying multiple audits sequentially' {
         BeforeAll {
             # Create multiple test audits
