@@ -45,7 +45,7 @@ Describe 'New-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction Stop
 
         # Create a temporary directory for file audits if it doesn't exist
-        $script:testAuditPath = Join-Path -Path $env:TEMP -ChildPath 'SqlDscTestAudits'
+        $script:testAuditPath = 'C:\Temp\SqlDscTestAudits'
         if (-not (Test-Path -Path $script:testAuditPath))
         {
             $null = New-Item -Path $script:testAuditPath -ItemType Directory -Force
@@ -189,15 +189,19 @@ Describe 'New-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         }
 
         It 'Should create a file audit with maximum files and reserve disk space' {
-            $result = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Path $script:testAuditPath -MaximumFiles 5 -ReserveDiskSpace -PassThru -Force -ErrorAction Stop
+            $result = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Path $script:testAuditPath -MaximumFiles 5 -MaximumFileSize 50 -MaximumFileSizeUnit 'Megabyte' -ReserveDiskSpace -PassThru -Force -ErrorAction Stop
 
             $result | Should -Not -BeNullOrEmpty
             $result.MaximumFiles | Should -Be 5
+            $result.MaximumFileSize | Should -Be 50
+            $result.MaximumFileSizeUnit | Should -Be 'MB'
             $result.ReserveDiskSpace | Should -BeTrue
 
             # Verify the audit exists with correct properties
             $createdAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
             $createdAudit.MaximumFiles | Should -Be 5
+            $createdAudit.MaximumFileSize | Should -Be 50
+            $createdAudit.MaximumFileSizeUnit | Should -Be 'MB'
             $createdAudit.ReserveDiskSpace | Should -BeTrue
         }
 
