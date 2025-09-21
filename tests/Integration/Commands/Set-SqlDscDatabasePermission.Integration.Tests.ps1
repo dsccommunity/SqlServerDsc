@@ -19,7 +19,7 @@ BeforeDiscovery {
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
@@ -66,7 +66,7 @@ BEGIN
     CREATE USER [$script:testLoginName] FOR LOGIN [$script:testLoginName];
 END
 "@
-        $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -Query $sqlQuery -ErrorAction 'Stop'
+        $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $sqlQuery -ErrorAction 'Stop'
     }
 
     AfterAll {
@@ -78,7 +78,7 @@ BEGIN
     DROP USER [$script:testLoginName];
 END
 "@
-        $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -Query $sqlQuery -ErrorAction 'SilentlyContinue'
+        $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $sqlQuery -ErrorAction 'SilentlyContinue'
 
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
 
