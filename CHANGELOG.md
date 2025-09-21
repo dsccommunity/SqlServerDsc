@@ -7,15 +7,78 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added integration tests for `Get-SqlDscManagedComputer` command to ensure it
+  functions correctly in real environments
+  [issue #2220](https://github.com/dsccommunity/SqlServerDsc/issues/2220).
 - Added integration tests for `Remove-SqlDscAudit` command to ensure it functions
   correctly in real environments
   [issue #2241](https://github.com/dsccommunity/SqlServerDsc/issues/2241).
 - Added integration tests for `New-SqlDscAudit` command to ensure it functions
   correctly in real environments
   [issue #2226](https://github.com/dsccommunity/SqlServerDsc/issues/2226).
+- Added integration tests for `Test-SqlDscIsLogin` command to ensure it functions
+  correctly in real environments
+  [issue #2230](https://github.com/dsccommunity/SqlServerDsc/issues/2230).
+- Added integration tests for `Set-SqlDscAudit` command to ensure it functions
+  correctly in real environments
+  [issue #2236](https://github.com/dsccommunity/SqlServerDsc/issues/2236).
+- Added integration tests for `Set-SqlDscStartupParameter` command to ensure
+  reliable startup parameter configuration
+  [issue #2233](https://github.com/dsccommunity/SqlServerDsc/issues/2233).
+- Added integration tests for `Set-SqlDscServerPermission` command to ensure it
+  functions correctly in real environments
+  [issue #2234](https://github.com/dsccommunity/SqlServerDsc/issues/2234).
+- Added integration tests for `Save-SqlDscSqlServerMediaFile` command to ensure
+  it functions correctly in real environments
+  [issue #2237](https://github.com/dsccommunity/SqlServerDsc/issues/2237).
+- Added integration tests for `Disable-SqlDscAudit` command to ensure it functions
+  correctly in real environments
+  [issue #2206](https://github.com/dsccommunity/SqlServerDsc/issues/2206).
+- Added integration tests for `ConvertTo-SqlDscDatabasePermission` command to
+  ensure command reliability
+  [issue #2209](https://github.com/dsccommunity/SqlServerDsc/issues/2209).
+- Added integration tests for `Set-SqlDscDatabasePermission` command to ensure
+  command reliability
+  [issue #2235](https://github.com/dsccommunity/SqlServerDsc/issues/2235).
+- Added integration test for `ConvertTo-SqlDscEditionName` command to ensure
+  command reliability in real environments
+  [issue #2208](https://github.com/dsccommunity/SqlServerDsc/issues/2208).
+- Added integration tests for `Import-SqlDscPreferredModule` command to ensure
+  proper module import functionality in real environments
+  [issue #2225](https://github.com/dsccommunity/SqlServerDsc/issues/2225).
+- Added integration tests for `Test-SqlDscIsSupportedFeature` command to ensure
+  it functions correctly in real environments
+  [issue #2228](https://github.com/dsccommunity/SqlServerDsc/issues/2228).
+- Added integration test for `Get-SqlDscManagedComputerService` command to ensure
+  command reliability [issue #2219](https://github.com/dsccommunity/SqlServerDsc/issues/2219).
+- Added integration tests for `Set-SqlDscTraceFlag` command to ensure it functions
+  correctly in real environments
+  [issue #2232](https://github.com/dsccommunity/SqlServerDsc/issues/2232).
+- Added integration tests for `ConvertFrom-SqlDscServerPermission` command to
+  ensure it functions correctly in real environments
+  [issue #2210](https://github.com/dsccommunity/SqlServerDsc/issues/2210).
+- `Remove-SqlDscTraceFlag`
+  - Added missing integration test to ensure command reliability ([issue #2239](https://github.com/dsccommunity/SqlServerDsc/issues/2239)).
+- `Remove-SqlDscAudit`
+  - Added missing integration test to ensure command reliability ([issue #2241](https://github.com/dsccommunity/SqlServerDsc/issues/2241)).
+- Added integration tests for `Test-SqlDscIsRole` command to ensure it functions
+  correctly in real environments
+  [issue #2229](https://github.com/dsccommunity/SqlServerDsc/issues/2229).
+- Added integration tests for `Add-SqlDscTraceFlag` command to ensure it functions
+  correctly in real environments
+  [issue #2214](https://github.com/dsccommunity/SqlServerDsc/issues/2214).
 
 ### Fixed
 
+- `Add-SqlDscTraceFlag` and `Remove-SqlDscTraceFlag`
+  - Fixed parameter binding error when `ErrorAction` was specified both
+    explicitly and via `PSBoundParameters` by using `Remove-CommonParameter`
+    instead of manual parameter removal
+    ([issue #2239](https://github.com/dsccommunity/SqlServerDsc/issues/2239)).
+- `Remove-SqlDscTraceFlag`
+  - Optimized to skip unnecessary Set operations when removal results in no
+    effective change
+    ([issue #2239](https://github.com/dsccommunity/SqlServerDsc/issues/2239)).
 - Updated `.gitattributes` to enforce LF line endings for PowerShell files to
   ensure cross-platform compatibility.
 - Updated GitHub Copilot setup workflow to fix environment variable assignment
