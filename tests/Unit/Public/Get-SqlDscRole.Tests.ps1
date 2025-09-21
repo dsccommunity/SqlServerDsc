@@ -19,7 +19,7 @@ BeforeDiscovery {
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
@@ -77,7 +77,7 @@ Describe 'Get-SqlDscRole' -Tag 'Public' {
 
         It 'Should call Refresh when Refresh parameter is specified' {
             Mock -CommandName 'Write-Verbose'
-            
+
             $script:refreshCalled = $false
             $mockServerObjectWithRefresh = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObjectWithRefresh | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
