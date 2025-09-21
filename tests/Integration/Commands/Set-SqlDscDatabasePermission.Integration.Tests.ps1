@@ -66,7 +66,7 @@ BEGIN
     CREATE USER [$script:testLoginName] FOR LOGIN [$script:testLoginName];
 END
 "@
-        $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $sqlQuery -ErrorAction 'Stop'
+        $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $sqlQuery -Force -ErrorAction 'Stop'
     }
 
     AfterAll {
@@ -78,7 +78,7 @@ BEGIN
     DROP USER [$script:testLoginName];
 END
 "@
-        $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $sqlQuery -ErrorAction 'SilentlyContinue'
+        $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $sqlQuery -Force -ErrorAction 'SilentlyContinue'
 
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
 
