@@ -19,7 +19,7 @@ BeforeDiscovery {
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
@@ -82,7 +82,7 @@ Describe 'New-SqlDscRole' -Tag 'Public' {
 
         It 'Should create a new server role successfully' {
             Mock -CommandName 'Write-Verbose'
-            
+
             # Create a mock role object that can be returned
             $mockNewRole = New-Object -TypeName Object
             $mockNewRole | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestRole' -Force
@@ -101,7 +101,7 @@ Describe 'New-SqlDscRole' -Tag 'Public' {
 
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'TestRole'
-            
+
             Should -Invoke -CommandName 'New-Object' -ParameterFilter {
                 $TypeName -eq 'Microsoft.SqlServer.Management.Smo.ServerRole'
             } -Exactly -Times 1
@@ -109,7 +109,7 @@ Describe 'New-SqlDscRole' -Tag 'Public' {
 
         It 'Should set the owner when Owner parameter is specified' {
             Mock -CommandName 'Write-Verbose'
-            
+
             # Create a mock role object that can be returned
             $mockNewRole = New-Object -TypeName Object
             $mockNewRole | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestRole' -Force
@@ -132,7 +132,7 @@ Describe 'New-SqlDscRole' -Tag 'Public' {
 
         It 'Should call Refresh when Refresh parameter is specified' {
             Mock -CommandName 'Write-Verbose'
-            
+
             # Create a mock role object that can be returned
             $mockNewRole = New-Object -TypeName Object
             $mockNewRole | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestRole' -Force
@@ -176,7 +176,7 @@ Describe 'New-SqlDscRole' -Tag 'Public' {
             # Create mock existing role
             $mockExistingRole = New-Object -TypeName Object
             $mockExistingRole | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'ExistingRole' -Force
-            
+
             # Create mock roles collection that returns the existing role
             $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
                 return @{
@@ -218,7 +218,7 @@ Describe 'New-SqlDscRole' -Tag 'Public' {
 
         It 'Should throw an error when role creation fails' {
             Mock -CommandName 'Write-Verbose'
-            
+
             # Create a mock role object that fails to create
             $mockNewRole = New-Object -TypeName Object
             $mockNewRole | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestRole' -Force
