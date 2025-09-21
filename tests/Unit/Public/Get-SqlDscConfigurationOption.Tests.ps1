@@ -19,7 +19,7 @@ BeforeDiscovery {
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
@@ -355,7 +355,7 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
 
             $completions | Should -Not -BeNullOrEmpty
             $completions | Should -HaveCount 2
-            
+
             $completions[0].CompletionText | Should -Be "'max degree of parallelism'"
             $completions[1].CompletionText | Should -Be "'max server memory (MB)'"
         }
