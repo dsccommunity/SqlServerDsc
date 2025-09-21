@@ -216,6 +216,7 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     TraceFlag_Remove_ShouldProcessCaption = Remove trace flag from instance
     TraceFlag_Remove_NoCurrentTraceFlags = There are no current trace flags on instance. Nothing to remove.
+    TraceFlag_Remove_NoChange = The specified trace flags are not currently set on the instance. No changes needed.
 
     ## Get-SqlDscPreferredModule
     PreferredModule_ModuleVersionFound = Preferred module '{0}' with version '{1}' found.
