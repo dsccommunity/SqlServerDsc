@@ -267,14 +267,15 @@ Describe 'New-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
         It 'Should create an audit with AuditFilter setting' {
             $testFilter = "([database_name] = 'master')"
+            $expectedFilter = "([database_name]='master')"  # SQL Server normalizes the filter by removing spaces
             $result = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -AuditFilter $testFilter -PassThru -Force -ErrorAction Stop
 
             $result | Should -Not -BeNullOrEmpty
-            $result.Filter | Should -Be $testFilter
+            $result.Filter | Should -Be $expectedFilter
 
             # Verify the audit exists with correct properties
             $createdAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
-            $createdAudit.Filter | Should -Be $testFilter
+            $createdAudit.Filter | Should -Be $expectedFilter
         }
 
         It 'Should support Refresh parameter' {
