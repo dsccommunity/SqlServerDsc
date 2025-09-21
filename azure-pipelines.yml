@@ -309,6 +309,7 @@ stages:
                   'tests/Integration/Commands/Get-SqlDscServerProtocol.Integration.Tests.ps1'
                   'tests/Integration/Commands/Disable-SqlDscLogin.Integration.Tests.ps1'
                   'tests/Integration/Commands/Enable-SqlDscLogin.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Test-SqlDscIsLogin.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscIsLoginEnabled.Integration.Tests.ps1'
                   'tests/Integration/Commands/New-SqlDscRole.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRole.Integration.Tests.ps1'
