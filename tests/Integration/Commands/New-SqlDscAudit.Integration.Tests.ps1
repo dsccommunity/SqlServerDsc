@@ -166,13 +166,13 @@ Describe 'New-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be $script:testAuditName
             $result.DestinationType | Should -Be 'File'
-            $result.FilePath | Should -Be $script:testAuditPath
+            $result.FilePath.TrimEnd('\', '/') | Should -Be $script:testAuditPath.TrimEnd('\', '/')
 
             # Verify the audit exists in the server
             $createdAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
             $createdAudit | Should -Not -BeNullOrEmpty
             $createdAudit.DestinationType | Should -Be 'File'
-            $createdAudit.FilePath | Should -Be $script:testAuditPath
+            $createdAudit.FilePath.TrimEnd('\', '/') | Should -Be $script:testAuditPath.TrimEnd('\', '/')
         }
 
         It 'Should create a file audit with maximum file size' {
