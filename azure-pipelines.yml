@@ -314,6 +314,7 @@ stages:
                   'tests/Integration/Commands/New-SqlDscRole.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRole.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscIsRole.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Test-SqlDscIsDatabasePrincipal.Integration.Tests.ps1'
                   'tests/Integration/Commands/Grant-SqlDscServerPermission.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscServerPermission.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscServerPermission.Integration.Tests.ps1'
