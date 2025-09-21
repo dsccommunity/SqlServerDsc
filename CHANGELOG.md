@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added integration tests for `Remove-SqlDscAudit` command to ensure it functions
   correctly in real environments
   [issue #2241](https://github.com/dsccommunity/SqlServerDsc/issues/2241).
+- Added integration tests for `Set-SqlDscAudit` command to ensure it functions
+  correctly in real environments
+  [issue #2236](https://github.com/dsccommunity/SqlServerDsc/issues/2236).
 - Added integration tests for `Set-SqlDscStartupParameter` command to ensure
   reliable startup parameter configuration
   [issue #2233](https://github.com/dsccommunity/SqlServerDsc/issues/2233).
