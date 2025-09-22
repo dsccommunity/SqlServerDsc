@@ -43,6 +43,7 @@ Command | Run order # | Depends on # | Use instance | Creates persistent objects
 Prerequisites | 0 | - | - | Sets up dependencies
 Install-SqlDscServer | 1 | 0 (Prerequisites) | - | DSCSQLTEST instance
 Connect-SqlDscDatabaseEngine | 1 | 0 (Prerequisites) | DSCSQLTEST | -
+Disconnect-SqlDscDatabaseEngine | 1 | 0 (Prerequisites) | DSCSQLTEST | -
 Assert-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 New-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | IntegrationTestSqlLogin, SqlIntegrationTestGroup login
 Get-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
