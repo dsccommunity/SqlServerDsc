@@ -34,8 +34,6 @@ Describe 'Remove-SqlDscAgentAlert' -Tag @('Integration_SQL2017', 'Integration_SQ
         # Integration tests are run on the DSCSQLTEST instance
         $script:sqlServerInstance = 'DSCSQLTEST'
 
-        # Note: SQL Server service is already running from Install-SqlDscServer test for performance optimization
-
         $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
         $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
 

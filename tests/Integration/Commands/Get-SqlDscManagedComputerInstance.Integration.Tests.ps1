@@ -34,8 +34,6 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag @('Integration_SQL2017', 'Inte
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
 
-        # Note: SQL Server service is already running from Install-SqlDscServer test for performance optimization
-
         $script:mockInstanceName = 'DSCSQLTEST'
         $script:mockServerName = Get-ComputerName
     }
