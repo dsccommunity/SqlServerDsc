@@ -46,7 +46,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
 
     AfterAll {
         # Restore the original Agent XPs value
-        if ($script:originalAgentXPsValue)
+        if ($null -ne $script:originalAgentXPsValue)
         {
             Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value $script:originalAgentXPsValue.RunValue -Force -ErrorAction 'SilentlyContinue'
         }
