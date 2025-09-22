@@ -31,8 +31,6 @@ BeforeAll {
 
 Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Note: SQL Server service is already running from Install-SqlDscServer test for performance optimization
-
         $script:instanceName = 'DSCSQLTEST'
         $script:computerName = Get-ComputerName
 
@@ -40,10 +38,6 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         $script:testSqlLoginName = 'IntegrationTestSqlLogin'
         $script:testWindowsUserName = '{0}\SqlIntegrationTest' -f $script:computerName
         $script:testWindowsGroupName = '{0}\SqlIntegrationTestGroup' -f $script:computerName
-    }
-
-    AfterAll {
-        # Note: SQL Server service is left running for subsequent tests for performance optimization
     }
 
     Context 'When connecting to SQL Server instance' {

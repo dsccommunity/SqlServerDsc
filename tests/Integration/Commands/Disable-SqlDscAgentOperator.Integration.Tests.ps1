@@ -43,8 +43,6 @@ AfterAll {
 
 Describe 'Disable-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022' {
     BeforeAll {
-        # Note: SQL Server service is already running from Install-SqlDscServer test for performance optimization
-
         $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
         $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
         $mockSqlAdministratorCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
@@ -60,9 +58,6 @@ Describe 'Disable-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_
         Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value 0 -Force -Verbose -ErrorAction 'Stop'
 
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
-
-        # Stopping the named instance SQL Server service after running tests.
-        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
     }
 
     Context 'When disabling an existing agent operator' {

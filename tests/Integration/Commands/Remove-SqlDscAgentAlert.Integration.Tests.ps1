@@ -49,8 +49,6 @@ Describe 'Remove-SqlDscAgentAlert' -Tag @('Integration_SQL2017', 'Integration_SQ
     AfterAll {
         # Disconnect from the SQL Server
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:sqlServerObject
-
-        # Note: SQL Server service is left running for subsequent tests for performance optimization
     }
 
     Context 'When removing by ServerObject' {

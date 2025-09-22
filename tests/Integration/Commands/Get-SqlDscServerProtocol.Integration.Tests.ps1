@@ -40,10 +40,6 @@ Describe 'Get-SqlDscServerProtocol' -Tag @('Integration_SQL2017', 'Integration_S
         $script:mockServerName = Get-ComputerName
     }
 
-    AfterAll {
-        # Note: SQL Server service is left running for subsequent tests for performance optimization
-    }
-
     Context 'When using parameter set ByServerName' {
         Context 'When getting a specific protocol' {
             It 'Should return TcpIp protocol information' {

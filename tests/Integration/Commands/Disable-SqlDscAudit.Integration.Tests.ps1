@@ -31,8 +31,6 @@ BeforeAll {
 
 Describe 'Disable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Note: SQL Server service is already running from Install-SqlDscServer test for performance optimization
-
         $script:mockInstanceName = 'DSCSQLTEST'
         $script:mockComputerName = Get-ComputerName
 
@@ -46,8 +44,6 @@ Describe 'Disable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
     AfterAll {
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
-
-        # Note: SQL Server service is left running for subsequent tests for performance optimization
     }
 
     Context 'When disabling an audit using ServerObject parameter set' {
@@ -204,7 +200,7 @@ Describe 'Disable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL201
                 'SqlDscTestMultiDisable1_' + (Get-Random),
                 'SqlDscTestMultiDisable2_' + (Get-Random)
             )
-            
+
             foreach ($auditName in $script:testAuditNames)
             {
                 $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $auditName -LogType 'ApplicationLog' -Force -ErrorAction Stop

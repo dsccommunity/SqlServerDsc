@@ -43,8 +43,6 @@ AfterAll {
 
 Describe 'New-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022' {
     BeforeAll {
-        # Note: SQL Server service is already running from Install-SqlDscServer test for performance optimization
-
         $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
         $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
 
@@ -63,8 +61,6 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
 
         # Disconnect from the SQL Server
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:sqlServerObject
-
-        # Note: SQL Server service is left running for subsequent tests for performance optimization
     }
 
     It 'Should create the persistent operator for other tests to use' {

@@ -56,8 +56,6 @@ Describe 'Test-SqlDscAgentAlertProperty' -Tag @('Integration_SQL2017', 'Integrat
 
         # Disconnect from the SQL Server
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:sqlServerObject
-
-        # Note: SQL Server service is left running for subsequent tests for performance optimization
     }
 
     Context 'When checking severity' {

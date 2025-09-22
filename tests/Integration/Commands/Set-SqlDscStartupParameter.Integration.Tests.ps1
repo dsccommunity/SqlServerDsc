@@ -59,8 +59,6 @@ Describe 'Set-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
                 Write-Warning -Message "Failed to restore original startup parameters: $($_.Exception.Message)"
             }
         }
-
-        # Note: SQL Server service is left running for subsequent tests for performance optimization
     }
 
     Context 'When using parameter set ByServerName' {
@@ -181,7 +179,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
 
             # Verify the parameters haven't changed
             $newParams = Get-SqlDscStartupParameter -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
-            
+
             # Compare arrays properly handling nulls/empty arrays
             if ($currentParams.TraceFlag -and $newParams.TraceFlag) {
                 Compare-Object -ReferenceObject $currentParams.TraceFlag -DifferenceObject $newParams.TraceFlag | Should -BeNullOrEmpty

@@ -31,8 +31,6 @@ BeforeAll {
 
 Describe 'Set-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Note: SQL Server service is already running from Install-SqlDscServer test for performance optimization
-
         $script:mockInstanceName = 'DSCSQLTEST'
         $script:mockServerName = Get-ComputerName
 
@@ -51,8 +49,6 @@ Describe 'Set-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
             # Clear all trace flags if there were none originally
             Set-SqlDscTraceFlag -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -TraceFlag @() -Force -ErrorAction 'SilentlyContinue'
         }
-
-        # Note: SQL Server service is left running for subsequent tests for performance optimization
     }
 
     Context 'When setting trace flags' {

@@ -31,8 +31,6 @@ BeforeAll {
 
 Describe 'New-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Note: SQL Server service is already running from Install-SqlDscServer test for performance optimization
-
         $script:mockInstanceName = 'DSCSQLTEST'
         $script:mockComputerName = Get-ComputerName
 
@@ -53,9 +51,9 @@ Describe 'New-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
     AfterAll {
         # Clean up any test audits that might remain
-        $testAudits = Get-SqlDscAudit -ServerObject $script:serverObject -ErrorAction 'SilentlyContinue' | 
+        $testAudits = Get-SqlDscAudit -ServerObject $script:serverObject -ErrorAction 'SilentlyContinue' |
             Where-Object { $_.Name -like 'SqlDscTestAudit*' }
-        
+
         foreach ($audit in $testAudits)
         {
             try
@@ -75,8 +73,6 @@ Describe 'New-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         {
             Remove-Item -Path $script:testAuditPath -Recurse -Force -ErrorAction 'SilentlyContinue'
         }
-
-        # Note: SQL Server service is left running for subsequent tests for performance optimization
     }
 
     Context 'When creating a new application log audit' {
@@ -110,7 +106,7 @@ Describe 'New-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
         It 'Should create a security log audit successfully' {
             $securityLogAuditName = 'SqlDscTestAudit_SecLog_' + (Get-Random)
-            
+
             try
             {
                 $result = New-SqlDscAudit -ServerObject $script:serverObject -Name $securityLogAuditName -LogType 'SecurityLog' -PassThru -Force -ErrorAction Stop
@@ -339,7 +335,7 @@ Describe 'New-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
         It 'Should throw error when path does not exist for file audit' {
             $nonExistentPath = Join-Path -Path $env:TEMP -ChildPath 'NonExistentPath'
-            
+
             { New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Path $nonExistentPath -Force -ErrorAction Stop } |
                 Should -Throw
         }

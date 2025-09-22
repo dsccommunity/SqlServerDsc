@@ -39,10 +39,6 @@ Describe 'Get-SqlDscManagedComputer' -Tag @('Integration_SQL2017', 'Integration_
         $script:mockServerName = Get-ComputerName
     }
 
-    AfterAll {
-        # Note: SQL Server service is left running for subsequent tests for performance optimization
-    }
-
     Context 'When using default parameters' {
         It 'Should return the managed computer object for the local computer' {
             $result = Get-SqlDscManagedComputer -ErrorAction 'Stop'

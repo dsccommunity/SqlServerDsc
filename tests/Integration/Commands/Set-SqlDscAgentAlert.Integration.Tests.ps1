@@ -53,8 +53,6 @@ Describe 'Set-SqlDscAgentAlert' -Tag @('Integration_SQL2017', 'Integration_SQL20
 
         # Disconnect from the SQL Server
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:sqlServerObject
-
-        # Note: SQL Server service is left running for subsequent tests for performance optimization
     }
 
     It 'Should update alert severity using ServerObject parameter set' {

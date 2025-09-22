@@ -74,8 +74,6 @@ END
 
         # Disconnect from the SQL Server
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:sqlServerObject
-
-        # Note: SQL Server service is left running for subsequent tests for performance optimization
     }
 
     It 'Should get all alerts' {

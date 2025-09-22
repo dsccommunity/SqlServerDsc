@@ -31,8 +31,6 @@ BeforeAll {
 
 Describe 'Revoke-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Note: SQL Server service is already running from Install-SqlDscServer test for performance optimization
-
         $script:mockInstanceName = 'DSCSQLTEST'
 
         $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
@@ -49,8 +47,6 @@ Describe 'Revoke-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integrat
 
     AfterAll {
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
-
-        # Note: SQL Server service is left running for subsequent tests for performance optimization
     }
 
     Context 'When revoking server permissions from login' {

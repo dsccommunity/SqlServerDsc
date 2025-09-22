@@ -31,14 +31,8 @@ BeforeAll {
 
 Describe 'Assert-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Note: SQL Server service is already running from Install-SqlDscServer test for performance optimization
-
         $script:instanceName = 'DSCSQLTEST'
         $script:computerName = Get-ComputerName
-    }
-
-    AfterAll {
-        # Note: SQL Server service is left running for subsequent tests for performance optimization
     }
 
     Context 'When connecting to SQL Server instance' {

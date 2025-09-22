@@ -40,10 +40,6 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag @('Integration_SQL2017', 'Inte
         $script:mockServerName = Get-ComputerName
     }
 
-    AfterAll {
-        # Note: SQL Server service is left running for subsequent tests for performance optimization
-    }
-
     Context 'When using parameter set ByServerName' {
         Context 'When getting a specific instance' {
             It 'Should return the correct server instance' {
