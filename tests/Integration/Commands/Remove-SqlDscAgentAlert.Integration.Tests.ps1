@@ -34,8 +34,7 @@ Describe 'Remove-SqlDscAgentAlert' -Tag @('Integration_SQL2017', 'Integration_SQ
         # Integration tests are run on the DSCSQLTEST instance
         $script:sqlServerInstance = 'DSCSQLTEST'
 
-        # Starting the named instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
+        # Note: SQL Server service is already running from Install-SqlDscServer test for performance optimization
 
         $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
         $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
@@ -51,8 +50,7 @@ Describe 'Remove-SqlDscAgentAlert' -Tag @('Integration_SQL2017', 'Integration_SQ
         # Disconnect from the SQL Server
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:sqlServerObject
 
-        # Stop the named instance SQL Server service to save memory on the build worker.
-        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
+        # Note: SQL Server service is left running for subsequent tests for performance optimization
     }
 
     Context 'When removing by ServerObject' {

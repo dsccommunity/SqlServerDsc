@@ -34,16 +34,14 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag @('Integration_SQL2017', 'Inte
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
 
-        # Starting the named instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
+        # Note: SQL Server service is already running from Install-SqlDscServer test for performance optimization
 
         $script:mockInstanceName = 'DSCSQLTEST'
         $script:mockServerName = Get-ComputerName
     }
 
     AfterAll {
-        # Stop the named instance SQL Server service to save memory on the build worker.
-        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
+        # Note: SQL Server service is left running for subsequent tests for performance optimization
     }
 
     Context 'When using parameter set ByServerName' {

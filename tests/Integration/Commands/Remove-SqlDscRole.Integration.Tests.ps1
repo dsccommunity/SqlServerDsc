@@ -31,8 +31,7 @@ BeforeAll {
 
 Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Starting the named instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
+        # Note: SQL Server service is already running from Install-SqlDscServer test for performance optimization
 
         $script:mockInstanceName = 'DSCSQLTEST'
         $script:mockComputerName = Get-ComputerName
@@ -69,8 +68,7 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2017', 'Integration_SQL2019'
 
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
 
-        # Stop the named instance SQL Server service to save memory on the build worker.
-        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
+        # Note: SQL Server service is left running for subsequent tests for performance optimization
     }
 
     Context 'When removing a SQL Server role by name' {

@@ -85,13 +85,11 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
 
     Context 'When connecting to a named instance' {
         BeforeAll {
-            # Starting the named instance SQL Server service prior to running tests.
-            Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
+            # Note: SQL Server service is already running from Install-SqlDscServer test for performance optimization
         }
 
         AfterAll {
-            # Stop the named instance SQL Server service to save memory on the build worker.
-            Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
+            # Note: SQL Server service is left running for subsequent tests for performance optimization
         }
 
         It 'Should have the named instance SQL Server service started' {
