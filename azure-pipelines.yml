@@ -325,6 +325,7 @@ stages:
                   'tests/Integration/Commands/New-SqlDscDatabase.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscDatabase.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscDatabase.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Invoke-SqlDscQuery.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscDatabasePermission.Integration.Tests.ps1'
                   'tests/Integration/Commands/ConvertTo-SqlDscDatabasePermission.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscAgentAlert.Integration.Tests.ps1'
