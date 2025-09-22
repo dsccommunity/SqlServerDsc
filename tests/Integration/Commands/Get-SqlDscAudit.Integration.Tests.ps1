@@ -19,7 +19,7 @@ BeforeDiscovery {
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
@@ -158,8 +158,8 @@ Describe 'Get-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
             $result.Name | Should -Be $script:testAuditName1
             $result.Parent | Should -Be $script:serverObject
-            $result | Should -HaveProperty 'Enabled'
-            $result | Should -HaveProperty 'DestinationType'
+            $result.Enabled | Should -Not -BeNull
+            $result.DestinationType | Should -Not -BeNull
         }
     }
 }
