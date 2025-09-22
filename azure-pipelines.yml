@@ -286,6 +286,8 @@ stages:
                   # Run the integration tests in a specific group order.
                   # Group 0
                   'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Save-SqlDscSqlServerMediaFile.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Import-SqlDscPreferredModule.Integration.Tests.ps1'
                   # Group 1
                   'tests/Integration/Commands/Install-SqlDscServer.Integration.Tests.ps1'
                   'tests/Integration/Commands/Connect-SqlDscDatabaseEngine.Integration.Tests.ps1'
@@ -297,16 +299,26 @@ stages:
                   'tests/Integration/Commands/Get-SqlDscConfigurationOption.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscConfigurationOption.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscConfigurationOption.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscStartupParameter.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Test-SqlDscIsSupportedFeature.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscManagedComputer.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscTraceFlag.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscManagedComputerInstance.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscManagedComputerService.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscServerProtocolName.Integration.Tests.ps1'
+                  'tests/Integration/Commands/ConvertTo-SqlDscEditionName.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscServerProtocol.Integration.Tests.ps1'
                   'tests/Integration/Commands/Disable-SqlDscLogin.Integration.Tests.ps1'
                   'tests/Integration/Commands/Enable-SqlDscLogin.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Test-SqlDscIsLogin.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscIsLoginEnabled.Integration.Tests.ps1'
                   'tests/Integration/Commands/New-SqlDscRole.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRole.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Test-SqlDscIsRole.Integration.Tests.ps1'
                   'tests/Integration/Commands/Grant-SqlDscServerPermission.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscServerPermission.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscServerPermission.Integration.Tests.ps1'
+                  'tests/Integration/Commands/ConvertFrom-SqlDscServerPermission.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscServerPermission.Integration.Tests.ps1'
                   'tests/Integration/Commands/Deny-SqlDscServerPermission.Integration.Tests.ps1'
                   'tests/Integration/Commands/Revoke-SqlDscServerPermission.Integration.Tests.ps1'
@@ -314,8 +326,12 @@ stages:
                   'tests/Integration/Commands/New-SqlDscDatabase.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscDatabase.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscDatabase.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Invoke-SqlDscQuery.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscDatabasePermission.Integration.Tests.ps1'
+                  'tests/Integration/Commands/ConvertTo-SqlDscDatabasePermission.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscAgentAlert.Integration.Tests.ps1'
                   'tests/Integration/Commands/New-SqlDscAgentAlert.Integration.Tests.ps1'
+                  'tests/Integration/Commands/New-SqlDscAudit.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscAgentAlert.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscAgentAlertProperty.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscIsAgentAlert.Integration.Tests.ps1'
@@ -326,13 +342,17 @@ stages:
                   'tests/Integration/Commands/Assert-SqlDscAgentOperator.Integration.Tests.ps1'
                   'tests/Integration/Commands/Enable-SqlDscAgentOperator.Integration.Tests.ps1'
                   'tests/Integration/Commands/Disable-SqlDscAgentOperator.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Disable-SqlDscAudit.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Add-SqlDscTraceFlag.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Remove-SqlDscAgentAlert.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscAgentOperator.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscAudit.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscAudit.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscDatabase.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscRole.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscLogin.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Remove-SqlDscTraceFlag.Integration.Tests.ps1'
                   # Group 9
                   'tests/Integration/Commands/Uninstall-SqlDscServer.Integration.Tests.ps1'
               )
@@ -397,6 +417,8 @@ stages:
                   # Run the integration tests in a specific group order.
                   # Group 0
                   'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Save-SqlDscSqlServerMediaFile.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Import-SqlDscPreferredModule.Integration.Tests.ps1'
                   # Group 1
                   'tests/Integration/Commands/Install-SqlDscReportingService.Integration.Tests.ps1'
                   # Group 2
@@ -460,6 +482,8 @@ stages:
                   # Run the integration tests in a specific group order.
                   # Group 0
                   'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Save-SqlDscSqlServerMediaFile.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Import-SqlDscPreferredModule.Integration.Tests.ps1'
                   # Group 1
                   'tests/Integration/Commands/Install-SqlDscBIReportServer.Integration.Tests.ps1'
                   # Group 2
