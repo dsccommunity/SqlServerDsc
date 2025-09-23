@@ -31,9 +31,6 @@ BeforeAll {
 
 Describe 'Invoke-SqlDscQuery' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Starting the named instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-
         $script:mockInstanceName = 'DSCSQLTEST'
         $script:mockComputerName = Get-ComputerName
 
@@ -58,7 +55,7 @@ CREATE TABLE TestTable (
 
 INSERT INTO TestTable (Name, Value) VALUES ('Test1', 100), ('Test2', 200), ('Test3', 300)
 "@
-        
+
         Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $createTableQuery -Force -ErrorAction 'Stop'
     }
 
@@ -77,9 +74,6 @@ INSERT INTO TestTable (Name, Value) VALUES ('Test1', 100), ('Test2', 200), ('Tes
         }
 
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
-
-        # Stop the named instance SQL Server service to save memory on the build worker.
-        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
     }
 
     Context 'When executing a query using ServerObject parameter set' {

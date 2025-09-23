@@ -34,9 +34,6 @@ Describe 'Set-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
 
-        # Starting the named instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-
         $script:mockInstanceName = 'DSCSQLTEST'
         $script:mockServerName = Get-ComputerName
 
@@ -60,9 +57,6 @@ Describe 'Set-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
                 Write-Warning -Message "Failed to restore original startup parameters: $($_.Exception.Message)"
             }
         }
-
-        # Stop the named instance SQL Server service to save memory on the build worker.
-        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
     }
 
     Context 'When using parameter set ByServerName' {
@@ -183,7 +177,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
 
             # Verify the parameters haven't changed
             $newParams = Get-SqlDscStartupParameter -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
-            
+
             # Compare arrays properly handling nulls/empty arrays
             if ($currentParams.TraceFlag -and $newParams.TraceFlag) {
                 Compare-Object -ReferenceObject $currentParams.TraceFlag -DifferenceObject $newParams.TraceFlag | Should -BeNullOrEmpty

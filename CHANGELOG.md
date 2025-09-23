@@ -226,6 +226,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Optimized integration test performance by leaving the DSCSQLTEST service running
+  for subsequent tests, significantly improving CI build times.
 - Improved code quality by ensuring all function invocations in the private
   and public functions use named parameters instead of positional parameters.
 - SqlServerDsc
