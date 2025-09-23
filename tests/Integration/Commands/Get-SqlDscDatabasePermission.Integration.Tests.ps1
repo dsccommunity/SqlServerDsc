@@ -184,7 +184,7 @@ Describe 'Get-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Integrati
                     Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $grantRolePermissionSql -Force -ErrorAction 'Stop'
 
                     # Test getting permissions for the custom role
-                    $result = Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $customRoleName
+                    $result = Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $customRoleName -Refresh
 
                     $result | Should -Not -BeNullOrEmpty
                     $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo]
