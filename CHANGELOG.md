@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added integration tests for `Get-SqlDscAudit` command to ensure it functions
   correctly in real environments
   [issue #2222](https://github.com/dsccommunity/SqlServerDsc/issues/2222).
+- Added integration tests for `Disconnect-SqlDscDatabaseEngine` command to ensure
+  command reliability in real environments
+  [issue #2224](https://github.com/dsccommunity/SqlServerDsc/issues/2224).
 - Added integration tests for `Invoke-SqlDscQuery` command to ensure it functions
   correctly in real environments
   [issue #2227](https://github.com/dsccommunity/SqlServerDsc/issues/2227).
@@ -229,6 +232,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Optimized integration test performance by leaving the DSCSQLTEST service running
+  for subsequent tests, significantly improving CI build times.
 - Improved code quality by ensuring all function invocations in the private
   and public functions use named parameters instead of positional parameters.
 - SqlServerDsc
