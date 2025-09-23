@@ -47,11 +47,11 @@ Describe 'Get-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Integrati
         # Create a test user in the database for permission testing
         $script:testUserName = 'SqlDscTestUser_' + (Get-Random)
         $testUserSql = "USE [$($script:testDatabaseName)]; CREATE USER [$($script:testUserName)] WITHOUT LOGIN;"
-        Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $testUserSql -ErrorAction 'Stop'
+        Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $testUserSql -Force -ErrorAction 'Stop'
 
         # Grant some permissions to the test user for testing
         $grantPermissionSql = "USE [$($script:testDatabaseName)]; GRANT CONNECT, SELECT TO [$($script:testUserName)];"
-        Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $grantPermissionSql -ErrorAction 'Stop'
+        Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $grantPermissionSql -Force -ErrorAction 'Stop'
     }
 
     AfterAll {
@@ -175,13 +175,13 @@ Describe 'Get-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Integrati
                 # Create a custom database role for testing
                 $customRoleName = 'TestRole_' + (Get-Random)
                 $createRoleSql = "USE [$($script:testDatabaseName)]; CREATE ROLE [$customRoleName];"
-                Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $createRoleSql -ErrorAction 'Stop'
+                Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $createRoleSql -Force -ErrorAction 'Stop'
 
                 try
                 {
                     # Grant a permission to the custom role
                     $grantRolePermissionSql = "USE [$($script:testDatabaseName)]; GRANT CONNECT TO [$customRoleName];"
-                    Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $grantRolePermissionSql -ErrorAction 'Stop'
+                    Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $grantRolePermissionSql -Force -ErrorAction 'Stop'
 
                     # Test getting permissions for the custom role
                     $result = Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $customRoleName
@@ -198,7 +198,7 @@ Describe 'Get-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Integrati
                 {
                     # Clean up the custom role
                     $dropRoleSql = "USE [$($script:testDatabaseName)]; DROP ROLE [$customRoleName];"
-                    Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $dropRoleSql -ErrorAction 'SilentlyContinue'
+                    Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $dropRoleSql -Force -ErrorAction 'SilentlyContinue'
                 }
             }
         }
