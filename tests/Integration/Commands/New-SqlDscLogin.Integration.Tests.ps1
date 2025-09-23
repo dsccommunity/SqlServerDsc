@@ -19,7 +19,7 @@ BeforeDiscovery {
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
@@ -31,9 +31,6 @@ BeforeAll {
 
 Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Starting the named instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-
         $script:instanceName = 'DSCSQLTEST'
         $script:computerName = Get-ComputerName
 
@@ -41,11 +38,6 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         $script:testSqlLoginName = 'IntegrationTestSqlLogin'
         $script:testWindowsUserName = '{0}\SqlIntegrationTest' -f $script:computerName
         $script:testWindowsGroupName = '{0}\SqlIntegrationTestGroup' -f $script:computerName
-    }
-
-    AfterAll {
-        # Stop the named instance SQL Server service to save memory on the build worker.
-        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
     }
 
     Context 'When connecting to SQL Server instance' {
