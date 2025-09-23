@@ -36,16 +36,6 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integr
     }
 
     Context 'When disconnecting from the default instance' {
-        BeforeAll {
-            # Starting the default instance SQL Server service prior to running tests.
-            Start-Service -Name 'MSSQLSERVER' -Verbose -ErrorAction 'Stop'
-        }
-
-        AfterAll {
-            # Stop the default instance SQL Server service to save memory on the build worker.
-            Stop-Service -Name 'MSSQLSERVER' -Verbose -ErrorAction 'Stop'
-        }
-
         It 'Should have the default instance SQL Server service started' {
             $getServiceResult = Get-Service -Name 'MSSQLSERVER' -ErrorAction 'Stop'
 
@@ -104,16 +94,6 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integr
     }
 
     Context 'When disconnecting from a named instance' {
-        BeforeAll {
-            # Starting the named instance SQL Server service prior to running tests.
-            Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-        }
-
-        AfterAll {
-            # Stop the named instance SQL Server service to save memory on the build worker.
-            Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-        }
-
         It 'Should have the named instance SQL Server service started' {
             $getServiceResult = Get-Service -Name 'MSSQL$DSCSQLTEST' -ErrorAction 'Stop'
 
