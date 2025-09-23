@@ -34,16 +34,8 @@ Describe 'Get-SqlDscServerProtocol' -Tag @('Integration_SQL2017', 'Integration_S
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
 
-        # Starting the named instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-
         $script:mockInstanceName = 'DSCSQLTEST'
         $script:mockServerName = Get-ComputerName
-    }
-
-    AfterAll {
-        # Stop the named instance SQL Server service to save memory on the build worker.
-        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
     }
 
     Context 'When using parameter set ByServerName' {

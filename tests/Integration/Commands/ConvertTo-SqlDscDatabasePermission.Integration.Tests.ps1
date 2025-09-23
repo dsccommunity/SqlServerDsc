@@ -31,9 +31,6 @@ BeforeAll {
 
 Describe 'ConvertTo-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Starting the named instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-
         $script:mockInstanceName = 'DSCSQLTEST'
 
         $mockSqlAdministratorUserName = 'SqlAdmin'
@@ -46,15 +43,11 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Int
 
     AfterAll {
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
-
-        # Stop the named instance SQL Server service to save memory on the build worker.
-        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
     }
-
     Context 'When converting empty collection of DatabasePermissionInfo' {
         It 'Should return empty array for empty DatabasePermissionInfo collection' {
             $emptyCollection = [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]] @()
-            
+
             $result = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $emptyCollection
 
             $result | Should -BeNullOrEmpty
@@ -62,7 +55,7 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Int
 
         It 'Should accept empty collection through pipeline' {
             $emptyCollection = [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]] @()
-            
+
             $result = $emptyCollection | ConvertTo-SqlDscDatabasePermission
 
             $result | Should -BeNullOrEmpty
@@ -80,12 +73,12 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Int
 
                 # Validate the result structure
                 $result | Should -Not -BeNullOrEmpty
-                
+
                 # Each result should have State and Permission properties
                 foreach ($permission in $result) {
                     $permission.State | Should -Not -BeNullOrEmpty
                     $permission.Permission | Should -Not -BeNullOrEmpty
-                    
+
                     # Validate that permission state is one of the expected values
                     $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
                 }
@@ -102,12 +95,12 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Int
 
                 # Validate the result structure
                 $result | Should -Not -BeNullOrEmpty
-                
+
                 # Each result should have State and Permission properties
                 foreach ($permission in $result) {
                     $permission.State | Should -Not -BeNullOrEmpty
                     $permission.Permission | Should -Not -BeNullOrEmpty
-                    
+
                     # Validate that permission state is one of the expected values
                     $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
                 }
@@ -126,12 +119,12 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Int
 
                 # Validate the result structure
                 $result | Should -Not -BeNullOrEmpty
-                
+
                 # Each result should have State and Permission properties
                 foreach ($permission in $result) {
                     $permission.State | Should -Not -BeNullOrEmpty
                     $permission.Permission | Should -Not -BeNullOrEmpty
-                    
+
                     # Validate that permission state is one of the expected values
                     $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
                 }
@@ -151,7 +144,7 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Int
                 if ($result) {
                     # Validate that permissions are properly grouped by state
                     $uniqueStates = $result.State | Sort-Object -Unique
-                    
+
                     foreach ($state in $uniqueStates) {
                         $permissionsForState = $result | Where-Object { $_.State -eq $state }
                         $permissionsForState | Should -HaveCount 1

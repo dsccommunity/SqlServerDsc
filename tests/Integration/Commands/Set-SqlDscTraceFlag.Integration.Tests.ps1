@@ -31,9 +31,6 @@ BeforeAll {
 
 Describe 'Set-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Starting the named instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-
         $script:mockInstanceName = 'DSCSQLTEST'
         $script:mockServerName = Get-ComputerName
 
@@ -52,9 +49,6 @@ Describe 'Set-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
             # Clear all trace flags if there were none originally
             Set-SqlDscTraceFlag -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -TraceFlag @() -Force -ErrorAction 'SilentlyContinue'
         }
-
-        # Stop the named instance SQL Server service to save memory on the build worker.
-        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
     }
 
     Context 'When setting trace flags' {
