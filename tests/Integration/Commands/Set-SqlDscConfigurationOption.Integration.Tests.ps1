@@ -19,7 +19,7 @@ BeforeDiscovery {
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
@@ -31,9 +31,6 @@ BeforeAll {
 
 Describe 'Set-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Starting the named instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-
         $script:mockInstanceName = 'DSCSQLTEST'
 
         $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
@@ -49,15 +46,12 @@ Describe 'Set-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
 
     AfterAll {
         # Restore the original Agent XPs value
-        if ($script:originalAgentXPsValue)
+        if ($null -ne $script:originalAgentXPsValue)
         {
             Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value $script:originalAgentXPsValue.RunValue -Force -ErrorAction 'SilentlyContinue'
         }
 
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
-
-        # Stop the named instance SQL Server service to save memory on the build worker.
-        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
     }
 
     Context 'When setting Agent XPs configuration option' {

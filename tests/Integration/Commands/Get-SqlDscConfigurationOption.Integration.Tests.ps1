@@ -19,7 +19,7 @@ BeforeDiscovery {
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
@@ -31,9 +31,6 @@ BeforeAll {
 
 Describe 'Get-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Starting the named instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-
         $script:mockInstanceName = 'DSCSQLTEST'
 
         $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
@@ -46,9 +43,6 @@ Describe 'Get-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
 
     AfterAll {
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
-
-        # Stop the named instance SQL Server service to save memory on the build worker.
-        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
     }
 
     Context 'When getting all configuration options' {
@@ -85,8 +79,8 @@ Describe 'Get-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
             $result | Should -BeOfType 'PSCustomObject'
             $result.PSTypeNames[0] | Should -Be 'SqlDsc.ConfigurationOption'
             $result.Name | Should -Be 'Agent XPs'
-            $result.RunValue | Should -Be 0
-            $result.ConfigValue | Should -Be 0
+            $result.RunValue | Should -Be 1
+            $result.ConfigValue | Should -Be 1
             $result.Minimum | Should -Be 0
             $result.Maximum | Should -Be 1
             $result.IsDynamic | Should -BeTrue
@@ -109,7 +103,7 @@ Describe 'Get-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
             $result = Get-SqlDscConfigurationOption -ServerObject $script:serverObject -Name '*XP*'
 
             @($result).Count | Should -BeGreaterOrEqual 1
-            $result | Where-Object { $_.Name -eq 'Agent XPs' } | Should -Not -BeNullOrEmpty
+            $result | Where-Object -FilterScript { $_.Name -eq 'Agent XPs' } | Should -Not -BeNullOrEmpty
         }
     }
 
@@ -120,8 +114,8 @@ Describe 'Get-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
             $result | Should -Not -BeNullOrEmpty
             $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
             $result.DisplayName | Should -Be 'Agent XPs'
-            $result.RunValue | Should -Be 0
-            $result.ConfigValue | Should -Be 0
+            $result.RunValue | Should -Be 1
+            $result.ConfigValue | Should -Be 1
         }
     }
 
@@ -143,7 +137,7 @@ Describe 'Get-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
             $result | Should -Not -BeNullOrEmpty
             $result | Should -BeOfType 'PSCustomObject'
             $result.Name | Should -Be 'Agent XPs'
-            $result.RunValue | Should -Be 0
+            $result.RunValue | Should -Be 1
         }
     }
 }

@@ -19,7 +19,7 @@ BeforeDiscovery {
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
@@ -31,9 +31,6 @@ BeforeAll {
 
 Describe 'Remove-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Starting the named instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-
         $script:mockInstanceName = 'DSCSQLTEST'
         $script:mockComputerName = Get-ComputerName
 
@@ -47,9 +44,6 @@ Describe 'Remove-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
     AfterAll {
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
-
-        # Stop the named instance SQL Server service to save memory on the build worker.
-        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
     }
 
     Context 'When removing an audit using ServerObject parameter set' {
@@ -151,7 +145,7 @@ Describe 'Remove-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
                 'SqlDscTestMultiRemove1_' + (Get-Random),
                 'SqlDscTestMultiRemove2_' + (Get-Random)
             )
-            
+
             foreach ($auditName in $script:testAuditNames)
             {
                 $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $auditName -LogType 'ApplicationLog' -Force -ErrorAction Stop
