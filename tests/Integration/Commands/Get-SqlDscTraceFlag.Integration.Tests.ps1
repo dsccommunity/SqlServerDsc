@@ -31,9 +31,6 @@ BeforeAll {
 
 Describe 'Get-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Starting the named instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-
         $script:mockInstanceName = 'DSCSQLTEST'
         $script:mockComputerName = Get-ComputerName
 
@@ -46,14 +43,9 @@ Describe 'Get-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
         $script:serviceObject = Get-SqlDscManagedComputerService -ServiceType 'DatabaseEngine' -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
     }
 
-    AfterAll {
-        # Stop the named instance SQL Server service to save memory on the build worker.
-        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-    }
-
-    Context 'When getting trace flags using default parameters' {
+    Context 'When getting trace flags using InstanceName parameter' {
         It 'Should return an array of UInt32 values or empty array' {
-            $result = Get-SqlDscTraceFlag
+            $result = Get-SqlDscTraceFlag -InstanceName $script:mockInstanceName
 
             # The result should be either null/empty or an array of UInt32 values
             if ($result) {
@@ -134,7 +126,7 @@ Describe 'Get-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
             } else {
                 $resultByServiceObject | Should -Not -BeNullOrEmpty
                 @($resultByServerName).Count | Should -Be @($resultByServiceObject).Count
-                
+
                 # If both have trace flags, they should be the same
                 if (@($resultByServerName).Count -gt 0) {
                     Compare-Object -ReferenceObject @($resultByServerName) -DifferenceObject @($resultByServiceObject) | Should -BeNullOrEmpty
