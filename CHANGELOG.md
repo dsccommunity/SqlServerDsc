@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added integration tests for `Get-SqlDscDatabasePermission` command to ensure
+  database permission retrieval functions correctly in real environments
+  [issue #2221](https://github.com/dsccommunity/SqlServerDsc/issues/2221).
 - Added integration tests for `Get-SqlDscManagedComputer` command to ensure it
   functions correctly in real environments
   [issue #2220](https://github.com/dsccommunity/SqlServerDsc/issues/2220).
@@ -81,6 +84,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added integration tests for `Add-SqlDscTraceFlag` command to ensure it functions
   correctly in real environments
   [issue #2214](https://github.com/dsccommunity/SqlServerDsc/issues/2214).
+
+### Changed
+
+- `Test-SqlDscIsDatabasePrincipal` and `Get-SqlDscDatabasePermission`
+  - Added `Refresh` parameter to refresh SMO collections before checking
+    database principals, addressing issues with custom database roles created
+    via T-SQL that aren't immediately visible to SMO. The refresh logic is
+    optimized to only refresh collections that will be used based on exclude
+    parameters, improving performance on databases with large numbers of principals
+    ([issue #2221](https://github.com/dsccommunity/SqlServerDsc/issues/2221)).
 
 ### Fixed
 

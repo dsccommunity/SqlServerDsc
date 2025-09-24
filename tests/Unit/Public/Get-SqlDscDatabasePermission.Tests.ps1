@@ -225,5 +225,17 @@ Describe 'Get-SqlDscDatabasePermission' -Tag 'Public' {
                 $mockResult[1].PermissionType.Update | Should -BeTrue
             }
         }
+
+        Context 'When using the Refresh parameter' {
+            It 'Should pass the Refresh parameter to Test-SqlDscIsDatabasePrincipal' {
+                Mock -CommandName Test-SqlDscIsDatabasePrincipal -MockWith {
+                    return $true
+                } -ParameterFilter { $Refresh -eq $true }
+
+                $mockResult = Get-SqlDscDatabasePermission -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'Zebes\SamusAran' -Refresh -ErrorAction 'Stop'
+
+                Should -Invoke -CommandName Test-SqlDscIsDatabasePrincipal -ParameterFilter { $Refresh -eq $true } -Exactly -Times 1 -Scope It
+            }
+        }
     }
 }
