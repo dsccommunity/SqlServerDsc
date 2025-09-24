@@ -48,8 +48,8 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
 
     Context 'When using parameter set ByServerName' {
         Context 'When getting startup parameters with default parameters' {
-            It 'Should return a StartupParameters object for the default instance' {
-                $result = Get-SqlDscStartupParameter -ErrorAction 'Stop'
+            It 'Should return a StartupParameters object for the test instance' {
+                $result = Get-SqlDscStartupParameter -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
 
                 $result | Should -Not -BeNullOrEmpty
                 $result | Should -BeOfType ([StartupParameters])
