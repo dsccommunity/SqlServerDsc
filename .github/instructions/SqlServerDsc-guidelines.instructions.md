@@ -6,10 +6,11 @@ applyTo: "**"
 # SqlServerDsc Requirements
 
 ## Build & Test Workflow Requirements
-- Run PowerShell script files from repository root
+- Never use VS Code task, always use PowerShell scripts via terminal, from repository root
 - Setup build and test environment (once per `pwsh` session): `./build.ps1 -Tasks noop`
 - Build project before running tests: `./build.ps1 -Tasks build`
 - Run tests without coverage (wildcards allowed): `Invoke-PesterJob -Path '{tests filepath}' -SkipCodeCoverage`
+- Run tests with coverage (wildcards allowed): `Invoke-PesterJob -Path '{tests filepath}' -EnableSourceLineMapping -FilterCodeCoverageResult '{pattern}'`
 - Run QA tests: `Invoke-PesterJob -Path 'tests/QA' -SkipCodeCoverage`
 - Never run integration tests locally
 
@@ -36,7 +37,6 @@ applyTo: "**"
 ## Tests Requirements
 - Unit tests: Add `$env:SqlServerDscCI = $true` in `BeforeAll`, remove in `AfterAll`
 - Integration tests:
-  - If requiring SQL Server DB, start the Windows service in `BeforeAll`, stop it in `AfterAll`.
   - Use `Connect-SqlDscDatabaseEngine` for SQL Server DB session, and always with correct CI credentials
   - Use `Disconnect-SqlDscDatabaseEngine` after `Connect-SqlDscDatabaseEngine`
   - Test config: tests/Integration/Commands/README.md and tests/Integration/Resources/README.md
