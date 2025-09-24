@@ -59,6 +59,7 @@ Get-SqlDscManagedComputerInstance | 2 | 1 (Install-SqlDscServer), 0 (Prerequisit
 Get-SqlDscManagedComputerService | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Get-SqlDscServerProtocolName | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Get-SqlDscServerProtocol | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscTraceFlag | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Set-SqlDscConfigurationOption | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Set-SqlDscStartupParameter | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Set-SqlDscTraceFlag | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
