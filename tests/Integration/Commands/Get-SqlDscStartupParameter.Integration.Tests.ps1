@@ -44,7 +44,7 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
                 $result = Get-SqlDscStartupParameter -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
 
                 $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType (InModuleScope -ScriptBlock { [StartupParameters] })
+                $result | Should -BeOfType (InModuleScope -ModuleName $script:moduleName -ScriptBlock { [StartupParameters] })
                 $result.DataFilePath | Should -Not -BeNullOrEmpty
                 $result.LogFilePath | Should -Not -BeNullOrEmpty
                 $result.ErrorLogPath | Should -Not -BeNullOrEmpty
@@ -56,7 +56,7 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
                 $result = Get-SqlDscStartupParameter -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
 
                 $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType (InModuleScope -ScriptBlock { [StartupParameters] })
+                $result | Should -BeOfType (InModuleScope -ModuleName $script:moduleName -ScriptBlock { [StartupParameters] })
                 $result.DataFilePath | Should -Not -BeNullOrEmpty
                 $result.LogFilePath | Should -Not -BeNullOrEmpty
                 $result.ErrorLogPath | Should -Not -BeNullOrEmpty
@@ -68,7 +68,7 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
                 $result = Get-SqlDscStartupParameter -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
 
                 $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType (InModuleScope -ScriptBlock { [StartupParameters] })
+                $result | Should -BeOfType (InModuleScope -ModuleName $script:moduleName -ScriptBlock { [StartupParameters] })
                 $result.DataFilePath | Should -Not -BeNullOrEmpty
                 $result.LogFilePath | Should -Not -BeNullOrEmpty
                 $result.ErrorLogPath | Should -Not -BeNullOrEmpty
@@ -94,7 +94,7 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
                 $result = Get-SqlDscStartupParameter -ServiceObject $script:serviceObject -ErrorAction 'Stop'
 
                 $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType (InModuleScope -ScriptBlock { [StartupParameters] })
+                $result | Should -BeOfType (InModuleScope -ModuleName $script:moduleName -ScriptBlock { [StartupParameters] })
                 $result.DataFilePath | Should -Not -BeNullOrEmpty
                 $result.LogFilePath | Should -Not -BeNullOrEmpty
                 $result.ErrorLogPath | Should -Not -BeNullOrEmpty
@@ -106,7 +106,7 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
                 $result = $script:serviceObject | Get-SqlDscStartupParameter -ErrorAction 'Stop'
 
                 $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType (InModuleScope -ScriptBlock { [StartupParameters] })
+                $result | Should -BeOfType (InModuleScope -ModuleName $script:moduleName -ScriptBlock { [StartupParameters] })
                 $result.DataFilePath | Should -Not -BeNullOrEmpty
                 $result.LogFilePath | Should -Not -BeNullOrEmpty
                 $result.ErrorLogPath | Should -Not -BeNullOrEmpty
