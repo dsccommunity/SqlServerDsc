@@ -297,6 +297,7 @@ stages:
                   'tests/Integration/Commands/New-SqlDscLogin.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscLogin.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscConfigurationOption.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscPreferredModule.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscConfigurationOption.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscConfigurationOption.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscStartupParameter.Integration.Tests.ps1'
