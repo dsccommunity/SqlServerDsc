@@ -28,6 +28,16 @@
         Specifies that fixed application roles should not be evaluated for the
         specified name.
 
+    .PARAMETER Refresh
+        Specifies that the database's principal collections (Users, Roles, and
+        ApplicationRoles) should be refreshed before testing if the principal exists.
+        This is helpful when principals could have been modified outside of the
+        **ServerObject**, for example through T-SQL. But on databases with a large
+        amount of principals it might be better to make sure the **ServerObject**
+        is recent enough. When exclude parameters are specified (e.g., **ExcludeUsers**,
+        **ExcludeRoles**, **ExcludeApplicationRoles**), only the collections that will
+        be used are refreshed to improve performance.
+
     .OUTPUTS
         [System.Boolean]
 
@@ -60,6 +70,13 @@
         Test-SqlDscIsDatabasePrincipal -ServerObject $serverInstance -DatabaseName 'MyDatabase' -Name 'MyPrincipal' -ExcludeApplicationRoles
 
         Returns $true if the principal exist in the database and is not a application role, if not $false is returned.
+
+    .EXAMPLE
+        $serverInstance = Connect-SqlDscDatabaseEngine
+        Test-SqlDscIsDatabasePrincipal -ServerObject $serverInstance -DatabaseName 'MyDatabase' -Name 'MyPrincipal' -Refresh
+
+        Returns $true if the principal exist in the database, if not $false is returned.
+        The database's principal collections are refreshed before testing.
 #>
 function Test-SqlDscIsDatabasePrincipal
 {
@@ -94,14 +111,44 @@ function Test-SqlDscIsDatabasePrincipal
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $ExcludeApplicationRoles
+        $ExcludeApplicationRoles,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Refresh
     )
 
     process
     {
         $principalExist = $false
 
+        if ($Refresh.IsPresent)
+        {
+            # Refresh the server's databases collection to ensure we have current data
+            $ServerObject.Databases.Refresh()
+        }
+
         $sqlDatabaseObject = $ServerObject.Databases[$DatabaseName]
+
+        if ($Refresh.IsPresent -and $sqlDatabaseObject)
+        {
+            # Refresh the database object's collections to ensure we have current data
+            # Only refresh collections that will be used based on exclude parameters
+            if (-not $ExcludeRoles.IsPresent)
+            {
+                $sqlDatabaseObject.Roles.Refresh()
+            }
+
+            if (-not $ExcludeUsers.IsPresent)
+            {
+                $sqlDatabaseObject.Users.Refresh()
+            }
+
+            if (-not $ExcludeApplicationRoles.IsPresent)
+            {
+                $sqlDatabaseObject.ApplicationRoles.Refresh()
+            }
+        }
 
         if (-not $sqlDatabaseObject)
         {

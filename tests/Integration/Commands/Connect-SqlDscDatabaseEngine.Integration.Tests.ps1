@@ -19,7 +19,7 @@ BeforeDiscovery {
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
@@ -84,16 +84,6 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
     }
 
     Context 'When connecting to a named instance' {
-        BeforeAll {
-            # Starting the named instance SQL Server service prior to running tests.
-            Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-        }
-
-        AfterAll {
-            # Stop the named instance SQL Server service to save memory on the build worker.
-            Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-        }
-
         It 'Should have the named instance SQL Server service started' {
             $getServiceResult = Get-Service -Name 'MSSQL$DSCSQLTEST' -ErrorAction 'Stop'
 

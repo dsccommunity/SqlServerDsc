@@ -19,7 +19,7 @@ BeforeDiscovery {
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
@@ -33,9 +33,6 @@ BeforeAll {
 Describe 'Uninstall-SqlDscServer' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
-
-        # Starting the named instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
     }
 
     It 'Should have the named instance SQL Server service started' {
