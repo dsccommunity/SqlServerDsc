@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added integration tests for `Get-SqlDscDatabasePermission` command to ensure
+  database permission retrieval functions correctly in real environments
+  [issue #2221](https://github.com/dsccommunity/SqlServerDsc/issues/2221).
 - Added integration tests for `Get-SqlDscManagedComputer` command to ensure it
   functions correctly in real environments
   [issue #2220](https://github.com/dsccommunity/SqlServerDsc/issues/2220).
@@ -16,6 +19,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added integration tests for `ConvertFrom-SqlDscDatabasePermission` command to
   ensure it functions correctly in real environments
   [issue #2211](https://github.com/dsccommunity/SqlServerDsc/issues/2211).
+- Added integration tests for `Get-SqlDscTraceFlag` command to ensure it functions
+  correctly in real environments
+  [issue #2216](https://github.com/dsccommunity/SqlServerDsc/issues/2216).
+- Added integration tests for `Get-SqlDscPreferredModule` command to ensure it
+  functions correctly in real environments
+  [issue #2218](https://github.com/dsccommunity/SqlServerDsc/issues/2218).
+- Added integration tests for `Enable-SqlDscAudit` command to ensure command
+  reliability [issue #2223](https://github.com/dsccommunity/SqlServerDsc/issues/2223).
+- Added integration tests for `Get-SqlDscAudit` command to ensure it functions
+  correctly in real environments
+  [issue #2222](https://github.com/dsccommunity/SqlServerDsc/issues/2222).
+- Added integration tests for `Disconnect-SqlDscDatabaseEngine` command to ensure
+  command reliability in real environments
+  [issue #2224](https://github.com/dsccommunity/SqlServerDsc/issues/2224).
+- Added integration tests for `Invoke-SqlDscQuery` command to ensure it functions
+  correctly in real environments
+  [issue #2227](https://github.com/dsccommunity/SqlServerDsc/issues/2227).
+- Added integration tests for `New-SqlDscAudit` command to ensure it functions
+  correctly in real environments
+  [issue #2226](https://github.com/dsccommunity/SqlServerDsc/issues/2226).
+- Added integration tests for `Test-SqlDscIsLogin` command to ensure it functions
+  correctly in real environments
+  [issue #2230](https://github.com/dsccommunity/SqlServerDsc/issues/2230).
+- Added integration tests for `Set-SqlDscAudit` command to ensure it functions
+  correctly in real environments
+  [issue #2236](https://github.com/dsccommunity/SqlServerDsc/issues/2236).
+- Added integration tests for `Set-SqlDscStartupParameter` command to ensure
+  reliable startup parameter configuration
+  [issue #2233](https://github.com/dsccommunity/SqlServerDsc/issues/2233).
+- Added integration tests for `Set-SqlDscServerPermission` command to ensure it
+  functions correctly in real environments
+  [issue #2234](https://github.com/dsccommunity/SqlServerDsc/issues/2234).
 - Added integration tests for `Save-SqlDscSqlServerMediaFile` command to ensure
   it functions correctly in real environments
   [issue #2237](https://github.com/dsccommunity/SqlServerDsc/issues/2237).
@@ -25,6 +60,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added integration tests for `ConvertTo-SqlDscDatabasePermission` command to
   ensure command reliability
   [issue #2209](https://github.com/dsccommunity/SqlServerDsc/issues/2209).
+- Added integration tests for `Set-SqlDscDatabasePermission` command to ensure
+  command reliability
+  [issue #2235](https://github.com/dsccommunity/SqlServerDsc/issues/2235).
 - Added integration test for `ConvertTo-SqlDscEditionName` command to ensure
   command reliability in real environments
   [issue #2208](https://github.com/dsccommunity/SqlServerDsc/issues/2208).
@@ -52,6 +90,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added integration tests for `Add-SqlDscTraceFlag` command to ensure it functions
   correctly in real environments
   [issue #2214](https://github.com/dsccommunity/SqlServerDsc/issues/2214).
+
+### Changed
+
+- `Test-SqlDscIsDatabasePrincipal` and `Get-SqlDscDatabasePermission`
+  - Added `Refresh` parameter to refresh SMO collections before checking
+    database principals, addressing issues with custom database roles created
+    via T-SQL that aren't immediately visible to SMO. The refresh logic is
+    optimized to only refresh collections that will be used based on exclude
+    parameters, improving performance on databases with large numbers of principals
+    ([issue #2221](https://github.com/dsccommunity/SqlServerDsc/issues/2221)).
 
 ### Fixed
 
@@ -208,6 +256,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Optimized integration test performance by leaving the DSCSQLTEST service running
+  for subsequent tests, significantly improving CI build times.
 - Improved code quality by ensuring all function invocations in the private
   and public functions use named parameters instead of positional parameters.
 - SqlServerDsc

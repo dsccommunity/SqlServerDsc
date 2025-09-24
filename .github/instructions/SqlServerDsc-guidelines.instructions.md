@@ -37,7 +37,6 @@ applyTo: "**"
 ## Tests Requirements
 - Unit tests: Add `$env:SqlServerDscCI = $true` in `BeforeAll`, remove in `AfterAll`
 - Integration tests:
-  - If requiring SQL Server DB, start the Windows service in `BeforeAll`, stop it in `AfterAll`.
   - Use `Connect-SqlDscDatabaseEngine` for SQL Server DB session, and always with correct CI credentials
   - Use `Disconnect-SqlDscDatabaseEngine` after `Connect-SqlDscDatabaseEngine`
   - Test config: tests/Integration/Commands/README.md and tests/Integration/Resources/README.md
