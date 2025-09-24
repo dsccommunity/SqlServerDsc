@@ -302,18 +302,14 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2017', 'Integration_SQL20
                 $sqlServerService.Status | Should -Be 'Running'
             }
 
-            It 'Should stop the named instance SQL Server service' {
-                # Stop the named instance SQL Server service to save memory on the build worker.
-                $stopServiceResult = Stop-Service -Name 'MSSQL$DSCSQLTEST' -Force -PassThru -Verbose -ErrorAction 'Stop'
+            It 'Should leave the named instance SQL Server service running for subsequent tests' {
+                # Leave the named instance SQL Server service running to avoid start/stop overhead in subsequent tests.
+                # The service will be stopped later in the test pipeline after all tests that require it have completed.
+                $sqlServerService = Get-Service -Name 'MSSQL$DSCSQLTEST' -ErrorAction 'Stop'
 
-                (
-                    <#
-                        Filter services. This will also have stopped the dependent
-                        service 'SQL Server Agent (DSCSQLTEST)'.
-                    #>
-                    $stopServiceResult |
-                        Where-Object -FilterScript { $_.Name -eq 'MSSQL$DSCSQLTEST' }
-                ).Status | Should -Be 'Stopped'
+                $sqlServerService.Status | Should -Be 'Running'
+                
+                Write-Verbose -Message 'MSSQL$DSCSQLTEST service left running for subsequent integration tests to improve performance' -Verbose
             }
         }
 

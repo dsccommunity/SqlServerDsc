@@ -31,9 +31,6 @@ BeforeAll {
 
 Describe 'Test-SqlDscIsLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Starting the named instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-
         $script:mockInstanceName = 'DSCSQLTEST'
 
         $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
@@ -49,9 +46,6 @@ Describe 'Test-SqlDscIsLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
     AfterAll {
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
-
-        # Stop the named instance SQL Server service to save memory on the build worker.
-        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
     }
 
     Context 'When testing login existence using ServerObject parameter set' {
@@ -101,7 +95,7 @@ Describe 'Test-SqlDscIsLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             # Test with Windows login (using SqlAdmin which should exist)
             $computerName = Get-ComputerName
             $windowsLoginName = "$computerName\SqlAdmin"
-            
+
             $result = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $windowsLoginName
 
             $result | Should -BeOfType [System.Boolean]

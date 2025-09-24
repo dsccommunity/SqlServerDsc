@@ -31,9 +31,6 @@ BeforeAll {
 
 Describe 'Set-SqlDscDatabaseDefault' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Starting the named instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-
         $script:mockInstanceName = 'DSCSQLTEST'
         $script:mockComputerName = Get-ComputerName
 
@@ -66,9 +63,6 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag @('Integration_SQL2017', 'Integration_
     AfterAll {
         # Disconnect from the database engine.
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
-
-        # Stopping the named instance SQL Server service after running tests.
-        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
     }
 
     Context 'When using the DatabaseObject parameter' {

@@ -30,23 +30,12 @@ BeforeAll {
 }
 
 # cSpell: ignore DSCSQLTEST
-Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'Disconnect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
-
-        # $previouslyErrorViewPreference = $ErrorView
-        # $ErrorView = 'DetailedView'
-        # $Error.Clear()
     }
 
-    # AfterAll {
-    #     $ErrorView = $previouslyErrorViewPreference
-
-    #     Write-Verbose -Message ('Error count: {0}' -f $Error.Count) -Verbose
-    #     Write-Verbose -Message ($Error | Out-String) -Verbose
-    # }
-
-    Context 'When connecting to the default instance impersonating a Windows user' {
+    Context 'When disconnecting from the default instance' {
         BeforeAll {
             # Starting the default instance SQL Server service prior to running tests.
             Start-Service -Name 'MSSQLSERVER' -Verbose -ErrorAction 'Stop'
@@ -63,8 +52,8 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
             $getServiceResult.Status | Should -Be 'Running'
         }
 
-        Context 'When impersonating a Windows user' {
-            It 'Should return the correct result' {
+        Context 'When disconnecting using Force parameter' {
+            It 'Should disconnect successfully without confirmation' {
                 {
                     $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
                     $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
@@ -78,20 +67,51 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
                     $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
                     $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+
+                    # Test the disconnect functionality
+                    Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject -Force -ErrorAction 'Stop'
+
+                    # After disconnect, the connection should be closed
+                    $sqlServerObject.ConnectionContext.IsOpen | Should -BeFalse
+                } | Should -Not -Throw
+            }
+        }
+
+        Context 'When disconnecting using pipeline input' {
+            It 'Should disconnect successfully via pipeline' {
+                {
+                    $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+                    $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+                    $connectSqlDscDatabaseEngineParameters = @{
+                        Credential  = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
+                        Verbose     = $true
+                        ErrorAction = 'Stop'
+                    }
+
+                    $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+
+                    $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+
+                    # Test the disconnect functionality via pipeline
+                    $sqlServerObject | Disconnect-SqlDscDatabaseEngine -Force -ErrorAction 'Stop'
+
+                    # After disconnect, the connection should be closed
+                    $sqlServerObject.ConnectionContext.IsOpen | Should -BeFalse
                 } | Should -Not -Throw
             }
         }
     }
 
-    Context 'When connecting to a named instance' {
+    Context 'When disconnecting from a named instance' {
         It 'Should have the named instance SQL Server service started' {
             $getServiceResult = Get-Service -Name 'MSSQL$DSCSQLTEST' -ErrorAction 'Stop'
 
             $getServiceResult.Status | Should -Be 'Running'
         }
 
-        Context 'When impersonating a Windows user' {
-            It 'Should return the correct result' {
+        Context 'When disconnecting using Windows authentication' {
+            It 'Should disconnect successfully from named instance' {
                 {
                     $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
                     $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
@@ -106,12 +126,18 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
                     $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
                     $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+
+                    # Test the disconnect functionality
+                    Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject -Force -ErrorAction 'Stop'
+
+                    # After disconnect, the connection should be closed
+                    $sqlServerObject.ConnectionContext.IsOpen | Should -BeFalse
                 } | Should -Not -Throw
             }
         }
 
-        Context 'When using a SQL login' {
-            It 'Should return the correct result' {
+        Context 'When disconnecting using SQL authentication' {
+            It 'Should disconnect successfully from named instance with SQL login' {
                 {
                     $sqlAdministratorUserName = 'sa'
                     $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
@@ -127,6 +153,12 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
                     $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
                     $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+
+                    # Test the disconnect functionality
+                    Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject -Force -ErrorAction 'Stop'
+
+                    # After disconnect, the connection should be closed
+                    $sqlServerObject.ConnectionContext.IsOpen | Should -BeFalse
                 } | Should -Not -Throw
             }
         }

@@ -43,9 +43,6 @@ AfterAll {
 
 Describe 'Test-SqlDscIsAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022' {
     BeforeAll {
-        # Starting the named instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-
         $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
         $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
         $mockSqlAdministratorCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockSqlAdministratorUserName, $mockSqlAdministratorPassword
@@ -55,9 +52,6 @@ Describe 'Test-SqlDscIsAgentOperator' -Tag 'Integration_SQL2017', 'Integration_S
 
     AfterAll {
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
-
-        # Stopping the named instance SQL Server service after running tests.
-        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
     }
 
     Context 'When testing for an existing agent operator' {

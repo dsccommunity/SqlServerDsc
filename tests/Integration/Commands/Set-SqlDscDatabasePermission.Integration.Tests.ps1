@@ -31,9 +31,6 @@ BeforeAll {
 
 Describe 'Set-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Starting the named instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-
         $script:mockInstanceName = 'DSCSQLTEST'
 
         $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
@@ -45,14 +42,14 @@ Describe 'Set-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Integrati
 
         # Use existing persistent test database from New-SqlDscDatabase integration tests
         $script:testDatabaseName = 'SqlDscIntegrationTestDatabase'
-        
+
         # Use existing persistent principals created by earlier integration tests
         $script:testLoginName = 'IntegrationTestSqlLogin'
         $script:testRoleName = 'SqlDscIntegrationTestRole_Persistent'
 
         # Ensure the test database exists
         $existingDatabase = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'SilentlyContinue'
-        
+
         if (-not $existingDatabase)
         {
             $null = New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction 'Stop'
@@ -81,9 +78,6 @@ END
         $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $sqlQuery -Force -ErrorAction 'SilentlyContinue'
 
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
-
-        # Stop the named instance SQL Server service to save memory on the build worker.
-        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
     }
 
     Context 'When setting database permissions with Grant state' {
@@ -128,7 +122,7 @@ END
             $permissions = Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $script:testLoginName -ErrorAction 'Stop'
 
             $permissions | Should -Not -BeNullOrEmpty
-            
+
             $connectPermission = $permissions | Where-Object { $_.PermissionState -eq 'Grant' -and $_.PermissionType.Connect -eq $true }
             $connectPermission | Should -Not -BeNullOrEmpty
             $connectPermission.PermissionType.Connect | Should -BeTrue
