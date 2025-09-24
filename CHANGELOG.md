@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added integration tests for `Remove-SqlDscAudit` command to ensure it functions
   correctly in real environments
   [issue #2241](https://github.com/dsccommunity/SqlServerDsc/issues/2241).
+- Added integration tests for `Enable-SqlDscAudit` command to ensure command
+  reliability [issue #2223](https://github.com/dsccommunity/SqlServerDsc/issues/2223).
 - Added integration tests for `Get-SqlDscAudit` command to ensure it functions
   correctly in real environments
   [issue #2222](https://github.com/dsccommunity/SqlServerDsc/issues/2222).

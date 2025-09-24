@@ -347,6 +347,7 @@ stages:
                   # Group 8
                   'tests/Integration/Commands/Remove-SqlDscAgentAlert.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscAgentOperator.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Enable-SqlDscAudit.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscAudit.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscAudit.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscAudit.Integration.Tests.ps1'
