@@ -384,6 +384,8 @@ ConvertFrom-StringData @'
     Database_Removed = Database '{0}' was removed successfully.
     Database_RemoveFailed = Failed to remove database '{0}' from instance '{1}'.
     Database_CannotRemoveSystem = Cannot remove system database '{0}'.
+    Database_DroppingConnections = Dropping all active connections to database '{0}'.
+    Database_DropConnectionsFailed = Failed to drop active connections for database '{0}'.
     Database_Remove_ShouldProcessVerboseDescription = Removing the database '{0}' from the instance '{1}'.
     Database_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove the database '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.

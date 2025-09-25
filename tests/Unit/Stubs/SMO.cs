@@ -156,6 +156,13 @@ namespace Microsoft.SqlServer.Management.Smo
         Dropped = 4,
     }
 
+    public enum TerminationClause : int
+    {
+        FailOnOpenTransactions = 0,
+        RollbackTransactionsImmediately = 1,
+        CloseAllConnectionsImmediately = 2
+    }
+
     #endregion Public Enums
 
     #region Public Classes
@@ -592,21 +599,32 @@ namespace Microsoft.SqlServer.Management.Smo
 
         public Database( Server server, string name ) {
             this.Name = name;
+            this.Parent = server;
         }
 
         public Database( Object server, string name ) {
             this.Name = name;
+            this.Parent = (Server)server;
         }
 
         public Database() {}
 
         public string Name;
+        public Server Parent;
 
         public void Create()
         {
         }
 
         public void Drop()
+        {
+        }
+
+        public void Alter()
+        {
+        }
+
+        public void Alter(TerminationClause terminationClause)
         {
         }
 
