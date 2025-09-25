@@ -102,6 +102,10 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Drop' -Value {
                 # Mock implementation
             } -Force
+            $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'UserAccess' -Value 'Multiple' -Force
+            $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                # Mock implementation
+            } -Force
         }
 
         It 'Should remove database successfully using database object' {
@@ -122,11 +126,68 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
         }
     }
 
+    Context 'When using DropConnections parameter' {
+        BeforeAll {
+            $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+            $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
+            $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'UserAccess' -Value 'Multiple' -Force
+            $mockDatabaseObject | Add-Member -MemberType 'ScriptProperty' -Name 'Parent' -Value {
+                $mockParent = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                $mockParent | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+                return $mockParent
+            } -Force
+            
+            $script:alterCalled = $false
+            $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                $script:alterCalled = $true
+                if ($this.UserAccess -ne 'Single') {
+                    throw 'UserAccess should be set to Single before calling Alter'
+                }
+            } -Force
+            
+            $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Drop' -Value {
+                if (-not $script:alterCalled) {
+                    throw 'Alter should be called before Drop when DropConnections is specified'
+                }
+            } -Force
+
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+            $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                return @{
+                    'TestDatabase' = $mockDatabaseObject
+                } | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                    # Mock implementation
+                } -PassThru -Force
+            } -Force
+        }
+
+        It 'Should drop all active connections before removing database with ServerObject' {
+            $script:alterCalled = $false
+            $mockDatabaseObject.UserAccess = 'Multiple'
+            
+            $null = Remove-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -DropConnections -Force
+            
+            $script:alterCalled | Should -BeTrue
+            $mockDatabaseObject.UserAccess | Should -Be 'Single'
+        }
+
+        It 'Should drop all active connections before removing database with DatabaseObject' {
+            $script:alterCalled = $false
+            $mockDatabaseObject.UserAccess = 'Multiple'
+            
+            $null = Remove-SqlDscDatabase -DatabaseObject $mockDatabaseObject -DropConnections -Force
+            
+            $script:alterCalled | Should -BeTrue
+            $mockDatabaseObject.UserAccess | Should -Be 'Single'
+        }
+    }
+
     Context 'Parameter validation' {
         It 'Should have the correct parameters in parameter set ServerObject' -ForEach @(
             @{
                 ExpectedParameterSetName = 'ServerObject'
-                ExpectedParameters = '-ServerObject <Server> -Name <string> [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-ServerObject <Server> -Name <string> [-Force] [-Refresh] [-DropConnections] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Remove-SqlDscDatabase').ParameterSets |
@@ -143,7 +204,7 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set DatabaseObject' -ForEach @(
             @{
                 ExpectedParameterSetName = 'DatabaseObject'
-                ExpectedParameters = '-DatabaseObject <Database> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-DatabaseObject <Database> [-Force] [-DropConnections] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Remove-SqlDscDatabase').ParameterSets |
