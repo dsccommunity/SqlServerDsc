@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added integration tests for `ConvertFrom-SqlDscDatabasePermission` command to
   ensure it functions correctly in real environments
   [issue #2211](https://github.com/dsccommunity/SqlServerDsc/issues/2211).
+- Added integration tests for `Get-SqlDscStartupParameter` command to ensure it
+  functions correctly in real environments
+  [issue #2217](https://github.com/dsccommunity/SqlServerDsc/issues/2217).
 - Added integration tests for `Get-SqlDscTraceFlag` command to ensure it functions
   correctly in real environments
   [issue #2216](https://github.com/dsccommunity/SqlServerDsc/issues/2216).
@@ -42,6 +45,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added integration tests for `Test-SqlDscIsLogin` command to ensure it functions
   correctly in real environments
   [issue #2230](https://github.com/dsccommunity/SqlServerDsc/issues/2230).
+- Added integration tests for `Test-SqlDscIsDatabasePrincipal` command to ensure it
+  functions correctly in real environments
+  [issue #2231](https://github.com/dsccommunity/SqlServerDsc/issues/2231).
 - Added integration tests for `Set-SqlDscAudit` command to ensure it functions
   correctly in real environments
   [issue #2236](https://github.com/dsccommunity/SqlServerDsc/issues/2236).

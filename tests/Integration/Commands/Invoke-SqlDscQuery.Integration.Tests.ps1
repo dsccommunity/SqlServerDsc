@@ -65,7 +65,7 @@ INSERT INTO TestTable (Name, Value) VALUES ('Test1', 100), ('Test2', 200), ('Tes
         {
             try
             {
-                Remove-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction 'Stop'
+                Remove-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -DropConnections -ErrorAction 'Stop'
             }
             catch
             {
