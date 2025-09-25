@@ -251,6 +251,26 @@ Describe 'Get-SqlDscStartupParameter' -Tag 'Public' {
                 Should -Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Times 0 -Scope It
             }
         }
+
+        Context 'When passing a service object via pipeline' {
+            It 'Should accept ServiceObject from pipeline and return correct results' {
+                $result = $mockServiceObject | Get-SqlDscStartupParameter
+
+                Should -ActualValue $result -BeOfType (InModuleScope -ScriptBlock { [StartupParameters] })
+
+                Should -ActualValue $result.TraceFlag -BeOfType 'System.UInt32[]'
+                Should -ActualValue $result.DataFilePath -BeOfType 'System.String[]'
+                Should -ActualValue $result.LogFilePath -BeOfType 'System.String[]'
+                Should -ActualValue $result.ErrorLogPath -BeOfType 'System.String[]'
+
+                $result.DataFilePath | Should -Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf'
+                $result.LogFilePath | Should -Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf'
+                $result.ErrorLogPath | Should -Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG'
+                $result.TraceFlag | Should -BeNullOrEmpty
+
+                Should -Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Times 0 -Scope It
+            }
+        }
     }
 
     Context 'When one trace flag exist' {
