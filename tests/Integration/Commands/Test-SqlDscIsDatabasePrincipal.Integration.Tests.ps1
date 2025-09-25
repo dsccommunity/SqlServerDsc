@@ -31,9 +31,6 @@ BeforeAll {
 
 Describe 'Test-SqlDscIsDatabasePrincipal' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Starting the named instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-
         $script:mockInstanceName = 'DSCSQLTEST'
 
         $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
@@ -45,51 +42,48 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag @('Integration_SQL2017', 'Integra
 
         # Use a test database that should exist - we'll create it if it doesn't exist
         $script:testDatabaseName = 'IntegrationTestDatabase'
-        
+
         # Create test database if it doesn't exist
         if (-not $script:serverObject.Databases[$script:testDatabaseName])
         {
-            New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction 'Stop'
+            $null = New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction 'Stop'
         }
 
         # Test principals that should exist in the database
         $script:testUserName = 'IntegrationTestUser'
         $script:testRoleName = 'IntegrationTestRole'
         $script:testAppRoleName = 'IntegrationTestAppRole'
-        
+
         # Create test database user if it doesn't exist
         $testDatabase = $script:serverObject.Databases[$script:testDatabaseName]
         if (-not $testDatabase.Users[$script:testUserName])
         {
             $sqlCommand = "USE [$script:testDatabaseName]; CREATE USER [$script:testUserName] WITHOUT LOGIN;"
-            $script:serverObject.ConnectionContext.ExecuteNonQuery($sqlCommand)
+            $null = $script:serverObject.ConnectionContext.ExecuteNonQuery($sqlCommand)
         }
-        
+
         # Create test database role if it doesn't exist
         if (-not $testDatabase.Roles[$script:testRoleName])
         {
             $sqlCommand = "USE [$script:testDatabaseName]; CREATE ROLE [$script:testRoleName];"
-            $script:serverObject.ConnectionContext.ExecuteNonQuery($sqlCommand)
+            $null = $script:serverObject.ConnectionContext.ExecuteNonQuery($sqlCommand)
         }
-        
+
         # Create test application role if it doesn't exist
         if (-not $testDatabase.ApplicationRoles[$script:testAppRoleName])
         {
             $sqlCommand = "USE [$script:testDatabaseName]; CREATE APPLICATION ROLE [$script:testAppRoleName] WITH PASSWORD = 'TestPassword123';"
-            $script:serverObject.ConnectionContext.ExecuteNonQuery($sqlCommand)
+            $null = $script:serverObject.ConnectionContext.ExecuteNonQuery($sqlCommand)
         }
 
         # Refresh database objects to ensure they are loaded
-        $testDatabase.Users.Refresh()
-        $testDatabase.Roles.Refresh()
-        $testDatabase.ApplicationRoles.Refresh()
+        $null = $testDatabase.Users.Refresh()
+        $null = $testDatabase.Roles.Refresh()
+        $null = $testDatabase.ApplicationRoles.Refresh()
     }
 
     AfterAll {
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
-
-        # Stop the named instance SQL Server service to save memory on the build worker.
-        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
     }
 
     Context 'When testing database user existence' {
