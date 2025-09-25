@@ -24,6 +24,13 @@
         on instances with a large amount of databases it might be better to make
         sure the **ServerObject** is recent enough, or pass in **DatabaseObject**.
 
+    .PARAMETER DropConnections
+        Specifies that all active connections to the database should be dropped
+        before removing the database. This sets the database to single-user mode
+        with immediate rollback of active transactions, which forcibly disconnects
+        all users and allows the database to be removed even when there are
+        active connections.
+
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $databaseObject = $serverObject | Get-SqlDscDatabase -Name 'MyDatabase'
@@ -42,6 +49,14 @@
         $serverObject | Remove-SqlDscDatabase -Name 'MyDatabase' -Force
 
         Removes the database named **MyDatabase** without prompting for confirmation.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $serverObject | Remove-SqlDscDatabase -Name 'MyDatabase' -DropConnections -Force
+
+        Drops all active connections to the database named **MyDatabase** and then removes it
+        without prompting for confirmation. This is useful when the database has active
+        connections that prevent removal.
 
     .OUTPUTS
         None.
@@ -72,7 +87,11 @@ function Remove-SqlDscDatabase
 
         [Parameter(ParameterSetName = 'ServerObject')]
         [System.Management.Automation.SwitchParameter]
-        $Refresh
+        $Refresh,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $DropConnections
     )
 
     process
@@ -126,6 +145,23 @@ function Remove-SqlDscDatabase
         {
             try
             {
+                # Drop all active connections if requested
+                if ($DropConnections.IsPresent)
+                {
+                    Write-Verbose -Message ($script:localizedData.Database_DroppingConnections -f $Name)
+
+                    try
+                    {
+                        $DatabaseObject.UserAccess = 'Single'
+                        $DatabaseObject.Alter([Microsoft.SqlServer.Management.Smo.TerminationClause]::RollbackTransactionsImmediately)
+                    }
+                    catch
+                    {
+                        $errorMessage = $script:localizedData.Database_DropConnectionsFailed -f $Name
+                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                    }
+                }
+
                 Write-Verbose -Message ($script:localizedData.Database_Removing -f $Name)
 
                 $DatabaseObject.Drop()
