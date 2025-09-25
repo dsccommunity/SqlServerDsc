@@ -73,56 +73,62 @@ function Get-SqlDscStartupParameter
         $InstanceName = 'MSSQLSERVER'
     )
 
-    $originalErrorActionPreference = $ErrorActionPreference
-
-    $ErrorActionPreference = 'Stop'
-
-    Assert-ElevatedUser -ErrorAction 'Stop'
-
-    $ErrorActionPreference = $originalErrorActionPreference
-
-    if ($PSCmdlet.ParameterSetName -eq 'ByServiceObject')
+    begin
     {
-        $ServiceObject | Assert-ManagedServiceType -ServiceType 'DatabaseEngine'
+        $originalErrorActionPreference = $ErrorActionPreference
+
+        $ErrorActionPreference = 'Stop'
+
+        Assert-ElevatedUser -ErrorAction 'Stop'
+
+        $ErrorActionPreference = $originalErrorActionPreference
     }
 
-    if ($PSCmdlet.ParameterSetName -eq 'ByServerName')
+    process
     {
-        $getSqlDscManagedComputerServiceParameters = @{
-            ServerName   = $ServerName
-            InstanceName = $InstanceName
-            ServiceType  = 'DatabaseEngine'
+        if ($PSCmdlet.ParameterSetName -eq 'ByServiceObject')
+        {
+            $ServiceObject | Assert-ManagedServiceType -ServiceType 'DatabaseEngine'
         }
 
-        $ServiceObject = Get-SqlDscManagedComputerService @getSqlDscManagedComputerServiceParameters
-
-        if (-not $ServiceObject)
+        if ($PSCmdlet.ParameterSetName -eq 'ByServerName')
         {
-            $writeErrorParameters = @{
-                Message      = $script:localizedData.StartupParameter_Get_FailedToFindServiceObject
-                Category     = 'InvalidOperation'
-                ErrorId      = 'GSDSP0001' # CSpell: disable-line
-                TargetObject = $ServiceObject
+            $getSqlDscManagedComputerServiceParameters = @{
+                ServerName   = $ServerName
+                InstanceName = $InstanceName
+                ServiceType  = 'DatabaseEngine'
             }
 
-            Write-Error @writeErrorParameters
+            $ServiceObject = Get-SqlDscManagedComputerService @getSqlDscManagedComputerServiceParameters
+
+            if (-not $ServiceObject)
+            {
+                $writeErrorParameters = @{
+                    Message      = $script:localizedData.StartupParameter_Get_FailedToFindServiceObject
+                    Category     = 'InvalidOperation'
+                    ErrorId      = 'GSDSP0001' # CSpell: disable-line
+                    TargetObject = $ServiceObject
+                }
+
+                Write-Error @writeErrorParameters
+            }
         }
+
+        Write-Verbose -Message (
+            $script:localizedData.StartupParameter_Get_ReturnStartupParameters -f $InstanceName, $ServerName
+        )
+
+        $startupParameters = $null
+
+        if ($ServiceObject.StartupParameters)
+        {
+            $startupParameters = [StartupParameters]::Parse($ServiceObject.StartupParameters)
+        }
+        else
+        {
+            Write-Debug -Message ($script:localizedData.StartupParameter_Get_FailedToFindStartupParameters -f $MyInvocation.MyCommand)
+        }
+
+        return $startupParameters
     }
-
-    Write-Verbose -Message (
-        $script:localizedData.StartupParameter_Get_ReturnStartupParameters -f $InstanceName, $ServerName
-    )
-
-    $startupParameters = $null
-
-    if ($ServiceObject.StartupParameters)
-    {
-        $startupParameters = [StartupParameters]::Parse($ServiceObject.StartupParameters)
-    }
-    else
-    {
-        Write-Debug -Message ($script:localizedData.StartupParameter_Get_FailedToFindStartupParameters -f $MyInvocation.MyCommand)
-    }
-
-    return $startupParameters
 }
