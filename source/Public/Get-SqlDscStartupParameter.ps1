@@ -6,13 +6,24 @@
         Get current startup parameters on a Database Engine instance.
 
     .PARAMETER ServiceObject
-        Specifies the Service object to return the trace flags from.
+        Specifies the Service object to return the startup parameters from.
 
     .PARAMETER ServerName
-       Specifies the server name to return the trace flags from.
+        Specifies the server name to return the startup parameters from.
 
     .PARAMETER InstanceName
-       Specifies the instance name to return the trace flags for.
+        Specifies the instance name to return the startup parameters for.
+
+    .INPUTS
+        Microsoft.SqlServer.Management.Smo.Wmi.Service
+
+        A service object representing the Database Engine service.
+
+    .OUTPUTS
+        StartupParameters
+
+        Returns a StartupParameters object containing the startup parameters
+        for the specified Database Engine instance.
 
     .EXAMPLE
         Get-SqlDscStartupParameter
@@ -39,9 +50,6 @@
 
         Get the startup parameters from the Database Engine instance 'SQL2022' on
         the server where the command in run.
-
-    .OUTPUTS
-        `[StartupParameters]`
 #>
 function Get-SqlDscStartupParameter
 {
@@ -50,7 +58,7 @@ function Get-SqlDscStartupParameter
     [CmdletBinding(DefaultParameterSetName = 'ByServerName')]
     param
     (
-        [Parameter(ParameterSetName = 'ByServiceObject', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'ByServiceObject', Mandatory = $true, ValueFromPipeline = $true)]
         [Microsoft.SqlServer.Management.Smo.Wmi.Service]
         $ServiceObject,
 
