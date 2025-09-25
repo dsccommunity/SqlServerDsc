@@ -134,61 +134,39 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
 
         It 'Should return an object with expected DataFilePath property' {
             $script:result.DataFilePath | Should -Not -BeNullOrEmpty
-            # PowerShell unwraps single-element arrays to scalars, so we need to handle both cases
-            if ($script:result.DataFilePath -is [System.Array]) {
-                $script:result.DataFilePath | Should -BeOfType ([System.String[]])
-                $script:result.DataFilePath[0] | Should -Match '\.mdf$'
-            } else {
-                $script:result.DataFilePath | Should -BeOfType ([System.String])
-                $script:result.DataFilePath | Should -Match '\.mdf$'
-            }
+            $script:result.DataFilePath | Should -BeOfType ([System.String])
+            $script:result.DataFilePath | Should -Match '\.mdf$'
         }
 
         It 'Should return an object with expected LogFilePath property' {
             $script:result.LogFilePath | Should -Not -BeNullOrEmpty
-            # PowerShell unwraps single-element arrays to scalars, so we need to handle both cases
-            if ($script:result.LogFilePath -is [System.Array]) {
-                $script:result.LogFilePath | Should -BeOfType ([System.String[]])
-                $script:result.LogFilePath[0] | Should -Match '\.ldf$'
-            } else {
-                $script:result.LogFilePath | Should -BeOfType ([System.String])
-                $script:result.LogFilePath | Should -Match '\.ldf$'
-            }
+            $script:result.LogFilePath | Should -BeOfType ([System.String])
+            $script:result.LogFilePath | Should -Match '\.ldf$'
         }
 
         It 'Should return an object with expected ErrorLogPath property' {
             $script:result.ErrorLogPath | Should -Not -BeNullOrEmpty
-            # PowerShell unwraps single-element arrays to scalars, so we need to handle both cases
-            if ($script:result.ErrorLogPath -is [System.Array]) {
-                $script:result.ErrorLogPath | Should -BeOfType ([System.String[]])
-                $script:result.ErrorLogPath[0] | Should -Match 'ERRORLOG$'
+            $script:result.ErrorLogPath | Should -BeOfType ([System.String])
+            $script:result.ErrorLogPath | Should -Match 'ERRORLOG$'
+        }
+
+        It 'Should return TraceFlag property as expected type' {
+            # TraceFlag can be null, a single UInt32, or an array
+            if ($null -ne $script:result.TraceFlag) {
+                # Check if it's either a single UInt32 or UInt32 array
+                ($script:result.TraceFlag -is [System.UInt32]) -or ($script:result.TraceFlag -is [System.UInt32[]]) | Should -BeTrue -Because 'TraceFlag can be a single value or array depending on how many flags are set'
             } else {
-                $script:result.ErrorLogPath | Should -BeOfType ([System.String])
-                $script:result.ErrorLogPath | Should -Match 'ERRORLOG$'
+                $script:result.TraceFlag | Should -BeNullOrEmpty -Because 'TraceFlag can be empty/null if no trace flags are set'
             }
         }
 
-        It 'Should return TraceFlag property as an array or single value' {
-            # PowerShell unwraps single-element arrays to scalars, so we need to handle both cases
-            if ($script:result.TraceFlag -is [System.Array]) {
-                $script:result.TraceFlag | Should -BeOfType ([System.UInt32[]])
-            } elseif ($script:result.TraceFlag -ne $null) {
-                $script:result.TraceFlag | Should -BeOfType ([System.UInt32])
+        It 'Should return InternalTraceFlag property as expected type' {
+            # InternalTraceFlag can be null, a single UInt32, or an array
+            if ($null -ne $script:result.InternalTraceFlag) {
+                # Check if it's either a single UInt32 or UInt32 array
+                ($script:result.InternalTraceFlag -is [System.UInt32]) -or ($script:result.InternalTraceFlag -is [System.UInt32[]]) | Should -BeTrue -Because 'InternalTraceFlag can be a single value or array depending on how many flags are set'
             } else {
-                # TraceFlag can be empty/null if no trace flags are set
-                $script:result.TraceFlag | Should -BeNullOrEmpty
-            }
-        }
-
-        It 'Should return InternalTraceFlag property as an array or single value' {
-            # PowerShell unwraps single-element arrays to scalars, so we need to handle both cases
-            if ($script:result.InternalTraceFlag -is [System.Array]) {
-                $script:result.InternalTraceFlag | Should -BeOfType ([System.UInt32[]])
-            } elseif ($script:result.InternalTraceFlag -ne $null) {
-                $script:result.InternalTraceFlag | Should -BeOfType ([System.UInt32])
-            } else {
-                # InternalTraceFlag can be empty/null if no internal trace flags are set
-                $script:result.InternalTraceFlag | Should -BeNullOrEmpty
+                $script:result.InternalTraceFlag | Should -BeNullOrEmpty -Because 'InternalTraceFlag can be empty/null if no internal trace flags are set'
             }
         }
     }
@@ -196,7 +174,7 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
     Context 'When comparing results from different parameter sets' {
         It 'Should return the same results for ByServerName and ByServiceObject parameter sets' {
             $resultByServerName = Get-SqlDscStartupParameter -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
-            
+
             $serviceObject = Get-SqlDscManagedComputerService -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ServiceType 'DatabaseEngine' -ErrorAction 'Stop'
             $resultByServiceObject = Get-SqlDscStartupParameter -ServiceObject $serviceObject -ErrorAction 'Stop'
 
