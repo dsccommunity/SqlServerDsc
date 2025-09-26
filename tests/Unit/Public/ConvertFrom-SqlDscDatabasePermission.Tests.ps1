@@ -79,4 +79,79 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag 'Public' {
             $mockResult.Update | Should -BeFalse
         }
     }
+
+    Context 'When passing multiple DatabasePermission objects over the pipeline' {
+        It 'Should consolidate all permissions into a single DatabasePermissionSet' {
+            $mockPermission1 = InModuleScope -ScriptBlock {
+                [DatabasePermission] @{
+                    State      = 'Grant'
+                    Permission = @(
+                        'Connect'
+                        'Alter'
+                    )
+                }
+            }
+
+            $mockPermission2 = InModuleScope -ScriptBlock {
+                [DatabasePermission] @{
+                    State      = 'Grant'
+                    Permission = @(
+                        'Update'
+                        'Delete'
+                    )
+                }
+            }
+
+            $mockResult = @($mockPermission1, $mockPermission2) | ConvertFrom-SqlDscDatabasePermission
+
+            # Verify permissions from first object are set
+            $mockResult.Connect | Should -BeTrue
+            $mockResult.Alter | Should -BeTrue
+
+            # Verify permissions from second object are set
+            $mockResult.Update | Should -BeTrue
+            $mockResult.Delete | Should -BeTrue
+
+            # Verify a permission not specified in either object remains false
+            $mockResult.Insert | Should -BeFalse
+        }
+    }
+
+    Context 'When passing a DatabasePermission object with empty permissions' {
+        It 'Should return a DatabasePermissionSet with all permissions set to false' {
+            $mockEmptyPermission = InModuleScope -ScriptBlock {
+                [DatabasePermission] @{
+                    State      = 'Grant'
+                    Permission = @()
+                }
+            }
+
+            $mockResult = ConvertFrom-SqlDscDatabasePermission -Permission $mockEmptyPermission
+
+            # Verify that common permissions remain false when no permissions are specified
+            $mockResult.Connect | Should -BeFalse
+            $mockResult.Alter | Should -BeFalse
+            $mockResult.Update | Should -BeFalse
+            $mockResult.Delete | Should -BeFalse
+            $mockResult.Insert | Should -BeFalse
+        }
+
+        It 'Should return a DatabasePermissionSet with all permissions set to false when passed over the pipeline' {
+            $mockEmptyPermission = InModuleScope -ScriptBlock {
+                [DatabasePermission] @{
+                    State      = 'Grant'
+                    Permission = @()
+                }
+            }
+
+            $mockResult = $mockEmptyPermission | ConvertFrom-SqlDscDatabasePermission
+
+            # Verify that common permissions remain false when no permissions are specified
+            $mockResult.Connect | Should -BeFalse
+            $mockResult.Alter | Should -BeFalse
+            $mockResult.Update | Should -BeFalse
+            $mockResult.Delete | Should -BeFalse
+            $mockResult.Insert | Should -BeFalse
+        }
+    }
 }
