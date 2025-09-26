@@ -1,10 +1,10 @@
 <#
     .SYNOPSIS
-        Converts a DatabasePermission object into an object of the type
+        Converts one or more DatabasePermission objects into an object of the type
         Microsoft.SqlServer.Management.Smo.DatabasePermissionSet.
 
     .DESCRIPTION
-        Converts a DatabasePermission object into an object of the type
+        Converts one or more DatabasePermission objects into a single object of the type
         Microsoft.SqlServer.Management.Smo.DatabasePermissionSet.
 
     .PARAMETER Permission

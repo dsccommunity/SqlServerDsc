@@ -327,6 +327,7 @@ stages:
                   'tests/Integration/Commands/Deny-SqlDscServerPermission.Integration.Tests.ps1'
                   'tests/Integration/Commands/Revoke-SqlDscServerPermission.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscDatabase.Integration.Tests.ps1'
+                  'tests/Integration/Commands/ConvertFrom-SqlDscDatabasePermission.Integration.Tests.ps1'
                   'tests/Integration/Commands/New-SqlDscDatabase.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscDatabase.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscDatabase.Integration.Tests.ps1'
