@@ -96,25 +96,29 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
     }
 
     Context 'When using the Refresh parameter' {
-        It 'Should refresh the database collection before creating' {
-            $uniqueName = 'SqlDscTestRefresh_' + (Get-Random)
+        BeforeEach {
+            $script:refreshTestDbName = $null
+        }
 
-            try
+        AfterEach {
+            # Clean up the refresh test database if it was created
+            if ($script:refreshTestDbName)
             {
-                $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $uniqueName -Refresh -Force -ErrorAction Stop
-
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be $uniqueName
-            }
-            finally
-            {
-                # Clean up
-                $dbToRemove = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $uniqueName -ErrorAction 'SilentlyContinue'
+                $dbToRemove = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:refreshTestDbName -ErrorAction 'SilentlyContinue'
                 if ($dbToRemove)
                 {
                     $null = Remove-SqlDscDatabase -DatabaseObject $dbToRemove -Force
                 }
             }
+        }
+
+        It 'Should refresh the database collection before creating' {
+            $script:refreshTestDbName = 'SqlDscTestRefresh_' + (Get-Random)
+
+            $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:refreshTestDbName -Refresh -Force -ErrorAction Stop
+
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be $script:refreshTestDbName
         }
     }
 }

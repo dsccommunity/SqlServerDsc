@@ -212,22 +212,19 @@ Describe 'Get-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_
 
             It 'Should throw an error when specified version does not exist' {
                 # Backup original environment variable
-                $originalSMODefaultModuleVersion = $env:SMODefaultModuleVersion
+                $script:originalSMODefaultModuleVersion = $env:SMODefaultModuleVersion
                 
-                try {
-                    # Set to a non-existent version
-                    $env:SMODefaultModuleVersion = '999.999.999'
+                # Set to a non-existent version
+                $env:SMODefaultModuleVersion = '999.999.999'
 
-                    { Get-SqlDscPreferredModule -ErrorAction 'Stop' } | Should -Throw -ErrorId 'GSDPM0001,Get-SqlDscPreferredModule'
+                { Get-SqlDscPreferredModule -ErrorAction 'Stop' } | Should -Throw -ErrorId 'GSDPM0001,Get-SqlDscPreferredModule'
+
+                # Restore original environment variable
+                if ($script:originalSMODefaultModuleVersion) {
+                    $env:SMODefaultModuleVersion = $script:originalSMODefaultModuleVersion
                 }
-                finally {
-                    # Restore original environment variable
-                    if ($originalSMODefaultModuleVersion) {
-                        $env:SMODefaultModuleVersion = $originalSMODefaultModuleVersion
-                    }
-                    else {
-                        Remove-Item -Path 'env:SMODefaultModuleVersion' -ErrorAction 'SilentlyContinue'
-                    }
+                else {
+                    Remove-Item -Path 'env:SMODefaultModuleVersion' -ErrorAction 'SilentlyContinue'
                 }
             }
         }

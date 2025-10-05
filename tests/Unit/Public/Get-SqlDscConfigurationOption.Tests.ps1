@@ -416,20 +416,15 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
             } -Force
             $global:BadTestServerObject = $badServer
 
-            try {
-                $inputScript = 'Get-SqlDscConfigurationOption -ServerObject $global:BadTestServerObject -Name test'
-                $result = TabExpansion2 -inputScript $inputScript -cursorColumn $inputScript.Length
+            $inputScript = 'Get-SqlDscConfigurationOption -ServerObject $global:BadTestServerObject -Name test'
+            $result = TabExpansion2 -inputScript $inputScript -cursorColumn $inputScript.Length
 
-                <#
-                    Should not throw an error and should return empty from argument completer, but then
-                    TabExpansion2 itself returns some default completions (like filesystem paths).
-                #>
-                $result | Should -BeOfType ([System.Management.Automation.CommandCompletion])
-                $result.CompletionMatches.ListItemText | Should -Be 'tests'
-            }
-            finally {
-                Remove-Variable -Name 'BadTestServerObject' -Scope Global -Force -ErrorAction SilentlyContinue
-            }
+            <#
+                Should not throw an error and should return empty from argument completer, but then
+                TabExpansion2 itself returns some default completions (like filesystem paths).
+            #>
+            $result | Should -BeOfType ([System.Management.Automation.CommandCompletion])
+            $result.CompletionMatches.ListItemText | Should -Be 'tests'
         }
 
         It 'Should handle missing ServerObject in tab completion gracefully' {
@@ -450,20 +445,15 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
             $invalidServer = 'Not a server object'
             $global:InvalidTestServerObject = $invalidServer
 
-            try {
-                $inputScript = 'Get-SqlDscConfigurationOption -ServerObject $global:InvalidTestServerObject -Name test'
-                $result = TabExpansion2 -inputScript $inputScript -cursorColumn $inputScript.Length
+            $inputScript = 'Get-SqlDscConfigurationOption -ServerObject $global:InvalidTestServerObject -Name test'
+            $result = TabExpansion2 -inputScript $inputScript -cursorColumn $inputScript.Length
 
-                <#
-                    Should not throw an error and should return empty from argument completer, but then
-                    TabExpansion2 itself returns some default completions (like filesystem paths).
-                #>
-                $result | Should -BeOfType ([System.Management.Automation.CommandCompletion])
-                $result.CompletionMatches.ListItemText | Should -Be 'tests'
-            }
-            finally {
-                Remove-Variable -Name 'InvalidTestServerObject' -Scope Global -Force -ErrorAction SilentlyContinue
-            }
+            <#
+                Should not throw an error and should return empty from argument completer, but then
+                TabExpansion2 itself returns some default completions (like filesystem paths).
+            #>
+            $result | Should -BeOfType ([System.Management.Automation.CommandCompletion])
+            $result.CompletionMatches.ListItemText | Should -Be 'tests'
         }
     }
 }

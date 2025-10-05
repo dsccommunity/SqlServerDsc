@@ -105,30 +105,18 @@ Describe 'New-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         }
 
         It 'Should create a security log audit successfully' {
-            $securityLogAuditName = 'SqlDscTestAudit_SecLog_' + (Get-Random)
+            $script:testAuditName = 'SqlDscTestAudit_SecLog_' + (Get-Random)
 
-            try
-            {
-                $result = New-SqlDscAudit -ServerObject $script:serverObject -Name $securityLogAuditName -LogType 'SecurityLog' -PassThru -Force -ErrorAction Stop
+            $result = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'SecurityLog' -PassThru -Force -ErrorAction Stop
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be $securityLogAuditName
-                $result.DestinationType | Should -Be 'SecurityLog'
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be $script:testAuditName
+            $result.DestinationType | Should -Be 'SecurityLog'
 
-                # Verify the audit exists in the server
-                $createdAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $securityLogAuditName -ErrorAction Stop
-                $createdAudit | Should -Not -BeNullOrEmpty
-                $createdAudit.DestinationType | Should -Be 'SecurityLog'
-            }
-            finally
-            {
-                # Clean up
-                $auditToRemove = Get-SqlDscAudit -ServerObject $script:serverObject -Name $securityLogAuditName -ErrorAction 'SilentlyContinue'
-                if ($auditToRemove)
-                {
-                    Remove-SqlDscAudit -AuditObject $auditToRemove -Force -ErrorAction 'SilentlyContinue'
-                }
-            }
+            # Verify the audit exists in the server
+            $createdAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
+            $createdAudit | Should -Not -BeNullOrEmpty
+            $createdAudit.DestinationType | Should -Be 'SecurityLog'
         }
 
         It 'Should support PassThru parameter' {
