@@ -117,7 +117,7 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
                 $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -SqlLogin -SecurePassword $script:testPassword -Disabled -Force
 
-                $loginObject = $script:serverObject.Logins[$script:testLoginName]
+                $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
                 $loginObject.IsDisabled | Should -BeTrue
             }
 
