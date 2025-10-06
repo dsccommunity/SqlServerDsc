@@ -210,21 +210,27 @@ Describe 'Get-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_
                 }
             }
 
-            It 'Should throw an error when specified version does not exist' {
-                # Backup original environment variable
-                $script:originalSMODefaultModuleVersion = $env:SMODefaultModuleVersion
-                
-                # Set to a non-existent version
-                $env:SMODefaultModuleVersion = '999.999.999'
-
-                { Get-SqlDscPreferredModule -ErrorAction 'Stop' } | Should -Throw -ErrorId 'GSDPM0001,Get-SqlDscPreferredModule'
-
-                # Restore original environment variable
-                if ($script:originalSMODefaultModuleVersion) {
-                    $env:SMODefaultModuleVersion = $script:originalSMODefaultModuleVersion
+            Context 'When testing error handling' {
+                BeforeEach {
+                    # Capture the current environment variable value
+                    $script:originalSMODefaultModuleVersion = $env:SMODefaultModuleVersion
                 }
-                else {
-                    Remove-Item -Path 'env:SMODefaultModuleVersion' -ErrorAction 'SilentlyContinue'
+
+                AfterEach {
+                    # Restore the environment variable
+                    if ($script:originalSMODefaultModuleVersion) {
+                        $env:SMODefaultModuleVersion = $script:originalSMODefaultModuleVersion
+                    }
+                    else {
+                        Remove-Item -Path 'env:SMODefaultModuleVersion' -ErrorAction 'SilentlyContinue'
+                    }
+                }
+
+                It 'Should throw an error when specified version does not exist' {
+                    # Set to a non-existent version
+                    $env:SMODefaultModuleVersion = '999.999.999'
+
+                    { Get-SqlDscPreferredModule -ErrorAction 'Stop' } | Should -Throw -ErrorId 'GSDPM0001,Get-SqlDscPreferredModule'
                 }
             }
         }
