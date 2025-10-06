@@ -75,29 +75,19 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
                 }
             }
 
-            It 'Should create a SQL Server login without error' {
+            It 'Should create a SQL Server login and verify it was created with correct properties' {
                 $script:testLoginName = $script:testSqlLoginName
 
                 $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -SqlLogin -SecurePassword $script:testPassword -Force
-            }
 
-            It 'Should verify the SQL Server login was created' {
-                $script:testLoginName = $script:testSqlLoginName
-
+                # Verify the login was created
                 Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName | Should -BeTrue
-            }
 
-            It 'Should verify the login type is SqlLogin' {
-                $script:testLoginName = $script:testSqlLoginName
-
+                # Verify the login type
                 $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
                 $loginObject.LoginType | Should -Be 'SqlLogin'
-            }
 
-            It 'Should verify the default database is set correctly' {
-                $script:testLoginName = $script:testSqlLoginName
-
-                $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
+                # Verify the default database
                 $loginObject.DefaultDatabase | Should -Be 'master'
             }
 
@@ -132,6 +122,10 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
             It 'Should throw an error when trying to create a login that already exists' {
                 $script:testLoginName = $script:testSqlLoginName
 
+                # First create the login
+                $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -SqlLogin -SecurePassword $script:testPassword -Force
+
+                # Then try to create it again, which should throw
                 { New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -SqlLogin -SecurePassword $script:testPassword -Force } | Should -Throw
             }
         }
