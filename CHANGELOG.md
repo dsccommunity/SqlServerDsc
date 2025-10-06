@@ -109,6 +109,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `New-SqlDscAudit`
+  - Fixed parameter validation to prevent the `ReserveDiskSpace` parameter from
+    being used with the `FileWithMaxFiles` parameter set (when only `MaximumFiles`
+    is specified without `MaximumFileSize`). This combination always resulted in
+    a SQL Server error because `RESERVE_DISK_SPACE` cannot be specified when
+    `MAXSIZE = UNLIMITED`. The `ReserveDiskSpace` parameter now correctly requires
+    both `MaximumFiles` and `MaximumFileSize` to be specified
+    ([issue #2289](https://github.com/dsccommunity/SqlServerDsc/issues/2289)).
 - `Add-SqlDscTraceFlag` and `Remove-SqlDscTraceFlag`
   - Fixed parameter binding error when `ErrorAction` was specified both
     explicitly and via `PSBoundParameters` by using `Remove-CommonParameter`
