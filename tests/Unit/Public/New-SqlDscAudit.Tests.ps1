@@ -65,7 +65,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
         }
         @{
             MockParameterSetName = 'FileWithMaxFiles'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'FileWithMaxRolloverFiles'
@@ -490,74 +490,6 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             $mockCreateAuditObject.MaximumFiles | Should -Be 2
 
             $mockMethodCreateCallCount | Should -Be 1
-        }
-    }
-
-    Context 'When passing file audit optional parameters MaximumFiles and ReserveDiskSpace' {
-        BeforeAll {
-            $script:mockCreateAuditObject = $null
-
-            Mock -CommandName New-Object -ParameterFilter {
-                $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Audit'
-            } -MockWith {
-                <#
-                    The Audit object is created in the script scope so that the
-                    properties can be validated.
-                #>
-                $script:mockCreateAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
-                    $PesterBoundParameters.ArgumentList[0],
-                    $PesterBoundParameters.ArgumentList[1]
-                ) |
-                    Add-Member -MemberType 'ScriptMethod' -Name 'Create' -Value {
-                        $script:mockMethodCreateCallCount += 1
-                    } -PassThru -Force
-
-                return $script:mockCreateAuditObject
-            }
-
-            Mock -CommandName Get-SqlDscAudit
-
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-            $mockServerObject.InstanceName = 'TestInstance'
-
-            $mockDefaultParameters = @{
-                ServerObject = $mockServerObject
-                Name = 'Log1'
-                Path = Get-TemporaryFolder
-                Force = $true
-            }
-        }
-
-        BeforeEach {
-            $script:mockMethodCreateCallCount = 0
-        }
-
-        It 'Should call the mocked method and have correct values in the object' {
-            New-SqlDscAudit -MaximumFiles 2 -ReserveDiskSpace @mockDefaultParameters
-
-            # This is the object created by the mock and modified by the command.
-            $mockCreateAuditObject.Name | Should -Be 'Log1'
-            $mockCreateAuditObject.DestinationType | Should -Be 'File'
-            $mockCreateAuditObject.FilePath | Should -Be (Get-TemporaryFolder)
-            $mockCreateAuditObject.MaximumFiles | Should -Be 2
-            $mockCreateAuditObject.ReserveDiskSpace | Should -BeTrue
-
-            $mockMethodCreateCallCount | Should -Be 1
-        }
-
-        Context 'When ReserveDiskSpace is set to $false' {
-            It 'Should call the mocked method and have correct values in the object' {
-                New-SqlDscAudit -MaximumFiles 2 -ReserveDiskSpace:$false @mockDefaultParameters
-
-                # This is the object created by the mock and modified by the command.
-                $mockCreateAuditObject.Name | Should -Be 'Log1'
-                $mockCreateAuditObject.DestinationType | Should -Be 'File'
-                $mockCreateAuditObject.FilePath | Should -Be (Get-TemporaryFolder)
-                $mockCreateAuditObject.MaximumFiles | Should -Be 2
-                $mockCreateAuditObject.ReserveDiskSpace | Should -BeFalse
-
-                $mockMethodCreateCallCount | Should -Be 1
-            }
         }
     }
 
