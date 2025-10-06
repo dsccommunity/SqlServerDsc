@@ -147,6 +147,14 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         }
 
         Context 'When creating a Windows group login' {
+            AfterEach {
+                # Clean up Windows group login
+                if (Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName)
+                {
+                    $script:serverObject.Logins[$script:testWindowsGroupName].Drop()
+                }
+            }
+
             It 'Should create a Windows group login without error' {
                 $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName -WindowsGroup -Force
 
