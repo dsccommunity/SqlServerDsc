@@ -407,6 +407,19 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
             $completions[1].CompletionText | Should -Be "'max degree of parallelism'"
         }
 
+        AfterAll {
+            # Clean up global variables created in error handling tests
+            if (Get-Variable -Name 'BadTestServerObject' -Scope Global -ErrorAction SilentlyContinue)
+            {
+                Remove-Variable -Name 'BadTestServerObject' -Scope Global -Force
+            }
+
+            if (Get-Variable -Name 'InvalidTestServerObject' -Scope Global -ErrorAction SilentlyContinue)
+            {
+                Remove-Variable -Name 'InvalidTestServerObject' -Scope Global -Force
+            }
+        }
+
         It 'Should handle tab completion errors gracefully' {
             # Create a server object that will cause an error
             $badServer = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
