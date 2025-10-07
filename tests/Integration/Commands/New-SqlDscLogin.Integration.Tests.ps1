@@ -65,11 +65,12 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
             BeforeEach {
                 $script:testLoginName = $null
+                $script:isPersistentLogin = $false
             }
 
             AfterEach {
-                # Clean up any login created in the test
-                if ($script:testLoginName -and (Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName))
+                # Clean up any login created in the test (but not persistent logins)
+                if ($script:testLoginName -and -not $script:isPersistentLogin -and (Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName))
                 {
                     $script:serverObject.Logins[$script:testLoginName].Drop()
                 }
@@ -77,8 +78,13 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
             It 'Should create a SQL Server login and verify it was created with correct properties' {
                 $script:testLoginName = $script:testSqlLoginName
+                $script:isPersistentLogin = $true  # This is a persistent login for other tests
 
-                $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -SqlLogin -SecurePassword $script:testPassword -Force
+                # Only create if it doesn't already exist
+                if (-not (Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName))
+                {
+                    $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -SqlLogin -SecurePassword $script:testPassword -Force
+                }
 
                 # Verify the login was created
                 Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName | Should -BeTrue
@@ -120,7 +126,7 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
             }
 
             It 'Should throw an error when trying to create a login that already exists' {
-                $script:testLoginName = $script:testSqlLoginName
+                $script:testLoginName = 'IntegrationTestDuplicate'
 
                 # First create the login
                 $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -SqlLogin -SecurePassword $script:testPassword -Force
@@ -151,16 +157,13 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         }
 
         Context 'When creating a Windows group login' {
-            AfterEach {
-                # Clean up Windows group login
-                if (Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName)
-                {
-                    $script:serverObject.Logins[$script:testWindowsGroupName].Drop()
-                }
-            }
-
             It 'Should create a Windows group login without error' {
-                $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName -WindowsGroup -Force
+                # This is a persistent login for other tests
+                # Only create if it doesn't already exist
+                if (-not (Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName))
+                {
+                    $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName -WindowsGroup -Force
+                }
 
                 Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName | Should -BeTrue
 
