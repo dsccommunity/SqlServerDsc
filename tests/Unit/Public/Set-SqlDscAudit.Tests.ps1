@@ -53,51 +53,51 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
             MockParameterSetName = 'ServerObject'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'ServerObjectWithSize'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'ServerObjectWithMaxFiles'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'ServerObjectWithMaxRolloverFiles'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -MaximumRolloverFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -MaximumRolloverFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'ServerObjectWithSizeAndMaxFiles'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'ServerObjectWithSizeAndMaxRolloverFiles'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumRolloverFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumRolloverFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'AuditObject'
-            MockExpectedParameters = '-AuditObject <Audit> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-AuditObject <Audit> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'AuditObjectWithSize'
-            MockExpectedParameters = '-AuditObject <Audit> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-AuditObject <Audit> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'AuditObjectWithMaxFiles'
-            MockExpectedParameters = '-AuditObject <Audit> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-AuditObject <Audit> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'AuditObjectWithMaxRolloverFiles'
-            MockExpectedParameters = '-AuditObject <Audit> -MaximumRolloverFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-AuditObject <Audit> -MaximumRolloverFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'AuditObjectWithSizeAndMaxFiles'
-            MockExpectedParameters = '-AuditObject <Audit> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-AuditObject <Audit> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'AuditObjectWithSizeAndMaxRolloverFiles'
-            MockExpectedParameters = '-AuditObject <Audit> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumRolloverFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-AuditObject <Audit> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumRolloverFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
         $result = (Get-Command -Name 'Set-SqlDscAudit').ParameterSets |
@@ -540,6 +540,40 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                     $script:mockMethodAlterCallCount += 1
                 } -PassThru -Force
 
+            # Set a different initial GUID
+            $script:mockAuditObject.Guid = 'a1111111-1111-1111-1111-111111111111'
+
+            Mock -CommandName ConvertTo-SqlDscAuditCreateParameters -MockWith {
+                return @{
+                    ServerObject = $AuditObject.Parent
+                    Name = $AuditObject.Name
+                    LogType = 'ApplicationLog'
+                    AuditGuid = $AuditGuid
+                }
+            }
+
+            Mock -CommandName Remove-SqlDscAudit
+
+            Mock -CommandName New-SqlDscAudit -MockWith {
+                $newAudit = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                    $ServerObject,
+                    $Name
+                )
+
+                # Add the Alter method
+                $newAudit | Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                    $script:mockMethodAlterCallCount += 1
+                } -Force
+
+                # Set the Guid property using Add-Member to ensure it can be set
+                if ($PSBoundParameters.ContainsKey('AuditGuid'))
+                {
+                    $newAudit | Add-Member -MemberType 'NoteProperty' -Name 'Guid' -Value $AuditGuid -Force
+                }
+
+                return $newAudit
+            }
+
             $mockDefaultParameters = @{
                 AuditObject = $mockAuditObject
                 Force = $true
@@ -550,14 +584,55 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
             $script:mockMethodAlterCallCount = 0
         }
 
-        It 'Should call the mocked method and have correct values in the object' {
-            Set-SqlDscAudit -AuditGuid 'b5962b93-a359-42ef-bf1e-193e8a5f6222' @mockDefaultParameters
+        It 'Should recreate the audit with the new GUID when AllowAuditGuidChange is specified' {
+            $result = Set-SqlDscAudit -AuditGuid 'b5962b93-a359-42ef-bf1e-193e8a5f6222' -AllowAuditGuidChange -PassThru @mockDefaultParameters
 
-            # This is the object created by the mock and modified by the command.
-            $mockAuditObject.Name | Should -Be 'Log1'
-            $mockAuditObject.Guid | Should -Be 'b5962b93-a359-42ef-bf1e-193e8a5f6222'
+            # Debug: Check what we got back
+            $result | Should -Not -BeNullOrEmpty -Because 'PassThru should return the audit object'
+            $result.Name | Should -Be 'Log1' -Because 'The audit name should match'
 
-            $mockMethodAlterCallCount | Should -Be 1
+            # Verify the helper function was called with correct GUID
+            Should -Invoke -CommandName ConvertTo-SqlDscAuditCreateParameters -Exactly -Times 1 -Scope It -ParameterFilter {
+                $AuditGuid -eq 'b5962b93-a359-42ef-bf1e-193e8a5f6222'
+            }
+
+            # Verify the audit was removed
+            Should -Invoke -CommandName Remove-SqlDscAudit -Exactly -Times 1 -Scope It
+
+            # Verify the audit was recreated with PassThru and the correct GUID
+            Should -Invoke -CommandName New-SqlDscAudit -Exactly -Times 1 -Scope It -ParameterFilter {
+                $PassThru.IsPresent -and $AuditGuid -eq 'b5962b93-a359-42ef-bf1e-193e8a5f6222'
+            }
+        }
+
+        Context 'When AuditGuid is same as existing GUID' {
+            It 'Should not recreate the audit but still call Alter' {
+                $mockAuditObject.Guid = 'b5962b93-a359-42ef-bf1e-193e8a5f6222'
+
+                Set-SqlDscAudit -AuditGuid 'b5962b93-a359-42ef-bf1e-193e8a5f6222' -AllowAuditGuidChange @mockDefaultParameters
+
+                # Should not invoke helper functions when GUID is not changing
+                Should -Invoke -CommandName ConvertTo-SqlDscAuditCreateParameters -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Remove-SqlDscAudit -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName New-SqlDscAudit -Exactly -Times 0 -Scope It
+
+                # Alter() is still called even when no property values change
+                $mockMethodAlterCallCount | Should -Be 1 -Because 'Alter() is always called in the normal update path'
+            }
+        }
+
+        Context 'When trying to change AuditGuid without AllowAuditGuidChange parameter' {
+            It 'Should throw the correct error' {
+                # Ensure the GUID is different from what we're trying to set
+                $mockAuditObject.Guid = 'a1111111-1111-1111-1111-111111111111'
+
+                $mockErrorMessage = InModuleScope -ScriptBlock {
+                    $script:localizedData.Audit_AuditGuidChangeRequiresAllowParameter -f 'Log1'
+                }
+
+                { Set-SqlDscAudit -AuditGuid 'b5962b93-a359-42ef-bf1e-193e8a5f6222' @mockDefaultParameters } |
+                    Should -Throw -ExpectedMessage $mockErrorMessage
+            }
         }
 
         Context 'When passing an invalid GUID' {
@@ -765,6 +840,92 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
 
             $mockMethodAlterCallCount | Should -Be 1
             $mockMethodRefreshCallCount | Should -Be 1
+        }
+    }
+
+    Context 'When changing AuditGuid with AllowAuditGuidChange and other properties' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject.InstanceName = 'TestInstance'
+
+            $script:mockAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                $mockServerObject,
+                'Log1'
+            ) |
+                Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                    $script:mockMethodAlterCallCount += 1
+                } -PassThru -Force
+
+            # Set a different initial GUID
+            $script:mockAuditObject.Guid = 'a1111111-1111-1111-1111-111111111111'
+
+            Mock -CommandName ConvertTo-SqlDscAuditCreateParameters -MockWith {
+                return @{
+                    ServerObject = $AuditObject.Parent
+                    Name = $AuditObject.Name
+                    LogType = 'ApplicationLog'
+                    AuditGuid = $AuditGuid
+                }
+            }
+
+            Mock -CommandName Remove-SqlDscAudit
+
+            # Track recursive call to Set-SqlDscAudit
+            $script:setAuditRecursiveCallCount = 0
+
+            Mock -CommandName New-SqlDscAudit -MockWith {
+                $newAudit = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                    $ServerObject,
+                    $Name
+                )
+
+                # Add the Alter method
+                $newAudit | Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                    $script:mockMethodAlterCallCount += 1
+                } -Force
+
+                # Set the Guid property using Add-Member to ensure it can be set
+                if ($PSBoundParameters.ContainsKey('AuditGuid'))
+                {
+                    $newAudit | Add-Member -MemberType 'NoteProperty' -Name 'Guid' -Value $AuditGuid -Force
+                }
+
+                return $newAudit
+            }
+
+            $mockDefaultParameters = @{
+                AuditObject = $mockAuditObject
+                Force = $true
+            }
+        }
+
+        BeforeEach {
+            $script:mockMethodAlterCallCount = 0
+            $script:setAuditRecursiveCallCount = 0
+        }
+
+        It 'Should recreate the audit with new GUID and apply other property changes' {
+            $result = Set-SqlDscAudit -AuditGuid 'b5962b93-a359-42ef-bf1e-193e8a5f6222' -AllowAuditGuidChange -QueueDelay 1000 -PassThru @mockDefaultParameters
+
+            # Verify the helper function was called with correct GUID
+            Should -Invoke -CommandName ConvertTo-SqlDscAuditCreateParameters -Exactly -Times 1 -Scope It -ParameterFilter {
+                $AuditGuid -eq 'b5962b93-a359-42ef-bf1e-193e8a5f6222'
+            }
+
+            # Verify the audit was removed
+            Should -Invoke -CommandName Remove-SqlDscAudit -Exactly -Times 1 -Scope It
+
+            # Verify the audit was recreated with PassThru and the correct GUID
+            Should -Invoke -CommandName New-SqlDscAudit -Exactly -Times 1 -Scope It -ParameterFilter {
+                $PassThru.IsPresent -and $AuditGuid -eq 'b5962b93-a359-42ef-bf1e-193e8a5f6222'
+            }
+
+            # The result should not be null
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be 'Log1'
+
+            # The QueueDelay should be set (via recursive call to Set-SqlDscAudit)
+            $result.QueueDelay | Should -Be 1000
         }
     }
 

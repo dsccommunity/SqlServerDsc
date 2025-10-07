@@ -84,6 +84,8 @@ ConvertFrom-StringData @'
     Audit_Update_ShouldProcessCaption = Update audit on instance
     Audit_MaximumFileSizeParameterValueInvalid = The maximum file size must be set to a value of 0 or a value between 2 and 2147483647.
     Audit_QueueDelayParameterValueInvalid = The queue delay must be set to a value of 0 or a value between 1000 and 2147483647.
+    Audit_AuditGuidChangeRequiresAllowParameter = Cannot modify the AuditGuid property of the audit '{0}'. SQL Server does not allow direct modification of the audit GUID. Use the parameter AllowAuditGuidChange to permit dropping and recreating the audit with the new GUID.
+    Audit_RecreatingAuditForGuidChange = Recreating the audit '{0}' on instance '{1}' to change the audit GUID to '{2}'.
 
     ## Get-SqlDscAudit
     Audit_Missing = There is no audit with the name '{0}'.

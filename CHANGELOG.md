@@ -96,6 +96,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added integration tests for `Add-SqlDscTraceFlag` command to ensure it functions
   correctly in real environments
   [issue #2214](https://github.com/dsccommunity/SqlServerDsc/issues/2214).
+- `Set-SqlDscAudit`
+  - Added `AllowAuditGuidChange` parameter to enable modifying the audit GUID
+    by dropping and recreating the audit with the new GUID. This parameter is
+    required when changing the `AuditGuid` property because SQL Server does not
+    allow direct modification of the audit GUID ([issue #2287](https://github.com/dsccommunity/SqlServerDsc/issues/2287)).
 
 ### Changed
 

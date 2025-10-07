@@ -107,22 +107,34 @@ Describe 'Set-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
             $modifiedAudit.Filter | Should -Be $newAuditFilter
         }
 
-        # It 'Should modify audit AuditGuid property successfully' {
-        #     # Verify audit exists before modification
-        #     $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
-        #     $originalAudit | Should -Not -BeNullOrEmpty
+        It 'Should modify audit AuditGuid property when AllowAuditGuidChange is specified' {
+            # Verify audit exists before modification
+            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
+            $originalAudit | Should -Not -BeNullOrEmpty
 
-        #     $originalGuid = $originalAudit.Guid
-        #     $newGuid = [System.Guid]::NewGuid().ToString()
+            $originalGuid = $originalAudit.Guid
+            $newGuid = [System.Guid]::NewGuid().ToString()
 
-        #     # Modify the audit
-        #     $null = Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -AuditGuid $newGuid -Force -ErrorAction Stop
+            # Modify the audit with AllowAuditGuidChange parameter
+            $null = Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -AuditGuid $newGuid -AllowAuditGuidChange -Force -ErrorAction Stop
 
-        #     # Verify audit was modified
-        #     $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
-        #     $modifiedAudit.Guid | Should -Be $newGuid
-        #     $modifiedAudit.Guid | Should -Not -Be $originalGuid
-        # }
+            # Verify audit was modified
+            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
+            $modifiedAudit.Guid | Should -Be $newGuid
+            $modifiedAudit.Guid | Should -Not -Be $originalGuid
+        }
+
+        It 'Should throw an error when trying to change AuditGuid without AllowAuditGuidChange parameter' {
+            # Verify audit exists before modification
+            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
+            $originalAudit | Should -Not -BeNullOrEmpty
+
+            $newGuid = [System.Guid]::NewGuid().ToString()
+
+            # Attempt to modify the audit GUID without AllowAuditGuidChange should throw an error
+            { Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -AuditGuid $newGuid -Force -ErrorAction Stop } |
+                Should -Throw -ExpectedMessage '*AllowAuditGuidChange*'
+        }
 
         It 'Should support multiple property modifications in one call' {
             # Verify audit exists before modification
