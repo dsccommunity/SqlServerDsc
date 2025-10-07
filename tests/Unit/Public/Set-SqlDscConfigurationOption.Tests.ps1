@@ -523,6 +523,11 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
             }
         }
 
+        AfterEach {
+            # Clean up any global test variables created during tab completion tests
+            Remove-Variable -Name 'BadTestServerObject' -Scope Global -Force -ErrorAction SilentlyContinue
+        }
+
         It 'Should provide Name parameter completions through TabExpansion2' {
             # This actually exercises the argument completer code through PowerShell's tab completion system
             $inputScript = 'Set-SqlDscConfigurationOption -ServerObject $global:TestServerObject -Name max'
@@ -602,20 +607,15 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
             } -Force
             $global:BadTestServerObject = $badServer
 
-            try {
-                $inputScript = 'Set-SqlDscConfigurationOption -ServerObject $global:BadTestServerObject -Name test'
-                $result = TabExpansion2 -inputScript $inputScript -cursorColumn $inputScript.Length
+            $inputScript = 'Set-SqlDscConfigurationOption -ServerObject $global:BadTestServerObject -Name test'
+            $result = TabExpansion2 -inputScript $inputScript -cursorColumn $inputScript.Length
 
-                <#
-                    Should not throw an error and should return empty from argument completer, but then
-                    TabExpansion2 itself returns some default completions (like filesystem paths).
-                #>
-                $result | Should -BeOfType ([System.Management.Automation.CommandCompletion])
-                $result.CompletionMatches.ListItemText | Should -Be 'tests'
-            }
-            finally {
-                Remove-Variable -Name 'BadTestServerObject' -Scope Global -Force -ErrorAction SilentlyContinue
-            }
+            <#
+                Should not throw an error and should return empty from argument completer, but then
+                TabExpansion2 itself returns some default completions (like filesystem paths).
+            #>
+            $result | Should -BeOfType ([System.Management.Automation.CommandCompletion])
+            $result.CompletionMatches.ListItemText | Should -Be 'tests'
         }
 
         It 'Should handle missing ServerObject in tab completion gracefully' {

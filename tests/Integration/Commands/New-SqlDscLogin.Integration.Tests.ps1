@@ -63,116 +63,107 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
                 $script:testPassword = ConvertTo-SecureString -String 'P@ssw0rd123!' -AsPlainText -Force
             }
 
-            It 'Should create a SQL Server login without error' {
-                $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testSqlLoginName -SqlLogin -SecurePassword $script:testPassword -Force
+            BeforeEach {
+                $script:testLoginName = $null
+                $script:isPersistentLogin = $false
             }
 
-            It 'Should verify the SQL Server login was created' {
-                Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testSqlLoginName | Should -BeTrue
+            AfterEach {
+                # Clean up any login created in the test (but not persistent logins)
+                if ($script:testLoginName -and -not $script:isPersistentLogin -and (Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName))
+                {
+                    $script:serverObject.Logins[$script:testLoginName].Drop()
+                }
             }
 
-            It 'Should verify the login type is SqlLogin' {
-                $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testSqlLoginName
+            It 'Should create a SQL Server login and verify it was created with correct properties' {
+                $script:testLoginName = $script:testSqlLoginName
+                $script:isPersistentLogin = $true  # This is a persistent login for other tests
+
+                # Only create if it doesn't already exist
+                if (-not (Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName))
+                {
+                    $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -SqlLogin -SecurePassword $script:testPassword -Force
+                }
+
+                # Verify the login was created
+                Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName | Should -BeTrue
+
+                # Verify the login type
+                $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
                 $loginObject.LoginType | Should -Be 'SqlLogin'
-            }
 
-            It 'Should verify the default database is set correctly' {
-                $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testSqlLoginName
+                # Verify the default database
                 $loginObject.DefaultDatabase | Should -Be 'master'
             }
 
             It 'Should create a SQL Server login with custom default database' {
-                $customLoginName = 'IntegrationTestCustomDb'
+                $script:testLoginName = 'IntegrationTestCustomDb'
 
-                try
-                {
-                    $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $customLoginName -SqlLogin -SecurePassword $script:testPassword -DefaultDatabase 'tempdb' -Force
+                $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -SqlLogin -SecurePassword $script:testPassword -DefaultDatabase 'tempdb' -Force
 
-                    $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $customLoginName
-                    $loginObject.DefaultDatabase | Should -Be 'tempdb'
-                }
-                finally
-                {
-                    # Clean up
-                    if (Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $customLoginName)
-                    {
-                        $script:serverObject.Logins[$customLoginName].Drop()
-                    }
-                }
+                $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
+                $loginObject.DefaultDatabase | Should -Be 'tempdb'
             }
 
             It 'Should create a SQL Server login with PassThru parameter' {
-                $passthroughLoginName = 'IntegrationTestPassThru'
+                $script:testLoginName = 'IntegrationTestPassThru'
 
-                try
-                {
-                    $result = New-SqlDscLogin -ServerObject $script:serverObject -Name $passthroughLoginName -SqlLogin -SecurePassword $script:testPassword -PassThru -Force
+                $result = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -SqlLogin -SecurePassword $script:testPassword -PassThru -Force
 
-                    $result | Should -Not -BeNullOrEmpty
-                    $result.Name | Should -Be $passthroughLoginName
-                    $result.LoginType | Should -Be 'SqlLogin'
-                }
-                finally
-                {
-                    # Clean up
-                    if (Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $passthroughLoginName)
-                    {
-                        $script:serverObject.Logins[$passthroughLoginName].Drop()
-                    }
-                }
+                $result | Should -Not -BeNullOrEmpty
+                $result.Name | Should -Be $script:testLoginName
+                $result.LoginType | Should -Be 'SqlLogin'
             }
 
             It 'Should create a disabled SQL Server login' {
-                $disabledLoginName = 'IntegrationTestDisabled'
+                $script:testLoginName = 'IntegrationTestDisabled'
 
-                try
-                {
-                    $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $disabledLoginName -SqlLogin -SecurePassword $script:testPassword -Disabled -Force
+                $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -SqlLogin -SecurePassword $script:testPassword -Disabled -Force
 
-                    $loginObject = $script:serverObject.Logins[$disabledLoginName]
-                    $loginObject.IsDisabled | Should -BeTrue
-                }
-                finally
-                {
-                    # Clean up
-                    if (Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $disabledLoginName)
-                    {
-                        $script:serverObject.Logins[$disabledLoginName].Drop()
-                    }
-                }
+                $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
+                $loginObject.IsDisabled | Should -BeTrue
             }
 
             It 'Should throw an error when trying to create a login that already exists' {
-                { New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testSqlLoginName -SqlLogin -SecurePassword $script:testPassword -Force } | Should -Throw
+                $script:testLoginName = 'IntegrationTestDuplicate'
+
+                # First create the login
+                $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -SqlLogin -SecurePassword $script:testPassword -Force
+
+                # Then try to create it again, which should throw
+                { New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -SqlLogin -SecurePassword $script:testPassword -Force } | Should -Throw
             }
         }
 
         Context 'When creating a Windows user login' {
+            AfterEach {
+                # Clean up Windows user login
+                if (Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testWindowsUserName)
+                {
+                    $script:serverObject.Logins[$script:testWindowsUserName].Drop()
+                }
+            }
+
             It 'Should create a Windows user login without error' {
-                try
-                {
-                    # Using the SqlIntegrationTest user created by Prerequisites integration test
-                    $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsUserName -WindowsUser -Force
+                # Using the SqlIntegrationTest user created by Prerequisites integration test
+                $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsUserName -WindowsUser -Force
 
-                    Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testWindowsUserName | Should -BeTrue
+                Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testWindowsUserName | Should -BeTrue
 
-                    $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsUserName
-                    $loginObject.LoginType | Should -Be 'WindowsUser'
-                }
-                finally
-                {
-                    # Clean up
-                    if (Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testWindowsUserName)
-                    {
-                        $script:serverObject.Logins[$script:testWindowsUserName].Drop()
-                    }
-                }
+                $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsUserName
+                $loginObject.LoginType | Should -Be 'WindowsUser'
             }
         }
 
         Context 'When creating a Windows group login' {
             It 'Should create a Windows group login without error' {
-                $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName -WindowsGroup -Force
+                # This is a persistent login for other tests
+                # Only create if it doesn't already exist
+                if (-not (Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName))
+                {
+                    $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName -WindowsGroup -Force
+                }
 
                 Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName | Should -BeTrue
 
@@ -182,23 +173,22 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         }
 
         Context 'When using Force parameter' {
+            BeforeEach {
+                $script:forceLoginName = 'IntegrationTestForce'
+            }
+
+            AfterEach {
+                # Clean up Force test login
+                if ($script:forceLoginName -and (Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:forceLoginName))
+                {
+                    $script:serverObject.Logins[$script:forceLoginName].Drop()
+                }
+            }
+
             It 'Should create a login with Force parameter without confirmation prompt' {
-                $forceLoginName = 'IntegrationTestForce'
+                $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:forceLoginName -SqlLogin -SecurePassword $script:testPassword -Force
 
-                try
-                {
-                    $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $forceLoginName -SqlLogin -SecurePassword $script:testPassword -Force
-
-                    Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $forceLoginName | Should -BeTrue
-                }
-                finally
-                {
-                    # Clean up
-                    if (Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $forceLoginName)
-                    {
-                        $script:serverObject.Logins[$forceLoginName].Drop()
-                    }
-                }
+                Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:forceLoginName | Should -BeTrue
             }
         }
 

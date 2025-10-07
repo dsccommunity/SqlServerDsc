@@ -163,6 +163,19 @@ Describe 'Get-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Integrati
         }
 
         Context 'When working with built-in database roles' {
+            BeforeEach {
+                $script:customRoleName = $null
+            }
+
+            AfterEach {
+                # Clean up the custom role if it was created
+                if ($script:customRoleName)
+                {
+                    $dropRoleSql = "USE [$($script:testDatabaseName)]; DROP ROLE [$script:customRoleName];"
+                    Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $dropRoleSql -Force -ErrorAction 'SilentlyContinue'
+                }
+            }
+
             It 'Should return permissions for db_datareader role' {
                 # Note: The command excludes fixed roles by default, so this should return null or empty
                 $result = Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name 'db_datareader' -ErrorAction 'SilentlyContinue'
@@ -173,33 +186,24 @@ Describe 'Get-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Integrati
 
             It 'Should work with non-fixed database roles when they exist' {
                 # Create a custom database role for testing
-                $customRoleName = 'TestRole_' + (Get-Random)
-                $createRoleSql = "USE [$($script:testDatabaseName)]; CREATE ROLE [$customRoleName];"
+                $script:customRoleName = 'TestRole_' + (Get-Random)
+                $createRoleSql = "USE [$($script:testDatabaseName)]; CREATE ROLE [$script:customRoleName];"
                 Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $createRoleSql -Force -ErrorAction 'Stop'
 
-                try
-                {
-                    # Grant a permission to the custom role
-                    $grantRolePermissionSql = "USE [$($script:testDatabaseName)]; GRANT CONNECT TO [$customRoleName];"
-                    Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $grantRolePermissionSql -Force -ErrorAction 'Stop'
+                # Grant a permission to the custom role
+                $grantRolePermissionSql = "USE [$($script:testDatabaseName)]; GRANT CONNECT TO [$script:customRoleName];"
+                Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $grantRolePermissionSql -Force -ErrorAction 'Stop'
 
-                    # Test getting permissions for the custom role
-                    $result = Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $customRoleName -Refresh
+                # Test getting permissions for the custom role
+                $result = Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $script:customRoleName -Refresh
 
-                    $result | Should -Not -BeNullOrEmpty
-                    $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo]
+                $result | Should -Not -BeNullOrEmpty
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo]
 
-                    # Verify the Connect permission we granted is present
-                    $connectPermission = $result | Where-Object { $_.PermissionType.Connect -eq $true }
-                    $connectPermission | Should -Not -BeNullOrEmpty
-                    $connectPermission.PermissionState | Should -Be 'Grant'
-                }
-                finally
-                {
-                    # Clean up the custom role
-                    $dropRoleSql = "USE [$($script:testDatabaseName)]; DROP ROLE [$customRoleName];"
-                    Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query $dropRoleSql -Force -ErrorAction 'SilentlyContinue'
-                }
+                # Verify the Connect permission we granted is present
+                $connectPermission = $result | Where-Object { $_.PermissionType.Connect -eq $true }
+                $connectPermission | Should -Not -BeNullOrEmpty
+                $connectPermission.PermissionState | Should -Be 'Grant'
             }
         }
     }

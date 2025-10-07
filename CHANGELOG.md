@@ -99,6 +99,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Refactored integration tests to remove `finally` blocks from `It`-blocks and
+  use Pester `BeforeEach`/`AfterEach` blocks instead, following DSC Community
+  coding guidelines. This improves test cleanup reliability and maintainability
+  across the following test files ([issue #2288](https://github.com/dsccommunity/SqlServerDsc/issues/2288)):
+  - `New-SqlDscLogin.Integration.Tests.ps1`
+  - `New-SqlDscAudit.Integration.Tests.ps1`
+  - `Get-SqlDscDatabasePermission.Integration.Tests.ps1`
+  - `Get-SqlDscPreferredModule.Integration.Tests.ps1`
+  - `New-SqlDscDatabase.Integration.Tests.ps1`
+- Refactored unit tests to remove `finally` blocks from `It`-blocks and
+  use Pester `AfterEach` blocks instead, following DSC Community coding
+  guidelines. This improves test cleanup reliability and maintainability
+  across the following test files ([issue #2288](https://github.com/dsccommunity/SqlServerDsc/issues/2288)):
+  - `Set-SqlDscConfigurationOption.Tests.ps1`
+  - `Get-SqlDscConfigurationOption.Tests.ps1`
+  - `Test-SqlDscConfigurationOption.Tests.ps1`
 - `Test-SqlDscIsDatabasePrincipal` and `Get-SqlDscDatabasePermission`
   - Added `Refresh` parameter to refresh SMO collections before checking
     database principals, addressing issues with custom database roles created

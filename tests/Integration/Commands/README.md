@@ -63,23 +63,23 @@ Get-SqlDscTraceFlag | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTE
 Set-SqlDscConfigurationOption | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Set-SqlDscStartupParameter | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Set-SqlDscTraceFlag | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Disable-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Enable-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Disable-SqlDscLogin | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Enable-SqlDscLogin | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Enable-SqlDscAudit | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Test-SqlDscIsLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Test-SqlDscIsLoginEnabled | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscIsLogin | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscIsLoginEnabled | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 New-SqlDscRole | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | SqlDscIntegrationTestRole_Persistent role
 Get-SqlDscRole | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Get-SqlDscStartupParameter | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Test-SqlDscIsRole | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Test-SqlDscIsDatabasePrincipal | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test database and database principals
-Grant-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Grants CreateEndpoint permission to role
-Get-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Set-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Grant-SqlDscServerPermission | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Grants CreateEndpoint permission to role
+Get-SqlDscServerPermission | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Set-SqlDscServerPermission | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 ConvertFrom-SqlDscServerPermission | 2 | 0 (Prerequisites) | - | -
-Test-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Deny-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Denies AlterTrace permission to login (persistent)
-Revoke-SqlDscServerPermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscServerPermission | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Deny-SqlDscServerPermission | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Denies AlterTrace permission to login (persistent)
+Revoke-SqlDscServerPermission | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Get-SqlDscDatabase | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 ConvertFrom-SqlDscDatabasePermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 New-SqlDscDatabase | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test databases
@@ -88,7 +88,7 @@ Test-SqlDscDatabase | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTE
 Get-SqlDscDatabasePermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test database, Test user
 Invoke-SqlDscQuery | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test database and table
 ConvertTo-SqlDscDatabasePermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Set-SqlDscDatabasePermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Set-SqlDscDatabasePermission | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Get-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 New-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test alerts
 New-SqlDscAudit | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test audits
