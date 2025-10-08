@@ -565,10 +565,11 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                     $script:mockMethodAlterCallCount += 1
                 } -Force
 
-                # Set the Guid property using Add-Member to ensure it can be set
-                if ($PSBoundParameters.ContainsKey('AuditGuid'))
+                # Set the Guid property directly on the SMO object (convert string to GUID)
+                # PowerShell should automatically convert the string to a GUID when assigning
+                if ($null -ne $AuditGuid -and $AuditGuid -ne '')
                 {
-                    $newAudit | Add-Member -MemberType 'NoteProperty' -Name 'Guid' -Value $AuditGuid -Force
+                    $newAudit.Guid = $AuditGuid
                 }
 
                 return $newAudit
@@ -590,6 +591,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
             # Debug: Check what we got back
             $result | Should -Not -BeNullOrEmpty -Because 'PassThru should return the audit object'
             $result.Name | Should -Be 'Log1' -Because 'The audit name should match'
+            $result.Guid | Should -Be 'b5962b93-a359-42ef-bf1e-193e8a5f6222' -Because 'The GUID should be set to the new value'
 
             # Verify the helper function was called with correct GUID
             Should -Invoke -CommandName ConvertTo-AuditNewParameterSet -Exactly -Times 1 -Scope It -ParameterFilter {
@@ -906,10 +908,11 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                     $script:mockMethodAlterCallCount += 1
                 } -Force
 
-                # Set the Guid property using Add-Member to ensure it can be set
-                if ($PSBoundParameters.ContainsKey('AuditGuid'))
+                # Set the Guid property directly on the SMO object (convert string to GUID)
+                # PowerShell should automatically convert the string to a GUID when assigning
+                if ($null -ne $AuditGuid -and $AuditGuid -ne '')
                 {
-                    $newAudit | Add-Member -MemberType 'NoteProperty' -Name 'Guid' -Value $AuditGuid -Force
+                    $newAudit.Guid = $AuditGuid
                 }
 
                 return $newAudit
@@ -948,6 +951,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
 
             # The QueueDelay should be set (via recursive call to Set-SqlDscAudit)
             $result.QueueDelay | Should -Be 1000
+            $result.Guid | Should -Be 'b5962b93-a359-42ef-bf1e-193e8a5f6222' -Because 'The GUID should be set to the new value'
         }
     }
 
