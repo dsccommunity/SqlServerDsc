@@ -282,11 +282,11 @@ function Set-SqlDscAudit
             $AuditObject.Refresh()
         }
 
-        $verboseDescriptionMessage = $script:localizedData.Audit_Update_ShouldProcessVerboseDescription -f $AuditObject.Name, $AuditObject.Parent.InstanceName
-        $verboseWarningMessage = $script:localizedData.Audit_Update_ShouldProcessVerboseWarning -f $AuditObject.Name
+        $descriptionMessage = $script:localizedData.Audit_Update_ShouldProcessVerboseDescription -f $AuditObject.Name, $AuditObject.Parent.InstanceName
+        $confirmationMessage = $script:localizedData.Audit_Update_ShouldProcessVerboseWarning -f $AuditObject.Name
         $captionMessage = $script:localizedData.Audit_Update_ShouldProcessCaption
 
-        if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
         {
             # Check if GUID change is requested early, before any other modifications
             if ($PSBoundParameters.ContainsKey('AuditGuid') -and $AuditObject.Guid -ne $AuditGuid)
