@@ -61,9 +61,18 @@ function ConvertTo-SqlDscAuditCreateParameters
                 # Convert SMO unit to parameter value
                 $parameters['MaximumFileSizeUnit'] = switch ($AuditObject.MaximumFileSizeUnit)
                 {
-                    'MB' { 'Megabyte' }
-                    'GB' { 'Gigabyte' }
-                    'TB' { 'Terabyte' }
+                    'MB'
+                    {
+                        'Megabyte'
+                    }
+                    'GB'
+                    {
+                        'Gigabyte'
+                    }
+                    'TB'
+                    {
+                        'Terabyte'
+                    }
                 }
             }
 
