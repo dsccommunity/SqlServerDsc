@@ -621,6 +621,28 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
             }
         }
 
+        Context 'When AuditGuid is same as existing GUID but other properties change' {
+            It 'Should update properties without recreating the audit' {
+                # Set the existing GUID and QueueDelay
+                $mockAuditObject.Guid = 'b5962b93-a359-42ef-bf1e-193e8a5f6222'
+                $mockAuditObject.QueueDelay = 500
+
+                # Call with same GUID but different QueueDelay
+                Set-SqlDscAudit -AuditGuid 'b5962b93-a359-42ef-bf1e-193e8a5f6222' -QueueDelay 1000 -AllowAuditGuidChange @mockDefaultParameters
+
+                # Should not invoke helper functions when GUID is not changing
+                Should -Invoke -CommandName ConvertTo-AuditNewParameterSet -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Remove-SqlDscAudit -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName New-SqlDscAudit -Exactly -Times 0 -Scope It
+
+                # Verify the property was updated
+                $mockAuditObject.QueueDelay | Should -Be 1000 -Because 'QueueDelay should be updated to the new value'
+
+                # Alter() should be called to persist the property change
+                $mockMethodAlterCallCount | Should -Be 1 -Because 'Alter() is called to update the property'
+            }
+        }
+
         Context 'When trying to change AuditGuid without AllowAuditGuidChange parameter' {
             It 'Should throw the correct error' {
                 # Ensure the GUID is different from what we're trying to set
