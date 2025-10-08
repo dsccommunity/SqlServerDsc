@@ -562,6 +562,17 @@ function Set-TargetResource
             {
                 Write-Verbose -Message "Did not help restarting the Reporting Services service, running the CIM method to initialize report server on $DatabaseServerName\$DatabaseInstanceName for instance ID '$($reportingServicesData.Configuration.InstallationID)'."
 
+                <#
+                    Add an additional wait before calling InitializeReportServer to give
+                    the WMI provider more time to be fully ready. This is especially
+                    important on resource-constrained systems.
+                #>
+                if ($PSBoundParameters.ContainsKey('RestartTimeout'))
+                {
+                    Write-Verbose -Message ($script:localizedData.WaitingForServiceReady -f $RestartTimeout)
+                    Start-Sleep -Seconds $RestartTimeout
+                }
+
                 $restartReportingService = $true
 
                 $invokeRsCimMethodParameters = @{

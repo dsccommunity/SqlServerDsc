@@ -135,7 +135,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     (particularly Windows Server 2025 in CI) by adding an optional `RestartTimeout`
     parameter that allows specifying a wait period (in seconds) after service
     restart to allow Reporting Services to fully initialize before attempting
-    to get configuration data or run initialization methods. When not specified,
+    to get configuration data or run initialization methods. The timeout is applied
+    both after the initial service restart and before calling `InitializeReportServer()`
+    if needed, giving the WMI provider sufficient time to be ready. When not specified,
     no additional wait time is applied, maintaining backward compatibility.
 - `New-SqlDscAudit`
   - Fixed parameter validation to prevent the `ReserveDiskSpace` parameter from
