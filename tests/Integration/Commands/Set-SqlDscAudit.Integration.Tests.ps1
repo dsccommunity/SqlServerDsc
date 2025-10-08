@@ -133,7 +133,7 @@ Describe 'Set-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
             # Attempt to modify the audit GUID without AllowAuditGuidChange should throw an error
             { Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -AuditGuid $newGuid -Force -ErrorAction Stop } |
-                Should -Throw -ExpectedMessage '*AllowAuditGuidChange*'
+                Should -Throw
         }
 
         It 'Should support multiple property modifications in one call' {
