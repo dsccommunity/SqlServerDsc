@@ -1,4 +1,4 @@
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
 BeforeDiscovery {
@@ -10,7 +10,7 @@ BeforeDiscovery {
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
-                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
+                & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
             }
 
             # If the dependencies have not been resolved, this will throw an error.
@@ -24,18 +24,18 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
     $env:SqlServerDscCI = $true
 
-    Import-Module -Name $script:dscModuleName
+    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
 
     # Loading mocked classes
-    Add-Type -Path (Join-Path -Path $PSScriptRoot -ChildPath '../Stubs/SMO.cs')
+    Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../Stubs') -ChildPath 'SMO.cs')
 
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
@@ -44,7 +44,7 @@ AfterAll {
     $PSDefaultParameterValues.Remove('Should:ModuleName')
 
     # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
+    Get-Module -Name $script:moduleName -All | Remove-Module -Force
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
