@@ -125,6 +125,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `DSC_SqlRS`
+  - Fixed intermittent initialization failures on resource-constrained systems
+    (particularly Windows Server 2025 in CI) by adding an optional `RestartTimeout`
+    parameter that allows specifying a wait period (in seconds) after service
+    restart to allow Reporting Services to fully initialize before attempting
+    to get configuration data or run initialization methods. When not specified,
+    no additional wait time is applied, maintaining backward compatibility
+    ([issue #2287](https://github.com/dsccommunity/SqlServerDsc/issues/2287)).
 - `New-SqlDscAudit`
   - Fixed parameter validation to prevent the `ReserveDiskSpace` parameter from
     being used with the `FileWithMaxFiles` parameter set (when only `MaximumFiles`
