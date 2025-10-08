@@ -13,8 +13,24 @@
     .PARAMETER AuditGuid
         Optional GUID to set on the audit. If not specified, the existing GUID is used.
 
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine
+        $auditObject = $serverObject.Audits['MyAudit']
+        $parameters = ConvertTo-AuditNewParameterSet -AuditObject $auditObject
+
+        Converts an existing audit object to a parameter set that can be used with New-SqlDscAudit.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine
+        $auditObject = $serverObject.Audits['MyAudit']
+        $parameters = ConvertTo-AuditNewParameterSet -AuditObject $auditObject -AuditGuid '12345678-1234-1234-1234-123456789012'
+
+        Converts an existing audit object to a parameter set with a custom GUID.
+
     .OUTPUTS
         System.Collections.Hashtable
+
+        Returns a hashtable of parameters for New-SqlDscAudit.
 #>
 function ConvertTo-AuditNewParameterSet
 {
