@@ -52,51 +52,51 @@ AfterAll {
 Describe 'Set-SqlDscAudit' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
-            MockParameterSetName = 'ServerObject'
+            MockParameterSetName   = 'ServerObject'
             MockExpectedParameters = '-ServerObject <Server> -Name <string> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
-            MockParameterSetName = 'ServerObjectWithSize'
+            MockParameterSetName   = 'ServerObjectWithSize'
             MockExpectedParameters = '-ServerObject <Server> -Name <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
-            MockParameterSetName = 'ServerObjectWithMaxFiles'
+            MockParameterSetName   = 'ServerObjectWithMaxFiles'
             MockExpectedParameters = '-ServerObject <Server> -Name <string> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
-            MockParameterSetName = 'ServerObjectWithMaxRolloverFiles'
+            MockParameterSetName   = 'ServerObjectWithMaxRolloverFiles'
             MockExpectedParameters = '-ServerObject <Server> -Name <string> -MaximumRolloverFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
-            MockParameterSetName = 'ServerObjectWithSizeAndMaxFiles'
+            MockParameterSetName   = 'ServerObjectWithSizeAndMaxFiles'
             MockExpectedParameters = '-ServerObject <Server> -Name <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
-            MockParameterSetName = 'ServerObjectWithSizeAndMaxRolloverFiles'
+            MockParameterSetName   = 'ServerObjectWithSizeAndMaxRolloverFiles'
             MockExpectedParameters = '-ServerObject <Server> -Name <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumRolloverFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
-            MockParameterSetName = 'AuditObject'
+            MockParameterSetName   = 'AuditObject'
             MockExpectedParameters = '-AuditObject <Audit> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
-            MockParameterSetName = 'AuditObjectWithSize'
+            MockParameterSetName   = 'AuditObjectWithSize'
             MockExpectedParameters = '-AuditObject <Audit> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
-            MockParameterSetName = 'AuditObjectWithMaxFiles'
+            MockParameterSetName   = 'AuditObjectWithMaxFiles'
             MockExpectedParameters = '-AuditObject <Audit> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
-            MockParameterSetName = 'AuditObjectWithMaxRolloverFiles'
+            MockParameterSetName   = 'AuditObjectWithMaxRolloverFiles'
             MockExpectedParameters = '-AuditObject <Audit> -MaximumRolloverFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
-            MockParameterSetName = 'AuditObjectWithSizeAndMaxFiles'
+            MockParameterSetName   = 'AuditObjectWithSizeAndMaxFiles'
             MockExpectedParameters = '-AuditObject <Audit> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
-            MockParameterSetName = 'AuditObjectWithSizeAndMaxRolloverFiles'
+            MockParameterSetName   = 'AuditObjectWithSizeAndMaxRolloverFiles'
             MockExpectedParameters = '-AuditObject <Audit> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumRolloverFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-AllowAuditGuidChange] [-Force] [-Refresh] [-PassThru] [-Path <string>] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
@@ -106,11 +106,11 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
             } |
             Select-Object -Property @(
                 @{
-                    Name = 'ParameterSetName'
+                    Name       = 'ParameterSetName'
                     Expression = { $_.Name }
                 },
                 @{
-                    Name = 'ParameterListAsString'
+                    Name       = 'ParameterListAsString'
                     Expression = { $_.ToString() }
                 }
             )
@@ -144,7 +144,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
 
             $mockDefaultParameters = @{
                 ServerObject = $mockServerObject
-                Name = 'Log1'
+                Name         = 'Log1'
             }
         }
 
@@ -282,8 +282,8 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
         It 'Should throw the correct error' {
             $mockNewSqlDscAuditParameters = @{
                 ServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                Path = Get-TemporaryFolder
-                Name = 'Log1'
+                Path         = Get-TemporaryFolder
+                Name         = 'Log1'
             }
 
             $mockErrorMessage = InModuleScope -ScriptBlock {
@@ -299,8 +299,8 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
     Context 'When adding an file audit and passing an invalid MaximumFileSize' {
         It 'Should throw the correct error when the value is <_>' -ForEach @(1, 2147483648) {
             $mockNewSqlDscAuditParameters = @{
-                ServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                Name = 'Log1'
+                ServerObject    = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                Name            = 'Log1'
                 MaximumFileSize = $_
             }
 
@@ -317,8 +317,8 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
         It 'Should throw the correct error when the value is <_>' -ForEach @(1, 457, 999, 2147483648) {
             $mockNewSqlDscAuditParameters = @{
                 ServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                Name = 'Log1'
-                QueueDelay = $_
+                Name         = 'Log1'
+                QueueDelay   = $_
             }
 
             $mockErrorMessage = 'Cannot validate argument on parameter ''QueueDelay''. '
@@ -347,7 +347,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
 
             $mockDefaultParameters = @{
                 AuditObject = $mockAuditObject
-                Force = $true
+                Force       = $true
             }
         }
 
@@ -383,7 +383,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
 
             $mockDefaultParameters = @{
                 AuditObject = $mockAuditObject
-                Force = $true
+                Force       = $true
             }
         }
 
@@ -420,7 +420,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
 
             $mockDefaultParameters = @{
                 AuditObject = $mockAuditObject
-                Force = $true
+                Force       = $true
             }
         }
 
@@ -456,7 +456,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
 
             $mockDefaultParameters = @{
                 AuditObject = $mockAuditObject
-                Force = $true
+                Force       = $true
             }
         }
 
@@ -506,7 +506,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
 
             $mockDefaultParameters = @{
                 AuditObject = $mockAuditObject
-                Force = $true
+                Force       = $true
             }
         }
 
@@ -546,9 +546,9 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
             Mock -CommandName ConvertTo-SqlDscAuditCreateParameters -MockWith {
                 return @{
                     ServerObject = $AuditObject.Parent
-                    Name = $AuditObject.Name
-                    LogType = 'ApplicationLog'
-                    AuditGuid = $AuditGuid
+                    Name         = $AuditObject.Name
+                    LogType      = 'ApplicationLog'
+                    AuditGuid    = $AuditGuid
                 }
             }
 
@@ -576,7 +576,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
 
             $mockDefaultParameters = @{
                 AuditObject = $mockAuditObject
-                Force = $true
+                Force       = $true
             }
         }
 
@@ -665,7 +665,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
 
             $mockDefaultParameters = @{
                 AuditObject = $mockAuditObject
-                Force = $true
+                Force       = $true
             }
         }
 
@@ -713,7 +713,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
 
             $mockDefaultParameters = @{
                 AuditObject = $mockAuditObject
-                Force = $true
+                Force       = $true
             }
         }
 
@@ -749,7 +749,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
 
             $mockDefaultParameters = @{
                 AuditObject = $mockAuditObject
-                Force = $true
+                Force       = $true
             }
         }
 
@@ -785,7 +785,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
 
             $mockDefaultParameters = @{
                 AuditObject = $mockAuditObject
-                Force = $true
+                Force       = $true
             }
         }
 
@@ -823,7 +823,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
 
             $mockDefaultParameters = @{
                 AuditObject = $mockAuditObject
-                Force = $true
+                Force       = $true
             }
         }
 
@@ -862,9 +862,9 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
             Mock -CommandName ConvertTo-SqlDscAuditCreateParameters -MockWith {
                 return @{
                     ServerObject = $AuditObject.Parent
-                    Name = $AuditObject.Name
-                    LogType = 'ApplicationLog'
-                    AuditGuid = $AuditGuid
+                    Name         = $AuditObject.Name
+                    LogType      = 'ApplicationLog'
+                    AuditGuid    = $AuditGuid
                 }
             }
 
@@ -895,7 +895,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
 
             $mockDefaultParameters = @{
                 AuditObject = $mockAuditObject
-                Force = $true
+                Force       = $true
             }
         }
 
@@ -948,7 +948,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
 
             $mockDefaultParameters = @{
                 AuditObject = $mockAuditObject
-                Force = $true
+                Force       = $true
             }
         }
 
@@ -989,7 +989,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
 
             $mockDefaultParameters = @{
                 AuditObject = $mockAuditObject
-                Force = $true
+                Force       = $true
             }
         }
 
