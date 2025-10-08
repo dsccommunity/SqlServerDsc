@@ -289,65 +289,61 @@ function Set-SqlDscAudit
         if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
             # Check if GUID change is requested early, before any other modifications
-            if ($PSBoundParameters.ContainsKey('AuditGuid'))
+            if ($PSBoundParameters.ContainsKey('AuditGuid') -and $AuditObject.Guid -ne $AuditGuid)
             {
-                # Check if the GUID is actually changing
-                if ($AuditObject.Guid -ne $AuditGuid)
+                # Validate that AllowAuditGuidChange is present
+                if (-not $AllowAuditGuidChange.IsPresent)
                 {
-                    # Validate that AllowAuditGuidChange is present
-                    if (-not $AllowAuditGuidChange.IsPresent)
-                    {
-                        $errorMessage = $script:localizedData.Audit_AuditGuidChangeRequiresAllowParameter -f $AuditObject.Name
+                    $errorMessage = $script:localizedData.Audit_AuditGuidChangeRequiresAllowParameter -f $AuditObject.Name
 
-                        $PSCmdlet.ThrowTerminatingError(
-                            [System.Management.Automation.ErrorRecord]::new(
-                                $errorMessage,
-                                'SSDA0001', # cspell: disable-line
-                                [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                                $AuditObject.Name
-                            )
+                    $PSCmdlet.ThrowTerminatingError(
+                        [System.Management.Automation.ErrorRecord]::new(
+                            $errorMessage,
+                            'SSDA0001', # cspell: disable-line
+                            [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                            $AuditObject.Name
                         )
-                    }
+                    )
+                }
 
-                    Write-Verbose -Message ($script:localizedData.Audit_RecreatingAuditForGuidChange -f $AuditObject.Name, $AuditObject.Parent.InstanceName, $AuditGuid)
+                Write-Verbose -Message ($script:localizedData.Audit_RecreatingAuditForGuidChange -f $AuditObject.Name, $AuditObject.Parent.InstanceName, $AuditGuid)
 
-                    # Convert audit properties to parameters for New-SqlDscAudit
-                    $newAuditParameters = ConvertTo-AuditNewParameterSet -AuditObject $AuditObject -AuditGuid $AuditGuid
+                # Convert audit properties to parameters for New-SqlDscAudit
+                $newAuditParameters = ConvertTo-AuditNewParameterSet -AuditObject $AuditObject -AuditGuid $AuditGuid
 
-                    # Drop the existing audit using Remove-SqlDscAudit
-                    # Use -Confirm:$false since we're already in a confirmed ShouldProcess context
-                    $AuditObject | Remove-SqlDscAudit -Confirm:$false
+                # Drop the existing audit using Remove-SqlDscAudit
+                # Use -Confirm:$false since we're already in a confirmed ShouldProcess context
+                $AuditObject | Remove-SqlDscAudit -Confirm:$false
 
-                    # Create new audit with the same properties using New-SqlDscAudit
-                    # Use -Confirm:$false and -PassThru since we're already in a confirmed context and need the object
-                    $AuditObject = New-SqlDscAudit @newAuditParameters -Confirm:$false -PassThru
+                # Create new audit with the same properties using New-SqlDscAudit
+                # Use -Confirm:$false and -PassThru since we're already in a confirmed context and need the object
+                $AuditObject = New-SqlDscAudit @newAuditParameters -Confirm:$false -PassThru
 
-                    # Remove parameters that should not be passed to recursive call
-                    $null = $PSBoundParameters.Remove('AuditGuid')
-                    $null = $PSBoundParameters.Remove('AllowAuditGuidChange')
-                    $null = $PSBoundParameters.Remove('ServerObject')
-                    $null = $PSBoundParameters.Remove('Name')
-                    $null = $PSBoundParameters.Remove('Force')
-                    $null = $PSBoundParameters.Remove('Refresh')
-                    $null = $PSBoundParameters.Remove('PassThru')
+                # Remove parameters that should not be passed to recursive call
+                $null = $PSBoundParameters.Remove('AuditGuid')
+                $null = $PSBoundParameters.Remove('AllowAuditGuidChange')
+                $null = $PSBoundParameters.Remove('ServerObject')
+                $null = $PSBoundParameters.Remove('Name')
+                $null = $PSBoundParameters.Remove('Force')
+                $null = $PSBoundParameters.Remove('Refresh')
+                $null = $PSBoundParameters.Remove('PassThru')
 
-                    # Remove common parameters and get the resulting hashtable
-                    $remainingParameters = Remove-CommonParameter -Hashtable $PSBoundParameters
+                # Remove common parameters and get the resulting hashtable
+                $remainingParameters = Remove-CommonParameter -Hashtable $PSBoundParameters
 
-                    # If there are other property-changing parameters to apply, recursively call Set-SqlDscAudit
-                    if ($remainingParameters.Count -gt 0)
-                    {
-                        # Add the new AuditObject parameter
-                        $remainingParameters['AuditObject'] = $AuditObject
+                # If there are other property-changing parameters to apply, recursively call Set-SqlDscAudit
+                if ($remainingParameters.Count -gt 0)
+                {
+                    # Add the new AuditObject parameter
+                    $remainingParameters['AuditObject'] = $AuditObject
 
-                        # Recursively call to apply remaining changes
-                        $AuditObject = Set-SqlDscAudit @remainingParameters -Confirm:$false -PassThru
-                    }
+                    # Recursively call to apply remaining changes
+                    $AuditObject = Set-SqlDscAudit @remainingParameters -Confirm:$false -PassThru
                 }
             }
             else
             {
-                # No GUID change, proceed with normal property updates
+                # No GUID change (or GUID is the same), proceed with normal property updates
 
                 # Apply other parameter changes
                 if ($PSBoundParameters.ContainsKey('Path'))
