@@ -27,6 +27,11 @@
 
         Converts an existing audit object to a parameter set with a custom GUID.
 
+    .INPUTS
+        None
+
+        This function does not accept pipeline input.
+
     .OUTPUTS
         System.Collections.Hashtable
 
