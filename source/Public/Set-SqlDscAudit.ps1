@@ -306,7 +306,7 @@ function Set-SqlDscAudit
                     )
                 }
 
-                Write-Verbose -Message ($script:localizedData.Audit_RecreatingAuditForGuidChange -f $AuditObject.Name, $AuditObject.Parent.InstanceName, $AuditGuid)
+                Write-Debug -Message ($script:localizedData.Audit_RecreatingAuditForGuidChange -f $AuditObject.Name, $AuditObject.Parent.InstanceName, $AuditGuid)
 
                 # Convert audit properties to parameters for New-SqlDscAudit
                 $newAuditParameters = ConvertTo-AuditNewParameterSet -AuditObject $AuditObject -AuditGuid $AuditGuid
