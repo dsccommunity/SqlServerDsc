@@ -3,7 +3,7 @@
         Updates a server audit.
 
     .DESCRIPTION
-        This command updates and existing server audit on a SQL Server Database Engine
+        This command updates an existing server audit on a SQL Server Database Engine
         instance.
 
     .PARAMETER ServerObject
@@ -32,6 +32,13 @@
         Specifies the GUID found in the mirrored database. To support scenarios such
         as database mirroring an audit needs a specific GUID.
 
+    .PARAMETER AllowAuditGuidChange
+        Specifies that the audit GUID can be changed by dropping and recreating the
+        audit. This parameter is required when modifying the AuditGuid property because
+        SQL Server does not allow direct modification of the audit GUID. When specified,
+        the audit will be dropped and recreated with all existing properties plus the
+        new GUID value. This is a destructive operation that requires explicit opt-in.
+
     .PARAMETER Force
         Specifies that the audit should be updated without any confirmation.
 
@@ -42,7 +49,7 @@
         it might be better to make sure the ServerObject is recent enough.
 
     .PARAMETER Path
-        Specifies the location where te log files wil be placed.
+        Specifies the location where the log files will be placed.
 
     .PARAMETER ReserveDiskSpace
         Specifies if the needed file space should be reserved. To use this parameter
@@ -57,7 +64,8 @@
         mean unlimited file size.
 
     .PARAMETER MaximumFileSizeUnit
-        Specifies the unit that is used for the file size. this can be KB, MB or GB.
+        Specifies the unit used for the file size. This can be Megabyte, Gigabyte,
+        or Terabyte.
 
     .PARAMETER MaximumRolloverFiles
         Specifies the amount of files on disk before SQL Server starts reusing
@@ -72,24 +80,30 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $sqlServerObject | Set-SqlDscAudit -Name 'MyFileAudit' -Path 'E:\auditFolder' -QueueDelay 1000
+        $serverObject | Set-SqlDscAudit -Name 'MyFileAudit' -Path 'E:\auditFolder' -QueueDelay 1000
 
-        Updates the file audit named **MyFileAudit** by setting the path to ''E:\auditFolder'
+        Updates the file audit named **MyFileAudit** by setting the path to 'E:\auditFolder'
         and the queue delay to 1000.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $sqlServerObject | New-SqlDscAudit -Name 'MyAppLogAudit' -QueueDelay 1000
+        $serverObject | New-SqlDscAudit -Name 'MyAppLogAudit' -QueueDelay 1000
 
         Updates the application log audit named **MyAppLogAudit** by setting the
         queue delay to 1000.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $sqlServerObject | Set-SqlDscAudit -Name 'MyFileAudit' -Path 'E:\auditFolder' -QueueDelay 1000 -PassThru
+        $serverObject | Set-SqlDscAudit -Name 'MyFileAudit' -Path 'E:\auditFolder' -QueueDelay 1000 -PassThru
 
         Updates the file audit named **MyFileAudit** by setting the path to ''E:\auditFolder'
         and the queue delay to 1000, and returns the Audit object.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $serverObject | Set-SqlDscAudit -Name 'MyFileAudit' -AuditGuid '12345678-1234-1234-1234-123456789012' -AllowAuditGuidChange
+
+        Changes the audit GUID by dropping and recreating the audit with the specified GUID.
 
     .NOTES
         This command has the confirm impact level set to high since an audit is
@@ -157,6 +171,10 @@ function Set-SqlDscAudit
         [ValidatePattern('^[0-9a-fA-F]{8}-(?:[0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$')]
         [System.String]
         $AuditGuid,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $AllowAuditGuidChange,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -250,7 +268,7 @@ function Set-SqlDscAudit
             $ConfirmPreference = 'None'
         }
 
-        if ($PSCmdlet.ParameterSetName -eq 'ServerObject')
+        if ($PSCmdlet.ParameterSetName -match '^ServerObject')
         {
             $getSqlDscAuditParameters = @{
                 ServerObject = $ServerObject
@@ -271,85 +289,139 @@ function Set-SqlDscAudit
             $AuditObject.Refresh()
         }
 
-        $verboseDescriptionMessage = $script:localizedData.Audit_Update_ShouldProcessVerboseDescription -f $AuditObject.Name, $AuditObject.Parent.InstanceName
-        $verboseWarningMessage = $script:localizedData.Audit_Update_ShouldProcessVerboseWarning -f $AuditObject.Name
+        $descriptionMessage = $script:localizedData.Audit_Update_ShouldProcessVerboseDescription -f $AuditObject.Name, $AuditObject.Parent.InstanceName
+        $confirmationMessage = $script:localizedData.Audit_Update_ShouldProcessVerboseWarning -f $AuditObject.Name
         $captionMessage = $script:localizedData.Audit_Update_ShouldProcessCaption
 
-        if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
         {
-            if ($PSBoundParameters.ContainsKey('Path'))
+            # Check if GUID change is requested early, before any other modifications
+            if ($PSBoundParameters.ContainsKey('AuditGuid') -and $AuditObject.Guid -ne $AuditGuid)
             {
-                $AuditObject.FilePath = $Path
-            }
+                # Validate that AllowAuditGuidChange is present
+                if (-not $AllowAuditGuidChange.IsPresent)
+                {
+                    $errorMessage = $script:localizedData.Audit_AuditGuidChangeRequiresAllowParameter -f $AuditObject.Name
 
-            if ($PSCmdlet.ParameterSetName -match 'WithSize')
+                    $PSCmdlet.ThrowTerminatingError(
+                        [System.Management.Automation.ErrorRecord]::new(
+                            $errorMessage,
+                            'SSDA0001', # cspell: disable-line
+                            [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                            $AuditObject.Name
+                        )
+                    )
+                }
+
+                Write-Debug -Message ($script:localizedData.Audit_RecreatingAuditForGuidChange -f $AuditObject.Name, $AuditObject.Parent.InstanceName, $AuditGuid)
+
+                # Convert audit properties to parameters for New-SqlDscAudit
+                $newAuditParameters = ConvertTo-AuditNewParameterSet -AuditObject $AuditObject -AuditGuid $AuditGuid
+
+                # Drop the existing audit using Remove-SqlDscAudit
+                # Use -Confirm:$false since we're already in a confirmed ShouldProcess context
+                $AuditObject | Remove-SqlDscAudit -Confirm:$false
+
+                # Create new audit with the same properties using New-SqlDscAudit
+                # Use -Confirm:$false and -PassThru since we're already in a confirmed context and need the object
+                $AuditObject = New-SqlDscAudit @newAuditParameters -Confirm:$false -PassThru
+
+                # Remove parameters that should not be passed to recursive call
+                $null = $PSBoundParameters.Remove('AuditGuid')
+                $null = $PSBoundParameters.Remove('AllowAuditGuidChange')
+                $null = $PSBoundParameters.Remove('ServerObject')
+                $null = $PSBoundParameters.Remove('Name')
+                $null = $PSBoundParameters.Remove('Force')
+                $null = $PSBoundParameters.Remove('Refresh')
+                $null = $PSBoundParameters.Remove('PassThru')
+
+                # Remove common parameters and get the resulting hashtable
+                $remainingParameters = Remove-CommonParameter -Hashtable $PSBoundParameters
+
+                # If there are other property-changing parameters to apply, recursively call Set-SqlDscAudit
+                if ($remainingParameters.Count -gt 0)
+                {
+                    # Add the new AuditObject parameter
+                    $remainingParameters['AuditObject'] = $AuditObject
+
+                    # Recursively call to apply remaining changes
+                    $AuditObject = Set-SqlDscAudit @remainingParameters -Confirm:$false -PassThru
+                }
+            }
+            else
             {
-                $queryMaximumFileSizeUnit = (
-                    @{
-                        Megabyte = 'MB'
-                        Gigabyte = 'GB'
-                        Terabyte = 'TB'
+                # No GUID change (or GUID is the same), proceed with normal property updates
+
+                # Apply other parameter changes
+                if ($PSBoundParameters.ContainsKey('Path'))
+                {
+                    $AuditObject.FilePath = $Path
+                }
+
+                if ($PSCmdlet.ParameterSetName -match 'WithSize')
+                {
+                    $queryMaximumFileSizeUnit = (
+                        @{
+                            Megabyte = 'MB'
+                            Gigabyte = 'GB'
+                            Terabyte = 'TB'
+                        }
+                    ).$MaximumFileSizeUnit
+
+                    $AuditObject.MaximumFileSize = $MaximumFileSize
+                    $AuditObject.MaximumFileSizeUnit = $queryMaximumFileSizeUnit
+                }
+
+                if ($PSCmdlet.ParameterSetName -match 'MaxFiles')
+                {
+                    if ($AuditObject.MaximumRolloverFiles)
+                    {
+                        # Switching to MaximumFiles instead of MaximumRolloverFiles.
+                        $AuditObject.MaximumRolloverFiles = 0
+
+                        # Must run method Alter() before setting MaximumFiles.
+                        $AuditObject.Alter()
                     }
-                ).$MaximumFileSizeUnit
 
-                $AuditObject.MaximumFileSize = $MaximumFileSize
-                $AuditObject.MaximumFileSizeUnit = $queryMaximumFileSizeUnit
-            }
+                    $AuditObject.MaximumFiles = $MaximumFiles
 
-            if ($PSCmdlet.ParameterSetName -match 'MaxFiles')
-            {
-                if ($AuditObject.MaximumRolloverFiles)
-                {
-                    # Switching to MaximumFiles instead of MaximumRolloverFiles.
-                    $AuditObject.MaximumRolloverFiles = 0
-
-                    # Must run method Alter() before setting MaximumFiles.
-                    $AuditObject.Alter()
+                    if ($PSBoundParameters.ContainsKey('ReserveDiskSpace'))
+                    {
+                        $AuditObject.ReserveDiskSpace = $ReserveDiskSpace.IsPresent
+                    }
                 }
 
-                $AuditObject.MaximumFiles = $MaximumFiles
-
-                if ($PSBoundParameters.ContainsKey('ReserveDiskSpace'))
+                if ($PSCmdlet.ParameterSetName -match 'MaxRolloverFiles')
                 {
-                    $AuditObject.ReserveDiskSpace = $ReserveDiskSpace.IsPresent
-                }
-            }
+                    if ($AuditObject.MaximumFiles)
+                    {
+                        # Switching to MaximumRolloverFiles instead of MaximumFiles.
+                        $AuditObject.MaximumFiles = 0
 
-            if ($PSCmdlet.ParameterSetName -match 'MaxRolloverFiles')
-            {
-                if ($AuditObject.MaximumFiles)
-                {
-                    # Switching to MaximumRolloverFiles instead of MaximumFiles.
-                    $AuditObject.MaximumFiles = 0
+                        # Must run method Alter() before setting MaximumRolloverFiles.
+                        $AuditObject.Alter()
+                    }
 
-                    # Must run method Alter() before setting MaximumRolloverFiles.
-                    $AuditObject.Alter()
+                    $AuditObject.MaximumRolloverFiles = $MaximumRolloverFiles
                 }
 
-                $AuditObject.MaximumRolloverFiles = $MaximumRolloverFiles
-            }
+                if ($PSBoundParameters.ContainsKey('OnFailure'))
+                {
+                    $AuditObject.OnFailure = $OnFailure
+                }
 
-            if ($PSBoundParameters.ContainsKey('OnFailure'))
-            {
-                $AuditObject.OnFailure = $OnFailure
-            }
+                if ($PSBoundParameters.ContainsKey('QueueDelay'))
+                {
+                    $AuditObject.QueueDelay = $QueueDelay
+                }
 
-            if ($PSBoundParameters.ContainsKey('QueueDelay'))
-            {
-                $AuditObject.QueueDelay = $QueueDelay
-            }
+                if ($PSBoundParameters.ContainsKey('AuditFilter'))
+                {
+                    $AuditObject.Filter = $AuditFilter
+                }
 
-            if ($PSBoundParameters.ContainsKey('AuditGuid'))
-            {
-                $AuditObject.Guid = $AuditGuid
+                $AuditObject.Alter()
             }
-
-            if ($PSBoundParameters.ContainsKey('AuditFilter'))
-            {
-                $AuditObject.Filter = $AuditFilter
-            }
-
-            $AuditObject.Alter()
 
             if ($PassThru.IsPresent)
             {
