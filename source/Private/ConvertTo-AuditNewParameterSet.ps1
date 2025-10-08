@@ -16,7 +16,7 @@
     .OUTPUTS
         System.Collections.Hashtable
 #>
-function ConvertTo-SqlDscAuditCreateParameters
+function ConvertTo-AuditNewParameterSet
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]

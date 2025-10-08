@@ -35,7 +35,7 @@ AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
 }
 
-Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         $script:mockInstanceName = 'DSCSQLTEST'
         $script:mockComputerName = Get-ComputerName
@@ -96,7 +96,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should return correct parameters that can recreate the audit' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             $parameters | Should -Not -BeNullOrEmpty
@@ -108,7 +108,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should recreate the audit with the same properties using returned parameters' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             # Remove the original audit
@@ -138,7 +138,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should return correct parameters for SecurityLog audit' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             $parameters | Should -Not -BeNullOrEmpty
@@ -162,7 +162,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should return correct parameters for File audit' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             $parameters | Should -Not -BeNullOrEmpty
@@ -172,7 +172,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should recreate the File audit with the same properties' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             # Remove the original audit
@@ -203,7 +203,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should return correct file size parameters' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             $parameters | Should -Not -BeNullOrEmpty
@@ -213,7 +213,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should recreate the audit with the same file size properties' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             # Remove the original audit
@@ -243,7 +243,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should return correct MaximumFiles and ReserveDiskSpace parameters' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             $parameters | Should -Not -BeNullOrEmpty
@@ -256,7 +256,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should recreate the audit with the same MaximumFiles properties' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             # Remove the original audit
@@ -287,7 +287,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should return correct MaximumRolloverFiles parameters' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             $parameters | Should -Not -BeNullOrEmpty
@@ -298,7 +298,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should recreate the audit with the same MaximumRolloverFiles properties' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             # Remove the original audit
@@ -327,7 +327,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should return correct OnFailure parameter' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             $parameters | Should -Not -BeNullOrEmpty
@@ -336,7 +336,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should recreate the audit with the same OnFailure setting' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             # Remove the original audit
@@ -365,7 +365,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should return correct QueueDelay parameter' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             $parameters | Should -Not -BeNullOrEmpty
@@ -374,7 +374,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should recreate the audit with the same QueueDelay setting' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             # Remove the original audit
@@ -404,7 +404,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should return correct AuditGuid parameter' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             $parameters | Should -Not -BeNullOrEmpty
@@ -417,7 +417,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit; NewGuid = $newGuid } -ScriptBlock {
                 param($AuditObject, $NewGuid)
 
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject -AuditGuid $NewGuid
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject -AuditGuid $NewGuid
             }
 
             $parameters | Should -Not -BeNullOrEmpty
@@ -427,7 +427,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should recreate the audit with the same AuditGuid' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             # Remove the original audit
@@ -458,7 +458,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should return correct AuditFilter parameter' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             $parameters | Should -Not -BeNullOrEmpty
@@ -467,7 +467,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should recreate the audit with the same AuditFilter' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             # Remove the original audit
@@ -513,7 +513,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should return all correct parameters for complex audit' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             $parameters | Should -Not -BeNullOrEmpty
@@ -530,7 +530,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag @('Integration_SQL2017', '
 
         It 'Should recreate the complex audit with all the same properties' {
             $parameters = InModuleScope -Parameters @{ AuditObject = $script:testAudit } -ScriptBlock {
-                ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject
+                ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
             # Remove the original audit

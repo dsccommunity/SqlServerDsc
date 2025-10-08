@@ -543,7 +543,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
             # Set a different initial GUID
             $script:mockAuditObject.Guid = 'a1111111-1111-1111-1111-111111111111'
 
-            Mock -CommandName ConvertTo-SqlDscAuditCreateParameters -MockWith {
+            Mock -CommandName ConvertTo-AuditNewParameterSet -MockWith {
                 return @{
                     ServerObject = $AuditObject.Parent
                     Name         = $AuditObject.Name
@@ -592,7 +592,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
             $result.Name | Should -Be 'Log1' -Because 'The audit name should match'
 
             # Verify the helper function was called with correct GUID
-            Should -Invoke -CommandName ConvertTo-SqlDscAuditCreateParameters -Exactly -Times 1 -Scope It -ParameterFilter {
+            Should -Invoke -CommandName ConvertTo-AuditNewParameterSet -Exactly -Times 1 -Scope It -ParameterFilter {
                 $AuditGuid -eq 'b5962b93-a359-42ef-bf1e-193e8a5f6222'
             }
 
@@ -612,7 +612,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                 Set-SqlDscAudit -AuditGuid 'b5962b93-a359-42ef-bf1e-193e8a5f6222' -AllowAuditGuidChange @mockDefaultParameters
 
                 # Should not invoke helper functions when GUID is not changing
-                Should -Invoke -CommandName ConvertTo-SqlDscAuditCreateParameters -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName ConvertTo-AuditNewParameterSet -Exactly -Times 0 -Scope It
                 Should -Invoke -CommandName Remove-SqlDscAudit -Exactly -Times 0 -Scope It
                 Should -Invoke -CommandName New-SqlDscAudit -Exactly -Times 0 -Scope It
 
@@ -859,7 +859,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
             # Set a different initial GUID
             $script:mockAuditObject.Guid = 'a1111111-1111-1111-1111-111111111111'
 
-            Mock -CommandName ConvertTo-SqlDscAuditCreateParameters -MockWith {
+            Mock -CommandName ConvertTo-AuditNewParameterSet -MockWith {
                 return @{
                     ServerObject = $AuditObject.Parent
                     Name         = $AuditObject.Name
@@ -908,7 +908,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
             $result = Set-SqlDscAudit -AuditGuid 'b5962b93-a359-42ef-bf1e-193e8a5f6222' -AllowAuditGuidChange -QueueDelay 1000 -PassThru @mockDefaultParameters
 
             # Verify the helper function was called with correct GUID
-            Should -Invoke -CommandName ConvertTo-SqlDscAuditCreateParameters -Exactly -Times 1 -Scope It -ParameterFilter {
+            Should -Invoke -CommandName ConvertTo-AuditNewParameterSet -Exactly -Times 1 -Scope It -ParameterFilter {
                 $AuditGuid -eq 'b5962b93-a359-42ef-bf1e-193e8a5f6222'
             }
 

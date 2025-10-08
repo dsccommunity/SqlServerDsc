@@ -49,7 +49,7 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag 'Private' {
+Describe 'ConvertTo-AuditNewParameterSet' -Tag 'Private' {
     Context 'When converting a File audit with basic properties' {
         BeforeAll {
             InModuleScope -ScriptBlock {
@@ -66,7 +66,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag 'Private' {
 
         It 'Should return correct parameters for basic file audit' {
             InModuleScope -ScriptBlock {
-                $result = ConvertTo-SqlDscAuditCreateParameters -AuditObject $script:mockAuditObject
+                $result = ConvertTo-AuditNewParameterSet -AuditObject $script:mockAuditObject
 
                 $result | Should -BeOfType [System.Collections.Hashtable]
                 $result['ServerObject'] | Should -Be $script:mockServerObject
@@ -94,7 +94,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag 'Private' {
 
         It 'Should return correct parameters including file size' {
             InModuleScope -ScriptBlock {
-                $result = ConvertTo-SqlDscAuditCreateParameters -AuditObject $script:mockAuditObject
+                $result = ConvertTo-AuditNewParameterSet -AuditObject $script:mockAuditObject
 
                 $result['MaximumFileSize'] | Should -Be 100
                 $result['MaximumFileSizeUnit'] | Should -Be 'Megabyte'
@@ -116,7 +116,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag 'Private' {
 
         It 'Should return correct parameters including MaximumFiles and ReserveDiskSpace' {
             InModuleScope -ScriptBlock {
-                $result = ConvertTo-SqlDscAuditCreateParameters -AuditObject $script:mockAuditObject
+                $result = ConvertTo-AuditNewParameterSet -AuditObject $script:mockAuditObject
 
                 $result['MaximumFiles'] | Should -Be 10
                 $result['ReserveDiskSpace'] | Should -BeTrue
@@ -138,7 +138,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag 'Private' {
 
         It 'Should return correct parameters including MaximumRolloverFiles' {
             InModuleScope -ScriptBlock {
-                $result = ConvertTo-SqlDscAuditCreateParameters -AuditObject $script:mockAuditObject
+                $result = ConvertTo-AuditNewParameterSet -AuditObject $script:mockAuditObject
 
                 $result['MaximumRolloverFiles'] | Should -Be 5
                 $result.ContainsKey('MaximumFiles') | Should -BeFalse
@@ -158,7 +158,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag 'Private' {
 
         It 'Should return correct parameters for ApplicationLog' {
             InModuleScope -ScriptBlock {
-                $result = ConvertTo-SqlDscAuditCreateParameters -AuditObject $script:mockAuditObject
+                $result = ConvertTo-AuditNewParameterSet -AuditObject $script:mockAuditObject
 
                 $result['LogType'] | Should -Be 'ApplicationLog'
                 $result.ContainsKey('Path') | Should -BeFalse
@@ -177,7 +177,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag 'Private' {
 
         It 'Should return correct parameters for SecurityLog' {
             InModuleScope -ScriptBlock {
-                $result = ConvertTo-SqlDscAuditCreateParameters -AuditObject $script:mockAuditObject
+                $result = ConvertTo-AuditNewParameterSet -AuditObject $script:mockAuditObject
 
                 $result['LogType'] | Should -Be 'SecurityLog'
                 $result.ContainsKey('Path') | Should -BeFalse
@@ -198,7 +198,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag 'Private' {
 
         It 'Should return correct parameters including AuditFilter' {
             InModuleScope -ScriptBlock {
-                $result = ConvertTo-SqlDscAuditCreateParameters -AuditObject $script:mockAuditObject
+                $result = ConvertTo-AuditNewParameterSet -AuditObject $script:mockAuditObject
 
                 $result['AuditFilter'] | Should -Be 'database_name = ''master'''
             }
@@ -219,7 +219,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag 'Private' {
         It 'Should use the provided GUID instead of the existing one' {
             InModuleScope -ScriptBlock {
                 $newGuid = '87654321-4321-4321-4321-210987654321'
-                $result = ConvertTo-SqlDscAuditCreateParameters -AuditObject $script:mockAuditObject -AuditGuid $newGuid
+                $result = ConvertTo-AuditNewParameterSet -AuditObject $script:mockAuditObject -AuditGuid $newGuid
 
                 $result['AuditGuid'] | Should -Be $newGuid
             }
@@ -239,7 +239,7 @@ Describe 'ConvertTo-SqlDscAuditCreateParameters' -Tag 'Private' {
 
         It 'Should include the existing GUID' {
             InModuleScope -ScriptBlock {
-                $result = ConvertTo-SqlDscAuditCreateParameters -AuditObject $script:mockAuditObject
+                $result = ConvertTo-AuditNewParameterSet -AuditObject $script:mockAuditObject
 
                 $result['AuditGuid'] | Should -Be '12345678-1234-1234-1234-123456789012'
             }

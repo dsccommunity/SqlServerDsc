@@ -312,7 +312,7 @@ function Set-SqlDscAudit
                     Write-Verbose -Message ($script:localizedData.Audit_RecreatingAuditForGuidChange -f $AuditObject.Name, $AuditObject.Parent.InstanceName, $AuditGuid)
 
                     # Convert audit properties to parameters for New-SqlDscAudit
-                    $newAuditParameters = ConvertTo-SqlDscAuditCreateParameters -AuditObject $AuditObject -AuditGuid $AuditGuid
+                    $newAuditParameters = ConvertTo-AuditNewParameterSet -AuditObject $AuditObject -AuditGuid $AuditGuid
 
                     # Drop the existing audit using Remove-SqlDscAudit
                     # Use -Confirm:$false since we're already in a confirmed ShouldProcess context
