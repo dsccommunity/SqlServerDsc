@@ -94,7 +94,7 @@ function ConvertTo-AuditNewParameterSet
     }
 
     # Add optional parameters if they have values
-    if ($AuditObject.OnFailure)
+    if ($null -ne $AuditObject.OnFailure)
     {
         $parameters['OnFailure'] = $AuditObject.OnFailure
     }

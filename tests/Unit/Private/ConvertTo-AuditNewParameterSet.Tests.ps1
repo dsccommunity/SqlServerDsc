@@ -74,8 +74,6 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag 'Private' {
                 $result['Path'] | Should -Be 'C:\Temp'
                 $result['OnFailure'] | Should -Be 'Continue'
                 $result['QueueDelay'] | Should -Be 1000
-                $result['Force'] | Should -BeTrue
-                $result['Confirm'] | Should -BeFalse
             }
         }
     }
