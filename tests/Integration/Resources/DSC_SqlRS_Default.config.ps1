@@ -185,6 +185,12 @@ Configuration DSC_SqlRS_ConfigureReportingServices_Config
             DatabaseInstanceName = $Node.DatabaseInstanceName
             Encrypt              = 'Optional'
 
+            <#
+                Adding a restart timeout to help with intermittent failures
+                on resource-constrained CI systems (especially Windows Server 2025).
+            #>
+            RestartTimeout = 30
+
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @(
