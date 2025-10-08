@@ -3,7 +3,7 @@
         Updates a server audit.
 
     .DESCRIPTION
-        This command updates and existing server audit on a SQL Server Database Engine
+        This command updates an existing server audit on a SQL Server Database Engine
         instance.
 
     .PARAMETER ServerObject
@@ -49,7 +49,7 @@
         it might be better to make sure the ServerObject is recent enough.
 
     .PARAMETER Path
-        Specifies the location where te log files wil be placed.
+        Specifies the location where the log files will be placed.
 
     .PARAMETER ReserveDiskSpace
         Specifies if the needed file space should be reserved. To use this parameter
@@ -64,7 +64,8 @@
         mean unlimited file size.
 
     .PARAMETER MaximumFileSizeUnit
-        Specifies the unit that is used for the file size. this can be KB, MB or GB.
+        Specifies the unit used for the file size. This can be Megabyte, Gigabyte,
+        or Terabyte.
 
     .PARAMETER MaximumRolloverFiles
         Specifies the amount of files on disk before SQL Server starts reusing
@@ -79,24 +80,30 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $sqlServerObject | Set-SqlDscAudit -Name 'MyFileAudit' -Path 'E:\auditFolder' -QueueDelay 1000
+        $serverObject | Set-SqlDscAudit -Name 'MyFileAudit' -Path 'E:\auditFolder' -QueueDelay 1000
 
-        Updates the file audit named **MyFileAudit** by setting the path to ''E:\auditFolder'
+        Updates the file audit named **MyFileAudit** by setting the path to 'E:\auditFolder'
         and the queue delay to 1000.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $sqlServerObject | New-SqlDscAudit -Name 'MyAppLogAudit' -QueueDelay 1000
+        $serverObject | New-SqlDscAudit -Name 'MyAppLogAudit' -QueueDelay 1000
 
         Updates the application log audit named **MyAppLogAudit** by setting the
         queue delay to 1000.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $sqlServerObject | Set-SqlDscAudit -Name 'MyFileAudit' -Path 'E:\auditFolder' -QueueDelay 1000 -PassThru
+        $serverObject | Set-SqlDscAudit -Name 'MyFileAudit' -Path 'E:\auditFolder' -QueueDelay 1000 -PassThru
 
         Updates the file audit named **MyFileAudit** by setting the path to ''E:\auditFolder'
         and the queue delay to 1000, and returns the Audit object.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $serverObject | Set-SqlDscAudit -Name 'MyFileAudit' -AuditGuid '12345678-1234-1234-1234-123456789012' -AllowAuditGuidChange
+
+        Changes the audit GUID by dropping and recreating the audit with the specified GUID.
 
     .NOTES
         This command has the confirm impact level set to high since an audit is
