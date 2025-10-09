@@ -180,6 +180,12 @@ function Get-TargetResource
         settings change. If this parameter is set to $true, Reporting Services
         will not be restarted, even after initialization.
 
+    .PARAMETER RestartTimeout
+        The number of seconds to wait after restarting Reporting Services before
+        continuing with configuration. This is useful on resource-constrained
+        systems where the service may take longer to fully initialize. If not
+        specified, no additional wait time is applied after service restart.
+
     .PARAMETER Encrypt
         Specifies how encryption should be enforced. There are currently no
         difference between using `Mandatory` or `Strict`.
@@ -262,6 +268,10 @@ function Set-TargetResource
         [Parameter()]
         [System.Boolean]
         $SuppressRestart,
+
+        [Parameter()]
+        [System.UInt32]
+        $RestartTimeout,
 
         [Parameter()]
         [ValidateSet('Mandatory', 'Optional', 'Strict')]
@@ -526,6 +536,18 @@ function Set-TargetResource
 
             Restart-ReportingServicesService -InstanceName $InstanceName -WaitTime 30
 
+            <#
+                Wait for the service to be fully ready after restart before attempting
+                to get reporting services data or initialize. This is especially important
+                on resource-constrained systems where the service may take longer to
+                fully initialize (e.g., Windows Server 2025 in CI environments).
+            #>
+            if ($PSBoundParameters.ContainsKey('RestartTimeout'))
+            {
+                Write-Verbose -Message ($script:localizedData.WaitingForServiceReady -f $RestartTimeout)
+                Start-Sleep -Seconds $RestartTimeout
+            }
+
             $restartReportingService = $false
 
             $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
@@ -539,6 +561,17 @@ function Set-TargetResource
             if ( -not $reportingServicesData.Configuration.IsInitialized )
             {
                 Write-Verbose -Message "Did not help restarting the Reporting Services service, running the CIM method to initialize report server on $DatabaseServerName\$DatabaseInstanceName for instance ID '$($reportingServicesData.Configuration.InstallationID)'."
+
+                <#
+                    Add an additional wait before calling InitializeReportServer to give
+                    the WMI provider more time to be fully ready. This is especially
+                    important on resource-constrained systems.
+                #>
+                if ($PSBoundParameters.ContainsKey('RestartTimeout'))
+                {
+                    Write-Verbose -Message ($script:localizedData.WaitingForServiceReady -f $RestartTimeout)
+                    Start-Sleep -Seconds $RestartTimeout
+                }
 
                 $restartReportingService = $true
 
@@ -804,6 +837,17 @@ function Set-TargetResource
         {
             Write-Verbose -Message $script:localizedData.Restart
             Restart-ReportingServicesService -InstanceName $InstanceName -WaitTime 30
+
+            <#
+                Wait for the service to be fully ready after restart before attempting
+                to test the configuration. This is especially important on resource-constrained
+                systems where the service may take longer to fully initialize.
+            #>
+            if ($PSBoundParameters.ContainsKey('RestartTimeout'))
+            {
+                Write-Verbose -Message ($script:localizedData.WaitingForServiceReady -f $RestartTimeout)
+                Start-Sleep -Seconds $RestartTimeout
+            }
         }
     }
 
@@ -851,6 +895,9 @@ function Set-TargetResource
         settings change. If this parameter is set to $true, Reporting Services
         will not be restarted, even after initialization.
 
+    .PARAMETER RestartTimeout
+        Not used in Test-TargetResource.
+
     .PARAMETER Encrypt
         Specifies how encryption should be enforced. There are currently no
         difference between using `Mandatory` or `Strict`.
@@ -897,6 +944,10 @@ function Test-TargetResource
         [Parameter()]
         [System.Boolean]
         $SuppressRestart,
+
+        [Parameter()]
+        [System.UInt32]
+        $RestartTimeout,
 
         [Parameter()]
         [ValidateSet('Mandatory', 'Optional', 'Strict')]

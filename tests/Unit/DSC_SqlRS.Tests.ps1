@@ -513,6 +513,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         Mock -CommandName Import-SqlDscPreferredModule
         Mock -CommandName Invoke-SqlDscQuery
         Mock -CommandName Restart-ReportingServicesService
+        Mock -CommandName Start-Sleep
         Mock -CommandName Invoke-RsCimMethod
         Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_GenerateDatabaseCreationScript -ParameterFilter {
             $MethodName -eq 'GenerateDatabaseCreationScript'
