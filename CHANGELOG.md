@@ -45,9 +45,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added integration tests for `Test-SqlDscIsLogin` command to ensure it functions
   correctly in real environments
   [issue #2230](https://github.com/dsccommunity/SqlServerDsc/issues/2230).
-- Added integration tests for `Test-SqlDscIsDatabasePrincipal` command to ensure it
-  functions correctly in real environments
+- Added integration tests for `Test-SqlDscIsDatabasePrincipal` command to ensure
+  it functions correctly in real environments
   [issue #2231](https://github.com/dsccommunity/SqlServerDsc/issues/2231).
+
+### Fixed
+
+- Updated integration test documentation in `tests/Integration/Commands/README.md`
+  to correctly reflect that `ConvertFrom-SqlDscDatabasePermission` test does not
+  require database instance connectivity
+  [issue #2284](https://github.com/dsccommunity/SqlServerDsc/issues/2284).
 - Added integration tests for `Set-SqlDscAudit` command to ensure it functions
   correctly in real environments
   [issue #2236](https://github.com/dsccommunity/SqlServerDsc/issues/2236).
