@@ -112,16 +112,9 @@ function Add-SqlDscTraceFlag
 
         $ErrorActionPreference = $originalErrorActionPreference
 
-        $desiredTraceFlags = [System.UInt32[]] $currentTraceFlags + @(
-            $TraceFlag |
-                ForEach-Object -Process {
-                    # Add only when it does not already exist.
-                    if ($_ -notin $currentTraceFlags)
-                    {
-                        $_
-                    }
-                }
-        )
+        $desiredTraceFlags = @($currentTraceFlags) + @($TraceFlag) |
+            Sort-Object -Unique
+        $desiredTraceFlags = [System.UInt32[]] $desiredTraceFlags
 
         $verboseDescriptionMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseDescription -f $InstanceName, ($TraceFlag -join ', ')
         $verboseWarningMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseWarning -f $InstanceName

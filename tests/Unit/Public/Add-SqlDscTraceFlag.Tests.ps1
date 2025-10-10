@@ -201,4 +201,114 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
             } -Exactly -Times 1 -Scope It
         }
     }
+
+    Context 'When duplicate trace flags are provided in the input' {
+        BeforeAll {
+            Mock -CommandName Set-SqlDscTraceFlag
+        }
+
+        Context 'When there are no existing trace flags and duplicates are provided' {
+            BeforeAll {
+                Mock -CommandName Get-SqlDscTraceFlag -MockWith {
+                    return @()
+                }
+
+                $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
+                $mockServiceObject.Name = 'MSSQL$SQL2022'
+            }
+
+            It 'Should de-duplicate trace flags when only duplicates are provided' {
+                { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,4199 -Force } | Should -Not -Throw
+
+                Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                    $TraceFlag.Count -eq 1 -and
+                    $TraceFlag -contains 4199
+                } -Exactly -Times 1 -Scope It
+            }
+
+            It 'Should de-duplicate trace flags when mix of unique and duplicates are provided' {
+                { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,3226,4199,3226 -Force } | Should -Not -Throw
+
+                Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                    $TraceFlag.Count -eq 2 -and
+                    $TraceFlag -contains 4199 -and
+                    $TraceFlag -contains 3226
+                } -Exactly -Times 1 -Scope It
+            }
+
+            It 'Should handle multiple duplicates of multiple trace flags' {
+                { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,4199,3226,3226,3226,1222 -Force } | Should -Not -Throw
+
+                Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                    $TraceFlag.Count -eq 3 -and
+                    $TraceFlag -contains 4199 -and
+                    $TraceFlag -contains 3226 -and
+                    $TraceFlag -contains 1222
+                } -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When there are existing trace flags and duplicates are provided' {
+            BeforeAll {
+                Mock -CommandName Get-SqlDscTraceFlag -MockWith {
+                    return @(3226)
+                }
+
+                $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
+                $mockServiceObject.Name = 'MSSQL$SQL2022'
+            }
+
+            It 'Should de-duplicate when adding trace flags that include duplicates and existing flag' {
+                { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,3226,4199 -Force } | Should -Not -Throw
+
+                Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                    $TraceFlag.Count -eq 2 -and
+                    $TraceFlag -contains 4199 -and
+                    $TraceFlag -contains 3226
+                } -Exactly -Times 1 -Scope It
+            }
+
+            It 'Should de-duplicate when all provided trace flags are duplicates of existing flag' {
+                { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 3226,3226 -Force } | Should -Not -Throw
+
+                Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                    $TraceFlag.Count -eq 1 -and
+                    $TraceFlag -contains 3226
+                } -Exactly -Times 1 -Scope It
+            }
+
+            It 'Should de-duplicate complex scenario with existing and new flags' {
+                { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,4199,3226,1222,1222 -Force } | Should -Not -Throw
+
+                Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                    $TraceFlag.Count -eq 3 -and
+                    $TraceFlag -contains 4199 -and
+                    $TraceFlag -contains 3226 -and
+                    $TraceFlag -contains 1222
+                } -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When there are multiple existing trace flags and duplicates are provided' {
+            BeforeAll {
+                Mock -CommandName Get-SqlDscTraceFlag -MockWith {
+                    return @(3226, 1222)
+                }
+
+                $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
+                $mockServiceObject.Name = 'MSSQL$SQL2022'
+            }
+
+            It 'Should de-duplicate and merge with multiple existing trace flags' {
+                { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,4199,3226,1222 -Force } | Should -Not -Throw
+
+                Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                    $TraceFlag.Count -eq 3 -and
+                    $TraceFlag -contains 4199 -and
+                    $TraceFlag -contains 3226 -and
+                    $TraceFlag -contains 1222
+                } -Exactly -Times 1 -Scope It
+            }
+        }
+    }
 }
