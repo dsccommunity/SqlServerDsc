@@ -130,6 +130,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `Save-SqlDscSqlServerMediaFile`
+  - Fixed the Force parameter to work correctly when ISO files exist in the
+    destination directory. The safety check now excludes the target file being
+    overwritten when checking for multiple ISO files, allowing the Force parameter
+    to function as intended ([issue #2280](https://github.com/dsccommunity/SqlServerDsc/issues/2280)).
 - `DSC_SqlRS`
   - Fixed intermittent initialization failures on resource-constrained systems
     (particularly Windows Server 2025 in CI) by adding an optional `RestartTimeout`
