@@ -107,22 +107,9 @@ function Save-SqlDscSqlServerMediaFile
         $ConfirmPreference = 'None'
     }
 
-    if ((Get-Item -Path "$DestinationPath/*.iso" -Force).Count -gt 0 -and -not $SkipExecution)
-    {
-        $auditAlreadyPresentMessage = $script:localizedData.SqlServerMediaFile_Save_InvalidDestinationFolder
-
-        $PSCmdlet.ThrowTerminatingError(
-            [System.Management.Automation.ErrorRecord]::new(
-                $auditAlreadyPresentMessage,
-                'SSDSSM0001', # cspell: disable-line
-                [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                $DestinationPath
-            )
-        )
-    }
-
     $destinationFilePath = Join-Path -Path $DestinationPath -ChildPath $FileName
 
+    # Handle target file if it exists - Force parameter controls overwrite behavior
     if ((Test-Path -Path $destinationFilePath))
     {
         $verboseDescriptionMessage = $script:localizedData.SqlServerMediaFile_Save_ShouldProcessVerboseDescription -f $destinationFilePath
@@ -226,10 +213,11 @@ function Save-SqlDscSqlServerMediaFile
                 Message      = $script:localizedData.SqlServerMediaFile_Save_MultipleFilesFoundAfterDownload
                 Category     = 'InvalidOperation'
                 ErrorId      = 'SSDSSM0002' # CSpell: disable-line
-                TargetObject = $ServiceType
+                TargetObject = $DestinationPath
             }
 
             Write-Error @writeErrorParameters
+            return
         }
 
         Write-Verbose -Message ($script:localizedData.SqlServerMediaFile_Save_RenamingFile -f $isoFile.Name, $FileName)

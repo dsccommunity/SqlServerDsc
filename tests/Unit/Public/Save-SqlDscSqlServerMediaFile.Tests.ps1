@@ -200,21 +200,75 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
         }
     }
 
-    Context 'When there is already an ISO file in the destination path' {
+    Context 'When the same ISO file already exists and Force parameter is used' {
         BeforeAll {
             Mock -CommandName Get-Item -MockWith {
-                return @{
-                    Count = 1
-                }
+                return @(
+                    @{
+                        FullName = Join-Path -Path $DestinationPath -ChildPath 'media.iso'
+                        Count = 1
+                    }
+                )
+            } -ParameterFilter {
+                $Path -eq "$DestinationPath/*.iso"
             }
+
+            Mock -CommandName Test-Path -MockWith {
+                return $true
+            } -ParameterFilter {
+                $Path -eq (Join-Path -Path $DestinationPath -ChildPath 'media.iso')
+            }
+
+            Mock -CommandName Invoke-WebRequest
+            Mock -CommandName Remove-Item
         }
 
-        It 'Should throw the correct error' {
-            $mockErrorMessage = InModuleScope -ScriptBlock {
-                $script:localizedData.SqlServerMediaFile_Save_InvalidDestinationFolder
+        It 'Should allow overwriting the existing file with Force parameter' {
+            Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.iso' -DestinationPath $DestinationPath -Force
+
+            Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Remove-Item -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When URL is an .exe and the same ISO file already exists with Force parameter' {
+        BeforeAll {
+            $exeUrl = 'https://example.com/installer.exe'
+
+            Mock -CommandName Get-Item -MockWith {
+                return @(
+                    @{
+                        FullName = Join-Path -Path $DestinationPath -ChildPath 'media.iso'
+                        Count = 1
+                    }
+                )
+            } -ParameterFilter {
+                $Path -eq "$DestinationPath/*.iso"
             }
 
-            { Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false } | Should -Throw $mockErrorMessage
+            Mock -CommandName Test-Path -MockWith {
+                return $true
+            } -ParameterFilter {
+                $Path -eq (Join-Path -Path $DestinationPath -ChildPath 'media.iso')
+            }
+
+            Mock -CommandName Invoke-WebRequest
+            Mock -CommandName Start-Process
+            Mock -CommandName Remove-Item
+            Mock -CommandName Rename-Item
+        }
+
+        It 'Should allow overwriting the existing file with Force parameter' {
+            Save-SqlDscSqlServerMediaFile -Url $exeUrl -DestinationPath $DestinationPath -Force
+
+            Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Remove-Item -ParameterFilter {
+                $Path -eq (Join-Path -Path $DestinationPath -ChildPath 'media.iso')
+            } -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Start-Process -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Remove-Item -ParameterFilter {
+                $Path -eq (Join-Path -Path $DestinationPath -ChildPath 'media.exe')
+            } -Exactly -Times 1 -Scope It
         }
     }
 }
