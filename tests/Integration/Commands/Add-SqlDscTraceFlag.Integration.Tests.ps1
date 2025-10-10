@@ -120,6 +120,18 @@ Describe 'Add-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
             $currentTraceFlags | Should -Contain $script:singleTestTraceFlag
             $currentTraceFlags | Should -Contain $script:additionalTestTraceFlag
         }
+
+        It 'Should de-duplicate trace flags provided in the input array' {
+            # Act - Add trace flags with duplicates in the input array
+            {
+                Add-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag @($script:singleTestTraceFlag, $script:singleTestTraceFlag, $script:additionalTestTraceFlag, $script:additionalTestTraceFlag) -Force -ErrorAction 'Stop'
+            } | Should -Not -Throw
+
+            # Assert - Verify each trace flag appears only once
+            $currentTraceFlags = Get-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
+            ($currentTraceFlags | Where-Object { $_ -eq $script:singleTestTraceFlag }).Count | Should -Be 1
+            ($currentTraceFlags | Where-Object { $_ -eq $script:additionalTestTraceFlag }).Count | Should -Be 1
+        }
     }
 
     Context 'When adding trace flags using ServiceObject parameter' {
@@ -169,6 +181,18 @@ Describe 'Add-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
             {
                 $currentTraceFlags | Should -Contain $traceFlag
             }
+        }
+
+        It 'Should de-duplicate trace flags provided in the input array using ServiceObject parameter' {
+            # Act - Add trace flags with duplicates in the input array
+            {
+                Add-SqlDscTraceFlag -ServiceObject $script:serviceObject -TraceFlag @($script:singleTestTraceFlag, $script:singleTestTraceFlag, $script:additionalTestTraceFlag, $script:additionalTestTraceFlag) -Force -ErrorAction 'Stop'
+            } | Should -Not -Throw
+
+            # Assert - Verify each trace flag appears only once
+            $currentTraceFlags = Get-SqlDscTraceFlag -ServiceObject $script:serviceObject -ErrorAction 'Stop'
+            ($currentTraceFlags | Where-Object { $_ -eq $script:singleTestTraceFlag }).Count | Should -Be 1
+            ($currentTraceFlags | Where-Object { $_ -eq $script:additionalTestTraceFlag }).Count | Should -Be 1
         }
     }
 }
