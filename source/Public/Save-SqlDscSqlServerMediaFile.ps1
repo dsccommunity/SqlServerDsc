@@ -234,10 +234,11 @@ function Save-SqlDscSqlServerMediaFile
                 Message      = $script:localizedData.SqlServerMediaFile_Save_MultipleFilesFoundAfterDownload
                 Category     = 'InvalidOperation'
                 ErrorId      = 'SSDSSM0002' # CSpell: disable-line
-                TargetObject = $ServiceType
+                TargetObject = $DestinationPath
             }
 
             Write-Error @writeErrorParameters
+            return
         }
 
         Write-Verbose -Message ($script:localizedData.SqlServerMediaFile_Save_RenamingFile -f $isoFile.Name, $FileName)
