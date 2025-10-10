@@ -19,7 +19,7 @@ function Invoke-TestSetup
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks noop" first.'
     }
 
     $script:testEnvironment = Initialize-TestEnvironment `
