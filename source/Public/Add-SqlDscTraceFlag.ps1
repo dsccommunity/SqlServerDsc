@@ -112,28 +112,38 @@ function Add-SqlDscTraceFlag
 
         $ErrorActionPreference = $originalErrorActionPreference
 
-        $desiredTraceFlags = @($currentTraceFlags) + @($TraceFlag) |
+        $desiredTraceFlags = @(
+            $currentTraceFlags
+            $TraceFlag
+        ) |
+            ForEach-Object { [System.UInt32] $_ } |
             Sort-Object -Unique
         $desiredTraceFlags = [System.UInt32[]] $desiredTraceFlags
 
-        $verboseDescriptionMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseDescription -f $InstanceName, ($TraceFlag -join ', ')
-        $verboseWarningMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseWarning -f $InstanceName
-        $captionMessage = $script:localizedData.TraceFlag_Add_ShouldProcessCaption
+        # Compare current and desired trace flags to determine if there's an effective change
+        $compareResult = Compare-Object -ReferenceObject @($currentTraceFlags) -DifferenceObject $desiredTraceFlags
 
-        if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        if ($compareResult)
         {
-            # Copy $PSBoundParameters to keep it intact.
-            $setSqlDscTraceFlagParameters = Remove-CommonParameter -Hashtable $PSBoundParameters
+            $verboseDescriptionMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseDescription -f $InstanceName, ($TraceFlag -join ', ')
+            $verboseWarningMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseWarning -f $InstanceName
+            $captionMessage = $script:localizedData.TraceFlag_Add_ShouldProcessCaption
 
-            $setSqlDscTraceFlagParameters.TraceFlag = $desiredTraceFlags
+            if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+            {
+                # Copy $PSBoundParameters to keep it intact.
+                $setSqlDscTraceFlagParameters = Remove-CommonParameter -Hashtable $PSBoundParameters
 
-            $originalErrorActionPreference = $ErrorActionPreference
+                $setSqlDscTraceFlagParameters.TraceFlag = $desiredTraceFlags
 
-            $ErrorActionPreference = 'Stop'
+                $originalErrorActionPreference = $ErrorActionPreference
 
-            Set-SqlDscTraceFlag @setSqlDscTraceFlagParameters -ErrorAction 'Stop'
+                $ErrorActionPreference = 'Stop'
 
-            $ErrorActionPreference = $originalErrorActionPreference
+                Set-SqlDscTraceFlag @setSqlDscTraceFlagParameters -ErrorAction 'Stop'
+
+                $ErrorActionPreference = $originalErrorActionPreference
+            }
         }
     }
 }

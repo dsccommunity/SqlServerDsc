@@ -195,10 +195,8 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
         It 'Should not add duplicate if it already exist' {
             { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 3226 -Force } | Should -Not -Throw
 
-            Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
-                $TraceFlag.Count -eq 1 -and
-                $TraceFlag -contains 3226
-            } -Exactly -Times 1 -Scope It
+            # Should not call Set-SqlDscTraceFlag when the trace flag already exists (idempotent)
+            Should -Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Times 0 -Scope It
         }
     }
 
@@ -271,10 +269,8 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
             It 'Should de-duplicate when all provided trace flags are duplicates of existing flag' {
                 { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 3226,3226 -Force } | Should -Not -Throw
 
-                Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
-                    $TraceFlag.Count -eq 1 -and
-                    $TraceFlag -contains 3226
-                } -Exactly -Times 1 -Scope It
+                # Should not call Set-SqlDscTraceFlag when all flags already exist (idempotent)
+                Should -Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Times 0 -Scope It
             }
 
             It 'Should de-duplicate complex scenario with existing and new flags' {
