@@ -109,28 +109,7 @@ function Save-SqlDscSqlServerMediaFile
 
     $destinationFilePath = Join-Path -Path $DestinationPath -ChildPath $FileName
 
-    if (-not $SkipExecution)
-    {
-        # Get all ISO files in destination path, excluding the target file
-        $existingIsoFiles = Get-Item -Path "$DestinationPath/*.iso" -Force -ErrorAction SilentlyContinue | Where-Object {
-            $_.FullName -ne $destinationFilePath
-        }
-
-        if ($existingIsoFiles.Count -gt 0)
-        {
-            $auditAlreadyPresentMessage = $script:localizedData.SqlServerMediaFile_Save_InvalidDestinationFolder
-
-            $PSCmdlet.ThrowTerminatingError(
-                [System.Management.Automation.ErrorRecord]::new(
-                    $auditAlreadyPresentMessage,
-                    'SSDSSM0001', # cspell: disable-line
-                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                    $DestinationPath
-                )
-            )
-        }
-    }
-
+    # Handle target file if it exists - Force parameter controls overwrite behavior
     if ((Test-Path -Path $destinationFilePath))
     {
         $verboseDescriptionMessage = $script:localizedData.SqlServerMediaFile_Save_ShouldProcessVerboseDescription -f $destinationFilePath

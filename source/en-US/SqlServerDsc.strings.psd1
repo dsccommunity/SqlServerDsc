@@ -274,7 +274,6 @@ ConvertFrom-StringData @'
     SqlServerMediaFile_Save_ShouldProcessVerboseWarning = Are you sure you want to replace existing file '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     SqlServerMediaFile_Save_ShouldProcessCaption = Replace existing file
-    SqlServerMediaFile_Save_InvalidDestinationFolder = Multiple files with the .iso extension was found in the destination path. Please choose another destination folder.
     SqlServerMediaFile_Save_MultipleFilesFoundAfterDownload = Multiple files with the .iso extension was found in the destination path. Cannot determine which one of the files that was downloaded.
     SqlServerMediaFile_Save_DownloadingInformation = Downloading the SQL Server media from '{0}'.
     SqlServerMediaFile_Save_IsExecutable = Downloaded an executable file. Using the executable to download the media file.
