@@ -169,18 +169,49 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integrat
             New-Item -Path $script:errorTestPath -ItemType Directory -Force | Out-Null
         }
         
-        It 'Should throw error when ISO files already exist in destination and SkipExecution is not used' {
-            # Create a dummy ISO file to trigger the error condition
-            $dummyIsoPath = Join-Path -Path $script:errorTestPath -ChildPath 'existing.iso'
-            'dummy iso content' | Out-File -FilePath $dummyIsoPath -Encoding UTF8
+        It 'Should throw error when multiple different ISO files already exist in destination and SkipExecution is not used' {
+            # Create two different dummy ISO files to trigger the error condition
+            $dummyIso1Path = Join-Path -Path $script:errorTestPath -ChildPath 'existing1.iso'
+            $dummyIso2Path = Join-Path -Path $script:errorTestPath -ChildPath 'existing2.iso'
+            'dummy iso content 1' | Out-File -FilePath $dummyIso1Path -Encoding UTF8
+            'dummy iso content 2' | Out-File -FilePath $dummyIso2Path -Encoding UTF8
 
-            # This should throw an error due to existing ISO file
+            # This should throw an error due to multiple existing ISO files
             {
                 Save-SqlDscSqlServerMediaFile -Url $script:directIsoUrl -DestinationPath $script:errorTestPath -FileName 'new-download.iso' -Quiet -ErrorAction 'Stop'
             } | Should -Throw
 
             # Clean up
-            Remove-Item -Path $dummyIsoPath -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path $dummyIso1Path -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path $dummyIso2Path -Force -ErrorAction SilentlyContinue
+        }
+
+        It 'Should allow overwriting the same ISO file when Force parameter is used' {
+            # Create a separate subdirectory for this test
+            $forceOverwriteTestPath = Join-Path -Path $script:testDownloadPath -ChildPath 'ForceOverwriteIso'
+            New-Item -Path $forceOverwriteTestPath -ItemType Directory -Force | Out-Null
+            
+            # First, create a dummy ISO file with the exact same name we'll download
+            $targetFileName = 'force-overwrite-test.iso'
+            $dummyIsoPath = Join-Path -Path $forceOverwriteTestPath -ChildPath $targetFileName
+            'dummy iso content for force overwrite test' | Out-File -FilePath $dummyIsoPath -Encoding UTF8
+            
+            # Verify the dummy file exists and get its original size
+            Test-Path -Path $dummyIsoPath | Should -BeTrue
+            $originalSize = (Get-Item -Path $dummyIsoPath).Length
+            
+            # Download with Force parameter should overwrite the existing ISO file
+            $result = Save-SqlDscSqlServerMediaFile -Url $script:directIsoUrl -DestinationPath $forceOverwriteTestPath -FileName $targetFileName -Force -Quiet -ErrorAction 'Stop'
+            
+            # Verify the file was overwritten (should be much larger than the dummy content)
+            $result | Should -BeOfType [System.IO.FileInfo]
+            $result.Name | Should -Be $targetFileName
+            $result.Exists | Should -BeTrue
+            $result.Length | Should -BeGreaterThan $originalSize
+            $result.Length | Should -BeGreaterThan 1000000  # Real ISO should be at least 1MB
+            
+            # Clean up
+            Remove-Item -Path $forceOverwriteTestPath -Recurse -Force -ErrorAction SilentlyContinue
         }
 
         It 'Should handle invalid URL gracefully' {
