@@ -112,20 +112,32 @@ function Add-SqlDscTraceFlag
 
         $ErrorActionPreference = $originalErrorActionPreference
 
+        # Normalize current trace flags: ensure array, remove nulls, cast to UInt32, sort uniquely
+        $normalizedCurrentTraceFlags = @($currentTraceFlags) |
+            Where-Object -FilterScript { $null -ne $_ } |
+            ForEach-Object -Process { [System.UInt32] $_ } |
+            Sort-Object -Unique
+
+        # Normalize input trace flags: ensure array, remove nulls, cast to UInt32, sort uniquely
+        $normalizedInputTraceFlags = @($TraceFlag) |
+            Where-Object -FilterScript { $null -ne $_ } |
+            ForEach-Object -Process { [System.UInt32] $_ } |
+            Sort-Object -Unique
+
+        # Combine normalized current and input trace flags to get the desired state
         $desiredTraceFlags = @(
-            $currentTraceFlags
-            $TraceFlag
+            $normalizedCurrentTraceFlags
+            $normalizedInputTraceFlags
         ) |
-            ForEach-Object { [System.UInt32] $_ } |
             Sort-Object -Unique
         $desiredTraceFlags = [System.UInt32[]] $desiredTraceFlags
 
-        # Compare current and desired trace flags to determine if there's an effective change
-        $compareResult = Compare-Object -ReferenceObject @($currentTraceFlags) -DifferenceObject $desiredTraceFlags
+        # Compare normalized current and desired trace flags to determine if there's an effective change
+        $compareResult = Compare-Object -ReferenceObject @($normalizedCurrentTraceFlags) -DifferenceObject $desiredTraceFlags
 
         if ($compareResult)
         {
-            $verboseDescriptionMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseDescription -f $InstanceName, ($TraceFlag -join ', ')
+            $verboseDescriptionMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseDescription -f $InstanceName, ($desiredTraceFlags -join ', ')
             $verboseWarningMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseWarning -f $InstanceName
             $captionMessage = $script:localizedData.TraceFlag_Add_ShouldProcessCaption
 
