@@ -156,7 +156,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
                 return $sqlServerModule
             }
 
-            { Import-SqlDscPreferredModule } | Should -Not -Throw
+            $null = Import-SqlDscPreferredModule
 
             Should -Invoke -CommandName Import-Module -Exactly -Times 0 -Scope It
         }
@@ -181,7 +181,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         }
 
         It 'Should use the already loaded module and not call Import-Module' {
-            { Import-SqlDscPreferredModule } | Should -Not -Throw
+            $null = Import-SqlDscPreferredModule
 
             Should -Invoke -CommandName Import-Module -Exactly -Times 0 -Scope It
         }
@@ -205,7 +205,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         }
 
         It 'Should import the SqlServer module without throwing' {
-            { Import-SqlDscPreferredModule } | Should -Not -Throw
+            $null = Import-SqlDscPreferredModule
 
             Should -Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Push-Location -Exactly -Times 1 -Scope It
@@ -231,7 +231,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         }
 
         It 'Should import the SqlServer module without throwing' {
-            { Import-SqlDscPreferredModule -Name 'OtherModule' } | Should -Not -Throw
+            $null = Import-SqlDscPreferredModule -Name 'OtherModule'
 
             Should -Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Push-Location -Exactly -Times 1 -Scope It
@@ -258,7 +258,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         }
 
         It 'Should import the SQLPS module without throwing' {
-            { Import-SqlDscPreferredModule -Force } | Should -Not -Throw
+            $null = Import-SqlDscPreferredModule -Force
 
             Should -Invoke -CommandName Get-SqlDscPreferredModule -ParameterFilter {
                 $PesterBoundParameters.ContainsKey('Refresh') -and $Refresh -eq $true
@@ -311,7 +311,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         }
 
         It 'Should import the SQLPD module without throwing' {
-            { Import-SqlDscPreferredModule -Name 'OtherModule' -Force } | Should -Not -Throw
+            $null = Import-SqlDscPreferredModule -Name 'OtherModule' -Force
 
             Should -Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Get-Module -Exactly -Times 1 -Scope It

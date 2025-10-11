@@ -133,7 +133,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag 'Public' {
 
         Context 'When passing SilentlyContinue to ErrorAction' {
             It 'Should not throw ' {
-                { Set-SqlDscStartupParameter -ServerName 'localhost' -TraceFlag @() -ErrorAction 'SilentlyContinue' } | Should -Not -Throw
+                $null = Set-SqlDscStartupParameter -ServerName 'localhost' -TraceFlag @() -ErrorAction 'SilentlyContinue'
 
                 Should -Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Times 1 -Scope It
             }
@@ -175,7 +175,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag 'Public' {
 
         Context 'When using parameter Confirm with value $false' {
             It 'Should call the mocked method and have correct value in the object' {
-                { Set-SqlDscStartupParameter -ServiceObject $mockServiceObject -TraceFlag 4199 -Confirm:$false } | Should -Not -Throw
+                $null = Set-SqlDscStartupParameter -ServiceObject $mockServiceObject -TraceFlag 4199 -Confirm:$false
 
                 # This is the object created by the mock and modified by the command.
                 $mockServiceObject.StartupParameters | Should -BeExactly ($mockStartupParameters + ';-T4199')
@@ -186,7 +186,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag 'Public' {
 
         Context 'When using parameter Force' {
             It 'Should call the mocked method and have correct value in the object' {
-                { Set-SqlDscStartupParameter -ServiceObject $mockServiceObject -TraceFlag 4199 -Force } | Should -Not -Throw
+                $null = Set-SqlDscStartupParameter -ServiceObject $mockServiceObject -TraceFlag 4199 -Force
 
                 # This is the object created by the mock and modified by the command.
                 $mockServiceObject.StartupParameters | Should -BeExactly ($mockStartupParameters + ';-T4199')
@@ -197,7 +197,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag 'Public' {
 
         Context 'When using parameter WhatIf' {
             It 'Should not call the mocked method and should not have changed the value in the object' {
-                { Set-SqlDscStartupParameter -ServiceObject $mockServiceObject -TraceFlag 4199 -WhatIf } | Should -Not -Throw
+                $null = Set-SqlDscStartupParameter -ServiceObject $mockServiceObject -TraceFlag 4199 -WhatIf
 
                 # This is the object created by the mock and modified by the command.
                 $mockServiceObject.StartupParameters | Should -BeExactly $mockStartupParameters
@@ -208,7 +208,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag 'Public' {
 
         Context 'When passing parameter ServerObject over the pipeline' {
             It 'Should call the mocked method and have correct value in the object' {
-                { $mockServiceObject | Set-SqlDscStartupParameter -TraceFlag 4199 -Force } | Should -Not -Throw
+                $null = $mockServiceObject | Set-SqlDscStartupParameter -TraceFlag 4199 -Force
 
                 # This is the object created by the mock and modified by the command.
                 $mockServiceObject.StartupParameters | Should -BeExactly ($mockStartupParameters + ';-T4199')
@@ -243,7 +243,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag 'Public' {
 
         Context 'When using parameter Confirm with value $false' {
             It 'Should call the mocked method and have correct value in the object' {
-                { Set-SqlDscStartupParameter -TraceFlag 4199 -Confirm:$false } | Should -Not -Throw
+                $null = Set-SqlDscStartupParameter -TraceFlag 4199 -Confirm:$false
 
                 # This is the object created by the mock and modified by the command.
                 $mockServiceObject.StartupParameters | Should -BeExactly ($mockStartupParameters + ';-T4199')
@@ -254,7 +254,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag 'Public' {
 
         Context 'When using parameter Force' {
             It 'Should call the mocked method and have correct value in the object' {
-                { Set-SqlDscStartupParameter -TraceFlag 4199 -Force } | Should -Not -Throw
+                $null = Set-SqlDscStartupParameter -TraceFlag 4199 -Force
 
                 # This is the object created by the mock and modified by the command.
                 $mockServiceObject.StartupParameters | Should -BeExactly ($mockStartupParameters + ';-T4199')
@@ -265,7 +265,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag 'Public' {
 
         Context 'When using parameter WhatIf' {
             It 'Should not call the mocked method and should not have changed the value in the object' {
-                { Set-SqlDscStartupParameter -TraceFlag 4199 -WhatIf } | Should -Not -Throw
+                $null = Set-SqlDscStartupParameter -TraceFlag 4199 -WhatIf
 
                 # This is the object created by the mock and modified by the command.
                 $mockServiceObject.StartupParameters | Should -BeExactly $mockStartupParameters
@@ -300,7 +300,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag 'Public' {
         }
 
         It 'Should call the mocked method and have correct value in the object' {
-            { Set-SqlDscStartupParameter -TraceFlag @() -Force } | Should -Not -Throw
+            $null = Set-SqlDscStartupParameter -TraceFlag @() -Force
 
             # This is the object created by the mock and modified by the command.
             $mockServiceObject.StartupParameters | Should -BeExactly $mockExpectedStartupParameters
@@ -333,7 +333,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag 'Public' {
         }
 
         It 'Should call the mocked method and have correct value in the object' {
-            { Set-SqlDscStartupParameter -InternalTraceFlag 8688 -Confirm:$false } | Should -Not -Throw
+            $null = Set-SqlDscStartupParameter -InternalTraceFlag 8688 -Confirm:$false
 
             # This is the object created by the mock and modified by the command.
             $mockServiceObject.StartupParameters | Should -BeExactly ($mockStartupParameters + ';-t8688')
@@ -367,7 +367,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag 'Public' {
         }
 
         It 'Should call the mocked method and have correct value in the object, removed all internal trace flag ang kept normal trace flags' {
-            { Set-SqlDscStartupParameter -InternalTraceFlag @() -Force } | Should -Not -Throw
+            $null = Set-SqlDscStartupParameter -InternalTraceFlag @() -Force
 
             # This is the object created by the mock and modified by the command.
             $mockServiceObject.StartupParameters | Should -BeExactly $mockExpectedStartupParameters

@@ -58,7 +58,7 @@ Describe 'SqlResourceBase' {
     Context 'When class is instantiated' {
         It 'Should not throw an exception' {
             InModuleScope -ScriptBlock {
-                { [SqlResourceBase]::new() } | Should -Not -Throw
+                $null = [SqlResourceBase]::new()
             }
         }
 

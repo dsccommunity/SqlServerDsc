@@ -70,7 +70,7 @@ Describe 'SqlDatabasePermission' {
     Context 'When class is instantiated' {
         It 'Should not throw an exception' {
             InModuleScope -ScriptBlock {
-                { [SqlDatabasePermission]::new() } | Should -Not -Throw
+                $null = [SqlDatabasePermission]::new()
             }
         }
 

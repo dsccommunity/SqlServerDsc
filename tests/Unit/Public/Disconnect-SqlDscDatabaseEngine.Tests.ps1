@@ -96,7 +96,7 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag 'Public' {
 
         Context 'When using parameter Confirm with value $false' {
             It 'Should call the correct mock with the expected parameters' {
-                { Disconnect-SqlDscDatabaseEngine -ServerObject $mockServerObject -Confirm:$false } | Should -Not -Throw
+                $null = Disconnect-SqlDscDatabaseEngine -ServerObject $mockServerObject -Confirm:$false
 
                 $mockMethodDisconnectCallCount | Should -Be 1
             }
@@ -104,7 +104,7 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag 'Public' {
 
         Context 'When using parameter Force' {
             It 'Should call the correct mock with the expected parameters' {
-                { Disconnect-SqlDscDatabaseEngine -ServerObject $mockServerObject -Force } | Should -Not -Throw
+                $null = Disconnect-SqlDscDatabaseEngine -ServerObject $mockServerObject -Force
 
                 $mockMethodDisconnectCallCount | Should -Be 1
             }
@@ -112,7 +112,7 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag 'Public' {
 
         Context 'When using parameter WhatIf' {
             It 'Should call the correct mock with the expected parameters' {
-                { Disconnect-SqlDscDatabaseEngine -ServerObject $mockServerObject -WhatIf } | Should -Not -Throw
+                $null = Disconnect-SqlDscDatabaseEngine -ServerObject $mockServerObject -WhatIf
 
                 $mockMethodDisconnectCallCount | Should -Be 0
             }
@@ -120,7 +120,7 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag 'Public' {
 
         Context 'When passing parameter ServerObject over the pipeline' {
             It 'Should call the correct mock with the expected parameters' {
-                { $mockServerObject | Disconnect-SqlDscDatabaseEngine -Force } | Should -Not -Throw
+                $null = $mockServerObject | Disconnect-SqlDscDatabaseEngine -Force
 
                 $mockMethodDisconnectCallCount | Should -Be 1
             }
