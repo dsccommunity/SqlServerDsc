@@ -512,7 +512,7 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                         Ensure = 'Present'
                     }
 
-                    { Set-TargetResource @setParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -546,7 +546,7 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                         Ensure = 'Present'
                     }
 
-                    { Set-TargetResource @setParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setParameters -ErrorAction 'Stop'
                 }
             }
         }
@@ -563,7 +563,7 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                         EmailAddress = 'newemail@contoso.com'
                     }
 
-                    { Set-TargetResource @setParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -585,7 +585,7 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                         Ensure = 'Absent'
                     }
 
-                    { Set-TargetResource @setParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It

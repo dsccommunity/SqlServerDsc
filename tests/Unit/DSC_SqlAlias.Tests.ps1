@@ -1124,7 +1124,7 @@ Describe 'SqlAlias\Set-TargetResource' {
                         $script:mockSetTargetResourceParameters.TcpPort = 1433
                         $script:mockSetTargetResourceParameters.ServerName = 'SqlNode.company.local'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
                 }
 
@@ -1164,7 +1164,7 @@ Describe 'SqlAlias\Set-TargetResource' {
                         $script:mockSetTargetResourceParameters.UseDynamicTcpPort = $true
                         $script:mockSetTargetResourceParameters.ServerName = 'SqlNode.company.local'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
                 }
 
@@ -1203,7 +1203,7 @@ Describe 'SqlAlias\Set-TargetResource' {
                         $script:mockSetTargetResourceParameters.Protocol = 'NP'
                         $script:mockSetTargetResourceParameters.ServerName = 'SqlNode.company.local'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
                 }
 
@@ -1248,7 +1248,7 @@ Describe 'SqlAlias\Set-TargetResource' {
                         $script:mockSetTargetResourceParameters.Ensure = 'Absent'
                         $script:mockSetTargetResourceParameters.Name = 'MyAlias'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
                 }
 

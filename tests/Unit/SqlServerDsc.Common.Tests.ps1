@@ -157,7 +157,7 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
                 DestinationPath = $mockRobocopyArgumentDestinationPath
             }
 
-            { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
+            $null = Copy-ItemWithRobocopy @copyItemWithRobocopyParameter -ErrorAction 'Stop'
 
             Should -Invoke -CommandName Get-Command -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Start-Process -Exactly -Times 1 -Scope It
@@ -179,7 +179,7 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
                 DestinationPath = $mockRobocopyArgumentDestinationPath
             }
 
-            { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
+            $null = Copy-ItemWithRobocopy @copyItemWithRobocopyParameter -ErrorAction 'Stop'
 
             Should -Invoke -CommandName Get-Command -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Start-Process -Exactly -Times 1 -Scope It
@@ -312,7 +312,7 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
                 DestinationPath = $mockRobocopyArgumentDestinationPath
             }
 
-            { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
+            $null = Copy-ItemWithRobocopy @copyItemWithRobocopyParameter -ErrorAction 'Stop'
 
             Should -Invoke -CommandName Get-Command -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Start-Process -Exactly -Times 1 -Scope It
@@ -326,7 +326,7 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
                 DestinationPath = $mockRobocopyArgumentDestinationPath
             }
 
-            { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
+            $null = Copy-ItemWithRobocopy @copyItemWithRobocopyParameter -ErrorAction 'Stop'
 
             Should -Invoke -CommandName Get-Command -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Start-Process -Exactly -Times 1 -Scope It
@@ -340,7 +340,7 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
                 DestinationPath = $mockRobocopyArgumentDestinationPath
             }
 
-            { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
+            $null = Copy-ItemWithRobocopy @copyItemWithRobocopyParameter -ErrorAction 'Stop'
         }
     }
 
@@ -365,7 +365,7 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
                 DestinationPath = $mockRobocopyArgumentDestinationPathWithSpaces
             }
 
-            { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
+            $null = Copy-ItemWithRobocopy @copyItemWithRobocopyParameter -ErrorAction 'Stop'
         }
 
         It 'Should finish successfully with exit code 2' {
@@ -376,7 +376,7 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
                 DestinationPath = $mockRobocopyArgumentDestinationPathWithSpaces
             }
 
-            { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
+            $null = Copy-ItemWithRobocopy @copyItemWithRobocopyParameter -ErrorAction 'Stop'
         }
 
         It 'Should finish successfully with exit code 3' {
@@ -387,7 +387,7 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
                 DestinationPath = $mockRobocopyArgumentDestinationPathWithSpaces
             }
 
-            { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
+            $null = Copy-ItemWithRobocopy @copyItemWithRobocopyParameter -ErrorAction 'Stop'
         }
     }
 }
@@ -430,14 +430,12 @@ Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstalla
         }
 
         It 'Should call the correct mocks' {
-            {
-                $invokeInstallationMediaCopyParameters = @{
-                    SourcePath = $mockSourcePathUNCWithLeaf
-                    SourceCredential = $mockShareCredential
-                }
+            $invokeInstallationMediaCopyParameters = @{
+                SourcePath = $mockSourcePathUNCWithLeaf
+                SourceCredential = $mockShareCredential
+            }
 
-                Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters
-            } | Should -Not -Throw
+            $null = Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters -ErrorAction 'Stop'
 
             Should -Invoke -CommandName Connect-UncPath -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName New-Guid -Exactly -Times 0 -Scope It
@@ -469,14 +467,12 @@ Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstalla
         }
 
         It 'Should call the correct mocks' {
-            {
-                $invokeInstallationMediaCopyParameters = @{
-                    SourcePath = $mockSourcePathUNCWithLeaf
-                    SourceCredential = $mockShareCredential
-                }
+            $invokeInstallationMediaCopyParameters = @{
+                SourcePath = $mockSourcePathUNCWithLeaf
+                SourceCredential = $mockShareCredential
+            }
 
-                Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters
-            } | Should -Not -Throw
+            $null = Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters -ErrorAction 'Stop'
 
             Should -Invoke -CommandName Connect-UncPath -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName New-Guid -Exactly -Times 0 -Scope It
@@ -514,8 +510,8 @@ Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstalla
                     SourceCredential = $mockShareCredential
                 }
 
-                Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters
-            } | Should -Not -Throw
+                $null = Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters -ErrorAction 'Stop'
+            }
 
             Should -Invoke -CommandName Connect-UncPath -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName New-Guid -Exactly -Times 1 -Scope It
@@ -601,13 +597,11 @@ Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
 
     Context 'When connecting to a UNC path without credentials (using current credentials)' {
         It 'Should call the correct mocks' {
-            {
-                $connectUncPathParameters = @{
-                    RemotePath = $mockSourcePathUNC
-                }
+            $connectUncPathParameters = @{
+                RemotePath = $mockSourcePathUNC
+            }
 
-                Connect-UncPath @connectUncPathParameters
-            } | Should -Not -Throw
+            $null = Connect-UncPath @connectUncPathParameters -ErrorAction 'Stop'
 
             Should -Invoke -CommandName New-SmbMapping -ParameterFilter {
                 <#
@@ -623,14 +617,12 @@ Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
 
     Context 'When connecting to a UNC path with specific credentials' {
         It 'Should call the correct mocks' {
-            {
-                $connectUncPathParameters = @{
-                    RemotePath = $mockSourcePathUNC
-                    SourceCredential = $mockShareCredential
-                }
+            $connectUncPathParameters = @{
+                RemotePath = $mockSourcePathUNC
+                SourceCredential = $mockShareCredential
+            }
 
-                Connect-UncPath @connectUncPathParameters
-            } | Should -Not -Throw
+            $null = Connect-UncPath @connectUncPathParameters -ErrorAction 'Stop'
 
             Should -Invoke -CommandName New-SmbMapping -ParameterFilter {
                 $RemotePath -eq $mockSourcePathUNC `
@@ -641,14 +633,12 @@ Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
 
     Context 'When connecting using Fully Qualified Domain Name (FQDN)' {
         It 'Should call the correct mocks' {
-            {
-                $connectUncPathParameters = @{
-                    RemotePath = $mockSourcePathUNC
-                    SourceCredential = $mockFqdnShareCredential
-                }
+            $connectUncPathParameters = @{
+                RemotePath = $mockSourcePathUNC
+                SourceCredential = $mockFqdnShareCredential
+            }
 
-                Connect-UncPath @connectUncPathParameters
-            } | Should -Not -Throw
+            $null = Connect-UncPath @connectUncPathParameters -ErrorAction 'Stop'
 
             Should -Invoke -CommandName New-SmbMapping -ParameterFilter {
                 $RemotePath -eq $mockSourcePathUNC `
@@ -807,7 +797,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
             }
 
             It 'Should restart SQL Service and running SQL Agent service' {
-                { Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' } | Should -Not -Throw
+                $null = Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -ErrorAction 'Stop'
 
                 Should -Invoke -CommandName Connect-SQL -ParameterFilter {
                     <#
@@ -827,7 +817,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
 
             Context 'When skipping the cluster check' {
                 It 'Should restart SQL Service and running SQL Agent service' {
-                    { Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -SkipClusterCheck } | Should -Not -Throw
+                    $null = Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -SkipClusterCheck -ErrorAction 'Stop'
 
                     Should -Invoke -CommandName Connect-SQL -ParameterFilter {
                         <#
@@ -848,7 +838,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
 
             Context 'When skipping the online check' {
                 It 'Should restart SQL Service and running SQL Agent service and not wait for the SQL Server instance to come back online' {
-                    { Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -SkipWaitForOnline } | Should -Not -Throw
+                    $null = Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -SkipWaitForOnline -ErrorAction 'Stop'
 
                     Should -Invoke -CommandName Connect-SQL -ParameterFilter {
                         <#
@@ -896,7 +886,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
             }
 
             It 'Should just call Restart-SqlClusterService to restart the SQL Server cluster instance' {
-                { Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' } | Should -Not -Throw
+                $null = Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -ErrorAction 'Stop'
 
                 Should -Invoke -CommandName Connect-SQL -ParameterFilter {
                     <#
@@ -916,7 +906,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
 
             Context 'When passing the Timeout value' {
                 It 'Should just call Restart-SqlClusterService with the correct parameter' {
-                    { Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -Timeout 120 } | Should -Not -Throw
+                    $null = Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -Timeout 120 -ErrorAction 'Stop'
 
                     Should -Invoke -CommandName Restart-SqlClusterService -ParameterFilter {
                         <#
@@ -930,7 +920,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
 
             Context 'When passing the OwnerNode value' {
                 It 'Should just call Restart-SqlClusterService with the correct parameter' {
-                    { Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -OwnerNode @('TestNode') } | Should -Not -Throw
+                    $null = Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -OwnerNode @('TestNode') -ErrorAction 'Stop'
 
                     Should -Invoke -CommandName Restart-SqlClusterService -ParameterFilter {
                         <#
@@ -968,7 +958,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
             }
 
             It 'Should restart SQL Service and not try to restart missing SQL Agent service' {
-                { Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'NOAGENT' -SkipClusterCheck } | Should -Not -Throw
+                $null = Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'NOAGENT' -SkipClusterCheck -ErrorAction 'Stop'
 
                 Should -Invoke -CommandName Get-Service -Scope It -Exactly -Times 1
                 Should -Invoke -CommandName Restart-Service -Scope It -Exactly -Times 1
@@ -1008,7 +998,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
             }
 
             It 'Should restart SQL Service and not try to restart stopped SQL Agent service' {
-                { Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'STOPPEDAGENT' -SkipClusterCheck } | Should -Not -Throw
+                $null = Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'STOPPEDAGENT' -SkipClusterCheck -ErrorAction 'Stop'
 
                 Should -Invoke -CommandName Get-Service -Scope It -Exactly -Times 1
                 Should -Invoke -CommandName Restart-Service -Scope It -Exactly -Times 1
@@ -1149,7 +1139,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
 
         It 'Should not restart any cluster resources' {
             InModuleScope -ScriptBlock {
-                { Restart-SqlClusterService -InstanceName 'MSSQLSERVER' } | Should -Not -Throw
+                $null = Restart-SqlClusterService -InstanceName 'MSSQLSERVER' -ErrorAction 'Stop'
             }
 
             Should -Invoke -CommandName Get-CimInstance -Scope It -Exactly -Times 1
@@ -1178,7 +1168,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
 
         It 'Should not restart any cluster resources' {
             InModuleScope -ScriptBlock {
-                { Restart-SqlClusterService -InstanceName 'MSSQLSERVER' } | Should -Not -Throw
+                $null = Restart-SqlClusterService -InstanceName 'MSSQLSERVER' -ErrorAction 'Stop'
             }
 
             Should -Invoke -CommandName Get-CimInstance -Scope It -Exactly -Times 1
@@ -1227,7 +1217,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
 
             It 'Should restart SQL Server cluster resource and the SQL Agent cluster resource' {
                 InModuleScope -ScriptBlock {
-                    { Restart-SqlClusterService -InstanceName 'MSSQLSERVER' } | Should -Not -Throw
+                    $null = Restart-SqlClusterService -InstanceName 'MSSQLSERVER' -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Get-CimInstance -Scope It -Exactly -Times 1
@@ -1279,7 +1269,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
 
             It 'Should restart SQL Server cluster resource and the SQL Agent cluster resource' {
                 InModuleScope -ScriptBlock {
-                    { Restart-SqlClusterService -InstanceName 'DSCTEST' } | Should -Not -Throw
+                    $null = Restart-SqlClusterService -InstanceName 'DSCTEST' -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Get-CimInstance -Scope It -Exactly -Times 1

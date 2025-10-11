@@ -98,7 +98,7 @@ Describe 'Changelog Management' -Tag 'Changelog' {
     }
 
     It 'Changelog format compliant with keepachangelog format' -Skip:(![bool](Get-Command git -EA SilentlyContinue)) {
-        { Get-ChangelogData -Path (Join-Path $ProjectPath 'CHANGELOG.md') -ErrorAction Stop } | Should -Not -Throw
+        $null = Get-ChangelogData -Path (Join-Path $ProjectPath 'CHANGELOG.md') -ErrorAction Stop
     }
 
     It 'Changelog should have an Unreleased header' -Skip:$skipTest {
@@ -108,13 +108,13 @@ Describe 'Changelog Management' -Tag 'Changelog' {
 
 Describe 'General module control' -Tags 'FunctionalQuality' {
     It 'Should import without errors' {
-        { Import-Module -Name $script:moduleName -Force -ErrorAction Stop } | Should -Not -Throw
+        $null = Import-Module -Name $script:moduleName -Force -ErrorAction Stop
 
         Get-Module -Name $script:moduleName | Should -Not -BeNullOrEmpty
     }
 
     It 'Should remove without error' {
-        { Remove-Module -Name $script:moduleName -ErrorAction Stop } | Should -Not -Throw
+        $null = Remove-Module -Name $script:moduleName -ErrorAction Stop
 
         Get-Module $script:moduleName | Should -BeNullOrEmpty
     }

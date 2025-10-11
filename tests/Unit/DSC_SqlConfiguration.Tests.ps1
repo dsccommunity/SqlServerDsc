@@ -258,7 +258,7 @@ Describe 'SqlConfiguration\Set-TargetResource' {
                         RestartTimeout = 120
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                     $script:mockAlterMethodCallCount | Should -Be 1
                 }
@@ -289,7 +289,7 @@ Describe 'SqlConfiguration\Set-TargetResource' {
                             RestartTimeout = 120
                         }
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     if ($IsDynamic)

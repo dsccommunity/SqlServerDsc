@@ -58,9 +58,7 @@ Describe 'Assert-Feature' -Tag 'Private' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                {
-                    Assert-Feature -Feature 'RS' -ProductVersion '14'
-                } | Should -Not -Throw
+                $null = Assert-Feature -Feature 'RS' -ProductVersion '14' -ErrorAction 'Stop'
             }
         }
 
@@ -68,9 +66,7 @@ Describe 'Assert-Feature' -Tag 'Private' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                {
-                    Assert-Feature -Feature 'RS', 'SQLENGINE' -ProductVersion '14'
-                } | Should -Not -Throw
+                $null = Assert-Feature -Feature 'RS', 'SQLENGINE' -ProductVersion '14' -ErrorAction 'Stop'
             }
         }
     }

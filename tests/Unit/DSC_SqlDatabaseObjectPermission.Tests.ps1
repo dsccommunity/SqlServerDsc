@@ -2008,7 +2008,7 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
         }
 
         It 'Should not try to set any values and should not throw an exception' {
-            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+            $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
             Should -Invoke -CommandName Get-DatabaseObject -Exactly -Times 0 -Scope It
         }
@@ -2168,7 +2168,7 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
                 }
 
                 It 'Should set the permissions without throwing an exception' {
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                     Should -Invoke -CommandName Get-DatabaseObject -Exactly -Times 1 -Scope It
 
@@ -2225,7 +2225,7 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
                         }
 
                         It 'Should set the permissions without throwing an exception' {
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                             Should -Invoke -CommandName Get-DatabaseObject -Exactly -Times 1 -Scope It
 
@@ -2293,7 +2293,7 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
                 }
 
                 It 'Should set the permissions without throwing an exception' {
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                     Should -Invoke -CommandName Get-DatabaseObject -Exactly -Times 1 -Scope It
 
@@ -2358,7 +2358,7 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
                 }
 
                 It 'Should set the permissions without throwing an exception' {
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                     Should -Invoke -CommandName Get-DatabaseObject -Exactly -Times 1 -Scope It
 
@@ -2436,7 +2436,7 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
                 }
 
                 It 'Should set the permissions without throwing an exception' {
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                     Should -Invoke -CommandName Get-DatabaseObject -Exactly -Times 1 -Scope It
 
@@ -2529,7 +2529,7 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
                 }
 
                 It 'Should revoke the permissions without throwing an exception' {
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                     Should -Invoke -CommandName Get-DatabaseObject -Exactly -Times 1 -Scope It
 
@@ -2582,7 +2582,7 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
                 }
 
                 It 'Should revoke the permissions without throwing an exception' {
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                     Should -Invoke -CommandName Get-DatabaseObject -Exactly -Times 1 -Scope It
 
@@ -2635,7 +2635,7 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
                 }
 
                 It 'Should revoke the permissions without throwing an exception' {
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                     Should -Invoke -CommandName Get-DatabaseObject -Exactly -Times 1 -Scope It
 

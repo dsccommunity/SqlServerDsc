@@ -99,11 +99,9 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
     ) {
         It 'Should not throw an exception' {
             InModuleScope -Parameters $_ -ScriptBlock {
-                {
-                    Assert-SetupActionProperties -Property @{
-                        ValidProperty = 'Value'
-                    } -SetupAction $MockSetupAction
-                } | Should -Not -Throw
+                $null = Assert-SetupActionProperties -Property @{
+                    ValidProperty = 'Value'
+                } -SetupAction $MockSetupAction -ErrorAction 'Stop'
             }
         }
     }
@@ -189,11 +187,9 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             InModuleScope -Parameters @{
                 MockFileStreamLevel = $_
             } -ScriptBlock {
-                {
-                    Assert-SetupActionProperties -Property @{
-                        FileStreamLevel = $MockFileStreamLevel
-                    } -SetupAction 'NotUsed'
-                } | Should -Not -Throw
+                $null = Assert-SetupActionProperties -Property @{
+                    FileStreamLevel = $MockFileStreamLevel
+                } -SetupAction 'NotUsed' -ErrorAction 'Stop'
             }
         }
     }
@@ -277,12 +273,10 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
      ) {
         It 'Should not throw an exception' {
             InModuleScope -Parameters $_ -ScriptBlock {
-                {
-                    Assert-SetupActionProperties -Property @{
-                        $MockParameterName = 'AccountName'
-                        ($MockParameterName -replace 'Account', 'Password') = 'Password'
-                    } -SetupAction 'NotUsed'
-                } | Should -Not -Throw
+                $null = Assert-SetupActionProperties -Property @{
+                    $MockParameterName = 'AccountName'
+                    ($MockParameterName -replace 'Account', 'Password') = 'Password'
+                } -SetupAction 'NotUsed' -ErrorAction 'Stop'
             }
         }
     }
@@ -321,11 +315,9 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
 
         It 'Should not throw an exception' {
             InModuleScope -Parameters $_ -ScriptBlock {
-                {
-                    Assert-SetupActionProperties -Property @{
-                        $MockParameterName = 'myMSA$'
-                    } -SetupAction 'NotUsed'
-                } | Should -Not -Throw
+                $null = Assert-SetupActionProperties -Property @{
+                    $MockParameterName = 'myMSA$'
+                } -SetupAction 'NotUsed' -ErrorAction 'Stop'
             }
         }
     }

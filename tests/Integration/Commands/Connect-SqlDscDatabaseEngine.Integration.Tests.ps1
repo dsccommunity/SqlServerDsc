@@ -65,20 +65,18 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
 
         Context 'When impersonating a Windows user' {
             It 'Should return the correct result' {
-                {
-                    $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
-                    $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+                $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+                $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
 
-                    $connectSqlDscDatabaseEngineParameters = @{
-                        Credential  = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
-                        Verbose     = $true
-                        ErrorAction = 'Stop'
-                    }
+                $connectSqlDscDatabaseEngineParameters = @{
+                    Credential  = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
+                    Verbose     = $true
+                    ErrorAction = 'Stop'
+                }
 
-                    $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+                $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-                    $sqlServerObject.Status.ToString() | Should -Match '^Online$'
-                } | Should -Not -Throw
+                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
             }
         }
     }
@@ -92,42 +90,38 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
 
         Context 'When impersonating a Windows user' {
             It 'Should return the correct result' {
-                {
-                    $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
-                    $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+                $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+                $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
 
-                    $connectSqlDscDatabaseEngineParameters = @{
-                        InstanceName = 'DSCSQLTEST'
-                        Credential   = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
-                        Verbose      = $true
-                        ErrorAction  = 'Stop'
-                    }
+                $connectSqlDscDatabaseEngineParameters = @{
+                    InstanceName = 'DSCSQLTEST'
+                    Credential   = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
+                    Verbose      = $true
+                    ErrorAction  = 'Stop'
+                }
 
-                    $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+                $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-                    $sqlServerObject.Status.ToString() | Should -Match '^Online$'
-                } | Should -Not -Throw
+                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
             }
         }
 
         Context 'When using a SQL login' {
             It 'Should return the correct result' {
-                {
-                    $sqlAdministratorUserName = 'sa'
-                    $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+                $sqlAdministratorUserName = 'sa'
+                $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
 
-                    $connectSqlDscDatabaseEngineParameters = @{
-                        InstanceName = 'DSCSQLTEST' # cSpell: disable-line
-                        LoginType    = 'SqlLogin'
-                        Credential   = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
-                        Verbose      = $true
-                        ErrorAction  = 'Stop'
-                    }
+                $connectSqlDscDatabaseEngineParameters = @{
+                    InstanceName = 'DSCSQLTEST' # cSpell: disable-line
+                    LoginType    = 'SqlLogin'
+                    Credential   = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
+                    Verbose      = $true
+                    ErrorAction  = 'Stop'
+                }
 
-                    $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+                $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-                    $sqlServerObject.Status.ToString() | Should -Match '^Online$'
-                } | Should -Not -Throw
+                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
             }
         }
     }

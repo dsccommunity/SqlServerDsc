@@ -50,19 +50,17 @@ Describe 'Uninstall-SqlDscReportingService' -Tag @('Integration_SQL2017', 'Integ
 
     Context 'When uninstalling Reporting Services' {
         It 'Should run the command without throwing' {
-            {
-                # Set splatting parameters for Uninstall-SqlDscReportingService
-                $uninstallSqlDscReportingServiceParameters = @{
-                    MediaPath       = $reportingServicesExecutable
-                    LogPath         = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Uninstall.log'
-                    SuppressRestart = $true
-                    Verbose         = $true
-                    ErrorAction     = 'Stop'
-                    Force           = $true
-                }
+            # Set splatting parameters for Uninstall-SqlDscReportingService
+            $uninstallSqlDscReportingServiceParameters = @{
+                MediaPath       = $reportingServicesExecutable
+                LogPath         = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Uninstall.log'
+                SuppressRestart = $true
+                Verbose         = $true
+                ErrorAction     = 'Stop'
+                Force           = $true
+            }
 
-                Uninstall-SqlDscReportingService @uninstallSqlDscReportingServiceParameters
-            } | Should -Not -Throw
+            $null = Uninstall-SqlDscReportingService @uninstallSqlDscReportingServiceParameters
         }
 
         It 'Should not have a SQL Server Reporting Services service' {

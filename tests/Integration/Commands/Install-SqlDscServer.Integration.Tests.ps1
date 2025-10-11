@@ -40,114 +40,112 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2017', 'Integration_SQL20
     Context 'When using Install parameter set' {
         Context 'When installing database engine default instance' {
             It 'Should run the command without throwing' {
-                {
-                    # Set splatting parameters for Install-SqlDscServer
-                    $installSqlDscServerParameters = @{
-                        Install               = $true
-                        AcceptLicensingTerms  = $true
-                        InstanceName          = 'MSSQLSERVER'
-                        Features              = 'SQLENGINE'
-                        SqlSysAdminAccounts   = @(
-                            ('{0}\SqlAdmin' -f $computerName)
-                        )
-                        SqlSvcAccount         = '{0}\svc-SqlPrimary' -f $computerName
-                        SqlSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
-                        SqlSvcStartupType     = 'Automatic'
-                        AgtSvcAccount         = '{0}\svc-SqlAgentPri' -f $computerName
-                        AgtSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
-                        AgtSvcStartupType     = 'Automatic'
-                        BrowserSvcStartupType = 'Automatic'
-                        SecurityMode          = 'SQL'
-                        SAPwd                 = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-                        SqlCollation          = 'Finnish_Swedish_CI_AS'
-                        InstallSharedDir      = 'C:\Program Files\Microsoft SQL Server'
-                        InstallSharedWOWDir   = 'C:\Program Files (x86)\Microsoft SQL Server'
-                        NpEnabled             = $true
-                        TcpEnabled            = $true
-                        MediaPath             = $env:IsoDrivePath
-                        Verbose               = $true
-                        ErrorAction           = 'Stop'
-                        Force                 = $true
-                    }
+                # Set splatting parameters for Install-SqlDscServer
+                $installSqlDscServerParameters = @{
+                    Install               = $true
+                    AcceptLicensingTerms  = $true
+                    InstanceName          = 'MSSQLSERVER'
+                    Features              = 'SQLENGINE'
+                    SqlSysAdminAccounts   = @(
+                        ('{0}\SqlAdmin' -f $computerName)
+                    )
+                    SqlSvcAccount         = '{0}\svc-SqlPrimary' -f $computerName
+                    SqlSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
+                    SqlSvcStartupType     = 'Automatic'
+                    AgtSvcAccount         = '{0}\svc-SqlAgentPri' -f $computerName
+                    AgtSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
+                    AgtSvcStartupType     = 'Automatic'
+                    BrowserSvcStartupType = 'Automatic'
+                    SecurityMode          = 'SQL'
+                    SAPwd                 = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+                    SqlCollation          = 'Finnish_Swedish_CI_AS'
+                    InstallSharedDir      = 'C:\Program Files\Microsoft SQL Server'
+                    InstallSharedWOWDir   = 'C:\Program Files (x86)\Microsoft SQL Server'
+                    NpEnabled             = $true
+                    TcpEnabled            = $true
+                    MediaPath             = $env:IsoDrivePath
+                    Verbose               = $true
+                    ErrorAction           = 'Stop'
+                    Force                 = $true
+                }
 
-                    Install-SqlDscServer @installSqlDscServerParameters
+                Install-SqlDscServer @installSqlDscServerParameters
 
-                    # <#
-                    #     Fails with the following error message:
+                # <#
+                #     Fails with the following error message:
 
-                    #     VERBOSE:   Exit code (Decimal):           -2068774911
-                    #     VERBOSE:   Exit facility code:            1201
-                    #     VERBOSE:   Exit error code:               1
-                    #     VERBOSE:   Exit message:                  There was an error generating the XML document.
+                #     VERBOSE:   Exit code (Decimal):           -2068774911
+                #     VERBOSE:   Exit facility code:            1201
+                #     VERBOSE:   Exit error code:               1
+                #     VERBOSE:   Exit message:                  There was an error generating the XML document.
 
-                    #     Searches points to a permission issue, but the user has been
-                    #     granted the local administrator permissions. But code be
-                    #     Searches also points to user right SeEnableDelegationPrivilege
-                    #     which was not evaluated if it was set correctly or even needed.
-                    # #>
-                    # $installScriptBlock = {
-                    #     param
-                    #     (
-                    #         [Parameter(Mandatory = $true)]
-                    #         [System.String]
-                    #         $IsoDrivePath,
+                #     Searches points to a permission issue, but the user has been
+                #     granted the local administrator permissions. But code be
+                #     Searches also points to user right SeEnableDelegationPrivilege
+                #     which was not evaluated if it was set correctly or even needed.
+                # #>
+                # $installScriptBlock = {
+                #     param
+                #     (
+                #         [Parameter(Mandatory = $true)]
+                #         [System.String]
+                #         $IsoDrivePath,
 
-                    #         [Parameter(Mandatory = $true)]
-                    #         [System.String]
-                    #         $ComputerName,
+                #         [Parameter(Mandatory = $true)]
+                #         [System.String]
+                #         $ComputerName,
 
-                    #         [Parameter(Mandatory = $true)]
-                    #         [System.String]
-                    #         $ModulePath
-                    #     )
+                #         [Parameter(Mandatory = $true)]
+                #         [System.String]
+                #         $ModulePath
+                #     )
 
-                    #     Write-Verbose -Message ('Running install as user ''{0}''.' -f $env:UserName) -Verbose
+                #     Write-Verbose -Message ('Running install as user ''{0}''.' -f $env:UserName) -Verbose
 
-                    #     Import-Module -Name $ModulePath -Force -ErrorAction 'Stop'
+                #     Import-Module -Name $ModulePath -Force -ErrorAction 'Stop'
 
-                    #     # Set splatting parameters for Install-SqlDscServer
-                    #     $installSqlDscServerParameters = @{
-                    #         Install               = $true
-                    #         AcceptLicensingTerms  = $true
-                    #         InstanceName          = 'MSSQLSERVER'
-                    #         Features              = 'SQLENGINE'
-                    #         SqlSysAdminAccounts   = @(
-                    #             ('{0}\SqlAdmin' -f $ComputerName)
-                    #         )
-                    #         SqlSvcAccount         = '{0}\svc-SqlPrimary' -f $ComputerName
-                    #         SqlSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
-                    #         SqlSvcStartupType     = 'Automatic'
-                    #         AgtSvcAccount         = '{0}\svc-SqlAgentPri' -f $ComputerName
-                    #         AgtSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
-                    #         AgtSvcStartupType     = 'Automatic'
-                    #         BrowserSvcStartupType = 'Automatic'
-                    #         SecurityMode          = 'SQL'
-                    #         SAPwd                 = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-                    #         SqlCollation          = 'Finnish_Swedish_CI_AS'
-                    #         InstallSharedDir      = 'C:\Program Files\Microsoft SQL Server'
-                    #         InstallSharedWOWDir   = 'C:\Program Files (x86)\Microsoft SQL Server'
-                    #         NpEnabled             = $true
-                    #         TcpEnabled            = $true
-                    #         MediaPath             = $IsoDrivePath
-                    #         Verbose               = $true
-                    #         ErrorAction           = 'Stop'
-                    #         Force                 = $true
-                    #     }
+                #     # Set splatting parameters for Install-SqlDscServer
+                #     $installSqlDscServerParameters = @{
+                #         Install               = $true
+                #         AcceptLicensingTerms  = $true
+                #         InstanceName          = 'MSSQLSERVER'
+                #         Features              = 'SQLENGINE'
+                #         SqlSysAdminAccounts   = @(
+                #             ('{0}\SqlAdmin' -f $ComputerName)
+                #         )
+                #         SqlSvcAccount         = '{0}\svc-SqlPrimary' -f $ComputerName
+                #         SqlSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
+                #         SqlSvcStartupType     = 'Automatic'
+                #         AgtSvcAccount         = '{0}\svc-SqlAgentPri' -f $ComputerName
+                #         AgtSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
+                #         AgtSvcStartupType     = 'Automatic'
+                #         BrowserSvcStartupType = 'Automatic'
+                #         SecurityMode          = 'SQL'
+                #         SAPwd                 = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+                #         SqlCollation          = 'Finnish_Swedish_CI_AS'
+                #         InstallSharedDir      = 'C:\Program Files\Microsoft SQL Server'
+                #         InstallSharedWOWDir   = 'C:\Program Files (x86)\Microsoft SQL Server'
+                #         NpEnabled             = $true
+                #         TcpEnabled            = $true
+                #         MediaPath             = $IsoDrivePath
+                #         Verbose               = $true
+                #         ErrorAction           = 'Stop'
+                #         Force                 = $true
+                #     }
 
-                    #     Install-SqlDscServer @installSqlDscServerParameters
-                    # }
+                #     Install-SqlDscServer @installSqlDscServerParameters
+                # }
 
-                    # $invokeCommandUsername = '{0}\SqlInstall' -f $ComputerName
-                    # $invokeCommandPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-                    # $invokeCommandCredential = New-Object System.Management.Automation.PSCredential ($invokeCommandUsername, $invokeCommandPassword)
+                # $invokeCommandUsername = '{0}\SqlInstall' -f $ComputerName
+                # $invokeCommandPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+                # $invokeCommandCredential = New-Object System.Management.Automation.PSCredential ($invokeCommandUsername, $invokeCommandPassword)
 
-                    # # Runs command as SqlInstall user.
-                    # Invoke-Command -ComputerName 'localhost' -Credential $invokeCommandCredential -ScriptBlock $installScriptBlock -ArgumentList @(
-                    #     $env:IsoDrivePath, # Already set by the prerequisites tests
-                    #     (Get-ComputerName),
-                    #     $modulePath
-                    # )
-                } | Should -Not -Throw
+                # # Runs command as SqlInstall user.
+                # Invoke-Command -ComputerName 'localhost' -Credential $invokeCommandCredential -ScriptBlock $installScriptBlock -ArgumentList @(
+                #     $env:IsoDrivePath, # Already set by the prerequisites tests
+                #     (Get-ComputerName),
+                #     $modulePath
+                # )
             }
 
             It 'Should have installed the SQL Server database engine' {
@@ -182,116 +180,114 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2017', 'Integration_SQL20
             # }
 
             It 'Should run the command without throwing' {
-                {
-                    # Set splatting parameters for Install-SqlDscServer
-                    $installSqlDscServerParameters = @{
-                        Install               = $true
-                        AcceptLicensingTerms  = $true
-                        InstanceName          = 'DSCSQLTEST'
-                        Features              = 'SQLENGINE'
-                        SqlSysAdminAccounts   = @(
-                            ('{0}\SqlAdmin' -f $computerName)
-                        )
-                        SqlSvcAccount         = '{0}\svc-SqlPrimary' -f $computerName
-                        SqlSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
-                        SqlSvcStartupType     = 'Automatic'
-                        AgtSvcAccount         = '{0}\svc-SqlAgentPri' -f $computerName
-                        AgtSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
-                        AgtSvcStartupType     = 'Automatic'
-                        BrowserSvcStartupType = 'Automatic'
-                        SecurityMode          = 'SQL'
-                        SAPwd                 = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-                        SqlCollation          = 'Finnish_Swedish_CI_AS'
-                        InstallSharedDir      = 'C:\Program Files\Microsoft SQL Server'
-                        InstallSharedWOWDir   = 'C:\Program Files (x86)\Microsoft SQL Server'
-                        NpEnabled             = $true
-                        TcpEnabled            = $true
-                        MediaPath             = $env:IsoDrivePath
-                        Verbose               = $true
-                        ErrorAction           = 'Stop'
-                        Force                 = $true
-                    }
+                # Set splatting parameters for Install-SqlDscServer
+                $installSqlDscServerParameters = @{
+                    Install               = $true
+                    AcceptLicensingTerms  = $true
+                    InstanceName          = 'DSCSQLTEST'
+                    Features              = 'SQLENGINE'
+                    SqlSysAdminAccounts   = @(
+                        ('{0}\SqlAdmin' -f $computerName)
+                    )
+                    SqlSvcAccount         = '{0}\svc-SqlPrimary' -f $computerName
+                    SqlSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
+                    SqlSvcStartupType     = 'Automatic'
+                    AgtSvcAccount         = '{0}\svc-SqlAgentPri' -f $computerName
+                    AgtSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
+                    AgtSvcStartupType     = 'Automatic'
+                    BrowserSvcStartupType = 'Automatic'
+                    SecurityMode          = 'SQL'
+                    SAPwd                 = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+                    SqlCollation          = 'Finnish_Swedish_CI_AS'
+                    InstallSharedDir      = 'C:\Program Files\Microsoft SQL Server'
+                    InstallSharedWOWDir   = 'C:\Program Files (x86)\Microsoft SQL Server'
+                    NpEnabled             = $true
+                    TcpEnabled            = $true
+                    MediaPath             = $env:IsoDrivePath
+                    Verbose               = $true
+                    ErrorAction           = 'Stop'
+                    Force                 = $true
+                }
 
-                    Install-SqlDscServer @installSqlDscServerParameters
+                Install-SqlDscServer @installSqlDscServerParameters
 
-                    # {
-                    #     <#
-                    #         Fails with the following error message:
+                # {
+                #     <#
+                #         Fails with the following error message:
 
-                    #         VERBOSE:   Exit code (Decimal):           -2068774911
-                    #         VERBOSE:   Exit facility code:            1201
-                    #         VERBOSE:   Exit error code:               1
-                    #         VERBOSE:   Exit message:                  There was an error generating the XML document.
+                #         VERBOSE:   Exit code (Decimal):           -2068774911
+                #         VERBOSE:   Exit facility code:            1201
+                #         VERBOSE:   Exit error code:               1
+                #         VERBOSE:   Exit message:                  There was an error generating the XML document.
 
-                    #         Searches points to a permission issue, but the user has been
-                    #         granted the local administrator permissions. But code be
-                    #         Searches also points to user right SeEnableDelegationPrivilege
-                    #         which was not evaluated if it was set correctly or even needed.
-                    #     #>
-                    #     $installScriptBlock = {
-                    #         param
-                    #         (
-                    #             [Parameter(Mandatory = $true)]
-                    #             [System.String]
-                    #             $IsoDrivePath,
+                #         Searches points to a permission issue, but the user has been
+                #         granted the local administrator permissions. But code be
+                #         Searches also points to user right SeEnableDelegationPrivilege
+                #         which was not evaluated if it was set correctly or even needed.
+                #     #>
+                #     $installScriptBlock = {
+                #         param
+                #         (
+                #             [Parameter(Mandatory = $true)]
+                #             [System.String]
+                #             $IsoDrivePath,
 
-                    #             [Parameter(Mandatory = $true)]
-                    #             [System.String]
-                    #             $ComputerName,
+                #             [Parameter(Mandatory = $true)]
+                #             [System.String]
+                #             $ComputerName,
 
-                    #             [Parameter(Mandatory = $true)]
-                    #             [System.String]
-                    #             $ModulePath
-                    #         )
+                #             [Parameter(Mandatory = $true)]
+                #             [System.String]
+                #             $ModulePath
+                #         )
 
-                    #         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
+                #         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
 
-                    #         Import-Module -Name $ModulePath -Force -ErrorAction 'Stop'
+                #         Import-Module -Name $ModulePath -Force -ErrorAction 'Stop'
 
-                    #         # Set splatting parameters for Install-SqlDscServer
-                    #         $installSqlDscServerParameters = @{
-                    #             Install               = $true
-                    #             AcceptLicensingTerms  = $true
-                    #             InstanceName          = 'DSCSQLTEST' # cSpell: disable-line
-                    #             Features              = 'SQLENGINE'
-                    #             SqlSysAdminAccounts   = @(
-                    #                 ('{0}\SqlAdmin' -f $ComputerName)
-                    #             )
-                    #             SqlSvcAccount         = '{0}\svc-SqlPrimary' -f $ComputerName
-                    #             SqlSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
-                    #             SqlSvcStartupType     = 'Automatic'
-                    #             AgtSvcAccount         = '{0}\svc-SqlAgentPri' -f $ComputerName
-                    #             AgtSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
-                    #             AgtSvcStartupType     = 'Automatic'
-                    #             BrowserSvcStartupType = 'Automatic'
-                    #             SecurityMode          = 'SQL'
-                    #             SAPwd                 = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-                    #             SqlCollation          = 'Finnish_Swedish_CI_AS'
-                    #             InstallSharedDir      = 'C:\Program Files\Microsoft SQL Server'
-                    #             InstallSharedWOWDir   = 'C:\Program Files (x86)\Microsoft SQL Server'
-                    #             NpEnabled             = $true
-                    #             TcpEnabled            = $true
-                    #             MediaPath             = $IsoDrivePath
-                    #             Verbose               = $true
-                    #             ErrorAction           = 'Stop'
-                    #             Force                 = $true
-                    #         }
+                #         # Set splatting parameters for Install-SqlDscServer
+                #         $installSqlDscServerParameters = @{
+                #             Install               = $true
+                #             AcceptLicensingTerms  = $true
+                #             InstanceName          = 'DSCSQLTEST' # cSpell: disable-line
+                #             Features              = 'SQLENGINE'
+                #             SqlSysAdminAccounts   = @(
+                #                 ('{0}\SqlAdmin' -f $ComputerName)
+                #             )
+                #             SqlSvcAccount         = '{0}\svc-SqlPrimary' -f $ComputerName
+                #             SqlSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
+                #             SqlSvcStartupType     = 'Automatic'
+                #             AgtSvcAccount         = '{0}\svc-SqlAgentPri' -f $ComputerName
+                #             AgtSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
+                #             AgtSvcStartupType     = 'Automatic'
+                #             BrowserSvcStartupType = 'Automatic'
+                #             SecurityMode          = 'SQL'
+                #             SAPwd                 = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+                #             SqlCollation          = 'Finnish_Swedish_CI_AS'
+                #             InstallSharedDir      = 'C:\Program Files\Microsoft SQL Server'
+                #             InstallSharedWOWDir   = 'C:\Program Files (x86)\Microsoft SQL Server'
+                #             NpEnabled             = $true
+                #             TcpEnabled            = $true
+                #             MediaPath             = $IsoDrivePath
+                #             Verbose               = $true
+                #             ErrorAction           = 'Stop'
+                #             Force                 = $true
+                #         }
 
-                    #         Install-SqlDscServer @installSqlDscServerParameters
-                    #     }
+                #         Install-SqlDscServer @installSqlDscServerParameters
+                #     }
 
-                    #     $invokeCommandUsername = 'SqlInstall' # Using computer name as NetBIOS name throw exception.
-                    #     $invokeCommandPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-                    #     $invokeCommandCredential = New-Object System.Management.Automation.PSCredential ($invokeCommandUsername, $invokeCommandPassword)
+                #     $invokeCommandUsername = 'SqlInstall' # Using computer name as NetBIOS name throw exception.
+                #     $invokeCommandPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+                #     $invokeCommandCredential = New-Object System.Management.Automation.PSCredential ($invokeCommandUsername, $invokeCommandPassword)
 
-                    #     # Runs command as SqlInstall user.
-                    #     Invoke-Command -ComputerName 'localhost' -Credential $invokeCommandCredential -ScriptBlock $installScriptBlock -ArgumentList @(
-                    #         $env:IsoDrivePath, # Already set by the prerequisites tests
-                    #         (Get-ComputerName),
-                    #         $modulePath
-                    #     )
-                    # } | Should -Not -Throw
-                } | Should -Not -Throw
+                #     # Runs command as SqlInstall user.
+                #     Invoke-Command -ComputerName 'localhost' -Credential $invokeCommandCredential -ScriptBlock $installScriptBlock -ArgumentList @(
+                #         $env:IsoDrivePath, # Already set by the prerequisites tests
+                #         (Get-ComputerName),
+                #         $modulePath
+                #     )
+                # } | Should -Not -Throw
             }
 
             It 'Should have installed the SQL Server database engine' {
@@ -308,7 +304,7 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2017', 'Integration_SQL20
                 $sqlServerService = Get-Service -Name 'MSSQL$DSCSQLTEST' -ErrorAction 'Stop'
 
                 $sqlServerService.Status | Should -Be 'Running'
-                
+
                 Write-Verbose -Message 'MSSQL$DSCSQLTEST service left running for subsequent integration tests to improve performance' -Verbose
             }
         }

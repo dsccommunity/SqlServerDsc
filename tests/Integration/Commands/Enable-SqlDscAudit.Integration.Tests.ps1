@@ -53,7 +53,7 @@ Describe 'Enable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             # Create a test audit for each test (disabled by default)
             $script:testAuditName = 'SqlDscTestEnableAudit_' + (Get-Random)
             $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -Force -ErrorAction Stop
-            
+
             # Verify audit is created but disabled
             $auditObject = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
             $auditObject.Enabled | Should -BeFalse
@@ -107,8 +107,7 @@ Describe 'Enable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             $enabledAudit.Enabled | Should -BeTrue
 
             # Enable the audit again - should not fail
-            { Enable-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Force -ErrorAction Stop } |
-                Should -Not -Throw
+            $null = Enable-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Force -ErrorAction 'Stop'
 
             # Verify audit is still enabled
             $stillEnabledAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
@@ -121,7 +120,7 @@ Describe 'Enable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             # Create a test audit for each test (disabled by default)
             $script:testAuditNameForObject = 'SqlDscTestEnableAuditObj_' + (Get-Random)
             $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -LogType 'ApplicationLog' -Force -ErrorAction Stop
-            
+
             # Verify audit is created but disabled
             $auditObject = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction Stop
             $auditObject.Enabled | Should -BeFalse
@@ -175,7 +174,7 @@ Describe 'Enable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             # Create a test audit for each test (disabled by default)
             $script:testAuditNameForPipeline = 'SqlDscTestEnableAuditPipe_' + (Get-Random)
             $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForPipeline -LogType 'ApplicationLog' -Force -ErrorAction Stop
-            
+
             # Verify audit is created but disabled
             $auditObject = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForPipeline -ErrorAction Stop
             $auditObject.Enabled | Should -BeFalse
@@ -214,11 +213,11 @@ Describe 'Enable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
                 'SqlDscTestMultiEnable1_' + (Get-Random),
                 'SqlDscTestMultiEnable2_' + (Get-Random)
             )
-            
+
             foreach ($auditName in $script:testAuditNames)
             {
                 $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $auditName -LogType 'ApplicationLog' -Force -ErrorAction Stop
-                
+
                 # Verify audit is created but disabled
                 $auditObject = Get-SqlDscAudit -ServerObject $script:serverObject -Name $auditName -ErrorAction Stop
                 $auditObject.Enabled | Should -BeFalse

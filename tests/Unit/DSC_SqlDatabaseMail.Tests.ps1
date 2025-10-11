@@ -861,7 +861,7 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                     $setTargetResourceParameters.AccountName = 'MissingAccount'
                     $setTargetResourceParameters.ProfileName = 'MissingProfile'
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
                     $script:MailAccountCreateMethodCallCount | Should -Be 0
                     $script:MailServerRenameMethodCallCount | Should -Be 0
@@ -905,7 +905,7 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                     $setTargetResourceParameters['TcpPort'] = $MockTcpPort
                     $setTargetResourceParameters['UseDefaultCredentials'] = $MockUseDefaultCredentials
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
                     $script:MailAccountCreateMethodCallCount | Should -Be 0
                     $script:MailServerRenameMethodCallCount | Should -Be 0
@@ -937,7 +937,7 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                     $setTargetResourceParameters = $mockDefaultParameters.Clone()
                     $setTargetResourceParameters.Ensure = 'Absent'
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
                     $script:JobServerAlterMethodCallCount | Should -Be 1
                     $script:MailProfileDropMethodCallCount | Should -Be 1
@@ -995,7 +995,7 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                         $setTargetResourceParameters['TcpPort'] = 2525
                         $setTargetResourceParameters['UseDefaultCredentials'] = $true
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
                         $script:MailAccountCreateMethodCallCount | Should -Be 1
                         $script:MailServerRenameMethodCallCount | Should -Be 1
@@ -1070,7 +1070,7 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
 
                         $setTargetResourceParameters.$Property = $PropertyValue
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
                         $script:MailAccountCreateMethodCallCount | Should -Be 0
 

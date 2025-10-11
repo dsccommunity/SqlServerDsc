@@ -32,7 +32,7 @@ BeforeAll {
 Describe 'Get-SqlDscInstalledInstance' {
     Context 'When getting all SQL Server instances' -Tag @('Integration_PowerBI') {
         It 'Should not throw an exception' {
-            { Get-SqlDscInstalledInstance } | Should -Not -Throw
+            $null = Get-SqlDscInstalledInstance -ErrorAction 'Stop'
         }
 
         It 'Should return an array of objects' {
