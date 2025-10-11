@@ -103,7 +103,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     ConfigurationData                  = $ConfigurationData
                 }
 
-                & $configurationName @configurationParameters
+                $null = & $configurationName @configurationParameters
 
                 $startDscConfigurationParameters = @{
                     Path         = $TestDrive
@@ -138,7 +138,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     ConfigurationData                  = $ConfigurationData
                 }
 
-                & $configurationName @configurationParameters
+                $null = & $configurationName @configurationParameters
 
                 $startDscConfigurationParameters = @{
                     Path         = $TestDrive
@@ -154,9 +154,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -259,7 +257,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     ConfigurationData                  = $ConfigurationData
                 }
 
-                & $configurationName @configurationParameters
+                $null = & $configurationName @configurationParameters
 
                 $startDscConfigurationParameters = @{
                     Path         = $TestDrive
@@ -275,9 +273,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -333,7 +329,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     ConfigurationData                  = $ConfigurationData
                 }
 
-                & $configurationName @configurationParameters
+                $null = & $configurationName @configurationParameters
 
                 $startDscConfigurationParameters = @{
                     Path         = $TestDrive
@@ -349,9 +345,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -447,7 +441,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     ConfigurationData = $ConfigurationData
                 }
 
-                & $configurationName @configurationParameters
+                $null = & $configurationName @configurationParameters
 
                 $startDscConfigurationParameters = @{
                     Path         = $TestDrive

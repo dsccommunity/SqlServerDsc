@@ -42,14 +42,10 @@ Describe 'Remove-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL
     Context 'When removing trace flags using ServerName and InstanceName parameters' {
         It 'Should remove a single trace flag without error' {
             # Arrange - Add a test trace flag first
-            {
-                Add-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $script:singleTestTraceFlag -Force -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Add-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $script:singleTestTraceFlag -Force -ErrorAction 'Stop'
 
             # Act - Remove the trace flag
-            {
-                Remove-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $script:singleTestTraceFlag -Force -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Remove-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $script:singleTestTraceFlag -Force -ErrorAction 'Stop'
 
             # Assert - Verify the trace flag was removed
             $currentTraceFlags = Get-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
@@ -58,14 +54,10 @@ Describe 'Remove-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL
 
         It 'Should remove multiple trace flags without error' {
             # Arrange - Add test trace flags first
-            {
-                Add-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $script:testTraceFlags -Force -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Add-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $script:testTraceFlags -Force -ErrorAction 'Stop'
 
             # Act - Remove the trace flags
-            {
-                Remove-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $script:testTraceFlags -Force -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Remove-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $script:testTraceFlags -Force -ErrorAction 'Stop'
 
             # Assert - Verify the trace flags were removed
             $currentTraceFlags = Get-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
@@ -77,9 +69,7 @@ Describe 'Remove-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL
 
         It 'Should not error when removing non-existent trace flags' {
             # Act & Assert - Removing a trace flag that doesn't exist should not throw
-            {
-                Remove-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag 9999 -Force -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Remove-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag 9999 -Force -ErrorAction 'Stop'
         }
 
         It 'Should preserve other existing trace flags when removing specific ones' {
@@ -88,14 +78,10 @@ Describe 'Remove-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL
             $flagsToRemove = @(4199, 1118)
             $flagsToKeep = @(3226, 2544)
 
-            {
-                Add-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $allTestFlags -Force -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Add-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $allTestFlags -Force -ErrorAction 'Stop'
 
             # Act - Remove only some of the trace flags
-            {
-                Remove-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $flagsToRemove -Force -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Remove-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $flagsToRemove -Force -ErrorAction 'Stop'
 
             # Assert - Verify correct flags were removed and others preserved
             $currentTraceFlags = Get-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
@@ -123,14 +109,10 @@ Describe 'Remove-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL
 
         It 'Should remove a single trace flag using ServiceObject parameter' {
             # Arrange - Add a test trace flag first
-            {
-                Add-SqlDscTraceFlag -ServiceObject $script:serviceObject -TraceFlag $script:singleTestTraceFlag -Force -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Add-SqlDscTraceFlag -ServiceObject $script:serviceObject -TraceFlag $script:singleTestTraceFlag -Force -ErrorAction 'Stop'
 
             # Act - Remove the trace flag
-            {
-                Remove-SqlDscTraceFlag -ServiceObject $script:serviceObject -TraceFlag $script:singleTestTraceFlag -Force -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Remove-SqlDscTraceFlag -ServiceObject $script:serviceObject -TraceFlag $script:singleTestTraceFlag -Force -ErrorAction 'Stop'
 
             # Assert - Verify the trace flag was removed
             $currentTraceFlags = Get-SqlDscTraceFlag -ServiceObject $script:serviceObject -ErrorAction 'Stop'
@@ -139,14 +121,10 @@ Describe 'Remove-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL
 
         It 'Should remove multiple trace flags using ServiceObject parameter' {
             # Arrange - Add test trace flags first
-            {
-                Add-SqlDscTraceFlag -ServiceObject $script:serviceObject -TraceFlag $script:testTraceFlags -Force -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Add-SqlDscTraceFlag -ServiceObject $script:serviceObject -TraceFlag $script:testTraceFlags -Force -ErrorAction 'Stop'
 
             # Act - Remove the trace flags
-            {
-                Remove-SqlDscTraceFlag -ServiceObject $script:serviceObject -TraceFlag $script:testTraceFlags -Force -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Remove-SqlDscTraceFlag -ServiceObject $script:serviceObject -TraceFlag $script:testTraceFlags -Force -ErrorAction 'Stop'
 
             # Assert - Verify the trace flags were removed
             $currentTraceFlags = Get-SqlDscTraceFlag -ServiceObject $script:serviceObject -ErrorAction 'Stop'

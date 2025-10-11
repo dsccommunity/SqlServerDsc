@@ -68,32 +68,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath           = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData    = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath           = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData    = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -133,32 +129,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath           = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData    = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath           = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData    = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -198,32 +190,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath           = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData    = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath           = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData    = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -268,32 +256,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath           = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData    = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath           = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData    = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -429,14 +413,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                 Context 'When the system is not in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Get'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Get'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
+
 
                         $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                         $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
@@ -464,27 +447,24 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     }
 
                     It 'Should run method Test() and return the state as $false' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Test'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Test'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.InDesiredState | Should -BeFalse
                     }
 
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Set'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Set'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
+
 
                         $resourceCurrentState.RebootRequired | Should -BeFalse
                     }
@@ -492,14 +472,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                 Context 'When the system is in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Get'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Get'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                         $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
@@ -527,14 +505,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     }
 
                     It 'Should run method Test() and return the state as $true' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Test'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Test'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.InDesiredState | Should -BeTrue
                     }
@@ -553,14 +529,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         all properties are in desired state.
                     #>
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Set'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Set'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.RebootRequired | Should -BeFalse
                     }
@@ -601,14 +575,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                 Context 'When the system is not in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Get'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Get'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                         $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
@@ -638,27 +610,23 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     }
 
                     It 'Should run method Test() and return the state as $false' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Test'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Test'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.InDesiredState | Should -BeFalse
                     }
 
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Set'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Set'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.RebootRequired | Should -BeFalse
                     }
@@ -666,14 +634,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                 Context 'When the system is in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Get'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Get'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                         $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
@@ -701,14 +667,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     }
 
                     It 'Should run method Test() and return the state as $true' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Test'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Test'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.InDesiredState | Should -BeTrue
                     }
@@ -727,14 +691,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         all properties are in desired state.
                     #>
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Set'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Set'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.RebootRequired | Should -BeFalse
                     }
@@ -774,14 +736,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                 Context 'When the system is not in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Get'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Get'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                         $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
@@ -811,27 +771,23 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     }
 
                     It 'Should run method Test() and return the state as $false' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Test'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Test'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.InDesiredState | Should -BeFalse
                     }
 
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Set'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Set'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.RebootRequired | Should -BeFalse
                     }
@@ -839,14 +795,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                 Context 'When the system is in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Get'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Get'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                         $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
@@ -873,14 +827,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     }
 
                     It 'Should run method Test() and return the state as $true' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Test'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Test'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.InDesiredState | Should -BeTrue
                     }
@@ -899,14 +851,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         all properties are in desired state.
                     #>
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Set'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Set'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.RebootRequired | Should -BeFalse
                     }
@@ -942,14 +892,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                 Context 'When the system is not in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Get'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Get'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                         $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
@@ -978,27 +926,23 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     }
 
                     It 'Should run method Test() and return the state as $false' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Test'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Test'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.InDesiredState | Should -BeFalse
                     }
 
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Set'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Set'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.RebootRequired | Should -BeFalse
                     }
@@ -1006,14 +950,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                 Context 'When the system is in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Get'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Get'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                         $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
@@ -1039,14 +981,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     }
 
                     It 'Should run method Test() and return the state as $true' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Test'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Test'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.InDesiredState | Should -BeTrue
                     }
@@ -1065,14 +1005,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         all properties are in desired state.
                     #>
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Set'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Set'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.RebootRequired | Should -BeFalse
                     }
@@ -1122,14 +1060,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                 Context 'When the system is not in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Get'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Get'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                         $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
@@ -1171,27 +1107,23 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     }
 
                     It 'Should run method Test() and return the state as $false' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Test'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Test'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.InDesiredState | Should -BeFalse
                     }
 
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Set'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Set'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.RebootRequired | Should -BeFalse
                     }
@@ -1199,14 +1131,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                 Context 'When the system is in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Get'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Get'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                         $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
@@ -1252,14 +1182,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     }
 
                     It 'Should run method Test() and return the state as $true' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Test'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Test'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.InDesiredState | Should -BeTrue
                     }
@@ -1278,14 +1206,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         all properties are in desired state.
                     #>
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Set'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Set'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.RebootRequired | Should -BeFalse
                     }
@@ -1332,14 +1258,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                 Context 'When the system is not in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Get'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Get'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                         $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
@@ -1384,27 +1308,23 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     }
 
                     It 'Should run method Test() and return the state as $false' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Test'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Test'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.InDesiredState | Should -BeFalse
                     }
 
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Set'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Set'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.RebootRequired | Should -BeFalse
                     }
@@ -1412,14 +1332,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                 Context 'When the system is in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Get'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Get'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                         $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
@@ -1462,14 +1380,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     }
 
                     It 'Should run method Test() and return the state as $true' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Test'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Test'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.InDesiredState | Should -BeTrue
                     }
@@ -1488,14 +1404,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         all properties are in desired state.
                     #>
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
-                            $mockInvokeDscResourceParameters.Method = 'Set'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+                        $mockInvokeDscResourceParameters.Method = 'Set'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
 
                         $resourceCurrentState.RebootRequired | Should -BeFalse
                     }

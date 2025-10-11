@@ -76,8 +76,7 @@ Describe 'Remove-SqlDscRole' -Tag 'Public' {
         It 'Should remove the server role successfully' {
             Mock -CommandName 'Write-Verbose'
 
-            { Remove-SqlDscRole -ServerObject $mockServerObject -Name 'CustomRole' -Force } |
-                Should -Not -Throw
+            $null = Remove-SqlDscRole -ServerObject $mockServerObject -Name 'CustomRole' -Force
         }
 
         It 'Should call Refresh when Refresh parameter is specified' {
@@ -134,8 +133,7 @@ Describe 'Remove-SqlDscRole' -Tag 'Public' {
         It 'Should remove the server role successfully' {
             Mock -CommandName 'Write-Verbose'
 
-            { Remove-SqlDscRole -RoleObject $mockRole -Force } |
-                Should -Not -Throw
+            $null = Remove-SqlDscRole -RoleObject $mockRole -Force
         }
     }
 
