@@ -89,7 +89,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
         It 'Should not duplicate existing trace flags when adding them again' {
             # Arrange - Ensure a trace flag is already set
             Add-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $script:singleTestTraceFlag -Force -ErrorAction 'Stop'
-            
+
             $beforeAddTraceFlags = Get-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
             $beforeCount = ($beforeAddTraceFlags | Where-Object { $_ -eq $script:singleTestTraceFlag }).Count
 
@@ -101,7 +101,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
             # Assert - Verify no duplicate was created
             $afterAddTraceFlags = Get-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
             $afterCount = ($afterAddTraceFlags | Where-Object { $_ -eq $script:singleTestTraceFlag }).Count
-            
+
             $afterCount | Should -Be $beforeCount
             $afterAddTraceFlags | Should -Contain $script:singleTestTraceFlag
         }
@@ -123,9 +123,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
         It 'Should de-duplicate trace flags provided in the input array' {
             # Act - Add trace flags with duplicates in the input array
-            {
-                Add-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag @($script:singleTestTraceFlag, $script:singleTestTraceFlag, $script:additionalTestTraceFlag, $script:additionalTestTraceFlag) -Force -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Add-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag @($script:singleTestTraceFlag, $script:singleTestTraceFlag, $script:additionalTestTraceFlag, $script:additionalTestTraceFlag) -Force -ErrorAction 'Stop'
 
             # Assert - Verify each trace flag appears only once
             $currentTraceFlags = Get-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
@@ -185,9 +183,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
         It 'Should de-duplicate trace flags provided in the input array using ServiceObject parameter' {
             # Act - Add trace flags with duplicates in the input array
-            {
-                Add-SqlDscTraceFlag -ServiceObject $script:serviceObject -TraceFlag @($script:singleTestTraceFlag, $script:singleTestTraceFlag, $script:additionalTestTraceFlag, $script:additionalTestTraceFlag) -Force -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Add-SqlDscTraceFlag -ServiceObject $script:serviceObject -TraceFlag @($script:singleTestTraceFlag, $script:singleTestTraceFlag, $script:additionalTestTraceFlag, $script:additionalTestTraceFlag) -Force -ErrorAction 'Stop'
 
             # Assert - Verify each trace flag appears only once
             $currentTraceFlags = Get-SqlDscTraceFlag -ServiceObject $script:serviceObject -ErrorAction 'Stop'
