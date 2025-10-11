@@ -72,7 +72,7 @@ function Add-SqlDscTraceFlag
         $InstanceName = 'MSSQLSERVER',
 
         [Parameter(Mandatory = $true)]
-        [ValidateRange(1, [UInt32]::MaxValue)]
+        [ValidateRange(1, [System.UInt32]::MaxValue)]
         [System.UInt32[]]
         $TraceFlag,
 
