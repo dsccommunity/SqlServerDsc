@@ -72,6 +72,7 @@ function Add-SqlDscTraceFlag
         $InstanceName = 'MSSQLSERVER',
 
         [Parameter(Mandatory = $true)]
+        [ValidateRange(1, [UInt32]::MaxValue)]
         [System.UInt32[]]
         $TraceFlag,
 
@@ -137,11 +138,11 @@ function Add-SqlDscTraceFlag
 
         if ($compareResult)
         {
-            $verboseDescriptionMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseDescription -f $InstanceName, ($desiredTraceFlags -join ', ')
-            $verboseWarningMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseWarning -f $InstanceName
+            $descriptionMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseDescription -f $InstanceName, ($desiredTraceFlags -join ', ')
+            $confirmationMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseWarning -f $InstanceName
             $captionMessage = $script:localizedData.TraceFlag_Add_ShouldProcessCaption
 
-            if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+            if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
             {
                 # Copy $PSBoundParameters to keep it intact.
                 $setSqlDscTraceFlagParameters = Remove-CommonParameter -Hashtable $PSBoundParameters
