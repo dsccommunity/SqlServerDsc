@@ -999,7 +999,7 @@ Describe 'SqlDatabaseRole\Set-TargetResource' -Tag 'Set' {
                     $mockSetTargetResourceParameters.Name         = 'MyRole'
                     $mockSetTargetResourceParameters.Ensure       = 'Absent'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $mockMethodDropWasCalled | Should -Be 1
                 }
@@ -1041,7 +1041,7 @@ Describe 'SqlDatabaseRole\Set-TargetResource' -Tag 'Set' {
                     $mockSetTargetResourceParameters.Name         = 'DatabaseRoleToAdd'
                     $mockSetTargetResourceParameters.Ensure       = 'Present'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $mockMethodCreateWasCalled | Should -Be 1
                 }
@@ -1141,7 +1141,7 @@ Describe 'SqlDatabaseRole\Set-TargetResource' -Tag 'Set' {
                     #>
                     $mockSetTargetResourceParameters.Members      = @('John', 'CONTOSO\SQLAdmin')
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -1175,7 +1175,7 @@ Describe 'SqlDatabaseRole\Set-TargetResource' -Tag 'Set' {
                     #>
                     $mockSetTargetResourceParameters.MembersToInclude = @('CONTOSO\SQLAdmin')
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -1207,7 +1207,7 @@ Describe 'SqlDatabaseRole\Set-TargetResource' -Tag 'Set' {
                     #>
                     $mockSetTargetResourceParameters.MembersToExclude = @('CONTOSO\KingJulian')
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -1288,9 +1288,7 @@ Describe 'Add-SqlDscDatabaseRoleMember' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                {
-                    Add-SqlDscDatabaseRoleMember -SqlDatabaseObject $mockSqlDatabaseObject -Name 'MyRole' -MemberName 'John'
-                } | Should -Not -Throw
+                $null = Add-SqlDscDatabaseRoleMember -SqlDatabaseObject $mockSqlDatabaseObject -Name 'MyRole' -MemberName 'John'
 
                 $mockMethodAddMemberWasCalled | Should -Be 1
             }
@@ -1379,9 +1377,7 @@ Describe 'Remove-SqlDscDatabaseRoleMember' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                {
-                    Remove-SqlDscDatabaseRoleMember -SqlDatabaseObject $mockSqlDatabaseObject -Name 'MyRole' -MemberName 'MyRole'
-                } | Should -Not -Throw
+                $null = Remove-SqlDscDatabaseRoleMember -SqlDatabaseObject $mockSqlDatabaseObject -Name 'MyRole' -MemberName 'MyRole'
 
                 $mockMethodDropMemberWasCalled | Should -Be 1
             }

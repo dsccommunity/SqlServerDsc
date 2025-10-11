@@ -189,7 +189,7 @@ Describe 'DSC_SqlTraceFlag\Get-TargetResource' -Tag 'Get' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                $null = Get-TargetResource @mockGetTargetResourceParameters
             }
         }
     }
@@ -214,7 +214,7 @@ Describe 'DSC_SqlTraceFlag\Get-TargetResource' -Tag 'Get' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                $null = Get-TargetResource @mockGetTargetResourceParameters
             }
         }
     }
@@ -846,7 +846,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $script:mockMethodAlterRan | Should -BeFalse -Because 'no TraceFlag parameter was set'
                 }
@@ -862,7 +862,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 
                     $mockSetTargetResourceParameters.ClearAllTraceFlags = $true
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
 
@@ -884,7 +884,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 
                     $mockSetTargetResourceParameters.TraceFlags = '3228'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
 
@@ -907,7 +907,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
                     $mockSetTargetResourceParameters.InstanceName = 'INST00'
                     $mockSetTargetResourceParameters.TraceFlagsToInclude = '3228'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
 
@@ -930,7 +930,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
 
                     $mockSetTargetResourceParameters.TraceFlagsToInclude = '3228'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
 
@@ -953,7 +953,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802;-T3228
 
                     $mockSetTargetResourceParameters.TraceFlagsToExclude = '1802'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
 
@@ -976,7 +976,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226
 
                     $mockSetTargetResourceParameters.TraceFlagsToExclude = '1802', '3226'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
 
@@ -1000,7 +1000,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                     $mockSetTargetResourceParameters.TraceFlags = '4199'
                     $mockSetTargetResourceParameters.RestartService = $true
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
 

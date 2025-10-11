@@ -1740,7 +1740,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
                         ('dummyPassword' | ConvertTo-SecureString -AsPlainText -Force)
                     )
 
-                    { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                    $null = Get-TargetResource @mockGetTargetResourceParameters
                 }
 
                 Should -Invoke New-SmbMapping -Exactly -Times 1 -Scope It
@@ -1940,7 +1940,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
 
                         Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
                         Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
@@ -1976,7 +1976,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = Set-TargetResource @mockSetTargetResourceParameters
 
                             Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
                             Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
@@ -2012,7 +2012,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                             InModuleScope -ScriptBlock {
                                 Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = Set-TargetResource @mockSetTargetResourceParameters
 
                                 Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 1 -Scope It
                                 Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
@@ -2029,7 +2029,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                             InModuleScope -ScriptBlock {
                                 Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = Set-TargetResource @mockSetTargetResourceParameters
 
                                 Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
                                 Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 1 -Scope It
@@ -2054,7 +2054,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                             InModuleScope -ScriptBlock {
                                 Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = Set-TargetResource @mockSetTargetResourceParameters
 
                                 Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
                                 Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 1 -Scope It
@@ -2091,7 +2091,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                             InModuleScope -ScriptBlock {
                                 Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = Set-TargetResource @mockSetTargetResourceParameters
 
                                 Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 1 -Scope It #-Because 'the rule already exist for the Database Engine'
                                 Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 1 -Scope It #-Because 'no rule exist for the SQL Browser'
@@ -2108,7 +2108,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                             InModuleScope -ScriptBlock {
                                 Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = Set-TargetResource @mockSetTargetResourceParameters
 
                                 Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It #-Because 'no rules exist to change'
                                 Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 2 -Scope It #-Because 'no rule exist for either the Database Engine or SQL Browser'
@@ -2158,7 +2158,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
 
                         Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
                     }
@@ -2193,7 +2193,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = Set-TargetResource @mockSetTargetResourceParameters
 
                             Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
                         }
@@ -2215,7 +2215,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = Set-TargetResource @mockSetTargetResourceParameters
 
                             Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 1 -Scope It
                         }
@@ -2238,7 +2238,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                             InModuleScope -ScriptBlock {
                                 Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = Set-TargetResource @mockSetTargetResourceParameters
 
                                 Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 1 -Scope It
                             }
@@ -2261,7 +2261,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = Set-TargetResource @mockSetTargetResourceParameters
 
                             Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 2 -Scope It #-Because 'no rule exist for either Analysis Services or SQL Browser'
                         }
@@ -2309,7 +2309,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
 
                         Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
                     }
@@ -2343,7 +2343,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = Set-TargetResource @mockSetTargetResourceParameters
 
                             Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
                         }
@@ -2364,7 +2364,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = Set-TargetResource @mockSetTargetResourceParameters
 
                             Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 2 -Scope It
                         }
@@ -2413,7 +2413,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
 
                         Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
                     }
@@ -2447,7 +2447,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = Set-TargetResource @mockSetTargetResourceParameters
 
                             Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
                         }
@@ -2472,7 +2472,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = Set-TargetResource @mockSetTargetResourceParameters
 
                             Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 2 -Scope It
                         }
@@ -2513,7 +2513,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         ('dummyPassword' | ConvertTo-SecureString -AsPlainText -Force)
                     )
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
                 Should -Invoke New-SmbMapping -Exactly -Times 1 -Scope It

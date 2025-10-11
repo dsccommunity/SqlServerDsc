@@ -401,7 +401,7 @@ Describe 'SqlDatabaseDefaultLocation\Set-TargetResource' {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    { Set-TargetResource @mockGetTargetResourceParameters -Type $Type -Path $Path } | Should -Not -Throw
+                    $null = Set-TargetResource @mockGetTargetResourceParameters -Type $Type -Path $Path
 
                     $script:methodAlterWasCalled | Should -Be 1
                 }
@@ -443,7 +443,7 @@ Describe 'SqlDatabaseDefaultLocation\Set-TargetResource' {
                     $mockGetTargetResourceParameters.Path = 'C:\AnyPath'
                     $mockGetTargetResourceParameters.RestartService = $true
 
-                    { Set-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockGetTargetResourceParameters
 
                     $script:methodAlterWasCalled | Should -Be 1
                 }
