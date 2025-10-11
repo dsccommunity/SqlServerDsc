@@ -51,6 +51,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Corrected error message in test file to recommend 'noop' task instead of 'build'
+  task for resolving dependencies
+  ([issue #2279](https://github.com/dsccommunity/SqlServerDsc/issues/2279)).
 - Updated integration test documentation in `tests/Integration/Commands/README.md`
   to correctly reflect that `ConvertFrom-SqlDscDatabasePermission` test does not
   require database instance connectivity
