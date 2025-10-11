@@ -73,9 +73,12 @@ function Get-SqlDscTraceFlag
 
     $traceFlags = [System.UInt32[]] @()
 
-    if ($startupParameter)
+    if ($startupParameter -and $startupParameter.TraceFlag)
     {
-        $traceFlags = $startupParameter.TraceFlag
+        # Filter out null and zero values (nulls get converted to 0 in UInt32 arrays).
+        # Valid trace flags start at 1.
+        $traceFlags = $startupParameter.TraceFlag |
+            Where-Object -FilterScript { $_ -ne 0 }
     }
 
     Write-Debug -Message (

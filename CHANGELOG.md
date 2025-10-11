@@ -111,35 +111,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     by dropping and recreating the audit with the new GUID. This parameter is
     required when changing the `AuditGuid` property because SQL Server does not
     allow direct modification of the audit GUID ([issue #2287](https://github.com/dsccommunity/SqlServerDsc/issues/2287)).
-
-### Changed
-
-- Refactored integration tests to remove `finally` blocks from `It`-blocks and
-  use Pester `BeforeEach`/`AfterEach` blocks instead, following DSC Community
-  coding guidelines. This improves test cleanup reliability and maintainability
-  across the following test files ([issue #2288](https://github.com/dsccommunity/SqlServerDsc/issues/2288)):
-  - `New-SqlDscLogin.Integration.Tests.ps1`
-  - `New-SqlDscAudit.Integration.Tests.ps1`
-  - `Get-SqlDscDatabasePermission.Integration.Tests.ps1`
-  - `Get-SqlDscPreferredModule.Integration.Tests.ps1`
-  - `New-SqlDscDatabase.Integration.Tests.ps1`
-- Refactored unit tests to remove `finally` blocks from `It`-blocks and
-  use Pester `AfterEach` blocks instead, following DSC Community coding
-  guidelines. This improves test cleanup reliability and maintainability
-  across the following test files ([issue #2288](https://github.com/dsccommunity/SqlServerDsc/issues/2288)):
-  - `Set-SqlDscConfigurationOption.Tests.ps1`
-  - `Get-SqlDscConfigurationOption.Tests.ps1`
-  - `Test-SqlDscConfigurationOption.Tests.ps1`
-- `Test-SqlDscIsDatabasePrincipal` and `Get-SqlDscDatabasePermission`
-  - Added `Refresh` parameter to refresh SMO collections before checking
-    database principals, addressing issues with custom database roles created
-    via T-SQL that aren't immediately visible to SMO. The refresh logic is
-    optimized to only refresh collections that will be used based on exclude
-    parameters, improving performance on databases with large numbers of principals
-    ([issue #2221](https://github.com/dsccommunity/SqlServerDsc/issues/2221)).
-
-### Fixed
-
 - `Save-SqlDscSqlServerMediaFile`
   - Fixed the Force parameter to work correctly when the target ISO file already
     exists. The command now properly overwrites the target file when Force is
@@ -174,6 +145,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     ([issue #2239](https://github.com/dsccommunity/SqlServerDsc/issues/2239)).
 - Updated `.gitattributes` to enforce LF line endings for PowerShell files to
   ensure cross-platform compatibility.
+
+### Changed
+
+- `Add-SqlDscTraceFlag`
+  - Improved de-duplication logic to normalize element types to `[System.UInt32]`
+    before sorting and removing duplicates, ensuring proper handling of mixed
+    numeric types ([issue #2277](https://github.com/dsccommunity/SqlServerDsc/issues/2277)).
+  - Added idempotent behavior by comparing current and desired trace flags before
+    calling `Set-SqlDscTraceFlag`, skipping unnecessary writes when there are no
+    effective changes ([issue #2277](https://github.com/dsccommunity/SqlServerDsc/issues/2277)).
+- Refactored integration tests to remove `finally` blocks from `It`-blocks and
+  use Pester `BeforeEach`/`AfterEach` blocks instead, following DSC Community
+  coding guidelines. This improves test cleanup reliability and maintainability
+  across the following test files ([issue #2288](https://github.com/dsccommunity/SqlServerDsc/issues/2288)):
+  - `New-SqlDscLogin.Integration.Tests.ps1`
+  - `New-SqlDscAudit.Integration.Tests.ps1`
+  - `Get-SqlDscDatabasePermission.Integration.Tests.ps1`
+  - `Get-SqlDscPreferredModule.Integration.Tests.ps1`
+  - `New-SqlDscDatabase.Integration.Tests.ps1`
+- Refactored unit tests to remove `finally` blocks from `It`-blocks and
+  use Pester `AfterEach` blocks instead, following DSC Community coding
+  guidelines. This improves test cleanup reliability and maintainability
+  across the following test files ([issue #2288](https://github.com/dsccommunity/SqlServerDsc/issues/2288)):
+  - `Set-SqlDscConfigurationOption.Tests.ps1`
+  - `Get-SqlDscConfigurationOption.Tests.ps1`
+  - `Test-SqlDscConfigurationOption.Tests.ps1`
+- `Test-SqlDscIsDatabasePrincipal` and `Get-SqlDscDatabasePermission`
+  - Added `Refresh` parameter to refresh SMO collections before checking
+    database principals, addressing issues with custom database roles created
+    via T-SQL that aren't immediately visible to SMO. The refresh logic is
+    optimized to only refresh collections that will be used based on exclude
+    parameters, improving performance on databases with large numbers of principals
+    ([issue #2221](https://github.com/dsccommunity/SqlServerDsc/issues/2221)).
 - Updated GitHub Copilot setup workflow to fix environment variable assignment
   in task.
 - Updated VS Code tasks configuration to use proper build and test commands
