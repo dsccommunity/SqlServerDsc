@@ -13,7 +13,7 @@
         Specifies the server name where the instance exist.
 
     .PARAMETER InstanceName
-       Specifies the instance name on which to remove the trace flags.
+       Specifies the instance name on which to add the trace flags.
 
     .PARAMETER TraceFlag
         Specifies the trace flags to add.
