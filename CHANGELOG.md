@@ -48,13 +48,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added integration tests for `Test-SqlDscIsDatabasePrincipal` command to ensure
   it functions correctly in real environments
   [issue #2231](https://github.com/dsccommunity/SqlServerDsc/issues/2231).
-- `Add-SqlDscTraceFlag`
-  - Added unit tests to verify that duplicate trace flags provided via the
-    `-TraceFlag` parameter are de-duplicated as expected
-    ([issue #2277](https://github.com/dsccommunity/SqlServerDsc/issues/2277)).
-  - Added integration tests to verify that duplicate trace flags in the input
-    array are properly de-duplicated in real environments
-    ([issue #2277](https://github.com/dsccommunity/SqlServerDsc/issues/2277)).
 
 ### Fixed
 
