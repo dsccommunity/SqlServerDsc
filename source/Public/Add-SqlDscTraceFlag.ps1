@@ -133,7 +133,7 @@ function Add-SqlDscTraceFlag
         $desiredTraceFlags = [System.UInt32[]] $desiredTraceFlags
 
         # Compare normalized current and desired trace flags to determine if there's an effective change
-        $compareResult = Compare-Object -ReferenceObject @($normalizedCurrentTraceFlags) -DifferenceObject $desiredTraceFlags
+        $compareResult = Compare-Object -ReferenceObject $normalizedCurrentTraceFlags -DifferenceObject $desiredTraceFlags
 
         if ($compareResult)
         {
