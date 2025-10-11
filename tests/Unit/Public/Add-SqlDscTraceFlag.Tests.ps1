@@ -216,7 +216,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
             }
 
             It 'Should de-duplicate trace flags when only duplicates are provided' {
-                { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,4199 -Force } | Should -Not -Throw
+                $null = Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,4199 -Force
 
                 Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
                     $TraceFlag.Count -eq 1 -and
@@ -225,7 +225,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
             }
 
             It 'Should de-duplicate trace flags when mix of unique and duplicates are provided' {
-                { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,3226,4199,3226 -Force } | Should -Not -Throw
+                $null = Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,3226,4199,3226 -Force
 
                 Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
                     $TraceFlag.Count -eq 2 -and
@@ -235,7 +235,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
             }
 
             It 'Should handle multiple duplicates of multiple trace flags' {
-                { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,4199,3226,3226,3226,1222 -Force } | Should -Not -Throw
+                $null = Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,4199,3226,3226,3226,1222 -Force
 
                 Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
                     $TraceFlag.Count -eq 3 -and
@@ -257,7 +257,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
             }
 
             It 'Should de-duplicate when adding trace flags that include duplicates and existing flag' {
-                { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,3226,4199 -Force } | Should -Not -Throw
+                $null = Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,3226,4199 -Force
 
                 Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
                     $TraceFlag.Count -eq 2 -and
@@ -267,14 +267,14 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
             }
 
             It 'Should de-duplicate when all provided trace flags are duplicates of existing flag' {
-                { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 3226,3226 -Force } | Should -Not -Throw
+                $null = Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 3226,3226 -Force
 
                 # Should not call Set-SqlDscTraceFlag when all flags already exist (idempotent)
                 Should -Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Times 0 -Scope It
             }
 
             It 'Should de-duplicate complex scenario with existing and new flags' {
-                { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,4199,3226,1222,1222 -Force } | Should -Not -Throw
+                $null = Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,4199,3226,1222,1222 -Force
 
                 Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
                     $TraceFlag.Count -eq 3 -and
@@ -296,7 +296,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
             }
 
             It 'Should de-duplicate and merge with multiple existing trace flags' {
-                { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,4199,3226,1222 -Force } | Should -Not -Throw
+                $null = Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,4199,3226,1222 -Force
 
                 Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
                     $TraceFlag.Count -eq 3 -and
