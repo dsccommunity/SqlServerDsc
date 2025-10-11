@@ -113,25 +113,26 @@ function Add-SqlDscTraceFlag
 
         $ErrorActionPreference = $originalErrorActionPreference
 
-        # Normalize current trace flags: ensure array, remove nulls, cast to UInt32, sort uniquely
-        $normalizedCurrentTraceFlags = @($currentTraceFlags) |
-            Where-Object -FilterScript { $null -ne $_ } |
-            ForEach-Object -Process { [System.UInt32] $_ } |
-            Sort-Object -Unique
+        # Normalize current trace flags: sort uniquely.
+        # Get-SqlDscTraceFlag already filters out nulls and zeros, and returns [UInt32[]].
+        $normalizedCurrentTraceFlags = $currentTraceFlags | Sort-Object -Unique
 
-        # Normalize input trace flags: ensure array, remove nulls, cast to UInt32, sort uniquely
-        $normalizedInputTraceFlags = @($TraceFlag) |
-            Where-Object -FilterScript { $null -ne $_ } |
-            ForEach-Object -Process { [System.UInt32] $_ } |
-            Sort-Object -Unique
+        # Ensure $normalizedCurrentTraceFlags is an empty array if no trace flags exist.
+        if ($null -eq $normalizedCurrentTraceFlags)
+        {
+            $normalizedCurrentTraceFlags = [System.UInt32[]] @()
+        }
+
+        # Normalize input trace flags: sort uniquely.
+        # Parameter type [System.UInt32[]] with ValidateRange already ensures non-null values and valid range.
+        $normalizedInputTraceFlags = $TraceFlag | Sort-Object -Unique
 
         # Combine normalized current and input trace flags to get the desired state
-        $desiredTraceFlags = @(
+        $desiredTraceFlags = [System.UInt32[]] @(
             $normalizedCurrentTraceFlags
             $normalizedInputTraceFlags
         ) |
             Sort-Object -Unique
-        $desiredTraceFlags = [System.UInt32[]] $desiredTraceFlags
 
         # Compare normalized current and desired trace flags to determine if there's an effective change
         $compareResult = Compare-Object -ReferenceObject $normalizedCurrentTraceFlags -DifferenceObject $desiredTraceFlags

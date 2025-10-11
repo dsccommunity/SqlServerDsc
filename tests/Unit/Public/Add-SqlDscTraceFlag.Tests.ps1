@@ -87,6 +87,14 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
         }
     }
 
+    Context 'When passing $null in TraceFlag array' {
+        It 'Should throw the correct error' {
+            $mockErrorMessage = 'Cannot validate argument on parameter ''TraceFlag''*'
+
+            { Add-SqlDscTraceFlag -TraceFlag @(4199, $null, 3226) -Force } | Should -Throw -ExpectedMessage $mockErrorMessage
+        }
+    }
+
     Context 'When there are no existing trace flags' {
         BeforeAll {
             Mock -CommandName Set-SqlDscTraceFlag
