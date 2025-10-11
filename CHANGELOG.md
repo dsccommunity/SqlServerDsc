@@ -56,16 +56,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     array are properly de-duplicated in real environments
     ([issue #2277](https://github.com/dsccommunity/SqlServerDsc/issues/2277)).
 
-### Changed
-
-- `Add-SqlDscTraceFlag`
-  - Improved de-duplication logic to normalize element types to `[System.UInt32]`
-    before sorting and removing duplicates, ensuring proper handling of mixed
-    numeric types ([issue #2277](https://github.com/dsccommunity/SqlServerDsc/issues/2277)).
-  - Added idempotent behavior by comparing current and desired trace flags before
-    calling `Set-SqlDscTraceFlag`, skipping unnecessary writes when there are no
-    effective changes ([issue #2277](https://github.com/dsccommunity/SqlServerDsc/issues/2277)).
-
 ### Fixed
 
 - Updated integration test documentation in `tests/Integration/Commands/README.md`
@@ -128,6 +118,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `Add-SqlDscTraceFlag`
+  - Improved de-duplication logic to normalize element types to `[System.UInt32]`
+    before sorting and removing duplicates, ensuring proper handling of mixed
+    numeric types ([issue #2277](https://github.com/dsccommunity/SqlServerDsc/issues/2277)).
+  - Added idempotent behavior by comparing current and desired trace flags before
+    calling `Set-SqlDscTraceFlag`, skipping unnecessary writes when there are no
+    effective changes ([issue #2277](https://github.com/dsccommunity/SqlServerDsc/issues/2277)).
 - Refactored integration tests to remove `finally` blocks from `It`-blocks and
   use Pester `BeforeEach`/`AfterEach` blocks instead, following DSC Community
   coding guidelines. This improves test cleanup reliability and maintainability
