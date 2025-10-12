@@ -54,51 +54,47 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integr
 
         Context 'When disconnecting using Force parameter' {
             It 'Should disconnect successfully without confirmation' {
-                {
-                    $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
-                    $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+                $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+                $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
 
-                    $connectSqlDscDatabaseEngineParameters = @{
-                        Credential  = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
-                        Verbose     = $true
-                        ErrorAction = 'Stop'
-                    }
+                $connectSqlDscDatabaseEngineParameters = @{
+                    Credential  = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
+                    Verbose     = $true
+                    ErrorAction = 'Stop'
+                }
 
-                    $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+                $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-                    $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
 
-                    # Test the disconnect functionality
-                    Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject -Force -ErrorAction 'Stop'
+                # Test the disconnect functionality
+                Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject -Force -ErrorAction 'Stop'
 
-                    # After disconnect, the connection should be closed
-                    $sqlServerObject.ConnectionContext.IsOpen | Should -BeFalse
-                } | Should -Not -Throw
+                # After disconnect, the connection should be closed
+                $sqlServerObject.ConnectionContext.IsOpen | Should -BeFalse
             }
         }
 
         Context 'When disconnecting using pipeline input' {
             It 'Should disconnect successfully via pipeline' {
-                {
-                    $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
-                    $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+                $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+                $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
 
-                    $connectSqlDscDatabaseEngineParameters = @{
-                        Credential  = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
-                        Verbose     = $true
-                        ErrorAction = 'Stop'
-                    }
+                $connectSqlDscDatabaseEngineParameters = @{
+                    Credential  = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
+                    Verbose     = $true
+                    ErrorAction = 'Stop'
+                }
 
-                    $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+                $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-                    $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
 
-                    # Test the disconnect functionality via pipeline
-                    $sqlServerObject | Disconnect-SqlDscDatabaseEngine -Force -ErrorAction 'Stop'
+                # Test the disconnect functionality via pipeline
+                $sqlServerObject | Disconnect-SqlDscDatabaseEngine -Force -ErrorAction 'Stop'
 
-                    # After disconnect, the connection should be closed
-                    $sqlServerObject.ConnectionContext.IsOpen | Should -BeFalse
-                } | Should -Not -Throw
+                # After disconnect, the connection should be closed
+                $sqlServerObject.ConnectionContext.IsOpen | Should -BeFalse
             }
         }
     }
@@ -112,54 +108,50 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integr
 
         Context 'When disconnecting using Windows authentication' {
             It 'Should disconnect successfully from named instance' {
-                {
-                    $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
-                    $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+                $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+                $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
 
-                    $connectSqlDscDatabaseEngineParameters = @{
-                        InstanceName = 'DSCSQLTEST'
-                        Credential   = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
-                        Verbose      = $true
-                        ErrorAction  = 'Stop'
-                    }
+                $connectSqlDscDatabaseEngineParameters = @{
+                    InstanceName = 'DSCSQLTEST'
+                    Credential   = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
+                    Verbose      = $true
+                    ErrorAction  = 'Stop'
+                }
 
-                    $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+                $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-                    $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
 
-                    # Test the disconnect functionality
-                    Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject -Force -ErrorAction 'Stop'
+                # Test the disconnect functionality
+                Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject -Force -ErrorAction 'Stop'
 
-                    # After disconnect, the connection should be closed
-                    $sqlServerObject.ConnectionContext.IsOpen | Should -BeFalse
-                } | Should -Not -Throw
+                # After disconnect, the connection should be closed
+                $sqlServerObject.ConnectionContext.IsOpen | Should -BeFalse
             }
         }
 
         Context 'When disconnecting using SQL authentication' {
             It 'Should disconnect successfully from named instance with SQL login' {
-                {
-                    $sqlAdministratorUserName = 'sa'
-                    $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+                $sqlAdministratorUserName = 'sa'
+                $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
 
-                    $connectSqlDscDatabaseEngineParameters = @{
-                        InstanceName = 'DSCSQLTEST' # cSpell: disable-line
-                        LoginType    = 'SqlLogin'
-                        Credential   = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
-                        Verbose      = $true
-                        ErrorAction  = 'Stop'
-                    }
+                $connectSqlDscDatabaseEngineParameters = @{
+                    InstanceName = 'DSCSQLTEST' # cSpell: disable-line
+                    LoginType    = 'SqlLogin'
+                    Credential   = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
+                    Verbose      = $true
+                    ErrorAction  = 'Stop'
+                }
 
-                    $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+                $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-                    $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
 
-                    # Test the disconnect functionality
-                    Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject -Force -ErrorAction 'Stop'
+                # Test the disconnect functionality
+                Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject -Force -ErrorAction 'Stop'
 
-                    # After disconnect, the connection should be closed
-                    $sqlServerObject.ConnectionContext.IsOpen | Should -BeFalse
-                } | Should -Not -Throw
+                # After disconnect, the connection should be closed
+                $sqlServerObject.ConnectionContext.IsOpen | Should -BeFalse
             }
         }
     }

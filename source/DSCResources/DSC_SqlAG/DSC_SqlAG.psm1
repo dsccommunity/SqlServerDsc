@@ -294,7 +294,7 @@ function Set-TargetResource
                             $script:localizedData.RemoveAvailabilityGroup -f $Name, $InstanceName
                         )
 
-                        Remove-SqlAvailabilityGroup -InputObject $availabilityGroup -ErrorAction Stop
+                        Remove-SqlAvailabilityGroup -InputObject $availabilityGroup -ErrorAction 'Stop'
                     }
                     catch
                     {
@@ -368,7 +368,7 @@ function Set-TargetResource
                         $script:localizedData.CreateAvailabilityGroupReplica -f $newReplicaParams.Name, $Name, $InstanceName
                     )
 
-                    $primaryReplica = New-SqlAvailabilityReplica @newReplicaParams -ErrorAction Stop
+                    $primaryReplica = New-SqlAvailabilityReplica @newReplicaParams -ErrorAction 'Stop'
                 }
                 catch
                 {
@@ -412,7 +412,7 @@ function Set-TargetResource
                         $script:localizedData.CreateAvailabilityGroup -f $Name, $InstanceName
                     )
 
-                    New-SqlAvailabilityGroup @newAvailabilityGroupParams -ErrorAction Stop
+                    New-SqlAvailabilityGroup @newAvailabilityGroupParams -ErrorAction 'Stop'
                 }
                 catch
                 {

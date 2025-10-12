@@ -502,7 +502,7 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
         }
 
         Context 'When creating the sql agent operator' {
-            It 'Should not throw' {
+            It 'Should create the sql agent operator' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
@@ -512,7 +512,7 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                         Ensure = 'Present'
                     }
 
-                    { Set-TargetResource @setParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -535,7 +535,7 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                 }
             }
 
-            It 'Should return the state as true' {
+            It 'Should create the sql agent operator with email address' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
@@ -546,13 +546,13 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                         Ensure = 'Present'
                     }
 
-                    { Set-TargetResource @setParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setParameters -ErrorAction 'Stop'
                 }
             }
         }
 
         Context 'When changing the email address' {
-            It 'Should not throw' {
+            It 'Should update the email address' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
@@ -563,7 +563,7 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                         EmailAddress = 'newemail@contoso.com'
                     }
 
-                    { Set-TargetResource @setParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -575,7 +575,7 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             }
 
-            It 'Should not throw' {
+            It 'Should drop the sql agent operator' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
@@ -585,7 +585,7 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                         Ensure = 'Absent'
                     }
 
-                    { Set-TargetResource @setParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It

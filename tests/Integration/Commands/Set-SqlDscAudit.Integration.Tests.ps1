@@ -39,7 +39,7 @@ Describe 'Set-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
         $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
 
-        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction Stop
+        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
     }
 
     AfterAll {
@@ -50,7 +50,7 @@ Describe 'Set-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         BeforeEach {
             # Create a test audit for each test
             $script:testAuditName = 'SqlDscTestSetAudit_' + (Get-Random)
-            $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -Force -ErrorAction Stop
+            $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -Force -ErrorAction 'Stop'
         }
 
         AfterEach {
@@ -60,85 +60,85 @@ Describe 'Set-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
         It 'Should modify audit QueueDelay property successfully' {
             # Verify audit exists before modification
-            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
+            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
             $originalAudit | Should -Not -BeNullOrEmpty
 
             $originalQueueDelay = $originalAudit.QueueDelay
             $newQueueDelay = 5000
 
             # Modify the audit
-            $null = Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -QueueDelay $newQueueDelay -Force -ErrorAction Stop
+            $null = Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -QueueDelay $newQueueDelay -Force -ErrorAction 'Stop'
 
             # Verify audit was modified
-            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
+            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
             $modifiedAudit.QueueDelay | Should -Be $newQueueDelay
             $modifiedAudit.QueueDelay | Should -Not -Be $originalQueueDelay
         }
 
         It 'Should modify audit OnFailure property successfully' {
             # Verify audit exists before modification
-            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
+            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
             $originalAudit | Should -Not -BeNullOrEmpty
 
             $originalOnFailure = $originalAudit.OnFailure
             $newOnFailure = 'FailOperation'
 
             # Modify the audit
-            $null = Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -OnFailure $newOnFailure -Force -ErrorAction Stop
+            $null = Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -OnFailure $newOnFailure -Force -ErrorAction 'Stop'
 
             # Verify audit was modified
-            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
+            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
             $modifiedAudit.OnFailure | Should -Be $newOnFailure
             $modifiedAudit.OnFailure | Should -Not -Be $originalOnFailure
         }
 
         It 'Should modify audit AuditFilter property successfully' {
             # Verify audit exists before modification
-            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
+            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
             $originalAudit | Should -Not -BeNullOrEmpty
 
             $newAuditFilter = "([server_principal_name] like '%test%')"
 
             # Modify the audit
-            $null = Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -AuditFilter $newAuditFilter -Force -ErrorAction Stop
+            $null = Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -AuditFilter $newAuditFilter -Force -ErrorAction 'Stop'
 
             # Verify audit was modified
-            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
+            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
             $modifiedAudit.Filter | Should -Be $newAuditFilter
         }
 
         It 'Should modify audit AuditGuid property when AllowAuditGuidChange is specified' {
             # Verify audit exists before modification
-            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
+            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
             $originalAudit | Should -Not -BeNullOrEmpty
 
             $originalGuid = $originalAudit.Guid
             $newGuid = [System.Guid]::NewGuid().ToString()
 
             # Modify the audit with AllowAuditGuidChange parameter
-            $null = Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -AuditGuid $newGuid -AllowAuditGuidChange -Force -ErrorAction Stop
+            $null = Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -AuditGuid $newGuid -AllowAuditGuidChange -Force -ErrorAction 'Stop'
 
             # Verify audit was modified
-            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
+            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
             $modifiedAudit.Guid | Should -Be $newGuid
             $modifiedAudit.Guid | Should -Not -Be $originalGuid
         }
 
         It 'Should throw an error when trying to change AuditGuid without AllowAuditGuidChange parameter' {
             # Verify audit exists before modification
-            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
+            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
             $originalAudit | Should -Not -BeNullOrEmpty
 
             $newGuid = [System.Guid]::NewGuid().ToString()
 
             # Attempt to modify the audit GUID without AllowAuditGuidChange should throw an error
-            { Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -AuditGuid $newGuid -Force -ErrorAction Stop } |
+            { Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -AuditGuid $newGuid -Force -ErrorAction 'Stop' } |
                 Should -Throw
         }
 
         It 'Should support multiple property modifications in one call' {
             # Verify audit exists before modification
-            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
+            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
             $originalAudit | Should -Not -BeNullOrEmpty
 
             $newQueueDelay = 3000
@@ -146,10 +146,10 @@ Describe 'Set-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
             $newAuditFilter = "([server_principal_name] like '%integration%')"
 
             # Modify multiple properties
-            $null = Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -QueueDelay $newQueueDelay -OnFailure $newOnFailure -AuditFilter $newAuditFilter -Force -ErrorAction Stop
+            $null = Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -QueueDelay $newQueueDelay -OnFailure $newOnFailure -AuditFilter $newAuditFilter -Force -ErrorAction 'Stop'
 
             # Verify all properties were modified
-            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
+            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
             $modifiedAudit.QueueDelay | Should -Be $newQueueDelay
             $modifiedAudit.OnFailure | Should -Be $newOnFailure
             $modifiedAudit.Filter | Should -Be $newAuditFilter
@@ -157,28 +157,28 @@ Describe 'Set-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
         It 'Should support the Refresh parameter' {
             # Verify audit exists before modification
-            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
+            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
             $originalAudit | Should -Not -BeNullOrEmpty
 
             $newQueueDelay = 4000
 
             # Modify the audit with Refresh parameter
-            $null = Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -QueueDelay $newQueueDelay -Refresh -Force -ErrorAction Stop
+            $null = Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -QueueDelay $newQueueDelay -Refresh -Force -ErrorAction 'Stop'
 
             # Verify audit was modified
-            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
+            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
             $modifiedAudit.QueueDelay | Should -Be $newQueueDelay
         }
 
         It 'Should support the PassThru parameter' {
             # Verify audit exists before modification
-            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction Stop
+            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
             $originalAudit | Should -Not -BeNullOrEmpty
 
             $newQueueDelay = 6000
 
             # Modify the audit with PassThru parameter
-            $result = Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -QueueDelay $newQueueDelay -PassThru -Force -ErrorAction Stop
+            $result = Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -QueueDelay $newQueueDelay -PassThru -Force -ErrorAction 'Stop'
 
             # Verify PassThru returns the audit object
             $result | Should -Not -BeNullOrEmpty
@@ -188,7 +188,7 @@ Describe 'Set-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         }
 
         It 'Should throw error when trying to modify non-existent audit' {
-            { Set-SqlDscAudit -ServerObject $script:serverObject -Name 'NonExistentAudit' -QueueDelay 5000 -Force -ErrorAction Stop } |
+            { Set-SqlDscAudit -ServerObject $script:serverObject -Name 'NonExistentAudit' -QueueDelay 5000 -Force -ErrorAction 'Stop' } |
                 Should -Throw
         }
     }
@@ -197,7 +197,7 @@ Describe 'Set-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         BeforeEach {
             # Create a test audit for each test
             $script:testAuditNameForObject = 'SqlDscTestSetAuditObj_' + (Get-Random)
-            $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -LogType 'ApplicationLog' -Force -ErrorAction Stop
+            $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -LogType 'ApplicationLog' -Force -ErrorAction 'Stop'
         }
 
         AfterEach {
@@ -206,45 +206,45 @@ Describe 'Set-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         }
 
         It 'Should modify audit using audit object' {
-            $auditObject = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction Stop
+            $auditObject = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction 'Stop'
             $auditObject | Should -Not -BeNullOrEmpty
 
             $originalQueueDelay = $auditObject.QueueDelay
             $newQueueDelay = 7000
 
             # Modify the audit using audit object
-            $null = Set-SqlDscAudit -AuditObject $auditObject -QueueDelay $newQueueDelay -Force -ErrorAction Stop
+            $null = Set-SqlDscAudit -AuditObject $auditObject -QueueDelay $newQueueDelay -Force -ErrorAction 'Stop'
 
             # Verify audit was modified
-            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction Stop
+            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction 'Stop'
             $modifiedAudit.QueueDelay | Should -Be $newQueueDelay
             $modifiedAudit.QueueDelay | Should -Not -Be $originalQueueDelay
         }
 
         It 'Should support pipeline input with audit object' {
-            $auditObject = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction Stop
+            $auditObject = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction 'Stop'
             $auditObject | Should -Not -BeNullOrEmpty
 
             $originalQueueDelay = $auditObject.QueueDelay
             $newQueueDelay = 8000
 
             # Modify the audit using pipeline
-            $auditObject | Set-SqlDscAudit -QueueDelay $newQueueDelay -Force -ErrorAction Stop
+            $auditObject | Set-SqlDscAudit -QueueDelay $newQueueDelay -Force -ErrorAction 'Stop'
 
             # Verify audit was modified
-            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction Stop
+            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction 'Stop'
             $modifiedAudit.QueueDelay | Should -Be $newQueueDelay
             $modifiedAudit.QueueDelay | Should -Not -Be $originalQueueDelay
         }
 
         It 'Should support PassThru with audit object' {
-            $auditObject = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction Stop
+            $auditObject = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction 'Stop'
             $auditObject | Should -Not -BeNullOrEmpty
 
             $newQueueDelay = 9000
 
             # Modify the audit using audit object with PassThru
-            $result = Set-SqlDscAudit -AuditObject $auditObject -QueueDelay $newQueueDelay -PassThru -Force -ErrorAction Stop
+            $result = Set-SqlDscAudit -AuditObject $auditObject -QueueDelay $newQueueDelay -PassThru -Force -ErrorAction 'Stop'
 
             # Verify PassThru returns the audit object
             $result | Should -Not -BeNullOrEmpty
@@ -258,7 +258,7 @@ Describe 'Set-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         BeforeEach {
             # Create a test audit for each test
             $script:testAuditNameForPipeline = 'SqlDscTestSetAuditPipe_' + (Get-Random)
-            $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForPipeline -LogType 'ApplicationLog' -Force -ErrorAction Stop
+            $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForPipeline -LogType 'ApplicationLog' -Force -ErrorAction 'Stop'
         }
 
         AfterEach {
@@ -268,17 +268,17 @@ Describe 'Set-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
         It 'Should support pipeline input with server object' {
             # Verify audit exists before modification
-            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForPipeline -ErrorAction Stop
+            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForPipeline -ErrorAction 'Stop'
             $originalAudit | Should -Not -BeNullOrEmpty
 
             $originalQueueDelay = $originalAudit.QueueDelay
             $newQueueDelay = 10000
 
             # Modify the audit using pipeline with server object
-            $script:serverObject | Set-SqlDscAudit -Name $script:testAuditNameForPipeline -QueueDelay $newQueueDelay -Force -ErrorAction Stop
+            $script:serverObject | Set-SqlDscAudit -Name $script:testAuditNameForPipeline -QueueDelay $newQueueDelay -Force -ErrorAction 'Stop'
 
             # Verify audit was modified
-            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForPipeline -ErrorAction Stop
+            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForPipeline -ErrorAction 'Stop'
             $modifiedAudit.QueueDelay | Should -Be $newQueueDelay
             $modifiedAudit.QueueDelay | Should -Not -Be $originalQueueDelay
         }
@@ -297,7 +297,7 @@ Describe 'Set-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         BeforeEach {
             # Create a test file audit for each test
             $script:testFileAuditName = 'SqlDscTestFileAudit_' + (Get-Random)
-            $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testFileAuditName -Path $script:tempAuditPath -Force -ErrorAction Stop
+            $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testFileAuditName -Path $script:tempAuditPath -Force -ErrorAction 'Stop'
         }
 
         AfterEach {
@@ -322,17 +322,17 @@ Describe 'Set-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
             }
 
             # Verify audit exists before modification
-            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testFileAuditName -ErrorAction Stop
+            $originalAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testFileAuditName -ErrorAction 'Stop'
             $originalAudit | Should -Not -BeNullOrEmpty
             $originalAudit.DestinationType | Should -Be 'File'
 
             $originalPath = $originalAudit.FilePath
 
             # Modify the audit path
-            $null = Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testFileAuditName -Path $newTempPath -Force -ErrorAction Stop
+            $null = Set-SqlDscAudit -ServerObject $script:serverObject -Name $script:testFileAuditName -Path $newTempPath -Force -ErrorAction 'Stop'
 
             # Verify audit was modified
-            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testFileAuditName -ErrorAction Stop
+            $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testFileAuditName -ErrorAction 'Stop'
             $modifiedAudit.FilePath | Should -Be $newTempPath
             $modifiedAudit.FilePath | Should -Not -Be $originalPath
 
@@ -354,7 +354,7 @@ Describe 'Set-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
             foreach ($auditName in $script:testAuditNames)
             {
-                $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $auditName -LogType 'ApplicationLog' -Force -ErrorAction Stop
+                $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $auditName -LogType 'ApplicationLog' -Force -ErrorAction 'Stop'
             }
         }
 
@@ -372,20 +372,20 @@ Describe 'Set-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
             # Verify audits exist before modification
             foreach ($auditName in $script:testAuditNames)
             {
-                $existingAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $auditName -ErrorAction Stop
+                $existingAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $auditName -ErrorAction 'Stop'
                 $existingAudit | Should -Not -BeNullOrEmpty
             }
 
             # Modify the audits
             foreach ($auditName in $script:testAuditNames)
             {
-                $null = Set-SqlDscAudit -ServerObject $script:serverObject -Name $auditName -QueueDelay $newQueueDelay -Force -ErrorAction Stop
+                $null = Set-SqlDscAudit -ServerObject $script:serverObject -Name $auditName -QueueDelay $newQueueDelay -Force -ErrorAction 'Stop'
             }
 
             # Verify audits were modified
             foreach ($auditName in $script:testAuditNames)
             {
-                $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $auditName -ErrorAction Stop
+                $modifiedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $auditName -ErrorAction 'Stop'
                 $modifiedAudit.QueueDelay | Should -Be $newQueueDelay
             }
         }

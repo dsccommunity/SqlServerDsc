@@ -35,7 +35,7 @@ BeforeAll {
 }
 
 AfterAll {
-    Remove-Item -Path 'Env:\SqlServerDscCI' -ErrorAction 'SilentlyContinue'
+    $null = Remove-Item -Path 'Env:\SqlServerDscCI' -ErrorAction 'Stop'
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:moduleName -All | Remove-Module -Force
@@ -52,11 +52,11 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_S
         $script:sqlServerObject = Connect-SqlDscDatabaseEngine -InstanceName $script:sqlServerInstance -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
 
         # Create a test operator for assertion tests
-        $script:sqlServerObject | New-SqlDscAgentOperator -Name 'IntegrationTest_AssertOperator' -EmailAddress 'assert@contoso.com' -ErrorAction Stop
+        $null = $script:sqlServerObject | New-SqlDscAgentOperator -Name 'IntegrationTest_AssertOperator' -EmailAddress 'assert@contoso.com' -ErrorAction 'Stop'
     }
 
     AfterAll {
-        $script:sqlServerObject | Remove-SqlDscAgentOperator -Name 'IntegrationTest_AssertOperator' -Force -ErrorAction 'SilentlyContinue'
+        $null = $script:sqlServerObject | Remove-SqlDscAgentOperator -Name 'IntegrationTest_AssertOperator' -Force -ErrorAction 'Stop'
 
         # Disconnect from the SQL Server
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:sqlServerObject
@@ -64,22 +64,22 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_S
 
     Context 'When operator exists' {
         It 'Should not throw when asserting existing operator' {
-            $null = Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'IntegrationTest_AssertOperator' -ErrorAction Stop
+            $null = Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'IntegrationTest_AssertOperator' -ErrorAction 'Stop'
         }
 
         It 'Should not throw when asserting persistent operator created by New-SqlDscAgentOperator' {
-            $null = Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'SqlDscIntegrationTestOperator_Persistent' -ErrorAction Stop
+            $null = Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'SqlDscIntegrationTestOperator_Persistent' -ErrorAction 'Stop'
         }
 
         It 'Should not return anything when operator exists' {
-            $result = Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'IntegrationTest_AssertOperator' -ErrorAction Stop
+            $result = Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'IntegrationTest_AssertOperator' -ErrorAction 'Stop'
             $result | Should -BeNullOrEmpty
         }
     }
 
     Context 'When operator does not exist' {
         It 'Should throw terminating error when operator does not exist' {
-            { Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'NonExistentOperator' -ErrorAction Stop } | Should -Throw
+            { Assert-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'NonExistentOperator' -ErrorAction 'Stop' } | Should -Throw
         }
 
     }

@@ -215,7 +215,7 @@ jobs:
           Write-Host 'Resolving project dependencies...'
 
           # Run dependency resolution
-          ./build.ps1 -ResolveDependency -Tasks 'noop' -UseModuleFast -ErrorAction Stop
+          ./build.ps1 -ResolveDependency -Tasks 'noop' -UseModuleFast -ErrorAction 'Stop'
 
           Write-Host 'Dependencies resolved successfully.'
 
@@ -225,7 +225,7 @@ jobs:
           Write-Host "Building $env:MODULE_NAME module..."
 
           # Build the module
-          ./build.ps1 -Tasks 'build' -ErrorAction Stop
+          ./build.ps1 -Tasks 'build' -ErrorAction 'Stop'
 
           # Verify build output
           $builtPath = "output/builtModule/$env:MODULE_NAME"

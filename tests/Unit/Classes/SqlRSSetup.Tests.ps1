@@ -58,7 +58,7 @@ Describe 'SqlRSSetup' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { [SqlRSSetup]::new() } | Should -Not -Throw
+                $null = [SqlRSSetup]::new()
             }
         }
 

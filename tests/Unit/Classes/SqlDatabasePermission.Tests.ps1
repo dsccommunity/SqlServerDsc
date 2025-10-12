@@ -70,7 +70,7 @@ Describe 'SqlDatabasePermission' {
     Context 'When class is instantiated' {
         It 'Should not throw an exception' {
             InModuleScope -ScriptBlock {
-                { [SqlDatabasePermission]::new() } | Should -Not -Throw
+                $null = [SqlDatabasePermission]::new()
             }
         }
 
@@ -1111,7 +1111,7 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
             InModuleScope -ScriptBlock {
                 {
                     # This test does not pass any properties to set as it is not necessary for this test.
-                    $mockSqlDatabasePermissionInstance.Modify(@{
+                    $null = $mockSqlDatabasePermissionInstance.Modify(@{
                             Permission = [DatabasePermission[]] @()
                         })
                 } | Should -Throw -ExpectedMessage $mockErrorRecord
@@ -1178,24 +1178,22 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    {
-                        $mockSqlDatabasePermissionInstance.Modify(@{
-                                Permission = [DatabasePermission[]] @(
-                                    [DatabasePermission] @{
-                                        State      = 'Grant'
-                                        Permission = @('Connect')
-                                    }
-                                    [DatabasePermission] @{
-                                        State      = 'GrantWithGrant'
-                                        Permission = @('Update')
-                                    }
-                                    [DatabasePermission] @{
-                                        State      = 'Deny'
-                                        Permission = @()
-                                    }
-                                )
-                            })
-                    } | Should -Not -Throw
+                    $null = $mockSqlDatabasePermissionInstance.Modify(@{
+                            Permission = [DatabasePermission[]] @(
+                                [DatabasePermission] @{
+                                    State      = 'Grant'
+                                    Permission = @('Connect')
+                                }
+                                [DatabasePermission] @{
+                                    State      = 'GrantWithGrant'
+                                    Permission = @('Update')
+                                }
+                                [DatabasePermission] @{
+                                    State      = 'Deny'
+                                    Permission = @()
+                                }
+                            )
+                        })
                 }
 
                 # Grants
@@ -1268,24 +1266,22 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    {
-                        $mockSqlDatabasePermissionInstance.Modify(@{
-                                Permission = [DatabasePermission[]] @(
-                                    [DatabasePermission] @{
-                                        State      = 'Grant'
-                                        Permission = @('Connect')
-                                    }
-                                    [DatabasePermission] @{
-                                        State      = 'GrantWithGrant'
-                                        Permission = @()
-                                    }
-                                    [DatabasePermission] @{
-                                        State      = 'Deny'
-                                        Permission = @()
-                                    }
-                                )
-                            })
-                    } | Should -Not -Throw
+                    $null = $mockSqlDatabasePermissionInstance.Modify(@{
+                            Permission = [DatabasePermission[]] @(
+                                [DatabasePermission] @{
+                                    State      = 'Grant'
+                                    Permission = @('Connect')
+                                }
+                                [DatabasePermission] @{
+                                    State      = 'GrantWithGrant'
+                                    Permission = @()
+                                }
+                                [DatabasePermission] @{
+                                    State      = 'Deny'
+                                    Permission = @()
+                                }
+                            )
+                        })
                 }
 
                 # Revoking Grants
@@ -1370,24 +1366,22 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    {
-                        $mockSqlDatabasePermissionInstance.Modify(@{
-                                PermissionToInclude = [DatabasePermission[]] @(
-                                    [DatabasePermission] @{
-                                        State      = 'Grant'
-                                        Permission = @('Connect')
-                                    }
-                                    [DatabasePermission] @{
-                                        State      = 'GrantWithGrant'
-                                        Permission = @('Update')
-                                    }
-                                    [DatabasePermission] @{
-                                        State      = 'Deny'
-                                        Permission = @()
-                                    }
-                                )
-                            })
-                    } | Should -Not -Throw
+                    $null = $mockSqlDatabasePermissionInstance.Modify(@{
+                            PermissionToInclude = [DatabasePermission[]] @(
+                                [DatabasePermission] @{
+                                    State      = 'Grant'
+                                    Permission = @('Connect')
+                                }
+                                [DatabasePermission] @{
+                                    State      = 'GrantWithGrant'
+                                    Permission = @('Update')
+                                }
+                                [DatabasePermission] @{
+                                    State      = 'Deny'
+                                    Permission = @()
+                                }
+                            )
+                        })
                 }
 
                 # Grants
@@ -1462,24 +1456,22 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    {
-                        $mockSqlDatabasePermissionInstance.Modify(@{
-                                PermissionToExclude = [DatabasePermission[]] @(
-                                    [DatabasePermission] @{
-                                        State      = 'Grant'
-                                        Permission = @('Connect')
-                                    }
-                                    [DatabasePermission] @{
-                                        State      = 'GrantWithGrant'
-                                        Permission = @('Update')
-                                    }
-                                    [DatabasePermission] @{
-                                        State      = 'Deny'
-                                        Permission = @()
-                                    }
-                                )
-                            })
-                    } | Should -Not -Throw
+                    $null = $mockSqlDatabasePermissionInstance.Modify(@{
+                            PermissionToExclude = [DatabasePermission[]] @(
+                                [DatabasePermission] @{
+                                    State      = 'Grant'
+                                    Permission = @('Connect')
+                                }
+                                [DatabasePermission] @{
+                                    State      = 'GrantWithGrant'
+                                    Permission = @('Update')
+                                }
+                                [DatabasePermission] @{
+                                    State      = 'Deny'
+                                    Permission = @()
+                                }
+                            )
+                        })
                 }
 
                 # Revoking Grants
@@ -1568,7 +1560,7 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
 
                 InModuleScope -ScriptBlock {
                     {
-                        $mockSqlDatabasePermissionInstance.Modify(@{
+                        $null = $mockSqlDatabasePermissionInstance.Modify(@{
                                 Permission = [DatabasePermission[]] @(
                                     [DatabasePermission] @{
                                         State      = 'Grant'
@@ -1661,7 +1653,7 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
 
                 InModuleScope -ScriptBlock {
                     {
-                        $mockSqlDatabasePermissionInstance.Modify(@{
+                        $null = $mockSqlDatabasePermissionInstance.Modify(@{
                                 Permission = [DatabasePermission[]] @(
                                     [DatabasePermission] @{
                                         State      = 'Grant'

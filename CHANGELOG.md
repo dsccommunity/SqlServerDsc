@@ -317,6 +317,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     from managed computer and instance objects.
   - Enhanced to optionally return all protocols when ProtocolName parameter
     is not specified.
+- All tests was changed to no longer use `Should -Not -Throw` for testing
+  that commands do not throw errors. Instead, tests now simply call the command
+  and will fail if an error is thrown, following best practices (follows
+  Pester 6 syntax).
 
 ### Changed
 

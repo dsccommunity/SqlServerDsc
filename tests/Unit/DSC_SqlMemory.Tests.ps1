@@ -905,7 +905,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $mockSetTargetResourceParameters.Ensure = 'Absent'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $mockMethodAlterWasRun | Should -Be 1
                 }
@@ -922,7 +922,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $mockSetTargetResourceParameters.MaxMemory = 15000
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $mockMethodAlterWasRun | Should -Be 1
                 }
@@ -939,7 +939,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $mockSetTargetResourceParameters.MinMemory = 4096
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $mockMethodAlterWasRun | Should -Be 1
                 }
@@ -962,7 +962,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $mockSetTargetResourceParameters.MaxMemoryPercent = 50
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $mockMethodAlterWasRun | Should -Be 1
                 }
@@ -985,7 +985,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $mockSetTargetResourceParameters.MinMemoryPercent = 50
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $mockMethodAlterWasRun | Should -Be 1
                 }
@@ -1008,7 +1008,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $mockSetTargetResourceParameters.DynamicAlloc = $true
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $mockMethodAlterWasRun | Should -Be 1
                 }
@@ -1032,7 +1032,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                     $mockSetTargetResourceParameters.DynamicAlloc = $true
                     $mockSetTargetResourceParameters.MinMemory = 4096
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $mockMethodAlterWasRun | Should -Be 1
                 }
@@ -1060,7 +1060,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                     $mockSetTargetResourceParameters.DynamicAlloc = $true
                     $mockSetTargetResourceParameters.MinMemoryPercent = 50
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $mockMethodAlterWasRun | Should -Be 1
                 }
@@ -1084,7 +1084,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                     $mockSetTargetResourceParameters.MaxMemoryPercent = 50
                     $mockSetTargetResourceParameters.MinMemory = 4096
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $mockMethodAlterWasRun | Should -Be 1
                 }
@@ -1102,7 +1102,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                     $mockSetTargetResourceParameters.MaxMemory = 8192
                     $mockSetTargetResourceParameters.MinMemory = 4096
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $mockMethodAlterWasRun | Should -Be 1
                 }
@@ -1126,7 +1126,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                     $mockSetTargetResourceParameters.MaxMemory = 16384
                     $mockSetTargetResourceParameters.MinMemoryPercent = 50
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $mockMethodAlterWasRun | Should -Be 1
                 }

@@ -592,7 +592,7 @@ Describe 'SqlDatabase\Set-TargetResource' {
                     $script:mockSetTargetResourceParameters['Ensure'] = 'Present'
                     $script:mockSetTargetResourceParameters['Name'] = 'NewDatabase'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $script:newObjectMethodCreateWasCalled | Should -Be 1
                 }
@@ -628,7 +628,7 @@ Describe 'SqlDatabase\Set-TargetResource' {
                         $script:mockSetTargetResourceParameters['Name'] = 'NewDatabase'
                         $script:mockSetTargetResourceParameters[$PropertyName] = $PropertyValue
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
 
                         $script:newObjectMethodCreateWasCalled | Should -Be 1
 
@@ -672,7 +672,7 @@ Describe 'SqlDatabase\Set-TargetResource' {
 
                     $script:mockSetTargetResourceParameters['Ensure'] = 'Absent'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $script:methodDropWasCalled | Should -Be 1
                 }
@@ -723,7 +723,7 @@ Describe 'SqlDatabase\Set-TargetResource' {
 
                     $script:mockSetTargetResourceParameters[$PropertyName] = $PropertyValue
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $script:methodAlterWasCalled | Should -Be 1
                 }

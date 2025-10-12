@@ -189,7 +189,7 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                        $null = Get-TargetResource @mockGetTargetResourceParameters
                     }
 
                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -246,7 +246,7 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                        $null = Get-TargetResource @mockGetTargetResourceParameters
                     }
 
                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -372,7 +372,7 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                        $null = Get-TargetResource @mockGetTargetResourceParameters
                     }
 
                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -429,7 +429,7 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                        $null = Get-TargetResource @mockGetTargetResourceParameters
                     }
 
                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -1166,7 +1166,7 @@ Describe 'SqlEndpoint\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.EndpointName = 'NewEndpoint'
                         $mockSetTargetResourceParameters.EndpointType = $MockEndpointType
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
 
                         $script:mockMethodCreateWasRun | Should -Be 1
                         $script:mockMethodStartWasRun | Should -Be 1
@@ -1197,7 +1197,7 @@ Describe 'SqlEndpoint\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.EndpointType = 'DatabaseMirroring'
                         $mockSetTargetResourceParameters.State = $MockState
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
 
                         $script:mockMethodCreateWasRun | Should -Be 1
                         $script:mockMethodAlterWasRun | Should -Be 0
@@ -1260,7 +1260,7 @@ Describe 'SqlEndpoint\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.EndpointType = 'DatabaseMirroring'
                         $mockSetTargetResourceParameters.$MockParameterName = $MockParameterValue
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
 
                         $script:mockMethodCreateWasRun | Should -Be 1
                         $script:mockMethodStartWasRun | Should -Be 1
@@ -1318,7 +1318,7 @@ Describe 'SqlEndpoint\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.EndpointType = 'ServiceBroker'
                         $mockSetTargetResourceParameters.$MockParameterName = $MockParameterValue
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
 
                         $script:mockMethodCreateWasRun | Should -Be 1
                         $script:mockMethodStartWasRun | Should -Be 1
@@ -1390,7 +1390,7 @@ Describe 'SqlEndpoint\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.EndpointType = 'DatabaseMirroring'
                         $mockSetTargetResourceParameters.$MockParameterName = $MockParameterValue
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
 
                         $script:mockMethodCreateWasRun | Should -Be 0
                         $script:mockMethodDropWasRun | Should -Be 0
@@ -1479,7 +1479,7 @@ Describe 'SqlEndpoint\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.EndpointType = 'ServiceBroker'
                         $mockSetTargetResourceParameters.$MockParameterName = $MockParameterValue
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
 
                         $script:mockMethodCreateWasRun | Should -Be 0
                         $script:mockMethodDropWasRun | Should -Be 0
@@ -1557,7 +1557,7 @@ Describe 'SqlEndpoint\Set-TargetResource' -Tag 'Set' {
                     $mockSetTargetResourceParameters.EndpointName = 'DefaultEndpointMirror'
                     $mockSetTargetResourceParameters.EndpointType = 'DatabaseMirroring'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $script:mockMethodDropWasRun | Should -Be 1
                     $script:mockMethodCreateWasRun | Should -Be 0

@@ -520,7 +520,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         Ensure                = 'Absent'
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
@@ -719,7 +719,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     SeedingMode                   = 'Manual'
                 }
 
-                { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
             }
 
             Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
@@ -776,7 +776,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         SeedingMode                   = 'Manual'
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
@@ -834,7 +834,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         SeedingMode                   = 'Manual'
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
@@ -1200,7 +1200,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
 
                     $setTargetResourceParameters.$MockPropertyName = $MockPropertyValue
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
@@ -1290,7 +1290,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         SeedingMode                   = 'Manual'
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 1 -Scope It
@@ -1323,7 +1323,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         SeedingMode                   = 'Manual'
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 1 -Scope It
@@ -1382,7 +1382,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         EndpointHostName      = 'Server10'
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 1 -Scope It
@@ -1441,7 +1441,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         EndpointHostName      = 'Server10'
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 1 -Scope It

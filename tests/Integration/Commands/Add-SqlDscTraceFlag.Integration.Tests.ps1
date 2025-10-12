@@ -63,9 +63,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
         It 'Should add a single trace flag without error' {
             # Act - Add the trace flag
-            {
-                Add-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $script:singleTestTraceFlag -Force -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Add-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $script:singleTestTraceFlag -Force -ErrorAction 'Stop'
 
             # Assert - Verify the trace flag was added
             $currentTraceFlags = Get-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
@@ -74,9 +72,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
         It 'Should add multiple trace flags without error' {
             # Act - Add the trace flags
-            {
-                Add-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $script:testTraceFlags -Force -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Add-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $script:testTraceFlags -Force -ErrorAction 'Stop'
 
             # Assert - Verify the trace flags were added
             $currentTraceFlags = Get-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
@@ -94,9 +90,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
             $beforeCount = ($beforeAddTraceFlags | Where-Object { $_ -eq $script:singleTestTraceFlag }).Count
 
             # Act - Try to add the same trace flag again
-            {
-                Add-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $script:singleTestTraceFlag -Force -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Add-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $script:singleTestTraceFlag -Force -ErrorAction 'Stop'
 
             # Assert - Verify no duplicate was created
             $afterAddTraceFlags = Get-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
@@ -111,9 +105,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
             Add-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $script:singleTestTraceFlag -Force -ErrorAction 'Stop'
 
             # Act - Add additional trace flags
-            {
-                Add-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $script:additionalTestTraceFlag -Force -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Add-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $script:additionalTestTraceFlag -Force -ErrorAction 'Stop'
 
             # Assert - Verify both old and new trace flags exist
             $currentTraceFlags = Get-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
@@ -158,9 +150,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
         It 'Should add a single trace flag using ServiceObject parameter' {
             # Act - Add the trace flag
-            {
-                Add-SqlDscTraceFlag -ServiceObject $script:serviceObject -TraceFlag $script:singleTestTraceFlag -Force -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Add-SqlDscTraceFlag -ServiceObject $script:serviceObject -TraceFlag $script:singleTestTraceFlag -Force -ErrorAction 'Stop'
 
             # Assert - Verify the trace flag was added
             $currentTraceFlags = Get-SqlDscTraceFlag -ServiceObject $script:serviceObject -ErrorAction 'Stop'
@@ -169,9 +159,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
         It 'Should add multiple trace flags using ServiceObject parameter' {
             # Act - Add the trace flags
-            {
-                Add-SqlDscTraceFlag -ServiceObject $script:serviceObject -TraceFlag $script:testTraceFlags -Force -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Add-SqlDscTraceFlag -ServiceObject $script:serviceObject -TraceFlag $script:testTraceFlags -Force -ErrorAction 'Stop'
 
             # Assert - Verify the trace flags were added
             $currentTraceFlags = Get-SqlDscTraceFlag -ServiceObject $script:serviceObject -ErrorAction 'Stop'

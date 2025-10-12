@@ -97,8 +97,7 @@ Describe 'Get-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
         It 'Should return empty result when no trace flags are set' {
             # This test validates the command works when no trace flags are configured
             # We cannot control the trace flag state in CI, so we just verify the command executes without error
-            { Get-SqlDscTraceFlag -InstanceName $script:mockInstanceName -ErrorAction 'Stop' } |
-                Should -Not -Throw
+            $null = Get-SqlDscTraceFlag -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
         }
     }
 

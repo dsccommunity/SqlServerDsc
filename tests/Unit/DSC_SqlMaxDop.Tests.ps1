@@ -524,7 +524,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $mockSetTargetResourceParameters.Ensure = 'Absent'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $mockMethodAlterWasRun | Should -Be 1
                 }
@@ -579,7 +579,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $mockSetTargetResourceParameters.MaxDop = 4
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $mockMethodAlterWasRun | Should -Be 1
                 }
@@ -638,7 +638,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $mockSetTargetResourceParameters.DynamicAlloc = $true
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $mockMethodAlterWasRun | Should -Be 1
                 }

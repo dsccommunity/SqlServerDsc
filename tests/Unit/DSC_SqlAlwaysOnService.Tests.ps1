@@ -221,7 +221,7 @@ Describe 'SqlAlwaysOnService\Get-TargetResource' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw 'Index operation failed; the array index evaluated to null'
+                        $null = Get-TargetResource @mockGetTargetResourceParameters
                     }
 
                     Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
@@ -446,7 +446,7 @@ Describe 'SqlAlwaysOnService\Set-TargetResource' {
                         $script:mockSetTargetResourceParameters['Ensure'] = 'Absent'
                         $script:mockSetTargetResourceParameters['InstanceName'] = $MockInstanceName
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
                     }
 
                     Should -Invoke -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
@@ -470,7 +470,7 @@ Describe 'SqlAlwaysOnService\Set-TargetResource' {
                         $script:mockSetTargetResourceParameters['Ensure'] = 'Present'
                         $script:mockSetTargetResourceParameters['InstanceName'] = $MockInstanceName
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
                     }
 
                     Should -Invoke -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly

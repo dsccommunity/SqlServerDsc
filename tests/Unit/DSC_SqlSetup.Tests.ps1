@@ -2429,7 +2429,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SDK', ''
                         }
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
                     }
 
                     Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
@@ -2474,7 +2474,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             ServerName          = 'host.company.local'
                         }
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
                     }
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
@@ -2515,7 +2515,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             TcpEnabled          = $true
                         }
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
                     }
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
@@ -2557,7 +2557,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             SourcePath          = $mockSourcePathUNC
                         }
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
                     }
 
                     Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
@@ -2601,7 +2601,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             SuppressReboot      = $true
                         }
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
                     }
 
                     Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
@@ -2725,7 +2725,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SDK', ''
                         }
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
                     }
 
                     Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
@@ -2774,7 +2774,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         NpEnabled           = $false
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
                 Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
@@ -2820,7 +2820,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             ServerName          = 'host.company.local'
                         }
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
                     }
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
@@ -2865,7 +2865,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         TcpEnabled          = $false
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
                 Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
@@ -2910,7 +2910,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         UseEnglish          = $true
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
                 Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
@@ -2955,7 +2955,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         SkipRule            = 'Cluster_VerifyForErrors'
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
                 Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
@@ -3004,7 +3004,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         )
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
                 Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
@@ -3048,7 +3048,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         SourcePath       = $TestDrive
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
 
                     $global:DSCMachineStatus | Should -Be 1
                 }
@@ -3074,7 +3074,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         SourcePath       = $TestDrive
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
                 Should -Invoke -CommandName Write-Warning -Exactly -Times 1 -Scope It
@@ -3178,7 +3178,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SourcePath       = $TestDrive
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockSetTargetResourceParameters
             }
 
             Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
@@ -3205,7 +3205,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SourcePath       = $TestDrive
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockSetTargetResourceParameters
             }
 
             Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
@@ -3276,7 +3276,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockSetTargetResourceParameters
             }
         }
     }
@@ -3385,7 +3385,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SQLBackupDir               = 'O:\MSSQL\Backup'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockSetTargetResourceParameters
             }
         }
 
@@ -3424,7 +3424,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     InstallSQLDataDir          = 'E:\MSSQL\Data'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockSetTargetResourceParameters
             }
         }
 
@@ -3467,7 +3467,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SQLUserDBLogDir            = 'E:\SQLData\UserDbLogs'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockSetTargetResourceParameters
             }
         }
 
@@ -3547,7 +3547,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SQLBackupDir               = 'O:\MSSQL\Backup'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockSetTargetResourceParameters
             }
         }
 
@@ -3728,7 +3728,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         SQLBackupDir               = 'O:\MSSQL\Backup'
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
                 # Reverting the mock to return a single site.
@@ -3862,7 +3862,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         SQLBackupDir               = 'C:\ClusterStorage\SQLBackup'
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
             }
 
@@ -3912,7 +3912,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             SQLBackupDir               = 'C:\ClusterStorage\SQLBackup\Backup'
                         }
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
                     }
                 }
             }
@@ -3975,7 +3975,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     Action       = 'PrepareFailoverCluster'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockSetTargetResourceParameters
             }
 
             Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
@@ -4108,7 +4108,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SQLBackupDir               = 'O:\MSSQL\Backup'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockSetTargetResourceParameters
             }
         }
 
@@ -4147,7 +4147,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     InstallSQLDataDir          = 'E:\MSSQL\Data'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockSetTargetResourceParameters
             }
         }
 
@@ -4190,7 +4190,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SQLUserDBLogDir            = 'E:\SQLData\UserDbLogs'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockSetTargetResourceParameters
             }
         }
 
@@ -4270,7 +4270,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SQLBackupDir               = 'O:\MSSQL\Backup'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockSetTargetResourceParameters
             }
         }
 
@@ -4451,7 +4451,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         SQLBackupDir               = 'O:\MSSQL\Backup'
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
                 # Reverting the mock to return a single site.

@@ -70,7 +70,7 @@ Describe 'SqlPermission' {
     Context 'When class is instantiated' {
         It 'Should not throw an exception' {
             InModuleScope -ScriptBlock {
-                { [SqlPermission]::new() } | Should -Not -Throw
+                $null = [SqlPermission]::new()
             }
         }
 
@@ -1152,24 +1152,22 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    {
-                        $mockSqlPermissionInstance.Modify(@{
-                                Permission = [ServerPermission[]] @(
-                                    [ServerPermission] @{
-                                        State      = 'Grant'
-                                        Permission = @('ConnectSql')
-                                    }
-                                    [ServerPermission] @{
-                                        State      = 'GrantWithGrant'
-                                        Permission = @('AlterAnyEndpoint')
-                                    }
-                                    [ServerPermission] @{
-                                        State      = 'Deny'
-                                        Permission = @()
-                                    }
-                                )
-                            })
-                    } | Should -Not -Throw
+                    $null = $mockSqlPermissionInstance.Modify(@{
+                            Permission = [ServerPermission[]] @(
+                                [ServerPermission] @{
+                                    State      = 'Grant'
+                                    Permission = @('ConnectSql')
+                                }
+                                [ServerPermission] @{
+                                    State      = 'GrantWithGrant'
+                                    Permission = @('AlterAnyEndpoint')
+                                }
+                                [ServerPermission] @{
+                                    State      = 'Deny'
+                                    Permission = @()
+                                }
+                            )
+                        })
                 }
 
                 # Grants
@@ -1241,24 +1239,22 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    {
-                        $mockSqlPermissionInstance.Modify(@{
-                                Permission = [ServerPermission[]] @(
-                                    [ServerPermission] @{
-                                        State      = 'Grant'
-                                        Permission = @('ConnectSql')
-                                    }
-                                    [ServerPermission] @{
-                                        State      = 'GrantWithGrant'
-                                        Permission = @()
-                                    }
-                                    [ServerPermission] @{
-                                        State      = 'Deny'
-                                        Permission = @()
-                                    }
-                                )
-                            })
-                    } | Should -Not -Throw
+                    $null = $mockSqlPermissionInstance.Modify(@{
+                            Permission = [ServerPermission[]] @(
+                                [ServerPermission] @{
+                                    State      = 'Grant'
+                                    Permission = @('ConnectSql')
+                                }
+                                [ServerPermission] @{
+                                    State      = 'GrantWithGrant'
+                                    Permission = @()
+                                }
+                                [ServerPermission] @{
+                                    State      = 'Deny'
+                                    Permission = @()
+                                }
+                            )
+                        })
                 }
 
                 # Revoking Grants
@@ -1342,24 +1338,22 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    {
-                        $mockSqlPermissionInstance.Modify(@{
-                                PermissionToInclude = [ServerPermission[]] @(
-                                    [ServerPermission] @{
-                                        State      = 'Grant'
-                                        Permission = @('ConnectSql')
-                                    }
-                                    [ServerPermission] @{
-                                        State      = 'GrantWithGrant'
-                                        Permission = @('AlterAnyEndpoint')
-                                    }
-                                    [ServerPermission] @{
-                                        State      = 'Deny'
-                                        Permission = @()
-                                    }
-                                )
-                            })
-                    } | Should -Not -Throw
+                    $null = $mockSqlPermissionInstance.Modify(@{
+                            PermissionToInclude = [ServerPermission[]] @(
+                                [ServerPermission] @{
+                                    State      = 'Grant'
+                                    Permission = @('ConnectSql')
+                                }
+                                [ServerPermission] @{
+                                    State      = 'GrantWithGrant'
+                                    Permission = @('AlterAnyEndpoint')
+                                }
+                                [ServerPermission] @{
+                                    State      = 'Deny'
+                                    Permission = @()
+                                }
+                            )
+                        })
                 }
 
                 # Grants
@@ -1433,24 +1427,22 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    {
-                        $mockSqlPermissionInstance.Modify(@{
-                                PermissionToExclude = [ServerPermission[]] @(
-                                    [ServerPermission] @{
-                                        State      = 'Grant'
-                                        Permission = @('ConnectSql')
-                                    }
-                                    [ServerPermission] @{
-                                        State      = 'GrantWithGrant'
-                                        Permission = @('AlterAnyEndpoint')
-                                    }
-                                    [ServerPermission] @{
-                                        State      = 'Deny'
-                                        Permission = @()
-                                    }
-                                )
-                            })
-                    } | Should -Not -Throw
+                    $null = $mockSqlPermissionInstance.Modify(@{
+                            PermissionToExclude = [ServerPermission[]] @(
+                                [ServerPermission] @{
+                                    State      = 'Grant'
+                                    Permission = @('ConnectSql')
+                                }
+                                [ServerPermission] @{
+                                    State      = 'GrantWithGrant'
+                                    Permission = @('AlterAnyEndpoint')
+                                }
+                                [ServerPermission] @{
+                                    State      = 'Deny'
+                                    Permission = @()
+                                }
+                            )
+                        })
                 }
 
                 # Revoking Grants

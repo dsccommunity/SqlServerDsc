@@ -195,7 +195,7 @@ Describe 'SqlScriptQuery\Set-TargetResource' -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockSetTargetResourceParameters
             }
         }
     }
@@ -213,7 +213,7 @@ Describe 'SqlScriptQuery\Set-TargetResource' -Tag 'Set' {
 
                 $mockSetTargetResourceParameters.QueryTimeout = 30
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockSetTargetResourceParameters
             }
         }
     }

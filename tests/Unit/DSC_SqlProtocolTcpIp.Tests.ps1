@@ -140,7 +140,7 @@ Describe 'SqlProtocolTcpIp\Get-TargetResource' -Tag 'Get' {
                         IpAddressGroup = 'IP2'
                     }
 
-                    { Get-TargetResource @getTargetResourceParameters } | Should -Not -Throw
+                    $null = Get-TargetResource @getTargetResourceParameters
                 }
 
                 Should -Invoke -CommandName Write-Warning
@@ -1044,7 +1044,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                     IpAddressGroup    = 'IPAll'
                 }
 
-                { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                $null = Set-TargetResource @setTargetResourceParameters
             }
 
             Should -Invoke -CommandName Compare-TargetResourceState -Exactly -Times 1 -Scope It
@@ -1112,7 +1112,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                         UseTcpDynamicPort = $true
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setTargetResourceParameters
 
                     <#
                         Addition evaluation is done in the mock to test if the
@@ -1185,7 +1185,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                         TcpPort        = '1433,1500,1501'
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setTargetResourceParameters
 
                     <#
                         Addition evaluation is done in the mock to test if the
@@ -1256,7 +1256,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                             Enabled        = $true
                         }
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @setTargetResourceParameters
 
                         <#
                             Addition evaluation is done in the mock to test if the
@@ -1326,7 +1326,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                             Enabled        = $false
                         }
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @setTargetResourceParameters
 
                         <#
                             Addition evaluation is done in the mock to test if the
@@ -1402,7 +1402,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                             IpAddress      = $MockExpectedIpAddress
                         }
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @setTargetResourceParameters
 
                         <#
                             Addition evaluation is done in the mock to test if the
@@ -1455,7 +1455,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                             SuppressRestart = $true
                         }
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @setTargetResourceParameters
                     }
 
                     Should -Invoke -CommandName Restart-SqlService -Exactly -Times 0 -Scope It

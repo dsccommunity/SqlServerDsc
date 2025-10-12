@@ -51,19 +51,19 @@ Describe 'Assert-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
         Context 'When a login exists' {
             It 'Should not throw an error for sa login' {
-                { Assert-SqlDscLogin -ServerObject $script:serverObject -Name 'sa' } | Should -Not -Throw
+                $null = Assert-SqlDscLogin -ServerObject $script:serverObject -Name 'sa' -ErrorAction 'Stop'
             }
 
             It 'Should not throw an error when using pipeline' {
-                { $script:serverObject | Assert-SqlDscLogin -Name 'sa' } | Should -Not -Throw
+                $null = $script:serverObject | Assert-SqlDscLogin -Name 'sa' -ErrorAction 'Stop'
             }
 
             It 'Should not throw an error for NT AUTHORITY\SYSTEM login' {
-                { Assert-SqlDscLogin -ServerObject $script:serverObject -Name 'NT AUTHORITY\SYSTEM' } | Should -Not -Throw
+                $null = Assert-SqlDscLogin -ServerObject $script:serverObject -Name 'NT AUTHORITY\SYSTEM' -ErrorAction 'Stop'
             }
 
             It 'Should not throw an error for SqlAdmin login' {
-                { Assert-SqlDscLogin -ServerObject $script:serverObject -Name ('{0}\SqlAdmin' -f $script:computerName) } | Should -Not -Throw
+                $null = Assert-SqlDscLogin -ServerObject $script:serverObject -Name ('{0}\SqlAdmin' -f $script:computerName) -ErrorAction 'Stop'
             }
         }
 
