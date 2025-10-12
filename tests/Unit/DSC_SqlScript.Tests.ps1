@@ -191,7 +191,7 @@ Describe 'SqlScript\Set-TargetResource' -Tag 'Set' {
             }
         }
 
-        It 'Should return the expected results' {
+        It 'Should complete without error' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
@@ -207,7 +207,7 @@ Describe 'SqlScript\Set-TargetResource' -Tag 'Set' {
             }
         }
 
-        It 'Should return the expected results' {
+        It 'Should complete without error with query timeout' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 

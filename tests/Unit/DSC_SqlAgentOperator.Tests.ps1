@@ -535,7 +535,7 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                 }
             }
 
-            It 'Should return the state as true' {
+            It 'Should create the sql agent operator with email address' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
