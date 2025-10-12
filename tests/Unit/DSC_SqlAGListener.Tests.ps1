@@ -154,7 +154,7 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
 
             It 'Should call the mock function Get-SQLAlwaysOnAvailabilityGroupListener' {
                 InModuleScope -ScriptBlock {
-                    $null = Get-TargetResource @mockGetTargetResourceParameters
+                    $null = Get-TargetResource @mockGetTargetResourceParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
@@ -241,7 +241,7 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
 
             It 'Should call the mock function Get-SQLAlwaysOnAvailabilityGroupListener' {
                 InModuleScope -ScriptBlock {
-                    $null = Get-TargetResource @mockGetTargetResourceParameters
+                    $null = Get-TargetResource @mockGetTargetResourceParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
@@ -315,7 +315,7 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
 
             It 'Should call the mock function Get-SQLAlwaysOnAvailabilityGroupListener' {
                 InModuleScope -ScriptBlock {
-                    $null = Get-TargetResource @mockGetTargetResourceParameters
+                    $null = Get-TargetResource @mockGetTargetResourceParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
@@ -389,7 +389,7 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
 
             It 'Should call the mock function Get-SQLAlwaysOnAvailabilityGroupListener' {
                 InModuleScope -ScriptBlock {
-                    $null = Get-TargetResource @mockGetTargetResourceParameters
+                    $null = Get-TargetResource @mockGetTargetResourceParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
