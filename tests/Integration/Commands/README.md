@@ -35,7 +35,12 @@ a higher run order number than the highest run order of the dependent
 integration tests.
 
 **Below are the integration tests listed in the run order, and with the dependency
-to each other. Dependencies are made to speed up the testing.**
+to each other. Dependencies are made to speed up the testing. The tests are
+organized by Azure Pipeline job.**
+
+### Integration_Test_Commands_SqlServer
+
+Tests for SQL Server Database Engine commands.
 
 <!-- markdownlint-disable MD013 -->
 Command | Run order # | Depends on # | Use instance | Creates persistent objects
@@ -107,22 +112,50 @@ Disable-SqlDscAgentOperator | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | 
 Get-SqlDscAudit | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Disable-SqlDscAudit | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Add-SqlDscTraceFlag | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Remove-SqlDscAgentAlert | 8 | 4 (New-SqlDscAgentAlert) | DSCSQLTEST | -
-Remove-SqlDscAgentOperator | 8 | 4 (New-SqlDscAgentOperator) | DSCSQLTEST | -
-Remove-SqlDscAudit | 8 | - | DSCSQLTEST | -
-Set-SqlDscAudit | 8 | - | DSCSQLTEST | -
-Remove-SqlDscDatabase | 8 | 4 (New-SqlDscDatabase) | DSCSQLTEST | -
-Remove-SqlDscRole | 8 | 4 (New-SqlDscRole) | DSCSQLTEST | -
-Remove-SqlDscLogin | 8 | 4 (New-SqlDscLogin) | DSCSQLTEST | -
-Remove-SqlDscTraceFlag | 8 | 1 (Install-SqlDscServer) | DSCSQLTEST | -
-Uninstall-SqlDscServer | 9 | 8 (Remove commands) | - | -
+Remove-SqlDscAgentAlert | 7 | 4 (New-SqlDscAgentAlert) | DSCSQLTEST | -
+Remove-SqlDscAgentOperator | 7 | 4 (New-SqlDscAgentOperator) | DSCSQLTEST | -
+Remove-SqlDscAudit | 7 | - | DSCSQLTEST | -
+Set-SqlDscAudit | 7 | - | DSCSQLTEST | -
+Remove-SqlDscDatabase | 7 | 4 (New-SqlDscDatabase) | DSCSQLTEST | -
+Remove-SqlDscRole | 7 | 4 (New-SqlDscRole) | DSCSQLTEST | -
+Remove-SqlDscLogin | 7 | 4 (New-SqlDscLogin) | DSCSQLTEST | -
+Remove-SqlDscTraceFlag | 7 | 1 (Install-SqlDscServer) | DSCSQLTEST | -
+Repair-SqlDscServer | 8 | 1 (Install-SqlDscServer) | DSCSQLTEST | -
+Uninstall-SqlDscServer | 9 | 8 (Repair-SqlDscServer) | - | -
+<!-- markdownlint-enable MD013 -->
+
+### Integration_Test_Commands_ReportingServices
+
+Tests for SQL Server Reporting Services commands.
+
+<!-- markdownlint-disable MD013 -->
+Command | Run order # | Depends on # | Use instance | Creates persistent objects
+--- | --- | --- | --- | ---
+Prerequisites | 0 | - | - | Sets up dependencies
+Save-SqlDscSqlServerMediaFile | 0 | - | - | Downloads SQL Server media files
+Import-SqlDscPreferredModule | 0 | - | - | -
 Install-SqlDscReportingService | 1 | 0 (Prerequisites) | - | SSRS instance
 Get-SqlDscInstalledInstance | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Get-SqlDscRSSetupConfiguration | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Test-SqlDscRSInstalled | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Repair-SqlDscReportingService | 8 | 1 (Install-SqlDscReportingService) | SSRS | -
 Uninstall-SqlDscReportingService | 9 | 8 (Repair-SqlDscReportingService) | - | -
+<!-- markdownlint-enable MD013 -->
+
+### Integration_Test_Commands_BIReportServer
+
+Tests for Power BI Report Server commands.
+
+<!-- markdownlint-disable MD013 -->
+Command | Run order # | Depends on # | Use instance | Creates persistent objects
+--- | --- | --- | --- | ---
+Prerequisites | 0 | - | - | Sets up dependencies
+Save-SqlDscSqlServerMediaFile | 0 | - | - | Downloads SQL Server media files
+Import-SqlDscPreferredModule | 0 | - | - | -
 Install-SqlDscBIReportServer | 1 | 0 (Prerequisites) | - | PBIRS instance
+Get-SqlDscInstalledInstance | 2 | 1 (Install-SqlDscBIReportServer), 0 (Prerequisites) | PBIRS | -
+Get-SqlDscRSSetupConfiguration | 2 | 1 (Install-SqlDscBIReportServer), 0 (Prerequisites) | PBIRS | -
+Test-SqlDscRSInstalled | 2 | 1 (Install-SqlDscBIReportServer), 0 (Prerequisites) | PBIRS | -
 Repair-SqlDscBIReportServer | 8 | 1 (Install-SqlDscBIReportServer) | PBIRS | -
 Uninstall-SqlDscBIReportServer | 9 | 8 (Repair-SqlDscBIReportServer) | - | -
 <!-- markdownlint-enable MD013 -->

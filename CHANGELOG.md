@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added integration tests for `Repair-SqlDscServer` command to ensure command
+  reliability. The test runs in group 8, before `Uninstall-SqlDscServer` in
+  group 9, to verify the repair functionality on the DSCSQLTEST instance
+  [issue #2238](https://github.com/dsccommunity/SqlServerDsc/issues/2238).
 - Added integration tests for `ConvertTo-SqlDscServerPermission` command to ensure
   command reliability [issue #2207](https://github.com/dsccommunity/SqlServerDsc/issues/2207).
 - Added post-installation configuration integration test to configure SSL certificate
