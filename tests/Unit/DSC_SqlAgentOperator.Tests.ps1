@@ -502,7 +502,7 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
         }
 
         Context 'When creating the sql agent operator' {
-            It 'Should not throw' {
+            It 'Should create the sql agent operator' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
@@ -552,7 +552,7 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
         }
 
         Context 'When changing the email address' {
-            It 'Should not throw' {
+            It 'Should update the email address' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
@@ -575,7 +575,7 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             }
 
-            It 'Should not throw' {
+            It 'Should drop the sql agent operator' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
