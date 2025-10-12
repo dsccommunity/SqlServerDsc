@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added integration tests for `ConvertTo-SqlDscServerPermission` command to ensure
-  command reliability [issue #2234](https://github.com/dsccommunity/SqlServerDsc/issues/2234).
+  command reliability [issue #2207](https://github.com/dsccommunity/SqlServerDsc/issues/2207).
 - Added integration tests for `Get-SqlDscDatabasePermission` command to ensure
   database permission retrieval functions correctly in real environments
   [issue #2221](https://github.com/dsccommunity/SqlServerDsc/issues/2221).
