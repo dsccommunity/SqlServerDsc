@@ -107,7 +107,7 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
                 $dbToRemove = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:refreshTestDbName -ErrorAction 'SilentlyContinue'
                 if ($dbToRemove)
                 {
-                    $null = Remove-SqlDscDatabase -DatabaseObject $dbToRemove -Force
+                    $null = Remove-SqlDscDatabase -DatabaseObject $dbToRemove -Force -ErrorAction 'Stop'
                 }
             }
         }
