@@ -142,6 +142,8 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
 
                 $sqlServerObject.Status.ToString() | Should -Match '^Online$'
                 $sqlServerObject.ConnectionContext.EncryptConnection | Should -BeTrue
+
+                Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject
             }
 
             It 'Should not enable EncryptConnection property when Encrypt parameter is not used' {
@@ -159,6 +161,8 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
 
                 $sqlServerObject.Status.ToString() | Should -Match '^Online$'
                 $sqlServerObject.ConnectionContext.EncryptConnection | Should -BeFalse
+
+                Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject
             }
         }
     }
