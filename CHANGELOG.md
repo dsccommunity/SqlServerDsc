@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added integration tests for `ConvertTo-SqlDscServerPermission` command to ensure
   command reliability [issue #2207](https://github.com/dsccommunity/SqlServerDsc/issues/2207).
+- Added post-installation configuration integration test to configure SSL certificate
+  support for SQL Server instance DSCSQLTEST in CI environment, enabling testing
+  of encryption-related functionality. The new `PostInstallationConfiguration`
+  integration test includes:
+  - Self-signed SSL certificate creation and installation
+  - Certificate configuration for SQL Server Database Engine
+  - Service account permissions for certificate private key access
+  - Certificate trust chain configuration
+  - Verification that encryption is properly configured
+  - Enabled previously skipped encryption tests in `Invoke-SqlDscQuery`
+  - Added integration tests for `Connect-SqlDscDatabaseEngine` command to verify
+    the `-Encrypt` parameter functionality
+  [issue #2290](https://github.com/dsccommunity/SqlServerDsc/issues/2290).
 - Added integration tests for `Get-SqlDscDatabasePermission` command to ensure
   database permission retrieval functions correctly in real environments
   [issue #2221](https://github.com/dsccommunity/SqlServerDsc/issues/2221).

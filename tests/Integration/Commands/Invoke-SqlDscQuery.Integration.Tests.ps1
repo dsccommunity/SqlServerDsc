@@ -145,8 +145,7 @@ INSERT INTO TestTable (Name, Value) VALUES ('Test1', 100), ('Test2', 200), ('Tes
         }
 
         Context 'When using optional parameters with ByServerName parameter set' {
-            # Using Encrypt in the CI is not possible until we add the required support (certificate) in the CI.
-            It 'Should execute query with Encrypt parameter' -Skip {
+            It 'Should execute query with Encrypt parameter' {
                 $null = Invoke-SqlDscQuery -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -DatabaseName $script:testDatabaseName -Query 'SELECT 1 as TestValue' -Encrypt -PassThru -Force -ErrorAction 'Stop'
             }
 
