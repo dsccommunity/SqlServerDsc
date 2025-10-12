@@ -77,6 +77,7 @@ Grant-SqlDscServerPermission | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer)
 Get-SqlDscServerPermission | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Set-SqlDscServerPermission | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 ConvertFrom-SqlDscServerPermission | 2 | 0 (Prerequisites) | - | -
+ConvertTo-SqlDscServerPermission | 2 | 2 (Grant-SqlDscServerPermission), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Test-SqlDscServerPermission | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Deny-SqlDscServerPermission | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Denies AlterTrace permission to login (persistent)
 Revoke-SqlDscServerPermission | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
