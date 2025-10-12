@@ -69,7 +69,7 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2017', 'Integration_SQL20
                     Force                 = $true
                 }
 
-                Install-SqlDscServer @installSqlDscServerParameters
+                $null = Install-SqlDscServer @installSqlDscServerParameters
 
                 # <#
                 #     Fails with the following error message:
@@ -209,7 +209,7 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2017', 'Integration_SQL20
                     Force                 = $true
                 }
 
-                Install-SqlDscServer @installSqlDscServerParameters
+                $null = Install-SqlDscServer @installSqlDscServerParameters
 
                 # {
                 #     <#
