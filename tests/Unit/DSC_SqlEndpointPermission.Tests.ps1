@@ -457,7 +457,7 @@ Describe 'SqlEndpointPermission\Set-TargetResource' -Tag 'Set' {
                     $mockSetTargetResourceParameters.Ensure = 'Absent'
                     $mockSetTargetResourceParameters.Principal = 'COMPANY\MissingAccount'
 
-                    $null = Set-TargetResource @mockSetTargetResourceParameters
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
                     Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It

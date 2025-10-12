@@ -35,7 +35,7 @@ BeforeAll {
 }
 
 AfterAll {
-    Remove-Item -Path 'Env:\SqlServerDscCI' -ErrorAction 'SilentlyContinue'
+    $null = Remove-Item -Path 'Env:\SqlServerDscCI' -ErrorAction 'Stop'
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:moduleName -All | Remove-Module -Force
@@ -56,7 +56,7 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_S
     }
 
     AfterAll {
-        $script:sqlServerObject | Remove-SqlDscAgentOperator -Name 'IntegrationTest_AssertOperator' -Force -ErrorAction 'SilentlyContinue'
+        $null = $script:sqlServerObject | Remove-SqlDscAgentOperator -Name 'IntegrationTest_AssertOperator' -Force -ErrorAction 'Stop'
 
         # Disconnect from the SQL Server
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:sqlServerObject
