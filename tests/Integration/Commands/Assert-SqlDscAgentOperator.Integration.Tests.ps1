@@ -52,7 +52,7 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_S
         $script:sqlServerObject = Connect-SqlDscDatabaseEngine -InstanceName $script:sqlServerInstance -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
 
         # Create a test operator for assertion tests
-        $script:sqlServerObject | New-SqlDscAgentOperator -Name 'IntegrationTest_AssertOperator' -EmailAddress 'assert@contoso.com' -ErrorAction 'Stop'
+        $null = $script:sqlServerObject | New-SqlDscAgentOperator -Name 'IntegrationTest_AssertOperator' -EmailAddress 'assert@contoso.com' -ErrorAction 'Stop'
     }
 
     AfterAll {
