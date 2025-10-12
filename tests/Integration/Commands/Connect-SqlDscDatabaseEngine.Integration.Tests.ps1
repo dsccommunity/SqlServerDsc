@@ -130,5 +130,42 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
                 } | Should -Not -Throw
             }
         }
+
+        Context 'When using Encrypt parameter' {
+            It 'Should enable EncryptConnection property on the ConnectionContext' {
+                $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+                $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+                $connectSqlDscDatabaseEngineParameters = @{
+                    InstanceName = 'DSCSQLTEST'
+                    Credential   = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
+                    Encrypt      = $true
+                    Verbose      = $true
+                    ErrorAction  = 'Stop'
+                }
+
+                $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+
+                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+                $sqlServerObject.ConnectionContext.EncryptConnection | Should -BeTrue
+            }
+
+            It 'Should not enable EncryptConnection property when Encrypt parameter is not used' {
+                $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+                $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+                $connectSqlDscDatabaseEngineParameters = @{
+                    InstanceName = 'DSCSQLTEST'
+                    Credential   = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
+                    Verbose      = $true
+                    ErrorAction  = 'Stop'
+                }
+
+                $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+
+                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+                $sqlServerObject.ConnectionContext.EncryptConnection | Should -BeFalse
+            }
+        }
     }
 }

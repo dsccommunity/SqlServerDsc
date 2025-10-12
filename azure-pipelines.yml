@@ -290,6 +290,7 @@ stages:
                   'tests/Integration/Commands/Import-SqlDscPreferredModule.Integration.Tests.ps1'
                   # Group 1
                   'tests/Integration/Commands/Install-SqlDscServer.Integration.Tests.ps1'
+                  'tests/Integration/Commands/PostInstallationConfiguration.Integration.Tests.ps1'
                   'tests/Integration/Commands/Connect-SqlDscDatabaseEngine.Integration.Tests.ps1'
                   'tests/Integration/Commands/Disconnect-SqlDscDatabaseEngine.Integration.Tests.ps1'
                   # Group 2

@@ -46,6 +46,7 @@ Save-SqlDscSqlServerMediaFile | 0 | - | - | Downloads SQL Server media files
 ConvertTo-SqlDscEditionName | 0 | - | - | -
 Import-SqlDscPreferredModule | 0 | - | - | -
 Install-SqlDscServer | 1 | 0 (Prerequisites) | - | DSCSQLTEST instance
+PostInstallationConfiguration | 1 | 1 (Install-SqlDscServer) | DSCSQLTEST | SSL certificate configuration
 Connect-SqlDscDatabaseEngine | 1 | 0 (Prerequisites) | DSCSQLTEST | -
 Disconnect-SqlDscDatabaseEngine | 1 | 0 (Prerequisites) | DSCSQLTEST | -
 Assert-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -

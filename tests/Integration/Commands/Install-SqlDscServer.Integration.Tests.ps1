@@ -308,7 +308,7 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2017', 'Integration_SQL20
                 $sqlServerService = Get-Service -Name 'MSSQL$DSCSQLTEST' -ErrorAction 'Stop'
 
                 $sqlServerService.Status | Should -Be 'Running'
-                
+
                 Write-Verbose -Message 'MSSQL$DSCSQLTEST service left running for subsequent integration tests to improve performance' -Verbose
             }
         }
