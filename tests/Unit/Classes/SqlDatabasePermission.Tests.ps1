@@ -1111,7 +1111,7 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
             InModuleScope -ScriptBlock {
                 {
                     # This test does not pass any properties to set as it is not necessary for this test.
-                    $mockSqlDatabasePermissionInstance.Modify(@{
+                    $null = $mockSqlDatabasePermissionInstance.Modify(@{
                             Permission = [DatabasePermission[]] @()
                         })
                 } | Should -Throw -ExpectedMessage $mockErrorRecord
@@ -1560,7 +1560,7 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
 
                 InModuleScope -ScriptBlock {
                     {
-                        $mockSqlDatabasePermissionInstance.Modify(@{
+                        $null = $mockSqlDatabasePermissionInstance.Modify(@{
                                 Permission = [DatabasePermission[]] @(
                                     [DatabasePermission] @{
                                         State      = 'Grant'
@@ -1653,7 +1653,7 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
 
                 InModuleScope -ScriptBlock {
                     {
-                        $mockSqlDatabasePermissionInstance.Modify(@{
+                        $null = $mockSqlDatabasePermissionInstance.Modify(@{
                                 Permission = [DatabasePermission[]] @(
                                     [DatabasePermission] @{
                                         State      = 'Grant'
