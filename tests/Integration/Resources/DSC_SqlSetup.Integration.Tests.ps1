@@ -208,7 +208,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 ErrorAction  = 'Stop'
             }
 
-            Start-DscConfiguration @startDscConfigurationParameters
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
     }
 
@@ -241,7 +241,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 ErrorAction  = 'Stop'
             }
 
-            Start-DscConfiguration @startDscConfigurationParameters
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         # Make sure the module was installed.
@@ -289,7 +289,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 ErrorAction  = 'Stop'
             }
 
-            Start-DscConfiguration @startDscConfigurationParameters
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         } -ErrorVariable itBlockError
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
@@ -405,7 +405,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 ErrorAction  = 'Stop'
             }
 
-            Start-DscConfiguration @startDscConfigurationParameters
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
     }
 
@@ -448,7 +448,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 ErrorAction  = 'Stop'
             }
 
-            Start-DscConfiguration @startDscConfigurationParameters
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         } -ErrorVariable itBlockError
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
@@ -559,7 +559,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 ErrorAction  = 'Stop'
             }
 
-            Start-DscConfiguration @startDscConfigurationParameters
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
     }
 
@@ -602,7 +602,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 ErrorAction  = 'Stop'
             }
 
-            Start-DscConfiguration @startDscConfigurationParameters
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         } -ErrorVariable itBlockError
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
@@ -719,7 +719,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 ErrorAction  = 'Stop'
             }
 
-            Start-DscConfiguration @startDscConfigurationParameters
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
     }
 
@@ -762,7 +762,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 ErrorAction  = 'Stop'
             }
 
-            Start-DscConfiguration @startDscConfigurationParameters
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         } -ErrorVariable itBlockError
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
@@ -879,7 +879,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 ErrorAction  = 'Stop'
             }
 
-            Start-DscConfiguration @startDscConfigurationParameters
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
     }
 
@@ -912,7 +912,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 ErrorAction  = 'Stop'
             }
 
-            Start-DscConfiguration @startDscConfigurationParameters
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
     }
 }
