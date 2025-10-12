@@ -1152,7 +1152,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    $mockSqlPermissionInstance.Modify(@{
+                    $null = $mockSqlPermissionInstance.Modify(@{
                             Permission = [ServerPermission[]] @(
                                 [ServerPermission] @{
                                     State      = 'Grant'
@@ -1239,7 +1239,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    $mockSqlPermissionInstance.Modify(@{
+                    $null = $mockSqlPermissionInstance.Modify(@{
                             Permission = [ServerPermission[]] @(
                                 [ServerPermission] @{
                                     State      = 'Grant'
@@ -1338,7 +1338,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    $mockSqlPermissionInstance.Modify(@{
+                    $null = $mockSqlPermissionInstance.Modify(@{
                             PermissionToInclude = [ServerPermission[]] @(
                                 [ServerPermission] @{
                                     State      = 'Grant'
@@ -1427,7 +1427,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    $mockSqlPermissionInstance.Modify(@{
+                    $null = $mockSqlPermissionInstance.Modify(@{
                             PermissionToExclude = [ServerPermission[]] @(
                                 [ServerPermission] @{
                                     State      = 'Grant'
