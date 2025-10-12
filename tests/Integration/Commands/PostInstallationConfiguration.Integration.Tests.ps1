@@ -94,7 +94,7 @@ Describe 'PostInstallationConfiguration' -Tag @('Integration_SQL2017', 'Integrat
 
         It 'Should grant SQL Server service account permission to certificate private key' {
             # Get the certificate from the Personal store
-            $cert = Get-ChildItem -Path "Cert:\LocalMachine\My\$script:certificateThumbprint"
+            $cert = Get-ChildItem -Path "Cert:\LocalMachine\My\$script:certificateThumbprint" -ErrorAction 'Stop'
 
             # Get the private key
             $rsaCert = [System.Security.Cryptography.X509Certificates.RSACertificateExtensions]::GetRSAPrivateKey($cert)
