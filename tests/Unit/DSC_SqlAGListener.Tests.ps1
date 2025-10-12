@@ -744,7 +744,7 @@ Describe 'SqlAGListener\Set-TargetResource' {
                 InModuleScope -ScriptBlock {
                     $mockSetTargetResourceParameters.Ensure = 'Absent'
 
-                    $null = Set-TargetResource @mockSetTargetResourceParameters
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -791,7 +791,7 @@ Describe 'SqlAGListener\Set-TargetResource' {
 
             It 'Should not throw and call the correct mocks' {
                 InModuleScope -ScriptBlock {
-                    $null = Set-TargetResource @mockSetTargetResourceParameters
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -868,7 +868,7 @@ Describe 'SqlAGListener\Set-TargetResource' {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     $mockSetTargetResourceParameters.$MockPropertyName = $MockExpectedValue
 
-                    $null = Set-TargetResource @mockSetTargetResourceParameters
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -1099,7 +1099,7 @@ Describe 'SqlAGListener\Set-TargetResource' {
 
                 It 'Should not throw and call the correct mocks' {
                     InModuleScope -ScriptBlock {
-                        $null = Set-TargetResource @mockSetTargetResourceParameters
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -1134,7 +1134,7 @@ Describe 'SqlAGListener\Set-TargetResource' {
                         $mockSetTargetResourceParameters.DHCP = $true
                         $mockSetTargetResourceParameters.IpAddress = '192.168.10.45/255.255.252.0'
 
-                        $null = Set-TargetResource @mockSetTargetResourceParameters
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -1170,7 +1170,7 @@ Describe 'SqlAGListener\Set-TargetResource' {
                     InModuleScope -ScriptBlock {
                         $mockSetTargetResourceParameters.Port = 5031
 
-                        $null = Set-TargetResource @mockSetTargetResourceParameters
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -1206,7 +1206,7 @@ Describe 'SqlAGListener\Set-TargetResource' {
                     InModuleScope -ScriptBlock {
                         $mockSetTargetResourceParameters.IpAddress = '192.168.10.45/255.255.252.0'
 
-                        $null = Set-TargetResource @mockSetTargetResourceParameters
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -1259,7 +1259,7 @@ Describe 'SqlAGListener\Set-TargetResource' {
                 InModuleScope -ScriptBlock {
                     $mockSetTargetResourceParameters.Ensure = 'Absent'
 
-                    $null = Set-TargetResource @mockSetTargetResourceParameters
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                     $mockMethodDropWasRunCount | Should -Be 1
                 }
@@ -1303,7 +1303,7 @@ Describe 'SqlAGListener\Set-TargetResource' {
                 InModuleScope -ScriptBlock {
                     $mockSetTargetResourceParameters.Port = 5030
 
-                    $null = Set-TargetResource @mockSetTargetResourceParameters
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -1384,7 +1384,7 @@ Describe 'SqlAGListener\Set-TargetResource' {
                             '192.168.0.1/255.255.252.0'
                         )
 
-                        $null = Set-TargetResource @mockSetTargetResourceParameters
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It

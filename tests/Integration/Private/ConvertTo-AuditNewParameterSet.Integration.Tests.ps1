@@ -45,7 +45,7 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
 
         $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
 
-        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction Stop
+        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
 
         # Create a temporary directory for file audits if it doesn't exist
         $script:testAuditPath = 'C:\Temp\SqlDscTestAudits'
@@ -84,7 +84,7 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
     Context 'When converting an ApplicationLog audit' {
         BeforeAll {
             $script:testAuditName = 'SqlDscTestConvert_AppLog_' + (Get-Random)
-            $script:testAudit = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -PassThru -Force -ErrorAction Stop
+            $script:testAudit = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -PassThru -Force -ErrorAction 'Stop'
         }
 
         AfterAll {
@@ -126,7 +126,7 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
     Context 'When converting a SecurityLog audit' {
         BeforeAll {
             $script:testAuditName = 'SqlDscTestConvert_SecLog_' + (Get-Random)
-            $script:testAudit = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'SecurityLog' -PassThru -Force -ErrorAction Stop
+            $script:testAudit = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'SecurityLog' -PassThru -Force -ErrorAction 'Stop'
         }
 
         AfterAll {
@@ -150,7 +150,7 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
     Context 'When converting a File audit with basic properties' {
         BeforeAll {
             $script:testAuditName = 'SqlDscTestConvert_File_' + (Get-Random)
-            $script:testAudit = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Path $script:testAuditPath -PassThru -Force -ErrorAction Stop
+            $script:testAudit = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Path $script:testAuditPath -PassThru -Force -ErrorAction 'Stop'
         }
 
         AfterAll {
@@ -191,7 +191,7 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
     Context 'When converting a File audit with MaximumFileSize' {
         BeforeAll {
             $script:testAuditName = 'SqlDscTestConvert_FileSize_' + (Get-Random)
-            $script:testAudit = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Path $script:testAuditPath -MaximumFileSize 100 -MaximumFileSizeUnit 'Megabyte' -PassThru -Force -ErrorAction Stop
+            $script:testAudit = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Path $script:testAuditPath -MaximumFileSize 100 -MaximumFileSizeUnit 'Megabyte' -PassThru -Force -ErrorAction 'Stop'
         }
 
         AfterAll {
@@ -231,7 +231,7 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
     Context 'When converting a File audit with MaximumFiles and ReserveDiskSpace' {
         BeforeAll {
             $script:testAuditName = 'SqlDscTestConvert_MaxFiles_' + (Get-Random)
-            $script:testAudit = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Path $script:testAuditPath -MaximumFiles 10 -MaximumFileSize 50 -MaximumFileSizeUnit 'Megabyte' -ReserveDiskSpace -PassThru -Force -ErrorAction Stop
+            $script:testAudit = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Path $script:testAuditPath -MaximumFiles 10 -MaximumFileSize 50 -MaximumFileSizeUnit 'Megabyte' -ReserveDiskSpace -PassThru -Force -ErrorAction 'Stop'
         }
 
         AfterAll {
@@ -275,7 +275,7 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
     Context 'When converting a File audit with MaximumRolloverFiles' {
         BeforeAll {
             $script:testAuditName = 'SqlDscTestConvert_Rollover_' + (Get-Random)
-            $script:testAudit = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Path $script:testAuditPath -MaximumRolloverFiles 15 -PassThru -Force -ErrorAction Stop
+            $script:testAudit = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Path $script:testAuditPath -MaximumRolloverFiles 15 -PassThru -Force -ErrorAction 'Stop'
         }
 
         AfterAll {
@@ -315,7 +315,7 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
     Context 'When converting an audit with OnFailure setting' {
         BeforeAll {
             $script:testAuditName = 'SqlDscTestConvert_OnFailure_' + (Get-Random)
-            $script:testAudit = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -OnFailure 'FailOperation' -PassThru -Force -ErrorAction Stop
+            $script:testAudit = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -OnFailure 'FailOperation' -PassThru -Force -ErrorAction 'Stop'
         }
 
         AfterAll {
@@ -353,7 +353,7 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
     Context 'When converting an audit with QueueDelay setting' {
         BeforeAll {
             $script:testAuditName = 'SqlDscTestConvert_QueueDelay_' + (Get-Random)
-            $script:testAudit = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -QueueDelay 3000 -PassThru -Force -ErrorAction Stop
+            $script:testAudit = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -QueueDelay 3000 -PassThru -Force -ErrorAction 'Stop'
         }
 
         AfterAll {
@@ -392,7 +392,7 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
         BeforeAll {
             $script:testAuditName = 'SqlDscTestConvert_Guid_' + (Get-Random)
             $script:testGuid = [System.Guid]::NewGuid().ToString()
-            $script:testAudit = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -AuditGuid $script:testGuid -PassThru -Force -ErrorAction Stop
+            $script:testAudit = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -AuditGuid $script:testGuid -PassThru -Force -ErrorAction 'Stop'
         }
 
         AfterAll {
@@ -446,7 +446,7 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
             $script:testAuditName = 'SqlDscTestConvert_Filter_' + (Get-Random)
             $script:testFilter = "([database_name] = 'master')"
             $script:expectedFilter = "([database_name]='master')"  # SQL Server normalizes the filter
-            $script:testAudit = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -AuditFilter $script:testFilter -PassThru -Force -ErrorAction Stop
+            $script:testAudit = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -AuditFilter $script:testFilter -PassThru -Force -ErrorAction 'Stop'
         }
 
         AfterAll {
@@ -501,7 +501,7 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
                 -AuditFilter $script:testFilter `
                 -PassThru `
                 -Force `
-                -ErrorAction Stop
+                -ErrorAction 'Stop'
         }
 
         AfterAll {

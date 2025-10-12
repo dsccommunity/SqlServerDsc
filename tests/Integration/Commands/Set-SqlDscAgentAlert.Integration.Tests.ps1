@@ -43,7 +43,7 @@ Describe 'Set-SqlDscAgentAlert' -Tag @('Integration_SQL2017', 'Integration_SQL20
         $script:sqlServerObject = Connect-SqlDscDatabaseEngine -InstanceName $script:sqlServerInstance -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
 
         # Create a test alert for updating
-        $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -Severity 14 -ErrorAction Stop
+        $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -Severity 14 -ErrorAction 'Stop'
     }
 
     AfterAll {

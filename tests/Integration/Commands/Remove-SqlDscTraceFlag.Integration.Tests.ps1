@@ -97,7 +97,7 @@ Describe 'Remove-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL
             }
 
             # Clean up - Remove remaining test flags
-            Remove-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $flagsToKeep -Force -ErrorAction 'SilentlyContinue'
+            $null = Remove-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -TraceFlag $flagsToKeep -Force -ErrorAction 'Stop'
         }
     }
 

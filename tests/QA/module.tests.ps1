@@ -40,7 +40,7 @@ BeforeDiscovery {
 
     $mut = Get-Module -Name $script:moduleName -ListAvailable |
         Select-Object -First 1 |
-            Import-Module -Force -ErrorAction Stop -PassThru
+            Import-Module -Force -ErrorAction 'Stop' -PassThru
 }
 
 BeforeAll {
@@ -66,7 +66,7 @@ BeforeAll {
                     -and $(
                     try
                     {
-                        Test-ModuleManifest -Path $_.FullName -ErrorAction Stop
+                        Test-ModuleManifest -Path $_.FullName -ErrorAction 'Stop'
                     }
                     catch
                     {
@@ -98,23 +98,23 @@ Describe 'Changelog Management' -Tag 'Changelog' {
     }
 
     It 'Changelog format compliant with keepachangelog format' -Skip:(![bool](Get-Command git -EA SilentlyContinue)) {
-        $null = Get-ChangelogData -Path (Join-Path $ProjectPath 'CHANGELOG.md') -ErrorAction Stop
+        $null = Get-ChangelogData -Path (Join-Path $ProjectPath 'CHANGELOG.md') -ErrorAction 'Stop'
     }
 
     It 'Changelog should have an Unreleased header' -Skip:$skipTest {
-        (Get-ChangelogData -Path (Join-Path -Path $ProjectPath -ChildPath 'CHANGELOG.md') -ErrorAction Stop).Unreleased | Should -Not -BeNullOrEmpty
+        (Get-ChangelogData -Path (Join-Path -Path $ProjectPath -ChildPath 'CHANGELOG.md') -ErrorAction 'Stop').Unreleased | Should -Not -BeNullOrEmpty
     }
 }
 
 Describe 'General module control' -Tags 'FunctionalQuality' {
     It 'Should import without errors' {
-        $null = Import-Module -Name $script:moduleName -Force -ErrorAction Stop
+        $null = Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
 
         Get-Module -Name $script:moduleName | Should -Not -BeNullOrEmpty
     }
 
     It 'Should remove without error' {
-        $null = Remove-Module -Name $script:moduleName -ErrorAction Stop
+        $null = Remove-Module -Name $script:moduleName -ErrorAction 'Stop'
 
         Get-Module $script:moduleName | Should -BeNullOrEmpty
     }

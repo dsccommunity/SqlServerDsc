@@ -39,7 +39,7 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
         $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
 
-        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction Stop
+        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
 
         # Test database names
         $script:testDatabaseName = 'SqlDscTestDatabase_' + (Get-Random)
@@ -65,32 +65,32 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
     Context 'When creating a new database' {
         It 'Should create a database successfully with minimal parameters' {
-            $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction Stop
+            $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be $script:testDatabaseName
             $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
 
             # Verify the database exists
-            $createdDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction Stop
+            $createdDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
             $createdDb | Should -Not -BeNullOrEmpty
         }
 
         It 'Should create a database with specified properties' {
-            $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameWithProperties -RecoveryModel 'Simple' -Force -ErrorAction Stop
+            $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameWithProperties -RecoveryModel 'Simple' -Force -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be $script:testDatabaseNameWithProperties
             $result.RecoveryModel | Should -Be 'Simple'
 
             # Verify the database exists with correct properties
-            $createdDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameWithProperties -ErrorAction Stop
+            $createdDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameWithProperties -ErrorAction 'Stop'
             $createdDb | Should -Not -BeNullOrEmpty
             $createdDb.RecoveryModel | Should -Be 'Simple'
         }
 
         It 'Should throw error when trying to create a database that already exists' {
-            { New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction Stop } |
+            { New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction 'Stop' } |
                 Should -Throw
         }
     }
@@ -115,7 +115,7 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         It 'Should refresh the database collection before creating' {
             $script:refreshTestDbName = 'SqlDscTestRefresh_' + (Get-Random)
 
-            $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:refreshTestDbName -Refresh -Force -ErrorAction Stop
+            $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:refreshTestDbName -Refresh -Force -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be $script:refreshTestDbName

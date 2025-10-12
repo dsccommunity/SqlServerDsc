@@ -39,14 +39,14 @@ Describe 'Get-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
         $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
 
-        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction Stop
+        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
 
         # Create test audits for the tests
         $script:testAuditName1 = 'SqlDscTestGetAudit1_' + (Get-Random)
         $script:testAuditName2 = 'SqlDscTestGetAudit2_' + (Get-Random)
 
-        $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName1 -LogType 'ApplicationLog' -Force -ErrorAction Stop
-        $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName2 -LogType 'ApplicationLog' -Force -ErrorAction Stop
+        $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName1 -LogType 'ApplicationLog' -Force -ErrorAction 'Stop'
+        $null = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName2 -LogType 'ApplicationLog' -Force -ErrorAction 'Stop'
     }
 
     AfterAll {

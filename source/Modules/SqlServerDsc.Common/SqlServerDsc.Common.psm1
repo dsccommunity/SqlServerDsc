@@ -32,7 +32,7 @@ function Copy-ItemWithRobocopy
 
     $quotedPath = '"{0}"' -f $Path
     $quotedDestinationPath = '"{0}"' -f $DestinationPath
-    $robocopyExecutable = Get-Command -Name 'Robocopy.exe' -ErrorAction Stop
+    $robocopyExecutable = Get-Command -Name 'Robocopy.exe' -ErrorAction 'Stop'
 
     $robocopyArgumentSilent = '/njh /njs /ndl /nc /ns /nfl'
     $robocopyArgumentCopySubDirectoriesIncludingEmpty = '/e'
@@ -284,11 +284,11 @@ function Start-SqlSetupProcess
         ArgumentList = $ArgumentList
     }
 
-    $sqlSetupProcess = Start-Process @startProcessParameters -PassThru -NoNewWindow -ErrorAction Stop
+    $sqlSetupProcess = Start-Process @startProcessParameters -PassThru -NoNewWindow -ErrorAction 'Stop'
 
     Write-Verbose -Message ($script:localizedData.StartSetupProcess -f $sqlSetupProcess.Id, $startProcessParameters.FilePath, $Timeout) -Verbose
 
-    Wait-Process -InputObject $sqlSetupProcess -Timeout $Timeout -ErrorAction Stop
+    Wait-Process -InputObject $sqlSetupProcess -Timeout $Timeout -ErrorAction 'Stop'
 
     return $sqlSetupProcess.ExitCode
 }

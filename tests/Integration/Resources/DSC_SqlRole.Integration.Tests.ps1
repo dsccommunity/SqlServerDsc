@@ -480,7 +480,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing an exception' {
-            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It "Should have set the resource and all values should match for $($ConfigurationData.AllNodes.Role4Name)." {
