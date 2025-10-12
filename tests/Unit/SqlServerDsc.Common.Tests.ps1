@@ -504,14 +504,12 @@ Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstalla
         }
 
         It 'Should call the correct mocks' {
-            {
-                $invokeInstallationMediaCopyParameters = @{
-                    SourcePath = $mockSourcePathUNC
-                    SourceCredential = $mockShareCredential
-                }
-
-                $null = Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters -ErrorAction 'Stop'
+            $invokeInstallationMediaCopyParameters = @{
+                SourcePath = $mockSourcePathUNC
+                SourceCredential = $mockShareCredential
             }
+
+            $null = Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters -ErrorAction 'Stop'
 
             Should -Invoke -CommandName Connect-UncPath -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName New-Guid -Exactly -Times 1 -Scope It
@@ -2559,7 +2557,7 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
     }
 
     Context 'When connecting to the default instance using the correct service instance but does not return a correct Database Engine object' {
-        Context 'When using ErrorAction set to Stop' {
+        Context 'When using ErrorAction set to Stop' -Skip:($IsLinux -or $IsMacOS) {
             BeforeAll {
                 Mock -CommandName New-Object -ParameterFilter {
                     $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Server'
