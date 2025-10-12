@@ -34,7 +34,8 @@ Describe 'PostInstallationConfiguration' -Tag @('Integration_SQL2017', 'Integrat
     Context 'When configuring SSL certificate for encryption support on DSCSQLTEST instance' {
         BeforeAll {
             $script:instanceName = 'DSCSQLTEST'
-            $script:computerName = $env:COMPUTERNAME
+            $script:computerName = Get-ComputerName
+            $script:computerNameFqdn = Get-ComputerName -FullyQualifiedDomainName
             $script:serviceAccountName = 'svc-SqlPrimary'
         }
 
@@ -54,7 +55,7 @@ Describe 'PostInstallationConfiguration' -Tag @('Integration_SQL2017', 'Integrat
                 Subject           = "CN=$script:computerName"
                 DnsName           = @(
                     $script:computerName
-                    $([System.Net.Dns]::GetHostEntry('').HostName)
+                    $script:computerNameFqdn
                     'localhost'
                 )
                 KeyAlgorithm      = 'RSA'
