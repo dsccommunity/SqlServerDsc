@@ -290,9 +290,13 @@ stages:
                   'tests/Integration/Commands/Import-SqlDscPreferredModule.Integration.Tests.ps1'
                   # Group 1
                   'tests/Integration/Commands/Install-SqlDscServer.Integration.Tests.ps1'
+                  # Group 2
+                  'tests/Integration/Commands/PostInstallationConfiguration.Integration.Tests.ps1'
+                  # Group 3
                   'tests/Integration/Commands/Connect-SqlDscDatabaseEngine.Integration.Tests.ps1'
                   'tests/Integration/Commands/Disconnect-SqlDscDatabaseEngine.Integration.Tests.ps1'
-                  # Group 2
+                  'tests/Integration/Commands/Invoke-SqlDscQuery.Integration.Tests.ps1'
+                  # Group 4
                   'tests/Integration/Commands/Assert-SqlDscLogin.Integration.Tests.ps1'
                   'tests/Integration/Commands/New-SqlDscLogin.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscLogin.Integration.Tests.ps1'
@@ -332,7 +336,6 @@ stages:
                   'tests/Integration/Commands/Set-SqlDscDatabase.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscDatabase.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscDatabasePermission.Integration.Tests.ps1'
-                  'tests/Integration/Commands/Invoke-SqlDscQuery.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscDatabasePermission.Integration.Tests.ps1'
                   'tests/Integration/Commands/ConvertTo-SqlDscDatabasePermission.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscAgentAlert.Integration.Tests.ps1'
