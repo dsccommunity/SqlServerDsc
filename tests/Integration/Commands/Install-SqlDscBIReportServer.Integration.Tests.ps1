@@ -42,21 +42,19 @@ Describe 'Install-SqlDscBIReportServer' -Tag @('Integration_PowerBI') {
     Context 'When installing Power BI Report Server' {
         # cSpell: ignore PBIRS
         It 'Should run the command without throwing' {
-            {
-                # Set splatting parameters for Install-SqlDscBIReportServer
-                $installSqlDscBIReportServerParameters = @{
-                    AcceptLicensingTerms = $true
-                    MediaPath            = $powerBIReportServerExecutable
-                    InstallFolder        = 'C:\Program Files\PBIRS'
-                    Edition              = 'Developer'
-                    LogPath              = Join-Path -Path $script:temporaryFolder -ChildPath 'PowerBIReportServer_Install.log'
-                    SuppressRestart      = $true
-                    Verbose              = $true
-                    Force                = $true
-                }
+            # Set splatting parameters for Install-SqlDscBIReportServer
+            $installSqlDscBIReportServerParameters = @{
+                AcceptLicensingTerms = $true
+                MediaPath            = $powerBIReportServerExecutable
+                InstallFolder        = 'C:\Program Files\PBIRS'
+                Edition              = 'Developer'
+                LogPath              = Join-Path -Path $script:temporaryFolder -ChildPath 'PowerBIReportServer_Install.log'
+                SuppressRestart      = $true
+                Verbose              = $true
+                Force                = $true
+            }
 
-                Install-SqlDscBIReportServer @installSqlDscBIReportServerParameters -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Install-SqlDscBIReportServer @installSqlDscBIReportServerParameters -ErrorAction 'Stop'
         }
 
         It 'Should have installed Power BI Report Server' {

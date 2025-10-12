@@ -67,10 +67,8 @@ Describe 'Assert-ManagedServiceType' -Tag 'Private' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                {
-                    $MockServiceObject |
-                        Assert-ManagedServiceType -ServiceType 'DatabaseEngine' -ErrorAction 'Stop'
-                } | Should -Not -Throw
+                $null = $MockServiceObject |
+                    Assert-ManagedServiceType -ServiceType 'DatabaseEngine' -ErrorAction 'Stop'
             }
         }
     }

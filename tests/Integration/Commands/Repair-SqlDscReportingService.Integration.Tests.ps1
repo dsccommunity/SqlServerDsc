@@ -50,20 +50,18 @@ Describe 'Repair-SqlDscReportingService' -Tag @('Integration_SQL2017', 'Integrat
 
     Context 'When repairing Reporting Services' {
         It 'Should run the repair command without throwing' {
-            {
-                # Set splatting parameters for Repair-SqlDscReportingService
-                $repairSqlDscReportingServiceParameters = @{
-                    AcceptLicensingTerms = $true
-                    MediaPath            = $reportingServicesExecutable
-                    LogPath              = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Repair.log'
-                    SuppressRestart      = $true
-                    Verbose              = $true
-                    ErrorAction          = 'Stop'
-                    Force                = $true
-                }
+            # Set splatting parameters for Repair-SqlDscReportingService
+            $repairSqlDscReportingServiceParameters = @{
+                AcceptLicensingTerms = $true
+                MediaPath            = $reportingServicesExecutable
+                LogPath              = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Repair.log'
+                SuppressRestart      = $true
+                Verbose              = $true
+                ErrorAction          = 'Stop'
+                Force                = $true
+            }
 
-                Repair-SqlDscReportingService @repairSqlDscReportingServiceParameters
-            } | Should -Not -Throw
+            $null = Repair-SqlDscReportingService @repairSqlDscReportingServiceParameters
         }
 
         It 'Should still have the SQL Server Reporting Services service running after repair' {

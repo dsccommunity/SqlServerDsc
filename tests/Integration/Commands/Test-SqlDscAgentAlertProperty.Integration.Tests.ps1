@@ -43,8 +43,8 @@ Describe 'Test-SqlDscAgentAlertProperty' -Tag @('Integration_SQL2017', 'Integrat
         $script:sqlServerObject = Connect-SqlDscDatabaseEngine -InstanceName $script:sqlServerInstance -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
 
         # Create test alerts for testing
-        $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -Severity 16 -ErrorAction Stop
-        $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_MessageIdAlert' -MessageId 50001 -ErrorAction Stop
+        $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -Severity 16 -ErrorAction 'Stop'
+        $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_MessageIdAlert' -MessageId 50001 -ErrorAction 'Stop'
     }
 
     AfterAll {

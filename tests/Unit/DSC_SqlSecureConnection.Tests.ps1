@@ -384,7 +384,7 @@ Describe 'SqlSecureConnection\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
                 Should -Invoke -CommandName Set-EncryptedConnectionSetting -Exactly -Times 1 -Scope It -ParameterFilter { $Thumbprint -ceq '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'.ToLower() }
@@ -411,7 +411,7 @@ Describe 'SqlSecureConnection\Set-TargetResource' -Tag 'Set' {
 
                     $mockSetTargetResourceParameters.SuppressRestart = $true
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
                 Should -Invoke -CommandName Set-EncryptedConnectionSetting -Exactly -Times 1 -Scope It -ParameterFilter { $Thumbprint -ceq '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'.ToLower() }
@@ -441,7 +441,7 @@ Describe 'SqlSecureConnection\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    { Set-TargetResource @mockSetTargetResourceParameters -ServerName 'MyHostName'} | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ServerName 'MyHostName'
                 }
 
                 Should -Invoke -CommandName Set-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
@@ -473,7 +473,7 @@ Describe 'SqlSecureConnection\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
                 Should -Invoke -CommandName Set-EncryptedConnectionSetting -Exactly -Times 0 -Scope It
@@ -503,7 +503,7 @@ Describe 'SqlSecureConnection\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
                 Should -Invoke -CommandName Set-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
@@ -535,7 +535,7 @@ Describe 'SqlSecureConnection\Set-TargetResource' -Tag 'Set' {
 
                     $mockSetTargetResourceParameters.Ensure = 'Absent'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
                 Should -Invoke -CommandName Set-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
@@ -834,7 +834,7 @@ Describe 'SqlSecureConnection\Set-EncryptedConnectionSetting' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Set-EncryptedConnectionSetting -InstanceName 'NamedInstance' -Thumbprint '12345678' -ForceEncryption $true } | Should -Not -Throw
+                $null = Set-EncryptedConnectionSetting -InstanceName 'NamedInstance' -Thumbprint '12345678' -ForceEncryption $true
             }
         }
     }
@@ -1016,7 +1016,7 @@ Describe 'SqlSecureConnection\Set-CertificatePermission' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Set-CertificatePermission -Thumbprint '12345678' -ServiceAccount 'Everyone' } | Should -Not -Throw
+                $null = Set-CertificatePermission -Thumbprint '12345678' -ServiceAccount 'Everyone'
             }
         }
     }
@@ -1090,7 +1090,7 @@ Describe 'SqlSecureConnection\Get-CertificateAcl' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Get-CertificateAcl -Thumbprint '12345678' } | Should -Not -Throw
+                $null = Get-CertificateAcl -Thumbprint '12345678'
             }
         }
     }
@@ -1146,7 +1146,7 @@ Describe 'SqlSecureConnection\Get-SqlEncryptionValue' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Get-SqlEncryptionValue -InstanceName 'INSTANCE' } | Should -Not -Throw
+                $null = Get-SqlEncryptionValue -InstanceName 'INSTANCE'
             }
         }
     }

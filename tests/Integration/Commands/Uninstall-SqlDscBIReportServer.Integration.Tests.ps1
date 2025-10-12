@@ -50,19 +50,17 @@ Describe 'Uninstall-SqlDscBIReportServer' -Tag @('Integration_PowerBI') {
 
     Context 'When uninstalling BI Report Server' {
         It 'Should run the command without throwing' {
-            {
-                # Set splatting parameters for Uninstall-SqlDscBIReportServer
-                $uninstallSqlDscBIReportServerParameters = @{
-                    MediaPath       = $powerBIReportServerExecutable
-                    LogPath         = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Uninstall.log'
-                    SuppressRestart = $true
-                    Verbose         = $true
-                    ErrorAction     = 'Stop'
-                    Force           = $true
-                }
+            # Set splatting parameters for Uninstall-SqlDscBIReportServer
+            $uninstallSqlDscBIReportServerParameters = @{
+                MediaPath       = $powerBIReportServerExecutable
+                LogPath         = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Uninstall.log'
+                SuppressRestart = $true
+                Verbose         = $true
+                ErrorAction     = 'Stop'
+                Force           = $true
+            }
 
-                Uninstall-SqlDscBIReportServer @uninstallSqlDscBIReportServerParameters
-            } | Should -Not -Throw
+            $null = Uninstall-SqlDscBIReportServer @uninstallSqlDscBIReportServerParameters
         }
 
         It 'Should not have a Power BI Report Server service' {

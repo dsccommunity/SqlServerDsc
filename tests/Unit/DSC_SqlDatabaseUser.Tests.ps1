@@ -647,7 +647,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -685,7 +685,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -724,7 +724,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -800,7 +800,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                         }
 
                         Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -832,7 +832,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                         }
 
                         Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -858,7 +858,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -880,7 +880,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -902,7 +902,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -980,7 +980,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                         }
 
                         Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -1012,7 +1012,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                         }
 
                         Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -1087,7 +1087,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -1133,7 +1133,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -1179,7 +1179,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
@@ -1410,7 +1410,7 @@ Describe 'Assert-SqlLogin' -Tag 'Helper' {
                     Verbose      = $true
                 }
 
-                { Assert-SqlLogin @assertSqlLoginParameters } | Should -Not -Throw
+                $null = Assert-SqlLogin @assertSqlLoginParameters -ErrorAction 'Stop'
             }
         }
     }
@@ -1482,7 +1482,7 @@ Describe 'Assert-DatabaseCertificate' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Assert-DatabaseCertificate @assertDatabaseCertificateParameters } | Should -Not -Throw
+                $null = Assert-DatabaseCertificate @assertDatabaseCertificateParameters -ErrorAction 'Stop'
             }
         }
     }
@@ -1554,7 +1554,7 @@ Describe 'Assert-DatabaseAsymmetricKey' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Assert-DatabaseAsymmetricKey @assertDatabaseAsymmetricKeyParameters } | Should -Not -Throw
+                $null = Assert-DatabaseAsymmetricKey @assertDatabaseAsymmetricKeyParameters -ErrorAction 'Stop'
             }
         }
     }

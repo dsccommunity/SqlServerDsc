@@ -50,20 +50,18 @@ Describe 'Repair-SqlDscBIReportServer' -Tag @('Integration_PowerBI') {
 
     Context 'When repairing BI Report Server' {
         It 'Should run the command without throwing' {
-            {
-                # Set splatting parameters for Repair-SqlDscBIReportServer
-                $repairSqlDscBIReportServerParameters = @{
-                    AcceptLicensingTerms = $true
-                    MediaPath            = $powerBIReportServerExecutable
-                    LogPath              = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Repair.log'
-                    SuppressRestart      = $true
-                    Verbose              = $true
-                    ErrorAction          = 'Stop'
-                    Force                = $true
-                }
+            # Set splatting parameters for Repair-SqlDscBIReportServer
+            $repairSqlDscBIReportServerParameters = @{
+                AcceptLicensingTerms = $true
+                MediaPath            = $powerBIReportServerExecutable
+                LogPath              = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Repair.log'
+                SuppressRestart      = $true
+                Verbose              = $true
+                ErrorAction          = 'Stop'
+                Force                = $true
+            }
 
-                Repair-SqlDscBIReportServer @repairSqlDscBIReportServerParameters
-            } | Should -Not -Throw
+            $null = Repair-SqlDscBIReportServer @repairSqlDscBIReportServerParameters
         }
 
         It 'Should still have a Power BI Report Server service running after repair' {

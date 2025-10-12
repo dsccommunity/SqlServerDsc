@@ -158,7 +158,7 @@ Describe 'DSC_SqlAgentFailsafe\Get-TargetResource' -Tag 'Get' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Get-TargetResource @mockTestParameters } | Should -Not -Throw
+                $null = Get-TargetResource @mockTestParameters -ErrorAction 'Stop'
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
             }
@@ -207,7 +207,7 @@ Describe 'DSC_SqlAgentFailsafe\Get-TargetResource' -Tag 'Get' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Get-TargetResource @mockTestParameters } | Should -Not -Throw
+                $null = Get-TargetResource @mockTestParameters -ErrorAction 'Stop'
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
             }
@@ -512,7 +512,7 @@ Describe 'DSC_SqlAgentFailsafe\Set-TargetResource' -Tag 'Set' {
                     Ensure = 'Present'
                 }
 
-                { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
             }
 
             Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -530,7 +530,7 @@ Describe 'DSC_SqlAgentFailsafe\Set-TargetResource' -Tag 'Set' {
                     NotificationMethod  = 'Pager'
                 }
 
-                { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
             }
 
             Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -603,7 +603,7 @@ Describe 'DSC_SqlAgentFailsafe\Set-TargetResource' -Tag 'Set' {
                     Ensure = 'Absent'
                 }
 
-                { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
             }
 
             Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It

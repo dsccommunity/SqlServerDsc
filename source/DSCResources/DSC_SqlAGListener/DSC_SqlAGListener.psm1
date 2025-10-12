@@ -259,7 +259,7 @@ function Set-TargetResource
                     Write-Verbose -Message $script:localizedData.SetAvailabilityGroupListenerDhcpDefaultSubnet
                 }
 
-                New-SqlAvailabilityGroupListener @newListenerParams -ErrorAction Stop | Out-Null
+                New-SqlAvailabilityGroupListener @newListenerParams -ErrorAction 'Stop' | Out-Null
             }
             else
             {
@@ -355,7 +355,7 @@ function Set-TargetResource
                                 Port        = $Port
                             }
 
-                            Set-SqlAvailabilityGroupListener @setListenerParams -ErrorAction Stop | Out-Null
+                            Set-SqlAvailabilityGroupListener @setListenerParams -ErrorAction 'Stop' | Out-Null
                         }
 
                         if (-not $ipAddressEqual)
@@ -379,7 +379,7 @@ function Set-TargetResource
                                 StaticIp    = $newIpAddress
                             }
 
-                            Add-SqlAvailabilityGroupListenerStaticIp @setListenerParams -ErrorAction Stop | Out-Null
+                            Add-SqlAvailabilityGroupListenerStaticIp @setListenerParams -ErrorAction 'Stop' | Out-Null
                         }
                     }
                     else

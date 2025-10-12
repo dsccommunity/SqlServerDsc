@@ -43,11 +43,11 @@ Describe 'Set-SqlDscAgentAlert' -Tag @('Integration_SQL2017', 'Integration_SQL20
         $script:sqlServerObject = Connect-SqlDscDatabaseEngine -InstanceName $script:sqlServerInstance -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
 
         # Create a test alert for updating
-        $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -Severity 14 -ErrorAction Stop
+        $null = $script:sqlServerObject | New-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -Severity 14 -ErrorAction 'Stop'
     }
 
     AfterAll {
-        $null = $script:sqlServerObject | Remove-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -Force -ErrorAction 'SilentlyContinue'
+        $null = $script:sqlServerObject | Remove-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -Force -ErrorAction 'Stop'
 
         # Disconnect from the SQL Server
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:sqlServerObject
@@ -72,7 +72,7 @@ BEGIN
         N'Mock message 50003';
 END
 '@
-        $script:sqlServerObject | Invoke-SqlDscQuery -DatabaseName 'master' -Query $addMessageQuery -Verbose -Force -ErrorAction 'Stop'
+        $null = $script:sqlServerObject | Invoke-SqlDscQuery -DatabaseName 'master' -Query $addMessageQuery -Verbose -Force -ErrorAction 'Stop'
 
 
         $null = $script:sqlServerObject | Set-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -MessageId 50003 -ErrorAction 'Stop' -Force
@@ -84,7 +84,7 @@ END
 
     It 'Should update alert using AlertObject parameter set' {
         # First reset to severity for this test
-        $script:sqlServerObject | Set-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -Severity 14 -ErrorAction 'Stop' -Force
+        $null = $script:sqlServerObject | Set-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -Severity 14 -ErrorAction 'Stop' -Force
 
         $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert'
 

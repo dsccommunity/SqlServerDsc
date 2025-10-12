@@ -589,7 +589,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                         UseSsl               = $true
                     }
 
-                    { Set-TargetResource @mockDefaultParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockDefaultParameters
                 }
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
@@ -731,7 +731,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             }
 
             It 'Should configure Reporting Service without throwing an error' {
-                { Set-TargetResource @testParameters } | Should -Not -Throw
+                $null = Set-TargetResource @testParameters
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'SetSecureConnectionLevel'
@@ -826,7 +826,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             }
 
             It 'Should configure Reporting Service without throwing an error' {
-                { Set-TargetResource @testParameters } | Should -Not -Throw
+                $null = Set-TargetResource @testParameters
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'SetSecureConnectionLevel'
@@ -911,7 +911,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             }
 
             It 'Should configure Reporting Service without throwing an error' {
-                { Set-TargetResource @defaultParameters } | Should -Not -Throw
+                $null = Set-TargetResource @defaultParameters
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'RemoveURL'
@@ -1010,7 +1010,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         }
 
         It 'Should configure Reporting Service without throwing an error' {
-            { Set-TargetResource @defaultParameters } | Should -Not -Throw
+            $null = Set-TargetResource @defaultParameters
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'SetSecureConnectionLevel'

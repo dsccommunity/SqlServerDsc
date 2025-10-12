@@ -70,7 +70,7 @@ Describe 'SqlAudit' {
     Context 'When class is instantiated' {
         It 'Should not throw an exception' {
             InModuleScope -ScriptBlock {
-                { [SqlAudit]::new() } | Should -Not -Throw
+                $null = [SqlAudit]::new()
             }
         }
 

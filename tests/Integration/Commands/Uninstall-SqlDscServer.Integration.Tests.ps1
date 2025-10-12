@@ -43,19 +43,17 @@ Describe 'Uninstall-SqlDscServer' -Tag @('Integration_SQL2017', 'Integration_SQL
 
     Context 'When uninstalling a named instance' {
         It 'Should run the command without throwing' {
-            {
-                # Set splatting parameters for Uninstall-SqlDscServer
-                $uninstallSqlDscServerParameters = @{
-                    InstanceName          = 'DSCSQLTEST'
-                    Features              = 'SQLENGINE'
-                    MediaPath             = $env:IsoDrivePath
-                    Verbose               = $true
-                    ErrorAction           = 'Stop'
-                    Force                 = $true
-                }
+            # Set splatting parameters for Uninstall-SqlDscServer
+            $uninstallSqlDscServerParameters = @{
+                InstanceName          = 'DSCSQLTEST'
+                Features              = 'SQLENGINE'
+                MediaPath             = $env:IsoDrivePath
+                Verbose               = $true
+                ErrorAction           = 'Stop'
+                Force                 = $true
+            }
 
-                Uninstall-SqlDscServer @uninstallSqlDscServerParameters
-            } | Should -Not -Throw
+            $null = Uninstall-SqlDscServer @uninstallSqlDscServerParameters
         }
 
         It 'Should not have a named instance SQL Server service' {

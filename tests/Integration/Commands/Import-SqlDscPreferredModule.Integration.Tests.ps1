@@ -67,7 +67,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integrati
         }
 
         It 'Should import a module without throwing' {
-            { Import-SqlDscPreferredModule -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = Import-SqlDscPreferredModule -ErrorAction 'Stop'
         }
 
         It 'Should import SqlServer module when available' {
@@ -86,7 +86,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integrati
         }
 
         It 'Should import a module without throwing when using Force' {
-            { Import-SqlDscPreferredModule -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = Import-SqlDscPreferredModule -Force -ErrorAction 'Stop'
         }
 
         It 'Should reload module when Force is used' {
@@ -118,7 +118,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integrati
                 return
             }
 
-            { Import-SqlDscPreferredModule -Name 'SQLPS' -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = Import-SqlDscPreferredModule -Name 'SQLPS' -ErrorAction 'Stop'
             
             $importedModule = Get-Module -Name 'SQLPS'
             $importedModule | Should -Not -BeNullOrEmpty
@@ -134,7 +134,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integrati
                 return
             }
 
-            { Import-SqlDscPreferredModule -Name 'SqlServer' -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = Import-SqlDscPreferredModule -Name 'SqlServer' -ErrorAction 'Stop'
             
             $importedModule = Get-Module -Name 'SqlServer'
             $importedModule | Should -Not -BeNullOrEmpty
@@ -164,7 +164,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integrati
 
             $env:SMODefaultModuleName = 'SqlServer'
             
-            { Import-SqlDscPreferredModule -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = Import-SqlDscPreferredModule -ErrorAction 'Stop'
             
             $importedModule = Get-Module -Name @('SqlServer', 'SQLPS') | Select-Object -First 1
             $importedModule | Should -Not -BeNullOrEmpty

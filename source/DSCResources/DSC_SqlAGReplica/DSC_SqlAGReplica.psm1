@@ -312,7 +312,7 @@ function Set-TargetResource
                             $script:localizedData.RemoveAvailabilityReplica -f $Name, $AvailabilityGroupName, $InstanceName
                         )
 
-                        Remove-SqlAvailabilityReplica -InputObject $availabilityGroupReplica -Confirm:$false -ErrorAction Stop
+                        Remove-SqlAvailabilityReplica -InputObject $availabilityGroupReplica -Confirm:$false -ErrorAction 'Stop'
                     }
                     catch
                     {

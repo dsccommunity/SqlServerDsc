@@ -329,7 +329,7 @@ Describe 'SqlEndpointPermission\Set-TargetResource' -Tag 'Set' {
 
                     $mockSetTargetResourceParameters.Principal = 'COMPANY\Account'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
                 }
@@ -352,7 +352,7 @@ Describe 'SqlEndpointPermission\Set-TargetResource' -Tag 'Set' {
                     $mockSetTargetResourceParameters.Ensure = 'Absent'
                     $mockSetTargetResourceParameters.Principal = 'COMPANY\MissingAccount'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
                 }
@@ -430,7 +430,7 @@ Describe 'SqlEndpointPermission\Set-TargetResource' -Tag 'Set' {
 
                     $mockSetTargetResourceParameters.Principal = 'COMPANY\Account'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
                     Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
@@ -457,7 +457,7 @@ Describe 'SqlEndpointPermission\Set-TargetResource' -Tag 'Set' {
                     $mockSetTargetResourceParameters.Ensure = 'Absent'
                     $mockSetTargetResourceParameters.Principal = 'COMPANY\MissingAccount'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
                     Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It

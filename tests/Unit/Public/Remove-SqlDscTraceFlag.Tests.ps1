@@ -103,7 +103,7 @@ Describe 'Remove-SqlDscTraceFlag' -Tag 'Public' {
 
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mocked method and have correct value in the object' {
-                    { Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Confirm:$false } | Should -Not -Throw
+                    $null = Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Confirm:$false
 
                     Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
                         $TraceFlag.Count -eq 0
@@ -113,7 +113,7 @@ Describe 'Remove-SqlDscTraceFlag' -Tag 'Public' {
 
             Context 'When using parameter Force' {
                 It 'Should call the mocked method and have correct value in the object' {
-                    { Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Force } | Should -Not -Throw
+                    $null = Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Force
 
                     Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
                         $TraceFlag.Count -eq 0
@@ -123,7 +123,7 @@ Describe 'Remove-SqlDscTraceFlag' -Tag 'Public' {
 
             Context 'When using parameter WhatIf' {
                 It 'Should not call the mocked method and should not have changed the value in the object' {
-                    { Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -WhatIf } | Should -Not -Throw
+                    $null = Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -WhatIf
 
                     Should -Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Times 0 -Scope It
                 }
@@ -131,7 +131,7 @@ Describe 'Remove-SqlDscTraceFlag' -Tag 'Public' {
 
             Context 'When passing parameter ServerObject over the pipeline' {
                 It 'Should call the mocked method and have correct value in the object' {
-                    { $mockServiceObject | Remove-SqlDscTraceFlag -TraceFlag 4199 -Force } | Should -Not -Throw
+                    $null = $mockServiceObject | Remove-SqlDscTraceFlag -TraceFlag 4199 -Force
 
                     Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
                         $TraceFlag.Count -eq 0
@@ -143,7 +143,7 @@ Describe 'Remove-SqlDscTraceFlag' -Tag 'Public' {
         Context 'When removing a trace flag by default parameter set and parameters default values' {
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mocked method and have correct value in the object' {
-                    { Remove-SqlDscTraceFlag -TraceFlag 4199 -Confirm:$false } | Should -Not -Throw
+                    $null = Remove-SqlDscTraceFlag -TraceFlag 4199 -Confirm:$false
 
                     Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
                         $TraceFlag.Count -eq 0
@@ -153,7 +153,7 @@ Describe 'Remove-SqlDscTraceFlag' -Tag 'Public' {
 
             Context 'When using parameter Force' {
                 It 'Should call the mocked method and have correct value in the object' {
-                    { Remove-SqlDscTraceFlag -TraceFlag 4199 -Force } | Should -Not -Throw
+                    $null = Remove-SqlDscTraceFlag -TraceFlag 4199 -Force
 
                     Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
                         $TraceFlag.Count -eq 0
@@ -163,7 +163,7 @@ Describe 'Remove-SqlDscTraceFlag' -Tag 'Public' {
 
             Context 'When using parameter WhatIf' {
                 It 'Should not call the mocked method and should not have changed the value in the object' {
-                    { Remove-SqlDscTraceFlag -TraceFlag 4199 -WhatIf } | Should -Not -Throw
+                    $null = Remove-SqlDscTraceFlag -TraceFlag 4199 -WhatIf
 
                     Should -Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Times 0 -Scope It
                 }
@@ -181,7 +181,7 @@ Describe 'Remove-SqlDscTraceFlag' -Tag 'Public' {
             }
 
             It 'Should not call Set-SqlDscTraceFlag when there is no effective change' {
-                { Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 3226 -Force } | Should -Not -Throw
+                $null = Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 3226 -Force
 
                 # Should not call Set since the trace flag to remove doesn't exist (no effective change).
                 Should -Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Times 0 -Scope It
@@ -201,7 +201,7 @@ Describe 'Remove-SqlDscTraceFlag' -Tag 'Public' {
         }
 
         It 'Should call the mocked method and have correct value in the object' {
-            { Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Force } | Should -Not -Throw
+            $null = Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Force
 
             Should -Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Times 0 -Scope It
         }
@@ -219,7 +219,7 @@ Describe 'Remove-SqlDscTraceFlag' -Tag 'Public' {
         }
 
         It 'Should call the mocked method and have correct value in the object' {
-            { Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 3226 -Force } | Should -Not -Throw
+            $null = Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 3226 -Force
 
             # Should still re-set the existing trace flag.
             Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {

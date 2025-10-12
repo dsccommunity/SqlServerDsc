@@ -778,7 +778,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                     Enabled      = $true
                 }
 
-                { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
             }
 
             Should -Invoke -CommandName Compare-TargetResourceState -Exactly -Times 1 -Scope It
@@ -851,7 +851,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                             Enabled                = $true
                         }
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
                         $script:wasMethodAlterCalled | Should -BeTrue
                     }
@@ -910,7 +910,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                             Enabled      = $true
                         }
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
                         $script:wasMethodAlterCalled | Should -BeTrue
                     }
@@ -969,7 +969,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                             Enabled      = $false
                         }
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
                         $script:wasMethodAlterCalled | Should -BeTrue
                     }
@@ -1035,7 +1035,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                             KeepAlive              = 50000
                         }
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
                         $script:wasMethodAlterCalled | Should -BeTrue
                     }
@@ -1096,7 +1096,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                             SuppressRestart = $true
                         }
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
                         $script:wasMethodAlterCalled | Should -BeTrue
                     }
@@ -1163,7 +1163,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                             Enabled      = $true
                         }
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
                         $script:wasMethodAlterCalled | Should -BeTrue
                     }
@@ -1220,7 +1220,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                             Enabled      = $true
                         }
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
                         $script:wasMethodAlterCalled | Should -BeTrue
                     }
@@ -1277,7 +1277,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                             PipeName     = '\\.\pipe\$$\CLU01A\MSSQL$SQL2014\sql\query'
                         }
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
                         $script:wasMethodAlterCalled | Should -BeTrue
                     }

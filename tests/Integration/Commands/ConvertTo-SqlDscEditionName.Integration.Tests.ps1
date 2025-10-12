@@ -148,11 +148,11 @@ Describe 'ConvertTo-SqlDscEditionName' -Tag @('Integration_SQL2017', 'Integratio
 
     Context 'When testing parameter validation' {
         It 'Should accept minimum UInt32 value (0)' {
-            { ConvertTo-SqlDscEditionName -Id 0 -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = ConvertTo-SqlDscEditionName -Id 0 -ErrorAction 'Stop'
         }
 
         It 'Should accept maximum UInt32 value (4294967295)' {
-            { ConvertTo-SqlDscEditionName -Id 4294967295 -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = ConvertTo-SqlDscEditionName -Id 4294967295 -ErrorAction 'Stop'
         }
     }
 }

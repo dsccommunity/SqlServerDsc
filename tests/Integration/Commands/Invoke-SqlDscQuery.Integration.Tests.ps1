@@ -79,15 +79,11 @@ INSERT INTO TestTable (Name, Value) VALUES ('Test1', 100), ('Test2', 200), ('Tes
     Context 'When executing a query using ServerObject parameter set' {
         Context 'When executing a query without returning results' {
             It 'Should execute the query without throwing (using Force parameter)' {
-                {
-                    Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query 'UPDATE TestTable SET Value = 500 WHERE ID = 1' -Force -ErrorAction 'Stop'
-                } | Should -Not -Throw
+                $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query 'UPDATE TestTable SET Value = 500 WHERE ID = 1' -Force -ErrorAction 'Stop'
             }
 
             It 'Should execute the query without throwing (using Confirm:$false parameter)' {
-                {
-                    Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query 'UPDATE TestTable SET Value = 600 WHERE ID = 2' -Confirm:$false -ErrorAction 'Stop'
-                } | Should -Not -Throw
+                $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query 'UPDATE TestTable SET Value = 600 WHERE ID = 2' -Confirm:$false -ErrorAction 'Stop'
             }
         }
 
@@ -112,15 +108,11 @@ INSERT INTO TestTable (Name, Value) VALUES ('Test1', 100), ('Test2', 200), ('Tes
 
         Context 'When using optional parameters with ServerObject parameter set' {
             It 'Should execute query with custom StatementTimeout' {
-                {
-                    Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query 'SELECT COUNT(*) FROM TestTable' -StatementTimeout 30 -PassThru -Force -ErrorAction 'Stop'
-                } | Should -Not -Throw
+                $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query 'SELECT COUNT(*) FROM TestTable' -StatementTimeout 30 -PassThru -Force -ErrorAction 'Stop'
             }
 
             It 'Should execute query with RedactText parameter' {
-                {
-                    Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query "SELECT * FROM TestTable WHERE Name = 'SensitiveData'" -RedactText @('SensitiveData') -PassThru -Force -ErrorAction 'Stop'
-                } | Should -Not -Throw
+                $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query "SELECT * FROM TestTable WHERE Name = 'SensitiveData'" -RedactText @('SensitiveData') -PassThru -Force -ErrorAction 'Stop'
             }
         }
 
@@ -138,9 +130,7 @@ INSERT INTO TestTable (Name, Value) VALUES ('Test1', 100), ('Test2', 200), ('Tes
     Context 'When executing a query using ByServerName parameter set' {
         Context 'When executing a query without returning results' {
             It 'Should execute the query without throwing' {
-                {
-                    Invoke-SqlDscQuery -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -DatabaseName $script:testDatabaseName -Query 'UPDATE TestTable SET Value = 700 WHERE ID = 3' -Force -ErrorAction 'Stop'
-                } | Should -Not -Throw
+                $null = Invoke-SqlDscQuery -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -DatabaseName $script:testDatabaseName -Query 'UPDATE TestTable SET Value = 700 WHERE ID = 3' -Force -ErrorAction 'Stop'
             }
         }
 
@@ -156,9 +146,7 @@ INSERT INTO TestTable (Name, Value) VALUES ('Test1', 100), ('Test2', 200), ('Tes
 
         Context 'When using optional parameters with ByServerName parameter set' {
             It 'Should execute query with Encrypt parameter' {
-                {
-                    Invoke-SqlDscQuery -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -DatabaseName $script:testDatabaseName -Query 'SELECT 1 as TestValue' -Encrypt -PassThru -Force -ErrorAction 'Stop'
-                } | Should -Not -Throw
+                $null = Invoke-SqlDscQuery -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -DatabaseName $script:testDatabaseName -Query 'SELECT 1 as TestValue' -Encrypt -PassThru -Force -ErrorAction 'Stop'
             }
 
             It 'Should execute query with LoginType parameter' {
@@ -166,15 +154,11 @@ INSERT INTO TestTable (Name, Value) VALUES ('Test1', 100), ('Test2', 200), ('Tes
                 $sqlLoginPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
                 $sqlLoginCredential = [System.Management.Automation.PSCredential]::new('sa', $sqlLoginPassword)
 
-                {
-                    Invoke-SqlDscQuery -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -Credential $sqlLoginCredential -LoginType 'SqlLogin' -DatabaseName $script:testDatabaseName -Query 'SELECT 1 as TestValue' -PassThru -Force -ErrorAction 'Stop'
-                } | Should -Not -Throw
+                $null = Invoke-SqlDscQuery -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -Credential $sqlLoginCredential -LoginType 'SqlLogin' -DatabaseName $script:testDatabaseName -Query 'SELECT 1 as TestValue' -PassThru -Force -ErrorAction 'Stop'
             }
 
             It 'Should execute query with custom StatementTimeout' {
-                {
-                    Invoke-SqlDscQuery -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -DatabaseName $script:testDatabaseName -Query 'SELECT 1 as TestValue' -StatementTimeout 60 -PassThru -Force -ErrorAction 'Stop'
-                } | Should -Not -Throw
+                $null = Invoke-SqlDscQuery -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -DatabaseName $script:testDatabaseName -Query 'SELECT 1 as TestValue' -StatementTimeout 60 -PassThru -Force -ErrorAction 'Stop'
             }
         }
     }

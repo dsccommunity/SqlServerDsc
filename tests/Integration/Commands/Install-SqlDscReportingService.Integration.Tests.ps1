@@ -41,21 +41,19 @@ Describe 'Install-SqlDscReportingService' -Tag @('Integration_SQL2017_RS', 'Inte
 
     Context 'When installing Reporting Services' {
         It 'Should run the command without throwing' {
-            {
-                # Set splatting parameters for Install-SqlDscReportingService
-                $installSqlDscReportingServicesParameters = @{
-                    AcceptLicensingTerms = $true
-                    MediaPath            = $reportingServicesExecutable
-                    InstallFolder        = 'C:\Program Files\SSRS'
-                    Edition              = 'Developer'
-                    LogPath              = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Install.log'
-                    SuppressRestart      = $true
-                    Verbose              = $true
-                    Force                = $true
-                }
+            # Set splatting parameters for Install-SqlDscReportingService
+            $installSqlDscReportingServicesParameters = @{
+                AcceptLicensingTerms = $true
+                MediaPath            = $reportingServicesExecutable
+                InstallFolder        = 'C:\Program Files\SSRS'
+                Edition              = 'Developer'
+                LogPath              = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Install.log'
+                SuppressRestart      = $true
+                Verbose              = $true
+                Force                = $true
+            }
 
-                Install-SqlDscReportingService @installSqlDscReportingServicesParameters -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = Install-SqlDscReportingService @installSqlDscReportingServicesParameters -ErrorAction 'Stop'
         }
 
         It 'Should have installed Reporting Services' {
