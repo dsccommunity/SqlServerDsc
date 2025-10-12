@@ -1178,7 +1178,7 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    $mockSqlDatabasePermissionInstance.Modify(@{
+                    $null = $mockSqlDatabasePermissionInstance.Modify(@{
                             Permission = [DatabasePermission[]] @(
                                 [DatabasePermission] @{
                                     State      = 'Grant'
@@ -1266,7 +1266,7 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    $mockSqlDatabasePermissionInstance.Modify(@{
+                    $null = $mockSqlDatabasePermissionInstance.Modify(@{
                             Permission = [DatabasePermission[]] @(
                                 [DatabasePermission] @{
                                     State      = 'Grant'
@@ -1366,7 +1366,7 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    $mockSqlDatabasePermissionInstance.Modify(@{
+                    $null = $mockSqlDatabasePermissionInstance.Modify(@{
                             PermissionToInclude = [DatabasePermission[]] @(
                                 [DatabasePermission] @{
                                     State      = 'Grant'
@@ -1456,7 +1456,7 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    $mockSqlDatabasePermissionInstance.Modify(@{
+                    $null = $mockSqlDatabasePermissionInstance.Modify(@{
                             PermissionToExclude = [DatabasePermission[]] @(
                                 [DatabasePermission] @{
                                     State      = 'Grant'
