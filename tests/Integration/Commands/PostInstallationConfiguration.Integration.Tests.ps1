@@ -68,7 +68,7 @@ Describe 'PostInstallationConfiguration' -Tag @('Integration_SQL2017', 'Integrat
                 CertStoreLocation = 'cert:\LocalMachine\My'
             }
 
-            $script:certificate = New-SelfSignedCertificate @certificateParams
+            $script:certificate = New-SelfSignedCertificate @certificateParams -ErrorAction 'Stop'
 
             $script:certificate | Should -Not -BeNullOrEmpty
             $script:certificate.Thumbprint | Should -Not -BeNullOrEmpty
@@ -107,17 +107,17 @@ Describe 'PostInstallationConfiguration' -Tag @('Integration_SQL2017', 'Integrat
             Test-Path -Path $privateKeyFile | Should -BeTrue
 
             # Grant read permission to the SQL Server service account
-            $acl = Get-Acl -Path $privateKeyFile
+            $acl = Get-Acl -Path $privateKeyFile -ErrorAction 'Stop'
             $accessRule = [System.Security.AccessControl.FileSystemAccessRule]::new(
                 $script:serviceAccountName,
                 [System.Security.AccessControl.FileSystemRights]::Read,
                 [System.Security.AccessControl.AccessControlType]::Allow
             )
             $acl.AddAccessRule($accessRule)
-            Set-Acl -Path $privateKeyFile -AclObject $acl
+            Set-Acl -Path $privateKeyFile -AclObject $acl -ErrorAction 'Stop'
 
             # Verify permission was granted
-            $updatedAcl = Get-Acl -Path $privateKeyFile
+            $updatedAcl = Get-Acl -Path $privateKeyFile -ErrorAction 'Stop'
             $serviceAccountAccess = $updatedAcl.Access | Where-Object -FilterScript {
                 $_.IdentityReference -like "*$script:serviceAccountName*" -and $_.FileSystemRights -match 'Read'
             }
@@ -174,7 +174,7 @@ Describe 'PostInstallationConfiguration' -Tag @('Integration_SQL2017', 'Integrat
             $serverObject.Status.ToString() | Should -Match '^Online$'
 
             # Clean up
-            Disconnect-SqlDscDatabaseEngine -ServerObject $serverObject
+            Disconnect-SqlDscDatabaseEngine -ServerObject $serverObject -ErrorAction 'Stop'
         }
 
         It 'Should verify the connection is using encryption via DMV query' {
@@ -204,7 +204,7 @@ WHERE session_id = @@SPID
             $result.Tables[0].Rows[0]['encrypt_option'] | Should -Be 'TRUE'
 
             # Clean up
-            Disconnect-SqlDscDatabaseEngine -ServerObject $serverObject
+            Disconnect-SqlDscDatabaseEngine -ServerObject $serverObject -ErrorAction 'Stop'
 
             Write-Verbose -Message "Verified encrypted connection using sys.dm_exec_connections DMV" -Verbose
             Write-Verbose -Message "SSL certificate successfully configured for SQL Server instance $script:instanceName" -Verbose
