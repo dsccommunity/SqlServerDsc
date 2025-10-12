@@ -78,6 +78,7 @@ Test-SqlDscIsDatabasePrincipal | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites)
 Grant-SqlDscServerPermission | 4 | 4 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Grants CreateEndpoint permission to role
 Get-SqlDscServerPermission | 4 | 4 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Set-SqlDscServerPermission | 4 | 4 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+ConvertTo-SqlDscServerPermission | 2 | 2 (Grant-SqlDscServerPermission), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 ConvertFrom-SqlDscServerPermission | 4 | 0 (Prerequisites) | - | -
 Test-SqlDscServerPermission | 4 | 4 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Deny-SqlDscServerPermission | 4 | 4 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Denies AlterTrace permission to login (persistent)
