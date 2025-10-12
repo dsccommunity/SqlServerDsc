@@ -56,14 +56,7 @@ Describe 'New-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
         foreach ($audit in $testAudits)
         {
-            try
-            {
-                Remove-SqlDscAudit -AuditObject $audit -Force -ErrorAction 'SilentlyContinue'
-            }
-            catch
-            {
-                # Ignore cleanup errors
-            }
+            $null = Remove-SqlDscAudit -AuditObject $audit -Force -ErrorAction 'SilentlyContinue'
         }
 
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
