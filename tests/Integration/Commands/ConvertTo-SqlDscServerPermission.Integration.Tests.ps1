@@ -38,11 +38,11 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integ
 
         $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
 
-        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
+        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
     }
 
     AfterAll {
-        Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
+        Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject -ErrorAction 'Stop'
     }
 
     Context 'When converting empty collection of ServerPermissionInfo' {
@@ -68,21 +68,19 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integ
             # Get permissions for the sa login
             $serverPermissionInfo = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sa' -ErrorAction 'Stop'
 
-            # Only proceed if we have permission data to work with
-            if ($serverPermissionInfo) {
-                $result = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $serverPermissionInfo
+            $result = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $serverPermissionInfo
 
-                # Validate the result structure
-                $result | Should -Not -BeNullOrEmpty
+            # Validate the result structure
+            $result | Should -Not -BeNullOrEmpty
 
-                # Each result should have State and Permission properties
-                foreach ($permission in $result) {
-                    $permission.State | Should -Not -BeNullOrEmpty
-                    $permission.Permission | Should -Not -BeNullOrEmpty
+            # Each result should have State and Permission properties
+            foreach ($permission in $result)
+            {
+                $permission.State | Should -Not -BeNullOrEmpty
+                $permission.Permission | Should -Not -BeNullOrEmpty
 
-                    # Validate that permission state is one of the expected values
-                    $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
-                }
+                # Validate that permission state is one of the expected values
+                $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
             }
         }
 
@@ -90,21 +88,19 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integ
             # Get permissions for the sa login
             $serverPermissionInfo = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sa' -ErrorAction 'Stop'
 
-            # Only proceed if we have permission data to work with
-            if ($serverPermissionInfo) {
-                $result = $serverPermissionInfo | ConvertTo-SqlDscServerPermission
+            $result = $serverPermissionInfo | ConvertTo-SqlDscServerPermission
 
-                # Validate the result structure
-                $result | Should -Not -BeNullOrEmpty
+            # Validate the result structure
+            $result | Should -Not -BeNullOrEmpty
 
-                # Each result should have State and Permission properties
-                foreach ($permission in $result) {
-                    $permission.State | Should -Not -BeNullOrEmpty
-                    $permission.Permission | Should -Not -BeNullOrEmpty
+            # Each result should have State and Permission properties
+            foreach ($permission in $result)
+            {
+                $permission.State | Should -Not -BeNullOrEmpty
+                $permission.Permission | Should -Not -BeNullOrEmpty
 
-                    # Validate that permission state is one of the expected values
-                    $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
-                }
+                # Validate that permission state is one of the expected values
+                $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
             }
         }
     }
@@ -114,21 +110,19 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integ
             # Get permissions for NT AUTHORITY\SYSTEM
             $serverPermissionInfo = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'NT AUTHORITY\SYSTEM' -ErrorAction 'SilentlyContinue'
 
-            # Only proceed if we have permission data to work with
-            if ($serverPermissionInfo) {
-                $result = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $serverPermissionInfo
+            $result = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $serverPermissionInfo
 
-                # Validate the result structure
-                $result | Should -Not -BeNullOrEmpty
+            # Validate the result structure
+            $result | Should -Not -BeNullOrEmpty
 
-                # Each result should have State and Permission properties
-                foreach ($permission in $result) {
-                    $permission.State | Should -Not -BeNullOrEmpty
-                    $permission.Permission | Should -Not -BeNullOrEmpty
+            # Each result should have State and Permission properties
+            foreach ($permission in $result)
+            {
+                $permission.State | Should -Not -BeNullOrEmpty
+                $permission.Permission | Should -Not -BeNullOrEmpty
 
-                    # Validate that permission state is one of the expected values
-                    $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
-                }
+                # Validate that permission state is one of the expected values
+                $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
             }
         }
     }
@@ -138,21 +132,19 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integ
             # Get permissions for the public server role
             $serverPermissionInfo = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'public' -ErrorAction 'Stop'
 
-            # Only proceed if we have permission data to work with
-            if ($serverPermissionInfo) {
-                $result = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $serverPermissionInfo
+            $result = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $serverPermissionInfo
 
-                # Validate the result structure
-                $result | Should -Not -BeNullOrEmpty
+            # Validate the result structure
+            $result | Should -Not -BeNullOrEmpty
 
-                # Each result should have State and Permission properties
-                foreach ($permission in $result) {
-                    $permission.State | Should -Not -BeNullOrEmpty
-                    $permission.Permission | Should -Not -BeNullOrEmpty
+            # Each result should have State and Permission properties
+            foreach ($permission in $result)
+            {
+                $permission.State | Should -Not -BeNullOrEmpty
+                $permission.Permission | Should -Not -BeNullOrEmpty
 
-                    # Validate that permission state is one of the expected values
-                    $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
-                }
+                # Validate that permission state is one of the expected values
+                $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
             }
         }
 
@@ -161,26 +153,26 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integ
             $serverPermissionInfo = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestRole_Persistent' -ErrorAction 'Stop'
 
             # Only proceed if we have permission data to work with
-            if ($serverPermissionInfo) {
-                $result = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $serverPermissionInfo
+            $result = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $serverPermissionInfo
 
-                # Validate the result structure
-                $result | Should -Not -BeNullOrEmpty
+            # Validate the result structure
+            $result | Should -Not -BeNullOrEmpty
 
-                # Each result should have State and Permission properties
-                foreach ($permission in $result) {
-                    $permission.State | Should -Not -BeNullOrEmpty
-                    $permission.Permission | Should -Not -BeNullOrEmpty
+            # Each result should have State and Permission properties
+            foreach ($permission in $result)
+            {
+                $permission.State | Should -Not -BeNullOrEmpty
+                $permission.Permission | Should -Not -BeNullOrEmpty
 
-                    # Validate that permission state is one of the expected values
-                    $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
-                }
+                # Validate that permission state is one of the expected values
+                $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
+            }
 
-                # Verify that the CreateEndpoint permission granted by Grant-SqlDscServerPermission test is present
-                $grantPermission = $result | Where-Object { $_.State -eq 'Grant' }
-                if ($grantPermission) {
-                    $grantPermission.Permission | Should -Contain 'CreateEndpoint' -Because 'CreateEndpoint permission should have been granted by Grant-SqlDscServerPermission integration test'
-                }
+            # Verify that the CreateEndpoint permission granted by Grant-SqlDscServerPermission test is present
+            $grantPermission = $result | Where-Object { $_.State -eq 'Grant' }
+            if ($grantPermission)
+            {
+                $grantPermission.Permission | Should -Contain 'CreateEndpoint' -Because 'CreateEndpoint permission should have been granted by Grant-SqlDscServerPermission integration test'
             }
         }
     }
@@ -190,20 +182,16 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integ
             # Get permissions from a principal that might have various permission states
             $serverPermissionInfo = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestRole_Persistent' -ErrorAction 'SilentlyContinue'
 
-            # Only proceed if we have permission data to work with
-            if ($serverPermissionInfo) {
-                $result = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $serverPermissionInfo
+            $result = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $serverPermissionInfo
 
-                if ($result) {
-                    # Validate that permissions are properly grouped by state
-                    $uniqueStates = $result.State | Sort-Object -Unique
+            # Validate that permissions are properly grouped by state
+            $uniqueStates = $result.State | Sort-Object -Unique
 
-                    foreach ($state in $uniqueStates) {
-                        $permissionsForState = $result | Where-Object { $_.State -eq $state }
-                        $permissionsForState | Should -HaveCount 1
-                        $permissionsForState[0].Permission | Should -Not -BeNullOrEmpty
-                    }
-                }
+            foreach ($state in $uniqueStates)
+            {
+                $permissionsForState = $result | Where-Object { $_.State -eq $state }
+                $permissionsForState | Should -HaveCount 1
+                $permissionsForState[0].Permission | Should -Not -BeNullOrEmpty
             }
         }
     }
