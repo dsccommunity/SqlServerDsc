@@ -39,9 +39,25 @@ Describe 'Get-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
         $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
 
         $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
+
+        # Get the original value of 'Agent XPs' to restore later
+        $agentXPsOption = Get-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs'
+        $script:originalAgentXPsValue = $agentXPsOption.ConfigValue
+
+        # Set Agent XPs to 1 if it's not already set
+        if ($script:originalAgentXPsValue -ne 1)
+        {
+            Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value 1
+        }
     }
 
     AfterAll {
+        # Restore the original value of 'Agent XPs' if it was not 1
+        if ($script:originalAgentXPsValue -ne 1)
+        {
+            Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value $script:originalAgentXPsValue
+        }
+
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
     }
 
