@@ -46,73 +46,73 @@ Save-SqlDscSqlServerMediaFile | 0 | - | - | Downloads SQL Server media files
 ConvertTo-SqlDscEditionName | 0 | - | - | -
 Import-SqlDscPreferredModule | 0 | - | - | -
 Install-SqlDscServer | 1 | 0 (Prerequisites) | - | DSCSQLTEST instance
-PostInstallationConfiguration | 1 | 1 (Install-SqlDscServer) | DSCSQLTEST | SSL certificate configuration
-Connect-SqlDscDatabaseEngine | 1 | 0 (Prerequisites) | DSCSQLTEST | -
-Disconnect-SqlDscDatabaseEngine | 1 | 0 (Prerequisites) | DSCSQLTEST | -
-Assert-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-New-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | IntegrationTestSqlLogin, SqlIntegrationTestGroup login
-Get-SqlDscLogin | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Get-SqlDscConfigurationOption | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Test-SqlDscConfigurationOption | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Test-SqlDscIsSupportedFeature | 2 | 0 (Prerequisites) | - | -
-Get-SqlDscManagedComputer | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Get-SqlDscManagedComputerInstance | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Get-SqlDscManagedComputerService | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Get-SqlDscServerProtocolName | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Get-SqlDscServerProtocol | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Get-SqlDscTraceFlag | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Set-SqlDscConfigurationOption | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Set-SqlDscStartupParameter | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Set-SqlDscTraceFlag | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Disable-SqlDscLogin | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Enable-SqlDscLogin | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Enable-SqlDscAudit | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Test-SqlDscIsLogin | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Test-SqlDscIsLoginEnabled | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-New-SqlDscRole | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | SqlDscIntegrationTestRole_Persistent role
-Get-SqlDscRole | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Get-SqlDscStartupParameter | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Test-SqlDscIsRole | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Test-SqlDscIsDatabasePrincipal | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test database and database principals
-Grant-SqlDscServerPermission | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Grants CreateEndpoint permission to role
-Get-SqlDscServerPermission | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Set-SqlDscServerPermission | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-ConvertFrom-SqlDscServerPermission | 2 | 0 (Prerequisites) | - | -
-Test-SqlDscServerPermission | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Deny-SqlDscServerPermission | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Denies AlterTrace permission to login (persistent)
-Revoke-SqlDscServerPermission | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Get-SqlDscDatabase | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-ConvertFrom-SqlDscDatabasePermission | 2 | 0 (Prerequisites) | - | -
-New-SqlDscDatabase | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test databases
-Set-SqlDscDatabase | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Test-SqlDscDatabase | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Get-SqlDscDatabasePermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test database, Test user
-Invoke-SqlDscQuery | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test database and table
-ConvertTo-SqlDscDatabasePermission | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Set-SqlDscDatabasePermission | 2 | 2 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Get-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-New-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test alerts
-New-SqlDscAudit | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test audits
-Set-SqlDscAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Test-SqlDscAgentAlertProperty | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Test-SqlDscIsAgentAlert | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Get-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-New-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | SqlDscIntegrationTestOperator_Persistent operator
-Set-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Test-SqlDscIsAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Assert-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Enable-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Disable-SqlDscAgentOperator | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Get-SqlDscAudit | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Disable-SqlDscAudit | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Add-SqlDscTraceFlag | 2 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
-Remove-SqlDscAgentAlert | 8 | 2 (New-SqlDscAgentAlert) | DSCSQLTEST | -
-Remove-SqlDscAgentOperator | 8 | 2 (New-SqlDscAgentOperator) | DSCSQLTEST | -
+PostInstallationConfiguration | 2 | 1 (Install-SqlDscServer) | DSCSQLTEST | SSL certificate configuration
+Connect-SqlDscDatabaseEngine | 3 | 2 (PostInstallationConfiguration), 0 (Prerequisites) | DSCSQLTEST | -
+Disconnect-SqlDscDatabaseEngine | 3 | 2 (PostInstallationConfiguration), 0 (Prerequisites) | DSCSQLTEST | -
+Invoke-SqlDscQuery | 3 | 2 (PostInstallationConfiguration), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test database and table
+Assert-SqlDscLogin | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+New-SqlDscLogin | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | IntegrationTestSqlLogin, SqlIntegrationTestGroup login
+Get-SqlDscLogin | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscConfigurationOption | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscConfigurationOption | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscIsSupportedFeature | 4 | 0 (Prerequisites) | - | -
+Get-SqlDscManagedComputer | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscManagedComputerInstance | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscManagedComputerService | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscServerProtocolName | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscServerProtocol | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscTraceFlag | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Set-SqlDscConfigurationOption | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Set-SqlDscStartupParameter | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Set-SqlDscTraceFlag | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Disable-SqlDscLogin | 4 | 4 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Enable-SqlDscLogin | 4 | 4 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Enable-SqlDscAudit | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscIsLogin | 4 | 4 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscIsLoginEnabled | 4 | 4 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+New-SqlDscRole | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | SqlDscIntegrationTestRole_Persistent role
+Get-SqlDscRole | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscStartupParameter | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscIsRole | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscIsDatabasePrincipal | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test database and database principals
+Grant-SqlDscServerPermission | 4 | 4 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Grants CreateEndpoint permission to role
+Get-SqlDscServerPermission | 4 | 4 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Set-SqlDscServerPermission | 4 | 4 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+ConvertFrom-SqlDscServerPermission | 4 | 0 (Prerequisites) | - | -
+Test-SqlDscServerPermission | 4 | 4 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Deny-SqlDscServerPermission | 4 | 4 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Denies AlterTrace permission to login (persistent)
+Revoke-SqlDscServerPermission | 4 | 4 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscDatabase | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+ConvertFrom-SqlDscDatabasePermission | 4 | 0 (Prerequisites) | - | -
+New-SqlDscDatabase | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test databases
+Set-SqlDscDatabase | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscDatabase | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscDatabasePermission | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test database, Test user
+ConvertTo-SqlDscDatabasePermission | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Set-SqlDscDatabasePermission | 4 | 4 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscAgentAlert | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+New-SqlDscAgentAlert | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test alerts
+New-SqlDscAudit | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test audits
+Set-SqlDscAgentAlert | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscAgentAlertProperty | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscIsAgentAlert | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscAgentOperator | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+New-SqlDscAgentOperator | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | SqlDscIntegrationTestOperator_Persistent operator
+Set-SqlDscAgentOperator | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscIsAgentOperator | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Assert-SqlDscAgentOperator | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Enable-SqlDscAgentOperator | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Disable-SqlDscAgentOperator | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Get-SqlDscAudit | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Disable-SqlDscAudit | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Add-SqlDscTraceFlag | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Remove-SqlDscAgentAlert | 8 | 4 (New-SqlDscAgentAlert) | DSCSQLTEST | -
+Remove-SqlDscAgentOperator | 8 | 4 (New-SqlDscAgentOperator) | DSCSQLTEST | -
 Remove-SqlDscAudit | 8 | - | DSCSQLTEST | -
 Set-SqlDscAudit | 8 | - | DSCSQLTEST | -
-Remove-SqlDscDatabase | 8 | 2 (New-SqlDscDatabase) | DSCSQLTEST | -
-Remove-SqlDscRole | 8 | 2 (New-SqlDscRole) | DSCSQLTEST | -
-Remove-SqlDscLogin | 8 | 2 (New-SqlDscLogin) | DSCSQLTEST | -
+Remove-SqlDscDatabase | 8 | 4 (New-SqlDscDatabase) | DSCSQLTEST | -
+Remove-SqlDscRole | 8 | 4 (New-SqlDscRole) | DSCSQLTEST | -
+Remove-SqlDscLogin | 8 | 4 (New-SqlDscLogin) | DSCSQLTEST | -
 Remove-SqlDscTraceFlag | 8 | 1 (Install-SqlDscServer) | DSCSQLTEST | -
 Uninstall-SqlDscServer | 9 | 8 (Remove commands) | - | -
 Install-SqlDscReportingService | 1 | 0 (Prerequisites) | - | SSRS instance
