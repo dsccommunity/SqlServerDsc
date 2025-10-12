@@ -73,7 +73,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 ConfigurationData = $ConfigurationData
             }
 
-            $null = $null = & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
             $startDscConfigurationParameters = @{
                 Path         = $TestDrive
@@ -127,7 +127,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 ConfigurationData = $ConfigurationData
             }
 
-            $null = $null = & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
             $startDscConfigurationParameters = @{
                 Path         = $TestDrive
@@ -181,7 +181,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 ConfigurationData = $ConfigurationData
             }
 
-            $null = $null = & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
             $startDscConfigurationParameters = @{
                 Path         = $TestDrive
@@ -238,7 +238,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 ConfigurationData = $ConfigurationData
             }
 
-            $null = $null = & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
             $startDscConfigurationParameters = @{
                 Path         = $TestDrive
@@ -297,7 +297,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 ConfigurationData = $ConfigurationData
             }
 
-            $null = $null = & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
             $startDscConfigurationParameters = @{
                 Path         = $TestDrive
@@ -357,7 +357,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 ConfigurationData = $ConfigurationData
             }
 
-            $null = $null = & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
             $startDscConfigurationParameters = @{
                 Path         = $TestDrive
@@ -411,7 +411,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 ConfigurationData = $ConfigurationData
             }
 
-            $null = $null = & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
             $startDscConfigurationParameters = @{
                 Path         = $TestDrive
@@ -465,7 +465,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 ConfigurationData = $ConfigurationData
             }
 
-            $null = $null = & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
             $startDscConfigurationParameters = @{
                 Path         = $TestDrive
@@ -533,7 +533,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 ConfigurationData = $ConfigurationData
             }
 
-            $null = $null = & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
             $startDscConfigurationParameters = @{
                 Path         = $TestDrive
