@@ -47,7 +47,7 @@ Describe 'Get-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
         # Set Agent XPs to 1 if it's not already set
         if ($script:originalAgentXPsValue -ne 1)
         {
-            Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value 1
+            Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value 1 -Force
         }
     }
 
@@ -55,7 +55,7 @@ Describe 'Get-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
         # Restore the original value of 'Agent XPs' if it was not 1
         if ($script:originalAgentXPsValue -ne 1)
         {
-            Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value $script:originalAgentXPsValue
+            Set-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value $script:originalAgentXPsValue -Force
         }
 
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
