@@ -161,7 +161,6 @@ INSERT INTO TestTable (Name, Value) VALUES ('Test1', 100), ('Test2', 200), ('Tes
             It 'Should execute query with custom StatementTimeout' {
                 $null = Invoke-SqlDscQuery -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -DatabaseName $script:testDatabaseName -Query 'SELECT 1 as TestValue' -StatementTimeout 60 -PassThru -Force -ErrorAction 'Stop'
             }
-            }
         }
     }
 
