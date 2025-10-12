@@ -108,10 +108,10 @@ Describe 'PostInstallationConfiguration' -Tag @('Integration_SQL2017', 'Integrat
 
             # Grant read permission to the SQL Server service account
             $acl = Get-Acl -Path $privateKeyFile
-            $accessRule = New-Object -TypeName 'System.Security.AccessControl.FileSystemAccessRule' -ArgumentList @(
+            $accessRule = [System.Security.AccessControl.FileSystemAccessRule]::new(
                 $script:serviceAccountName,
-                'Read',
-                'Allow'
+                [System.Security.AccessControl.FileSystemRights]::Read,
+                [System.Security.AccessControl.AccessControlType]::Allow
             )
             $acl.AddAccessRule($accessRule)
             Set-Acl -Path $privateKeyFile -AclObject $acl
