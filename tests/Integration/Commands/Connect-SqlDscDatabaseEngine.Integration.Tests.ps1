@@ -77,6 +77,8 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
                 $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
                 $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+
+                Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject
             }
         }
     }
@@ -103,6 +105,8 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
                 $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
                 $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+
+                Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject
             }
         }
 
@@ -122,6 +126,8 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
                 $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
                 $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+
+                Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject
             }
         }
 
