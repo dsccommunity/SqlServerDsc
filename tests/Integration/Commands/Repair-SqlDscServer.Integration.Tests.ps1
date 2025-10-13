@@ -52,7 +52,32 @@ Describe 'Repair-SqlDscServer' -Tag @('Integration_SQL2017', 'Integration_SQL201
                 Force        = $true
             }
 
-            $null = Repair-SqlDscServer @repairSqlDscServerParameters
+            try
+            {
+                $null = Repair-SqlDscServer @repairSqlDscServerParameters
+            }
+            catch
+            {
+                # Output Summary.txt if it exists to help diagnose the failure
+                $summaryFiles = Get-ChildItem -Path 'C:\Program Files\Microsoft SQL Server' -Filter 'Summary.txt' -Recurse -ErrorAction SilentlyContinue |
+                    Where-Object { $_.FullName -match '\\Setup Bootstrap\\Log\\' } |
+                    Sort-Object -Property LastWriteTime -Descending |
+                    Select-Object -First 1
+
+                if ($summaryFiles)
+                {
+                    Write-Verbose "==== SQL Server Setup Summary.txt (from $($summaryFiles.FullName)) ====" -Verbose
+                    Get-Content -Path $summaryFiles.FullName | Write-Verbose -Verbose
+                    Write-Verbose "==== End of Summary.txt ====" -Verbose
+                }
+                else
+                {
+                    Write-Verbose 'No Summary.txt file found.' -Verbose
+                }
+
+                # Re-throw the original error
+                throw $_
+            }
         }
 
         It 'Should still have the named instance SQL Server service running after repair' {
