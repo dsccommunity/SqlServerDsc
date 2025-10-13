@@ -13,8 +13,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   [issue #2238](https://github.com/dsccommunity/SqlServerDsc/issues/2238).
 - Added integration tests for `ConvertTo-SqlDscServerPermission` command to ensure
   command reliability [issue #2207](https://github.com/dsccommunity/SqlServerDsc/issues/2207).
-- Added integration tests for `ConvertTo-SqlDscServerPermission` command to ensure
-  command reliability [issue #2207](https://github.com/dsccommunity/SqlServerDsc/issues/2207).
 - Added post-installation configuration integration test to configure SSL certificate
   support for SQL Server instance DSCSQLTEST in CI environment, enabling testing
   of encryption-related functionality. The new `PostInstallationConfiguration`
