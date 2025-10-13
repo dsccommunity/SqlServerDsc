@@ -199,6 +199,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   with improved task grouping and problem matchers.
 - Updated instruction files to use correct build command (`noop` instead of
   `build`) and fixed file pattern matching syntax.
+- Bump GitHub actions codeql-action/upload-sarif to v4
 
 ## [17.2.0] - 2025-09-16
 
