@@ -27,9 +27,6 @@
     .PARAMETER Enu
         See the notes section for more information.
 
-    .PARAMETER Features
-        See the notes section for more information.
-
     .PARAMETER PBEngSvcAccount
         See the notes section for more information.
 
@@ -55,14 +52,22 @@
         None.
 
     .EXAMPLE
-        Repair-SqlDscServer -InstanceName 'MyInstance' -Features 'SQLENGINE' -MediaPath 'E:\'
+        Repair-SqlDscServer -InstanceName 'MyInstance' -MediaPath 'E:\'
 
-        Repairs the database engine of the instance 'MyInstance'.
+        Repairs all installed features of the instance 'MyInstance'.
 
     .NOTES
         The parameters are intentionally not described since it would take a lot
         of effort to keep them up to date. Instead there is a link that points to
         the SQL Server command line setup documentation which will stay relevant.
+
+        SQL Server Repair action does not accept the FEATURES parameter. Although
+        Microsoft's documentation lists /FEATURES as required for the Repair action,
+        the actual SQL Server setup executable (tested with SQL Server 2017 and
+        SQL Server 2022) rejects this parameter with the error: "The setting
+        'FEATURES' is not allowed when the value of setting 'ACTION' is 'Repair'."
+        SQL Server automatically repairs all installed features during a repair
+        operation.
 #>
 function Repair-SqlDscServer
 {
@@ -83,44 +88,6 @@ function Repair-SqlDscServer
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
         $Enu,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateSet(
-            'SQL',
-            'SQLEngine', # Part of parent feature SQL
-            'Replication', # Part of parent feature SQL
-            'FullText', # Part of parent feature SQL
-            'DQ', # Part of parent feature SQL
-            'PolyBase', # Part of parent feature SQL
-            'PolyBaseCore', # Part of parent feature SQL
-            'PolyBaseJava', # Part of parent feature SQL
-            'AdvancedAnalytics', # Part of parent feature SQL
-            'SQL_INST_MR', # Part of parent feature SQL
-            'SQL_INST_MPY', # Part of parent feature SQL
-            'SQL_INST_JAVA', # Part of parent feature SQL
-            'AS',
-            'RS',
-            'RS_SHP',
-            'RS_SHPWFE', # cspell: disable-line
-            'DQC',
-            'IS',
-            'IS_Master', # Part of parent feature IS
-            'IS_Worker', # Part of parent feature IS
-            'MDS',
-            'SQL_SHARED_MPY',
-            'SQL_SHARED_MR',
-            'Tools',
-            'BC', # Part of parent feature Tools
-            'Conn', # Part of parent feature Tools
-            'DREPLAY_CTLR', # Part of parent feature Tools (cspell: disable-line)
-            'DREPLAY_CLT', # Part of parent feature Tools (cspell: disable-line)
-            'SNAC_SDK', # Part of parent feature Tools (cspell: disable-line)
-            'SDK', # Part of parent feature Tools
-            'LocalDB', # Part of parent feature Tools
-            'AZUREEXTENSION'
-        )]
-        [System.String[]]
-        $Features,
 
         [Parameter()]
         [System.String]

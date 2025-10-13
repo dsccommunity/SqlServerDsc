@@ -46,7 +46,6 @@ Describe 'Repair-SqlDscServer' -Tag @('Integration_SQL2017', 'Integration_SQL201
             # Set splatting parameters for Repair-SqlDscServer
             $repairSqlDscServerParameters = @{
                 InstanceName = 'DSCSQLTEST'
-                Features     = 'SQLENGINE'
                 MediaPath    = $env:IsoDrivePath
                 Verbose      = $true
                 ErrorAction  = 'Stop'

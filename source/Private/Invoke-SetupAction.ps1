@@ -421,9 +421,9 @@
         Upgrades the instance 'MyInstance' with the SQL Server edition that is provided by the media path.
 
     .EXAMPLE
-        Invoke-SetupAction -Repair -InstanceName 'MyInstance' -Features 'SQLENGINE' -MediaPath 'E:\'
+        Invoke-SetupAction -Repair -InstanceName 'MyInstance' -MediaPath 'E:\'
 
-        Repairs the database engine of the instance 'MyInstance'.
+        Repairs all installed features of the instance 'MyInstance'.
 
     .EXAMPLE
         Invoke-SetupAction -RebuildDatabase -InstanceName 'MyInstance' -SqlSysAdminAccounts @('MyAdminAccount') -MediaPath 'E:\'
@@ -462,6 +462,14 @@
 
         For RebuildDatabase the parameter SAPwd must be set if the instance was
         installed with SecurityMode = 'SQL'.
+
+        SQL Server Repair action does not accept the FEATURES parameter. Although
+        Microsoft's documentation lists /FEATURES as required for the Repair action,
+        the actual SQL Server setup executable (tested with SQL Server 2017 and
+        SQL Server 2022) rejects this parameter with the error: "The setting
+        'FEATURES' is not allowed when the value of setting 'ACTION' is 'Repair'."
+        SQL Server automatically repairs all installed features during a repair
+        operation.
 #>
 function Invoke-SetupAction
 {
@@ -626,7 +634,6 @@ function Invoke-SetupAction
 
         [Parameter(ParameterSetName = 'Install', Mandatory = $true)]
         [Parameter(ParameterSetName = 'PrepareImage', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'Repair', Mandatory = $true)]
         [Parameter(ParameterSetName = 'Uninstall', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster', Mandatory = $true)]

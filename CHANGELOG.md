@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   [issue #2238](https://github.com/dsccommunity/SqlServerDsc/issues/2238).
 - Added integration tests for `ConvertTo-SqlDscServerPermission` command to ensure
   command reliability [issue #2207](https://github.com/dsccommunity/SqlServerDsc/issues/2207).
+- Added integration tests for `ConvertTo-SqlDscServerPermission` command to ensure
+  command reliability [issue #2207](https://github.com/dsccommunity/SqlServerDsc/issues/2207).
 - Added post-installation configuration integration test to configure SSL certificate
   support for SQL Server instance DSCSQLTEST in CI environment, enabling testing
   of encryption-related functionality. The new `PostInstallationConfiguration`
@@ -70,6 +72,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `Repair-SqlDscServer`
+  - Removed the `Features` parameter from the command as SQL Server Repair action
+    does not accept the `/FEATURES` parameter. SQL Server automatically repairs
+    all installed features when using the Repair action. This fixes the error
+    "The setting 'FEATURES' is not allowed when the value of setting 'ACTION'
+    is 'Repair'." that occurred when attempting to repair a SQL Server instance
+    [issue #2238](https://github.com/dsccommunity/SqlServerDsc/issues/2238).
 - Corrected error message in test file to recommend 'noop' task instead of 'build'
   task for resolving dependencies
   ([issue #2279](https://github.com/dsccommunity/SqlServerDsc/issues/2279)).
