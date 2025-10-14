@@ -67,22 +67,33 @@ Describe 'Repair-SqlDscServer' -Tag @('Integration_SQL2017', 'Integration_SQL201
         try
         {
             Write-Verbose -Message 'Checking if SQL Server LocalDB is installed...' -Verbose
-            $localDbProducts = Get-CimInstance -ClassName Win32_Product -Filter "Name LIKE '%LocalDB%'" -ErrorAction SilentlyContinue
+            
+            # Use registry-based detection instead of Win32_Product to avoid MSI consistency checks
+            $uninstallKeys = @(
+                'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*',
+                'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*'
+            )
+
+            $localDbProducts = Get-ItemProperty -Path $uninstallKeys -ErrorAction SilentlyContinue |
+                Where-Object { $_.DisplayName -like '*LocalDB*' }
 
             if ($localDbProducts)
             {
                 foreach ($product in $localDbProducts)
                 {
-                    Write-Verbose -Message "Uninstalling LocalDB product: $($product.Name) (IdentifyingNumber: $($product.IdentifyingNumber))" -Verbose
-                    $result = $product | Invoke-CimMethod -MethodName Uninstall
+                    Write-Verbose -Message "Uninstalling LocalDB product: $($product.DisplayName) (Product Code: $($product.PSChildName))" -Verbose
                     
-                    if ($result.ReturnValue -eq 0)
+                    # Uninstall using msiexec with the product code
+                    $uninstallArgs = "/x `"$($product.PSChildName)`" /qn /norestart"
+                    $process = Start-Process -FilePath 'msiexec.exe' -ArgumentList $uninstallArgs -Wait -PassThru
+                    
+                    if ($process.ExitCode -eq 0)
                     {
-                        Write-Verbose -Message "Successfully uninstalled: $($product.Name)" -Verbose
+                        Write-Verbose -Message "Successfully uninstalled: $($product.DisplayName)" -Verbose
                     }
                     else
                     {
-                        Write-Warning -Message "Failed to uninstall $($product.Name). Return value: $($result.ReturnValue)"
+                        Write-Warning -Message "Failed to uninstall $($product.DisplayName). Exit code: $($process.ExitCode)"
                     }
                 }
             }
