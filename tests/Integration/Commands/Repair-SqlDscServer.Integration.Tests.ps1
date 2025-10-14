@@ -33,6 +33,26 @@ BeforeAll {
 Describe 'Repair-SqlDscServer' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
+
+        # Check if SQL Server LocalDB is installed (may be pre-installed on hosted agent)
+        try
+        {
+            Write-Verbose -Message 'Checking for SQL Server LocalDB installations...' -Verbose
+            $localDbInfo = & sqllocaldb info 2>&1
+            if ($LASTEXITCODE -eq 0)
+            {
+                Write-Verbose -Message "SQL Server LocalDB is installed. Instances found:" -Verbose
+                $localDbInfo | ForEach-Object { Write-Verbose -Message "  $_" -Verbose }
+            }
+            else
+            {
+                Write-Verbose -Message 'SQL Server LocalDB is not installed or sqllocaldb.exe is not in PATH.' -Verbose
+            }
+        }
+        catch
+        {
+            Write-Verbose -Message "Could not check for LocalDB: $($_.Exception.Message)" -Verbose
+        }
     }
 
     It 'Should have the named instance SQL Server service running' {
@@ -41,7 +61,67 @@ Describe 'Repair-SqlDscServer' -Tag @('Integration_SQL2017', 'Integration_SQL201
         $getServiceResult.Status | Should -Be 'Running'
     }
 
+    It 'Should uninstall SQL Server LocalDB if present to avoid repair conflicts' {
+        # LocalDB may be pre-installed on hosted agents and cause repair to fail
+        # because SqlLocalDB.msi is not in our installation media
+        try
+        {
+            Write-Verbose -Message 'Checking if SQL Server LocalDB is installed...' -Verbose
+            $localDbProducts = Get-CimInstance -ClassName Win32_Product -Filter "Name LIKE '%LocalDB%'" -ErrorAction SilentlyContinue
+
+            if ($localDbProducts)
+            {
+                foreach ($product in $localDbProducts)
+                {
+                    Write-Verbose -Message "Uninstalling LocalDB product: $($product.Name) (IdentifyingNumber: $($product.IdentifyingNumber))" -Verbose
+                    $result = $product | Invoke-CimMethod -MethodName Uninstall
+                    
+                    if ($result.ReturnValue -eq 0)
+                    {
+                        Write-Verbose -Message "Successfully uninstalled: $($product.Name)" -Verbose
+                    }
+                    else
+                    {
+                        Write-Warning -Message "Failed to uninstall $($product.Name). Return value: $($result.ReturnValue)"
+                    }
+                }
+            }
+            else
+            {
+                Write-Verbose -Message 'No SQL Server LocalDB products found to uninstall.' -Verbose
+            }
+        }
+        catch
+        {
+            Write-Warning -Message "Error checking/uninstalling LocalDB: $($_.Exception.Message)"
+        }
+    }
+
     Context 'When repairing a named instance' {
+        <#
+            NOTE: This test may fail if the SQL Server installation includes features
+            for which the installation media does not contain the required MSI files.
+            For example, if LocalDB is installed but SqlLocalDB.msi is not in the
+            installation media, the repair will fail with:
+            "An installation package for the product Microsoft SQL Server 2019 LocalDB
+            cannot be found. Try the installation again using a valid copy of the
+            installation package 'SqlLocalDB.msi'."
+
+            This is a limitation of SQL Server's Repair action - it repairs ALL installed
+            features and requires all MSI files to be present in the installation media.
+
+            This test may also intermittently fail with exit code -2068052310 (0x8424000A).
+            This appears to be a SQL Server setup behavior where repair completes successfully
+            but returns a non-zero exit code. The Summary.txt typically shows:
+            - All features passed
+            - Warnings: "Service SID support has been enabled on the service"
+
+            The subsequent tests verify the repair was actually successful by checking:
+            - SQL Server service is running
+            - Can connect to the instance
+            If this failure occurs, check the Summary.txt output in the test logs to confirm
+            the repair actually completed successfully despite the non-zero exit code.
+        #>
         It 'Should run the repair command without throwing' {
             # Set splatting parameters for Repair-SqlDscServer
             $repairSqlDscServerParameters = @{
@@ -73,6 +153,24 @@ Describe 'Repair-SqlDscServer' -Tag @('Integration_SQL2017', 'Integration_SQL201
                 else
                 {
                     Write-Verbose 'No Summary.txt file found.' -Verbose
+                }
+
+                # Check if this is the known LocalDB MSI missing issue
+                if ($_.Exception.Message -match 'SqlLocalDB\.msi')
+                {
+                    Write-Warning @'
+The repair failed because LocalDB is installed but the SqlLocalDB.msi file is not
+available in the installation media. This is a known limitation of SQL Server's
+Repair action - it repairs ALL installed features and requires all MSI files to
+be present in the installation media.
+
+Possible solutions:
+1. Use installation media that includes SqlLocalDB.msi
+2. Uninstall LocalDB before running repair
+3. Use a different SQL Server instance that doesn't have LocalDB installed
+
+This is not a bug in SqlServerDsc but a limitation of SQL Server setup.
+'@
                 }
 
                 # Re-throw the original error
