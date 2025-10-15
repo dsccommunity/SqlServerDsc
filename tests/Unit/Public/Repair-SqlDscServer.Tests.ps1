@@ -52,7 +52,7 @@ Describe 'Repair-SqlDscServer' -Tag 'Public' {
         @{
             MockParameterSetName   = '__AllParameterSets'
             # cSpell: disable-next
-            MockExpectedParameters = '[-MediaPath] <string> [-InstanceName] <string> [-Features] <string[]> [[-PBEngSvcAccount] <string>] [[-PBEngSvcPassword] <securestring>] [[-PBEngSvcStartupType] <string>] [[-PBStartPortRange] <ushort>] [[-PBEndPortRange] <ushort>] [[-Timeout] <uint>] [-Enu] [-PBScaleOut] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '[-MediaPath] <string> [-InstanceName] <string> [[-PBEngSvcAccount] <string>] [[-PBEngSvcPassword] <securestring>] [[-PBEngSvcStartupType] <string>] [[-PBStartPortRange] <ushort>] [[-PBEndPortRange] <ushort>] [[-Timeout] <uint>] [-Enu] [-PBScaleOut] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
         $result = (Get-Command -Name 'Repair-SqlDscServer').ParameterSets |
@@ -94,8 +94,6 @@ Describe 'Repair-SqlDscServer' -Tag 'Public' {
                 $mockDefaultParameters = @{
                     MediaPath    = '\SqlMedia'
                     InstanceName = 'INSTANCE'
-                    # Intentionally using both upper- and lower-case in the value.
-                    Features     = 'SqlEngine'
                     ErrorAction  = 'Stop'
                 }
             }
@@ -106,7 +104,6 @@ Describe 'Repair-SqlDscServer' -Tag 'Public' {
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly '\/ACTION=Repair'
-                        $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE'
                         $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
 
                         # Return $true if none of the above throw.
@@ -121,7 +118,6 @@ Describe 'Repair-SqlDscServer' -Tag 'Public' {
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly '\/ACTION=Repair'
-                        $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE'
                         $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
 
                         # Return $true if none of the above throw.
@@ -148,8 +144,6 @@ Describe 'Repair-SqlDscServer' -Tag 'Public' {
                 $repairSqlDscServerParameters = @{
                     MediaPath        = '\SqlMedia'
                     InstanceName     = 'INSTANCE'
-                    # Intentionally using both upper- and lower-case in the value.
-                    Features         = 'SqlEngine'
                     Force            = $true
                     PBStartPortRange = 16450
                     PBEndPortRange   = 16460
@@ -204,8 +198,6 @@ Describe 'Repair-SqlDscServer' -Tag 'Public' {
                 $mockDefaultParameters = @{
                     MediaPath    = '\SqlMedia'
                     InstanceName = 'INSTANCE'
-                    # Intentionally using both upper- and lower-case in the value.
-                    Features     = 'SqlEngine'
                     Force        = $true
                     ErrorAction  = 'Stop'
                 }
