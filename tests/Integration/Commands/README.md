@@ -125,6 +125,23 @@ Initialize-SqlDscRebuildDatabase | 8 | 1 (Install-SqlDscServer) | DSCSQLTEST | -
 Uninstall-SqlDscServer | 9 | 8 (Repair-SqlDscServer), 8 (Initialize-SqlDscRebuildDatabase) | - | -
 <!-- markdownlint-enable MD013 -->
 
+### Integration_Test_Commands_SqlServer_PreparedImage
+
+Tests for SQL Server Database Engine commands using the prepared image installation
+workflow. This test suite runs in a separate job with its own CI worker, testing
+`Install-SqlDscServer` with `-PrepareImage` followed by `Complete-SqlDscImage`.
+
+<!-- markdownlint-disable MD013 -->
+Command | Run order # | Depends on # | Use instance | Creates persistent objects
+--- | --- | --- | --- | ---
+Prerequisites | 0 | - | - | Sets up dependencies
+Save-SqlDscSqlServerMediaFile | 0 | - | - | Downloads SQL Server media files
+Import-SqlDscPreferredModule | 0 | - | - | -
+Install-SqlDscServer (PrepareImage) | 1 | 0 (Prerequisites) | - | DSCSQLTEST instance prepared
+Complete-SqlDscImage | 2 | 1 (Install-SqlDscServer) | DSCSQLTEST | Completes prepared image installation
+Uninstall-SqlDscServer | 9 | 2 (Complete-SqlDscImage) | - | -
+<!-- markdownlint-enable MD013 -->
+
 ### Integration_Test_Commands_ReportingServices
 
 Tests for SQL Server Reporting Services commands.
