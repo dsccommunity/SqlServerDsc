@@ -44,7 +44,7 @@ Describe 'Install-SqlDscServer - PrepareImage' -Tag @('Integration_SQL2017', 'In
                 $installSqlDscServerParameters = @{
                     PrepareImage          = $true
                     AcceptLicensingTerms  = $true
-                    InstanceName          = 'DSCSQLTEST'
+                    InstanceId            = 'DSCSQLTEST'
                     Features              = 'SQLENGINE'
                     InstallSharedDir      = 'C:\Program Files\Microsoft SQL Server'
                     InstallSharedWOWDir   = 'C:\Program Files (x86)\Microsoft SQL Server'
@@ -54,7 +54,32 @@ Describe 'Install-SqlDscServer - PrepareImage' -Tag @('Integration_SQL2017', 'In
                     Force                 = $true
                 }
 
-                $null = Install-SqlDscServer @installSqlDscServerParameters
+                try
+                {
+                    $null = Install-SqlDscServer @installSqlDscServerParameters
+                }
+                catch
+                {
+                    # Output Summary.txt if it exists to help diagnose the failure
+                    $summaryFiles = Get-ChildItem -Path 'C:\Program Files\Microsoft SQL Server' -Filter 'Summary.txt' -Recurse -ErrorAction SilentlyContinue |
+                        Where-Object { $_.FullName -match '\\Setup Bootstrap\\Log\\' } |
+                        Sort-Object -Property LastWriteTime -Descending |
+                        Select-Object -First 1
+
+                    if ($summaryFiles)
+                    {
+                        Write-Verbose "==== SQL Server Setup Summary.txt (from $($summaryFiles.FullName)) ====" -Verbose
+                        Get-Content -Path $summaryFiles.FullName | Write-Verbose -Verbose
+                        Write-Verbose "==== End of Summary.txt ====" -Verbose
+                    }
+                    else
+                    {
+                        Write-Verbose 'No Summary.txt file found.' -Verbose
+                    }
+
+                    # Re-throw the original error
+                    throw $_
+                }
             }
         }
     }

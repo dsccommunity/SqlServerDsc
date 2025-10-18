@@ -694,6 +694,7 @@ function Invoke-SetupAction
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
+        [Parameter(ParameterSetName = 'PrepareImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [System.String]

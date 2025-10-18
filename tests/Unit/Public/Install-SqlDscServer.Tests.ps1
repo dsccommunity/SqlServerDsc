@@ -72,7 +72,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         @{
             MockParameterSetName   = 'PrepareImage'
             # cSpell: disable-next
-            MockExpectedParameters = '-PrepareImage -AcceptLicensingTerms -MediaPath <string> -Features <string[]> -InstanceId <string> [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstanceDir <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-PrepareImage -AcceptLicensingTerms -MediaPath <string> -Features <string[]> -InstanceId <string> [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstallSharedWowDir <string>] [-InstanceDir <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName   = 'Upgrade'
