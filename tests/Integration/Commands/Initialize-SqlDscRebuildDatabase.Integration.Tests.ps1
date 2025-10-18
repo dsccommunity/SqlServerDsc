@@ -88,7 +88,32 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag @('Integration_SQL2017', 'Integ
                     Force               = $true
                 }
 
-                $null = Initialize-SqlDscRebuildDatabase @rebuildSqlDscDatabaseParameters
+                try
+                {
+                    $null = Initialize-SqlDscRebuildDatabase @rebuildSqlDscDatabaseParameters
+                }
+                catch
+                {
+                    # Output Summary.txt if it exists to help diagnose the failure
+                    $summaryFiles = Get-ChildItem -Path 'C:\Program Files\Microsoft SQL Server' -Filter 'Summary.txt' -Recurse -ErrorAction SilentlyContinue |
+                        Where-Object { $_.FullName -match '\\Setup Bootstrap\\Log\\' } |
+                        Sort-Object -Property LastWriteTime -Descending |
+                        Select-Object -First 1
+
+                    if ($summaryFiles)
+                    {
+                        Write-Verbose "==== SQL Server Setup Summary.txt (from $($summaryFiles.FullName)) ====" -Verbose
+                        Get-Content -Path $summaryFiles.FullName | Write-Verbose -Verbose
+                        Write-Verbose "==== End of Summary.txt ====" -Verbose
+                    }
+                    else
+                    {
+                        Write-Verbose 'No Summary.txt file found.' -Verbose
+                    }
+
+                    # Re-throw the original error
+                    throw $_
+                }
             }
 
             It 'Should have the SQL Server service running after rebuild' {
@@ -134,7 +159,32 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag @('Integration_SQL2017', 'Integ
                     Force                = $true
                 }
 
-                $null = Initialize-SqlDscRebuildDatabase @rebuildSqlDscDatabaseParameters
+                try
+                {
+                    $null = Initialize-SqlDscRebuildDatabase @rebuildSqlDscDatabaseParameters
+                }
+                catch
+                {
+                    # Output Summary.txt if it exists to help diagnose the failure
+                    $summaryFiles = Get-ChildItem -Path 'C:\Program Files\Microsoft SQL Server' -Filter 'Summary.txt' -Recurse -ErrorAction SilentlyContinue |
+                        Where-Object { $_.FullName -match '\\Setup Bootstrap\\Log\\' } |
+                        Sort-Object -Property LastWriteTime -Descending |
+                        Select-Object -First 1
+
+                    if ($summaryFiles)
+                    {
+                        Write-Verbose "==== SQL Server Setup Summary.txt (from $($summaryFiles.FullName)) ====" -Verbose
+                        Get-Content -Path $summaryFiles.FullName | Write-Verbose -Verbose
+                        Write-Verbose "==== End of Summary.txt ====" -Verbose
+                    }
+                    else
+                    {
+                        Write-Verbose 'No Summary.txt file found.' -Verbose
+                    }
+
+                    # Re-throw the original error
+                    throw $_
+                }
             }
 
             It 'Should have the SQL Server service running after rebuild with TempDB parameters' {
@@ -162,7 +212,32 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag @('Integration_SQL2017', 'Integ
                     Force               = $true
                 }
 
-                $null = Initialize-SqlDscRebuildDatabase @rebuildSqlDscDatabaseParameters
+                try
+                {
+                    $null = Initialize-SqlDscRebuildDatabase @rebuildSqlDscDatabaseParameters
+                }
+                catch
+                {
+                    # Output Summary.txt if it exists to help diagnose the failure
+                    $summaryFiles = Get-ChildItem -Path 'C:\Program Files\Microsoft SQL Server' -Filter 'Summary.txt' -Recurse -ErrorAction SilentlyContinue |
+                        Where-Object { $_.FullName -match '\\Setup Bootstrap\\Log\\' } |
+                        Sort-Object -Property LastWriteTime -Descending |
+                        Select-Object -First 1
+
+                    if ($summaryFiles)
+                    {
+                        Write-Verbose "==== SQL Server Setup Summary.txt (from $($summaryFiles.FullName)) ====" -Verbose
+                        Get-Content -Path $summaryFiles.FullName | Write-Verbose -Verbose
+                        Write-Verbose "==== End of Summary.txt ====" -Verbose
+                    }
+                    else
+                    {
+                        Write-Verbose 'No Summary.txt file found.' -Verbose
+                    }
+
+                    # Re-throw the original error
+                    throw $_
+                }
             }
 
             It 'Should have the SQL Server service running after rebuild with collation' {
