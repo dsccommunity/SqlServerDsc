@@ -207,12 +207,12 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag @('Integration_SQL2017', 'Integ
                 $mockSqlAdministratorUserName = 'SqlAdmin'
                 $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
 
-                $sqlAdminCredential = [System.Management.Automation.PSCredential]::new(
+                $mockSqlAdministratorCredential = [System.Management.Automation.PSCredential]::new(
                     $mockSqlAdministratorUserName,
                     $mockSqlAdministratorPassword
                 )
 
-                $server = Connect-SqlDscDatabaseEngine -InstanceName 'DSCSQLTEST' -Credential $sqlAdminCredential -ErrorAction 'Stop'
+                $server = Connect-SqlDscDatabaseEngine -InstanceName 'DSCSQLTEST' -Credential $mockSqlAdministratorCredential -ErrorAction 'Stop'
                 $server.Databases['tempdb'].FileGroups['PRIMARY'].Files.Count | Should -Be 8
                 Disconnect-SqlDscDatabaseEngine -ServerObject $server -ErrorAction 'Stop'
             }
