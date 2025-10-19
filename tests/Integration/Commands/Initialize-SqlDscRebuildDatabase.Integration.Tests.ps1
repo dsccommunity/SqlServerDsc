@@ -1,4 +1,5 @@
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'because ConvertTo-SecureString is used to simplify the tests.')]
 param ()
 
 BeforeDiscovery {
@@ -77,8 +78,11 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag @('Integration_SQL2017', 'Integ
         Context 'When specifying only mandatory parameters' {
             It 'Should run the rebuild command without throwing (using Force parameter)' {
                 # Set splatting parameters for Initialize-SqlDscRebuildDatabase
+                $saPwd = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
                 $rebuildSqlDscDatabaseParameters = @{
                     InstanceName        = 'DSCSQLTEST'
+                    SAPwd               = $saPwd
                     SqlSysAdminAccounts = @(
                         ('{0}\SqlAdmin' -f (Get-ComputerName))
                     )
@@ -147,8 +151,11 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag @('Integration_SQL2017', 'Integ
         Context 'When specifying optional TempDB parameters' {
             It 'Should run the rebuild command with custom TempDB file count' {
                 # Set splatting parameters for Initialize-SqlDscRebuildDatabase
+                $saPwd = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
                 $rebuildSqlDscDatabaseParameters = @{
                     InstanceName         = 'DSCSQLTEST'
+                    SAPwd                = $saPwd
                     SqlSysAdminAccounts  = @(
                         ('{0}\SqlAdmin' -f (Get-ComputerName))
                     )
@@ -200,8 +207,11 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag @('Integration_SQL2017', 'Integ
         Context 'When specifying optional SqlCollation parameter' {
             It 'Should run the rebuild command with custom collation' {
                 # Set splatting parameters for Initialize-SqlDscRebuildDatabase
+                $saPwd = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
                 $rebuildSqlDscDatabaseParameters = @{
                     InstanceName        = 'DSCSQLTEST'
+                    SAPwd               = $saPwd
                     SqlSysAdminAccounts = @(
                         ('{0}\SqlAdmin' -f (Get-ComputerName))
                     )
