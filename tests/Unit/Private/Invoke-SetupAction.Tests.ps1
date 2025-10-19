@@ -2835,7 +2835,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                         AcceptLicensingTerms = $true
                         MediaPath = '\SqlMedia'
                         InstanceName = 'INSTANCE'
-                        ProductKey = 22222-00000-00000-00000-00000
+                        ProductKey = '22222-00000-00000-00000-00000'
                         Force = $true
                     }
                 }
@@ -3304,7 +3304,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             @{
                 MockParameterName = 'InstanceName'
                 MockParameterValue = 'INSTANCE'
-                MockExpectedRegEx = '\/INSTANCENAME="INSTANCE"*' # cspell: disable-line
+                MockExpectedRegEx = '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
             }
             @{
                 MockParameterName = 'Enu'
