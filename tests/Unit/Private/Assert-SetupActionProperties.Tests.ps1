@@ -428,6 +428,11 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             MockFeature = 'SQLENGINE'
         }
         @{
+            MockSetupAction = 'PrepareImage'
+            MockMissingParameterName = 'InstanceId'
+            MockFeature = 'SQLENGINE'
+        }
+        @{
             MockSetupAction = 'InstallFailoverCluster'
             MockMissingParameterName = 'AgtSvcAccount'
             MockFeature = 'SQLENGINE'

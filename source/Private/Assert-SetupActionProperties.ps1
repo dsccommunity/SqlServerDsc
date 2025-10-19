@@ -144,6 +144,17 @@ function Assert-SetupActionProperties
         }
     }
 
+    if ($SetupAction -in @('PrepareImage'))
+    {
+        # If feature is SQLENGINE, then InstanceId is mandatory.
+        if ($Property.ContainsKey('Features') -and $Property.Features -contains 'SQLENGINE')
+        {
+            Assert-BoundParameter -BoundParameterList $Property -RequiredParameter @(
+                'InstanceId'
+            )
+        }
+    }
+
     if ($SetupAction -in @('InstallFailoverCluster', 'PrepareFailoverCluster', 'AddNode'))
     {
         # If feature is SQLENGINE, then for specified setup actions the parameter AgtSvcAccount is mandatory.
