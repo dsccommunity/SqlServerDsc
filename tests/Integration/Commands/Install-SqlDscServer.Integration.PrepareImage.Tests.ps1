@@ -32,9 +32,8 @@ BeforeAll {
 # cSpell: ignore SQLSERVERAGENT, DSCSQLTEST, PrepareImage
 Describe 'Install-SqlDscServer - PrepareImage' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
-
         $computerName = Get-ComputerName
+        Write-Verbose -Message ("Running integration test as user '{0}' on computer '{1}'." -f $env:UserName, $computerName) -Verbose
     }
 
     Context 'When using PrepareImage parameter set' {
