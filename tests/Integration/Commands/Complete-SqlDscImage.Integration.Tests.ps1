@@ -44,6 +44,8 @@ Describe 'Complete-SqlDscImage' -Tag @('Integration_SQL2017', 'Integration_SQL20
                 AcceptLicensingTerms  = $true
                 InstanceName          = 'DSCSQLTEST'
                 InstanceId            = 'DSCSQLTEST'
+                SqlSvcAccount         = '{0}\svc-SqlPrimary' -f $computerName
+                SqlSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
                 MediaPath             = $env:IsoDrivePath
                 Verbose               = $true
                 ErrorAction           = 'Stop'
@@ -140,6 +142,11 @@ Describe 'Complete-SqlDscImage' -Tag @('Integration_SQL2017', 'Integration_SQL20
                 AcceptLicensingTerms  = $true
                 InstanceName          = 'DSCSQLTEST'
                 InstanceId            = 'DSCSQLTEST'
+                SqlSvcAccount         = '{0}\svc-SqlPrimary' -f $computerName
+                SqlSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
+                SqlSysAdminAccounts   = @(
+                    ('{0}\SqlAdmin' -f $computerName)
+                )
                 InstallSqlDataDir     = 'C:\Program Files\Microsoft SQL Server\MSSQL\Data'
                 SqlBackupDir          = 'C:\Program Files\Microsoft SQL Server\MSSQL\Backup'
                 SqlTempDbDir          = 'C:\Program Files\Microsoft SQL Server\MSSQL\Data'

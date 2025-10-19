@@ -194,7 +194,7 @@ function Complete-SqlDscImage
         [System.Management.Automation.SwitchParameter]
         $Enu,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceId,
 

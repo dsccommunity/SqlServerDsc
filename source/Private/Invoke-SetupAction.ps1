@@ -712,7 +712,7 @@ function Invoke-SetupAction
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'CompleteImage')]
+        [Parameter(ParameterSetName = 'CompleteImage', Mandatory = $true)]
         [Parameter(ParameterSetName = 'Upgrade')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]

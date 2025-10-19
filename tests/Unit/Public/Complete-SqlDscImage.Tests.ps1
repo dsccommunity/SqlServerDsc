@@ -52,7 +52,7 @@ Describe 'Complete-SqlDscImage' -Tag 'Public' {
         @{
             MockParameterSetName   = '__AllParameterSets'
             # cSpell: disable-next
-            MockExpectedParameters = '[-MediaPath] <string> [[-InstanceName] <string>] [[-InstanceId] <string>] [[-PBEngSvcAccount] <string>] [[-PBEngSvcPassword] <securestring>] [[-PBEngSvcStartupType] <string>] [[-PBStartPortRange] <ushort>] [[-PBEndPortRange] <ushort>] [[-ProductKey] <string>] [[-AgtSvcAccount] <string>] [[-AgtSvcPassword] <securestring>] [[-AgtSvcStartupType] <string>] [[-BrowserSvcStartupType] <string>] [[-InstallSqlDataDir] <string>] [[-SqlBackupDir] <string>] [[-SecurityMode] <string>] [[-SAPwd] <securestring>] [[-SqlCollation] <string>] [[-SqlSvcAccount] <string>] [[-SqlSvcPassword] <securestring>] [[-SqlSvcStartupType] <string>] [[-SqlSysAdminAccounts] <string[]>] [[-SqlTempDbDir] <string>] [[-SqlTempDbLogDir] <string>] [[-SqlTempDbFileCount] <ushort>] [[-SqlTempDbFileSize] <ushort>] [[-SqlTempDbFileGrowth] <ushort>] [[-SqlTempDbLogFileSize] <ushort>] [[-SqlTempDbLogFileGrowth] <ushort>] [[-SqlUserDbDir] <string>] [[-SqlUserDbLogDir] <string>] [[-FileStreamLevel] <ushort>] [[-FileStreamShareName] <string>] [[-RsInstallMode] <string>] [[-RSSvcAccount] <string>] [[-RSSvcPassword] <securestring>] [[-RSSvcStartupType] <string>] [[-Timeout] <uint>] -AcceptLicensingTerms [-Enu] [-PBScaleOut] [-EnableRanU] [-NpEnabled] [-TcpEnabled] [-ProductCoveredBySA] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '[-MediaPath] <string> [[-InstanceName] <string>] [-InstanceId] <string> [[-PBEngSvcAccount] <string>] [[-PBEngSvcPassword] <securestring>] [[-PBEngSvcStartupType] <string>] [[-PBStartPortRange] <ushort>] [[-PBEndPortRange] <ushort>] [[-ProductKey] <string>] [[-AgtSvcAccount] <string>] [[-AgtSvcPassword] <securestring>] [[-AgtSvcStartupType] <string>] [[-BrowserSvcStartupType] <string>] [[-InstallSqlDataDir] <string>] [[-SqlBackupDir] <string>] [[-SecurityMode] <string>] [[-SAPwd] <securestring>] [[-SqlCollation] <string>] [[-SqlSvcAccount] <string>] [[-SqlSvcPassword] <securestring>] [[-SqlSvcStartupType] <string>] [[-SqlSysAdminAccounts] <string[]>] [[-SqlTempDbDir] <string>] [[-SqlTempDbLogDir] <string>] [[-SqlTempDbFileCount] <ushort>] [[-SqlTempDbFileSize] <ushort>] [[-SqlTempDbFileGrowth] <ushort>] [[-SqlTempDbLogFileSize] <ushort>] [[-SqlTempDbLogFileGrowth] <ushort>] [[-SqlUserDbDir] <string>] [[-SqlUserDbLogDir] <string>] [[-FileStreamLevel] <ushort>] [[-FileStreamShareName] <string>] [[-RsInstallMode] <string>] [[-RSSvcAccount] <string>] [[-RSSvcPassword] <securestring>] [[-RSSvcStartupType] <string>] [[-Timeout] <uint>] -AcceptLicensingTerms [-Enu] [-PBScaleOut] [-EnableRanU] [-NpEnabled] [-TcpEnabled] [-ProductCoveredBySA] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
         $result = (Get-Command -Name 'Complete-SqlDscImage').ParameterSets |
@@ -94,6 +94,7 @@ Describe 'Complete-SqlDscImage' -Tag 'Public' {
                 $mockDefaultParameters = @{
                     AcceptLicensingTerms = $true
                     MediaPath            = '\SqlMedia'
+                    InstanceId           = 'MSSQLSERVER'
                     ErrorAction          = 'Stop'
                 }
             }
@@ -142,6 +143,7 @@ Describe 'Complete-SqlDscImage' -Tag 'Public' {
                 $completeSqlDscImageParameters = @{
                     AcceptLicensingTerms = $true
                     MediaPath            = '\SqlMedia'
+                    InstanceId           = 'MSSQLSERVER'
                     Force                = $true
                     PBStartPortRange     = 16450
                     PBEndPortRange       = 16460
@@ -360,6 +362,7 @@ Describe 'Complete-SqlDscImage' -Tag 'Public' {
                 $mockDefaultParameters = @{
                     AcceptLicensingTerms = $true
                     MediaPath            = '\SqlMedia'
+                    InstanceId           = 'MSSQLSERVER'
                     Force                = $true
                     ErrorAction          = 'Stop'
                 }

@@ -82,7 +82,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
         @{
             MockParameterSetName = 'CompleteImage'
             # cSpell: disable-next
-            MockExpectedParameters = '-CompleteImage -AcceptLicensingTerms -MediaPath <string> [-InstanceName <string>] [-Enu] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <securestring>] [-AgtSvcStartupType <string>] [-BrowserSvcStartupType <string>] [-EnableRanU] [-InstallSqlDataDir <string>] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <securestring>] [-SqlCollation <string>] [-SqlSvcAccount <string>] [-SqlSvcPassword <securestring>] [-SqlSvcStartupType <string>] [-SqlSysAdminAccounts <string[]>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlUserDbLogDir <string>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-NpEnabled] [-TcpEnabled] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <securestring>] [-RSSvcStartupType <string>] [-ProductCoveredBySA] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-CompleteImage -AcceptLicensingTerms -MediaPath <string> -InstanceId <string> [-InstanceName <string>] [-Enu] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <securestring>] [-AgtSvcStartupType <string>] [-BrowserSvcStartupType <string>] [-EnableRanU] [-InstallSqlDataDir <string>] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <securestring>] [-SqlCollation <string>] [-SqlSvcAccount <string>] [-SqlSvcPassword <securestring>] [-SqlSvcStartupType <string>] [-SqlSysAdminAccounts <string[]>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlUserDbLogDir <string>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-NpEnabled] [-TcpEnabled] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <securestring>] [-RSSvcStartupType <string>] [-ProductCoveredBySA] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'Upgrade'
@@ -3221,6 +3221,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                         CompleteImage = $true
                         AcceptLicensingTerms = $true
                         MediaPath = '\SqlMedia'
+                        InstanceId = 'MSSQLSERVER'
                     }
                 }
             }
@@ -3277,6 +3278,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                         CompleteImage = $true
                         AcceptLicensingTerms = $true
                         MediaPath = '\SqlMedia'
+                        InstanceId = 'MSSQLSERVER'
                         Force = $true
                         PBStartPortRange = 16450
                         PBEndPortRange = 16460
@@ -3500,6 +3502,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                         CompleteImage = $true
                         AcceptLicensingTerms = $true
                         MediaPath = '\SqlMedia'
+                        InstanceId = 'MSSQLSERVER'
                         Force = $true
                     }
                 }
