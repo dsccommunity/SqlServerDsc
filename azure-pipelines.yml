@@ -994,6 +994,7 @@ stages:
     dependsOn:
     - Quality_Test_and_Unit_Test
     - Integration_Test_Commands_SqlServer
+    - Integration_Test_Commands_SqlServer_PreparedImage
     - Integration_Test_Commands_ReportingServices
     - Integration_Test_Commands_BIReportServer
     - Integration_Test_Resources_SqlServer
