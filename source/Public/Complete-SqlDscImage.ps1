@@ -161,7 +161,7 @@
         None.
 
     .EXAMPLE
-        Complete-SqlDscImage -AcceptLicensingTerms -MediaPath 'E:\'
+        Complete-SqlDscImage -AcceptLicensingTerms -MediaPath 'E:\' -InstanceId 'MSSQLSERVER'
 
         Completes the image installation of the SQL Server default instance that
         was prepared using `Install-SqlDscServer` with the parameter `-PrepareImage`.

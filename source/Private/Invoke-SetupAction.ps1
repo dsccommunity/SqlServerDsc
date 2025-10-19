@@ -406,7 +406,7 @@
         Prepares the server for using the database engine for an instance named 'MyInstance'.
 
     .EXAMPLE
-        Invoke-SetupAction -CompleteImage -AcceptLicensingTerms -MediaPath 'E:\'
+        Invoke-SetupAction -CompleteImage -AcceptLicensingTerms -InstanceId 'MSSQLSERVER' -MediaPath 'E:\'
 
         Completes install on a server that was previously prepared (by using prepare image).
 
