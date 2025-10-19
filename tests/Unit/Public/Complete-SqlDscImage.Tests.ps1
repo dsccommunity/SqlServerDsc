@@ -174,11 +174,6 @@ Describe 'Complete-SqlDscImage' -Tag 'Public' {
                 MockExpectedRegEx  = '\/ENU\s*'
             }
             @{
-                MockParameterName  = 'InstanceId'
-                MockParameterValue = 'Instance'
-                MockExpectedRegEx  = '\/INSTANCEID="Instance"' # cspell: disable-line
-            }
-            @{
                 MockParameterName  = 'PBEngSvcAccount'
                 MockParameterValue = 'NT Authority\NETWORK SERVICE'
                 MockExpectedRegEx  = '\/PBENGSVCACCOUNT="NT Authority\\NETWORK SERVICE"' # cspell: disable-line
