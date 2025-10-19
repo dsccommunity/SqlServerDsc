@@ -47,6 +47,8 @@ Describe 'Complete-SqlDscImage' -Tag @('Integration_SQL2017', 'Integration_SQL20
                 InstanceId            = 'DSCSQLTEST'
                 SqlSvcAccount         = '{0}\svc-SqlPrimary' -f $computerName
                 SqlSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
+                AgtSvcAccount         = '{0}\svc-SqlAgentPri' -f $computerName
+                AgtSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
                 MediaPath             = $env:IsoDrivePath
                 Verbose               = $true
                 ErrorAction           = 'Stop'
@@ -145,6 +147,8 @@ Describe 'Complete-SqlDscImage' -Tag @('Integration_SQL2017', 'Integration_SQL20
                 InstanceId            = 'DSCSQLTEST'
                 SqlSvcAccount         = '{0}\svc-SqlPrimary' -f $computerName
                 SqlSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
+                AgtSvcAccount         = '{0}\svc-SqlAgentPri' -f $computerName
+                AgtSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
                 SqlSysAdminAccounts   = @(
                     ('{0}\SqlAdmin' -f $computerName)
                 )

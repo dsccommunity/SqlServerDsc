@@ -161,7 +161,7 @@
         None.
 
     .EXAMPLE
-        Complete-SqlDscImage -AcceptLicensingTerms -MediaPath 'E:\' -InstanceId 'MSSQLSERVER' -SqlSvcAccount 'NT Service\MSSQLSERVER'
+        Complete-SqlDscImage -AcceptLicensingTerms -MediaPath 'E:\' -InstanceId 'MSSQLSERVER' -SqlSvcAccount 'NT Service\MSSQLSERVER' -AgtSvcAccount 'NT Service\MSSQLSERVER'
 
         Completes the image installation of the SQL Server default instance that
         was prepared using `Install-SqlDscServer` with the parameter `-PrepareImage`.
@@ -227,7 +227,7 @@ function Complete-SqlDscImage
         [System.String]
         $ProductKey, # This is argument PID but $PID is reserved variable.
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AgtSvcAccount,
 
