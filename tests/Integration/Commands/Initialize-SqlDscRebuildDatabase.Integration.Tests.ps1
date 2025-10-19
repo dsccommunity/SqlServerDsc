@@ -50,7 +50,7 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag @('Integration_SQL2017', 'Integ
         $sqlService = Get-Service -Name $serviceName -ErrorAction 'Stop'
         if ($sqlService.Status -ne 'Stopped')
         {
-            Write-Error -Message "Failed to stop SQL Server service '$serviceName'"
+            throw "Failed to stop SQL Server service '$serviceName'"
         }
     }
 
@@ -70,7 +70,7 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag @('Integration_SQL2017', 'Integ
         $sqlService = Get-Service -Name $serviceName -ErrorAction 'Stop'
         if ($sqlService.Status -ne 'Running')
         {
-            Write-Error -Message "Failed to start SQL Server service '$serviceName'"
+            throw "Failed to start SQL Server service '$serviceName'"
         }
     }
 
