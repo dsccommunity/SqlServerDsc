@@ -229,7 +229,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Confirm:$false @mockDefaultParameters
+                        $null = Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=Install'
@@ -248,7 +248,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Force' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Force @mockDefaultParameters
+                        $null = Invoke-SetupAction -Force @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=Install'
@@ -267,7 +267,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter WhatIf' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -WhatIf @mockDefaultParameters
+                        $null = Invoke-SetupAction -WhatIf @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
                     }
@@ -299,7 +299,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
             It 'Should call the mock with the correct argument string' {
                 InModuleScope -ScriptBlock {
-                    Invoke-SetupAction @installSqlDscServerParameters
+                    $null = Invoke-SetupAction @installSqlDscServerParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly 'PBPORTRANGE=16450-16460' # cspell: disable-line
@@ -738,7 +738,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
 
-                    Invoke-SetupAction @installSqlDscServerParameters
+                    $null = Invoke-SetupAction @installSqlDscServerParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly $MockExpectedRegEx
@@ -828,7 +828,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
 
                     # Redirect all verbose stream to $null to ge no output from ShouldProcess.
-                    Invoke-SetupAction @installSqlDscServerParameters -Verbose 4> $null
+                    $null = Invoke-SetupAction @installSqlDscServerParameters -Verbose 4> $null
 
                     $mockVerboseMessage = $script:localizedData.Invoke_SetupAction_SetupArguments
 
@@ -880,7 +880,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Confirm:$false @mockDefaultParameters
+                        $null = Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=Upgrade'
@@ -897,7 +897,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Force' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Force @mockDefaultParameters
+                        $null = Invoke-SetupAction -Force @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=Upgrade'
@@ -914,7 +914,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter WhatIf' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -WhatIf @mockDefaultParameters
+                        $null = Invoke-SetupAction -WhatIf @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
                     }
@@ -1016,7 +1016,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
 
-                    Invoke-SetupAction @installSqlDscServerParameters
+                    $null = Invoke-SetupAction @installSqlDscServerParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly $MockExpectedRegEx
@@ -1070,7 +1070,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Confirm:$false @mockDefaultParameters
+                        $null = Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=InstallFailoverCluster'
@@ -1092,7 +1092,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Force' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Force @mockDefaultParameters
+                        $null = Invoke-SetupAction -Force @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=InstallFailoverCluster'
@@ -1114,7 +1114,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter WhatIf' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -WhatIf @mockDefaultParameters
+                        $null = Invoke-SetupAction -WhatIf @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
                     }
@@ -1149,7 +1149,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
             It 'Should call the mock with the correct argument string' {
                 InModuleScope -ScriptBlock {
-                    Invoke-SetupAction @installSqlDscServerParameters
+                    $null = Invoke-SetupAction @installSqlDscServerParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly 'PBPORTRANGE=16450-16460' # cspell: disable-line
@@ -1481,7 +1481,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
 
-                    Invoke-SetupAction @installSqlDscServerParameters
+                    $null = Invoke-SetupAction @installSqlDscServerParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly $MockExpectedRegEx
@@ -1526,7 +1526,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Confirm:$false @mockDefaultParameters
+                        $null = Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=PrepareFailoverCluster'
@@ -1543,7 +1543,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Force' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Force @mockDefaultParameters
+                        $null = Invoke-SetupAction -Force @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=PrepareFailoverCluster'
@@ -1560,7 +1560,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter WhatIf' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -WhatIf @mockDefaultParameters
+                        $null = Invoke-SetupAction -WhatIf @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
                     }
@@ -1591,7 +1591,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
             It 'Should call the mock with the correct argument string' {
                 InModuleScope -ScriptBlock {
-                    Invoke-SetupAction @installSqlDscServerParameters
+                    $null = Invoke-SetupAction @installSqlDscServerParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly 'PBPORTRANGE=16450-16460' # cspell: disable-line
@@ -1768,7 +1768,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
 
-                    Invoke-SetupAction @installSqlDscServerParameters
+                    $null = Invoke-SetupAction @installSqlDscServerParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly $MockExpectedRegEx
@@ -1819,7 +1819,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Confirm:$false @mockDefaultParameters
+                        $null = Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=CompleteFailoverCluster'
@@ -1839,7 +1839,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Force' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Force @mockDefaultParameters
+                        $null = Invoke-SetupAction -Force @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=CompleteFailoverCluster'
@@ -1859,7 +1859,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter WhatIf' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -WhatIf @mockDefaultParameters
+                        $null = Invoke-SetupAction -WhatIf @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
                     }
@@ -2064,7 +2064,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
 
-                    Invoke-SetupAction @installSqlDscServerParameters
+                    $null = Invoke-SetupAction @installSqlDscServerParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly $MockExpectedRegEx
@@ -2113,7 +2113,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Confirm:$false @mockDefaultParameters
+                        $null = Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=AddNode'
@@ -2130,7 +2130,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Force' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Force @mockDefaultParameters
+                        $null = Invoke-SetupAction -Force @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=AddNode'
@@ -2147,7 +2147,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter WhatIf' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -WhatIf @mockDefaultParameters
+                        $null = Invoke-SetupAction -WhatIf @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
                     }
@@ -2182,7 +2182,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
             It 'Should call the mock with the correct argument string' {
                 InModuleScope -ScriptBlock {
-                    Invoke-SetupAction @installSqlDscServerParameters
+                    $null = Invoke-SetupAction @installSqlDscServerParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly 'PBPORTRANGE=16450-16460' # cspell: disable-line
@@ -2318,7 +2318,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
 
-                    Invoke-SetupAction @installSqlDscServerParameters
+                    $null = Invoke-SetupAction @installSqlDscServerParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly $MockExpectedRegEx
@@ -2360,7 +2360,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Confirm:$false @mockDefaultParameters
+                        $null = Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=RemoveNode'
@@ -2376,7 +2376,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Force' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Force @mockDefaultParameters
+                        $null = Invoke-SetupAction -Force @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=RemoveNode'
@@ -2392,7 +2392,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter WhatIf' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -WhatIf @mockDefaultParameters
+                        $null = Invoke-SetupAction -WhatIf @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
                     }
@@ -2432,7 +2432,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
 
-                    Invoke-SetupAction @installSqlDscServerParameters
+                    $null = Invoke-SetupAction @installSqlDscServerParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly $MockExpectedRegEx
@@ -2480,7 +2480,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Confirm:$false @mockDefaultParameters
+                        $null = Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             # cspell: disable-next
@@ -2496,7 +2496,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Force' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Force @mockDefaultParameters
+                        $null = Invoke-SetupAction -Force @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             # cspell: disable-next
@@ -2512,7 +2512,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter WhatIf' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -WhatIf @mockDefaultParameters
+                        $null = Invoke-SetupAction -WhatIf @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
                     }
@@ -2571,7 +2571,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
 
-                    Invoke-SetupAction @installSqlDscServerParameters
+                    $null = Invoke-SetupAction @installSqlDscServerParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly $MockExpectedRegEx
@@ -2614,7 +2614,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Confirm:$false @mockDefaultParameters
+                        $null = Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=RebuildDatabase'
@@ -2631,7 +2631,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Force' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Force @mockDefaultParameters
+                        $null = Invoke-SetupAction -Force @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=RebuildDatabase'
@@ -2648,7 +2648,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter WhatIf' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -WhatIf @mockDefaultParameters
+                        $null = Invoke-SetupAction -WhatIf @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
                     }
@@ -2729,7 +2729,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
 
-                    Invoke-SetupAction @installSqlDscServerParameters
+                    $null = Invoke-SetupAction @installSqlDscServerParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly $MockExpectedRegEx
@@ -2773,7 +2773,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Confirm:$false @mockDefaultParameters
+                        $null = Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=EditionUpgrade'
@@ -2791,7 +2791,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Force' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Force @mockDefaultParameters
+                        $null = Invoke-SetupAction -Force @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=EditionUpgrade'
@@ -2809,7 +2809,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter WhatIf' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -WhatIf @mockDefaultParameters
+                        $null = Invoke-SetupAction -WhatIf @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
                     }
@@ -2851,7 +2851,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
 
-                    Invoke-SetupAction @installSqlDscServerParameters
+                    $null = Invoke-SetupAction @installSqlDscServerParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly $MockExpectedRegEx
@@ -2893,7 +2893,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Confirm:$false @mockDefaultParameters
+                        $null = Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=Repair'
@@ -2909,7 +2909,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Force' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Force @mockDefaultParameters
+                        $null = Invoke-SetupAction -Force @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=Repair'
@@ -2925,7 +2925,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter WhatIf' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -WhatIf @mockDefaultParameters
+                        $null = Invoke-SetupAction -WhatIf @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
                     }
@@ -2953,7 +2953,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
             It 'Should call the mock with the correct argument string' {
                 InModuleScope -ScriptBlock {
-                    Invoke-SetupAction @installSqlDscServerParameters
+                    $null = Invoke-SetupAction @installSqlDscServerParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly 'PBPORTRANGE=16450-16460' # cspell: disable-line
@@ -3017,7 +3017,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
 
-                    Invoke-SetupAction @installSqlDscServerParameters
+                    $null = Invoke-SetupAction @installSqlDscServerParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly $MockExpectedRegEx
@@ -3062,7 +3062,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Confirm:$false @mockDefaultParameters
+                        $null = Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=PrepareImage'
@@ -3080,7 +3080,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Force' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Force @mockDefaultParameters
+                        $null = Invoke-SetupAction -Force @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=PrepareImage'
@@ -3098,7 +3098,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter WhatIf' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -WhatIf @mockDefaultParameters
+                        $null = Invoke-SetupAction -WhatIf @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
                     }
@@ -3191,7 +3191,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
 
-                    Invoke-SetupAction @installSqlDscServerParameters
+                    $null = Invoke-SetupAction @installSqlDscServerParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly $MockExpectedRegEx
@@ -3234,10 +3234,11 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Confirm:$false @mockDefaultParameters
+                        $null = Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=CompleteImage'
+                            $ArgumentList | Should -MatchExactly '\/INSTANCEID="MSSQLSERVER"'
 
                             # Return $true if none of the above throw.
                             $true
@@ -3249,10 +3250,11 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Force' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Force @mockDefaultParameters
+                        $null = Invoke-SetupAction -Force @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=CompleteImage'
+                            $ArgumentList | Should -MatchExactly '\/INSTANCEID="MSSQLSERVER"'
 
                             # Return $true if none of the above throw.
                             $true
@@ -3264,7 +3266,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter WhatIf' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -WhatIf @mockDefaultParameters
+                        $null = Invoke-SetupAction -WhatIf @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
                     }
@@ -3293,7 +3295,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
             It 'Should call the mock with the correct argument string' {
                 InModuleScope -ScriptBlock {
-                    Invoke-SetupAction @installSqlDscServerParameters
+                    $null = Invoke-SetupAction @installSqlDscServerParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly 'PBPORTRANGE=16450-16460' # cspell: disable-line
@@ -3523,7 +3525,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
 
-                    Invoke-SetupAction @installSqlDscServerParameters
+                    $null = Invoke-SetupAction @installSqlDscServerParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly $MockExpectedRegEx
@@ -3567,7 +3569,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Confirm:$false @mockDefaultParameters
+                        $null = Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=Uninstall'
@@ -3584,7 +3586,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Force' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Force @mockDefaultParameters
+                        $null = Invoke-SetupAction -Force @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=Uninstall'
@@ -3601,7 +3603,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter WhatIf' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -WhatIf @mockDefaultParameters
+                        $null = Invoke-SetupAction -WhatIf @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
                     }
@@ -3645,7 +3647,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Confirm:$false @mockDefaultParameters
+                        $null = Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=Install'
@@ -3668,7 +3670,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter Force' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -Force @mockDefaultParameters
+                        $null = Invoke-SetupAction -Force @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=Install'
@@ -3691,7 +3693,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             Context 'When using parameter WhatIf' {
                 It 'Should call the mock with the correct argument string' {
                     InModuleScope -ScriptBlock {
-                        Invoke-SetupAction -WhatIf @mockDefaultParameters
+                        $null = Invoke-SetupAction -WhatIf @mockDefaultParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
                     }
@@ -3737,7 +3739,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
 
-                    Invoke-SetupAction @installSqlDscServerParameters
+                    $null = Invoke-SetupAction @installSqlDscServerParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly $MockExpectedRegEx
@@ -3781,7 +3783,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 Context 'When using parameter Confirm with value $false' {
                     It 'Should call the mock with the correct argument string' {
                         InModuleScope -ScriptBlock {
-                            Invoke-SetupAction -Confirm:$false @mockDefaultParameters
+                            $null = Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
                             Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                                 $ArgumentList | Should -MatchExactly '\/ACTION=Install'
@@ -3798,7 +3800,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 Context 'When using parameter Force' {
                     It 'Should call the mock with the correct argument string' {
                         InModuleScope -ScriptBlock {
-                            Invoke-SetupAction -Force @mockDefaultParameters
+                            $null = Invoke-SetupAction -Force @mockDefaultParameters
 
                             Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                                 $ArgumentList | Should -MatchExactly '\/ACTION=Install'
@@ -3815,7 +3817,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 Context 'When using parameter WhatIf' {
                     It 'Should call the mock with the correct argument string' {
                         InModuleScope -ScriptBlock {
-                            Invoke-SetupAction -WhatIf @mockDefaultParameters
+                            $null = Invoke-SetupAction -WhatIf @mockDefaultParameters
 
                             Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
                         }
@@ -3871,7 +3873,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -Parameters $_ -ScriptBlock {
                         $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
 
-                        Invoke-SetupAction @installSqlDscServerParameters
+                        $null = Invoke-SetupAction @installSqlDscServerParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly $MockExpectedRegEx
@@ -3923,7 +3925,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                         $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
 
                         # Redirect all verbose stream to $null to ge no output from ShouldProcess.
-                        Invoke-SetupAction @installSqlDscServerParameters -Verbose 4> $null
+                        $null = Invoke-SetupAction @installSqlDscServerParameters -Verbose 4> $null
 
                         $mockVerboseMessage = $script:localizedData.Invoke_SetupAction_SetupArguments
 
@@ -3965,7 +3967,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 Context 'When using parameter Confirm with value $false' {
                     It 'Should call the mock with the correct argument string' {
                         InModuleScope -ScriptBlock {
-                            Invoke-SetupAction -Confirm:$false @mockDefaultParameters
+                            $null = Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
                             Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                                 $ArgumentList | Should -MatchExactly '\/ACTION=Install'
@@ -3982,7 +3984,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 Context 'When using parameter Force' {
                     It 'Should call the mock with the correct argument string' {
                         InModuleScope -ScriptBlock {
-                            Invoke-SetupAction -Force @mockDefaultParameters
+                            $null = Invoke-SetupAction -Force @mockDefaultParameters
 
                             Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                                 $ArgumentList | Should -MatchExactly '\/ACTION=Install'
@@ -3999,7 +4001,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 Context 'When using parameter WhatIf' {
                     It 'Should call the mock with the correct argument string' {
                         InModuleScope -ScriptBlock {
-                            Invoke-SetupAction -WhatIf @mockDefaultParameters
+                            $null = Invoke-SetupAction -WhatIf @mockDefaultParameters
 
                             Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
                         }
@@ -4045,7 +4047,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -Parameters $_ -ScriptBlock {
                         $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
 
-                        Invoke-SetupAction @installSqlDscServerParameters
+                        $null = Invoke-SetupAction @installSqlDscServerParameters
 
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly $MockExpectedRegEx
