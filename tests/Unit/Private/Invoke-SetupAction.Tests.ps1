@@ -3128,6 +3128,11 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 MockExpectedRegEx = '\/INSTALLSHAREDDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
             }
             @{
+                MockParameterName = 'InstallSharedWOWDir'
+                MockParameterValue = 'C:\Program Files (x86)\Microsoft SQL Server'
+                MockExpectedRegEx = '\/INSTALLSHAREDWOWDIR="C:\\Program Files \(x86\)\\Microsoft SQL Server"' # cspell: disable-line
+            }
+            @{
                 MockParameterName = 'InstanceDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server'
                 MockExpectedRegEx = '\/INSTANCEDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
@@ -3632,7 +3637,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                         AzureRegion = 'West-US'
                         AzureTenantId = '7e52fb9e-6aad-426c-98c4-7d2f11f7e94b'
                         AzureServicePrincipal = 'MyServicePrincipal'
-                        AzureServicePrincipalSecret = ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-linePbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
+                        AzureServicePrincipalSecret = ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
                     }
                 }
             }
