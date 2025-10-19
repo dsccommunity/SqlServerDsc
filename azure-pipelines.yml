@@ -367,6 +367,7 @@ stages:
                   'tests/Integration/Commands/Remove-SqlDscTraceFlag.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscServer.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Initialize-SqlDscRebuildDatabase.Integration.Tests.ps1'
                   # Group 9
                   'tests/Integration/Commands/Uninstall-SqlDscServer.Integration.Tests.ps1'
               )

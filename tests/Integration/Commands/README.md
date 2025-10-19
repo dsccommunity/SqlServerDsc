@@ -121,7 +121,8 @@ Remove-SqlDscRole | 7 | 4 (New-SqlDscRole) | DSCSQLTEST | -
 Remove-SqlDscLogin | 7 | 4 (New-SqlDscLogin) | DSCSQLTEST | -
 Remove-SqlDscTraceFlag | 7 | 1 (Install-SqlDscServer) | DSCSQLTEST | -
 Repair-SqlDscServer | 8 | 1 (Install-SqlDscServer) | DSCSQLTEST | -
-Uninstall-SqlDscServer | 9 | 8 (Repair-SqlDscServer) | - | -
+Initialize-SqlDscRebuildDatabase | 8 | 1 (Install-SqlDscServer) | DSCSQLTEST | -
+Uninstall-SqlDscServer | 9 | 8 (Repair-SqlDscServer), 8 (Initialize-SqlDscRebuildDatabase) | - | -
 <!-- markdownlint-enable MD013 -->
 
 ### Integration_Test_Commands_ReportingServices
