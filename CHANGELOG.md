@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added script `Remove-SqlServerFromCIImage.ps1` to remove pre-installed SQL Server
+  components from Microsoft Hosted agents that conflict with PrepareImage operations.
+  The script is now run automatically in the CI pipeline before PrepareImage tests
+  to resolve Sysprep compatibility errors [issue #2212](https://github.com/dsccommunity/SqlServerDsc/issues/2212).
 - Added integration tests for `Complete-SqlDscImage` command to ensure command
   reliability in prepared image installation workflows. The test runs in a separate
   pipeline job `Integration_Test_Commands_SqlServer_PreparedImage` with its own CI

@@ -428,6 +428,11 @@ stages:
             name: cleanCIWorker
             displayName: 'Clean CI worker'
           - powershell: |
+              Write-Information -MessageData 'Removing pre-installed SQL Server components that conflict with PrepareImage...' -InformationAction Continue
+              & ./tests/Integration/Commands/Scripts/Remove-SqlServerFromCIImage.ps1 -Confirm:$false -InformationAction Continue -Verbose
+            name: removeSqlServerComponents
+            displayName: 'Remove pre-installed SQL Server components'
+          - powershell: |
               ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
                   # Run the integration tests in a specific group order for prepared image workflow.
                   # Group 0
