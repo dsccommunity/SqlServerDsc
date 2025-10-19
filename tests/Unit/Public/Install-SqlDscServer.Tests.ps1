@@ -1870,6 +1870,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 MockExpectedRegEx  = '\/INSTALLSHAREDDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
             }
             @{
+                MockParameterName  = 'InstallSharedWOWDir'
+                MockParameterValue = 'C:\Program Files (x86)\Microsoft SQL Server'
+                MockExpectedRegEx  = '\/INSTALLSHAREDWOWDIR="C:\\Program Files \(x86\)\\Microsoft SQL Server"' # cspell: disable-line
+            }
+            @{
                 MockParameterName  = 'InstanceDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server'
                 MockExpectedRegEx  = '\/INSTANCEDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
