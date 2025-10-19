@@ -406,7 +406,7 @@
         Prepares the server for using the database engine for an instance named 'MyInstance'.
 
     .EXAMPLE
-        Invoke-SetupAction -CompleteImage -AcceptLicensingTerms -InstanceId 'MSSQLSERVER' -MediaPath 'E:\'
+        Invoke-SetupAction -CompleteImage -AcceptLicensingTerms -InstanceId 'MSSQLSERVER' -SqlSvcAccount 'NT Service\MSSQLSERVER' -MediaPath 'E:\'
 
         Completes install on a server that was previously prepared (by using prepare image).
 
@@ -1013,7 +1013,7 @@ function Invoke-SetupAction
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
+        [Parameter(ParameterSetName = 'CompleteImage', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'AddNode')]
