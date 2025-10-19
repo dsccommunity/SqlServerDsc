@@ -40,52 +40,6 @@ Describe 'Complete-SqlDscImage' -Tag @('Integration_SQL2017', 'Integration_SQL20
 
     Context 'When completing a prepared SQL Server image' {
         It 'Should run the command without throwing' {
-            # Set splatting parameters for Complete-SqlDscImage
-            $completeSqlDscImageParameters = @{
-                AcceptLicensingTerms  = $true
-                InstanceName          = 'DSCSQLTEST'
-                InstanceId            = 'DSCSQLTEST'
-                SqlSvcAccount         = '{0}\svc-SqlPrimary' -f $computerName
-                SqlSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
-                AgtSvcAccount         = '{0}\svc-SqlAgentPri' -f $computerName
-                AgtSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
-                MediaPath             = $env:IsoDrivePath
-                Verbose               = $true
-                ErrorAction           = 'Stop'
-                Force                 = $true
-            }
-
-            try
-            {
-                $null = Complete-SqlDscImage @completeSqlDscImageParameters
-            }
-            catch
-            {
-                # Output Summary.txt if it exists to help diagnose the failure
-                $summaryFiles = Get-ChildItem -Path 'C:\Program Files\Microsoft SQL Server' -Filter 'Summary.txt' -Recurse -ErrorAction SilentlyContinue |
-                    Where-Object { $_.FullName -match '\\Setup Bootstrap\\Log\\' } |
-                    Sort-Object -Property LastWriteTime -Descending |
-                    Select-Object -First 1
-
-                if ($summaryFiles)
-                {
-                    Write-Verbose "==== SQL Server Setup Summary.txt (from $($summaryFiles.FullName)) ====" -Verbose
-                    Get-Content -Path $summaryFiles.FullName | Write-Verbose -Verbose
-                    Write-Verbose "==== End of Summary.txt ====" -Verbose
-                }
-                else
-                {
-                    Write-Verbose 'No Summary.txt file found.' -Verbose
-                }
-
-                # Re-throw the original error
-                throw $_
-            }
-        }
-    }
-
-    Context 'When completing a prepared image with service account parameters' {
-        It 'Should run the command without throwing' {
             # Set splatting parameters for Complete-SqlDscImage with service account configuration
             $completeSqlDscImageParameters = @{
                 AcceptLicensingTerms  = $true
@@ -100,55 +54,6 @@ Describe 'Complete-SqlDscImage' -Tag @('Integration_SQL2017', 'Integration_SQL20
                 BrowserSvcStartupType = 'Automatic'
                 SecurityMode          = 'SQL'
                 SAPwd                 = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-                SqlSysAdminAccounts   = @(
-                    ('{0}\SqlAdmin' -f $computerName)
-                )
-                MediaPath             = $env:IsoDrivePath
-                Verbose               = $true
-                ErrorAction           = 'Stop'
-                Force                 = $true
-            }
-
-            try
-            {
-                $null = Complete-SqlDscImage @completeSqlDscImageParameters
-            }
-            catch
-            {
-                # Output Summary.txt if it exists to help diagnose the failure
-                $summaryFiles = Get-ChildItem -Path 'C:\Program Files\Microsoft SQL Server' -Filter 'Summary.txt' -Recurse -ErrorAction SilentlyContinue |
-                    Where-Object { $_.FullName -match '\\Setup Bootstrap\\Log\\' } |
-                    Sort-Object -Property LastWriteTime -Descending |
-                    Select-Object -First 1
-
-                if ($summaryFiles)
-                {
-                    Write-Verbose "==== SQL Server Setup Summary.txt (from $($summaryFiles.FullName)) ====" -Verbose
-                    Get-Content -Path $summaryFiles.FullName | Write-Verbose -Verbose
-                    Write-Verbose "==== End of Summary.txt ====" -Verbose
-                }
-                else
-                {
-                    Write-Verbose 'No Summary.txt file found.' -Verbose
-                }
-
-                # Re-throw the original error
-                throw $_
-            }
-        }
-    }
-
-    Context 'When completing a prepared image with SQL Server directory parameters' {
-        It 'Should run the command without throwing' {
-            # Set splatting parameters for Complete-SqlDscImage with directory configuration
-            $completeSqlDscImageParameters = @{
-                AcceptLicensingTerms  = $true
-                InstanceName          = 'DSCSQLTEST'
-                InstanceId            = 'DSCSQLTEST'
-                SqlSvcAccount         = '{0}\svc-SqlPrimary' -f $computerName
-                SqlSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
-                AgtSvcAccount         = '{0}\svc-SqlAgentPri' -f $computerName
-                AgtSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
                 SqlSysAdminAccounts   = @(
                     ('{0}\SqlAdmin' -f $computerName)
                 )
