@@ -194,7 +194,7 @@ function Complete-SqlDscImage
         [System.Management.Automation.SwitchParameter]
         $Enu,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [System.String]
         $InstanceId,
 
@@ -227,7 +227,7 @@ function Complete-SqlDscImage
         [System.String]
         $ProductKey, # This is argument PID but $PID is reserved variable.
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [System.String]
         $AgtSvcAccount,
 
@@ -270,7 +270,7 @@ function Complete-SqlDscImage
         [System.String]
         $SqlCollation,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [System.String]
         $SqlSvcAccount,
 

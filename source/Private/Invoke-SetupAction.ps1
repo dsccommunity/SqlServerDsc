@@ -712,7 +712,7 @@ function Invoke-SetupAction
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'CompleteImage', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'Upgrade')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
@@ -816,7 +816,7 @@ function Invoke-SetupAction
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'AddNode')]
@@ -1013,7 +1013,7 @@ function Invoke-SetupAction
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'AddNode')]
