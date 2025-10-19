@@ -188,7 +188,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             }
         }
 
-        It 'Should throw an error when the MediaPath does not exist' {
+        It 'Should throw when ConfigurationFile does not exist' {
             InModuleScope -ScriptBlock {
                 { Invoke-SetupAction @mockDefaultParameters } |
                     Should -Throw -ExpectedMessage "Cannot validate argument on parameter 'ConfigurationFile'. The specified configuration file was not found."
