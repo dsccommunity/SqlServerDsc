@@ -248,7 +248,7 @@ function Set-SqlDscDatabase
 
                 $PSCmdlet.ThrowTerminatingError(
                     [System.Management.Automation.ErrorRecord]::new(
-                        [System.InvalidOperationException]::new($errorMessage),
+                        [System.InvalidOperationException]::new($errorMessage, $_.Exception),
                         'SSDD0004', # SQL Server Database - Set failed
                         [System.Management.Automation.ErrorCategory]::InvalidOperation,
                         $DatabaseObject
