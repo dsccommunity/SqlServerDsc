@@ -108,6 +108,14 @@ function Set-SqlDscDatabase
         $PassThru
     )
 
+    begin
+    {
+        if ($Force.IsPresent -and -not $Confirm)
+        {
+            $ConfirmPreference = 'None'
+        }
+    }
+
     process
     {
         if ($PSCmdlet.ParameterSetName -eq 'ServerObject')
@@ -196,7 +204,7 @@ function Set-SqlDscDatabase
         $verboseWarningMessage = $script:localizedData.Database_Set_ShouldProcessVerboseWarning -f $Name
         $captionMessage = $script:localizedData.Database_Set_ShouldProcessCaption
 
-        if ($Force.IsPresent -or $PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
             try
             {
