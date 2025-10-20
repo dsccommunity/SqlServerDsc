@@ -195,6 +195,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `Set-SqlDscAgentAlert`
+  - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
+    functions for proper terminating error handling ([issue #2196](https://github.com/dsccommunity/SqlServerDsc/issues/2196)).
 - `Remove-SqlDscRole`
   - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
     functions for proper terminating error handling ([issue #2199](https://github.com/dsccommunity/SqlServerDsc/issues/2199)).
