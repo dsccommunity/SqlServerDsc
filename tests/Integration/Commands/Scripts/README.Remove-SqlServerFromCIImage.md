@@ -26,10 +26,10 @@ PrepareImage/Sysprep operations, causing setup to fail with the error:
 
 ## Solution
 
-This script identifies and removes all SQL Server related products from the
+This script identifies and removes all SQL Server-related products from the
 system registry before running PrepareImage operations. It:
 
-1. Scans the Windows registry for SQL Server related products
+1. Scans the Windows registry for SQL Server-related products
 1. Identifies uninstall methods (MSI or custom uninstaller)
 1. Removes each product silently
 1. Provides detailed logging of the removal process
@@ -70,7 +70,7 @@ To run the script manually on a CI agent or local machine:
 
 1. **Registry Scan**: Searches both 32-bit and 64-bit registry uninstall
    locations
-1. **Pattern Matching**: Uses multiple patterns to identify SQL Server related
+1. **Pattern Matching**: Uses multiple patterns to identify SQL Server-related
    products
 1. **Uninstall Method Detection**: Automatically detects whether to use:
    - `msiexec.exe` for MSI-based products
