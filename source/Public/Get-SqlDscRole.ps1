@@ -85,6 +85,8 @@ function Get-SqlDscRole
                 }
 
                 Write-Error @writeErrorParameters
+
+                return
             }
             else
             {
