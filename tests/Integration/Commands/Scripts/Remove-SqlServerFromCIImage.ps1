@@ -16,11 +16,8 @@
         - SQL Server Browser
         - Any other SQL Server related products
 
-    .PARAMETER WhatIf
-        Shows what would be removed without actually removing anything.
-
-    .PARAMETER Confirm
-        Prompts for confirmation before removing each product.
+    .PARAMETER Force
+        Suppresses confirmation prompts before removing each product.
 
     .EXAMPLE
         .\Remove-SqlServerFromCIImage.ps1
@@ -31,6 +28,12 @@
         .\Remove-SqlServerFromCIImage.ps1 -WhatIf
 
         Shows what SQL Server components would be removed without actually removing them.
+
+    .EXAMPLE
+        .\Remove-SqlServerFromCIImage.ps1 -Force
+
+        Removes all pre-installed SQL Server components from the CI agent, without prompting
+        for confirmation.
 
     .NOTES
         This script should be run on Microsoft Hosted agents before performing
