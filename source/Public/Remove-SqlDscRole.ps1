@@ -75,6 +75,14 @@ function Remove-SqlDscRole
         $Refresh
     )
 
+    begin
+    {
+        if ($Force.IsPresent -and -not $Confirm)
+        {
+            $ConfirmPreference = 'None'
+        }
+    }
+
     process
     {
         if ($PSCmdlet.ParameterSetName -eq 'ServerObject')
@@ -129,7 +137,7 @@ function Remove-SqlDscRole
         $verboseWarningMessage = $script:localizedData.Role_Remove_ShouldProcessVerboseWarning -f $Name
         $captionMessage = $script:localizedData.Role_Remove_ShouldProcessCaption
 
-        if ($Force.IsPresent -or $PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
             try
             {
