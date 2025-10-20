@@ -94,6 +94,14 @@ function Remove-SqlDscDatabase
         $DropConnections
     )
 
+    begin
+    {
+        if ($Force.IsPresent -and -not $Confirm)
+        {
+            $ConfirmPreference = 'None'
+        }
+    }
+
     process
     {
         if ($PSCmdlet.ParameterSetName -eq 'ServerObject')
@@ -165,7 +173,7 @@ function Remove-SqlDscDatabase
         $verboseWarningMessage = $script:localizedData.Database_Remove_ShouldProcessVerboseWarning -f $Name
         $captionMessage = $script:localizedData.Database_Remove_ShouldProcessCaption
 
-        if ($Force.IsPresent -or $PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
             # Drop all active connections if requested
             if ($DropConnections.IsPresent)
