@@ -94,6 +94,9 @@ Describe 'Complete-SqlDscImage' -Tag 'Public' {
                 $mockDefaultParameters = @{
                     AcceptLicensingTerms = $true
                     MediaPath            = '\SqlMedia'
+                    InstanceId           = 'MSSQLSERVER'
+                    SqlSvcAccount        = 'NT Service\MSSQLSERVER'
+                    AgtSvcAccount        = 'NT Service\MSSQLSERVER'
                     ErrorAction          = 'Stop'
                 }
             }
@@ -142,6 +145,9 @@ Describe 'Complete-SqlDscImage' -Tag 'Public' {
                 $completeSqlDscImageParameters = @{
                     AcceptLicensingTerms = $true
                     MediaPath            = '\SqlMedia'
+                    InstanceId           = 'MSSQLSERVER'
+                    SqlSvcAccount        = 'NT Service\MSSQLSERVER'
+                    AgtSvcAccount        = 'NT Service\MSSQLSERVER'
                     Force                = $true
                     PBStartPortRange     = 16450
                     PBEndPortRange       = 16460
@@ -170,11 +176,6 @@ Describe 'Complete-SqlDscImage' -Tag 'Public' {
                 MockParameterName  = 'Enu'
                 MockParameterValue = $true
                 MockExpectedRegEx  = '\/ENU\s*'
-            }
-            @{
-                MockParameterName  = 'InstanceId'
-                MockParameterValue = 'Instance'
-                MockExpectedRegEx  = '\/INSTANCEID="Instance"' # cspell: disable-line
             }
             @{
                 MockParameterName  = 'PBEngSvcAccount'
@@ -360,6 +361,9 @@ Describe 'Complete-SqlDscImage' -Tag 'Public' {
                 $mockDefaultParameters = @{
                     AcceptLicensingTerms = $true
                     MediaPath            = '\SqlMedia'
+                    InstanceId           = 'MSSQLSERVER'
+                    SqlSvcAccount        = 'NT Service\MSSQLSERVER'
+                    AgtSvcAccount        = 'NT Service\MSSQLSERVER'
                     Force                = $true
                     ErrorAction          = 'Stop'
                 }

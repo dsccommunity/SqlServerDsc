@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added script `Remove-SqlServerFromCIImage.ps1` to remove pre-installed SQL Server
+  components from Microsoft Hosted agents that conflict with PrepareImage operations.
+  The script is now run automatically in the CI pipeline before PrepareImage tests
+  to resolve Sysprep compatibility errors [issue #2212](https://github.com/dsccommunity/SqlServerDsc/issues/2212).
+- Added integration tests for `Complete-SqlDscImage` command to ensure command
+  reliability in prepared image installation workflows. The test runs in a separate
+  pipeline job `Integration_Test_Commands_SqlServer_PreparedImage` with its own CI
+  worker, and verifies the completion of SQL Server instances prepared using
+  `Install-SqlDscServer` with the `-PrepareImage` parameter. The test includes
+  scenarios with minimal parameters and various service account/directory
+  configurations [issue #2212](https://github.com/dsccommunity/SqlServerDsc/issues/2212).
+- Added integration test for `Install-SqlDscServer` with the `-PrepareImage`
+  parameter set to support the prepared image installation workflow. This test
+  (`Install-SqlDscServer.Integration.PrepareImage.Tests.ps1`) runs in the
+  `Integration_Test_Commands_SqlServer_PreparedImage` pipeline job and prepares
+  a DSCSQLTEST instance that is later completed by `Complete-SqlDscImage` tests
+  [issue #2212](https://github.com/dsccommunity/SqlServerDsc/issues/2212).
 - Added integration tests for `Initialize-SqlDscRebuildDatabase` command to ensure
   command reliability. The test runs in group 8, alongside `Repair-SqlDscServer`,
   to verify the rebuild database functionality on the DSCSQLTEST instance

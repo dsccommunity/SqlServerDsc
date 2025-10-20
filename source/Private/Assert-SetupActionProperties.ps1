@@ -131,17 +131,38 @@ function Assert-SetupActionProperties
         )
     }
 
-    # If feature is SQLENGINE, then for specified setup actions the parameter AgtSvcAccount is mandatory.
-    if ($SetupAction -in ('CompleteImage', 'InstallFailoverCluster', 'PrepareFailoverCluster', 'AddNode'))
+    if ($SetupAction -in @('CompleteImage'))
     {
+        # If feature is SQLENGINE, then InstanceId, SqlSvcAccount and AgtSvcAccount are mandatory.
+        if ($Property.ContainsKey('Features') -and $Property.Features -contains 'SQLENGINE')
+        {
+            Assert-BoundParameter -BoundParameterList $Property -RequiredParameter @(
+                'InstanceId'
+                'SqlSvcAccount'
+                'AgtSvcAccount'
+            )
+        }
+    }
+
+    if ($SetupAction -in @('PrepareImage'))
+    {
+        # If feature is SQLENGINE, then InstanceId is mandatory.
+        if ($Property.ContainsKey('Features') -and $Property.Features -contains 'SQLENGINE')
+        {
+            Assert-BoundParameter -BoundParameterList $Property -RequiredParameter @(
+                'InstanceId'
+            )
+        }
+    }
+
+    if ($SetupAction -in @('InstallFailoverCluster', 'PrepareFailoverCluster', 'AddNode'))
+    {
+        # If feature is SQLENGINE, then for specified setup actions the parameter AgtSvcAccount is mandatory.
         if ($Property.ContainsKey('Features') -and $Property.Features -contains 'SQLENGINE')
         {
             Assert-BoundParameter -BoundParameterList $Property -RequiredParameter @('AgtSvcAccount')
         }
-    }
 
-    if ($SetupAction -in ('InstallFailoverCluster', 'PrepareFailoverCluster', 'AddNode'))
-    {
         # The parameter ASSvcAccount is mandatory if feature AS is installed and setup action is InstallFailoverCluster, PrepareFailoverCluster, or AddNode.
         if ($Property.ContainsKey('Features') -and $Property.Features -contains 'AS')
         {

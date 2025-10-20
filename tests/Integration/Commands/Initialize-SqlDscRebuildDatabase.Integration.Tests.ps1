@@ -50,7 +50,7 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag @('Integration_SQL2017', 'Integ
         $sqlService = Get-Service -Name $serviceName -ErrorAction 'Stop'
         if ($sqlService.Status -ne 'Stopped')
         {
-            Write-Error -Message "Failed to stop SQL Server service '$serviceName'"
+            throw "Failed to stop SQL Server service '$serviceName'"
         }
     }
 
@@ -70,7 +70,7 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag @('Integration_SQL2017', 'Integ
         $sqlService = Get-Service -Name $serviceName -ErrorAction 'Stop'
         if ($sqlService.Status -ne 'Running')
         {
-            Write-Error -Message "Failed to start SQL Server service '$serviceName'"
+            throw "Failed to start SQL Server service '$serviceName'"
         }
     }
 
@@ -202,6 +202,20 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag @('Integration_SQL2017', 'Integ
                 $sqlService = Get-Service -Name $serviceName -ErrorAction 'Stop'
                 $sqlService.Status | Should -Be 'Running'
             }
+
+            It 'Should have the requested TempDB file count' {
+                $mockSqlAdministratorUserName = 'SqlAdmin'
+                $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+                $mockSqlAdministratorCredential = [System.Management.Automation.PSCredential]::new(
+                    $mockSqlAdministratorUserName,
+                    $mockSqlAdministratorPassword
+                )
+
+                $server = Connect-SqlDscDatabaseEngine -InstanceName 'DSCSQLTEST' -Credential $mockSqlAdministratorCredential -ErrorAction 'Stop'
+                $server.Databases['tempdb'].FileGroups['PRIMARY'].Files.Count | Should -Be 8
+                Disconnect-SqlDscDatabaseEngine -ServerObject $server -ErrorAction 'Stop'
+            }
         }
 
         Context 'When specifying optional SqlCollation parameter' {
@@ -257,6 +271,20 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag @('Integration_SQL2017', 'Integ
 
                 $sqlService = Get-Service -Name $serviceName -ErrorAction 'Stop'
                 $sqlService.Status | Should -Be 'Running'
+            }
+
+            It 'Should set the requested server collation' {
+                $mockSqlAdministratorUserName = 'SqlAdmin'
+                $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+                $mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new(
+                    $mockSqlAdministratorUserName,
+                    $mockSqlAdministratorPassword
+                )
+
+                $server = Connect-SqlDscDatabaseEngine -InstanceName 'DSCSQLTEST' -Credential $mockSqlAdminCredential -ErrorAction 'Stop'
+                $server.Collation | Should -Be 'SQL_Latin1_General_CP1_CI_AS'
+                Disconnect-SqlDscDatabaseEngine -ServerObject $server -ErrorAction 'Stop'
             }
         }
     }

@@ -72,7 +72,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         @{
             MockParameterSetName   = 'PrepareImage'
             # cSpell: disable-next
-            MockExpectedParameters = '-PrepareImage -AcceptLicensingTerms -MediaPath <string> -Features <string[]> -InstanceId <string> [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstanceDir <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-PrepareImage -AcceptLicensingTerms -MediaPath <string> -Features <string[]> [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstallSharedWowDir <string>] [-InstanceDir <string>] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName   = 'Upgrade'
@@ -1868,6 +1868,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 MockParameterName  = 'InstallSharedDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server'
                 MockExpectedRegEx  = '\/INSTALLSHAREDDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
+            }
+            @{
+                MockParameterName  = 'InstallSharedWOWDir'
+                MockParameterValue = 'C:\Program Files (x86)\Microsoft SQL Server'
+                MockExpectedRegEx  = '\/INSTALLSHAREDWOWDIR="C:\\Program Files \(x86\)\\Microsoft SQL Server"' # cspell: disable-line
             }
             @{
                 MockParameterName  = 'InstanceDir'
