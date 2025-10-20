@@ -124,7 +124,7 @@ Describe 'Get-SqlDscRole' -Tag 'Public' {
             Mock -CommandName 'Write-Verbose'
 
             # Test the exact error message first
-            $expectedMessage = 'Server role ''NonExistentRole'' was not found.'
+            $expectedMessage = 'Server role ''NonExistentRole'' was not found. (GSDR0001)'
 
             { Get-SqlDscRole -ServerObject $mockServerObject -Name 'NonExistentRole' -ErrorAction 'Stop' } |
                 Should -Throw -ExpectedMessage $expectedMessage

@@ -314,7 +314,7 @@ ConvertFrom-StringData @'
     Role_Get = Getting server roles from instance '{0}'.
     Role_GetAll = Getting all server roles.
     Role_Found = Found server role '{0}'.
-    Role_NotFound = Server role '{0}' was not found. (RSDR0001)
+    Get_SqlDscRole_NotFound = Server role '{0}' was not found. (GSDR0001)
 
     ## New-SqlDscRole
     Role_Create = Creating server role '{0}' on instance '{1}'.
@@ -331,6 +331,7 @@ ConvertFrom-StringData @'
     Role_Remove = Removing server role '{0}' from instance '{1}'.
     Role_Removing = Removing server role '{0}'.
     Role_Removed = Server role '{0}' was removed successfully.
+    Remove_SqlDscRole_NotFound = Server role '{0}' was not found. (RSDR0001)
     Role_RemoveFailed = Failed to remove server role '{0}' from instance '{1}'. (RSDR0003)
     Role_CannotRemoveBuiltIn = Cannot remove built-in server role '{0}'. (RSDR0002)
     Role_Remove_ShouldProcessVerboseDescription = Removing the server role '{0}' from the instance '{1}'.

@@ -73,9 +73,9 @@ function Get-SqlDscRole
 
             if (-not $roleObject)
             {
-                Write-Verbose -Message ($script:localizedData.Role_NotFound -f $Name)
+                Write-Verbose -Message ($script:localizedData.Get_SqlDscRole_NotFound -f $Name)
 
-                $missingRoleMessage = $script:localizedData.Role_NotFound -f $Name
+                $missingRoleMessage = $script:localizedData.Get_SqlDscRole_NotFound -f $Name
 
                 $writeErrorParameters = @{
                     Message      = $missingRoleMessage

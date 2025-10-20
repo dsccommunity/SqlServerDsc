@@ -92,7 +92,7 @@ function Remove-SqlDscRole
 
             if (-not $RoleObject)
             {
-                $errorMessage = $script:localizedData.Role_NotFound -f $Name
+                $errorMessage = $script:localizedData.Remove_SqlDscRole_NotFound -f $Name
 
                 $PSCmdlet.ThrowTerminatingError(
                     [System.Management.Automation.ErrorRecord]::new(
