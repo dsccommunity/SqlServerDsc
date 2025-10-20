@@ -126,7 +126,15 @@ function Set-SqlDscDatabase
             if (-not $DatabaseObject)
             {
                 $errorMessage = $script:localizedData.Database_NotFound -f $Name
-                New-InvalidOperationException -Message $errorMessage
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        ($errorMessage),
+                        'SSDD0001', # SQL Server Database - Database not found
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $Name
+                    )
+                )
             }
         }
         else
@@ -154,7 +162,15 @@ function Set-SqlDscDatabase
             if ($CompatibilityLevel -notin $supportedCompatibilityLevels.$($ServerObject.VersionMajor))
             {
                 $errorMessage = $script:localizedData.Database_InvalidCompatibilityLevel -f $CompatibilityLevel, $ServerObject.InstanceName
-                New-ObjectNotFoundException -Message $errorMessage
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        ($errorMessage),
+                        'SSDD0002', # SQL Server Database - Invalid compatibility level
+                        [System.Management.Automation.ErrorCategory]::InvalidArgument,
+                        $CompatibilityLevel
+                    )
+                )
             }
         }
 
@@ -164,7 +180,15 @@ function Set-SqlDscDatabase
             if ($Collation -notin $ServerObject.EnumCollations().Name)
             {
                 $errorMessage = $script:localizedData.Database_InvalidCollation -f $Collation, $ServerObject.InstanceName
-                New-ObjectNotFoundException -Message $errorMessage
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        ($errorMessage),
+                        'SSDD0003', # SQL Server Database - Invalid collation
+                        [System.Management.Automation.ErrorCategory]::InvalidArgument,
+                        $Collation
+                    )
+                )
             }
         }
 
@@ -221,7 +245,15 @@ function Set-SqlDscDatabase
             catch
             {
                 $errorMessage = $script:localizedData.Database_SetFailed -f $Name, $ServerObject.InstanceName
-                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        ($errorMessage),
+                        'SSDD0004', # SQL Server Database - Set failed
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $DatabaseObject
+                    )
+                )
             }
         }
     }
