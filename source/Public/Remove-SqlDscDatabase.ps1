@@ -111,7 +111,15 @@ function Remove-SqlDscDatabase
             if ($Name -in $systemDatabases)
             {
                 $errorMessage = $script:localizedData.Database_CannotRemoveSystem -f $Name
-                New-InvalidOperationException -Message $errorMessage
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.InvalidOperationException]::new($errorMessage),
+                        'RSDD0001', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $Name
+                    )
+                )
             }
 
             # Get the database object
@@ -120,7 +128,15 @@ function Remove-SqlDscDatabase
             if (-not $DatabaseObject)
             {
                 $errorMessage = $script:localizedData.Database_NotFound -f $Name
-                New-InvalidOperationException -Message $errorMessage
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.Management.Automation.ItemNotFoundException]::new($errorMessage),
+                        'RSDD0002', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::ObjectNotFound,
+                        $Name
+                    )
+                )
             }
         }
         else
@@ -133,7 +149,15 @@ function Remove-SqlDscDatabase
             if ($Name -in $systemDatabases)
             {
                 $errorMessage = $script:localizedData.Database_CannotRemoveSystem -f $Name
-                New-InvalidOperationException -Message $errorMessage
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.InvalidOperationException]::new($errorMessage),
+                        'RSDD0003', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $Name
+                    )
+                )
             }
         }
 
@@ -143,26 +167,46 @@ function Remove-SqlDscDatabase
 
         if ($Force.IsPresent -or $PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
+            # Drop all active connections if requested
+            if ($DropConnections.IsPresent)
+            {
+                Write-Verbose -Message ($script:localizedData.Database_DroppingConnections -f $Name)
+
+                try
+                {
+                    $originalErrorActionPreference = $ErrorActionPreference
+
+                    $ErrorActionPreference = 'Stop'
+
+                    $DatabaseObject.UserAccess = 'Single'
+                    $DatabaseObject.Alter([Microsoft.SqlServer.Management.Smo.TerminationClause]::RollbackTransactionsImmediately)
+                }
+                catch
+                {
+                    $errorMessage = $script:localizedData.Database_DropConnectionsFailed -f $Name
+
+                    $PSCmdlet.ThrowTerminatingError(
+                        [System.Management.Automation.ErrorRecord]::new(
+                            [System.InvalidOperationException]::new($errorMessage, $_.Exception),
+                            'RSDD0004', # cspell: disable-line
+                            [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                            $DatabaseObject
+                        )
+                    )
+                }
+                finally
+                {
+                    $ErrorActionPreference = $originalErrorActionPreference
+                }
+            }
+
+            Write-Verbose -Message ($script:localizedData.Database_Removing -f $Name)
+
             try
             {
-                # Drop all active connections if requested
-                if ($DropConnections.IsPresent)
-                {
-                    Write-Verbose -Message ($script:localizedData.Database_DroppingConnections -f $Name)
+                $originalErrorActionPreference = $ErrorActionPreference
 
-                    try
-                    {
-                        $DatabaseObject.UserAccess = 'Single'
-                        $DatabaseObject.Alter([Microsoft.SqlServer.Management.Smo.TerminationClause]::RollbackTransactionsImmediately)
-                    }
-                    catch
-                    {
-                        $errorMessage = $script:localizedData.Database_DropConnectionsFailed -f $Name
-                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
-                    }
-                }
-
-                Write-Verbose -Message ($script:localizedData.Database_Removing -f $Name)
+                $ErrorActionPreference = 'Stop'
 
                 $DatabaseObject.Drop()
 
@@ -171,7 +215,19 @@ function Remove-SqlDscDatabase
             catch
             {
                 $errorMessage = $script:localizedData.Database_RemoveFailed -f $Name, $DatabaseObject.Parent.InstanceName
-                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.InvalidOperationException]::new($errorMessage, $_.Exception),
+                        'RSDD0005', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $DatabaseObject
+                    )
+                )
+            }
+            finally
+            {
+                $ErrorActionPreference = $originalErrorActionPreference
             }
         }
     }
