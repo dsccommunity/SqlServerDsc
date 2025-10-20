@@ -129,7 +129,7 @@ function Set-SqlDscDatabase
 
                 $PSCmdlet.ThrowTerminatingError(
                     [System.Management.Automation.ErrorRecord]::new(
-                        ($errorMessage),
+                        [System.InvalidOperationException]::new($errorMessage),
                         'SSDD0001', # SQL Server Database - Database not found
                         [System.Management.Automation.ErrorCategory]::InvalidOperation,
                         $Name
@@ -165,7 +165,7 @@ function Set-SqlDscDatabase
 
                 $PSCmdlet.ThrowTerminatingError(
                     [System.Management.Automation.ErrorRecord]::new(
-                        ($errorMessage),
+                        [System.ArgumentException]::new($errorMessage),
                         'SSDD0002', # SQL Server Database - Invalid compatibility level
                         [System.Management.Automation.ErrorCategory]::InvalidArgument,
                         $CompatibilityLevel
@@ -183,7 +183,7 @@ function Set-SqlDscDatabase
 
                 $PSCmdlet.ThrowTerminatingError(
                     [System.Management.Automation.ErrorRecord]::new(
-                        ($errorMessage),
+                        [System.ArgumentException]::new($errorMessage),
                         'SSDD0003', # SQL Server Database - Invalid collation
                         [System.Management.Automation.ErrorCategory]::InvalidArgument,
                         $Collation
@@ -248,7 +248,7 @@ function Set-SqlDscDatabase
 
                 $PSCmdlet.ThrowTerminatingError(
                     [System.Management.Automation.ErrorRecord]::new(
-                        ($errorMessage),
+                        [System.InvalidOperationException]::new($errorMessage),
                         'SSDD0004', # SQL Server Database - Set failed
                         [System.Management.Automation.ErrorCategory]::InvalidOperation,
                         $DatabaseObject
