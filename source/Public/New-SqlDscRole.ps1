@@ -70,6 +70,14 @@ function New-SqlDscRole
         $Refresh
     )
 
+    begin
+    {
+        if ($Force.IsPresent -and -not $Confirm)
+        {
+            $ConfirmPreference = 'None'
+        }
+    }
+
     process
     {
         if ($Refresh.IsPresent)
@@ -99,7 +107,7 @@ function New-SqlDscRole
         $verboseWarningMessage = $script:localizedData.Role_Create_ShouldProcessVerboseWarning -f $Name
         $captionMessage = $script:localizedData.Role_Create_ShouldProcessCaption
 
-        if ($Force.IsPresent -or $PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
             try
             {
