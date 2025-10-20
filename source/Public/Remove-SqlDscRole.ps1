@@ -93,7 +93,15 @@ function Remove-SqlDscRole
             if (-not $RoleObject)
             {
                 $errorMessage = $script:localizedData.Role_NotFound -f $Name
-                New-InvalidOperationException -Message $errorMessage
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.InvalidOperationException]::new($errorMessage),
+                        'RSDR0001', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $Name
+                    )
+                )
             }
         }
         else
@@ -106,7 +114,15 @@ function Remove-SqlDscRole
         if ($RoleObject.IsFixedRole)
         {
             $errorMessage = $script:localizedData.Role_CannotRemoveBuiltIn -f $Name
-            New-InvalidOperationException -Message $errorMessage
+
+            $PSCmdlet.ThrowTerminatingError(
+                [System.Management.Automation.ErrorRecord]::new(
+                    [System.InvalidOperationException]::new($errorMessage),
+                    'RSDR0002', # cspell: disable-line
+                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                    $RoleObject
+                )
+            )
         }
 
         $verboseDescriptionMessage = $script:localizedData.Role_Remove_ShouldProcessVerboseDescription -f $Name, $RoleObject.Parent.InstanceName
@@ -126,7 +142,15 @@ function Remove-SqlDscRole
             catch
             {
                 $errorMessage = $script:localizedData.Role_RemoveFailed -f $Name, $RoleObject.Parent.InstanceName
-                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.InvalidOperationException]::new($errorMessage, $_.Exception),
+                        'RSDR0003', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $RoleObject
+                    )
+                )
             }
         }
     }
