@@ -96,9 +96,9 @@ function Remove-SqlDscRole
 
                 $PSCmdlet.ThrowTerminatingError(
                     [System.Management.Automation.ErrorRecord]::new(
-                        [System.InvalidOperationException]::new($errorMessage),
+                        [System.Management.Automation.ItemNotFoundException]::new($errorMessage),
                         'RSDR0001', # cspell: disable-line
-                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        [System.Management.Automation.ErrorCategory]::ObjectNotFound,
                         $Name
                     )
                 )
