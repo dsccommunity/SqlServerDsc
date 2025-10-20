@@ -37,9 +37,19 @@
         SQL Server PrepareImage operations.
 #>
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
-param()
+param
+(
+    [Parameter()]
+    [System.Management.Automation.SwitchParameter]
+    $Force
+)
 
 $ErrorActionPreference = 'Stop'
+
+if ($Force.IsPresent -and -not $Confirm)
+{
+    $ConfirmPreference = 'None'
+}
 
 Write-Information -MessageData 'Starting removal of pre-installed SQL Server components from CI image...' -InformationAction 'Continue'
 
@@ -49,7 +59,7 @@ $uninstallKeys = @(
     'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*'
 )
 
-Write-Verbose -Message 'Scanning registry for SQL Server products...' -Verbose
+Write-Verbose -Message 'Scanning registry for SQL Server products...'
 
 $allProducts = Get-ItemProperty -Path $uninstallKeys -ErrorAction 'SilentlyContinue'
 
@@ -117,7 +127,7 @@ foreach ($product in $sqlServerProducts)
     $productCode = $product.PSChildName
     $uninstallString = $product.UninstallString
 
-    Write-Verbose -Message ('Processing: {0}' -f $productName) -Verbose
+    Write-Verbose -Message ('Processing: {0}' -f $productName)
 
     # Skip if no uninstall information is available
     if (-not $productCode -and -not $uninstallString)
@@ -151,7 +161,7 @@ foreach ($product in $sqlServerProducts)
                     (Join-Path -Path $env:TEMP -ChildPath ('SqlServerUninstall_{0}.log' -f $productCode))
                 )
 
-                Write-Verbose -Message ('Using msiexec to uninstall product code: {0}' -f $productCode) -Verbose
+                Write-Verbose -Message ('Using msiexec to uninstall product code: {0}' -f $productCode)
 
                 $previousErrorActionPreference = $ErrorActionPreference
                 $ErrorActionPreference = 'Continue'
@@ -174,7 +184,7 @@ foreach ($product in $sqlServerProducts)
             elseif ($uninstallString)
             {
                 # Custom uninstaller
-                Write-Verbose -Message ('Using custom uninstaller: {0}' -f $uninstallString) -Verbose
+                Write-Verbose -Message ('Using custom uninstaller: {0}' -f $uninstallString)
 
                 # Parse uninstall string to separate executable and arguments
                 if ($uninstallString -match '^"([^"]+)"(.*)$')
@@ -194,14 +204,14 @@ foreach ($product in $sqlServerProducts)
                     $arguments += ' /quiet /norestart'
                 }
 
-                Write-Verbose -Message ('Executable: {0}' -f $executable) -Verbose
-                Write-Verbose -Message ('Arguments: {0}' -f $arguments) -Verbose
-
-                $previousErrorActionPreference = $ErrorActionPreference
-                $ErrorActionPreference = 'Continue'
+                Write-Verbose -Message ('Executable: {0}' -f $executable)
+                Write-Verbose -Message ('Arguments: {0}' -f $arguments)
 
                 if (Test-Path -Path $executable)
                 {
+                    $previousErrorActionPreference = $ErrorActionPreference
+                    $ErrorActionPreference = 'Continue'
+
                     $process = Start-Process -FilePath $executable -ArgumentList $arguments -Wait -PassThru -NoNewWindow
 
                     $ErrorActionPreference = $previousErrorActionPreference
@@ -222,8 +232,6 @@ foreach ($product in $sqlServerProducts)
                     Write-Warning -Message ('Uninstaller not found: {0}' -f $executable)
                     $failedCount++
                 }
-
-                $ErrorActionPreference = $previousErrorActionPreference
             }
             else
             {
