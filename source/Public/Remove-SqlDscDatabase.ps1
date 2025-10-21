@@ -149,8 +149,8 @@ function Remove-SqlDscDatabase
             )
         }
 
-        $descriptionMessage = $script:localizedData.Database_Remove_ShouldProcessVerboseDescription -f $Name, $DatabaseObject.Parent.InstanceName
-        $confirmationMessage = $script:localizedData.Database_Remove_ShouldProcessVerboseWarning -f $Name
+        $descriptionMessage = $script:localizedData.Database_Remove_ShouldProcessDescription -f $Name, $DatabaseObject.Parent.InstanceName
+        $confirmationMessage = $script:localizedData.Database_Remove_ShouldProcessConfirmation -f $Name
         $captionMessage = $script:localizedData.Database_Remove_ShouldProcessCaption
 
         if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
