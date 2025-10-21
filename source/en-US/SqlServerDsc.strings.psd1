@@ -327,13 +327,11 @@ ConvertFrom-StringData @'
 
     ## Remove-SqlDscRole
     Role_Remove = Removing server role '{0}' from instance '{1}'.
-    Role_Removing = Removing server role '{0}'.
-    Role_Removed = Server role '{0}' was removed successfully.
     Remove_SqlDscRole_NotFound = Server role '{0}' was not found. (RSDR0001)
     Role_RemoveFailed = Failed to remove server role '{0}' from instance '{1}'. (RSDR0003)
     Role_CannotRemoveBuiltIn = Cannot remove built-in server role '{0}'. (RSDR0002)
-    Role_Remove_ShouldProcessVerboseDescription = Removing the server role '{0}' from the instance '{1}'.
-    Role_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove the server role '{0}'?
+    Role_Remove_ShouldProcessDescription = Removing the server role '{0}' from the instance '{1}'.
+    Role_Remove_ShouldProcessConfirmation = Are you sure you want to remove the server role '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Role_Remove_ShouldProcessCaption = Remove server role from instance
 

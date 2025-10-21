@@ -133,19 +133,15 @@ function Remove-SqlDscRole
             )
         }
 
-        $verboseDescriptionMessage = $script:localizedData.Role_Remove_ShouldProcessVerboseDescription -f $Name, $RoleObject.Parent.InstanceName
-        $verboseWarningMessage = $script:localizedData.Role_Remove_ShouldProcessVerboseWarning -f $Name
+        $descriptionMessage = $script:localizedData.Role_Remove_ShouldProcessDescription -f $Name, $RoleObject.Parent.InstanceName
+        $confirmationMessage = $script:localizedData.Role_Remove_ShouldProcessConfirmation -f $Name
         $captionMessage = $script:localizedData.Role_Remove_ShouldProcessCaption
 
-        if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
         {
             try
             {
-                Write-Verbose -Message ($script:localizedData.Role_Removing -f $Name)
-
                 $RoleObject.Drop()
-
-                Write-Verbose -Message ($script:localizedData.Role_Removed -f $Name)
             }
             catch
             {
