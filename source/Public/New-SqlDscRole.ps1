@@ -96,7 +96,7 @@ function New-SqlDscRole
             $PSCmdlet.ThrowTerminatingError(
                 [System.Management.Automation.ErrorRecord]::new(
                     [System.InvalidOperationException]::new($errorMessage),
-                    'NSR0001', # cspell: disable-line
+                    'NSDR0001', # cspell: disable-line
                     [System.Management.Automation.ErrorCategory]::ResourceExists,
                     $Name
                 )
@@ -133,7 +133,7 @@ function New-SqlDscRole
                 $PSCmdlet.ThrowTerminatingError(
                     [System.Management.Automation.ErrorRecord]::new(
                         [System.InvalidOperationException]::new($errorMessage, $_.Exception),
-                        'NSR0002', # cspell: disable-line
+                        'NSDR0002', # cspell: disable-line
                         [System.Management.Automation.ErrorCategory]::InvalidOperation,
                         $Name
                     )
