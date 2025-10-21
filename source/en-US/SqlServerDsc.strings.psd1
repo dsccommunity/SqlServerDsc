@@ -318,12 +318,10 @@ ConvertFrom-StringData @'
 
     ## New-SqlDscRole
     Role_Create = Creating server role '{0}' on instance '{1}'.
-    Role_Creating = Creating server role '{0}'.
-    Role_Created = Server role '{0}' was created successfully.
     Role_CreateFailed = Failed to create server role '{0}' on instance '{1}'.
     Role_AlreadyExists = Server role '{0}' already exists on instance '{1}'.
-    Role_Create_ShouldProcessVerboseDescription = Creating the server role '{0}' on the instance '{1}'.
-    Role_Create_ShouldProcessVerboseWarning = Are you sure you want to create the server role '{0}'?
+    Role_Create_ShouldProcessDescription = Creating the server role '{0}' on the instance '{1}'.
+    Role_Create_ShouldProcessConfirmation = Are you sure you want to create the server role '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Role_Create_ShouldProcessCaption = Create server role on instance
 

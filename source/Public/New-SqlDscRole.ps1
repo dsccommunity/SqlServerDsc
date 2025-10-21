@@ -103,11 +103,11 @@ function New-SqlDscRole
             )
         }
 
-        $verboseDescriptionMessage = $script:localizedData.Role_Create_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
-        $verboseWarningMessage = $script:localizedData.Role_Create_ShouldProcessVerboseWarning -f $Name
+        $descriptionMessage = $script:localizedData.Role_Create_ShouldProcessDescription -f $Name, $ServerObject.InstanceName
+        $confirmationMessage = $script:localizedData.Role_Create_ShouldProcessConfirmation -f $Name
         $captionMessage = $script:localizedData.Role_Create_ShouldProcessCaption
 
-        if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
         {
             try
             {
@@ -118,11 +118,7 @@ function New-SqlDscRole
                     $serverRole.Owner = $Owner
                 }
 
-                Write-Verbose -Message ($script:localizedData.Role_Creating -f $Name)
-
                 $serverRole.Create()
-
-                Write-Verbose -Message ($script:localizedData.Role_Created -f $Name)
 
                 return $serverRole
             }
