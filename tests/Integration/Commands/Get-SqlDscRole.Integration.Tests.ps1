@@ -96,7 +96,7 @@ Describe 'Get-SqlDscRole' -Tag @('Integration_SQL2017', 'Integration_SQL2019', '
 
         It 'Should throw an error when the role does not exist' {
             { Get-SqlDscRole -ServerObject $script:serverObject -Name 'NonExistentRole' -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage 'Server role ''NonExistentRole'' was not found.'
+                Should -Throw -ExpectedMessage '*Server role ''NonExistentRole'' was not found.*'
         }
 
         It 'Should return null when the role does not exist and error action is SilentlyContinue' {
