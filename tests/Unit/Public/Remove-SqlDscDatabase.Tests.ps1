@@ -86,7 +86,7 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
 
         It 'Should throw error when trying to remove system database' {
             { Remove-SqlDscDatabase -ServerObject $mockServerObject -Name 'master' -Force } |
-                Should -Throw -ExpectedMessage '*Cannot remove system database*'
+                Should -Throw -ExpectedMessage '*Cannot remove system database*' -ErrorId 'RSDD0001,Remove-SqlDscDatabase'
         }
     }
 
@@ -122,7 +122,7 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
             } -Force
 
             { Remove-SqlDscDatabase -DatabaseObject $mockSystemDatabaseObject -Force } |
-                Should -Throw -ExpectedMessage '*Cannot remove system database*'
+                Should -Throw -ExpectedMessage '*Cannot remove system database*' -ErrorId 'RSDD0001,Remove-SqlDscDatabase'
         }
     }
 

@@ -163,6 +163,13 @@ namespace Microsoft.SqlServer.Management.Smo
         CloseAllConnectionsImmediately = 2
     }
 
+    public enum DatabaseUserAccess : int
+    {
+        Multiple = 0,
+        Single = 1,
+        Restricted = 2
+    }
+
     #endregion Public Enums
 
     #region Public Classes

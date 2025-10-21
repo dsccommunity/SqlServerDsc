@@ -377,9 +377,6 @@ ConvertFrom-StringData @'
     Database_Set_ShouldProcessCaption = Set database properties on instance
 
     ## Remove-SqlDscDatabase
-    Database_Remove = Removing database '{0}' from instance '{1}'.
-    Database_Removing = Removing database '{0}'.
-    Database_Removed = Database '{0}' was removed successfully.
     Database_RemoveFailed = Failed to remove database '{0}' from instance '{1}'.
     Database_CannotRemoveSystem = Cannot remove system database '{0}'.
     Database_DroppingConnections = Dropping all active connections to database '{0}'.
@@ -388,6 +385,7 @@ ConvertFrom-StringData @'
     Database_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove the database '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Database_Remove_ShouldProcessCaption = Remove database from instance
+    Remove_SqlDscDatabase_NotFound = Database '{0}' was not found.
 
     ## Test-SqlDscDatabase
     Database_Test = Testing the state of database '{0}' on instance '{1}'.
