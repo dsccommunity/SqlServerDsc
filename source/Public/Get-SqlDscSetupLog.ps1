@@ -30,6 +30,9 @@
 
         Retrieves the setup log and filters for lines containing 'Error'.
 
+    .INPUTS
+        None. This command does not accept pipeline input.
+
     .OUTPUTS
         `[System.String[]]`
 
