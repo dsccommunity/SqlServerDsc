@@ -163,6 +163,17 @@ namespace Microsoft.SqlServer.Management.Smo
         CloseAllConnectionsImmediately = 2
     }
 
+    // TypeName: Microsoft.SqlServer.Management.Smo.DatabaseUserAccess
+    // Used by:
+    //  New-SqlDscDatabase.Tests.ps1
+    //  Set-SqlDscDatabase.Tests.ps1
+    public enum DatabaseUserAccess : int
+    {
+        Multiple = 0,
+        Single = 1,
+        Restricted = 2
+    }
+
     #endregion Public Enums
 
     #region Public Classes

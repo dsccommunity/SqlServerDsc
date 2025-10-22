@@ -147,7 +147,15 @@ function New-SqlDscDatabase
             if ($CompatibilityLevel -notin $supportedCompatibilityLevels.$($ServerObject.VersionMajor))
             {
                 $errorMessage = $script:localizedData.Database_InvalidCompatibilityLevel -f $CompatibilityLevel, $ServerObject.InstanceName
-                New-ArgumentException -ArgumentName 'CompatibilityLevel' -Message $errorMessage
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.ArgumentException]::new($errorMessage),
+                        'NSD0003', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidArgument,
+                        $CompatibilityLevel
+                    )
+                )
             }
         }
 
@@ -157,7 +165,15 @@ function New-SqlDscDatabase
             if ($Collation -notin $ServerObject.EnumCollations().Name)
             {
                 $errorMessage = $script:localizedData.Database_InvalidCollation -f $Collation, $ServerObject.InstanceName
-                New-ArgumentException -ArgumentName 'Collation' -Message $errorMessage
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.ArgumentException]::new($errorMessage),
+                        'NSD0004', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidArgument,
+                        $Collation
+                    )
+                )
             }
         }
 

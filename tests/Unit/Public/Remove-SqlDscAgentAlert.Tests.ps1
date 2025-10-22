@@ -211,9 +211,13 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Public' {
             $script:mockFailingAlert | Add-Member -MemberType ScriptMethod -Name 'Drop' -Value { throw 'Removal failed' } -Force
         }
 
-        It 'Should throw error when removal fails' {
-            { Remove-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Force } |
-                Should -Throw -ExpectedMessage '*Failed to remove*'
+        It 'Should throw correct error when removal fails' {
+            $errorRecord = { Remove-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Force } |
+                Should -Throw -PassThru
+
+            $errorRecord.Exception.Message | Should -BeLike '*Failed to remove*TestAlert*'
+            $errorRecord.Exception | Should -BeOfType [System.InvalidOperationException]
+            $errorRecord.FullyQualifiedErrorId | Should -Be 'RSAA0005,Remove-SqlDscAgentAlert'
         }
     }
 

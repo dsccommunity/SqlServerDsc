@@ -117,9 +117,13 @@ function Remove-SqlDscAgentAlert
 
         if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
+            Write-Verbose -Message ($script:localizedData.Remove_SqlDscAgentAlert_RemovingAlert -f $alertObjectToRemove.Name)
+
             try
             {
-                Write-Verbose -Message ($script:localizedData.Remove_SqlDscAgentAlert_RemovingAlert -f $alertObjectToRemove.Name)
+                $originalErrorActionPreference = $ErrorActionPreference
+
+                $ErrorActionPreference = 'Stop'
 
                 $alertObjectToRemove.Drop()
 
@@ -128,7 +132,19 @@ function Remove-SqlDscAgentAlert
             catch
             {
                 $errorMessage = $script:localizedData.Remove_SqlDscAgentAlert_RemoveFailed -f $alertObjectToRemove.Name
-                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.InvalidOperationException]::new($errorMessage, $_.Exception),
+                        'RSAA0005', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $alertObjectToRemove
+                    )
+                )
+            }
+            finally
+            {
+                $ErrorActionPreference = $originalErrorActionPreference
             }
         }
     }

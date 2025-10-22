@@ -75,6 +75,14 @@ function Remove-SqlDscRole
         $Refresh
     )
 
+    begin
+    {
+        if ($Force.IsPresent -and -not $Confirm)
+        {
+            $ConfirmPreference = 'None'
+        }
+    }
+
     process
     {
         if ($PSCmdlet.ParameterSetName -eq 'ServerObject')
@@ -92,8 +100,16 @@ function Remove-SqlDscRole
 
             if (-not $RoleObject)
             {
-                $errorMessage = $script:localizedData.Role_NotFound -f $Name
-                New-InvalidOperationException -Message $errorMessage
+                $errorMessage = $script:localizedData.Remove_SqlDscRole_NotFound -f $Name
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.Management.Automation.ItemNotFoundException]::new($errorMessage),
+                        'RSDR0001', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::ObjectNotFound,
+                        $Name
+                    )
+                )
             }
         }
         else
@@ -106,27 +122,39 @@ function Remove-SqlDscRole
         if ($RoleObject.IsFixedRole)
         {
             $errorMessage = $script:localizedData.Role_CannotRemoveBuiltIn -f $Name
-            New-InvalidOperationException -Message $errorMessage
+
+            $PSCmdlet.ThrowTerminatingError(
+                [System.Management.Automation.ErrorRecord]::new(
+                    [System.InvalidOperationException]::new($errorMessage),
+                    'RSDR0002', # cspell: disable-line
+                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                    $RoleObject
+                )
+            )
         }
 
-        $verboseDescriptionMessage = $script:localizedData.Role_Remove_ShouldProcessVerboseDescription -f $Name, $RoleObject.Parent.InstanceName
-        $verboseWarningMessage = $script:localizedData.Role_Remove_ShouldProcessVerboseWarning -f $Name
+        $descriptionMessage = $script:localizedData.Role_Remove_ShouldProcessDescription -f $Name, $RoleObject.Parent.InstanceName
+        $confirmationMessage = $script:localizedData.Role_Remove_ShouldProcessConfirmation -f $Name
         $captionMessage = $script:localizedData.Role_Remove_ShouldProcessCaption
 
-        if ($Force.IsPresent -or $PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
         {
             try
             {
-                Write-Verbose -Message ($script:localizedData.Role_Removing -f $Name)
-
                 $RoleObject.Drop()
-
-                Write-Verbose -Message ($script:localizedData.Role_Removed -f $Name)
             }
             catch
             {
                 $errorMessage = $script:localizedData.Role_RemoveFailed -f $Name, $RoleObject.Parent.InstanceName
-                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.InvalidOperationException]::new($errorMessage, $_.Exception),
+                        'RSDR0003', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $RoleObject
+                    )
+                )
             }
         }
     }

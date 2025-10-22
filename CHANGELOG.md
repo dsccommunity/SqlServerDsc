@@ -195,6 +195,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `Remove-SqlDscAgentAlert`
+  - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
+    functions for proper terminating error handling ([issue #2193](https://github.com/dsccommunity/SqlServerDsc/issues/2193)).
+- `Set-SqlDscAgentAlert`
+  - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
+    functions for proper terminating error handling ([issue #2196](https://github.com/dsccommunity/SqlServerDsc/issues/2196)).
+- `Remove-SqlDscDatabase`
+  - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
+    functions for proper terminating error handling ([issue #2195](https://github.com/dsccommunity/SqlServerDsc/issues/2195)).
+- `Remove-SqlDscRole`
+  - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
+    functions for proper terminating error handling ([issue #2199](https://github.com/dsccommunity/SqlServerDsc/issues/2199)).
+- `New-SqlDscDatabase`
+  - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
+    functions for proper terminating error handling ([issue #2200](https://github.com/dsccommunity/SqlServerDsc/issues/2200)).
+- `Set-SqlDscDatabase`
+  - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
+    functions for proper terminating error handling ([issue #2198](https://github.com/dsccommunity/SqlServerDsc/issues/2198)).
 - `Add-SqlDscTraceFlag`
   - Improved de-duplication logic to normalize element types to `[System.UInt32]`
     before sorting and removing duplicates, ensuring proper handling of mixed
