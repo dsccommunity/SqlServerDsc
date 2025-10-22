@@ -528,10 +528,9 @@ ConvertFrom-StringData @'
     ConvertTo_FormattedParameterDescription_NoParametersToUpdate = (no parameters to update)
 
     ## Get-SqlDscSetupLog
-    SetupLog_SearchingForFile = Searching for '{0}' in path '{1}'.
-    SetupLog_FileFound = Found setup log file at '{0}'.
-    SetupLog_FileNotFound = Setup log file '{0}' not found.
-    SetupLog_Header = ==== SQL Server Setup {0} (from {1}) ====
-    SetupLog_Footer = ==== End of {0} ====
-    SetupLog_NoFileFound = No {0} file found.
+    Get_SqlDscSetupLog_SearchingForFile = Searching for '{0}' in path '{1}'. (GSDSL0001)
+    Get_SqlDscSetupLog_FileFound = Found setup log file at '{0}'. (GSDSL0002)
+    Get_SqlDscSetupLog_FileNotFound = Setup log file '{0}' not found. (GSDSL0003)
+    Get_SqlDscSetupLog_Header = ==== SQL Server Setup {0} (from {1}) ==== (GSDSL0004)
+    Get_SqlDscSetupLog_Footer = ==== End of {0} ==== (GSDSL0005)
 '@

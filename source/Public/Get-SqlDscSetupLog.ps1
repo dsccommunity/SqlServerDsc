@@ -48,7 +48,7 @@ function Get-SqlDscSetupLog
 
     $setupLogFileName = 'Summary.txt'
 
-    Write-Verbose -Message ($script:localizedData.SetupLog_SearchingForFile -f $setupLogFileName, $Path)
+    Write-Verbose -Message ($script:localizedData.Get_SqlDscSetupLog_SearchingForFile -f $setupLogFileName, $Path)
 
     <#
         Find the most recent Summary.txt file from Setup Bootstrap\Log directories.
@@ -67,17 +67,17 @@ function Get-SqlDscSetupLog
 
     if ($summaryFiles)
     {
-        Write-Verbose -Message ($script:localizedData.SetupLog_FileFound -f $summaryFiles.FullName)
+        Write-Verbose -Message ($script:localizedData.Get_SqlDscSetupLog_FileFound -f $summaryFiles.FullName)
 
-        $output += $script:localizedData.SetupLog_Header -f $setupLogFileName, $summaryFiles.FullName
+        $output += $script:localizedData.Get_SqlDscSetupLog_Header -f $setupLogFileName, $summaryFiles.FullName
         $output += Get-Content -Path $summaryFiles.FullName
-        $output += $script:localizedData.SetupLog_Footer -f $setupLogFileName
+        $output += $script:localizedData.Get_SqlDscSetupLog_Footer -f $setupLogFileName
 
         return $output
     }
     else
     {
-        Write-Verbose -Message ($script:localizedData.SetupLog_FileNotFound -f $setupLogFileName)
+        Write-Verbose -Message ($script:localizedData.Get_SqlDscSetupLog_FileNotFound -f $setupLogFileName)
 
         return $null
     }
