@@ -60,11 +60,10 @@ Describe 'Get-SqlDscSetupLog' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
         It 'Should support custom Path parameter' {
             # Test that a custom path parameter works
-            # Using the standard path should return results
             $result = Get-SqlDscSetupLog -Path 'C:\Program Files\Microsoft SQL Server'
 
-            # Should return either the log or null, but should not error
-            $result | Should -BeOfType @('System.String', 'System.Object[]', $null)
+            # Using the standard path should return results
+            $result | Should -Not -BeNullOrEmpty
         }
 
         It 'Should return log content in correct format' {
