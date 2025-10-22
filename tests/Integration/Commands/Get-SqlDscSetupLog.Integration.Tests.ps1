@@ -74,7 +74,6 @@ Describe 'Get-SqlDscSetupLog' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             # If a log was found, verify it contains meaningful content
             $logString = $setupLog -join "`n"
             $logString.Length | Should -BeGreaterThan 0
-            }
         }
     }
 }
