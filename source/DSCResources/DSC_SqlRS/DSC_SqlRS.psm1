@@ -295,7 +295,7 @@ function Set-TargetResource
                 $ReportsVirtualDirectory = 'Reports'
             }
 
-            $reportingServicesServiceName = 'SQLServerReportingServices'
+            $reportingServicesServiceName = $reportingServicesData.Configuration.ServiceName
             $reportingServicesDatabaseName = 'ReportServer'
         }
         elseif ( $InstanceName -eq 'MSSQLSERVER' )
