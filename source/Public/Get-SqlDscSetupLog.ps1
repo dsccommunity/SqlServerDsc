@@ -61,19 +61,19 @@ function Get-SqlDscSetupLog
         structures and should not be user-configurable. The -Path parameter allows users to
         specify the root search path for cases where SQL Server is installed in non-standard locations.
     #>
-    $summaryFiles = Get-ChildItem -Path $Path -Filter $setupLogFileName -Recurse -ErrorAction 'SilentlyContinue' |
+    $summaryFile = Get-ChildItem -Path $Path -Filter $setupLogFileName -Recurse -ErrorAction 'SilentlyContinue' |
         Where-Object -FilterScript { $_.FullName -match '\\Setup Bootstrap\\Log\\' } |
         Sort-Object -Property 'LastWriteTime' -Descending |
         Select-Object -First 1
 
     $output = @()
 
-    if ($summaryFiles)
+    if ($summaryFile)
     {
-        Write-Verbose -Message ($script:localizedData.Get_SqlDscSetupLog_FileFound -f $summaryFiles.FullName)
+        Write-Verbose -Message ($script:localizedData.Get_SqlDscSetupLog_FileFound -f $summaryFile.FullName)
 
-        $output += $script:localizedData.Get_SqlDscSetupLog_Header -f $setupLogFileName, $summaryFiles.FullName
-        $output += Get-Content -Path $summaryFiles.FullName
+        $output += $script:localizedData.Get_SqlDscSetupLog_Header -f $setupLogFileName, $summaryFile.FullName
+        $output += Get-Content -Path $summaryFile.FullName
         $output += $script:localizedData.Get_SqlDscSetupLog_Footer -f $setupLogFileName
 
         return $output
