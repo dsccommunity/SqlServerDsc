@@ -39,8 +39,8 @@ Describe 'Get-SqlDscSetupLog' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             # The log should not be null if SQL Server is installed
             $setupLog | Should -Not -BeNullOrEmpty
 
-            # The log should be a string or array of strings
-            $setupLog | Should -BeOfType @('System.String', 'System.Object[]')
+            # The log should be an array (string array)
+            $setupLog | Should -BeOfType ([System.Object[]])
 
             # The log content should contain typical SQL Server setup log information
             # We check for common patterns that appear in Summary.txt
