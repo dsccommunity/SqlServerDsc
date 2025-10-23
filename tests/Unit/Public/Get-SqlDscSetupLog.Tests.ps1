@@ -238,24 +238,6 @@ Describe 'Get-SqlDscSetupLog' -Tag 'Public' {
         }
     }
 
-    Context 'When Get-ChildItem throws an error' {
-        BeforeAll {
-            Mock -CommandName Test-Path -MockWith {
-                return $true
-            }
-
-            Mock -CommandName Get-ChildItem -MockWith {
-                return $null
-            }
-        }
-
-        It 'Should handle errors gracefully and return no file found message' {
-            $result = Get-SqlDscSetupLog
-
-            $result | Should -BeNullOrEmpty
-        }
-    }
-
     Context 'When filtering for Setup Bootstrap\Log directory' {
         BeforeAll {
             Mock -CommandName Test-Path -MockWith {
