@@ -34,7 +34,8 @@ Describe 'Get-SqlDscSetupLog' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         It 'Should retrieve the setup log from the most recent installation' {
             # This test verifies that Get-SqlDscSetupLog can successfully retrieve the
             # SQL Server setup log (Summary.txt) from the CI test instance installation
-            $setupLog = Get-SqlDscSetupLog
+            # Using ErrorAction Stop to ensure the command does not throw on valid path
+            $setupLog = Get-SqlDscSetupLog -ErrorAction 'Stop'
 
             # The log should not be null if SQL Server is installed
             $setupLog | Should -Not -BeNullOrEmpty
@@ -50,18 +51,18 @@ Describe 'Get-SqlDscSetupLog' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             Write-Verbose -Message "Retrieved setup log with $($setupLog.Count) lines" -Verbose
         }
 
-        It 'Should return null when setup log is not found in non-existent path' {
-            # Test that the command gracefully handles non-existent paths
-            # Using a path that definitely doesn't contain SQL Server logs
-            $setupLogNotFound = Get-SqlDscSetupLog -Path 'C:\NonExistentPath'
-
-            # Should return null when no log file is found
-            $setupLogNotFound | Should -BeNullOrEmpty
+        It 'Should throw when setup log path does not exist' {
+            # Test that the command throws a terminating error for non-existent paths
+            # when using ErrorAction Stop
+            {
+                Get-SqlDscSetupLog -Path 'C:\NonExistentPath' -ErrorAction 'Stop'
+            } | Should -Throw
         }
 
         It 'Should support custom Path parameter' {
             # Test that a custom path parameter works
-            $result = Get-SqlDscSetupLog -Path 'C:\Program Files\Microsoft SQL Server'
+            # Using ErrorAction Stop to ensure the command does not throw on valid path
+            $result = Get-SqlDscSetupLog -Path 'C:\Program Files\Microsoft SQL Server' -ErrorAction 'Stop'
 
             # Using the standard path should return results
             $result | Should -Not -BeNullOrEmpty
@@ -70,7 +71,8 @@ Describe 'Get-SqlDscSetupLog' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         It 'Should include header and footer in the output' {
             # Verify that the output includes the formatted header and footer
             # that Get-SqlDscSetupLog adds to the raw log content
-            $setupLog = Get-SqlDscSetupLog
+            # Using ErrorAction Stop to ensure the command does not throw on valid path
+            $setupLog = Get-SqlDscSetupLog -ErrorAction 'Stop'
 
             $setupLog | Should -Not -BeNullOrEmpty
 
