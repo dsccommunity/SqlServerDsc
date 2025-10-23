@@ -45,7 +45,7 @@ Describe 'Get-SqlDscSetupLog' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             # The log content should contain typical SQL Server setup log information
             # We check for common patterns that appear in Summary.txt
             $logContent = $setupLog -join "`n"
-            @($logContent) | Should -Match '(Setup completed|Installation|SQL Server|Feature)' -ErrorAction 'SilentlyContinue'
+            $logContent | Should -Match '(Setup completed|Installation|SQL Server|Feature)'
 
             Write-Verbose -Message "Retrieved setup log with $($setupLog.Count) lines" -Verbose
         }
@@ -73,14 +73,14 @@ Describe 'Get-SqlDscSetupLog' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             $setupLog = Get-SqlDscSetupLog
 
             $setupLog | Should -Not -BeNullOrEmpty
-            
+
             # The command adds a header line and footer line to the output
             # Verify the output contains multiple lines (header + content + footer)
             $setupLog.Count | Should -BeGreaterThan 2
-            
+
             # The first line should be a header containing "Summary.txt"
             $setupLog[0] | Should -Match 'Summary\.txt'
-            
+
             # The last line should be a footer
             $setupLog[-1] | Should -Match 'Summary\.txt'
         }
