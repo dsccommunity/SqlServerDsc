@@ -50,12 +50,13 @@ Describe 'Get-SqlDscSetupLog' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             Write-Verbose -Message "Retrieved setup log with $($setupLog.Count) lines" -Verbose
         }
 
-        It 'Should retrieve the setup log from the default path' {
-            # Test that the default path works correctly
-            $setupLogDefault = Get-SqlDscSetupLog
+        It 'Should return null when setup log is not found in non-existent path' {
+            # Test that the command gracefully handles non-existent paths
+            # Using a path that definitely doesn't contain SQL Server logs
+            $setupLogNotFound = Get-SqlDscSetupLog -Path 'C:\NonExistentPath'
 
-            # Should return the same result as without parameters
-            $setupLogDefault | Should -Not -BeNullOrEmpty
+            # Should return null when no log file is found
+            $setupLogNotFound | Should -BeNullOrEmpty
         }
 
         It 'Should support custom Path parameter' {
@@ -66,13 +67,22 @@ Describe 'Get-SqlDscSetupLog' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             $result | Should -Not -BeNullOrEmpty
         }
 
-        It 'Should return log content in correct format' {
+        It 'Should include header and footer in the output' {
+            # Verify that the output includes the formatted header and footer
+            # that Get-SqlDscSetupLog adds to the raw log content
             $setupLog = Get-SqlDscSetupLog
 
             $setupLog | Should -Not -BeNullOrEmpty
-            # If a log was found, verify it contains meaningful content
-            $logString = $setupLog -join "`n"
-            $logString.Length | Should -BeGreaterThan 0
+            
+            # The command adds a header line and footer line to the output
+            # Verify the output contains multiple lines (header + content + footer)
+            $setupLog.Count | Should -BeGreaterThan 2
+            
+            # The first line should be a header containing "Summary.txt"
+            $setupLog[0] | Should -Match 'Summary\.txt'
+            
+            # The last line should be a footer
+            $setupLog[-1] | Should -Match 'Summary\.txt'
         }
     }
 }
