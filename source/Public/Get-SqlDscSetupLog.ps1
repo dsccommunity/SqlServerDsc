@@ -53,6 +53,21 @@ function Get-SqlDscSetupLog
 
     Write-Verbose -Message ($script:localizedData.Get_SqlDscSetupLog_SearchingForFile -f $setupLogFileName, $Path)
 
+    # Check if the path exists before attempting to search for files
+    if (-not (Test-Path -Path $Path -PathType 'Container'))
+    {
+        $writeErrorParameters = @{
+            Message      = $script:localizedData.Get_SqlDscSetupLog_PathNotFound -f $Path
+            Category     = 'ObjectNotFound'
+            ErrorId      = 'GSDSL0006'
+            TargetObject = $Path
+        }
+
+        Write-Error @writeErrorParameters
+
+        return $null
+    }
+
     <#
         Find the most recent Summary.txt file from Setup Bootstrap\Log directories.
         Summary.txt is the standard SQL Server setup diagnostic log that records the outcome

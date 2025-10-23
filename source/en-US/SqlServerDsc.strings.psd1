@@ -533,4 +533,5 @@ ConvertFrom-StringData @'
     Get_SqlDscSetupLog_FileNotFound = Setup log file '{0}' not found. (GSDSL0003)
     Get_SqlDscSetupLog_Header = ==== SQL Server Setup {0} (from {1}) ==== (GSDSL0004)
     Get_SqlDscSetupLog_Footer = ==== End of {0} ==== (GSDSL0005)
+    Get_SqlDscSetupLog_PathNotFound = Path '{0}' does not exist. (GSDSL0006)
 '@

@@ -49,6 +49,10 @@ AfterAll {
 Describe 'Get-SqlDscSetupLog' -Tag 'Public' {
     Context 'When the setup log file exists' {
         BeforeAll {
+            Mock -CommandName Test-Path -MockWith {
+                return $true
+            }
+
             Mock -CommandName Get-ChildItem -MockWith {
                 $mockFileInfo = New-Object -TypeName PSObject
                 $mockFileInfo | Add-Member -MemberType NoteProperty -Name 'FullName' -Value 'C:\Program Files\Microsoft SQL Server\150\Setup Bootstrap\Log\Summary.txt'
@@ -110,6 +114,10 @@ Describe 'Get-SqlDscSetupLog' -Tag 'Public' {
 
     Context 'When multiple setup log files exist' {
         BeforeAll {
+            Mock -CommandName Test-Path -MockWith {
+                return $true
+            }
+
             Mock -CommandName Get-ChildItem -MockWith {
                 $mockFileInfo1 = New-Object -TypeName PSObject
                 $mockFileInfo1 | Add-Member -MemberType NoteProperty -Name 'FullName' -Value 'C:\Program Files\Microsoft SQL Server\150\Setup Bootstrap\Log\Summary.txt'
@@ -140,6 +148,10 @@ Describe 'Get-SqlDscSetupLog' -Tag 'Public' {
 
     Context 'When the setup log file does not exist' {
         BeforeAll {
+            Mock -CommandName Test-Path -MockWith {
+                return $true
+            }
+
             Mock -CommandName Get-ChildItem -MockWith {
                 return $null
             }
@@ -162,8 +174,76 @@ Describe 'Get-SqlDscSetupLog' -Tag 'Public' {
         }
     }
 
+    Context 'When the specified path does not exist' {
+        BeforeAll {
+            Mock -CommandName Test-Path -MockWith {
+                return $false
+            }
+
+            Mock -CommandName Get-ChildItem -MockWith {
+                throw 'Get-ChildItem should not be called when path does not exist'
+            }
+
+            Mock -CommandName Write-Error
+        }
+
+        It 'Should return null without searching for files' {
+            $result = Get-SqlDscSetupLog -Path 'C:\NonExistentPath' -ErrorAction 'SilentlyContinue'
+
+            $result | Should -BeNullOrEmpty
+        }
+
+        It 'Should not call Get-ChildItem when path does not exist' {
+            $result = Get-SqlDscSetupLog -Path 'C:\NonExistentPath' -ErrorAction 'SilentlyContinue'
+
+            Should -Invoke -CommandName Get-ChildItem -Exactly -Times 0
+        }
+
+        It 'Should call Test-Path with the correct parameters' {
+            $result = Get-SqlDscSetupLog -Path 'C:\NonExistentPath' -ErrorAction 'SilentlyContinue'
+
+            Should -Invoke -CommandName Test-Path -ParameterFilter {
+                $Path -eq 'C:\NonExistentPath' -and
+                $PathType -eq 'Container'
+            } -Exactly -Times 1
+        }
+
+        It 'Should call Write-Error with the correct parameters' {
+            $result = Get-SqlDscSetupLog -Path 'C:\NonExistentPath' -ErrorAction 'SilentlyContinue'
+
+            Should -Invoke -CommandName Write-Error -ParameterFilter {
+                $Message -match 'C:\\NonExistentPath' -and
+                $Category -eq 'ObjectNotFound' -and
+                $ErrorId -eq 'GSDSL0006' -and
+                $TargetObject -eq 'C:\NonExistentPath'
+            } -Exactly -Times 1
+        }
+    }
+
+    Context 'When the specified path does not exist and ErrorAction is Stop' {
+        BeforeAll {
+            Mock -CommandName Test-Path -MockWith {
+                return $false
+            }
+
+            Mock -CommandName Get-ChildItem -MockWith {
+                throw 'Get-ChildItem should not be called when path does not exist'
+            }
+        }
+
+        It 'Should throw a terminating error when using ErrorAction Stop' {
+            {
+                Get-SqlDscSetupLog -Path 'C:\NonExistentPath' -ErrorAction 'Stop'
+            } | Should -Throw -ErrorId 'GSDSL0006,Get-SqlDscSetupLog'
+        }
+    }
+
     Context 'When Get-ChildItem throws an error' {
         BeforeAll {
+            Mock -CommandName Test-Path -MockWith {
+                return $true
+            }
+
             Mock -CommandName Get-ChildItem -MockWith {
                 return $null
             }
@@ -178,6 +258,10 @@ Describe 'Get-SqlDscSetupLog' -Tag 'Public' {
 
     Context 'When filtering for Setup Bootstrap\Log directory' {
         BeforeAll {
+            Mock -CommandName Test-Path -MockWith {
+                return $true
+            }
+
             Mock -CommandName Get-ChildItem -MockWith {
                 $mockFileInfo1 = New-Object -TypeName PSObject
                 $mockFileInfo1 | Add-Member -MemberType NoteProperty -Name 'FullName' -Value 'C:\Program Files\Microsoft SQL Server\SomeOtherLocation\Summary.txt'
