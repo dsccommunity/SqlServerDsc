@@ -56,6 +56,7 @@ function Get-TargetResource
         InstanceName                 = $InstanceName
         DatabaseServerName           = $DatabaseServerName
         DatabaseInstanceName         = $DatabaseInstanceName
+        ServiceName                  = $null
         ReportServerVirtualDirectory = $null
         ReportsVirtualDirectory      = $null
         ReportServerReservedUrl      = $null
@@ -79,6 +80,8 @@ function Get-TargetResource
             $getTargetResourceResult.DatabaseServerName = $reportingServicesData.Configuration.DatabaseServerName
             $getTargetResourceResult.DatabaseInstanceName = 'MSSQLSERVER'
         }
+
+        $getTargetResourceResult.ServiceName = $reportingServicesData.Configuration.ServiceName
 
         $isInitialized = $reportingServicesData.Configuration.IsInitialized
 
@@ -534,7 +537,7 @@ function Set-TargetResource
             #>
             Write-Verbose -Message $script:localizedData.RestartToFinishInitialization
 
-            Restart-ReportingServicesService -InstanceName $InstanceName -WaitTime 30
+            Restart-ReportingServicesService -ServiceName $reportingServicesServiceName -WaitTime 30
 
             <#
                 Wait for the service to be fully ready after restart before attempting
@@ -836,7 +839,7 @@ function Set-TargetResource
         elseif ( $restartReportingService -and (-not $SuppressRestart) )
         {
             Write-Verbose -Message $script:localizedData.Restart
-            Restart-ReportingServicesService -InstanceName $InstanceName -WaitTime 30
+            Restart-ReportingServicesService -ServiceName $currentConfig.ServiceName -WaitTime 30
 
             <#
                 Wait for the service to be fully ready after restart before attempting
