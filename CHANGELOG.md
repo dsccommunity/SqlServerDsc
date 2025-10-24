@@ -110,6 +110,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to correctly reflect that `ConvertFrom-SqlDscDatabasePermission` test does not
   require database instance connectivity
   [issue #2284](https://github.com/dsccommunity/SqlServerDsc/issues/2284).
+- Updated unit test assertion in `Get-SqlDscSetupLog.Tests.ps1` to use
+  `Should -BeFalse` instead of `Should -Contain $false` to comply with DSC
+  Community Pester style guidelines
+  [issue #2315](https://github.com/dsccommunity/SqlServerDsc/issues/2315).
 - Added integration tests for `Set-SqlDscAudit` command to ensure it functions
   correctly in real environments
   [issue #2236](https://github.com/dsccommunity/SqlServerDsc/issues/2236).
