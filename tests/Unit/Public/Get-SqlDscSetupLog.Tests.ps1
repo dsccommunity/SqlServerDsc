@@ -284,7 +284,7 @@ Describe 'Get-SqlDscSetupLog' -Tag 'Public' {
 
         It 'Should have Path as an optional parameter' {
             $commandInfo = Get-Command -Name 'Get-SqlDscSetupLog'
-            $commandInfo.Parameters['Path'].Attributes.Mandatory | Should -Contain $false
+            $commandInfo.Parameters['Path'].Attributes.Mandatory | Should -BeFalse
         }
 
         It 'Should have the correct output type' {
