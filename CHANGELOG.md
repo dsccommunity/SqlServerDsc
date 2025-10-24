@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added public command `Get-SqlDscSetupLog` to retrieve SQL Server setup bootstrap
+  logs (Summary.txt) from the most recent setup operation. This command can be used
+  interactively for troubleshooting or within integration tests to help diagnose
+  setup failures. Integration tests have been updated to use this command instead
+  of duplicated error handling code [issue #2311](https://github.com/dsccommunity/SqlServerDsc/issues/2311).
 - Added script `Remove-SqlServerFromCIImage.ps1` to remove pre-installed SQL Server
   components from Microsoft Hosted agents that conflict with PrepareImage operations.
   The script is now run automatically in the CI pipeline before PrepareImage tests
