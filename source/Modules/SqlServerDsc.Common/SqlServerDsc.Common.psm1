@@ -1109,12 +1109,16 @@ function Restart-SqlClusterService
 #>
 function Restart-ReportingServicesService
 {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'InstanceName')]
     param
     (
-        [Parameter()]
+        [Parameter(ParameterSetName = 'InstanceName')]
         [System.String]
         $InstanceName = 'MSSQLSERVER',
+
+        [Parameter(ParameterSetName = 'ServiceName', Mandatory = $true)]
+        [System.String]
+        $ServiceName,
 
         [Parameter()]
         [System.UInt16]
@@ -1125,10 +1129,10 @@ function Restart-ReportingServicesService
     {
         # Check if we're dealing with SSRS 2017 or SQL2019
         $ServiceName = 'SQLServerReportingServices'
-
-        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
-        $reportingServicesService = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
     }
+
+    Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
+    $reportingServicesService = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
 
     if ($null -eq $reportingServicesService)
     {
