@@ -93,6 +93,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added integration tests for `Test-SqlDscIsDatabasePrincipal` command to ensure
   it functions correctly in real environments
   [issue #2231](https://github.com/dsccommunity/SqlServerDsc/issues/2231).
+- Added public command `Test-SqlDscDatabaseProperty` to test database properties
+  on SQL Server Database Engine instances. This command supports two parameter sets:
+  `ServerObject` with `DatabaseName`, and `DatabaseObject` (from `Get-SqlDscDatabase`).
+  It allows users to specify any non-collection properties of the SMO Database object
+  as dynamic parameters to test, returning `$true` if all tested properties match
+  their expected values, and `$false` otherwise. This command improves maintainability
+  of SQL DSC resources and provides granular database configuration testing
+  [issue #2306](https://github.com/dsccommunity/SqlServerDsc/issues/2306).
 
 ### Fixed
 

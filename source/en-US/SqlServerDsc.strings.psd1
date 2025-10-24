@@ -398,6 +398,12 @@ ConvertFrom-StringData @'
     Database_RecoveryModelWrong = The database '{0}' exists and has the recovery model '{1}', but expected it to have the recovery model '{2}'.
     Database_OwnerNameWrong = The database '{0}' exists and has the owner '{1}', but expected it to have the owner '{2}'.
 
+    ## Test-SqlDscDatabaseProperty
+    DatabaseProperty_TestingProperties = Testing properties of database '{0}' on instance '{1}'.
+    DatabaseProperty_TestingPropertiesFromObject = Testing properties of database '{0}' on instance '{1}' using database object.
+    DatabaseProperty_PropertyWrong = The database '{0}' property '{1}' has the value '{2}', but expected it to have the value '{3}'.
+    DatabaseProperty_PropertyCorrect = The database '{0}' property '{1}' has the expected value '{2}'.
+
     ## Set-SqlDscDatabaseDefault
     DatabaseDefault_Set = Setting default objects of database '{0}' on instance '{1}'. (SSDDD0001)
     DatabaseDefault_Updated = Database '{0}' default objects were updated successfully. (SSDDD0002)
