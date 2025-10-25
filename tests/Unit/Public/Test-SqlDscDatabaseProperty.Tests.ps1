@@ -409,6 +409,48 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
         }
     }
 
+    Context 'When testing a property that does not exist on the database object' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -PassThru -Force
+
+            # Mock Get-SqlDscDatabase to return our custom minimal database object
+            Mock -CommandName Get-SqlDscDatabase -MockWith {
+                <#
+                    Create a minimal database object without certain properties using PSCustomObject
+                    This allows us to control exactly which properties exist, simulating older SQL Server versions
+                #>
+                return [PSCustomObject] @{
+                    Name = 'MinimalDatabase'
+                    Collation = 'SQL_Latin1_General_CP1_CI_AS'
+                    # Intentionally not including AcceleratedRecoveryEnabled to simulate SQL Server version that doesn't support it
+                }
+            }
+        }
+
+        It 'Should throw an exception when property does not exist on the database object' {
+            # AcceleratedRecoveryEnabled is not added to the minimal database object
+            { Test-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'MinimalDatabase' -AcceleratedRecoveryEnabled $true -ErrorAction 'Stop' } |
+                Should -Throw -ExpectedMessage "The property 'AcceleratedRecoveryEnabled' does not exist on database 'MinimalDatabase'. This might be due to the property not being supported on this SQL Server version.*"
+        }
+
+        It 'Should continue testing other properties after encountering a missing property' {
+            # Test with both a missing property and an existing property
+            $result = Test-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'MinimalDatabase' -AcceleratedRecoveryEnabled $true -Collation 'SQL_Latin1_General_CP1_CI_AS' -ErrorAction 'SilentlyContinue'
+
+            # Should return true because the existing property (Collation) matches
+            $result | Should -BeTrue
+        }
+
+        It 'Should return false when a missing property is tested along with a non-matching property' {
+            # Test with a missing property and a non-matching existing property
+            $result = Test-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'MinimalDatabase' -AcceleratedRecoveryEnabled $true -Collation 'Different_Collation' -ErrorAction 'SilentlyContinue'
+
+            # Should return false because the existing property (Collation) does not match
+            $result | Should -BeFalse
+        }
+    }
+
     Context 'Parameter validation' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
