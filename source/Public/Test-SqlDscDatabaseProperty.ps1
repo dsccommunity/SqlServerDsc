@@ -484,6 +484,11 @@
 
         Tests multiple database properties at once.
 
+    .INPUTS
+        `[Microsoft.SqlServer.Management.Smo.Database]`
+
+        The database object to test properties for (from Get-SqlDscDatabase).
+
     .OUTPUTS
         `[System.Boolean]`
 #>
