@@ -15,7 +15,7 @@
         By default log files are created under %TEMP%.
 
     .PARAMETER SuppressRestart
-        Suppresses the restart of the computer after the uninstallation is finished.
+        Specifies whether to suppress the restart of the computer after the uninstallation is finished.
         By default the computer is restarted after the uninstallation is finished.
 
     .PARAMETER Timeout
@@ -24,11 +24,11 @@
         this time, an exception will be thrown.
 
     .PARAMETER Force
-        If specified the command will not ask for confirmation. Same as if Confirm:$false
+        Specifies whether the command will not ask for confirmation. Same as if Confirm:$false
         is used.
 
     .PARAMETER PassThru
-        If specified the command will return the setup process exit code.
+        Specifies whether the command will return the setup process exit code.
 
     .OUTPUTS
         When PassThru is specified the function will return the setup process exit

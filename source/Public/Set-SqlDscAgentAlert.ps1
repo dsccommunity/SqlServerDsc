@@ -24,7 +24,7 @@
         Cannot be used together with Severity.
 
     .PARAMETER PassThru
-        If specified, the updated alert object will be returned.
+        Specifies whether the updated alert object will be returned.
 
     .PARAMETER Refresh
         Specifies that the alert object should be refreshed before updating. This
