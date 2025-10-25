@@ -225,9 +225,6 @@ BeforeAll {
 
     $env:SqlServerDscCI = $true
 
-    # Loading mocked classes first, before importing module
-    Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../Stubs') -ChildPath 'SMO.cs')
-
     Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
