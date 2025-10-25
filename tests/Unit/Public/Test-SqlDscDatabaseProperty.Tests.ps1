@@ -148,7 +148,7 @@ BeforeDiscovery {
         'CompatibilityLevel' = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Smo.CompatibilityLevel]::Version150; ExpectedValue = [Microsoft.SqlServer.Management.Smo.CompatibilityLevel]::Version150 }
         'ContainmentType' = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Smo.ContainmentType]::None; ExpectedValue = [Microsoft.SqlServer.Management.Smo.ContainmentType]::None }
         'DatabaseEngineEdition' = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Common.DatabaseEngineEdition]::Standard; ExpectedValue = [Microsoft.SqlServer.Management.Common.DatabaseEngineEdition]::Standard }
-        'DatabaseEngineType' = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Smo.DatabaseEngineType]::Standalone; ExpectedValue = [Microsoft.SqlServer.Management.Smo.DatabaseEngineType]::Standalone }
+        'DatabaseEngineType' = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Common.DatabaseEngineType]::Standalone; ExpectedValue = [Microsoft.SqlServer.Management.Common.DatabaseEngineType]::Standalone }
         'FilestreamNonTransactedAccess' = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Smo.FilestreamNonTransactedAccessType]::Off; ExpectedValue = [Microsoft.SqlServer.Management.Smo.FilestreamNonTransactedAccessType]::Off }
         'LogReuseWaitStatus' = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Smo.LogReuseWaitStatus]::Nothing; ExpectedValue = [Microsoft.SqlServer.Management.Smo.LogReuseWaitStatus]::Nothing }
         'MirroringSafetyLevel' = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Smo.MirroringSafetyLevel]::Full; ExpectedValue = [Microsoft.SqlServer.Management.Smo.MirroringSafetyLevel]::Full }
@@ -193,7 +193,7 @@ BeforeDiscovery {
                     'CompatibilityLevel' { [Microsoft.SqlServer.Management.Smo.CompatibilityLevel]::Version140 }
                     'ContainmentType' { [Microsoft.SqlServer.Management.Smo.ContainmentType]::Partial }
                     'DatabaseEngineEdition' { [Microsoft.SqlServer.Management.Common.DatabaseEngineEdition]::Enterprise }
-                    'DatabaseEngineType' { [Microsoft.SqlServer.Management.Smo.DatabaseEngineType]::SqlAzureDatabase }
+                    'DatabaseEngineType' { [Microsoft.SqlServer.Management.Common.DatabaseEngineType]::SqlAzureDatabase }
                     'FilestreamNonTransactedAccess' { [Microsoft.SqlServer.Management.Smo.FilestreamNonTransactedAccessType]::ReadOnly }
                     'LogReuseWaitStatus' { [Microsoft.SqlServer.Management.Smo.LogReuseWaitStatus]::LogBackup }
                     'MirroringSafetyLevel' { [Microsoft.SqlServer.Management.Smo.MirroringSafetyLevel]::Off }

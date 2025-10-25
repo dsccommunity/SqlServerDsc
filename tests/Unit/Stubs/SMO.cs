@@ -236,13 +236,6 @@ namespace Microsoft.SqlServer.Management.Smo
         Initializing = 4
     }
 
-    public enum DatabaseEngineType : int
-    {
-        Unknown = 0,
-        Standalone = 1,
-        SqlAzureDatabase = 2,
-    }
-
     public enum LogReuseWaitStatus : int
     {
         Nothing = 0,
@@ -848,7 +841,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public RetentionPeriodUnits ChangeTrackingRetentionPeriodUnits = RetentionPeriodUnits.Days;
         public CompatibilityLevel CompatibilityLevel = CompatibilityLevel.Version150;
         public Microsoft.SqlServer.Management.Common.DatabaseEngineEdition DatabaseEngineEdition = Microsoft.SqlServer.Management.Common.DatabaseEngineEdition.Standard;
-        public DatabaseEngineType DatabaseEngineType = DatabaseEngineType.Standalone;
+        public Microsoft.SqlServer.Management.Common.DatabaseEngineType DatabaseEngineType = Microsoft.SqlServer.Management.Common.DatabaseEngineType.Standalone;
         public ContainmentType ContainmentType = ContainmentType.None;
         public FilestreamNonTransactedAccessType FilestreamNonTransactedAccess = FilestreamNonTransactedAccessType.Off;
         public LogReuseWaitStatus LogReuseWaitStatus = LogReuseWaitStatus.Nothing;
@@ -2245,6 +2238,17 @@ namespace Microsoft.SqlServer.Management.Common
         SqlDatabaseEdge = 9,
         SqlAzureArcManagedInstance = 10,
         SqlOnDemand = 11
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Common.DatabaseEngineType
+    // BaseType: System.Enum
+    // Used by:
+    //  Test-SqlDscDatabaseProperty
+    public enum DatabaseEngineType : int
+    {
+        Unknown = 0,
+        Standalone = 1,
+        SqlAzureDatabase = 2,
     }
 
     #endregion

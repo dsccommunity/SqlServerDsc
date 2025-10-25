@@ -1046,7 +1046,7 @@ function Test-SqlDscDatabaseProperty
         $DatabaseEngineEdition,
 
         [Parameter()]
-        [Microsoft.SqlServer.Management.Smo.DatabaseEngineType]
+        [Microsoft.SqlServer.Management.Common.DatabaseEngineType]
         $DatabaseEngineType,
 
         [Parameter()]
