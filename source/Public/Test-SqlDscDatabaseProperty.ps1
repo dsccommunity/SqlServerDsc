@@ -1,22 +1,27 @@
 <#
     .SYNOPSIS
-        Tests if database properties on a SQL Server Database Engine instance are in the desired state.
+        Tests if database properties on a SQL Server Database Engine instance are
+        in the desired state.
 
     .DESCRIPTION
-        This command tests if database properties on a SQL Server Database Engine instance are in the desired state.
+        This command tests if database properties on a SQL Server Database Engine
+        instance are in the desired state.
 
-        The command supports a comprehensive set of database properties including configuration settings,
-        metadata, security properties, performance settings, and state information. Users can test one or
-        multiple properties in a single command execution.
+        The command supports a comprehensive set of database properties including
+        configuration settings, metadata, security properties, performance settings,
+        and state information. Users can test one or multiple properties in a
+        single command execution.
 
-        All properties correspond directly to Microsoft SQL Server Management Objects (SMO) Database class
-        properties and support the same data types and values as the underlying SMO implementation.
+        All properties correspond directly to Microsoft SQL Server Management Objects (SMO)
+        Database class properties and support the same data types and values as the
+        underlying SMO implementation.
 
     .PARAMETER ServerObject
         Specifies current server connection object.
 
     .PARAMETER Name
-        Specifies the name of the database to test properties for.
+        Specifies the name of the database to test properties for. The logical
+        database name as it appears in SQL Server.
 
     .PARAMETER DatabaseObject
         Specifies the database object to test properties for (from Get-SqlDscDatabase).
@@ -30,12 +35,6 @@
     .PARAMETER CompatibilityLevel
         Specifies the database compatibility level (affects query processor behavior and features).
 
-    .PARAMETER AutoClose
-        Specifies whether the database closes after the last user exits.
-
-    .PARAMETER AutoShrink
-        Specifies whether the database automatically shrinks files when free space is detected.
-
     .PARAMETER Owner
         Specifies the owner (login) of the database.
 
@@ -46,424 +45,421 @@
         Specifies whether implicit access to external resources by modules is allowed (use with caution).
 
     .PARAMETER AcceleratedRecoveryEnabled
-        Enables Accelerated Database Recovery (ADR) for the database.
+        Specifies whether Accelerated Database Recovery (ADR) is enabled for the database.
 
     .PARAMETER ActiveConnections
-        Number of active connections to the database (as observed by SMO).
+        Specifies the number of active connections to the database (as observed by SMO).
 
     .PARAMETER ActiveDirectory
-        Indicates whether the database participates in Active Directory integration features.
+        Specifies whether the database participates in Active Directory integration features.
 
     .PARAMETER AnsiNullDefault
-        When ON, new columns allow NULL by default unless explicitly specified.
+        Specifies whether new columns allow NULL by default unless explicitly specified (when ON).
 
     .PARAMETER AnsiNullsEnabled
-        When ON, comparisons to NULL follow ANSI SQL behavior (x = NULL yields UNKNOWN).
+        Specifies whether comparisons to NULL follow ANSI SQL behavior (when ON, x = NULL yields UNKNOWN).
 
     .PARAMETER AnsiPaddingEnabled
-        Controls padding for variable-length columns (e.g., CHAR/VARCHAR) per ANSI rules.
+        Specifies whether padding for variable-length columns (e.g., CHAR/VARCHAR) follows ANSI rules.
 
     .PARAMETER AnsiWarningsEnabled
-        When ON, ANSI warnings are generated for certain conditions (e.g., divide by zero).
+        Specifies whether ANSI warnings are generated for certain conditions (when ON, e.g., divide by zero).
 
     .PARAMETER ArithmeticAbortEnabled
-        Terminates a query when an overflow or divide-by-zero error occurs.
+        Specifies whether a query is terminated when an overflow or divide-by-zero error occurs.
 
     .PARAMETER AutoClose
-        Closes the database after the last user exits.
+        Specifies whether the database closes after the last user exits.
 
     .PARAMETER AutoCreateIncrementalStatisticsEnabled
-        Allows creation of incremental statistics on partitioned tables.
+        Specifies whether creation of incremental statistics on partitioned tables is allowed.
 
     .PARAMETER AutoCreateStatisticsEnabled
-        Automatically creates single-column statistics for query optimization.
+        Specifies whether single-column statistics are automatically created for query optimization.
 
     .PARAMETER AutoShrink
-        Automatically shrinks database files when free space is detected.
+        Specifies whether the database automatically shrinks files when free space is detected.
 
     .PARAMETER AutoUpdateStatisticsAsync
-        Updates statistics asynchronously, allowing queries to proceed with old stats.
+        Specifies whether statistics are updated asynchronously, allowing queries to proceed with old stats.
 
     .PARAMETER AutoUpdateStatisticsEnabled
-        Automatically updates statistics when they are out-of-date.
+        Specifies whether statistics are automatically updated when they are out-of-date.
 
     .PARAMETER AvailabilityDatabaseSynchronizationState
-        Synchronization state of the database in an Availability Group.
+        Specifies the synchronization state of the database in an Availability Group.
 
     .PARAMETER AvailabilityGroupName
-        Name of the Availability Group to which the database belongs, if any.
+        Specifies the name of the Availability Group to which the database belongs, if any.
 
     .PARAMETER AzureEdition
-        Azure SQL Database edition (e.g., Basic/Standard/Premium/GeneralPurpose/BusinessCritical).
+        Specifies the Azure SQL Database edition (e.g., Basic/Standard/Premium/GeneralPurpose/BusinessCritical).
 
     .PARAMETER AzureServiceObjective
-        Azure SQL Database service objective (e.g., S3, P1, GP_Gen5_4).
+        Specifies the Azure SQL Database service objective (e.g., S3, P1, GP_Gen5_4).
 
     .PARAMETER BrokerEnabled
-        Indicates whether Service Broker is enabled for the database.
+        Specifies whether Service Broker is enabled for the database.
 
     .PARAMETER CaseSensitive
-        True if the database collation is case-sensitive.
+        Specifies whether the database collation is case-sensitive.
 
     .PARAMETER CatalogCollation
-        Catalog-level collation used for metadata and temporary objects.
+        Specifies the catalog-level collation used for metadata and temporary objects.
 
     .PARAMETER ChangeTrackingAutoCleanUp
-        Enables automatic cleanup of change tracking information.
+        Specifies whether automatic cleanup of change tracking information is enabled.
 
     .PARAMETER ChangeTrackingEnabled
-        Enables change tracking for the database.
+        Specifies whether change tracking is enabled for the database.
 
     .PARAMETER ChangeTrackingRetentionPeriod
-        Retention period value for change tracking information.
+        Specifies the retention period value for change tracking information.
 
     .PARAMETER ChangeTrackingRetentionPeriodUnits
-        Units for the retention period (e.g., DAYS, HOURS).
+        Specifies the units for the retention period (e.g., DAYS, HOURS).
 
     .PARAMETER CloseCursorsOnCommitEnabled
-        Closes open cursors when a transaction is committed.
+        Specifies whether open cursors are closed when a transaction is committed.
 
     .PARAMETER ConcatenateNullYieldsNull
-        When ON, concatenation with NULL results in NULL.
+        Specifies whether concatenation with NULL results in NULL (when ON).
 
     .PARAMETER ContainmentType
         Specifies the containment level of the database (NONE or PARTIAL).
 
     .PARAMETER CreateDate
-        Date and time that the database was created.
+        Specifies the date and time that the database was created.
 
     .PARAMETER DatabaseEngineEdition
-        Edition of the database engine hosting the database.
+        Specifies the edition of the database engine hosting the database.
 
     .PARAMETER DatabaseEngineType
-        Engine type (e.g., Standalone, AzureSqlDatabase, SqlOnDemand).
+        Specifies the engine type (e.g., Standalone, AzureSqlDatabase, SqlOnDemand).
 
     .PARAMETER DatabaseGuid
-        Unique identifier (GUID) of the database.
+        Specifies the unique identifier (GUID) of the database.
 
     .PARAMETER DatabaseOwnershipChaining
-        Enables ownership chaining across objects within the database.
+        Specifies whether ownership chaining across objects within the database is enabled.
 
     .PARAMETER DataRetentionEnabled
-        Enables SQL Server data retention policy at the database level.
+        Specifies whether SQL Server data retention policy is enabled at the database level.
 
     .PARAMETER DateCorrelationOptimization
-        Enables date correlation optimization to speed up temporal joins.
+        Specifies whether date correlation optimization is enabled to speed up temporal joins.
 
     .PARAMETER DboLogin
-        Login that owns the database (dbo).
+        Specifies the login that owns the database (dbo).
 
     .PARAMETER DefaultFileGroup
-        Name of the default filegroup for the database.
+        Specifies the name of the default filegroup for the database.
 
     .PARAMETER DefaultFileStreamFileGroup
-        Name of the default FILESTREAM filegroup.
+        Specifies the name of the default FILESTREAM filegroup.
 
     .PARAMETER DefaultFullTextCatalog
-        Default full-text catalog used for full-text indexes.
+        Specifies the default full-text catalog used for full-text indexes.
 
     .PARAMETER DefaultFullTextLanguage
-        LCID of the default full-text language.
+        Specifies the LCID of the default full-text language.
 
     .PARAMETER DefaultLanguage
-        ID of the default language for the database.
+        Specifies the ID of the default language for the database.
 
     .PARAMETER DefaultSchema
-        Default schema name for users without an explicit default schema.
+        Specifies the default schema name for users without an explicit default schema.
 
     .PARAMETER DelayedDurability
-        Enables delayed transaction log flushes to improve throughput.
+        Specifies whether delayed transaction log flushes are enabled to improve throughput.
 
     .PARAMETER EncryptionEnabled
-        Indicates whether Transparent Data Encryption (TDE) is enabled.
+        Specifies whether Transparent Data Encryption (TDE) is enabled.
 
     .PARAMETER FilestreamDirectoryName
-        Directory name used for FILESTREAM data.
+        Specifies the directory name used for FILESTREAM data.
 
     .PARAMETER FilestreamNonTransactedAccess
-        Configures FILESTREAM access level for non-transactional access.
+        Specifies the FILESTREAM access level for non-transactional access.
 
     .PARAMETER HasDatabaseEncryptionKey
-        True if the database has a database encryption key (TDE).
+        Specifies whether the database has a database encryption key (TDE).
 
     .PARAMETER HasFileInCloud
-        Indicates the database has one or more files in Azure Storage.
+        Specifies whether the database has one or more files in Azure Storage.
 
     .PARAMETER HasMemoryOptimizedObjects
-        True if the database contains memory-optimized (In-Memory OLTP) objects.
+        Specifies whether the database contains memory-optimized (In-Memory OLTP) objects.
 
     .PARAMETER HonorBrokerPriority
-        Enables honoring Service Broker conversation priority.
+        Specifies whether honoring Service Broker conversation priority is enabled.
 
     .PARAMETER ID
-        Database ID (DB_ID). Unique numeric identifier assigned to the database by SQL Server.
+        Specifies the database ID (DB_ID). Unique numeric identifier assigned to the database by SQL Server.
 
     .PARAMETER IndexSpaceUsage
-        Space used by indexes in KB.
+        Specifies the space used by indexes in KB.
 
     .PARAMETER IsAccessible
-        True if the database is accessible to the current connection.
+        Specifies whether the database is accessible to the current connection.
 
     .PARAMETER IsDatabaseSnapshot
-        Indicates whether the database is a database snapshot.
+        Specifies whether the database is a database snapshot.
 
     .PARAMETER IsDatabaseSnapshotBase
-        True if the database is the source (base) of one or more snapshots.
+        Specifies whether the database is the source (base) of one or more snapshots.
 
     .PARAMETER IsDbAccessAdmin
-        True if the caller is member of db_accessadmin for this database.
+        Specifies whether the caller is member of db_accessadmin for this database.
 
     .PARAMETER IsDbBackupOperator
-        True if the caller is member of db_backupoperator.
+        Specifies whether the caller is member of db_backupoperator.
 
     .PARAMETER IsDbDataReader
-        True if the caller is member of db_datareader.
+        Specifies whether the caller is member of db_datareader.
 
     .PARAMETER IsDbDataWriter
-        True if the caller is member of db_datawriter.
+        Specifies whether the caller is member of db_datawriter.
 
     .PARAMETER IsDbDdlAdmin
-        True if the caller is member of db_ddladmin.
+        Specifies whether the caller is member of db_ddladmin.
 
     .PARAMETER IsDbDenyDataReader
-        True if the caller is member of db_denydatareader.
+        Specifies whether the caller is member of db_denydatareader.
 
     .PARAMETER IsDbDenyDataWriter
-        True if the caller is member of db_denydatawriter.
+        Specifies whether the caller is member of db_denydatawriter.
 
     .PARAMETER IsDbManager
-        True if the caller is member of db_manager (Azure role).
+        Specifies whether the caller is member of db_manager (Azure role).
 
     .PARAMETER IsDbOwner
-        True if the caller is member of db_owner.
+        Specifies whether the caller is member of db_owner.
 
     .PARAMETER IsDbSecurityAdmin
-        True if the caller is member of db_securityadmin.
+        Specifies whether the caller is member of db_securityadmin.
 
     .PARAMETER IsFabricDatabase
-        True if the database is a Microsoft Fabric SQL database.
+        Specifies whether the database is a Microsoft Fabric SQL database.
 
     .PARAMETER IsFullTextEnabled
-        Indicates whether full-text search is enabled.
+        Specifies whether full-text search is enabled.
 
     .PARAMETER IsLedger
-        True if the database is enabled for SQL Ledger features.
+        Specifies whether the database is enabled for SQL Ledger features.
 
     .PARAMETER IsLoginManager
-        True if the caller is member of the login manager role (Azure).
+        Specifies whether the caller is member of the login manager role (Azure).
 
     .PARAMETER IsMailHost
-        Indicates whether Database Mail host features are configured on this DB.
+        Specifies whether Database Mail host features are configured on this database.
 
     .PARAMETER IsManagementDataWarehouse
-        True if the database is configured as the Management Data Warehouse.
+        Specifies whether the database is configured as the Management Data Warehouse.
 
     .PARAMETER IsMaxSizeApplicable
-        True if MaxSizeInBytes is enforced for the database.
+        Specifies whether MaxSizeInBytes is enforced for the database.
 
     .PARAMETER IsMirroringEnabled
-        Indicates whether database mirroring is configured.
+        Specifies whether database mirroring is configured.
 
     .PARAMETER IsParameterizationForced
-        When ON, forces parameterization of queries by default.
+        Specifies whether parameterization of queries is forced by default (when ON).
 
     .PARAMETER IsReadCommittedSnapshotOn
-        True if READ_COMMITTED_SNAPSHOT isolation is ON.
+        Specifies whether READ_COMMITTED_SNAPSHOT isolation is ON.
 
     .PARAMETER IsSqlDw
-        True if the database is an Azure Synapse (SQL DW) database.
+        Specifies whether the database is an Azure Synapse (SQL DW) database.
 
     .PARAMETER IsSqlDwEdition
-        True if the edition corresponds to Azure Synapse (DW).
+        Specifies whether the edition corresponds to Azure Synapse (DW).
 
     .PARAMETER IsSystemObject
-        True for system databases (master, model, msdb, tempdb).
+        Specifies whether the database is a system database (master, model, msdb, tempdb).
 
     .PARAMETER IsVarDecimalStorageFormatEnabled
-        True if vardecimal storage format is enabled.
+        Specifies whether vardecimal storage format is enabled.
 
     .PARAMETER IsVarDecimalStorageFormatSupported
-        True if vardecimal storage format is supported by the server.
+        Specifies whether vardecimal storage format is supported by the server.
 
     .PARAMETER LastBackupDate
-        Timestamp of the last full database backup.
+        Specifies the timestamp of the last full database backup.
 
     .PARAMETER LastDifferentialBackupDate
-        Timestamp of the last differential backup.
+        Specifies the timestamp of the last differential backup.
 
     .PARAMETER LastGoodCheckDbTime
-        Timestamp when DBCC CHECKDB last completed successfully.
+        Specifies the timestamp when DBCC CHECKDB last completed successfully.
 
     .PARAMETER LastLogBackupDate
-        Timestamp of the last transaction log backup.
+        Specifies the timestamp of the last transaction log backup.
 
     .PARAMETER LegacyCardinalityEstimation
-        Enables legacy cardinality estimator for the primary.
+        Specifies whether the legacy cardinality estimator is enabled for the primary.
 
     .PARAMETER LegacyCardinalityEstimationForSecondary
-        Enables legacy cardinality estimator for secondary replicas.
+        Specifies whether the legacy cardinality estimator is enabled for secondary replicas.
 
     .PARAMETER LocalCursorsDefault
-        When ON, cursors are local by default instead of global.
+        Specifies whether cursors are local by default instead of global (when ON).
 
     .PARAMETER LogReuseWaitStatus
-        Reason why the transaction log cannot be reused.
+        Specifies the reason why the transaction log cannot be reused.
 
     .PARAMETER MaxDop
-        MAXDOP database-scoped configuration for primary replicas.
+        Specifies the MAXDOP database-scoped configuration for primary replicas.
 
     .PARAMETER MaxDopForSecondary
-        MAXDOP database-scoped configuration for secondary replicas.
+        Specifies the MAXDOP database-scoped configuration for secondary replicas.
 
     .PARAMETER MaxSizeInBytes
-        Maximum size of the database in bytes.
+        Specifies the maximum size of the database in bytes.
 
     .PARAMETER MemoryAllocatedToMemoryOptimizedObjectsInKB
-        Memory allocated to memory-optimized objects (KB).
+        Specifies the memory allocated to memory-optimized objects (KB).
 
     .PARAMETER MemoryUsedByMemoryOptimizedObjectsInKB
-        Memory used by memory-optimized objects (KB).
+        Specifies the memory used by memory-optimized objects (KB).
 
     .PARAMETER MirroringFailoverLogSequenceNumber
-        Mirroring failover LSN (if mirroring configured).
+        Specifies the mirroring failover LSN (if mirroring configured).
 
     .PARAMETER MirroringID
-        Unique mirroring ID for the database.
+        Specifies the unique mirroring ID for the database.
 
     .PARAMETER MirroringPartner
-        Mirroring partner server name (if configured).
+        Specifies the mirroring partner server name (if configured).
 
     .PARAMETER MirroringPartnerInstance
-        Mirroring partner instance name (if configured).
+        Specifies the mirroring partner instance name (if configured).
 
     .PARAMETER MirroringRedoQueueMaxSize
-        Redo queue maximum size for mirroring/AGs.
+        Specifies the redo queue maximum size for mirroring/AGs.
 
     .PARAMETER MirroringRoleSequence
-        Sequence number for mirroring role transitions.
+        Specifies the sequence number for mirroring role transitions.
 
     .PARAMETER MirroringSafetyLevel
-        Mirroring safety level (FULL/Off/HighPerformance).
+        Specifies the mirroring safety level (FULL/Off/HighPerformance).
 
     .PARAMETER MirroringSafetySequence
-        Sequence for mirroring safety changes.
+        Specifies the sequence for mirroring safety changes.
 
     .PARAMETER MirroringStatus
-        Current mirroring state of the database.
+        Specifies the current mirroring state of the database.
 
     .PARAMETER MirroringTimeout
-        Timeout in seconds for mirroring sessions.
+        Specifies the timeout in seconds for mirroring sessions.
 
     .PARAMETER MirroringWitness
-        Mirroring witness server (if used).
+        Specifies the mirroring witness server (if used).
 
     .PARAMETER MirroringWitnessStatus
-        Status of the mirroring witness.
-
-    .PARAMETER Name
-        Name of the database. The logical database name as it appears in SQL Server.
+        Specifies the status of the mirroring witness.
 
     .PARAMETER NestedTriggersEnabled
-        Allows triggers to fire other triggers (nested triggers).
+        Specifies whether triggers are allowed to fire other triggers (nested triggers).
 
     .PARAMETER NumericRoundAbortEnabled
-        When ON, raises an error on loss of precision due to rounding.
+        Specifies whether an error is raised on loss of precision due to rounding (when ON).
 
     .PARAMETER PageVerify
-        Page verification setting (NONE, TORN_PAGE_DETECTION, CHECKSUM).
+        Specifies the page verification setting (NONE, TORN_PAGE_DETECTION, CHECKSUM).
 
     .PARAMETER ParameterSniffing
-        Enables parameter sniffing behavior on the primary.
+        Specifies whether parameter sniffing behavior is enabled on the primary.
 
     .PARAMETER ParameterSniffingForSecondary
-        Enables parameter sniffing on secondary replicas.
+        Specifies whether parameter sniffing is enabled on secondary replicas.
 
     .PARAMETER PersistentVersionStoreFileGroup
-        Filegroup used for the Persistent Version Store (PVS).
+        Specifies the filegroup used for the Persistent Version Store (PVS).
 
     .PARAMETER PersistentVersionStoreSizeKB
-        Size of the Persistent Version Store in KB.
+        Specifies the size of the Persistent Version Store in KB.
 
     .PARAMETER PrimaryFilePath
-        Path of the primary data files directory.
+        Specifies the path of the primary data files directory.
 
     .PARAMETER QueryOptimizerHotfixes
-        Enables query optimizer hotfixes on the primary.
+        Specifies whether query optimizer hotfixes are enabled on the primary.
 
     .PARAMETER QueryOptimizerHotfixesForSecondary
-        Enables query optimizer hotfixes on secondary replicas.
+        Specifies whether query optimizer hotfixes are enabled on secondary replicas.
 
     .PARAMETER QuotedIdentifiersEnabled
-        When ON, identifiers can be delimited by double quotes.
+        Specifies whether identifiers can be delimited by double quotes (when ON).
 
     .PARAMETER RecoveryForkGuid
-        GUID for the current recovery fork of the database.
+        Specifies the GUID for the current recovery fork of the database.
 
     .PARAMETER RecursiveTriggersEnabled
-        Allows a trigger to fire itself recursively.
+        Specifies whether a trigger is allowed to fire itself recursively.
 
     .PARAMETER RemoteDataArchiveCredential
-        Credential name for Stretch Database/remote data archive.
+        Specifies the credential name for Stretch Database/remote data archive.
 
     .PARAMETER RemoteDataArchiveEnabled
-        Enables Stretch Database (remote data archive).
+        Specifies whether Stretch Database (remote data archive) is enabled.
 
     .PARAMETER RemoteDataArchiveEndpoint
-        Endpoint URL for remote data archive.
+        Specifies the endpoint URL for remote data archive.
 
     .PARAMETER RemoteDataArchiveLinkedServer
-        Linked server used by remote data archive.
+        Specifies the linked server used by remote data archive.
 
     .PARAMETER RemoteDataArchiveUseFederatedServiceAccount
-        Use federated service account for remote data archive.
+        Specifies whether to use federated service account for remote data archive.
 
     .PARAMETER RemoteDatabaseName
-        Remote database name for remote data archive.
+        Specifies the remote database name for remote data archive.
 
     .PARAMETER ReplicationOptions
-        Replication options that are enabled for the database.
+        Specifies the replication options that are enabled for the database.
 
     .PARAMETER ServiceBrokerGuid
-        Unique Service Broker identifier for the database.
+        Specifies the unique Service Broker identifier for the database.
 
     .PARAMETER Size
-        Approximate size of the database in MB (as reported by SMO).
+        Specifies the approximate size of the database in MB (as reported by SMO).
 
     .PARAMETER SnapshotIsolationState
-        Indicates whether SNAPSHOT isolation is OFF/ON/IN_TRANSITION.
+        Specifies whether SNAPSHOT isolation is OFF/ON/IN_TRANSITION.
 
     .PARAMETER SpaceAvailable
-        Free space available in the database (KB).
+        Specifies the free space available in the database (KB).
 
     .PARAMETER State
-        General state of the SMO object.
+        Specifies the general state of the SMO object.
 
     .PARAMETER Status
-        Operational status of the database as reported by SMO.
+        Specifies the operational status of the database as reported by SMO.
 
     .PARAMETER TargetRecoveryTime
-        Target recovery time (seconds) for indirect checkpointing.
+        Specifies the target recovery time (seconds) for indirect checkpointing.
 
     .PARAMETER TemporalHistoryRetentionEnabled
-        Enables automatic cleanup of system-versioned temporal history.
+        Specifies whether automatic cleanup of system-versioned temporal history is enabled.
 
     .PARAMETER TransformNoiseWords
-        Controls full-text noise word behavior during queries.
+        Specifies how full-text noise word behavior is controlled during queries.
 
     .PARAMETER TwoDigitYearCutoff
-        Two-digit year cutoff used for date conversion.
+        Specifies the two-digit year cutoff used for date conversion.
 
     .PARAMETER UserAccess
-        Database user access mode (MULTI_USER, RESTRICTED_USER, SINGLE_USER).
+        Specifies the database user access mode (MULTI_USER, RESTRICTED_USER, SINGLE_USER).
 
     .PARAMETER UserName
-        User name for the current connection context (as seen by SMO).
+        Specifies the user name for the current connection context (as seen by SMO).
 
     .PARAMETER Version
-        Internal version number of the database.
+        Specifies the internal version number of the database.
 
     .PARAMETER WarnOnRename
-        Emits a warning when objects are renamed.
+        Specifies whether a warning is emitted when objects are renamed.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
