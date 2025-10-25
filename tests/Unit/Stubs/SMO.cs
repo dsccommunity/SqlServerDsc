@@ -236,22 +236,6 @@ namespace Microsoft.SqlServer.Management.Smo
         Initializing = 4
     }
 
-    public enum DatabaseEngineEdition : int
-    {
-        Unknown = 0,
-        Personal = 1,
-        Standard = 2,
-        Enterprise = 3,
-        Express = 4,
-        SqlDatabase = 5,
-        SqlDataWarehouse = 6,
-        SqlStretchDatabase = 7,
-        SqlManagedInstance = 8,
-        SqlDatabaseEdge = 9,
-        SqlAzureArcManagedInstance = 10,
-        SqlOnDemand = 11
-    }
-
     public enum DatabaseEngineType : int
     {
         Unknown = 0,
@@ -863,7 +847,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public AvailabilityDatabaseSynchronizationState AvailabilityDatabaseSynchronizationState = AvailabilityDatabaseSynchronizationState.Synchronized;
         public RetentionPeriodUnits ChangeTrackingRetentionPeriodUnits = RetentionPeriodUnits.Days;
         public CompatibilityLevel CompatibilityLevel = CompatibilityLevel.Version150;
-        public DatabaseEngineEdition DatabaseEngineEdition = DatabaseEngineEdition.Standard;
+        public Microsoft.SqlServer.Management.Common.DatabaseEngineEdition DatabaseEngineEdition = Microsoft.SqlServer.Management.Common.DatabaseEngineEdition.Standard;
         public DatabaseEngineType DatabaseEngineType = DatabaseEngineType.Standalone;
         public ContainmentType ContainmentType = ContainmentType.None;
         public FilestreamNonTransactedAccessType FilestreamNonTransactedAccess = FilestreamNonTransactedAccessType.Off;
@@ -2234,6 +2218,33 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
         {
             return new Operator();
         }
+    }
+
+    #endregion
+}
+
+namespace Microsoft.SqlServer.Management.Common
+{
+    #region Public Enums
+
+    // TypeName: Microsoft.SqlServer.Management.Common.DatabaseEngineEdition
+    // BaseType: System.Enum
+    // Used by:
+    //  Test-SqlDscDatabaseProperty
+    public enum DatabaseEngineEdition : int
+    {
+        Unknown = 0,
+        Personal = 1,
+        Standard = 2,
+        Enterprise = 3,
+        Express = 4,
+        SqlDatabase = 5,
+        SqlDataWarehouse = 6,
+        SqlStretchDatabase = 7,
+        SqlManagedInstance = 8,
+        SqlDatabaseEdge = 9,
+        SqlAzureArcManagedInstance = 10,
+        SqlOnDemand = 11
     }
 
     #endregion

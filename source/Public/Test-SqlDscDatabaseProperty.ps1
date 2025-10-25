@@ -1042,7 +1042,7 @@ function Test-SqlDscDatabaseProperty
         $ContainmentType,
 
         [Parameter()]
-        [Microsoft.SqlServer.Management.Smo.DatabaseEngineEdition]
+        [Microsoft.SqlServer.Management.Common.DatabaseEngineEdition]
         $DatabaseEngineEdition,
 
         [Parameter()]
