@@ -1109,7 +1109,7 @@ function Test-SqlDscDatabaseProperty
 
                 $previousErrorActionPreference = $ErrorActionPreference
                 $ErrorActionPreference = 'Stop'
-                $sqlDatabaseObject = $ServerObject | Get-SqlDscDatabase -Name $Name
+                $sqlDatabaseObject = $ServerObject | Get-SqlDscDatabase -Name $Name -ErrorAction 'Stop'
                 $ErrorActionPreference = $previousErrorActionPreference
             }
 
@@ -1135,6 +1135,12 @@ function Test-SqlDscDatabaseProperty
         # Test each specified property
         foreach ($parameterName in $boundParameters.Keys)
         {
+            if ($sqlDatabaseObject.PSObject.Properties.Name -notcontains $parameterName)
+            {
+                Write-Error -Message ($script:localizedData.DatabaseProperty_PropertyNotFound -f $parameterName, $sqlDatabaseObject.Name)
+                continue
+            }
+
             $expectedValue = $boundParameters.$parameterName
             $actualValue = $sqlDatabaseObject.$parameterName
 
