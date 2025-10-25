@@ -24,7 +24,7 @@
         this time, an exception will be thrown.
 
     .PARAMETER Force
-        Specifies whether the command will not ask for confirmation. Same as if Confirm:$false
+        Specifies whether the command will not ask for confirmation. Same as if '-Confirm:$false'
         is used.
 
     .PARAMETER PassThru
