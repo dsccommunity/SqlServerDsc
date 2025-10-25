@@ -153,10 +153,9 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
             $result | Should -BeTrue
         }
 
-        It 'Should return false when testing non-existent database' {
-            $result = Test-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name 'NonExistentDatabase' -ErrorAction 'Stop'
-
-            $result | Should -BeFalse
+        It 'Should throw an error when testing non-existent database' {
+            { Test-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name 'NonExistentDatabase' -ErrorAction 'Stop' } |
+                Should -Throw
         }
     }
 
