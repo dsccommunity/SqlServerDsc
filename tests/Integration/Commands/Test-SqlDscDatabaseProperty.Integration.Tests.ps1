@@ -195,14 +195,15 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
                 $actualValue = $databaseObject.$PropertyName
 
                 $testParameters = @{
-                    ServerObject = $script:serverObject
-                    Name = $DatabaseName
+                    ServerObject  = $script:serverObject
+                    Name          = $DatabaseName
                     $PropertyName = $TestValue
-                    ErrorAction = 'Stop'
+                    ErrorAction   = 'Stop'
                 }
 
                 $result = Test-SqlDscDatabaseProperty @testParameters
-                $expectedResult = ($actualValue -eq [System.Convert]::ToBoolean($TestValue))
+
+                $expectedResult = $actualValue.ToString() -eq $TestValue.ToString()
 
                 $result | Should -Be $expectedResult -Because "Property '$PropertyName' should return $expectedResult when testing value '$TestValue' against actual value '$actualValue' for database '$DatabaseName'"
             }
@@ -213,14 +214,15 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
                 $testValue = '0'
 
                 $testParameters = @{
-                    ServerObject = $script:serverObject
-                    Name = $DatabaseName
+                    ServerObject  = $script:serverObject
+                    Name          = $DatabaseName
                     $PropertyName = $testValue
-                    ErrorAction = 'Stop'
+                    ErrorAction   = 'Stop'
                 }
 
                 $result = Test-SqlDscDatabaseProperty @testParameters
-                $expectedResult = ($actualValue -eq [System.Convert]::ToBoolean($testValue))
+
+                $expectedResult = $actualValue.ToString() -eq $testValue.ToString()
 
                 $result | Should -Be $expectedResult -Because "Property '$PropertyName' should return $expectedResult when testing value '$testValue' against actual value '$actualValue' for database '$DatabaseName'"
             }
@@ -232,10 +234,10 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
                 $actualValue = $databaseObject.$PropertyName
 
                 $testParameters = @{
-                    ServerObject = $script:serverObject
-                    Name = $DatabaseName
+                    ServerObject  = $script:serverObject
+                    Name          = $DatabaseName
                     $PropertyName = $actualValue
-                    ErrorAction = 'Stop'
+                    ErrorAction   = 'Stop'
                 }
 
                 if ($actualValue -is [System.Enum])
@@ -256,17 +258,62 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
                 {
                     $enumType = $actualValue.GetType()
                     $enumValues = [System.Enum]::GetValues($enumType)
-                    $differentEnum = $enumValues | Where-Object { $_ -ne $actualValue } | Select-Object -First 1
-                    if ($differentEnum) { $differentEnum.ToString() } else { 'DifferentEnumValue' }
+                    $differentEnum = $enumValues |
+                        Where-Object { $_ -ne $actualValue } | Select-Object -First 1
+
+                    if ($differentEnum)
+                    {
+                        $differentEnum.ToString()
+                    }
+                    else
+                    {
+                        'DifferentEnumValue'
+                    }
                 }
                 else
                 {
-                    switch ($actualValue.GetType().Name)
+                    if ($actualValue -eq $null)
                     {
-                        'String' { 'DifferentTestValue' }
-                        'Int32' { if ($actualValue -eq 0) { 999 } else { 0 } }
-                        'Int64' { if ($actualValue -eq 0) { 999 } else { 0 } }
-                        default { 'DifferentValue' }
+                        'DifferentValue'
+                    }
+                    else
+                    {
+                        switch ($actualValue.GetType().Name)
+                        {
+                            'String'
+                            {
+                                'DifferentTestValue'
+                            }
+
+                            'Int32'
+                            {
+                                if ($actualValue -eq 0)
+                                {
+                                    999
+                                }
+                                else
+                                {
+                                    0
+                                }
+                            }
+
+                            'Int64'
+                            {
+                                if ($actualValue -eq 0)
+                                {
+                                    999
+                                }
+                                else
+                                {
+                                    0
+                                }
+                            }
+
+                            default
+                            {
+                                'DifferentValue'
+                            }
+                        }
                     }
                 }
 
@@ -277,10 +324,10 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
                 }
 
                 $testParameters = @{
-                    ServerObject = $script:serverObject
-                    Name = $DatabaseName
+                    ServerObject  = $script:serverObject
+                    Name          = $DatabaseName
                     $PropertyName = $testValue
-                    ErrorAction = 'Stop'
+                    ErrorAction   = 'Stop'
                 }
 
                 $result = Test-SqlDscDatabaseProperty @testParameters
@@ -296,10 +343,10 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
             $actualValue = $databaseObject.$PropertyName
 
             $testParameters = @{
-                ServerObject = $script:serverObject
-                Name = $DatabaseName
+                ServerObject  = $script:serverObject
+                Name          = $DatabaseName
                 $PropertyName = $TestValue
-                ErrorAction = 'Stop'
+                ErrorAction   = 'Stop'
             }
 
             $result = Test-SqlDscDatabaseProperty @testParameters
@@ -317,10 +364,10 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
             $testValue = '0'
 
             $testParameters = @{
-                ServerObject = $script:serverObject
-                Name = $DatabaseName
+                ServerObject  = $script:serverObject
+                Name          = $DatabaseName
                 $PropertyName = $testValue
-                ErrorAction = 'Stop'
+                ErrorAction   = 'Stop'
             }
 
             $result = Test-SqlDscDatabaseProperty @testParameters
@@ -357,7 +404,14 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
             $actualOwner = $masterDb.Owner
 
             # Use wrong recovery model
-            $wrongRecoveryModel = if ($masterDb.RecoveryModel.ToString() -eq 'Simple') { 'Full' } else { 'Simple' }
+            $wrongRecoveryModel = if ($masterDb.RecoveryModel.ToString() -eq 'Simple')
+            {
+                'Full'
+            }
+            else
+            {
+                'Simple'
+            }
 
             $result = Test-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name 'master' `
                 -Collation $actualCollation `
