@@ -450,7 +450,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
         }
     }
 
-    Context 'Database property parameters' {
+    Context 'When testing database property parameters' {
         BeforeAll {
             # Create mock database using the SMO stub - properties are already set to expected values
             $mockDatabaseWithAllProperties = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
