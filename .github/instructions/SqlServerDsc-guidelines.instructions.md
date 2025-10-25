@@ -27,7 +27,6 @@ applyTo: "**"
 ## SQL Server Interaction
 - Always prefer SMO over T-SQL
 - Unit tests: Use SMO stub types from SMO.cs, never mock SMO types
-- Run tests in new session after changing SMO.cs
 
 ## Testing CI Environment
 - Database Engine: instance `DSCSQLTEST`

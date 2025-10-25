@@ -6,7 +6,8 @@
         Installs SQL Server Power BI Report Server using the provided setup executable.
 
     .PARAMETER AcceptLicensingTerms
-        Required parameter to be able to run unattended install. By specifying this
+        Specifies that the acceptance of all license terms and notices for the
+        specified features is required to be able to run unattended install. By specifying this
         parameter you acknowledge the acceptance of all license terms and notices for
         the specified features, the terms and notices that the setup executable
         normally asks for.
@@ -20,7 +21,7 @@
         This parameter is mutually exclusive with the parameter Edition.
 
     .PARAMETER EditionUpgrade
-        Upgrades the edition of the installed product. Requires that either the
+        Specifies whether to upgrade the edition of the installed product. Requires that either the
         ProductKey or the Edition parameter is also assigned. By default no edition
         upgrade is performed.
 
@@ -40,7 +41,7 @@
         PI Report Server: %ProgramFiles%\Microsoft Power BI Report Server
 
     .PARAMETER SuppressRestart
-        Suppresses the restart of the computer after the installation is finished.
+        Specifies whether to suppress the restart of the computer after the installation is finished.
         By default the computer is restarted after the installation is finished.
 
     .PARAMETER Timeout
@@ -49,11 +50,11 @@
         this time, an exception will be thrown.
 
     .PARAMETER Force
-        If specified the command will not ask for confirmation. Same as if Confirm:$false
+        Specifies whether the command will not ask for confirmation. Same as if Confirm:$false
         is used.
 
     .PARAMETER PassThru
-        If specified the command will return the setup process exit code.
+        Specifies whether the command will return the setup process exit code.
 
     .OUTPUTS
         When PassThru is specified the function will return the setup process exit

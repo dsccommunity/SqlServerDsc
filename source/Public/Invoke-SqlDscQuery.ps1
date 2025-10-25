@@ -9,7 +9,7 @@
         Specifies current server connection object.
 
     .PARAMETER ServerName
-        Specifies the server name where the instance exist.
+        Specifies the server name where the instance exists.
 
     .PARAMETER InstanceName
        Specifies the instance name on which to execute the T-SQL query.
@@ -29,21 +29,21 @@
         Specifies the name of the database to execute the T-SQL query in.
 
     .PARAMETER Query
-        The query string to execute.
+        Specifies the query string to execute.
 
     .PARAMETER PassThru
-        Specifies if the command should return any result the query might return.
+        Specifies whether the command should return any result the query might return.
 
     .PARAMETER StatementTimeout
-        Set the query StatementTimeout in seconds. Default 600 seconds (10 minutes).
+        Specifies the query StatementTimeout in seconds. Default 600 seconds (10 minutes).
 
     .PARAMETER RedactText
-        One or more text strings to redact from the query when verbose messages
+        Specifies one or more text strings to redact from the query when verbose messages
         are written to the console. Strings will be escaped so they will not
         be interpreted as regular expressions (RegEx).
 
     .PARAMETER Encrypt
-        Specifies if encryption should be used.
+        Specifies whether encryption should be used.
 
     .PARAMETER Force
         Specifies that the query should be executed without any confirmation.
