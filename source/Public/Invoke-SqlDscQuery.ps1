@@ -9,7 +9,7 @@
         Specifies current server connection object.
 
     .PARAMETER ServerName
-        Specifies the server name where the instance exist.
+        Specifies the server name where the instance exists.
 
     .PARAMETER InstanceName
        Specifies the instance name on which to execute the T-SQL query.
