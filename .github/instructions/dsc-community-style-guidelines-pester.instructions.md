@@ -52,10 +52,11 @@ applyTo: "**/*.[Tt]ests.ps1"
 - Public commands: `tests/Unit/Public/{Name}.Tests.ps1`
 - Private functions: `tests/Unit/Private/{Name}.Tests.ps1`
 
-## Data-Driven Tests
-- Define variables in separate `BeforeDiscovery` for `-ForEach` (close to usage)
+## Data-Driven Tests (Test Cases)
+- Define `-ForEach` variables in `BeforeDiscovery` (close to usage)
 - `-ForEach` allowed on `Context` and `It` blocks
-- Keep scope close to usage context
+- Never add `param()` inside Pester blocks when using `-ForEach`
+- Access test case properties directly: `$PropertyName`
 
 ## Best Practices
 - Cover all scenarios and code paths
