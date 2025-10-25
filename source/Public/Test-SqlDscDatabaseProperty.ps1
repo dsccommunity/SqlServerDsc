@@ -1144,7 +1144,30 @@ function Test-SqlDscDatabaseProperty
             $expectedValue = $boundParameters.$parameterName
             $actualValue = $sqlDatabaseObject.$parameterName
 
-            if ($actualValue -ne $expectedValue)
+            # Use a robust comparison that handles empty strings, nulls, and different types
+            $valuesMatch = $false
+
+            # Check if both values are null or empty strings (treat them as equivalent)
+            $actualIsNullOrEmpty = [System.String]::IsNullOrEmpty($actualValue)
+            $expectedIsNullOrEmpty = [System.String]::IsNullOrEmpty($expectedValue)
+
+            if ($actualIsNullOrEmpty -and $expectedIsNullOrEmpty)
+            {
+                # Both are null or empty, consider them equal
+                $valuesMatch = $true
+            }
+            elseif ($actualIsNullOrEmpty -or $expectedIsNullOrEmpty)
+            {
+                # One is null/empty and the other is not
+                $valuesMatch = $false
+            }
+            else
+            {
+                # Both have values, compare them directly
+                $valuesMatch = $actualValue -eq $expectedValue
+            }
+
+            if (-not $valuesMatch)
             {
                 Write-Verbose -Message ($script:localizedData.DatabaseProperty_PropertyWrong -f $sqlDatabaseObject.Name, $parameterName, $actualValue, $expectedValue)
                 $isInDesiredState = $false
