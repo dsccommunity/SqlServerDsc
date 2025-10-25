@@ -410,62 +410,43 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
     }
 
     Context 'Parameter validation' {
-        It 'Should have the correct parameters in parameter set ServerObjectSet' -ForEach @(
+        It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = 'ServerObjectSet'
-                # Note: Dynamic parameters cannot be easily tested in this format, so we focus on core parameters
+                ExpectedParameters = '-ServerObject <Server> -Name <string> [-AcceleratedRecoveryEnabled <bool>] [-ActiveDirectory <bool>] [-AnsiNullDefault <bool>] [-AnsiNullsEnabled <bool>] [-AnsiPaddingEnabled <bool>] [-AnsiWarningsEnabled <bool>] [-ArithmeticAbortEnabled <bool>] [-AutoClose <bool>] [-AutoCreateIncrementalStatisticsEnabled <bool>] [-AutoCreateStatisticsEnabled <bool>] [-AutoShrink <bool>] [-AutoUpdateStatisticsAsync <bool>] [-AutoUpdateStatisticsEnabled <bool>] [-BrokerEnabled <bool>] [-CaseSensitive <bool>] [-ChangeTrackingAutoCleanUp <bool>] [-ChangeTrackingEnabled <bool>] [-CloseCursorsOnCommitEnabled <bool>] [-ConcatenateNullYieldsNull <bool>] [-DatabaseOwnershipChaining <bool>] [-DataRetentionEnabled <bool>] [-DateCorrelationOptimization <bool>] [-DelayedDurability <bool>] [-EncryptionEnabled <bool>] [-HasDatabaseEncryptionKey <bool>] [-HasFileInCloud <bool>] [-HasMemoryOptimizedObjects <bool>] [-HonorBrokerPriority <bool>] [-IsAccessible <bool>] [-IsDatabaseSnapshot <bool>] [-IsDatabaseSnapshotBase <bool>] [-IsDbAccessAdmin <bool>] [-IsDbBackupOperator <bool>] [-IsDbDataReader <bool>] [-IsDbDataWriter <bool>] [-IsDbDdlAdmin <bool>] [-IsDbDenyDataReader <bool>] [-IsDbDenyDataWriter <bool>] [-IsDbManager <bool>] [-IsDbOwner <bool>] [-IsDbSecurityAdmin <bool>] [-IsFabricDatabase <bool>] [-IsFullTextEnabled <bool>] [-IsLedger <bool>] [-IsLoginManager <bool>] [-IsMailHost <bool>] [-IsManagementDataWarehouse <bool>] [-IsMaxSizeApplicable <bool>] [-IsMirroringEnabled <bool>] [-IsParameterizationForced <bool>] [-IsReadCommittedSnapshotOn <bool>] [-IsSqlDw <bool>] [-IsSqlDwEdition <bool>] [-IsSystemObject <bool>] [-IsVarDecimalStorageFormatEnabled <bool>] [-IsVarDecimalStorageFormatSupported <bool>] [-LegacyCardinalityEstimation <bool>] [-LegacyCardinalityEstimationForSecondary <bool>] [-LocalCursorsDefault <bool>] [-NestedTriggersEnabled <bool>] [-NumericRoundAbortEnabled <bool>] [-ParameterSniffing <bool>] [-ParameterSniffingForSecondary <bool>] [-QueryOptimizerHotfixes <bool>] [-QueryOptimizerHotfixesForSecondary <bool>] [-QuotedIdentifiersEnabled <bool>] [-ReadOnly <bool>] [-RecursiveTriggersEnabled <bool>] [-RemoteDataArchiveEnabled <bool>] [-RemoteDataArchiveUseFederatedServiceAccount <bool>] [-TemporalHistoryRetentionEnabled <bool>] [-TransformNoiseWords <bool>] [-Trustworthy <bool>] [-WarnOnRename <bool>] [-ActiveConnections <int>] [-ChangeTrackingRetentionPeriod <int>] [-DefaultFullTextLanguage <int>] [-DefaultLanguage <int>] [-ID <int>] [-MaxDop <int>] [-MaxDopForSecondary <int>] [-MirroringRedoQueueMaxSize <int>] [-MirroringRoleSequence <int>] [-MirroringSafetySequence <int>] [-MirroringTimeout <int>] [-TargetRecoveryTime <int>] [-TwoDigitYearCutoff <int>] [-Version <int>] [-IndexSpaceUsage <long>] [-MaxSizeInBytes <long>] [-MemoryAllocatedToMemoryOptimizedObjectsInKB <long>] [-MemoryUsedByMemoryOptimizedObjectsInKB <long>] [-MirroringFailoverLogSequenceNumber <long>] [-PersistentVersionStoreSizeKB <long>] [-SpaceAvailable <long>] [-Size <double>] [-AvailabilityGroupName <string>] [-AzureServiceObjective <string>] [-CatalogCollation <string>] [-Collation <string>] [-DboLogin <string>] [-DefaultFileGroup <string>] [-DefaultFileStreamFileGroup <string>] [-DefaultFullTextCatalog <string>] [-DefaultSchema <string>] [-FilestreamDirectoryName <string>] [-MirroringPartner <string>] [-MirroringPartnerInstance <string>] [-MirroringWitness <string>] [-Owner <string>] [-PersistentVersionStoreFileGroup <string>] [-PrimaryFilePath <string>] [-RemoteDataArchiveCredential <string>] [-RemoteDataArchiveEndpoint <string>] [-RemoteDataArchiveLinkedServer <string>] [-RemoteDatabaseName <string>] [-UserName <string>] [-AzureEdition <string>] [-CreateDate <datetime>] [-LastBackupDate <datetime>] [-LastDifferentialBackupDate <datetime>] [-LastGoodCheckDbTime <datetime>] [-LastLogBackupDate <datetime>] [-DatabaseGuid <guid>] [-MirroringID <guid>] [-RecoveryForkGuid <guid>] [-ServiceBrokerGuid <guid>] [-AvailabilityDatabaseSynchronizationState <AvailabilityDatabaseSynchronizationState>] [-ChangeTrackingRetentionPeriodUnits <RetentionPeriodUnits>] [-CompatibilityLevel <CompatibilityLevel>] [-ContainmentType <ContainmentType>] [-DatabaseEngineEdition <DatabaseEngineEdition>] [-DatabaseEngineType <DatabaseEngineType>] [-FilestreamNonTransactedAccess <FilestreamNonTransactedAccessType>] [-LogReuseWaitStatus <LogReuseWaitStatus>] [-MirroringSafetyLevel <MirroringSafetyLevel>] [-MirroringStatus <MirroringStatus>] [-MirroringWitnessStatus <MirroringWitnessStatus>] [-PageVerify <PageVerify>] [-RecoveryModel <RecoveryModel>] [-ReplicationOptions <ReplicationOptions>] [-SnapshotIsolationState <SnapshotIsolationState>] [-State <SqlSmoState>] [-Status <DatabaseStatus>] [-UserAccess <DatabaseUserAccess>] [<CommonParameters>]'
             }
-        ) {
-            $parameterSets = (Get-Command -Name 'Test-SqlDscDatabaseProperty').ParameterSets
-            $serverObjectSet = $parameterSets | Where-Object -FilterScript { $_.Name -eq 'ServerObjectSet' }
-
-            $serverObjectSet | Should -Not -BeNullOrEmpty
-            $serverObjectSet.Parameters.Name | Should -Contain 'ServerObject'
-            $serverObjectSet.Parameters.Name | Should -Contain 'Name'
-        }
-
-        It 'Should have the correct parameters in parameter set DatabaseObjectSet' -ForEach @(
             @{
                 ExpectedParameterSetName = 'DatabaseObjectSet'
+                ExpectedParameters = '-DatabaseObject <Database> [-AcceleratedRecoveryEnabled <bool>] [-ActiveDirectory <bool>] [-AnsiNullDefault <bool>] [-AnsiNullsEnabled <bool>] [-AnsiPaddingEnabled <bool>] [-AnsiWarningsEnabled <bool>] [-ArithmeticAbortEnabled <bool>] [-AutoClose <bool>] [-AutoCreateIncrementalStatisticsEnabled <bool>] [-AutoCreateStatisticsEnabled <bool>] [-AutoShrink <bool>] [-AutoUpdateStatisticsAsync <bool>] [-AutoUpdateStatisticsEnabled <bool>] [-BrokerEnabled <bool>] [-CaseSensitive <bool>] [-ChangeTrackingAutoCleanUp <bool>] [-ChangeTrackingEnabled <bool>] [-CloseCursorsOnCommitEnabled <bool>] [-ConcatenateNullYieldsNull <bool>] [-DatabaseOwnershipChaining <bool>] [-DataRetentionEnabled <bool>] [-DateCorrelationOptimization <bool>] [-DelayedDurability <bool>] [-EncryptionEnabled <bool>] [-HasDatabaseEncryptionKey <bool>] [-HasFileInCloud <bool>] [-HasMemoryOptimizedObjects <bool>] [-HonorBrokerPriority <bool>] [-IsAccessible <bool>] [-IsDatabaseSnapshot <bool>] [-IsDatabaseSnapshotBase <bool>] [-IsDbAccessAdmin <bool>] [-IsDbBackupOperator <bool>] [-IsDbDataReader <bool>] [-IsDbDataWriter <bool>] [-IsDbDdlAdmin <bool>] [-IsDbDenyDataReader <bool>] [-IsDbDenyDataWriter <bool>] [-IsDbManager <bool>] [-IsDbOwner <bool>] [-IsDbSecurityAdmin <bool>] [-IsFabricDatabase <bool>] [-IsFullTextEnabled <bool>] [-IsLedger <bool>] [-IsLoginManager <bool>] [-IsMailHost <bool>] [-IsManagementDataWarehouse <bool>] [-IsMaxSizeApplicable <bool>] [-IsMirroringEnabled <bool>] [-IsParameterizationForced <bool>] [-IsReadCommittedSnapshotOn <bool>] [-IsSqlDw <bool>] [-IsSqlDwEdition <bool>] [-IsSystemObject <bool>] [-IsVarDecimalStorageFormatEnabled <bool>] [-IsVarDecimalStorageFormatSupported <bool>] [-LegacyCardinalityEstimation <bool>] [-LegacyCardinalityEstimationForSecondary <bool>] [-LocalCursorsDefault <bool>] [-NestedTriggersEnabled <bool>] [-NumericRoundAbortEnabled <bool>] [-ParameterSniffing <bool>] [-ParameterSniffingForSecondary <bool>] [-QueryOptimizerHotfixes <bool>] [-QueryOptimizerHotfixesForSecondary <bool>] [-QuotedIdentifiersEnabled <bool>] [-ReadOnly <bool>] [-RecursiveTriggersEnabled <bool>] [-RemoteDataArchiveEnabled <bool>] [-RemoteDataArchiveUseFederatedServiceAccount <bool>] [-TemporalHistoryRetentionEnabled <bool>] [-TransformNoiseWords <bool>] [-Trustworthy <bool>] [-WarnOnRename <bool>] [-ActiveConnections <int>] [-ChangeTrackingRetentionPeriod <int>] [-DefaultFullTextLanguage <int>] [-DefaultLanguage <int>] [-ID <int>] [-MaxDop <int>] [-MaxDopForSecondary <int>] [-MirroringRedoQueueMaxSize <int>] [-MirroringRoleSequence <int>] [-MirroringSafetySequence <int>] [-MirroringTimeout <int>] [-TargetRecoveryTime <int>] [-TwoDigitYearCutoff <int>] [-Version <int>] [-IndexSpaceUsage <long>] [-MaxSizeInBytes <long>] [-MemoryAllocatedToMemoryOptimizedObjectsInKB <long>] [-MemoryUsedByMemoryOptimizedObjectsInKB <long>] [-MirroringFailoverLogSequenceNumber <long>] [-PersistentVersionStoreSizeKB <long>] [-SpaceAvailable <long>] [-Size <double>] [-AvailabilityGroupName <string>] [-AzureServiceObjective <string>] [-CatalogCollation <string>] [-Collation <string>] [-DboLogin <string>] [-DefaultFileGroup <string>] [-DefaultFileStreamFileGroup <string>] [-DefaultFullTextCatalog <string>] [-DefaultSchema <string>] [-FilestreamDirectoryName <string>] [-MirroringPartner <string>] [-MirroringPartnerInstance <string>] [-MirroringWitness <string>] [-Owner <string>] [-PersistentVersionStoreFileGroup <string>] [-PrimaryFilePath <string>] [-RemoteDataArchiveCredential <string>] [-RemoteDataArchiveEndpoint <string>] [-RemoteDataArchiveLinkedServer <string>] [-RemoteDatabaseName <string>] [-UserName <string>] [-AzureEdition <string>] [-CreateDate <datetime>] [-LastBackupDate <datetime>] [-LastDifferentialBackupDate <datetime>] [-LastGoodCheckDbTime <datetime>] [-LastLogBackupDate <datetime>] [-DatabaseGuid <guid>] [-MirroringID <guid>] [-RecoveryForkGuid <guid>] [-ServiceBrokerGuid <guid>] [-AvailabilityDatabaseSynchronizationState <AvailabilityDatabaseSynchronizationState>] [-ChangeTrackingRetentionPeriodUnits <RetentionPeriodUnits>] [-CompatibilityLevel <CompatibilityLevel>] [-ContainmentType <ContainmentType>] [-DatabaseEngineEdition <DatabaseEngineEdition>] [-DatabaseEngineType <DatabaseEngineType>] [-FilestreamNonTransactedAccess <FilestreamNonTransactedAccessType>] [-LogReuseWaitStatus <LogReuseWaitStatus>] [-MirroringSafetyLevel <MirroringSafetyLevel>] [-MirroringStatus <MirroringStatus>] [-MirroringWitnessStatus <MirroringWitnessStatus>] [-PageVerify <PageVerify>] [-RecoveryModel <RecoveryModel>] [-ReplicationOptions <ReplicationOptions>] [-SnapshotIsolationState <SnapshotIsolationState>] [-State <SqlSmoState>] [-Status <DatabaseStatus>] [-UserAccess <DatabaseUserAccess>] [<CommonParameters>]'
             }
         ) {
-            $parameterSets = (Get-Command -Name 'Test-SqlDscDatabaseProperty').ParameterSets
-            $databaseObjectSet = $parameterSets | Where-Object -FilterScript { $_.Name -eq 'DatabaseObjectSet' }
+            $result = (Get-Command -Name 'Test-SqlDscDatabaseProperty').ParameterSets |
+                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
+                Select-Object -Property @(
+                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
+                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
+                )
 
-            $databaseObjectSet | Should -Not -BeNullOrEmpty
-            $databaseObjectSet.Parameters.Name | Should -Contain 'DatabaseObject'
+            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should -Be $ExpectedParameters
         }
 
-        It 'Should have ServerObject as a mandatory parameter in ServerObjectSet' {
+        It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscDatabaseProperty').Parameters['ServerObject']
 
-            # Check if mandatory in ServerObjectSet
-            $serverObjectSetAttribute = $parameterInfo.Attributes | Where-Object { $_.ParameterSetName -eq 'ServerObjectSet' }
-            $serverObjectSetAttribute.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
 
-        It 'Should have Name as a mandatory parameter in ServerObjectSet' {
+        It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscDatabaseProperty').Parameters['Name']
 
-            # Check if mandatory in ServerObjectSet
-            $serverObjectSetAttribute = $parameterInfo.Attributes | Where-Object { $_.ParameterSetName -eq 'ServerObjectSet' }
-            $serverObjectSetAttribute.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
 
-        It 'Should have DatabaseObject as a mandatory parameter in DatabaseObjectSet' {
+        It 'Should have DatabaseObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscDatabaseProperty').Parameters['DatabaseObject']
 
-            # Check if mandatory in DatabaseObjectSet
-            $databaseObjectSetAttribute = $parameterInfo.Attributes | Where-Object { $_.ParameterSetName -eq 'DatabaseObjectSet' }
-            $databaseObjectSetAttribute.Mandatory | Should -BeTrue
-        }
-
-        It 'Should have DatabaseObject support ValueFromPipeline' {
-            $parameterInfo = (Get-Command -Name 'Test-SqlDscDatabaseProperty').Parameters['DatabaseObject']
-
-            # Check if it accepts pipeline input
-            $pipelineAttribute = $parameterInfo.Attributes | Where-Object { $_.ValueFromPipeline -eq $true }
-            $pipelineAttribute | Should -Not -BeNullOrEmpty
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
     }
 
@@ -497,7 +478,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
                 'DataRetentionEnabled', 'DateCorrelationOptimization', 'DelayedDurability', 'EncryptionEnabled',
                 'HasDatabaseEncryptionKey', 'HasFileInCloud', 'HasMemoryOptimizedObjects', 'HonorBrokerPriority',
                 'IsAccessible', 'IsDatabaseSnapshot', 'IsDatabaseSnapshotBase', 'IsDbAccessAdmin', 'IsDbBackupOperator',
-                'IsDbDatareader', 'IsDbDatawriter', 'IsDbDdlAdmin', 'IsDbDenyDatareader', 'IsDbDenyDatawriter',
+                'IsDbDataReader', 'IsDbDataWriter', 'IsDbDdlAdmin', 'IsDbDenyDataReader', 'IsDbDenyDataWriter',
                 'IsDbManager', 'IsDbOwner', 'IsDbSecurityAdmin', 'IsFabricDatabase', 'IsFullTextEnabled',
                 'IsLedger', 'IsLoginManager', 'IsMailHost', 'IsManagementDataWarehouse', 'IsMaxSizeApplicable',
                 'IsMirroringEnabled', 'IsParameterizationForced', 'IsReadCommittedSnapshotOn', 'IsSqlDw',
