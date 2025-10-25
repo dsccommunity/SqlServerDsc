@@ -25,58 +25,59 @@ BeforeDiscovery {
     # Define comprehensive test cases for database properties that can be tested with master database
     $script:masterDatabaseTestCases = @(
         # Boolean properties - test with expected values for master database
-        @{ PropertyName = 'AutoClose'; DatabaseName = 'master' }
-        @{ PropertyName = 'AutoShrink'; DatabaseName = 'master' }
-        @{ PropertyName = 'AnsiNullsEnabled'; DatabaseName = 'master' }
-        @{ PropertyName = 'AnsiPaddingEnabled'; DatabaseName = 'master' }
-        @{ PropertyName = 'AnsiWarningsEnabled'; DatabaseName = 'master' }
-        @{ PropertyName = 'ArithmeticAbortEnabled'; DatabaseName = 'master' }
-        @{ PropertyName = 'BrokerEnabled'; DatabaseName = 'master' }
-        @{ PropertyName = 'CaseSensitive'; DatabaseName = 'master' }
-        @{ PropertyName = 'CloseCursorsOnCommitEnabled'; DatabaseName = 'master' }
-        @{ PropertyName = 'ConcatenateNullYieldsNull'; DatabaseName = 'master' }
-        @{ PropertyName = 'DatabaseOwnershipChaining'; DatabaseName = 'master' }
-        @{ PropertyName = 'DateCorrelationOptimization'; DatabaseName = 'master' }
-        @{ PropertyName = 'EncryptionEnabled'; DatabaseName = 'master' }
-        @{ PropertyName = 'HasDatabaseEncryptionKey'; DatabaseName = 'master' }
-        @{ PropertyName = 'HasFileInCloud'; DatabaseName = 'master' }
-        @{ PropertyName = 'HasMemoryOptimizedObjects'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsAccessible'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsDbAccessAdmin'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsDbBackupOperator'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsDbDataReader'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsDbDataWriter'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsDbDdlAdmin'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsDbDenyDataReader'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsDbDenyDataWriter'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsDbManager'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsDbOwner'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsDbSecurityAdmin'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsDatabaseSnapshot'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsDatabaseSnapshotBase'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsFabricDatabase'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsFullTextEnabled'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsLedger'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsLoginManager'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsMailHost'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsManagementDataWarehouse'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsMaxSizeApplicable'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsMirroringEnabled'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsParameterizationForced'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsReadCommittedSnapshotOn'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsSqlDw'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsSqlDwEdition'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsSystemObject'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsVarDecimalStorageFormatEnabled'; DatabaseName = 'master' }
-        @{ PropertyName = 'IsVarDecimalStorageFormatSupported'; DatabaseName = 'master' }
-        @{ PropertyName = 'LocalCursorsDefault'; DatabaseName = 'master' }
-        @{ PropertyName = 'NestedTriggersEnabled'; DatabaseName = 'master' }
-        @{ PropertyName = 'NumericRoundAbortEnabled'; DatabaseName = 'master' }
-        @{ PropertyName = 'QuotedIdentifiersEnabled'; DatabaseName = 'master' }
-        @{ PropertyName = 'ReadOnly'; DatabaseName = 'master' }
-        @{ PropertyName = 'RecursiveTriggersEnabled'; DatabaseName = 'master' }
-        @{ PropertyName = 'Trustworthy'; DatabaseName = 'master' }
-        @{ PropertyName = 'WarnOnRename'; DatabaseName = 'master' }
+        # Using string '1' which converts to both Boolean $true and Integer 1
+        @{ PropertyName = 'AutoClose'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'AutoShrink'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'AnsiNullsEnabled'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'AnsiPaddingEnabled'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'AnsiWarningsEnabled'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'ArithmeticAbortEnabled'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'BrokerEnabled'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'CaseSensitive'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'CloseCursorsOnCommitEnabled'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'ConcatenateNullYieldsNull'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'DatabaseOwnershipChaining'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'DateCorrelationOptimization'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'EncryptionEnabled'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'HasDatabaseEncryptionKey'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'HasFileInCloud'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'HasMemoryOptimizedObjects'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsAccessible'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsDbAccessAdmin'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsDbBackupOperator'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsDbDataReader'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsDbDataWriter'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsDbDdlAdmin'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsDbDenyDataReader'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsDbDenyDataWriter'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsDbManager'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsDbOwner'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsDbSecurityAdmin'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsDatabaseSnapshot'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsDatabaseSnapshotBase'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsFabricDatabase'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsFullTextEnabled'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsLedger'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsLoginManager'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsMailHost'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsManagementDataWarehouse'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsMaxSizeApplicable'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsMirroringEnabled'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsParameterizationForced'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsReadCommittedSnapshotOn'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsSqlDw'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsSqlDwEdition'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsSystemObject'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsVarDecimalStorageFormatEnabled'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'IsVarDecimalStorageFormatSupported'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'LocalCursorsDefault'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'NestedTriggersEnabled'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'NumericRoundAbortEnabled'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'QuotedIdentifiersEnabled'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'ReadOnly'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'RecursiveTriggersEnabled'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'Trustworthy'; DatabaseName = 'master'; TestValue = '1' }
+        @{ PropertyName = 'WarnOnRename'; DatabaseName = 'master'; TestValue = '1' }
 
         # String properties - test with actual values from master database
         @{ PropertyName = 'Collation'; DatabaseName = 'master' }
@@ -104,22 +105,22 @@ BeforeDiscovery {
 
     # Define properties that should be tested with model database (as it's more configurable)
     $script:modelDatabaseTestCases = @(
-        @{ PropertyName = 'AutoCreateStatisticsEnabled'; DatabaseName = 'model' }
-        @{ PropertyName = 'AutoUpdateStatisticsEnabled'; DatabaseName = 'model' }
-        @{ PropertyName = 'AutoUpdateStatisticsAsync'; DatabaseName = 'model' }
-        @{ PropertyName = 'AutoCreateIncrementalStatisticsEnabled'; DatabaseName = 'model' }
-        @{ PropertyName = 'ParameterSniffing'; DatabaseName = 'model' }
-        @{ PropertyName = 'LegacyCardinalityEstimation'; DatabaseName = 'model' }
-        @{ PropertyName = 'QueryOptimizerHotfixes'; DatabaseName = 'model' }
-        @{ PropertyName = 'AnsiNullDefault'; DatabaseName = 'model' }
-        @{ PropertyName = 'ChangeTrackingEnabled'; DatabaseName = 'model' }
-        @{ PropertyName = 'ChangeTrackingAutoCleanUp'; DatabaseName = 'model' }
-        @{ PropertyName = 'DataRetentionEnabled'; DatabaseName = 'model' }
-        @{ PropertyName = 'TemporalHistoryRetentionEnabled'; DatabaseName = 'model' }
-        @{ PropertyName = 'AcceleratedRecoveryEnabled'; DatabaseName = 'model' }
-        @{ PropertyName = 'DelayedDurability'; DatabaseName = 'model' }
-        @{ PropertyName = 'HonorBrokerPriority'; DatabaseName = 'model' }
-        @{ PropertyName = 'TransformNoiseWords'; DatabaseName = 'model' }
+        @{ PropertyName = 'AutoCreateStatisticsEnabled'; DatabaseName = 'model'; TestValue = '1' }
+        @{ PropertyName = 'AutoUpdateStatisticsEnabled'; DatabaseName = 'model'; TestValue = '1' }
+        @{ PropertyName = 'AutoUpdateStatisticsAsync'; DatabaseName = 'model'; TestValue = '1' }
+        @{ PropertyName = 'AutoCreateIncrementalStatisticsEnabled'; DatabaseName = 'model'; TestValue = '1' }
+        @{ PropertyName = 'ParameterSniffing'; DatabaseName = 'model'; TestValue = '1' }
+        @{ PropertyName = 'LegacyCardinalityEstimation'; DatabaseName = 'model'; TestValue = '1' }
+        @{ PropertyName = 'QueryOptimizerHotfixes'; DatabaseName = 'model'; TestValue = '1' }
+        @{ PropertyName = 'AnsiNullDefault'; DatabaseName = 'model'; TestValue = '1' }
+        @{ PropertyName = 'ChangeTrackingEnabled'; DatabaseName = 'model'; TestValue = '1' }
+        @{ PropertyName = 'ChangeTrackingAutoCleanUp'; DatabaseName = 'model'; TestValue = '1' }
+        @{ PropertyName = 'DataRetentionEnabled'; DatabaseName = 'model'; TestValue = '1' }
+        @{ PropertyName = 'TemporalHistoryRetentionEnabled'; DatabaseName = 'model'; TestValue = '1' }
+        @{ PropertyName = 'AcceleratedRecoveryEnabled'; DatabaseName = 'model'; TestValue = '1' }
+        @{ PropertyName = 'DelayedDurability'; DatabaseName = 'model'; TestValue = '1' }
+        @{ PropertyName = 'HonorBrokerPriority'; DatabaseName = 'model'; TestValue = '1' }
+        @{ PropertyName = 'TransformNoiseWords'; DatabaseName = 'model'; TestValue = '1' }
     )
 }
 
@@ -190,172 +191,146 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
     }
 
     Context 'When testing all database properties with master database' {
-        It 'Should return true when property <PropertyName> matches expected value' -ForEach $script:masterDatabaseTestCases {
-            # Get the database object
-            $databaseObject = $script:serverObject.Databases[$DatabaseName]
+        Context 'When testing Boolean properties' {
+            It 'Should return expected result when property <PropertyName> is tested with value 1' -ForEach ($script:masterDatabaseTestCases | Where-Object { $_.TestValue }) {
+                $databaseObject = $script:serverObject.Databases[$DatabaseName]
+                $actualValue = $databaseObject.$PropertyName
 
-            # Get the actual value from the database
-            $actualValue = $databaseObject.$PropertyName
+                $testParameters = @{
+                    ServerObject = $script:serverObject
+                    Name = $DatabaseName
+                    $PropertyName = $TestValue
+                    ErrorAction = 'Stop'
+                }
 
-            # Create parameter splat for the test
-            $testParameters = @{
-                ServerObject = $script:serverObject
-                Name = $DatabaseName
-                $PropertyName = $actualValue
-                ErrorAction = 'Stop'
+                $result = Test-SqlDscDatabaseProperty @testParameters
+                $expectedResult = ($actualValue -eq [System.Convert]::ToBoolean($TestValue))
+
+                $result | Should -Be $expectedResult -Because "Property '$PropertyName' should return $expectedResult when testing value '$TestValue' against actual value '$actualValue' for database '$DatabaseName'"
             }
 
-            # For enum properties, convert to string if needed
-            if ($actualValue -is [System.Enum])
-            {
-                $testParameters[$PropertyName] = $actualValue.ToString()
+            It 'Should return expected result when property <PropertyName> is tested with value 0' -ForEach ($script:masterDatabaseTestCases | Where-Object { $_.TestValue }) {
+                $databaseObject = $script:serverObject.Databases[$DatabaseName]
+                $actualValue = $databaseObject.$PropertyName
+                $testValue = '0'
+
+                $testParameters = @{
+                    ServerObject = $script:serverObject
+                    Name = $DatabaseName
+                    $PropertyName = $testValue
+                    ErrorAction = 'Stop'
+                }
+
+                $result = Test-SqlDscDatabaseProperty @testParameters
+                $expectedResult = ($actualValue -eq [System.Convert]::ToBoolean($testValue))
+
+                $result | Should -Be $expectedResult -Because "Property '$PropertyName' should return $expectedResult when testing value '$testValue' against actual value '$actualValue' for database '$DatabaseName'"
             }
-
-            $result = Test-SqlDscDatabaseProperty @testParameters
-
-            $result | Should -BeTrue -Because "Property '$PropertyName' should match the actual value '$actualValue' for database '$DatabaseName'"
         }
 
-        It 'Should return false when property <PropertyName> does not match expected value' -ForEach $script:masterDatabaseTestCases {
-            # Get the database object
-            $databaseObject = $script:serverObject.Databases[$DatabaseName]
+        Context 'When testing non-Boolean properties' {
+            It 'Should return true when property <PropertyName> matches actual value' -ForEach ($script:masterDatabaseTestCases | Where-Object { -not $_.TestValue }) {
+                $databaseObject = $script:serverObject.Databases[$DatabaseName]
+                $actualValue = $databaseObject.$PropertyName
 
-            # Get the actual value from the database
-            $actualValue = $databaseObject.$PropertyName
+                $testParameters = @{
+                    ServerObject = $script:serverObject
+                    Name = $DatabaseName
+                    $PropertyName = $actualValue
+                    ErrorAction = 'Stop'
+                }
 
-            # Create a different test value based on the property type
-            $differentValue = switch ($actualValue.GetType().Name)
-            {
-                'Boolean' { -not $actualValue }
-                'String' { 'DifferentTestValue' }
-                'Int32' { if ($actualValue -eq 0) { 999 } else { 0 } }
-                'Int64' { if ($actualValue -eq 0) { 999 } else { 0 } }
-                default {
-                    if ($actualValue -is [System.Enum])
+                if ($actualValue -is [System.Enum])
+                {
+                    $testParameters[$PropertyName] = $actualValue.ToString()
+                }
+
+                $result = Test-SqlDscDatabaseProperty @testParameters
+
+                $result | Should -BeTrue -Because "Property '$PropertyName' should return true when testing value '$actualValue' against actual value '$actualValue' for database '$DatabaseName'"
+            }
+
+            It 'Should return false when property <PropertyName> does not match actual value' -ForEach ($script:masterDatabaseTestCases | Where-Object { -not $_.TestValue }) {
+                $databaseObject = $script:serverObject.Databases[$DatabaseName]
+                $actualValue = $databaseObject.$PropertyName
+
+                $testValue = if ($actualValue -is [System.Enum])
+                {
+                    $enumType = $actualValue.GetType()
+                    $enumValues = [System.Enum]::GetValues($enumType)
+                    $differentEnum = $enumValues | Where-Object { $_ -ne $actualValue } | Select-Object -First 1
+                    if ($differentEnum) { $differentEnum.ToString() } else { 'DifferentEnumValue' }
+                }
+                else
+                {
+                    switch ($actualValue.GetType().Name)
                     {
-                        # For enum types, try to get a different enum value
-                        $enumType = $actualValue.GetType()
-                        $enumValues = [System.Enum]::GetValues($enumType)
-                        $differentEnum = $enumValues | Where-Object { $_ -ne $actualValue } | Select-Object -First 1
-                        if ($differentEnum)
-                        {
-                            $differentEnum.ToString()
-                        }
-                        else
-                        {
-                            'DifferentEnumValue'
-                        }
-                    }
-                    else
-                    {
-                        'DifferentValue'
+                        'String' { 'DifferentTestValue' }
+                        'Int32' { if ($actualValue -eq 0) { 999 } else { 0 } }
+                        'Int64' { if ($actualValue -eq 0) { 999 } else { 0 } }
+                        default { 'DifferentValue' }
                     }
                 }
+
+                if ($testValue -eq $actualValue)
+                {
+                    Set-ItResult -Skipped -Because "Could not determine a different value for property '$PropertyName' with value '$actualValue'"
+                    return
+                }
+
+                $testParameters = @{
+                    ServerObject = $script:serverObject
+                    Name = $DatabaseName
+                    $PropertyName = $testValue
+                    ErrorAction = 'Stop'
+                }
+
+                $result = Test-SqlDscDatabaseProperty @testParameters
+
+                $result | Should -BeFalse -Because "Property '$PropertyName' should return false when testing value '$testValue' against actual value '$actualValue' for database '$DatabaseName'"
             }
-
-            # Skip test if we couldn't determine a different value
-            if ($differentValue -eq $actualValue)
-            {
-                Set-ItResult -Skipped -Because "Could not determine a different value for property '$PropertyName' with value '$actualValue'"
-                return
-            }
-
-            # Create parameter splat for the test
-            $testParameters = @{
-                ServerObject = $script:serverObject
-                Name = $DatabaseName
-                $PropertyName = $differentValue
-                ErrorAction = 'Stop'
-            }
-
-            $result = Test-SqlDscDatabaseProperty @testParameters
-
-            $result | Should -BeFalse -Because "Property '$PropertyName' should not match when testing different value '$differentValue' (actual: '$actualValue') for database '$DatabaseName'"
         }
     }
 
     Context 'When testing all database properties with model database' {
         It 'Should return true when property <PropertyName> matches expected value' -ForEach $script:modelDatabaseTestCases {
-            # Get the database object
             $databaseObject = $script:serverObject.Databases[$DatabaseName]
-
-            # Get the actual value from the database
             $actualValue = $databaseObject.$PropertyName
 
-            # Create parameter splat for the test
             $testParameters = @{
                 ServerObject = $script:serverObject
                 Name = $DatabaseName
-                $PropertyName = $actualValue
+                $PropertyName = $TestValue
                 ErrorAction = 'Stop'
-            }
-
-            # For enum properties, convert to string if needed
-            if ($actualValue -is [System.Enum])
-            {
-                $testParameters[$PropertyName] = $actualValue.ToString()
             }
 
             $result = Test-SqlDscDatabaseProperty @testParameters
 
-            $result | Should -BeTrue -Because "Property '$PropertyName' should match the actual value '$actualValue' for database '$DatabaseName'"
+            # All model database test cases have TestValue for Boolean properties
+            $expectedResult = ($actualValue -eq [System.Convert]::ToBoolean($TestValue))
+
+            $result | Should -Be $expectedResult -Because "Property '$PropertyName' should return $expectedResult when testing value '$TestValue' against actual value '$actualValue' for database '$DatabaseName'"
         }
 
         It 'Should return false when property <PropertyName> does not match expected value' -ForEach $script:modelDatabaseTestCases {
-            # Get the database object
             $databaseObject = $script:serverObject.Databases[$DatabaseName]
-
-            # Get the actual value from the database
             $actualValue = $databaseObject.$PropertyName
 
-            # Create a different test value based on the property type
-            $differentValue = switch ($actualValue.GetType().Name)
-            {
-                'Boolean' { -not $actualValue }
-                'String' { 'DifferentTestValue' }
-                'Int32' { if ($actualValue -eq 0) { 999 } else { 0 } }
-                'Int64' { if ($actualValue -eq 0) { 999 } else { 0 } }
-                default {
-                    if ($actualValue -is [System.Enum])
-                    {
-                        # For enum types, try to get a different enum value
-                        $enumType = $actualValue.GetType()
-                        $enumValues = [System.Enum]::GetValues($enumType)
-                        $differentEnum = $enumValues | Where-Object { $_ -ne $actualValue } | Select-Object -First 1
-                        if ($differentEnum)
-                        {
-                            $differentEnum.ToString()
-                        }
-                        else
-                        {
-                            'DifferentEnumValue'
-                        }
-                    }
-                    else
-                    {
-                        'DifferentValue'
-                    }
-                }
-            }
+            $testValue = '0'
 
-            # Skip test if we couldn't determine a different value
-            if ($differentValue -eq $actualValue)
-            {
-                Set-ItResult -Skipped -Because "Could not determine a different value for property '$PropertyName' with value '$actualValue'"
-                return
-            }
-
-            # Create parameter splat for the test
             $testParameters = @{
                 ServerObject = $script:serverObject
                 Name = $DatabaseName
-                $PropertyName = $differentValue
+                $PropertyName = $testValue
                 ErrorAction = 'Stop'
             }
 
             $result = Test-SqlDscDatabaseProperty @testParameters
 
-            $result | Should -BeFalse -Because "Property '$PropertyName' should not match when testing different value '$differentValue' (actual: '$actualValue') for database '$DatabaseName'"
+            # All model database test cases are Boolean properties with TestValue
+            $expectedResult = ($actualValue -eq [System.Convert]::ToBoolean($testValue))
+
+            $result | Should -Be $expectedResult -Because "Property '$PropertyName' should return $expectedResult when testing value '$testValue' against actual value '$actualValue' for database '$DatabaseName'"
         }
     }
 
