@@ -399,10 +399,10 @@ ConvertFrom-StringData @'
     Database_OwnerNameWrong = The database '{0}' exists and has the owner '{1}', but expected it to have the owner '{2}'.
 
     ## Test-SqlDscDatabaseProperty
-    DatabaseProperty_TestingProperties = Testing properties of database '{0}' on instance '{1}'.
-    DatabaseProperty_TestingPropertiesFromObject = Testing properties of database '{0}' on instance '{1}' using database object.
-    DatabaseProperty_PropertyWrong = The database '{0}' property '{1}' has the value '{2}', but expected it to have the value '{3}'.
-    DatabaseProperty_PropertyCorrect = The database '{0}' property '{1}' has the expected value '{2}'.
+    DatabaseProperty_TestingProperties = Testing properties of database '{0}' on instance '{1}'. (TSDDP0001)
+    DatabaseProperty_TestingPropertiesFromObject = Testing properties of database '{0}' on instance '{1}' using database object. (TSDDP0002)
+    DatabaseProperty_PropertyWrong = The database '{0}' property '{1}' has the value '{2}', but expected it to have the value '{3}'. (TSDDP0003)
+    DatabaseProperty_PropertyCorrect = The database '{0}' property '{1}' has the expected value '{2}'. (TSDDP0004)
 
     ## Set-SqlDscDatabaseDefault
     DatabaseDefault_Set = Setting default objects of database '{0}' on instance '{1}'. (SSDDD0001)
