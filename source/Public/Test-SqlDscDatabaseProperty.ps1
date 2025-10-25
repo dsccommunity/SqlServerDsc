@@ -476,7 +476,7 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        Test-SqlDscDatabaseProperty -ServerObject $serverObject -Name 'MyDatabase' -Owner 'sa' -AutoClose $false -TrustWorthy $false
+        Test-SqlDscDatabaseProperty -ServerObject $serverObject -Name 'MyDatabase' -Owner 'sa' -AutoClose $false -Trustworthy $false
 
         Tests multiple database properties at once.
 
