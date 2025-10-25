@@ -182,8 +182,6 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
             @{ DatabaseName = 'model' }
             @{ DatabaseName = 'msdb' }
         ) {
-            param($DatabaseName)
-
             $result = Test-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $DatabaseName -ErrorAction 'Stop'
 
             $result | Should -BeTrue
