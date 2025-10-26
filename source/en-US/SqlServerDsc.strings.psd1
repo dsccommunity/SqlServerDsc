@@ -387,16 +387,8 @@ ConvertFrom-StringData @'
     Database_Remove_ShouldProcessCaption = Remove database from instance
     Remove_SqlDscDatabase_NotFound = Database '{0}' was not found.
 
-    ## Test-SqlDscDatabase
-    Database_Test = Testing the state of database '{0}' on instance '{1}'.
-    Database_InDesiredStatePresent = Database '{0}' is present and in desired state.
-    Database_InDesiredStateAbsent = Database '{0}' is absent as expected.
-    Database_NotInDesiredStatePresent = Expected the database '{0}' to be present, but it was absent.
-    Database_NotInDesiredStateAbsent = Expected the database '{0}' to be absent, but it was present.
-    Database_CollationWrong = The database '{0}' exists and has the collation '{1}', but expected it to have the collation '{2}'.
-    Database_CompatibilityLevelWrong = The database '{0}' exists and has the compatibility level '{1}', but expected it to have the compatibility level '{2}'.
-    Database_RecoveryModelWrong = The database '{0}' exists and has the recovery model '{1}', but expected it to have the recovery model '{2}'.
-    Database_OwnerNameWrong = The database '{0}' exists and has the owner '{1}', but expected it to have the owner '{2}'.
+    ## Test-SqlDscIsDatabase
+    IsDatabase_Test = Testing if database '{0}' exists on instance '{1}'.
 
     ## Test-SqlDscDatabaseProperty
     DatabaseProperty_TestingProperties = Testing properties of database '{0}' on instance '{1}'. (TSDDP0001)
