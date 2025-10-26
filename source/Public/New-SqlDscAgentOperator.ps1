@@ -45,7 +45,7 @@
         Specifies the weekday pager start time for the SQL Agent Operator.
 
     .PARAMETER PassThru
-        If specified, the created operator object will be returned.
+        Specifies whether the created operator object will be returned.
 
     .PARAMETER Force
         Specifies that the operator should be created without any confirmation.
