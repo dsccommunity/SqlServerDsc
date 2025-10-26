@@ -33,6 +33,11 @@
 
     .OUTPUTS
         `[System.Boolean]`
+
+    .INPUTS
+        `[Microsoft.SqlServer.Management.Smo.Server]`
+
+        The server object can be provided via the pipeline to **ServerObject**.
 #>
 function Test-SqlDscIsDatabase
 {
