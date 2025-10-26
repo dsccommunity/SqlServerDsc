@@ -138,7 +138,8 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
                 Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockDefaultInstanceName -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value '' -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru -Force |
-                Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force
+                Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force |
+                Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $mockReportingServicesServiceName -PassThru -Force
         }
 
         Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_ListReservedUrls -ParameterFilter {
@@ -990,7 +991,8 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                                 Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockNamedInstanceName -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value $mockVirtualDirectoryReportServerName -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value $mockVirtualDirectoryReportManagerName -PassThru |
-                                Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $script:mockDynamicSecureConnectionLevel -PassThru -Force
+                                Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $script:mockDynamicSecureConnectionLevel -PassThru -Force |
+                                Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $mockReportingServicesServiceName -PassThru -Force
                     ReportsApplicationName = 'ReportServerWebApp'
                     SqlVersion             = $sqlVersion.Version
                 }
