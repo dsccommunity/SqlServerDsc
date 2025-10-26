@@ -90,7 +90,7 @@ Deny-SqlDscServerPermission | 4 | 4 (New-SqlDscLogin), 1 (Install-SqlDscServer),
 Revoke-SqlDscServerPermission | 4 | 4 (New-SqlDscLogin), 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Get-SqlDscDatabase | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 ConvertFrom-SqlDscDatabasePermission | 4 | 0 (Prerequisites) | - | -
-New-SqlDscDatabase | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test databases
+New-SqlDscDatabase | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | SqlDscIntegrationTestDatabase_Persistent database
 Set-SqlDscDatabase | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Test-SqlDscDatabase | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Get-SqlDscDatabasePermission | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test database, Test user
@@ -214,6 +214,11 @@ that remains for other tests to validate against.
 Creates a persistent agent operator `SqlDscIntegrationTestOperator_Persistent`
 that remains on the instance for other tests to use.
 
+### `New-SqlDscDatabase`
+
+Creates a persistent database `SqlDscIntegrationTestDatabase_Persistent`
+with Simple recovery model that remains on the instance for other tests to use.
+
 ## Dependencies
 
 ### SqlServer module
@@ -291,6 +296,12 @@ IntegrationTestSqlLogin | P@ssw0rd123! | AlterTrace (Deny) | SQL Server login cr
 Role | Owner | Permission | Description
 --- | --- | --- | ---
 SqlDscIntegrationTestRole_Persistent | sa | CreateEndpoint | Server role created by New-SqlDscRole integration tests. CreateEndpoint permission granted by Grant-SqlDscServerPermission integration tests for server permission testing.
+
+### SQL Server Databases
+
+Database | Recovery Model | Description
+--- | --- | ---
+SqlDscIntegrationTestDatabase_Persistent | Simple | Database created by New-SqlDscDatabase integration tests for use by other integration tests.
 <!-- markdownlint-enable MD013 -->
 
 ### Image media (ISO)
