@@ -388,7 +388,7 @@ ConvertFrom-StringData @'
     Remove_SqlDscDatabase_NotFound = Database '{0}' was not found.
 
     ## Test-SqlDscIsDatabase
-    IsDatabase_Test = Testing if database '{0}' exists on instance '{1}'.
+    IsDatabase_Test = Testing if database '{0}' exists on instance '{1}'. (TSID0001)
 
     ## Test-SqlDscDatabaseProperty
     DatabaseProperty_TestingProperties = Testing properties of database '{0}' on instance '{1}'. (TSDDP0001)
