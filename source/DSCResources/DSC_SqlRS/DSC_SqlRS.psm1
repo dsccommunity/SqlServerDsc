@@ -56,7 +56,6 @@ function Get-TargetResource
         InstanceName                 = $InstanceName
         DatabaseServerName           = $DatabaseServerName
         DatabaseInstanceName         = $DatabaseInstanceName
-        ServiceName                  = $null
         ReportServerVirtualDirectory = $null
         ReportsVirtualDirectory      = $null
         ReportServerReservedUrl      = $null
@@ -839,7 +838,7 @@ function Set-TargetResource
         elseif ( $restartReportingService -and (-not $SuppressRestart) )
         {
             Write-Verbose -Message $script:localizedData.Restart
-            Restart-ReportingServicesService -ServiceName $currentConfig.ServiceName -WaitTime 30
+            Restart-ReportingServicesService -ServiceName $reportingServicesData.Configuration.ServiceName -WaitTime 30
 
             <#
                 Wait for the service to be fully ready after restart before attempting
