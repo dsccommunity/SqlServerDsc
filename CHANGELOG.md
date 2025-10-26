@@ -91,6 +91,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `SqlRS`
+  - Obtain the Reporting service name from WMI for version 14 and higher.
+    [issue #2313](https://github.com/dsccommunity/SqlServerDsc/issues/2313)
 - `Repair-SqlDscServer`
   - Removed the `Features` parameter from the command as SQL Server Repair action
     does not accept the `/FEATURES` parameter. SQL Server automatically repairs
@@ -195,6 +198,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `Restart-ReportingServicesService`
+  - Add the ServiceName parameter to restart service with the service name specified.
+  - Introduce parameter sets to make a current version is backward compatible.
 - `Add-SqlDscTraceFlag`
   - Improved de-duplication logic to normalize element types to `[System.UInt32]`
     before sorting and removing duplicates, ensuring proper handling of mixed
