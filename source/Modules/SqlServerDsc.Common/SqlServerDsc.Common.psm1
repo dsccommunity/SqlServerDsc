@@ -1103,6 +1103,9 @@ function Restart-SqlClusterService
         Name of the instance to be restarted. Default is 'MSSQLSERVER'
         (the default instance).
 
+    .PARAMETER ServiceName
+        Name of the service to be restarted.
+
     .PARAMETER WaitTime
         Number of seconds to wait between service stop and service start.
         Default value is 0 seconds.
