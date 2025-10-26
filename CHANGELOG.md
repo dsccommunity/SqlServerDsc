@@ -7,10 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Removed public command `Test-SqlDscDatabase` as it is now redundant. The new
-  command `Test-SqlDscIsDatabase` provides database existence checking with a
-  cleaner interface. Users testing database properties should use
-  `Test-SqlDscDatabaseProperty` instead ([issue #2201](https://github.com/dsccommunity/SqlServerDsc/issues/2201)).
+- BREAKING CHANGE: Removed public command `Test-SqlDscDatabase`. Use
+  `Test-SqlDscIsDatabase` to check existence. For property checks, use
+  `Test-SqlDscDatabaseProperty`. See [issue #2201](https://github.com/dsccommunity/SqlServerDsc/issues/2201).
 
 ### Added
 
