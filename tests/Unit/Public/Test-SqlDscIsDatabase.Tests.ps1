@@ -57,25 +57,34 @@ Describe 'Test-SqlDscIsDatabase' -Tag 'Public' {
 
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
-            $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
-                return @{
-                    'TestDatabase' = $mockExistingDatabase
-                } | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
-                    # Mock implementation
-                } -PassThru -Force
-            } -Force
         }
 
         It 'Should return true when database exists' {
+            Mock -CommandName Get-SqlDscDatabase -MockWith {
+                return $mockExistingDatabase
+            }
+
             $result = Test-SqlDscIsDatabase -ServerObject $mockServerObject -Name 'TestDatabase'
 
             $result | Should -BeTrue
+
+            Should -Invoke -CommandName Get-SqlDscDatabase -ParameterFilter {
+                $ServerObject -eq $mockServerObject -and $Name -eq 'TestDatabase' -and $Refresh -eq $false
+            } -Exactly -Times 1 -Scope It
         }
 
         It 'Should return false when database does not exist' {
+            Mock -CommandName Get-SqlDscDatabase -MockWith {
+                return $null
+            }
+
             $result = Test-SqlDscIsDatabase -ServerObject $mockServerObject -Name 'NonExistentDatabase'
 
             $result | Should -BeFalse
+
+            Should -Invoke -CommandName Get-SqlDscDatabase -ParameterFilter {
+                $ServerObject -eq $mockServerObject -and $Name -eq 'NonExistentDatabase' -and $Refresh -eq $false
+            } -Exactly -Times 1 -Scope It
         }
 
         It 'Should call Refresh when Refresh parameter is specified' {
@@ -88,14 +97,22 @@ Describe 'Test-SqlDscIsDatabase' -Tag 'Public' {
             $result | Should -BeTrue
 
             Should -Invoke -CommandName Get-SqlDscDatabase -ParameterFilter {
-                $Refresh -eq $true
+                $ServerObject -eq $mockServerObject -and $Name -eq 'TestDatabase' -and $Refresh -eq $true
             } -Exactly -Times 1 -Scope It
         }
 
         It 'Should support pipeline input' {
+            Mock -CommandName Get-SqlDscDatabase -MockWith {
+                return $mockExistingDatabase
+            }
+
             $result = $mockServerObject | Test-SqlDscIsDatabase -Name 'TestDatabase'
 
             $result | Should -BeTrue
+
+            Should -Invoke -CommandName Get-SqlDscDatabase -ParameterFilter {
+                $ServerObject -eq $mockServerObject -and $Name -eq 'TestDatabase' -and $Refresh -eq $false
+            } -Exactly -Times 1 -Scope It
         }
     }
 
