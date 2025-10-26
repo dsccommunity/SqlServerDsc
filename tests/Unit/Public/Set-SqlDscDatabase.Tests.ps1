@@ -57,6 +57,9 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
             $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Collation' -Value 'SQL_Latin1_General_CP1_CI_AS' -Force
             $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'RecoveryModel' -Value 'Full' -Force
             $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'CompatibilityLevel' -Value 'Version150' -Force
+            $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'AutoClose' -Value $false -Force
+            $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'AutoShrink' -Value $false -Force
+            $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'PageVerify' -Value 'Checksum' -Force
             $mockDatabaseObject | Add-Member -MemberType 'ScriptProperty' -Name 'Parent' -Value {
                 $mockParent = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
                 $mockParent | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
@@ -70,10 +73,6 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
                 return $mockParent
             } -Force
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
-                # Mock implementation
-            } -Force
-            $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'SetOwner' -Value {
-                param($OwnerName)
                 # Mock implementation
             } -Force
 
@@ -99,6 +98,10 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
             $null = Set-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -RecoveryModel 'Simple' -Force
         }
 
+        It 'Should modify multiple properties at once' {
+            $null = Set-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -AutoClose $true -AutoShrink $true -PageVerify 'None' -Force
+        }
+
         It 'Should return database object when PassThru is specified' {
             $result = Set-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -RecoveryModel 'Simple' -Force -PassThru
 
@@ -107,8 +110,8 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should throw error when database does not exist' {
-            { Set-SqlDscDatabase -ServerObject $mockServerObject -Name 'NonExistentDatabase' -RecoveryModel 'Simple' -Force } |
-                Should -Throw -ExpectedMessage '*not found*' -ErrorId 'SSDD0001,Set-SqlDscDatabase'
+            { Set-SqlDscDatabase -ServerObject $mockServerObject -Name 'NonExistentDatabase' -RecoveryModel 'Simple' -Force -ErrorAction 'Stop' } |
+                Should -Throw -ExpectedMessage '*not found*' -ErrorId 'GSDD0001,Get-SqlDscDatabase'
         }
     }
 
@@ -249,10 +252,12 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
         }
     }
 
-    Context 'When testing OwnerName parameter usage' {
+    Context 'When property is already set to desired value' {
         BeforeAll {
             $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
             $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
+            $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'RecoveryModel' -Value 'Simple' -Force
+            $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'AutoClose' -Value $true -Force
             $mockDatabaseObject | Add-Member -MemberType 'ScriptProperty' -Name 'Parent' -Value {
                 $mockParent = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
                 $mockParent | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
@@ -265,17 +270,17 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
                 return $mockParent
             } -Force
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
-                # Mock implementation
-            } -Force
-            $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'SetOwner' -Value {
-                param($OwnerName)
-                # Mock implementation
+                throw 'Alter() should not be called when property is already set'
             } -Force
         }
 
-        It 'Should call SetOwner when OwnerName parameter is specified' {
-            # This tests that the OwnerName parameter usage path (line 202) is covered
-            $null = Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -OwnerName 'sa' -Force
+        It 'Should not call Alter() when property is already set to desired value' {
+            # Should not throw because Alter() is not called
+            { Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -Force } | Should -Not -Throw
+        }
+
+        It 'Should not call Alter() when all properties are already set' {
+            { Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -AutoClose $true -Force } | Should -Not -Throw
         }
     }
 
@@ -307,38 +312,23 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
     }
 
     Context 'Parameter validation' {
-        It 'Should have the correct parameters in parameter set ServerObject' -ForEach @(
-            @{
-                ExpectedParameterSetName = 'ServerObject'
-                ExpectedParameters = '-ServerObject <Server> -Name <string> [-Collation <string>] [-CompatibilityLevel <string>] [-RecoveryModel <string>] [-OwnerName <string>] [-Force] [-Refresh] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
-            }
-        ) {
-            $result = (Get-Command -Name 'Set-SqlDscDatabase').ParameterSets |
-                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
-                Select-Object -Property @(
-                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
-                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
-                )
+        It 'Should have many settable SMO properties available as parameters' {
+            $command = Get-Command -Name 'Set-SqlDscDatabase'
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            # Verify some key properties are available
+            $command.Parameters.Keys | Should -Contain 'Collation'
+            $command.Parameters.Keys | Should -Contain 'CompatibilityLevel'
+            $command.Parameters.Keys | Should -Contain 'RecoveryModel'
+            $command.Parameters.Keys | Should -Contain 'AutoClose'
+            $command.Parameters.Keys | Should -Contain 'AutoShrink'
+            $command.Parameters.Keys | Should -Contain 'PageVerify'
+            $command.Parameters.Keys | Should -Contain 'AnsiNullDefault'
+            $command.Parameters.Keys | Should -Contain 'TargetRecoveryTime'
         }
 
-        It 'Should have the correct parameters in parameter set DatabaseObject' -ForEach @(
-            @{
-                ExpectedParameterSetName = 'DatabaseObject'
-                ExpectedParameters = '-DatabaseObject <Database> [-Collation <string>] [-CompatibilityLevel <string>] [-RecoveryModel <string>] [-OwnerName <string>] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
-            }
-        ) {
-            $result = (Get-Command -Name 'Set-SqlDscDatabase').ParameterSets |
-                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
-                Select-Object -Property @(
-                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
-                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
-                )
-
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+        It 'Should not have OwnerName parameter (moved to Set-SqlDscDatabaseOwner)' {
+            $command = Get-Command -Name 'Set-SqlDscDatabase'
+            $command.Parameters.Keys | Should -Not -Contain 'OwnerName'
         }
     }
 }

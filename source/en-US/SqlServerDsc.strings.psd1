@@ -367,14 +367,23 @@ ConvertFrom-StringData @'
     Database_Updating = Updating database '{0}'.
     Database_Updated = Database '{0}' was updated successfully.
     Database_SetFailed = Failed to set properties of database '{0}' on instance '{1}'.
-    Database_UpdatingCollation = Changing the database collation to '{0}'.
-    Database_UpdatingCompatibilityLevel = Changing the database compatibility level to '{0}'.
-    Database_UpdatingRecoveryModel = Changing the database recovery model to '{0}'.
-    Database_UpdatingOwner = Changing the database owner to '{0}'.
+    Database_UpdatingProperty = Setting property '{0}' to '{1}'.
+    Database_PropertyAlreadySet = Property '{0}' is already set to '{1}'.
+    Database_NoPropertiesChanged = No properties were changed for database '{0}'.
     Database_Set_ShouldProcessVerboseDescription = Setting properties of the database '{0}' on the instance '{1}'.
     Database_Set_ShouldProcessVerboseWarning = Are you sure you want to modify the database '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Database_Set_ShouldProcessCaption = Set database properties on instance
+    Set_SqlDscDatabase_InvalidCompatibilityLevel = The specified compatibility level '{0}' is not a valid compatibility level for the instance '{1}'.
+    Set_SqlDscDatabase_InvalidCollation = The specified collation '{0}' is not a valid collation for the instance '{1}'.
+
+    ## Set-SqlDscDatabaseOwner
+    DatabaseOwner_Updating = Setting owner of database '{0}' to '{1}'.
+    DatabaseOwner_Updated = Owner of database '{0}' was set to '{1}'.
+    DatabaseOwner_Set_ShouldProcessVerboseDescription = Setting the owner of the database '{0}' to '{1}' on the instance '{2}'.
+    DatabaseOwner_Set_ShouldProcessVerboseWarning = Are you sure you want to change the owner of the database '{0}' to '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    DatabaseOwner_Set_ShouldProcessCaption = Set database owner on instance
 
     ## Remove-SqlDscDatabase
     Database_RemoveFailed = Failed to remove database '{0}' from instance '{1}'.

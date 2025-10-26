@@ -10,9 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BREAKING CHANGE: Removed public command `Test-SqlDscDatabase`. Use
   `Test-SqlDscIsDatabase` to check existence. For property checks, use
   `Test-SqlDscDatabaseProperty`. See [issue #2201](https://github.com/dsccommunity/SqlServerDsc/issues/2201).
+- BREAKING CHANGE: `Set-SqlDscDatabase`
+  - Removed parameter `OwnerName`. Use the new command `Set-SqlDscDatabaseOwner`
+    to change database ownership instead.
 
 ### Added
 
+- Added public command `Set-SqlDscDatabaseOwner` to change the owner of a SQL Server
+  database. This command uses the SMO `SetOwner()` method and supports both
+  `ServerObject` and `DatabaseObject` parameter sets. It replaces the `OwnerName`
+  parameter that was removed from `Set-SqlDscDatabase`.
 - Added public command `Test-SqlDscIsDatabase` to test if a database exists on a
   SQL Server Database Engine instance ([issue #2201](https://github.com/dsccommunity/SqlServerDsc/issues/2201)).
 - Added public command `Get-SqlDscSetupLog` to retrieve SQL Server setup bootstrap
@@ -220,6 +227,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `Set-SqlDscDatabase`
+  - BREAKING CHANGE: Completely refactored to support all 85+ settable SMO Database
+    properties as parameters. The command now uses a generic property-setting loop
+    instead of hard-coded property handling. This allows setting any writable
+    property of the `Microsoft.SqlServer.Management.Smo.Database` class, including:
+    - 46 Boolean properties (e.g., `AnsiNullDefault`, `AutoClose`, `AutoShrink`,
+      `IsSystemObject`, `RecursiveTriggersEnabled`)
+    - 8 Int32 properties (e.g., `AutoCreateStatisticsIncremental`, `DataSpaceUsage`,
+      `IndexSpaceUsage`, `TargetRecoveryTime`)
+    - 1 Int64 property (`MaxSizeInBytes`)
+    - 19 String properties (e.g., `Collation`, `DefaultFileGroup`, `DefaultSchema`,
+      `PrimaryFilePath`)
+    - 11 Enum properties (e.g., `CompatibilityLevel`, `PageVerify`, `RecoveryModel`,
+      `UserAccess`)
+  - Removed all property-specific validation logic - SMO now handles validation
+  - Removed individual property update messages - now uses generic
+    `Database_UpdatingProperty` message
+  - Added check to skip updating properties that are already set to the desired value
+  - Properties are only modified if they differ from the current value, reducing
+    unnecessary database operations
 - `Remove-SqlDscAgentAlert`
   - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
     functions for proper terminating error handling ([issue #2193](https://github.com/dsccommunity/SqlServerDsc/issues/2193)).

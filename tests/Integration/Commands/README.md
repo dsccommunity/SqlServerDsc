@@ -92,6 +92,7 @@ Get-SqlDscDatabase | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTES
 ConvertFrom-SqlDscDatabasePermission | 4 | 0 (Prerequisites) | - | -
 New-SqlDscDatabase | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | SqlDscIntegrationTestDatabase_Persistent database
 Set-SqlDscDatabase | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Set-SqlDscDatabaseOwner | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Test-SqlDscIsDatabase | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Test-SqlDscDatabaseProperty | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Get-SqlDscDatabasePermission | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test database, Test user
