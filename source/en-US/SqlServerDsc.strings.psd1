@@ -314,27 +314,24 @@ ConvertFrom-StringData @'
     Role_Get = Getting server roles from instance '{0}'.
     Role_GetAll = Getting all server roles.
     Role_Found = Found server role '{0}'.
-    Role_NotFound = Server role '{0}' was not found.
+    Get_SqlDscRole_NotFound = Server role '{0}' was not found. (GSDR0001)
 
     ## New-SqlDscRole
     Role_Create = Creating server role '{0}' on instance '{1}'.
-    Role_Creating = Creating server role '{0}'.
-    Role_Created = Server role '{0}' was created successfully.
     Role_CreateFailed = Failed to create server role '{0}' on instance '{1}'.
     Role_AlreadyExists = Server role '{0}' already exists on instance '{1}'.
-    Role_Create_ShouldProcessVerboseDescription = Creating the server role '{0}' on the instance '{1}'.
-    Role_Create_ShouldProcessVerboseWarning = Are you sure you want to create the server role '{0}'?
+    Role_Create_ShouldProcessDescription = Creating the server role '{0}' on the instance '{1}'.
+    Role_Create_ShouldProcessConfirmation = Are you sure you want to create the server role '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Role_Create_ShouldProcessCaption = Create server role on instance
 
     ## Remove-SqlDscRole
     Role_Remove = Removing server role '{0}' from instance '{1}'.
-    Role_Removing = Removing server role '{0}'.
-    Role_Removed = Server role '{0}' was removed successfully.
-    Role_RemoveFailed = Failed to remove server role '{0}' from instance '{1}'.
-    Role_CannotRemoveBuiltIn = Cannot remove built-in server role '{0}'.
-    Role_Remove_ShouldProcessVerboseDescription = Removing the server role '{0}' from the instance '{1}'.
-    Role_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove the server role '{0}'?
+    Remove_SqlDscRole_NotFound = Server role '{0}' was not found. (RSDR0001)
+    Role_RemoveFailed = Failed to remove server role '{0}' from instance '{1}'. (RSDR0003)
+    Role_CannotRemoveBuiltIn = Cannot remove built-in server role '{0}'. (RSDR0002)
+    Role_Remove_ShouldProcessDescription = Removing the server role '{0}' from the instance '{1}'.
+    Role_Remove_ShouldProcessConfirmation = Are you sure you want to remove the server role '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Role_Remove_ShouldProcessCaption = Remove server role from instance
 
@@ -380,17 +377,15 @@ ConvertFrom-StringData @'
     Database_Set_ShouldProcessCaption = Set database properties on instance
 
     ## Remove-SqlDscDatabase
-    Database_Remove = Removing database '{0}' from instance '{1}'.
-    Database_Removing = Removing database '{0}'.
-    Database_Removed = Database '{0}' was removed successfully.
     Database_RemoveFailed = Failed to remove database '{0}' from instance '{1}'.
     Database_CannotRemoveSystem = Cannot remove system database '{0}'.
     Database_DroppingConnections = Dropping all active connections to database '{0}'.
     Database_DropConnectionsFailed = Failed to drop active connections for database '{0}'.
-    Database_Remove_ShouldProcessVerboseDescription = Removing the database '{0}' from the instance '{1}'.
-    Database_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove the database '{0}'?
+    Database_Remove_ShouldProcessDescription = Removing the database '{0}' from the instance '{1}'.
+    Database_Remove_ShouldProcessConfirmation = Are you sure you want to remove the database '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Database_Remove_ShouldProcessCaption = Remove database from instance
+    Remove_SqlDscDatabase_NotFound = Database '{0}' was not found.
 
     ## Test-SqlDscDatabase
     Database_Test = Testing the state of database '{0}' on instance '{1}'.
@@ -402,6 +397,13 @@ ConvertFrom-StringData @'
     Database_CompatibilityLevelWrong = The database '{0}' exists and has the compatibility level '{1}', but expected it to have the compatibility level '{2}'.
     Database_RecoveryModelWrong = The database '{0}' exists and has the recovery model '{1}', but expected it to have the recovery model '{2}'.
     Database_OwnerNameWrong = The database '{0}' exists and has the owner '{1}', but expected it to have the owner '{2}'.
+
+    ## Test-SqlDscDatabaseProperty
+    DatabaseProperty_TestingProperties = Testing properties of database '{0}' on instance '{1}'. (TSDDP0001)
+    DatabaseProperty_TestingPropertiesFromObject = Testing properties of database '{0}' on instance '{1}' using database object. (TSDDP0002)
+    DatabaseProperty_PropertyWrong = The database '{0}' property '{1}' has the value '{2}', but expected it to have the value '{3}'. (TSDDP0003)
+    DatabaseProperty_PropertyCorrect = The database '{0}' property '{1}' has the expected value '{2}'. (TSDDP0004)
+    DatabaseProperty_PropertyNotFound = The property '{0}' does not exist on database '{1}'. This might be due to the property not being supported on this SQL Server version. (TSDDP0005)
 
     ## Set-SqlDscDatabaseDefault
     DatabaseDefault_Set = Setting default objects of database '{0}' on instance '{1}'. (SSDDD0001)
@@ -531,4 +533,12 @@ ConvertFrom-StringData @'
 
     ## ConvertTo-FormattedParameterDescription
     ConvertTo_FormattedParameterDescription_NoParametersToUpdate = (no parameters to update)
+
+    ## Get-SqlDscSetupLog
+    Get_SqlDscSetupLog_SearchingForFile = Searching for '{0}' in path '{1}'. (GSDSL0001)
+    Get_SqlDscSetupLog_FileFound = Found setup log file at '{0}'. (GSDSL0002)
+    Get_SqlDscSetupLog_FileNotFound = Setup log file '{0}' not found. (GSDSL0003)
+    Get_SqlDscSetupLog_Header = ==== SQL Server Setup {0} (from {1}) ==== (GSDSL0004)
+    Get_SqlDscSetupLog_Footer = ==== End of {0} ==== (GSDSL0005)
+    Get_SqlDscSetupLog_PathNotFound = Path '{0}' does not exist. (GSDSL0006)
 '@

@@ -133,13 +133,23 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should throw error when CompatibilityLevel is invalid for SQL Server version' {
-            { New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDB' -CompatibilityLevel 'Version80' -Force } |
-                Should -Throw -ExpectedMessage '*not a valid compatibility level*'
+            $errorRecord = { New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDB' -CompatibilityLevel 'Version80' -Force } |
+                Should -Throw -ExpectedMessage '*not a valid compatibility level*' -PassThru
+
+            $errorRecord.Exception.Message | Should -BeLike '*not a valid compatibility level*'
+            $errorRecord.FullyQualifiedErrorId | Should -Be 'NSD0003,New-SqlDscDatabase'
+            $errorRecord.CategoryInfo.Category | Should -Be 'InvalidArgument'
+            $errorRecord.CategoryInfo.TargetName | Should -Be 'Version80'
         }
 
         It 'Should throw error when Collation is invalid' {
-            { New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDB' -Collation 'InvalidCollation' -Force } |
-                Should -Throw -ExpectedMessage '*not a valid collation*'
+            $errorRecord = { New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDB' -Collation 'InvalidCollation' -Force } |
+                Should -Throw -ExpectedMessage '*not a valid collation*' -PassThru
+
+            $errorRecord.Exception.Message | Should -BeLike '*not a valid collation*'
+            $errorRecord.FullyQualifiedErrorId | Should -Be 'NSD0004,New-SqlDscDatabase'
+            $errorRecord.CategoryInfo.Category | Should -Be 'InvalidArgument'
+            $errorRecord.CategoryInfo.TargetName | Should -Be 'InvalidCollation'
         }
     }
 

@@ -24,7 +24,7 @@
         Cannot be used together with Severity.
 
     .PARAMETER PassThru
-        If specified, the updated alert object will be returned.
+        Specifies whether the updated alert object will be returned.
 
     .PARAMETER Refresh
         Specifies that the alert object should be refreshed before updating. This
@@ -141,7 +141,15 @@ function Set-SqlDscAgentAlert
             if ($null -eq $alertObjectToUpdate)
             {
                 $errorMessage = $script:localizedData.Set_SqlDscAgentAlert_AlertNotFound -f $Name
-                New-ObjectNotFoundException -Message $errorMessage
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.Management.Automation.ItemNotFoundException]::new($errorMessage),
+                        'SSAA0002', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::ObjectNotFound,
+                        $Name
+                    )
+                )
             }
         }
         else
@@ -209,7 +217,15 @@ function Set-SqlDscAgentAlert
             catch
             {
                 $errorMessage = $script:localizedData.Set_SqlDscAgentAlert_UpdateFailed -f $alertObjectToUpdate.Name
-                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.InvalidOperationException]::new($errorMessage, $_.Exception),
+                        'SSAA0008', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $alertObjectToUpdate
+                    )
+                )
             }
         }
     }
