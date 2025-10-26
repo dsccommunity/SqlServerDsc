@@ -344,24 +344,29 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
     Context 'When testing comprehensive database property combinations' {
         It 'Should return true when testing multiple properties together with correct values' {
             # Get actual values from persistent test database
-            $testDb = $script:serverObject.Databases['SqlDscIntegrationTestDatabase_Persistent']
+            $testDb = $script:serverObject.Databases[$script:persistentTestDatabase]
             $actualCollation = $testDb.Collation
             $actualCompatibilityLevel = $testDb.CompatibilityLevel.ToString()
             $actualRecoveryModel = $testDb.RecoveryModel.ToString()
             $actualOwner = $testDb.Owner
 
-            $result = Test-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestDatabase_Persistent' `
-                -Collation $actualCollation `
-                -RecoveryModel $actualRecoveryModel `
-                -Owner $actualOwner `
-                -ErrorAction 'Stop'
+            $testParameters = @{
+                ServerObject   = $script:serverObject
+                Name           = $script:persistentTestDatabase
+                Collation      = $actualCollation
+                RecoveryModel  = $actualRecoveryModel
+                Owner          = $actualOwner
+                ErrorAction    = 'Stop'
+            }
+
+            $result = Test-SqlDscDatabaseProperty @testParameters
 
             $result | Should -BeTrue
         }
 
         It 'Should return false when testing multiple properties with one incorrect value' {
             # Get actual values from persistent test database
-            $testDb = $script:serverObject.Databases['SqlDscIntegrationTestDatabase_Persistent']
+            $testDb = $script:serverObject.Databases[$script:persistentTestDatabase]
             $actualCollation = $testDb.Collation
             $actualOwner = $testDb.Owner
 
@@ -375,11 +380,16 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
                 'Simple'
             }
 
-            $result = Test-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestDatabase_Persistent' `
-                -Collation $actualCollation `
-                -RecoveryModel $wrongRecoveryModel `
-                -Owner $actualOwner `
-                -ErrorAction 'Stop'
+            $testParameters = @{
+                ServerObject   = $script:serverObject
+                Name           = $script:persistentTestDatabase
+                Collation      = $actualCollation
+                RecoveryModel  = $wrongRecoveryModel
+                Owner          = $actualOwner
+                ErrorAction    = 'Stop'
+            }
+
+            $result = Test-SqlDscDatabaseProperty @testParameters
 
             $result | Should -BeFalse
         }
