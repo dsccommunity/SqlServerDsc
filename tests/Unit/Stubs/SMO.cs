@@ -163,6 +163,153 @@ namespace Microsoft.SqlServer.Management.Smo
         CloseAllConnectionsImmediately = 2
     }
 
+    // TypeName: Microsoft.SqlServer.Management.Smo.DatabaseUserAccess
+    // Used by:
+    //  New-SqlDscDatabase.Tests.ps1
+    //  Set-SqlDscDatabase.Tests.ps1
+    public enum DatabaseUserAccess : int
+    {
+        Multiple = 0,
+        Single = 1,
+        Restricted = 2
+    }
+
+    // Database-specific enums
+    public enum CompatibilityLevel : int
+    {
+        Version60 = 60,
+        Version65 = 65,
+        Version70 = 70,
+        Version80 = 80,
+        Version90 = 90,
+        Version100 = 100,
+        Version110 = 110,
+        Version120 = 120,
+        Version130 = 130,
+        Version140 = 140,
+        Version150 = 150,
+        Version160 = 160,
+        Version170 = 170
+    }
+
+    public enum ContainmentType : int
+    {
+        None = 0,
+        Partial = 1
+    }
+
+    public enum FilestreamNonTransactedAccessType : int
+    {
+        Off = 0,
+        ReadOnly = 1,
+        Full = 2
+    }
+
+    public enum PageVerify : int
+    {
+        None = 0,
+        TornPageDetection = 1,
+        Checksum = 2
+    }
+
+    public enum RecoveryModel : int
+    {
+        Full = 1,
+        BulkLogged = 2,
+        Simple = 3
+    }
+
+    public enum RetentionPeriodUnits : int
+    {
+        None = 0,
+        Days = 1,
+        Hours = 2,
+        Minutes = 3
+    }
+
+    public enum AvailabilityDatabaseSynchronizationState : int
+    {
+        NotSynchronizing = 0,
+        Synchronizing = 1,
+        Synchronized = 2,
+        Reverting = 3,
+        Initializing = 4
+    }
+
+    public enum LogReuseWaitStatus : int
+    {
+        Nothing = 0,
+        Checkpoint = 1,
+        LogBackup = 2,
+        BackupOrRestore = 3,
+        Transaction = 4,
+        Mirroring = 5,
+        Replication = 6,
+        SnapshotCreation = 7,
+        LogScan = 8,
+        Other = 9
+    }
+
+    public enum MirroringSafetyLevel : int
+    {
+        None = 0,
+        Unknown = 1,
+        Off = 2,
+        Full = 3
+    }
+
+    public enum MirroringStatus : int
+    {
+        None = 0,
+        Suspended = 1,
+        Disconnected = 2,
+        Synchronizing = 3,
+        PendingFailover = 4,
+        Synchronized = 5
+    }
+
+    public enum MirroringWitnessStatus : int
+    {
+        None = 0,
+        Unknown = 1,
+        Connected = 2,
+        Disconnected = 3
+    }
+
+    [System.Flags]
+    public enum ReplicationOptions : int
+    {
+        None = 0,
+        Published = 1,
+        Subscribed = 2,
+        MergePublished = 4,
+        MergeSubscribed = 8
+    }
+
+    public enum SnapshotIsolationState : int
+    {
+        Disabled = 0,
+        Enabled = 1,
+        PendingOff = 2,
+        PendingOn = 3
+    }
+
+    [System.Flags]
+    public enum DatabaseStatus : int
+    {
+        Normal = 1,
+        Restoring = 2,
+        RecoveryPending = 4,
+        Recovering = 8,
+        Suspect = 16,
+        Offline = 32,
+        Inaccessible = 62,
+        Standby = 64,
+        Shutdown = 128,
+        EmergencyMode = 256,
+        AutoClosed = 512
+    }
+
     #endregion Public Enums
 
     #region Public Classes
@@ -574,27 +721,148 @@ namespace Microsoft.SqlServer.Management.Smo
     //  DSC_SqlDatabasePermission
     public class Database
     {
+        // Boolean Properties
+        public bool AcceleratedRecoveryEnabled = true;
+        public bool ActiveDirectory = false;
+        public bool AnsiNullDefault = true;
+        public bool AnsiNullsEnabled = true;
+        public bool AnsiPaddingEnabled = true;
+        public bool AnsiWarningsEnabled = true;
+        public bool ArithmeticAbortEnabled = true;
         public bool AutoClose = false;
-        public string AvailabilityGroupName = "";
+        public bool AutoCreateIncrementalStatisticsEnabled = true;
+        public bool AutoCreateStatisticsEnabled = true;
+        public bool AutoShrink = false;
+        public bool AutoUpdateStatisticsAsync = false;
+        public bool AutoUpdateStatisticsEnabled = true;
+        public bool BrokerEnabled = false;
+        public bool CaseSensitive = false;
+        public bool ChangeTrackingAutoCleanUp = true;
+        public bool ChangeTrackingEnabled = false;
+        public bool CloseCursorsOnCommitEnabled = false;
+        public bool ConcatenateNullYieldsNull = true;
+        public bool DatabaseOwnershipChaining = false;
+        public bool DataRetentionEnabled = false;
+        public bool DateCorrelationOptimization = false;
+        public bool DelayedDurability = false;
+        public bool EncryptionEnabled = false;
+        public bool HasDatabaseEncryptionKey = false;
+        public bool HasFileInCloud = false;
+        public bool HasMemoryOptimizedObjects = false;
+        public bool HonorBrokerPriority = false;
+        public bool IsAccessible = true;
+        public bool IsDatabaseSnapshot = false;
+        public bool IsDatabaseSnapshotBase = false;
+        public bool IsDbAccessAdmin = false;
+        public bool IsDbBackupOperator = false;
+        public bool IsDbDatareader = false;
+        public bool IsDbDatawriter = false;
+        public bool IsDbDdlAdmin = false;
+        public bool IsDbDenyDatareader = false;
+        public bool IsDbDenyDatawriter = false;
+        public bool IsDbManager = false;
+        public bool IsDbOwner = true;
+        public bool IsDbSecurityAdmin = false;
+        public bool IsFabricDatabase = false;
+        public bool IsFullTextEnabled = false;
+        public bool IsLedger = false;
+        public bool IsLoginManager = false;
+        public bool IsMailHost = false;
+        public bool IsManagementDataWarehouse = false;
+        public bool IsMaxSizeApplicable = false;
+        public bool IsMirroringEnabled = false;
+        public bool IsParameterizationForced = false;
+        public bool IsReadCommittedSnapshotOn = false;
+        public bool IsSqlDw = false;
+        public bool IsSqlDwEdition = false;
+        public bool IsSystemObject = false;
+        public bool IsVarDecimalStorageFormatEnabled = false;
+        public bool IsVarDecimalStorageFormatSupported = true;
+        public bool LegacyCardinalityEstimation = false;
+        public bool LegacyCardinalityEstimationForSecondary = false;
+        public bool LocalCursorsDefault = false;
+        public bool NestedTriggersEnabled = true;
+        public bool NumericRoundAbortEnabled = false;
+        public bool ParameterSniffing = true;
+        public bool ParameterSniffingForSecondary = true;
+        public bool QueryOptimizerHotfixes = false;
+        public bool QueryOptimizerHotfixesForSecondary = false;
+        public bool QuotedIdentifiersEnabled = true;
+        public bool ReadOnly = false;
+        public bool RecursiveTriggersEnabled = false;
+        public bool RemoteDataArchiveEnabled = false;
+        public bool RemoteDataArchiveUseFederatedServiceAccount = false;
+        public bool TemporalHistoryRetentionEnabled = true;
+        public bool TransformNoiseWords = false;
+        public bool Trustworthy = false;
+        public bool WarnOnRename = true;
+
+        // String Properties
+        public string AvailabilityGroupName = "TestAG";
+        public string AzureServiceObjective = "S1";
+        public string CatalogCollation = "SQL_Latin1_General_CP1_CI_AS";
+        public string Collation = "SQL_Latin1_General_CP1_CI_AS";
+        public string DboLogin = "sa";
+        public string DefaultFileGroup = "PRIMARY";
+        public string DefaultFileStreamFileGroup = "FileStreamGroup";
+        public string DefaultFullTextCatalog = "TestCatalog";
+        public string DefaultSchema = "dbo";
+        public string FilestreamDirectoryName = "TestDirectory";
+        public string MirroringPartner = "TestPartner";
+        public string MirroringPartnerInstance = "TestInstance";
+        public string MirroringWitness = "TestWitness";
+        public string Owner = "sa";
+        public string PersistentVersionStoreFileGroup = "PRIMARY";
+        public string PrimaryFilePath = "C:\\Data\\";
+        public string RemoteDataArchiveCredential = "TestCredential";
+        public string RemoteDataArchiveEndpoint = "https://test.endpoint.com";
+        public string RemoteDataArchiveLinkedServer = "TestLinkedServer";
+        public string RemoteDatabaseName = "RemoteDB";
+        public string UserName = "TestUser";
+
+        // Integer Properties
+        public int ActiveConnections = 5;
+        public int ChangeTrackingRetentionPeriod = 2;
+        public int DefaultFullTextLanguage = 1033;
+        public int DefaultLanguage = 0;
+        public int ID = 5;
+        public int MaxDop = 0;
+        public int MaxDopForSecondary = 0;
+        public int MirroringRedoQueueMaxSize = 100;
+        public int MirroringRoleSequence = 1;
+        public int MirroringSafetySequence = 1;
+        public int MirroringTimeout = 10;
+        public int TargetRecoveryTime = 60;
+        public int TwoDigitYearCutoff = 2049;
+        public int Version = 904;
+
+        // Enum Properties
+        public AvailabilityDatabaseSynchronizationState AvailabilityDatabaseSynchronizationState = AvailabilityDatabaseSynchronizationState.Synchronized;
+        public RetentionPeriodUnits ChangeTrackingRetentionPeriodUnits = RetentionPeriodUnits.Days;
+        public CompatibilityLevel CompatibilityLevel = CompatibilityLevel.Version150;
+        public Microsoft.SqlServer.Management.Common.DatabaseEngineEdition DatabaseEngineEdition = Microsoft.SqlServer.Management.Common.DatabaseEngineEdition.Standard;
+        public Microsoft.SqlServer.Management.Common.DatabaseEngineType DatabaseEngineType = Microsoft.SqlServer.Management.Common.DatabaseEngineType.Standalone;
+        public ContainmentType ContainmentType = ContainmentType.None;
+        public FilestreamNonTransactedAccessType FilestreamNonTransactedAccess = FilestreamNonTransactedAccessType.Off;
+        public LogReuseWaitStatus LogReuseWaitStatus = LogReuseWaitStatus.Nothing;
+        public MirroringSafetyLevel MirroringSafetyLevel = MirroringSafetyLevel.Full;
+        public MirroringStatus MirroringStatus = MirroringStatus.None;
+        public MirroringWitnessStatus MirroringWitnessStatus = MirroringWitnessStatus.None;
+        public ReplicationOptions ReplicationOptions = ReplicationOptions.None;
+        public SnapshotIsolationState SnapshotIsolationState = SnapshotIsolationState.Disabled;
+        public PageVerify PageVerify = PageVerify.Checksum;
+        public RecoveryModel RecoveryModel = RecoveryModel.Full;
+        public DatabaseUserAccess UserAccess = DatabaseUserAccess.Multiple;
+        public SqlSmoState State = SqlSmoState.Existing;
+        public DatabaseStatus Status = DatabaseStatus.Normal;
+
+        // Other existing properties
         public Certificate[] Certificates;
-        public string ContainmentType = "None";
         public DateTime CreateDate;
         public DatabaseEncryptionKey DatabaseEncryptionKey;
-        public string DefaultFileStreamFileGroup;
-        public string DefaultFileGroup = "PRIMARY";
-        public string DefaultFullTextCatalog;
-        public bool EncryptionEnabled = false;
-        public Hashtable FileGroups;
-        public string FilestreamDirectoryName;
-        public string FilestreamNonTransactedAccess = "Off";
-        public int ID = 6;
-        public bool IsMirroringEnabled = false;
         public DateTime LastBackupDate = DateTime.Now;
+        public Hashtable FileGroups;
         public Hashtable LogFiles;
-        public string Owner = "sa";
-        public bool ReadOnly = false;
-        public string RecoveryModel = "Full";
-        public string UserAccess = "Multiple";
 
 
         public Database( Server server, string name ) {
@@ -1943,6 +2211,44 @@ namespace Microsoft.SqlServer.Management.Smo.Agent
         {
             return new Operator();
         }
+    }
+
+    #endregion
+}
+
+namespace Microsoft.SqlServer.Management.Common
+{
+    #region Public Enums
+
+    // TypeName: Microsoft.SqlServer.Management.Common.DatabaseEngineEdition
+    // BaseType: System.Enum
+    // Used by:
+    //  Test-SqlDscDatabaseProperty
+    public enum DatabaseEngineEdition : int
+    {
+        Unknown = 0,
+        Personal = 1,
+        Standard = 2,
+        Enterprise = 3,
+        Express = 4,
+        SqlDatabase = 5,
+        SqlDataWarehouse = 6,
+        SqlStretchDatabase = 7,
+        SqlManagedInstance = 8,
+        SqlDatabaseEdge = 9,
+        SqlAzureArcManagedInstance = 10,
+        SqlOnDemand = 11
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Common.DatabaseEngineType
+    // BaseType: System.Enum
+    // Used by:
+    //  Test-SqlDscDatabaseProperty
+    public enum DatabaseEngineType : int
+    {
+        Unknown = 0,
+        Standalone = 1,
+        SqlAzureDatabase = 2,
     }
 
     #endregion

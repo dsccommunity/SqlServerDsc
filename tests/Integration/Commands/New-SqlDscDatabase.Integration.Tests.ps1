@@ -121,4 +121,33 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             $result.Name | Should -Be $script:refreshTestDbName
         }
     }
+
+    Context 'When creating a persistent database for other integration tests' {
+        BeforeAll {
+            $script:persistentTestDatabase = 'SqlDscIntegrationTestDatabase_Persistent'
+        }
+
+        It 'Should create a persistent database that remains on the instance' {
+            # Create persistent database with Simple recovery model that will remain on the instance
+            $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:persistentTestDatabase -RecoveryModel 'Simple' -Force -ErrorAction 'Stop'
+
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be $script:persistentTestDatabase
+            $result.RecoveryModel | Should -Be 'Simple'
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
+
+            # Verify the database exists
+            $verifyDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:persistentTestDatabase -Refresh -ErrorAction 'Stop'
+
+            $verifyDb | Should -Not -BeNullOrEmpty
+            $verifyDb.Name | Should -Be $script:persistentTestDatabase
+            $verifyDb.RecoveryModel | Should -Be 'Simple'
+        }
+
+        It 'Should throw error when trying to create the persistent database that already exists' {
+            # Try to re-create the persistent database which should already exist
+            { New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:persistentTestDatabase -Force -ErrorAction 'Stop' } |
+                Should -Throw
+        }
+    }
 }

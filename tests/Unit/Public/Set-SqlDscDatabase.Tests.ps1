@@ -108,7 +108,7 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
 
         It 'Should throw error when database does not exist' {
             { Set-SqlDscDatabase -ServerObject $mockServerObject -Name 'NonExistentDatabase' -RecoveryModel 'Simple' -Force } |
-                Should -Throw -ExpectedMessage '*not found*'
+                Should -Throw -ExpectedMessage '*not found*' -ErrorId 'SSDD0001,Set-SqlDscDatabase'
         }
     }
 
@@ -166,7 +166,7 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
 
         It 'Should throw error when CompatibilityLevel is invalid for SQL Server version' {
             { Set-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -CompatibilityLevel 'Version80' -Force } |
-                Should -Throw -ExpectedMessage '*not a valid compatibility level*'
+                Should -Throw -ExpectedMessage '*not a valid compatibility level*' -ErrorId 'SSDD0002,Set-SqlDscDatabase'
         }
 
         It 'Should allow valid CompatibilityLevel for SQL Server version' {
@@ -220,7 +220,7 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
 
         It 'Should throw error when Collation is invalid' {
             { Set-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Collation 'InvalidCollation' -Force } |
-                Should -Throw -ExpectedMessage '*not a valid collation*'
+                Should -Throw -ExpectedMessage '*not a valid collation*' -ErrorId 'SSDD0003,Set-SqlDscDatabase'
         }
 
         It 'Should allow valid Collation' {
@@ -276,6 +276,33 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
         It 'Should call SetOwner when OwnerName parameter is specified' {
             # This tests that the OwnerName parameter usage path (line 202) is covered
             $null = Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -OwnerName 'sa' -Force
+        }
+    }
+
+    Context 'When database modification fails' {
+        BeforeAll {
+            $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+            $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
+            $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'RecoveryModel' -Value 'Full' -Force
+            $mockDatabaseObject | Add-Member -MemberType 'ScriptProperty' -Name 'Parent' -Value {
+                $mockParent = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                $mockParent | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+                $mockParent | Add-Member -MemberType 'NoteProperty' -Name 'VersionMajor' -Value 15 -Force
+                $mockParent | Add-Member -MemberType 'ScriptMethod' -Name 'EnumCollations' -Value {
+                    return @(
+                        @{ Name = 'SQL_Latin1_General_CP1_CI_AS' }
+                    )
+                } -Force
+                return $mockParent
+            } -Force
+            $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                throw 'Simulated Alter() failure'
+            } -Force
+        }
+
+        It 'Should throw terminating error when Alter() fails' {
+            { Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -Force } |
+                Should -Throw -ExpectedMessage '*Failed to set properties*' -ErrorId 'SSDD0004,Set-SqlDscDatabase'
         }
     }
 

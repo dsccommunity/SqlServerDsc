@@ -80,13 +80,21 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should throw error when database does not exist' {
+            $expectedMessage = InModuleScope -ScriptBlock {
+                $script:localizedData.Remove_SqlDscDatabase_NotFound -f 'NonExistentDatabase'
+            }
+
             { Remove-SqlDscDatabase -ServerObject $mockServerObject -Name 'NonExistentDatabase' -Force } |
-                Should -Throw -ExpectedMessage '*not found*'
+                Should -Throw -ExpectedMessage ('*{0}*' -f $expectedMessage) -ErrorId 'RSDD0002,Remove-SqlDscDatabase'
         }
 
         It 'Should throw error when trying to remove system database' {
+            $expectedMessage = InModuleScope -ScriptBlock {
+                $script:localizedData.Database_CannotRemoveSystem -f 'master'
+            }
+
             { Remove-SqlDscDatabase -ServerObject $mockServerObject -Name 'master' -Force } |
-                Should -Throw -ExpectedMessage '*Cannot remove system database*'
+                Should -Throw -ExpectedMessage ('*{0}*' -f $expectedMessage) -ErrorId 'RSDD0001,Remove-SqlDscDatabase'
         }
     }
 
@@ -121,8 +129,12 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
                 return $mockParent
             } -Force
 
+            $expectedMessage = InModuleScope -ScriptBlock {
+                $script:localizedData.Database_CannotRemoveSystem -f 'master'
+            }
+
             { Remove-SqlDscDatabase -DatabaseObject $mockSystemDatabaseObject -Force } |
-                Should -Throw -ExpectedMessage '*Cannot remove system database*'
+                Should -Throw -ExpectedMessage ('*{0}*' -f $expectedMessage) -ErrorId 'RSDD0001,Remove-SqlDscDatabase'
         }
     }
 

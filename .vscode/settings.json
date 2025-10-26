@@ -91,7 +91,23 @@
         "SOURCEBRANCHNAME",
         "setvariable",
         "RAISERROR",
-        "filegroup"
+        "filegroup",
+        "checkdb",
+        "msdb",
+        "db_datawriter",
+        "db_ddladmin",
+        "db_owner",
+        "db_accessadmin",
+        "db_securityadmin",
+        "db_backupoperator",
+        "db_denydatareader",
+        "db_denydatawriter",
+        "OLTP",
+        "LCID",
+        "varchar",
+        "maxdop",
+        "hotfixes",
+        "checkpointing"
     ],
     "cSpell.ignorePaths": [
         ".git"

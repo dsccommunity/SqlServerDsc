@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added public command `Get-SqlDscSetupLog` to retrieve SQL Server setup bootstrap
+  logs (Summary.txt) from the most recent setup operation. This command can be used
+  interactively for troubleshooting or within integration tests to help diagnose
+  setup failures. Integration tests have been updated to use this command instead
+  of duplicated error handling code [issue #2311](https://github.com/dsccommunity/SqlServerDsc/issues/2311).
 - Added script `Remove-SqlServerFromCIImage.ps1` to remove pre-installed SQL Server
   components from Microsoft Hosted agents that conflict with PrepareImage operations.
   The script is now run automatically in the CI pipeline before PrepareImage tests
@@ -88,6 +93,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added integration tests for `Test-SqlDscIsDatabasePrincipal` command to ensure
   it functions correctly in real environments
   [issue #2231](https://github.com/dsccommunity/SqlServerDsc/issues/2231).
+- Added public command `Test-SqlDscDatabaseProperty` to test database properties
+  on SQL Server Database Engine instances. This command supports two parameter sets:
+  `ServerObject` with **DatabaseName**, and `DatabaseObject` (from `Get-SqlDscDatabase`).
+  It allows users to specify any non-collection properties of the SMO Database object
+  as dynamic parameters to test, returning `$true` if all tested properties match
+  their expected values, and `$false` otherwise. This command improves maintainability
+  of SQL DSC resources and provides granular database configuration testing
+  [issue #2306](https://github.com/dsccommunity/SqlServerDsc/issues/2306).
 
 ### Fixed
 
@@ -108,6 +121,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to correctly reflect that `ConvertFrom-SqlDscDatabasePermission` test does not
   require database instance connectivity
   [issue #2284](https://github.com/dsccommunity/SqlServerDsc/issues/2284).
+- Updated unit test assertion in `Get-SqlDscSetupLog.Tests.ps1` to use
+  `Should -BeFalse` instead of `Should -Contain $false` to comply with DSC
+  Community Pester style guidelines
+  [issue #2315](https://github.com/dsccommunity/SqlServerDsc/issues/2315).
 - Added integration tests for `Set-SqlDscAudit` command to ensure it functions
   correctly in real environments
   [issue #2236](https://github.com/dsccommunity/SqlServerDsc/issues/2236).
@@ -202,6 +219,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add the ServiceName parameter to restart service with the service name specified.
   - Introduce parameter sets to maintain backward compatibility with the current
     version.
+- `Remove-SqlDscAgentAlert`
+  - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
+    functions for proper terminating error handling ([issue #2193](https://github.com/dsccommunity/SqlServerDsc/issues/2193)).
+- `Set-SqlDscAgentAlert`
+  - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
+    functions for proper terminating error handling ([issue #2196](https://github.com/dsccommunity/SqlServerDsc/issues/2196)).
+- `Remove-SqlDscDatabase`
+  - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
+    functions for proper terminating error handling ([issue #2195](https://github.com/dsccommunity/SqlServerDsc/issues/2195)).
+- `Remove-SqlDscRole`
+  - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
+    functions for proper terminating error handling ([issue #2199](https://github.com/dsccommunity/SqlServerDsc/issues/2199)).
+- `New-SqlDscDatabase`
+  - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
+    functions for proper terminating error handling ([issue #2200](https://github.com/dsccommunity/SqlServerDsc/issues/2200)).
+- `Set-SqlDscDatabase`
+  - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
+    functions for proper terminating error handling ([issue #2198](https://github.com/dsccommunity/SqlServerDsc/issues/2198)).
 - `Add-SqlDscTraceFlag`
   - Improved de-duplication logic to normalize element types to `[System.UInt32]`
     before sorting and removing duplicates, ensuring proper handling of mixed
