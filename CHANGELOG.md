@@ -200,7 +200,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `Restart-ReportingServicesService`
   - Add the ServiceName parameter to restart service with the service name specified.
-  - Introduce parameter sets to make a current version is backward compatible.
+  - Introduce parameter sets to maintain backward compatibility with the current
+    version.
 - `Add-SqlDscTraceFlag`
   - Improved de-duplication logic to normalize element types to `[System.UInt32]`
     before sorting and removing duplicates, ensuring proper handling of mixed
