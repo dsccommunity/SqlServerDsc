@@ -34,6 +34,8 @@
     .OUTPUTS
         `[System.Boolean]`
 
+        Returns `$true` if the target object is a database; otherwise, `$false`.
+
     .INPUTS
         `[Microsoft.SqlServer.Management.Smo.Server]`
 
