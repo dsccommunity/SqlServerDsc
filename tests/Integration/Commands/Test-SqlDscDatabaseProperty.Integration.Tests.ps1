@@ -352,7 +352,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
 
             $testParameters = @{
                 ServerObject   = $script:serverObject
-                Name           = $script:persistentTestDatabase
+                Name           = 'SqlDscIntegrationTestDatabase_Persistent'
                 Collation      = $actualCollation
                 RecoveryModel  = $actualRecoveryModel
                 Owner          = $actualOwner
@@ -382,7 +382,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
 
             $testParameters = @{
                 ServerObject   = $script:serverObject
-                Name           = $script:persistentTestDatabase
+                Name           = 'SqlDscIntegrationTestDatabase_Persistent'
                 Collation      = $actualCollation
                 RecoveryModel  = $wrongRecoveryModel
                 Owner          = $actualOwner
