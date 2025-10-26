@@ -1137,7 +1137,7 @@ function Test-SqlDscDatabaseProperty
         {
             if ($sqlDatabaseObject.PSObject.Properties.Name -notcontains $parameterName)
             {
-                Write-Error -Message ($script:localizedData.DatabaseProperty_PropertyNotFound -f $parameterName, $sqlDatabaseObject.Name)
+                Write-Error -Message ($script:localizedData.DatabaseProperty_PropertyNotFound -f $parameterName, $sqlDatabaseObject.Name) -Category 'InvalidArgument' -ErrorId 'TSDDP0001' -TargetObject $parameterName
                 continue
             }
 
