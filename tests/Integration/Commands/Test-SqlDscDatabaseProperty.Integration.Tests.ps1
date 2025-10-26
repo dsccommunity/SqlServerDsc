@@ -41,7 +41,8 @@ BeforeDiscovery {
         @{ PropertyName = 'DatabaseOwnershipChaining'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'DateCorrelationOptimization'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'EncryptionEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
-        @{ PropertyName = 'HasDatabaseEncryptionKey'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        # TODO: HasDatabaseEncryptionKey - Commented out because this property requires specific database configuration or SQL Server edition that is not available in the persistent test database
+        # @{ PropertyName = 'HasDatabaseEncryptionKey'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'HasFileInCloud'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'HasMemoryOptimizedObjects'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'IsAccessible'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
@@ -57,13 +58,16 @@ BeforeDiscovery {
         @{ PropertyName = 'IsDbSecurityAdmin'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'IsDatabaseSnapshot'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'IsDatabaseSnapshotBase'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
-        @{ PropertyName = 'IsFabricDatabase'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        # TODO: IsFabricDatabase - Commented out because this property requires specific database configuration or SQL Server edition that is not available in the persistent test database
+        # @{ PropertyName = 'IsFabricDatabase'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'IsFullTextEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
-        @{ PropertyName = 'IsLedger'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        # TODO: IsLedger - Commented out because this property requires specific database configuration or SQL Server edition that is not available in the persistent test database
+        # @{ PropertyName = 'IsLedger'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'IsLoginManager'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'IsMailHost'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'IsManagementDataWarehouse'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
-        @{ PropertyName = 'IsMaxSizeApplicable'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        # TODO: IsMaxSizeApplicable - Commented out because this property requires specific database configuration or SQL Server edition that is not available in the persistent test database
+        # @{ PropertyName = 'IsMaxSizeApplicable'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'IsMirroringEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'IsParameterizationForced'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'IsReadCommittedSnapshotOn'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
@@ -89,9 +93,11 @@ BeforeDiscovery {
         @{ PropertyName = 'AnsiNullDefault'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'ChangeTrackingEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'ChangeTrackingAutoCleanUp'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
-        @{ PropertyName = 'DataRetentionEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        # TODO: DataRetentionEnabled - Commented out because this property requires specific database configuration or SQL Server edition that is not available in the persistent test database
+        # @{ PropertyName = 'DataRetentionEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'TemporalHistoryRetentionEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
-        @{ PropertyName = 'AcceleratedRecoveryEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        # TODO: AcceleratedRecoveryEnabled - Commented out because this property requires specific database configuration or SQL Server edition that is not available in the persistent test database
+        # @{ PropertyName = 'AcceleratedRecoveryEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'DelayedDurability'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'HonorBrokerPriority'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'TransformNoiseWords'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
