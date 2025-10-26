@@ -271,7 +271,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
                 }
                 else
                 {
-                    if ($actualValue -eq $null)
+                    if ($null -eq $actualValue)
                     {
                         'DifferentValue'
                     }
