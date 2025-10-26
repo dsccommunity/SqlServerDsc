@@ -26,6 +26,16 @@
     .PARAMETER DatabaseObject
         Specifies the database object to test properties for (from Get-SqlDscDatabase).
 
+    .PARAMETER Refresh
+        Specifies that the **ServerObject**'s databases should be refreshed before
+        trying to get the database object. This is helpful when databases could have been
+        modified outside of the **ServerObject**, for example through T-SQL. But
+        on instances with a large amount of databases it might be better to make
+        sure the **ServerObject** is recent enough.
+
+        This parameter is only used when testing properties using **ServerObject** and
+        **Name** parameters.
+
     .PARAMETER Collation
         Specifies the default collation for the database.
 
@@ -504,6 +514,10 @@ function Test-SqlDscDatabaseProperty
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
+
+        [Parameter(ParameterSetName = 'ServerObjectSet')]
+        [System.Management.Automation.SwitchParameter]
+        $Refresh,
 
         [Parameter(ParameterSetName = 'DatabaseObjectSet', Mandatory = $true, ValueFromPipeline = $true)]
         [Microsoft.SqlServer.Management.Smo.Database]
@@ -1109,7 +1123,7 @@ function Test-SqlDscDatabaseProperty
 
                 $previousErrorActionPreference = $ErrorActionPreference
                 $ErrorActionPreference = 'Stop'
-                $sqlDatabaseObject = $ServerObject | Get-SqlDscDatabase -Name $Name -ErrorAction 'Stop'
+                $sqlDatabaseObject = $ServerObject | Get-SqlDscDatabase -Name $Name -Refresh:$Refresh -ErrorAction 'Stop'
                 $ErrorActionPreference = $previousErrorActionPreference
             }
 
@@ -1127,7 +1141,7 @@ function Test-SqlDscDatabaseProperty
         $boundParameters = Remove-CommonParameter -Hashtable $PSBoundParameters
 
         # Remove function-specific parameters
-        foreach ($parameterToRemove in @('ServerObject', 'Name', 'DatabaseObject'))
+        foreach ($parameterToRemove in @('ServerObject', 'Name', 'DatabaseObject', 'Refresh'))
         {
             $boundParameters.Remove($parameterToRemove)
         }
