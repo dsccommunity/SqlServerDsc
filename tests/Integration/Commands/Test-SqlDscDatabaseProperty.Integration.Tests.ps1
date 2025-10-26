@@ -350,11 +350,16 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
             $actualRecoveryModel = $testDb.RecoveryModel.ToString()
             $actualOwner = $testDb.Owner
 
-            $result = Test-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestDatabase_Persistent' `
-                -Collation $actualCollation `
-                -RecoveryModel $actualRecoveryModel `
-                -Owner $actualOwner `
-                -ErrorAction 'Stop'
+            $testParameters = @{
+                ServerObject   = $script:serverObject
+                Name           = 'SqlDscIntegrationTestDatabase_Persistent'
+                Collation      = $actualCollation
+                RecoveryModel  = $actualRecoveryModel
+                Owner          = $actualOwner
+                ErrorAction    = 'Stop'
+            }
+
+            $result = Test-SqlDscDatabaseProperty @testParameters
 
             $result | Should -BeTrue
         }
@@ -375,11 +380,16 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
                 'Simple'
             }
 
-            $result = Test-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestDatabase_Persistent' `
-                -Collation $actualCollation `
-                -RecoveryModel $wrongRecoveryModel `
-                -Owner $actualOwner `
-                -ErrorAction 'Stop'
+            $testParameters = @{
+                ServerObject   = $script:serverObject
+                Name           = 'SqlDscIntegrationTestDatabase_Persistent'
+                Collation      = $actualCollation
+                RecoveryModel  = $wrongRecoveryModel
+                Owner          = $actualOwner
+                ErrorAction    = 'Stop'
+            }
+
+            $result = Test-SqlDscDatabaseProperty @testParameters
 
             $result | Should -BeFalse
         }

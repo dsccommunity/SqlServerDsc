@@ -5,8 +5,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- BREAKING CHANGE: Removed public command `Test-SqlDscDatabase`. Use
+  `Test-SqlDscIsDatabase` to check existence. For property checks, use
+  `Test-SqlDscDatabaseProperty`. See [issue #2201](https://github.com/dsccommunity/SqlServerDsc/issues/2201).
+
 ### Added
 
+- Added public command `Test-SqlDscIsDatabase` to test if a database exists on a
+  SQL Server Database Engine instance ([issue #2201](https://github.com/dsccommunity/SqlServerDsc/issues/2201)).
 - Added public command `Get-SqlDscSetupLog` to retrieve SQL Server setup bootstrap
   logs (Summary.txt) from the most recent setup operation. This command can be used
   interactively for troubleshooting or within integration tests to help diagnose
