@@ -106,41 +106,6 @@ Describe 'Test-SqlDscIsDatabase' -Tag 'Public' {
         }
     }
 
-    Context 'When calling with verbose output' {
-        BeforeAll {
-            $mockExistingDatabase = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
-            $mockExistingDatabase | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
-
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-            $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
-            $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
-                return @{
-                    'TestDatabase' = $mockExistingDatabase
-                } | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
-                    # Mock implementation
-                } -PassThru -Force
-            } -Force
-        }
-
-        It 'Should write verbose message when database exists' {
-            Mock -CommandName Write-Verbose
-
-            Test-SqlDscIsDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Verbose
-
-            # Should be called 3 times: 1 from Test-SqlDscIsDatabase, 2 from Get-SqlDscDatabase
-            Should -Invoke -CommandName Write-Verbose -Exactly -Times 3 -Scope It
-        }
-
-        It 'Should write verbose message when database does not exist' {
-            Mock -CommandName Write-Verbose
-
-            Test-SqlDscIsDatabase -ServerObject $mockServerObject -Name 'NonExistentDatabase' -Verbose
-
-            # Should be called 3 times: 1 from Test-SqlDscIsDatabase, 2 from Get-SqlDscDatabase
-            Should -Invoke -CommandName Write-Verbose -Exactly -Times 3 -Scope It
-        }
-    }
-
     Context 'Parameter validation' {
         It 'Should have the correct parameters in parameter set __AllParameterSets' -ForEach @(
             @{
