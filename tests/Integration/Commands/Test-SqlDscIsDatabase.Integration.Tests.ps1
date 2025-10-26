@@ -109,8 +109,8 @@ Describe 'Test-SqlDscIsDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
     Context 'When testing case sensitivity' {
         It 'Should handle case differences correctly' {
             # Test with different case - SQL Server database names are case-insensitive by default
-            $result1 = Test-SqlDscIsDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName.ToUpper()
-            $result2 = Test-SqlDscIsDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName.ToLower()
+            $result1 = Test-SqlDscIsDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName.ToUpper() -ErrorAction 'Stop'
+            $result2 = Test-SqlDscIsDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName.ToLower() -ErrorAction 'Stop'
 
             $result1 | Should -BeOfType [System.Boolean]
             $result2 | Should -BeOfType [System.Boolean]
