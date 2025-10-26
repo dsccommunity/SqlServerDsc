@@ -22,104 +22,102 @@ BeforeDiscovery {
         throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 
-    # Define comprehensive test cases for database properties that can be tested with master database
-    $script:masterDatabaseTestCases = @(
-        # Boolean properties - test with expected values for master database
-        @{ PropertyName = 'AutoClose'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'AutoShrink'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'AnsiNullsEnabled'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'AnsiPaddingEnabled'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'AnsiWarningsEnabled'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'ArithmeticAbortEnabled'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'BrokerEnabled'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'CaseSensitive'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'CloseCursorsOnCommitEnabled'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'ConcatenateNullYieldsNull'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'DatabaseOwnershipChaining'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'DateCorrelationOptimization'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'EncryptionEnabled'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'HasDatabaseEncryptionKey'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'HasFileInCloud'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'HasMemoryOptimizedObjects'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsAccessible'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsDbAccessAdmin'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsDbBackupOperator'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsDbDataReader'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsDbDataWriter'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsDbDdlAdmin'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsDbDenyDataReader'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsDbDenyDataWriter'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsDbManager'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsDbOwner'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsDbSecurityAdmin'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsDatabaseSnapshot'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsDatabaseSnapshotBase'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsFabricDatabase'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsFullTextEnabled'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsLedger'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsLoginManager'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsMailHost'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsManagementDataWarehouse'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsMaxSizeApplicable'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsMirroringEnabled'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsParameterizationForced'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsReadCommittedSnapshotOn'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsSqlDw'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsSqlDwEdition'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsSystemObject'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsVarDecimalStorageFormatEnabled'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'IsVarDecimalStorageFormatSupported'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'LocalCursorsDefault'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'NestedTriggersEnabled'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'NumericRoundAbortEnabled'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'QuotedIdentifiersEnabled'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'ReadOnly'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'RecursiveTriggersEnabled'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'Trustworthy'; DatabaseName = 'master'; TestValue = $true }
-        @{ PropertyName = 'WarnOnRename'; DatabaseName = 'master'; TestValue = $true }
+    # Persistent test database created by New-SqlDscDatabase integration tests
+    $script:persistentTestDatabase = 'SqlDscIntegrationTestDatabase_Persistent'
 
-        # String properties - test with actual values from master database
-        @{ PropertyName = 'Collation'; DatabaseName = 'master' }
-        @{ PropertyName = 'Owner'; DatabaseName = 'master' }
-        @{ PropertyName = 'DefaultFileGroup'; DatabaseName = 'master' }
-        @{ PropertyName = 'DefaultSchema'; DatabaseName = 'master' }
+    # Define comprehensive test cases for database properties that can be tested with the persistent test database
+    $script:testDatabaseTestCases = @(
+        # Boolean properties - test with expected values for the persistent test database
+        @{ PropertyName = 'AutoClose'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'AutoShrink'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'AnsiNullsEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'AnsiPaddingEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'AnsiWarningsEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'ArithmeticAbortEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'BrokerEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'CaseSensitive'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'CloseCursorsOnCommitEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'ConcatenateNullYieldsNull'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'DatabaseOwnershipChaining'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'DateCorrelationOptimization'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'EncryptionEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'HasDatabaseEncryptionKey'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'HasFileInCloud'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'HasMemoryOptimizedObjects'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsAccessible'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsDbAccessAdmin'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsDbBackupOperator'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsDbDataReader'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsDbDataWriter'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsDbDdlAdmin'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsDbDenyDataReader'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsDbDenyDataWriter'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsDbManager'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsDbOwner'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsDbSecurityAdmin'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsDatabaseSnapshot'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsDatabaseSnapshotBase'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsFabricDatabase'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsFullTextEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsLedger'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsLoginManager'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsMailHost'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsManagementDataWarehouse'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsMaxSizeApplicable'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsMirroringEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsParameterizationForced'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsReadCommittedSnapshotOn'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsSqlDw'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsSqlDwEdition'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsSystemObject'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsVarDecimalStorageFormatEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'IsVarDecimalStorageFormatSupported'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'LocalCursorsDefault'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'NestedTriggersEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'NumericRoundAbortEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'QuotedIdentifiersEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'ReadOnly'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'RecursiveTriggersEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'Trustworthy'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'AutoCreateStatisticsEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'AutoUpdateStatisticsEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'AutoUpdateStatisticsAsync'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'AutoCreateIncrementalStatisticsEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'ParameterSniffing'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'LegacyCardinalityEstimation'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'QueryOptimizerHotfixes'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'AnsiNullDefault'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'ChangeTrackingEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'ChangeTrackingAutoCleanUp'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'DataRetentionEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'TemporalHistoryRetentionEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'AcceleratedRecoveryEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'DelayedDurability'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'HonorBrokerPriority'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        @{ PropertyName = 'TransformNoiseWords'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
 
-        # Numeric properties - test with actual values from master database
-        @{ PropertyName = 'ID'; DatabaseName = 'master' }
-        @{ PropertyName = 'ActiveConnections'; DatabaseName = 'master' }
-        @{ PropertyName = 'MaxDop'; DatabaseName = 'master' }
-        @{ PropertyName = 'TargetRecoveryTime'; DatabaseName = 'master' }
-        @{ PropertyName = 'Version'; DatabaseName = 'master' }
+        # String properties - test with actual values from the persistent test database
+        @{ PropertyName = 'Collation'; DatabaseName = $script:persistentTestDatabase }
+        @{ PropertyName = 'Owner'; DatabaseName = $script:persistentTestDatabase }
+        @{ PropertyName = 'DefaultFileGroup'; DatabaseName = $script:persistentTestDatabase }
+        @{ PropertyName = 'DefaultSchema'; DatabaseName = $script:persistentTestDatabase }
 
-        # Enum properties - test with actual values from master database
-        @{ PropertyName = 'CompatibilityLevel'; DatabaseName = 'master' }
-        @{ PropertyName = 'ContainmentType'; DatabaseName = 'master' }
-        @{ PropertyName = 'PageVerify'; DatabaseName = 'master' }
-        @{ PropertyName = 'RecoveryModel'; DatabaseName = 'master' }
-        @{ PropertyName = 'SnapshotIsolationState'; DatabaseName = 'master' }
-        @{ PropertyName = 'State'; DatabaseName = 'master' }
-        @{ PropertyName = 'Status'; DatabaseName = 'master' }
-        @{ PropertyName = 'UserAccess'; DatabaseName = 'master' }
-    )
+        # Numeric properties - test with actual values from the persistent test database
+        @{ PropertyName = 'ID'; DatabaseName = $script:persistentTestDatabase }
+        @{ PropertyName = 'ActiveConnections'; DatabaseName = $script:persistentTestDatabase }
+        @{ PropertyName = 'MaxDop'; DatabaseName = $script:persistentTestDatabase }
+        @{ PropertyName = 'TargetRecoveryTime'; DatabaseName = $script:persistentTestDatabase }
+        @{ PropertyName = 'Version'; DatabaseName = $script:persistentTestDatabase }
 
-    # Define properties that should be tested with model database (as it's more configurable)
-    $script:modelDatabaseTestCases = @(
-        @{ PropertyName = 'AutoCreateStatisticsEnabled'; DatabaseName = 'model'; TestValue = $true }
-        @{ PropertyName = 'AutoUpdateStatisticsEnabled'; DatabaseName = 'model'; TestValue = $true }
-        @{ PropertyName = 'AutoUpdateStatisticsAsync'; DatabaseName = 'model'; TestValue = $true }
-        @{ PropertyName = 'AutoCreateIncrementalStatisticsEnabled'; DatabaseName = 'model'; TestValue = $true }
-        @{ PropertyName = 'ParameterSniffing'; DatabaseName = 'model'; TestValue = $true }
-        @{ PropertyName = 'LegacyCardinalityEstimation'; DatabaseName = 'model'; TestValue = $true }
-        @{ PropertyName = 'QueryOptimizerHotfixes'; DatabaseName = 'model'; TestValue = $true }
-        @{ PropertyName = 'AnsiNullDefault'; DatabaseName = 'model'; TestValue = $true }
-        @{ PropertyName = 'ChangeTrackingEnabled'; DatabaseName = 'model'; TestValue = $true }
-        @{ PropertyName = 'ChangeTrackingAutoCleanUp'; DatabaseName = 'model'; TestValue = $true }
-        @{ PropertyName = 'DataRetentionEnabled'; DatabaseName = 'model'; TestValue = $true }
-        @{ PropertyName = 'TemporalHistoryRetentionEnabled'; DatabaseName = 'model'; TestValue = $true }
-        @{ PropertyName = 'AcceleratedRecoveryEnabled'; DatabaseName = 'model'; TestValue = $true }
-        @{ PropertyName = 'DelayedDurability'; DatabaseName = 'model'; TestValue = $true }
-        @{ PropertyName = 'HonorBrokerPriority'; DatabaseName = 'model'; TestValue = $true }
-        @{ PropertyName = 'TransformNoiseWords'; DatabaseName = 'model'; TestValue = $true }
+        # Enum properties - test with actual values from the persistent test database
+        @{ PropertyName = 'CompatibilityLevel'; DatabaseName = $script:persistentTestDatabase }
+        @{ PropertyName = 'ContainmentType'; DatabaseName = $script:persistentTestDatabase }
+        @{ PropertyName = 'PageVerify'; DatabaseName = $script:persistentTestDatabase }
+        @{ PropertyName = 'RecoveryModel'; DatabaseName = $script:persistentTestDatabase }
+        @{ PropertyName = 'SnapshotIsolationState'; DatabaseName = $script:persistentTestDatabase }
+        @{ PropertyName = 'State'; DatabaseName = $script:persistentTestDatabase }
+        @{ PropertyName = 'Status'; DatabaseName = $script:persistentTestDatabase }
+        @{ PropertyName = 'UserAccess'; DatabaseName = $script:persistentTestDatabase }
     )
 }
 
@@ -187,9 +185,9 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
         }
     }
 
-    Context 'When testing all database properties with master database' {
+    Context 'When testing all database properties with persistent test database' {
         Context 'When testing Boolean properties' {
-            It 'Should return expected result when property <PropertyName> is tested with value $true' -ForEach ($script:masterDatabaseTestCases | Where-Object { $_.TestValue }) {
+            It 'Should return expected result when property <PropertyName> is tested with value $true' -ForEach ($script:testDatabaseTestCases | Where-Object { $_.TestValue }) {
                 $databaseObject = $script:serverObject.Databases[$DatabaseName]
                 $actualValue = $databaseObject.$PropertyName
 
@@ -207,7 +205,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
                 $result | Should -Be $expectedResult -Because "Property '$PropertyName' should return $expectedResult when testing value '$TestValue' against actual value '$actualValue' for database '$DatabaseName'"
             }
 
-            It 'Should return expected result when property <PropertyName> is tested with value $false' -ForEach ($script:masterDatabaseTestCases | Where-Object { $_.TestValue }) {
+            It 'Should return expected result when property <PropertyName> is tested with value $false' -ForEach ($script:testDatabaseTestCases | Where-Object { $_.TestValue }) {
                 $databaseObject = $script:serverObject.Databases[$DatabaseName]
                 $actualValue = $databaseObject.$PropertyName
                 $testValue = $false
@@ -228,7 +226,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
         }
 
         Context 'When testing non-Boolean properties' {
-            It 'Should return true when property <PropertyName> matches actual value' -ForEach ($script:masterDatabaseTestCases | Where-Object { -not $_.TestValue }) {
+            It 'Should return true when property <PropertyName> matches actual value' -ForEach ($script:testDatabaseTestCases | Where-Object { -not $_.TestValue }) {
                 $databaseObject = $script:serverObject.Databases[$DatabaseName]
                 $actualValue = $databaseObject.$PropertyName
 
@@ -249,7 +247,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
                 $result | Should -BeTrue -Because "Property '$PropertyName' should return true when testing value '$actualValue' against actual value '$actualValue' for database '$DatabaseName'"
             }
 
-            It 'Should return false when property <PropertyName> does not match actual value' -ForEach ($script:masterDatabaseTestCases | Where-Object { -not $_.TestValue }) {
+            It 'Should return false when property <PropertyName> does not match actual value' -ForEach ($script:testDatabaseTestCases | Where-Object { -not $_.TestValue }) {
                 $databaseObject = $script:serverObject.Databases[$DatabaseName]
                 $actualValue = $databaseObject.$PropertyName
 
@@ -266,7 +264,8 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
                     }
                     else
                     {
-                        'DifferentEnumValue'
+                        # Could not find a different enum value, skip this test
+                        $null
                     }
                 }
                 else
@@ -316,7 +315,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
                     }
                 }
 
-                if ($testValue -eq $actualValue)
+                if ($null -eq $testValue -or $testValue -eq $actualValue)
                 {
                     Set-ItResult -Skipped -Because "Could not determine a different value for property '$PropertyName' with value '$actualValue'"
                     return
@@ -336,58 +335,16 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
         }
     }
 
-    Context 'When testing all database properties with model database' {
-        It 'Should return true when property <PropertyName> matches expected value' -ForEach $script:modelDatabaseTestCases {
-            $databaseObject = $script:serverObject.Databases[$DatabaseName]
-            $actualValue = $databaseObject.$PropertyName
-
-            $testParameters = @{
-                ServerObject  = $script:serverObject
-                Name          = $DatabaseName
-                $PropertyName = $TestValue
-                ErrorAction   = 'Stop'
-            }
-
-            $result = Test-SqlDscDatabaseProperty @testParameters
-
-            # All model database test cases have TestValue for Boolean properties
-            $expectedResult = ($actualValue -eq $TestValue)
-
-            $result | Should -Be $expectedResult -Because "Property '$PropertyName' should return $expectedResult when testing value '$TestValue' against actual value '$actualValue' for database '$DatabaseName'"
-        }
-
-        It 'Should return false when property <PropertyName> does not match expected value' -ForEach $script:modelDatabaseTestCases {
-            $databaseObject = $script:serverObject.Databases[$DatabaseName]
-            $actualValue = $databaseObject.$PropertyName
-
-            $testValue = $false
-
-            $testParameters = @{
-                ServerObject  = $script:serverObject
-                Name          = $DatabaseName
-                $PropertyName = $testValue
-                ErrorAction   = 'Stop'
-            }
-
-            $result = Test-SqlDscDatabaseProperty @testParameters
-
-            # All model database test cases are Boolean properties with TestValue
-            $expectedResult = ($actualValue -eq $testValue)
-
-            $result | Should -Be $expectedResult -Because "Property '$PropertyName' should return $expectedResult when testing value '$testValue' against actual value '$actualValue' for database '$DatabaseName'"
-        }
-    }
-
     Context 'When testing comprehensive database property combinations' {
         It 'Should return true when testing multiple properties together with correct values' {
-            # Get actual values from master database
-            $masterDb = $script:serverObject.Databases['master']
-            $actualCollation = $masterDb.Collation
-            $actualCompatibilityLevel = $masterDb.CompatibilityLevel.ToString()
-            $actualRecoveryModel = $masterDb.RecoveryModel.ToString()
-            $actualOwner = $masterDb.Owner
+            # Get actual values from persistent test database
+            $testDb = $script:serverObject.Databases['SqlDscIntegrationTestDatabase_Persistent']
+            $actualCollation = $testDb.Collation
+            $actualCompatibilityLevel = $testDb.CompatibilityLevel.ToString()
+            $actualRecoveryModel = $testDb.RecoveryModel.ToString()
+            $actualOwner = $testDb.Owner
 
-            $result = Test-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name 'master' `
+            $result = Test-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestDatabase_Persistent' `
                 -Collation $actualCollation `
                 -RecoveryModel $actualRecoveryModel `
                 -Owner $actualOwner `
@@ -397,13 +354,13 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
         }
 
         It 'Should return false when testing multiple properties with one incorrect value' {
-            # Get actual values from master database
-            $masterDb = $script:serverObject.Databases['master']
-            $actualCollation = $masterDb.Collation
-            $actualOwner = $masterDb.Owner
+            # Get actual values from persistent test database
+            $testDb = $script:serverObject.Databases['SqlDscIntegrationTestDatabase_Persistent']
+            $actualCollation = $testDb.Collation
+            $actualOwner = $testDb.Owner
 
             # Use wrong recovery model
-            $wrongRecoveryModel = if ($masterDb.RecoveryModel.ToString() -eq 'Simple')
+            $wrongRecoveryModel = if ($testDb.RecoveryModel.ToString() -eq 'Simple')
             {
                 'Full'
             }
@@ -412,7 +369,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
                 'Simple'
             }
 
-            $result = Test-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name 'master' `
+            $result = Test-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestDatabase_Persistent' `
                 -Collation $actualCollation `
                 -RecoveryModel $wrongRecoveryModel `
                 -Owner $actualOwner `
