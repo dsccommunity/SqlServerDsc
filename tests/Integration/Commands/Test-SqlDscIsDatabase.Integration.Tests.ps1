@@ -38,20 +38,20 @@ Describe 'Test-SqlDscIsDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
 
         $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
 
-        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
+        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
 
         # Use existing persistent database for testing
         $script:testDatabaseName = 'SqlDscIntegrationTestDatabase_Persistent'
     }
 
     AfterAll {
-        Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
+        Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject -ErrorAction 'Stop'
     }
 
     Context 'When testing database existence using ServerObject parameter set' {
         It 'Should return True when database exists' {
             # Test with persistent integration test database
-            $result = Test-SqlDscIsDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName
+            $result = Test-SqlDscIsDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
 
             $result | Should -BeOfType [System.Boolean]
             $result | Should -BeTrue
@@ -59,7 +59,7 @@ Describe 'Test-SqlDscIsDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
 
         It 'Should return False when database does not exist' {
             # Test with non-existent database
-            $result = Test-SqlDscIsDatabase -ServerObject $script:serverObject -Name 'NonExistentDatabase'
+            $result = Test-SqlDscIsDatabase -ServerObject $script:serverObject -Name 'NonExistentDatabase' -ErrorAction 'Stop'
 
             $result | Should -BeOfType [System.Boolean]
             $result | Should -BeFalse
@@ -67,7 +67,7 @@ Describe 'Test-SqlDscIsDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
 
         It 'Should accept ServerObject from pipeline' {
             # Test using pipeline
-            $result = $script:serverObject | Test-SqlDscIsDatabase -Name $script:testDatabaseName
+            $result = $script:serverObject | Test-SqlDscIsDatabase -Name $script:testDatabaseName -ErrorAction 'Stop'
 
             $result | Should -BeOfType [System.Boolean]
             $result | Should -BeTrue
@@ -75,7 +75,7 @@ Describe 'Test-SqlDscIsDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
 
         It 'Should return True for system database master' {
             # Test with built-in master database
-            $result = Test-SqlDscIsDatabase -ServerObject $script:serverObject -Name 'master'
+            $result = Test-SqlDscIsDatabase -ServerObject $script:serverObject -Name 'master' -ErrorAction 'Stop'
 
             $result | Should -BeOfType [System.Boolean]
             $result | Should -BeTrue
@@ -83,7 +83,7 @@ Describe 'Test-SqlDscIsDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
 
         It 'Should return True for system database msdb' {
             # Test with built-in msdb database
-            $result = Test-SqlDscIsDatabase -ServerObject $script:serverObject -Name 'msdb'
+            $result = Test-SqlDscIsDatabase -ServerObject $script:serverObject -Name 'msdb' -ErrorAction 'Stop'
 
             $result | Should -BeOfType [System.Boolean]
             $result | Should -BeTrue
@@ -91,7 +91,7 @@ Describe 'Test-SqlDscIsDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
 
         It 'Should return True for system database model' {
             # Test with built-in model database
-            $result = Test-SqlDscIsDatabase -ServerObject $script:serverObject -Name 'model'
+            $result = Test-SqlDscIsDatabase -ServerObject $script:serverObject -Name 'model' -ErrorAction 'Stop'
 
             $result | Should -BeOfType [System.Boolean]
             $result | Should -BeTrue
@@ -99,7 +99,7 @@ Describe 'Test-SqlDscIsDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
 
         It 'Should return True for system database tempdb' {
             # Test with built-in tempdb database
-            $result = Test-SqlDscIsDatabase -ServerObject $script:serverObject -Name 'tempdb'
+            $result = Test-SqlDscIsDatabase -ServerObject $script:serverObject -Name 'tempdb' -ErrorAction 'Stop'
 
             $result | Should -BeOfType [System.Boolean]
             $result | Should -BeTrue
@@ -121,7 +121,7 @@ Describe 'Test-SqlDscIsDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
     Context 'When using Refresh parameter' {
         It 'Should return correct result when using Refresh switch' {
             # Test with Refresh parameter
-            $result = Test-SqlDscIsDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh
+            $result = Test-SqlDscIsDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
 
             $result | Should -BeOfType [System.Boolean]
             $result | Should -BeTrue
@@ -129,7 +129,7 @@ Describe 'Test-SqlDscIsDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
 
         It 'Should return False for non-existent database when using Refresh switch' {
             # Test with Refresh parameter for non-existent database
-            $result = Test-SqlDscIsDatabase -ServerObject $script:serverObject -Name 'NonExistentDatabase' -Refresh
+            $result = Test-SqlDscIsDatabase -ServerObject $script:serverObject -Name 'NonExistentDatabase' -Refresh -ErrorAction 'Stop'
 
             $result | Should -BeOfType [System.Boolean]
             $result | Should -BeFalse
