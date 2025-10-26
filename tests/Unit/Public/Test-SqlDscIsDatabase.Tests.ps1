@@ -79,24 +79,17 @@ Describe 'Test-SqlDscIsDatabase' -Tag 'Public' {
         }
 
         It 'Should call Refresh when Refresh parameter is specified' {
-            Mock -CommandName Write-Verbose
+            Mock -CommandName Get-SqlDscDatabase -MockWith {
+                return $mockExistingDatabase
+            }
 
-            $refreshCalled = $false
-
-            $mockServerObjectWithRefresh = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-            $mockServerObjectWithRefresh | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
-            $mockServerObjectWithRefresh | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
-                return @{
-                    'TestDatabase' = $mockExistingDatabase
-                } | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
-                    # This will be verified by checking if Refresh was called
-                } -PassThru -Force
-            } -Force
-
-            $result = Test-SqlDscIsDatabase -ServerObject $mockServerObjectWithRefresh -Name 'TestDatabase' -Refresh
+            $result = Test-SqlDscIsDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Refresh
 
             $result | Should -BeTrue
-            # We can verify Refresh was called by the fact that no error was thrown and the command completed successfully
+
+            Should -Invoke -CommandName Get-SqlDscDatabase -ParameterFilter {
+                $Refresh -eq $true
+            } -Exactly -Times 1 -Scope It
         }
 
         It 'Should support pipeline input' {
