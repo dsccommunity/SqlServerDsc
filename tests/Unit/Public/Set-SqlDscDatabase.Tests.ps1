@@ -137,10 +137,6 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
                 # Mock implementation
             } -Force
-            $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'SetOwner' -Value {
-                param($OwnerName)
-                # Mock implementation
-            } -Force
         }
 
         It 'Should modify database using database object' {
