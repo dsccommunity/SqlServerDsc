@@ -186,7 +186,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
 
         It 'Should throw error when SetOwner() fails' {
             { Set-SqlDscDatabaseOwner -DatabaseObject $mockDatabaseObject -OwnerName 'sa' -Force } |
-                Should -Throw -ExpectedMessage '*Simulated SetOwner() failure*'
+                Should -Throw -ExpectedMessage '*Failed to set owner of database*'
         }
     }
 
@@ -208,6 +208,40 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
     }
 
     Context 'Parameter validation' {
+        It 'Should have the correct parameters in parameter set ServerObjectSet' -ForEach @(
+            @{
+                ExpectedParameterSetName = 'ServerObjectSet'
+                ExpectedParameters = '-ServerObject <Server> -Name <string> -OwnerName <string> [-Refresh] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            }
+        ) {
+            $result = (Get-Command -Name 'Set-SqlDscDatabaseOwner').ParameterSets |
+                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
+                Select-Object -Property @(
+                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
+                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
+                )
+
+            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should -Be $ExpectedParameters
+        }
+
+        It 'Should have the correct parameters in parameter set DatabaseObjectSet' -ForEach @(
+            @{
+                ExpectedParameterSetName = 'DatabaseObjectSet'
+                ExpectedParameters = '-DatabaseObject <Database> -OwnerName <string> [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            }
+        ) {
+            $result = (Get-Command -Name 'Set-SqlDscDatabaseOwner').ParameterSets |
+                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
+                Select-Object -Property @(
+                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
+                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
+                )
+
+            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should -Be $ExpectedParameters
+        }
+
         It 'Should have OwnerName as a mandatory parameter' {
             $command = Get-Command -Name 'Set-SqlDscDatabaseOwner'
             $ownerNameParam = $command.Parameters['OwnerName']
