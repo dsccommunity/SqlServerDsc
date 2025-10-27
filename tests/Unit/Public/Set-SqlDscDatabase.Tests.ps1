@@ -275,7 +275,7 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should not call Alter() when property is already set to desired value' {
-            $null = Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -Force
+            $null = Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -Refresh -Force
         }
 
         It 'Should not call Alter() when all properties are already set' {
