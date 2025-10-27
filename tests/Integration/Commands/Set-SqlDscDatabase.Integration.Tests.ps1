@@ -90,7 +90,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
-            $updatedDb.AutoClose | Should -Be $true
+            $updatedDb.AutoClose | Should -BeTrue
 
             # Reset to default
             $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoClose $false -Force -ErrorAction 'Stop'
@@ -101,7 +101,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
-            $updatedDb.AutoShrink | Should -Be $true
+            $updatedDb.AutoShrink | Should -BeTrue
 
             # Reset to default
             $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoShrink $false -Force -ErrorAction 'Stop'
@@ -124,8 +124,8 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             # Verify the changes
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
             $updatedDb.RecoveryModel | Should -Be 'Full'
-            $updatedDb.AutoClose | Should -Be $false
-            $updatedDb.AutoShrink | Should -Be $false
+            $updatedDb.AutoClose | Should -BeFalse
+            $updatedDb.AutoShrink | Should -BeFalse
             $updatedDb.PageVerify | Should -Be 'Checksum'
         }
 
@@ -165,7 +165,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
-            $updatedDb.AutoClose | Should -Be $true
+            $updatedDb.AutoClose | Should -BeTrue
 
             # Reset to default
             $null = Set-SqlDscDatabase -DatabaseObject $databaseObject -AutoClose $false -Force -ErrorAction 'Stop'
