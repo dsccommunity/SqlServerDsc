@@ -72,7 +72,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Simple' -Force -ErrorAction 'Stop'
 
             # Verify the change
-            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
             $updatedDb.RecoveryModel | Should -Be 'Simple'
         }
 
@@ -80,7 +80,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -CompatibilityLevel 'Version150' -Force -ErrorAction 'Stop'
 
             # Verify the change
-            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
             $updatedDb.CompatibilityLevel | Should -Be 'Version150'
         }
 
@@ -88,7 +88,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoClose $true -Force -ErrorAction 'Stop'
 
             # Verify the change
-            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
             $updatedDb.AutoClose | Should -Be $true
 
             # Reset to default
@@ -99,7 +99,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoShrink $true -Force -ErrorAction 'Stop'
 
             # Verify the change
-            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
             $updatedDb.AutoShrink | Should -Be $true
 
             # Reset to default
@@ -110,7 +110,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -PageVerify 'TornPageDetection' -Force -ErrorAction 'Stop'
 
             # Verify the change
-            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
             $updatedDb.PageVerify | Should -Be 'TornPageDetection'
 
             # Reset to default
@@ -136,7 +136,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Simple' -Force -ErrorAction 'Stop'
 
             # Verify the value is still correct
-            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
             $updatedDb.RecoveryModel | Should -Be 'Simple'
         }
 
