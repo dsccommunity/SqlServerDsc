@@ -50,7 +50,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
         $null = New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Force -ErrorAction 'Stop'
 
         # Get the current owner to restore later
-        $testDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName
+        $testDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
         $script:originalOwner = $testDb.Owner
     }
 
@@ -76,7 +76,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
             $null = Set-SqlDscDatabaseOwner -ServerObject $script:serverObject -Name $script:testDatabaseName -OwnerName 'sa' -Force -ErrorAction 'Stop'
 
             # Verify the change
-            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
             $updatedDb.Owner | Should -Be 'sa'
         }
 
@@ -99,7 +99,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
             $null = Set-SqlDscDatabaseOwner -ServerObject $script:serverObject -Name $script:testDatabaseName -OwnerName $ownerName -Force -ErrorAction 'Stop'
 
             # Verify the value is still correct
-            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
             $updatedDb.Owner | Should -Be $ownerName
         }
 
