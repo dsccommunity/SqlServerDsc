@@ -248,7 +248,7 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
                 )
             } -Force
 
-            $null = Set-SqlDscDatabase -ServerObject $mockServerObjectWithValidDb -Name 'TestDatabase' -Collation 'SQL_Latin1_General_CP1_CI_AS' -Force
+            $null = Set-SqlDscDatabase -ServerObject $mockServerObjectWithValidDb -Refresh -Name 'TestDatabase' -Collation 'SQL_Latin1_General_CP1_CI_AS' -Force
         }
     }
 
@@ -275,7 +275,7 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should not call Alter() when property is already set to desired value' {
-            $null = Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -Refresh -Force
+            $null = Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -Force
         }
 
         It 'Should not call Alter() when all properties are already set' {
