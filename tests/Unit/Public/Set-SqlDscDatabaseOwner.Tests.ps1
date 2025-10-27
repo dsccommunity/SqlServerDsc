@@ -18,7 +18,7 @@ BeforeDiscovery {
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
-                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+                & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
             }
 
             # If the dependencies has not been resolved, this will throw an error.
@@ -211,15 +211,15 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
         It 'Should have OwnerName as a mandatory parameter' {
             $command = Get-Command -Name 'Set-SqlDscDatabaseOwner'
             $ownerNameParam = $command.Parameters['OwnerName']
-            
+
             $ownerNameParam | Should -Not -BeNullOrEmpty
             $ownerNameParam.ParameterType.Name | Should -Be 'String'
-            
+
             # Check if parameter is mandatory in at least one parameter set
-            $mandatoryInAnySets = $ownerNameParam.Attributes | 
-                Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] } | 
+            $mandatoryInAnySets = $ownerNameParam.Attributes |
+                Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] } |
                 Where-Object { $_.Mandatory -eq $true }
-                
+
             $mandatoryInAnySets | Should -Not -BeNullOrEmpty
         }
 
