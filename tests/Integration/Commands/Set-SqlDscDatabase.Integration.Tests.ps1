@@ -77,11 +77,12 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         }
 
         It 'Should set compatibility level successfully' {
-            $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -CompatibilityLevel 'Version150' -Force -ErrorAction 'Stop'
+            # Use Version140 which is supported on all tested versions (SQL 2017+)
+            $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -CompatibilityLevel 'Version140' -Force -ErrorAction 'Stop'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
-            $updatedDb.CompatibilityLevel | Should -Be 'Version150'
+            $updatedDb.CompatibilityLevel | Should -Be 'Version140'
         }
 
         It 'Should set AutoClose successfully' {
