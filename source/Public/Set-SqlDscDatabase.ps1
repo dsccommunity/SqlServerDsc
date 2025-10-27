@@ -86,9 +86,6 @@
     .PARAMETER BrokerEnabled
         Specifies whether Service Broker is enabled for the database.
 
-    .PARAMETER CatalogCollation
-        Specifies the catalog-level collation used for metadata and temporary objects.
-
     .PARAMETER ChangeTrackingAutoCleanUp
         Specifies whether automatic cleanup of change tracking information is enabled.
 
@@ -298,6 +295,15 @@
 
     .OUTPUTS
         None. But when **PassThru** is specified the output is `[Microsoft.SqlServer.Management.Smo.Database]`.
+
+    .NOTES
+        The following database properties are read-only after creation and cannot be modified
+        using this command:
+
+        - **CatalogCollation**: The catalog-level collation used for metadata and temporary
+          objects. This property is marked as ReadOnlyAfterCreation in the SMO Database
+          class and can only be set during database creation (e.g., using New-SqlDscDatabase
+          or CREATE DATABASE statements).
 #>
 function Set-SqlDscDatabase
 {
@@ -538,10 +544,6 @@ function Set-SqlDscDatabase
         $AzureServiceObjective,
 
         [Parameter()]
-        [System.String]
-        $CatalogCollation,
-
-        [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Collation,
@@ -660,6 +662,16 @@ function Set-SqlDscDatabase
             $ConfirmPreference = 'None'
         }
 
+        # Get the server object based on parameter set
+        $serverInstance = if ($PSCmdlet.ParameterSetName -eq 'DatabaseObjectSet')
+        {
+            $DatabaseObject.Parent
+        }
+        else
+        {
+            $ServerObject
+        }
+
         # Validate compatibility level if specified
         if ($PSBoundParameters.ContainsKey('CompatibilityLevel'))
         {
@@ -675,9 +687,9 @@ function Set-SqlDscDatabase
                 16 = @('Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150', 'Version160')
             }
 
-            if ($CompatibilityLevel -notin $supportedCompatibilityLevels.$($ServerObject.VersionMajor))
+            if ($CompatibilityLevel -notin $supportedCompatibilityLevels.$($serverInstance.VersionMajor))
             {
-                $errorMessage = $script:localizedData.Set_SqlDscDatabase_InvalidCompatibilityLevel -f $CompatibilityLevel, $ServerObject.InstanceName
+                $errorMessage = $script:localizedData.Set_SqlDscDatabase_InvalidCompatibilityLevel -f $CompatibilityLevel, $serverInstance.InstanceName
 
                 $PSCmdlet.ThrowTerminatingError(
                     [System.Management.Automation.ErrorRecord]::new(
@@ -693,9 +705,9 @@ function Set-SqlDscDatabase
         # Validate collation if specified
         if ($PSBoundParameters.ContainsKey('Collation'))
         {
-            if ($Collation -notin $ServerObject.EnumCollations().Name)
+            if ($Collation -notin $serverInstance.EnumCollations().Name)
             {
-                $errorMessage = $script:localizedData.Set_SqlDscDatabase_InvalidCollation -f $Collation, $ServerObject.InstanceName
+                $errorMessage = $script:localizedData.Set_SqlDscDatabase_InvalidCollation -f $Collation, $serverInstance.InstanceName
 
                 $PSCmdlet.ThrowTerminatingError(
                     [System.Management.Automation.ErrorRecord]::new(
