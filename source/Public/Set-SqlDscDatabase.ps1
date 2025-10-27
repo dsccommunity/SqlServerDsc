@@ -808,14 +808,14 @@ function Set-SqlDscDatabase
                 }
                 catch
                 {
-                    $errorMessage = $script:localizedData.Database_SetFailed -f $Name, $ServerObject.InstanceName
+                    $errorMessage = $script:localizedData.Database_SetFailed -f $sqlDatabaseObject.Name, $sqlDatabaseObject.Parent.InstanceName
 
                     $PSCmdlet.ThrowTerminatingError(
                         [System.Management.Automation.ErrorRecord]::new(
                             [System.InvalidOperationException]::new($errorMessage, $_.Exception),
                             'SSDD0004', # SQL Server Database - Set failed
                             [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                            $DatabaseObject
+                            $sqlDatabaseObject
                         )
                     )
                 }
