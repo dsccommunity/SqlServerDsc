@@ -40,11 +40,11 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag @('Integration_SQL2017', 'Integrati
 
         $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
 
-        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
+        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
     }
 
     AfterAll {
-        Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
+        Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject -ErrorAction 'Stop'
     }
 
     Context 'When getting compatibility levels' {
