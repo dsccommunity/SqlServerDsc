@@ -294,7 +294,14 @@
         The database object to modify (from Get-SqlDscDatabase).
 
     .OUTPUTS
-        None. But when **PassThru** is specified the output is `[Microsoft.SqlServer.Management.Smo.Database]`.
+        None.
+
+        When PassThru is not specified, no output is returned.
+
+    .OUTPUTS
+        Microsoft.SqlServer.Management.Smo.Database
+
+        When PassThru is specified, returns the updated database object.
 
     .NOTES
         The following database properties are read-only after creation and cannot be modified
