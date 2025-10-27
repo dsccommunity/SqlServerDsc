@@ -80,8 +80,6 @@ function Get-TargetResource
             $getTargetResourceResult.DatabaseInstanceName = 'MSSQLSERVER'
         }
 
-        $getTargetResourceResult.ServiceName = $reportingServicesData.Configuration.ServiceName
-
         $isInitialized = $reportingServicesData.Configuration.IsInitialized
 
         [System.Boolean] $getTargetResourceResult.IsInitialized = $isInitialized
