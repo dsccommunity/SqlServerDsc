@@ -480,7 +480,8 @@ namespace Microsoft.SqlServer.Management.Smo
                 NetName = this.NetName,
                 Roles = this.Roles,
                 ServiceName = this.ServiceName,
-                Version = this.Version
+                Version = this.Version,
+                VersionMajor = this.VersionMajor
             };
         }
 
