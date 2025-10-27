@@ -138,9 +138,35 @@ function Set-SqlDscDatabaseOwner
 
         if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
-            Write-Debug -Message ($script:localizedData.DatabaseOwner_Updating -f $sqlDatabaseObject.Name, $OwnerName)
-            $sqlDatabaseObject.SetOwner($OwnerName)
-            Write-Debug -Message ($script:localizedData.DatabaseOwner_Updated -f $sqlDatabaseObject.Name, $OwnerName)
+            # Check if the owner is already correct (idempotence)
+            if ($sqlDatabaseObject.Owner -eq $OwnerName)
+            {
+                Write-Debug -Message ($script:localizedData.DatabaseOwner_OwnerAlreadyCorrect -f $sqlDatabaseObject.Name, $OwnerName)
+            }
+            else
+            {
+                Write-Debug -Message ($script:localizedData.DatabaseOwner_Updating -f $sqlDatabaseObject.Name, $OwnerName)
+
+                try
+                {
+                    $sqlDatabaseObject.SetOwner($OwnerName)
+                }
+                catch
+                {
+                    $errorMessage = $script:localizedData.DatabaseOwner_SetFailed -f $sqlDatabaseObject.Name, $OwnerName
+
+                    $PSCmdlet.ThrowTerminatingError(
+                        [System.Management.Automation.ErrorRecord]::new(
+                            [System.InvalidOperationException]::new($errorMessage, $_.Exception),
+                            'SSDDO0001', # cspell: disable-line
+                            [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                            $sqlDatabaseObject
+                        )
+                    )
+                }
+
+                Write-Debug -Message ($script:localizedData.DatabaseOwner_Updated -f $sqlDatabaseObject.Name, $OwnerName)
+            }
 
             if ($PassThru.IsPresent)
             {

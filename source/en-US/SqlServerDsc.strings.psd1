@@ -380,6 +380,8 @@ ConvertFrom-StringData @'
     ## Set-SqlDscDatabaseOwner
     DatabaseOwner_Updating = Setting owner of database '{0}' to '{1}'.
     DatabaseOwner_Updated = Owner of database '{0}' was set to '{1}'.
+    DatabaseOwner_OwnerAlreadyCorrect = Owner of database '{0}' is already set to '{1}'.
+    DatabaseOwner_SetFailed = Failed to set owner of database '{0}' to '{1}'.
     DatabaseOwner_Set_ShouldProcessVerboseDescription = Setting the owner of the database '{0}' to '{1}' on the instance '{2}'.
     DatabaseOwner_Set_ShouldProcessVerboseWarning = Are you sure you want to change the owner of the database '{0}' to '{1}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
