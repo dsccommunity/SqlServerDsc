@@ -11,15 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Test-SqlDscIsDatabase` to check existence. For property checks, use
   `Test-SqlDscDatabaseProperty`. See [issue #2201](https://github.com/dsccommunity/SqlServerDsc/issues/2201).
 - BREAKING CHANGE: `Set-SqlDscDatabase`
-  - Removed parameter `OwnerName`. Use the new command `Set-SqlDscDatabaseOwner`
-    to change database ownership instead.
+  - Removed parameter `OwnerName` [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
+    Use the new command `Set-SqlDscDatabaseOwner` to change database ownership instead.
 
 ### Added
 
 - Added public command `Set-SqlDscDatabaseOwner` to change the owner of a SQL Server
-  database. This command uses the SMO `SetOwner()` method and supports both
-  `ServerObject` and `DatabaseObject` parameter sets. It replaces the `OwnerName`
-  parameter that was removed from `Set-SqlDscDatabase`.
+  database [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
+  This command uses the SMO `SetOwner()` method and supports both `ServerObject`
+  and `DatabaseObject` parameter sets. This replaces the ownership changes
+  previously done via the `OwnerName` parameter in `Set-SqlDscDatabase`.
 - Added public command `Test-SqlDscIsDatabase` to test if a database exists on a
   SQL Server Database Engine instance ([issue #2201](https://github.com/dsccommunity/SqlServerDsc/issues/2201)).
 - Added public command `Get-SqlDscSetupLog` to retrieve SQL Server setup bootstrap
@@ -241,6 +242,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       `PrimaryFilePath`)
     - 11 Enum properties (e.g., `CompatibilityLevel`, `PageVerify`, `RecoveryModel`,
       `UserAccess`)
+  - Note: This command excludes properties that are only settable at database
+    creation time (e.g., `CatalogCollation`, `ContainmentType`), properties
+    requiring specific SMO methods instead of direct assignment (e.g., default
+    filegroup changes via `SetDefaultFileGroup()`, full-text catalog management,
+    FILESTREAM configuration), and properties managed by dedicated commands (e.g.,
+    database ownership via `Set-SqlDscDatabaseOwner`). Property availability may
+    vary by SQL Server version; the command dynamically exposes properties
+    supported by the current SMO version.
   - Removed all property-specific validation logic - SMO now handles validation
   - Removed individual property update messages - now uses generic
     `Database_UpdatingProperty` message
