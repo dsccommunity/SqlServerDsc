@@ -229,30 +229,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `Set-SqlDscDatabase`
-  - BREAKING CHANGE: Completely refactored to support all 85+ settable SMO Database
+  - BREAKING CHANGE: Completely refactored to support settable SMO Database
     properties as parameters ([issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177)).
-    The command now uses a generic property-setting loop instead of hard‑coded handling.
-    Writable examples include:
-    - 46 Boolean properties (e.g., `AnsiNullDefault`, `AutoClose`, `AutoShrink`,
-      `RecursiveTriggersEnabled`, `QuotedIdentifiersEnabled`)
-    - 8 Int32 properties (e.g., `TargetRecoveryTime`, `TwoDigitYearCutoff`, `MaxDop`)
-    - 19 String properties (e.g., `Collation`, `DefaultSchema`)
-    - 11 Enum properties (e.g., `CompatibilityLevel`, `PageVerify`, `RecoveryModel`,
-      `UserAccess`)
-  - Note: This command excludes properties that are only settable at database
-    creation time (e.g., `CatalogCollation`, `ContainmentType`), properties
-    requiring specific SMO methods instead of direct assignment (e.g., default
-    filegroup changes via `SetDefaultFileGroup()`, snapshot isolation via
-    `SetSnapshotIsolation()`, full‑text catalog management, FILESTREAM configuration),
-    and properties managed by dedicated commands (e.g., database ownership via
-    `Set-SqlDscDatabaseOwner`). Property availability may vary by SQL Server version;
-    the command dynamically exposes properties supported by the current SMO version.
-  - Removed all property-specific validation logic - SMO now handles validation
-  - Removed individual property update messages - now uses generic
-    `Database_UpdatingProperty` message
-  - Added check to skip updating properties that are already set to the desired value
-  - Properties are only modified if they differ from the current value, reducing
-    unnecessary database operations
 - `Remove-SqlDscAgentAlert`
   - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
     functions for proper terminating error handling ([issue #2193](https://github.com/dsccommunity/SqlServerDsc/issues/2193)).

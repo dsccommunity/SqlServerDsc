@@ -116,12 +116,6 @@
     .PARAMETER DateCorrelationOptimization
         Specifies whether date correlation optimization is enabled to speed up temporal joins.
 
-    .PARAMETER DefaultFileGroup
-        Specifies the name of the default filegroup for the database.
-
-    .PARAMETER DefaultFileStreamFileGroup
-        Specifies the name of the default FILESTREAM filegroup.
-
     .PARAMETER DefaultFullTextCatalog
         Specifies the default full-text catalog used for full-text indexes.
 
@@ -242,9 +236,6 @@
     .PARAMETER RemoteDatabaseName
         Specifies the remote database name for remote data archive.
 
-    .PARAMETER SnapshotIsolationState
-        Specifies whether SNAPSHOT isolation is OFF/ON/IN_TRANSITION.
-
     .PARAMETER TargetRecoveryTime
         Specifies the target recovery time (seconds) for indirect checkpointing.
 
@@ -311,6 +302,17 @@
           objects. This property is marked as ReadOnlyAfterCreation in the SMO Database
           class and can only be set during database creation (e.g., using New-SqlDscDatabase
           or CREATE DATABASE statements).
+
+        The following database properties require method calls instead of direct property
+        assignment and will be supported through separate commands:
+
+        - **DefaultFileGroup**: The default filegroup for the database. Use the
+          `SetDefaultFileGroup()` method via a dedicated command.
+        - **DefaultFileStreamFileGroup**: The default FILESTREAM filegroup. Use the
+          `SetDefaultFileStreamFileGroup()` method via a dedicated command.
+        - **SnapshotIsolationState**: The snapshot isolation state (OFF/ON/IN_TRANSITION).
+          Use the `SetSnapshotIsolation()` method via a dedicated command or ALTER DATABASE
+          T-SQL statements.
 #>
 function Set-SqlDscDatabase
 {
@@ -557,14 +559,6 @@ function Set-SqlDscDatabase
 
         [Parameter()]
         [System.String]
-        $DefaultFileGroup,
-
-        [Parameter()]
-        [System.String]
-        $DefaultFileStreamFileGroup,
-
-        [Parameter()]
-        [System.String]
         $DefaultFullTextCatalog,
 
         [Parameter()]
@@ -643,10 +637,6 @@ function Set-SqlDscDatabase
         [Parameter()]
         [Microsoft.SqlServer.Management.Smo.RecoveryModel]
         $RecoveryModel,
-
-        [Parameter()]
-        [Microsoft.SqlServer.Management.Smo.SnapshotIsolationState]
-        $SnapshotIsolationState,
 
         [Parameter()]
         [Microsoft.SqlServer.Management.Smo.DatabaseUserAccess]
