@@ -50,6 +50,29 @@ AfterAll {
 }
 
 Describe 'Get-SqlDscCompatibilityLevel' -Tag 'Public' {
+    Context 'When validating parameter sets' {
+        It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
+            @{
+                ExpectedParameterSetName = 'ServerObject'
+                ExpectedParameters = '-ServerObject <Server> [<CommonParameters>]'
+            }
+            @{
+                ExpectedParameterSetName = 'Version'
+                ExpectedParameters = '-Version <Version> [<CommonParameters>]'
+            }
+        ) {
+            $result = (Get-Command -Name 'Get-SqlDscCompatibilityLevel').ParameterSets |
+                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
+                Select-Object -Property @(
+                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
+                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
+                )
+
+            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should -Be $ExpectedParameters
+        }
+    }
+
     Context 'When getting compatibility levels for a server object' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
