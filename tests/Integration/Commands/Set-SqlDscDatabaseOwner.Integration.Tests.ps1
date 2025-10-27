@@ -39,7 +39,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
 
         $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
 
-        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
+        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
 
         # Test database names
         $script:testDatabaseName = 'SqlDscTestSetOwner_' + (Get-Random)
@@ -68,7 +68,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
             }
         }
 
-        Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
+        Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject -ErrorAction 'Stop'
     }
 
     Context 'When setting database owner using ServerObject parameter set' {
@@ -91,7 +91,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
 
         It 'Should be idempotent when owner is already set' {
             $ownerName = 'sa'
-            
+
             # Set owner
             $null = Set-SqlDscDatabaseOwner -ServerObject $script:serverObject -Name $script:testDatabaseName -OwnerName $ownerName -Force -ErrorAction 'Stop'
 
@@ -123,7 +123,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
         It 'Should support pipeline input with database object' {
             $ownerName = '{0}\SqlAdmin' -f $script:mockComputerName
             $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
-            
+
             $null = $databaseObject | Set-SqlDscDatabaseOwner -OwnerName $ownerName -Force -ErrorAction 'Stop'
 
             # Verify the change
