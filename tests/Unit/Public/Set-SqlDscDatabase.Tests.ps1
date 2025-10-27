@@ -275,12 +275,11 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should not call Alter() when property is already set to desired value' {
-            # Should not throw because Alter() is not called
-            { Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -Force } | Should -Not -Throw
+            $null = Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -Force
         }
 
         It 'Should not call Alter() when all properties are already set' {
-            { Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -AutoClose $true -Force } | Should -Not -Throw
+            $null = Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -AutoClose $true -Force
         }
     }
 
@@ -312,6 +311,40 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
     }
 
     Context 'Parameter validation' {
+        It 'Should have the correct parameters in parameter set ServerObjectSet' -ForEach @(
+            @{
+                ExpectedParameterSetName = 'ServerObjectSet'
+                ExpectedParameters = '-ServerObject <Server> -Name <string> [-Refresh] [-AcceleratedRecoveryEnabled <bool>] [-AnsiNullDefault <bool>] [-AnsiNullsEnabled <bool>] [-AnsiPaddingEnabled <bool>] [-AnsiWarningsEnabled <bool>] [-ArithmeticAbortEnabled <bool>] [-AutoClose <bool>] [-AutoCreateIncrementalStatisticsEnabled <bool>] [-AutoCreateStatisticsEnabled <bool>] [-AutoShrink <bool>] [-AutoUpdateStatisticsAsync <bool>] [-AutoUpdateStatisticsEnabled <bool>] [-BrokerEnabled <bool>] [-ChangeTrackingAutoCleanUp <bool>] [-ChangeTrackingEnabled <bool>] [-CloseCursorsOnCommitEnabled <bool>] [-ConcatenateNullYieldsNull <bool>] [-DatabaseOwnershipChaining <bool>] [-DataRetentionEnabled <bool>] [-DateCorrelationOptimization <bool>] [-DelayedDurability <bool>] [-EncryptionEnabled <bool>] [-HonorBrokerPriority <bool>] [-IsFullTextEnabled <bool>] [-LegacyCardinalityEstimation <bool>] [-LegacyCardinalityEstimationForSecondary <bool>] [-LocalCursorsDefault <bool>] [-NestedTriggersEnabled <bool>] [-NumericRoundAbortEnabled <bool>] [-ParameterSniffing <bool>] [-ParameterSniffingForSecondary <bool>] [-QueryOptimizerHotfixes <bool>] [-QueryOptimizerHotfixesForSecondary <bool>] [-QuotedIdentifiersEnabled <bool>] [-ReadOnly <bool>] [-RecursiveTriggersEnabled <bool>] [-RemoteDataArchiveEnabled <bool>] [-RemoteDataArchiveUseFederatedServiceAccount <bool>] [-TemporalHistoryRetentionEnabled <bool>] [-TransformNoiseWords <bool>] [-Trustworthy <bool>] [-ChangeTrackingRetentionPeriod <int>] [-DefaultFullTextLanguage <int>] [-DefaultLanguage <int>] [-MaxDop <int>] [-MaxDopForSecondary <int>] [-MirroringRedoQueueMaxSize <int>] [-MirroringTimeout <int>] [-TargetRecoveryTime <int>] [-TwoDigitYearCutoff <int>] [-MaxSizeInBytes <long>] [-AzureServiceObjective <string>] [-Collation <string>] [-DefaultFileGroup <string>] [-DefaultFileStreamFileGroup <string>] [-DefaultFullTextCatalog <string>] [-DefaultSchema <string>] [-FilestreamDirectoryName <string>] [-MirroringPartner <string>] [-MirroringPartnerInstance <string>] [-MirroringWitness <string>] [-PersistentVersionStoreFileGroup <string>] [-PrimaryFilePath <string>] [-RemoteDataArchiveCredential <string>] [-RemoteDataArchiveEndpoint <string>] [-RemoteDataArchiveLinkedServer <string>] [-RemoteDatabaseName <string>] [-AzureEdition <string>] [-ChangeTrackingRetentionPeriodUnits <RetentionPeriodUnits>] [-CompatibilityLevel <CompatibilityLevel>] [-ContainmentType <ContainmentType>] [-FilestreamNonTransactedAccess <FilestreamNonTransactedAccessType>] [-MirroringSafetyLevel <MirroringSafetyLevel>] [-PageVerify <PageVerify>] [-RecoveryModel <RecoveryModel>] [-SnapshotIsolationState <SnapshotIsolationState>] [-UserAccess <DatabaseUserAccess>] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            }
+        ) {
+            $result = (Get-Command -Name 'Set-SqlDscDatabase').ParameterSets |
+                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
+                Select-Object -Property @(
+                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
+                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
+                )
+
+            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should -Be $ExpectedParameters
+        }
+
+        It 'Should have the correct parameters in parameter set DatabaseObjectSet' -ForEach @(
+            @{
+                ExpectedParameterSetName = 'DatabaseObjectSet'
+                ExpectedParameters = '-DatabaseObject <Database> [-AcceleratedRecoveryEnabled <bool>] [-AnsiNullDefault <bool>] [-AnsiNullsEnabled <bool>] [-AnsiPaddingEnabled <bool>] [-AnsiWarningsEnabled <bool>] [-ArithmeticAbortEnabled <bool>] [-AutoClose <bool>] [-AutoCreateIncrementalStatisticsEnabled <bool>] [-AutoCreateStatisticsEnabled <bool>] [-AutoShrink <bool>] [-AutoUpdateStatisticsAsync <bool>] [-AutoUpdateStatisticsEnabled <bool>] [-BrokerEnabled <bool>] [-ChangeTrackingAutoCleanUp <bool>] [-ChangeTrackingEnabled <bool>] [-CloseCursorsOnCommitEnabled <bool>] [-ConcatenateNullYieldsNull <bool>] [-DatabaseOwnershipChaining <bool>] [-DataRetentionEnabled <bool>] [-DateCorrelationOptimization <bool>] [-DelayedDurability <bool>] [-EncryptionEnabled <bool>] [-HonorBrokerPriority <bool>] [-IsFullTextEnabled <bool>] [-LegacyCardinalityEstimation <bool>] [-LegacyCardinalityEstimationForSecondary <bool>] [-LocalCursorsDefault <bool>] [-NestedTriggersEnabled <bool>] [-NumericRoundAbortEnabled <bool>] [-ParameterSniffing <bool>] [-ParameterSniffingForSecondary <bool>] [-QueryOptimizerHotfixes <bool>] [-QueryOptimizerHotfixesForSecondary <bool>] [-QuotedIdentifiersEnabled <bool>] [-ReadOnly <bool>] [-RecursiveTriggersEnabled <bool>] [-RemoteDataArchiveEnabled <bool>] [-RemoteDataArchiveUseFederatedServiceAccount <bool>] [-TemporalHistoryRetentionEnabled <bool>] [-TransformNoiseWords <bool>] [-Trustworthy <bool>] [-ChangeTrackingRetentionPeriod <int>] [-DefaultFullTextLanguage <int>] [-DefaultLanguage <int>] [-MaxDop <int>] [-MaxDopForSecondary <int>] [-MirroringRedoQueueMaxSize <int>] [-MirroringTimeout <int>] [-TargetRecoveryTime <int>] [-TwoDigitYearCutoff <int>] [-MaxSizeInBytes <long>] [-AzureServiceObjective <string>] [-Collation <string>] [-DefaultFileGroup <string>] [-DefaultFileStreamFileGroup <string>] [-DefaultFullTextCatalog <string>] [-DefaultSchema <string>] [-FilestreamDirectoryName <string>] [-MirroringPartner <string>] [-MirroringPartnerInstance <string>] [-MirroringWitness <string>] [-PersistentVersionStoreFileGroup <string>] [-PrimaryFilePath <string>] [-RemoteDataArchiveCredential <string>] [-RemoteDataArchiveEndpoint <string>] [-RemoteDataArchiveLinkedServer <string>] [-RemoteDatabaseName <string>] [-AzureEdition <string>] [-ChangeTrackingRetentionPeriodUnits <RetentionPeriodUnits>] [-CompatibilityLevel <CompatibilityLevel>] [-ContainmentType <ContainmentType>] [-FilestreamNonTransactedAccess <FilestreamNonTransactedAccessType>] [-MirroringSafetyLevel <MirroringSafetyLevel>] [-PageVerify <PageVerify>] [-RecoveryModel <RecoveryModel>] [-SnapshotIsolationState <SnapshotIsolationState>] [-UserAccess <DatabaseUserAccess>] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            }
+        ) {
+            $result = (Get-Command -Name 'Set-SqlDscDatabase').ParameterSets |
+                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
+                Select-Object -Property @(
+                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
+                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
+                )
+
+            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should -Be $ExpectedParameters
+        }
+
         It 'Should have many settable SMO properties available as parameters' {
             $command = Get-Command -Name 'Set-SqlDscDatabase'
 
