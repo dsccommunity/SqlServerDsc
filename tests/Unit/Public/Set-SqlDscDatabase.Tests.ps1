@@ -237,9 +237,12 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
                 # Mock implementation
             } -Force
             $mockServerObjectWithValidDb | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
-                return @{
+                $databaseCollection = @{
                     'TestDatabase' = $mockDatabaseObjectWithValidProps
                 }
+                return $databaseCollection | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                    # Mock implementation
+                } -PassThru -Force
             } -Force
             $mockServerObjectWithValidDb | Add-Member -MemberType 'ScriptMethod' -Name 'EnumCollations' -Value {
                 return @(
