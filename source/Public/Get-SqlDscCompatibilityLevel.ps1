@@ -81,9 +81,20 @@ function Get-SqlDscCompatibilityLevel
         #>
         $minimumCompatLevel = switch ($majorVersion)
         {
-            { $_ -ge 12 } { 100 } # SQL 2014 (v12) and later support minimum compat level 100
-            11 { 90 }             # SQL 2012 (v11) supports minimum compat level 90
-            { $_ -le 10 } { 80 }  # SQL 2008 R2 (v10.5) and earlier support minimum compat level 80
+            { $_ -ge 12 }
+            {
+                100 # SQL 2014 (v12) and later support minimum compat level 100
+            }
+
+            11
+            {
+                90 # SQL 2012 (v11) supports minimum compat level 90
+            }
+
+            { $_ -le 10 }
+            {
+                80 # SQL 2008 R2 (v10.5) and earlier support minimum compat level 80
+            }
         }
 
         <#
