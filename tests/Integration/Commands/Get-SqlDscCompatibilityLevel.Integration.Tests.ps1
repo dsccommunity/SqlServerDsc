@@ -43,6 +43,10 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag @('Integration_SQL2017', 'Integrati
         $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
     }
 
+    AfterAll {
+        Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
+    }
+
     Context 'When getting compatibility levels' {
         BeforeAll {
             # Determine expected compatibility levels based on server major version
