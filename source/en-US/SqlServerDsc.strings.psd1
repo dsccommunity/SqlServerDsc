@@ -377,6 +377,12 @@ ConvertFrom-StringData @'
     Set_SqlDscDatabase_InvalidCompatibilityLevel = The specified compatibility level '{0}' is not a valid compatibility level for the instance '{1}'.
     Set_SqlDscDatabase_InvalidCollation = The specified collation '{0}' is not a valid collation for the instance '{1}'.
 
+    ## Get-SqlDscCompatibilityLevel
+    GetCompatibilityLevel_GettingForInstance = Getting supported compatibility levels for instance '{0}' (version {1}).
+    GetCompatibilityLevel_GettingForVersion = Getting supported compatibility levels for SQL Server version '{0}' (major version {1}).
+    GetCompatibilityLevel_Found = Found {0} supported compatibility level(s) for SQL Server major version {1}.
+    GetCompatibilityLevel_SmoTooOld = The loaded SMO library does not support SQL Server major version {0}. Returning compatibility levels up to {1} (expected maximum {2}). Consider updating the SqlServer PowerShell module to support newer SQL Server versions.
+
     ## Set-SqlDscDatabaseOwner
     DatabaseOwner_Updating = Setting owner of database '{0}' to '{1}'.
     DatabaseOwner_Updated = Owner of database '{0}' was set to '{1}'.

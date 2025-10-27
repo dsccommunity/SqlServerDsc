@@ -682,19 +682,9 @@ function Set-SqlDscDatabase
         # Validate compatibility level if specified
         if ($PSBoundParameters.ContainsKey('CompatibilityLevel'))
         {
-            $supportedCompatibilityLevels = @{
-                8  = @('Version80')
-                9  = @('Version80', 'Version90')
-                10 = @('Version80', 'Version90', 'Version100')
-                11 = @('Version90', 'Version100', 'Version110')
-                12 = @('Version100', 'Version110', 'Version120')
-                13 = @('Version100', 'Version110', 'Version120', 'Version130')
-                14 = @('Version100', 'Version110', 'Version120', 'Version130', 'Version140')
-                15 = @('Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150')
-                16 = @('Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150', 'Version160')
-            }
+            $supportedCompatibilityLevels = $serverInstance | Get-SqlDscCompatibilityLevel
 
-            if ($CompatibilityLevel -notin $supportedCompatibilityLevels.$($serverInstance.VersionMajor))
+            if ($CompatibilityLevel -notin $supportedCompatibilityLevels)
             {
                 $errorMessage = $script:localizedData.Set_SqlDscDatabase_InvalidCompatibilityLevel -f $CompatibilityLevel, $serverInstance.InstanceName
 

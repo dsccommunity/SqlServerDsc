@@ -452,6 +452,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public string NetName;
         public Hashtable Roles = new Hashtable();
         public Hashtable Version = new Hashtable();
+        public int VersionMajor;
 
         public Server(){}
         public Server(string name)
