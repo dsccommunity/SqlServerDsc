@@ -265,20 +265,20 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        Set-SqlDscDatabase -ServerObject $serverObject -Name 'MyDatabase' -RecoveryModel 'Simple'
+        Set-SqlDscDatabaseProperty -ServerObject $serverObject -Name 'MyDatabase' -RecoveryModel 'Simple'
 
         Sets the recovery model of the database named **MyDatabase** to **Simple**.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $databaseObject = $serverObject | Get-SqlDscDatabase -Name 'MyDatabase'
-        Set-SqlDscDatabase -DatabaseObject $databaseObject -ReadOnly $false -AutoClose $false
+        Set-SqlDscDatabaseProperty -DatabaseObject $databaseObject -ReadOnly $false -AutoClose $false
 
         Sets multiple database properties at once using a database object.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        Set-SqlDscDatabase -ServerObject $serverObject -Name 'MyDatabase' -CompatibilityLevel 'Version160' -Trustworthy $false -Force
+        Set-SqlDscDatabaseProperty -ServerObject $serverObject -Name 'MyDatabase' -CompatibilityLevel 'Version160' -Trustworthy $false -Force
 
         Sets the compatibility level and trustworthy property of the database without prompting for confirmation.
 
@@ -310,7 +310,7 @@
         property assignment and will be supported through separate commands, e.g.
         `Set-SqlDscDatabaseDefaultFileGroup`.
 #>
-function Set-SqlDscDatabase
+function Set-SqlDscDatabaseProperty
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues.')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Justification = 'This is not a password but a credential name reference.')]
@@ -676,7 +676,7 @@ function Set-SqlDscDatabase
 
             if ($CompatibilityLevel -notin $supportedCompatibilityLevels)
             {
-                $errorMessage = $script:localizedData.Set_SqlDscDatabase_InvalidCompatibilityLevel -f $CompatibilityLevel, $serverInstance.InstanceName
+                $errorMessage = $script:localizedData.Set_SqlDscDatabaseProperty_InvalidCompatibilityLevel -f $CompatibilityLevel, $serverInstance.InstanceName
 
                 $PSCmdlet.ThrowTerminatingError(
                     [System.Management.Automation.ErrorRecord]::new(
@@ -694,7 +694,7 @@ function Set-SqlDscDatabase
         {
             if ($Collation -notin $serverInstance.EnumCollations().Name)
             {
-                $errorMessage = $script:localizedData.Set_SqlDscDatabase_InvalidCollation -f $Collation, $serverInstance.InstanceName
+                $errorMessage = $script:localizedData.Set_SqlDscDatabaseProperty_InvalidCollation -f $Collation, $serverInstance.InstanceName
 
                 $PSCmdlet.ThrowTerminatingError(
                     [System.Management.Automation.ErrorRecord]::new(
