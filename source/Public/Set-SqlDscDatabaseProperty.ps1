@@ -129,7 +129,7 @@
         Specifies the default schema name for users without an explicit default schema.
 
     .PARAMETER DelayedDurability
-        Specifies whether delayed transaction log flushes are enabled to improve throughput.
+        Specifies the delayed durability setting for the database (DISABLED, ALLOWED, FORCED).
 
     .PARAMETER EncryptionEnabled
         Specifies whether Transparent Data Encryption (TDE) is enabled.
@@ -431,10 +431,6 @@ function Set-SqlDscDatabaseProperty
 
         [Parameter()]
         [System.Boolean]
-        $DelayedDurability,
-
-        [Parameter()]
-        [System.Boolean]
         $EncryptionEnabled,
 
         [Parameter()]
@@ -649,6 +645,10 @@ function Set-SqlDscDatabaseProperty
         [Parameter()]
         [Microsoft.SqlServer.Management.Smo.ContainmentType]
         $ContainmentType,
+
+        [Parameter()]
+        [Microsoft.SqlServer.Management.Smo.DelayedDurability]
+        $DelayedDurability,
 
         [Parameter()]
         [Microsoft.SqlServer.Management.Smo.FilestreamNonTransactedAccessType]

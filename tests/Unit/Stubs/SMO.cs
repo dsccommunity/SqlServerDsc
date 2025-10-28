@@ -258,6 +258,13 @@ namespace Microsoft.SqlServer.Management.Smo
         Full = 3
     }
 
+    public enum DelayedDurability : int
+    {
+        Disabled = 0,
+        Allowed = 1,
+        Forced = 2
+    }
+
     public enum MirroringStatus : int
     {
         None = 0,
