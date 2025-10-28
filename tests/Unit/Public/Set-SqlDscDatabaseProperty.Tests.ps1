@@ -49,7 +49,7 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'Set-SqlDscDatabasePropertyProperty' -Tag 'Public' {
+Describe 'Set-SqlDscDatabaseProperty' -Tag 'Public' {
     Context 'When modifying a database using ServerObject and Name' {
         BeforeAll {
             $script:mockAlterCalled = $false
