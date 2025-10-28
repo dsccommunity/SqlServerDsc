@@ -110,6 +110,9 @@
     .PARAMETER DatabaseOwnershipChaining
         Specifies whether ownership chaining across objects within the database is enabled.
 
+    .PARAMETER DatabaseSnapshotBaseName
+        Specifies the base name of the source database from which this database snapshot was created.
+
     .PARAMETER DataRetentionEnabled
         Specifies whether SQL Server data retention policy is enabled at the database level.
 
@@ -146,8 +149,20 @@
     .PARAMETER IsFullTextEnabled
         Specifies whether full-text search is enabled.
 
+    .PARAMETER IsLedger
+        Specifies whether the database is a ledger database.
+
+    .PARAMETER IsParameterizationForced
+        Specifies whether forced parameterization is enabled for the database.
+
     .PARAMETER IsReadCommittedSnapshotOn
         Specifies whether READ_COMMITTED_SNAPSHOT isolation is ON.
+
+    .PARAMETER IsSqlDw
+        Specifies whether the database is a SQL Data Warehouse database.
+
+    .PARAMETER IsVarDecimalStorageFormatEnabled
+        Specifies whether vardecimal compression is enabled.
 
     .PARAMETER LegacyCardinalityEstimation
         Specifies whether the legacy cardinality estimator is enabled for the primary.
@@ -435,7 +450,23 @@ function Set-SqlDscDatabaseProperty
 
         [Parameter()]
         [System.Boolean]
+        $IsLedger,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsParameterizationForced,
+
+        [Parameter()]
+        [System.Boolean]
         $IsReadCommittedSnapshotOn,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsSqlDw,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsVarDecimalStorageFormatEnabled,
 
         [Parameter()]
         [System.Boolean]
@@ -556,6 +587,10 @@ function Set-SqlDscDatabaseProperty
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Collation,
+
+        [Parameter()]
+        [System.String]
+        $DatabaseSnapshotBaseName,
 
         [Parameter()]
         [System.String]
