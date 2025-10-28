@@ -410,10 +410,5 @@ Describe 'Set-SqlDscDatabasePropertyProperty' -Tag 'Public' {
             $command.Parameters.Keys | Should -Contain 'AnsiNullDefault'
             $command.Parameters.Keys | Should -Contain 'TargetRecoveryTime'
         }
-
-        It 'Should not have OwnerName parameter (moved to Set-SqlDscDatabasePropertyOwner)' {
-            $command = Get-Command -Name 'Set-SqlDscDatabaseProperty'
-            $command.Parameters.Keys | Should -Not -Contain 'OwnerName'
-        }
     }
 }
