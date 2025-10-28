@@ -119,9 +119,6 @@
     .PARAMETER DateCorrelationOptimization
         Specifies whether date correlation optimization is enabled to speed up temporal joins.
 
-    .PARAMETER DefaultFullTextCatalog
-        Specifies the default full-text catalog used for full-text indexes.
-
     .PARAMETER DefaultFullTextLanguage
         Specifies the LCID of the default full-text language.
 
@@ -575,7 +572,7 @@ function Set-SqlDscDatabaseProperty
 
         # Long Integer Properties
         [Parameter()]
-        [System.Int64]
+        [System.Double]
         $MaxSizeInBytes,
 
         # String Properties
@@ -591,10 +588,6 @@ function Set-SqlDscDatabaseProperty
         [Parameter()]
         [System.String]
         $DatabaseSnapshotBaseName,
-
-        [Parameter()]
-        [System.String]
-        $DefaultFullTextCatalog,
 
         [Parameter()]
         [System.String]
