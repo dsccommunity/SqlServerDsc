@@ -106,7 +106,6 @@ BeforeDiscovery {
         # String Properties
         'AvailabilityGroupName'                       = @{ Type = 'String'; TestValue = 'TestAG'; ExpectedValue = 'TestAG' }
         'AzureServiceObjective'                       = @{ Type = 'String'; TestValue = 'S1'; ExpectedValue = 'S1' }
-        'CatalogCollation'                            = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Smo.CatalogCollationType]::DatabaseDefault; ExpectedValue = [Microsoft.SqlServer.Management.Smo.CatalogCollationType]::DatabaseDefault }
         'Collation'                                   = @{ Type = 'String'; TestValue = 'SQL_Latin1_General_CP1_CI_AS'; ExpectedValue = 'SQL_Latin1_General_CP1_CI_AS' }
         'DboLogin'                                    = @{ Type = 'String'; TestValue = 'sa'; ExpectedValue = 'sa' }
         'DefaultFileGroup'                            = @{ Type = 'String'; TestValue = 'PRIMARY'; ExpectedValue = 'PRIMARY' }
@@ -144,6 +143,7 @@ BeforeDiscovery {
 
         # Enum Properties
         'AvailabilityDatabaseSynchronizationState'    = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Smo.AvailabilityDatabaseSynchronizationState]::Synchronized; ExpectedValue = [Microsoft.SqlServer.Management.Smo.AvailabilityDatabaseSynchronizationState]::Synchronized }
+        'CatalogCollation'                            = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Smo.CatalogCollationType]::DatabaseDefault; ExpectedValue = [Microsoft.SqlServer.Management.Smo.CatalogCollationType]::DatabaseDefault }
         'ChangeTrackingRetentionPeriodUnits'          = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Smo.RetentionPeriodUnits]::Days; ExpectedValue = [Microsoft.SqlServer.Management.Smo.RetentionPeriodUnits]::Days }
         'CompatibilityLevel'                          = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Smo.CompatibilityLevel]::Version150; ExpectedValue = [Microsoft.SqlServer.Management.Smo.CompatibilityLevel]::Version150 }
         'ContainmentType'                             = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Smo.ContainmentType]::None; ExpectedValue = [Microsoft.SqlServer.Management.Smo.ContainmentType]::None }
@@ -608,44 +608,128 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
             } -Force
         }
 
-        It 'Should support all database property parameters' {
+        It 'Should have parameter <ParameterName> available' -ForEach @(
+            @{ ParameterName = 'AcceleratedRecoveryEnabled' }
+            @{ ParameterName = 'ActiveDirectory' }
+            @{ ParameterName = 'AnsiNullDefault' }
+            @{ ParameterName = 'AnsiNullsEnabled' }
+            @{ ParameterName = 'AnsiPaddingEnabled' }
+            @{ ParameterName = 'AnsiWarningsEnabled' }
+            @{ ParameterName = 'ArithmeticAbortEnabled' }
+            @{ ParameterName = 'AutoClose' }
+            @{ ParameterName = 'AutoCreateIncrementalStatisticsEnabled' }
+            @{ ParameterName = 'AutoCreateStatisticsEnabled' }
+            @{ ParameterName = 'AutoShrink' }
+            @{ ParameterName = 'AutoUpdateStatisticsAsync' }
+            @{ ParameterName = 'AutoUpdateStatisticsEnabled' }
+            @{ ParameterName = 'BrokerEnabled' }
+            @{ ParameterName = 'CaseSensitive' }
+            @{ ParameterName = 'ChangeTrackingAutoCleanUp' }
+            @{ ParameterName = 'ChangeTrackingEnabled' }
+            @{ ParameterName = 'CloseCursorsOnCommitEnabled' }
+            @{ ParameterName = 'ConcatenateNullYieldsNull' }
+            @{ ParameterName = 'DatabaseOwnershipChaining' }
+            @{ ParameterName = 'DataRetentionEnabled' }
+            @{ ParameterName = 'DateCorrelationOptimization' }
+            @{ ParameterName = 'DelayedDurability' }
+            @{ ParameterName = 'EncryptionEnabled' }
+            @{ ParameterName = 'HasDatabaseEncryptionKey' }
+            @{ ParameterName = 'HasFileInCloud' }
+            @{ ParameterName = 'HasMemoryOptimizedObjects' }
+            @{ ParameterName = 'HonorBrokerPriority' }
+            @{ ParameterName = 'IsAccessible' }
+            @{ ParameterName = 'IsDatabaseSnapshot' }
+            @{ ParameterName = 'IsDatabaseSnapshotBase' }
+            @{ ParameterName = 'IsDbAccessAdmin' }
+            @{ ParameterName = 'IsDbBackupOperator' }
+            @{ ParameterName = 'IsDbDataReader' }
+            @{ ParameterName = 'IsDbDataWriter' }
+            @{ ParameterName = 'IsDbDdlAdmin' }
+            @{ ParameterName = 'IsDbDenyDataReader' }
+            @{ ParameterName = 'IsDbDenyDataWriter' }
+            @{ ParameterName = 'IsDbManager' }
+            @{ ParameterName = 'IsDbOwner' }
+            @{ ParameterName = 'IsDbSecurityAdmin' }
+            @{ ParameterName = 'IsFabricDatabase' }
+            @{ ParameterName = 'IsFullTextEnabled' }
+            @{ ParameterName = 'IsLedger' }
+            @{ ParameterName = 'IsLoginManager' }
+            @{ ParameterName = 'IsMailHost' }
+            @{ ParameterName = 'IsManagementDataWarehouse' }
+            @{ ParameterName = 'IsMaxSizeApplicable' }
+            @{ ParameterName = 'IsMirroringEnabled' }
+            @{ ParameterName = 'IsParameterizationForced' }
+            @{ ParameterName = 'IsReadCommittedSnapshotOn' }
+            @{ ParameterName = 'IsSqlDw' }
+            @{ ParameterName = 'IsSqlDwEdition' }
+            @{ ParameterName = 'IsSystemObject' }
+            @{ ParameterName = 'IsVarDecimalStorageFormatEnabled' }
+            @{ ParameterName = 'IsVarDecimalStorageFormatSupported' }
+            @{ ParameterName = 'LegacyCardinalityEstimation' }
+            @{ ParameterName = 'LegacyCardinalityEstimationForSecondary' }
+            @{ ParameterName = 'LocalCursorsDefault' }
+            @{ ParameterName = 'NestedTriggersEnabled' }
+            @{ ParameterName = 'NumericRoundAbortEnabled' }
+            @{ ParameterName = 'ParameterSniffing' }
+            @{ ParameterName = 'ParameterSniffingForSecondary' }
+            @{ ParameterName = 'QueryOptimizerHotfixes' }
+            @{ ParameterName = 'QueryOptimizerHotfixesForSecondary' }
+            @{ ParameterName = 'QuotedIdentifiersEnabled' }
+            @{ ParameterName = 'ReadOnly' }
+            @{ ParameterName = 'RecursiveTriggersEnabled' }
+            @{ ParameterName = 'RemoteDataArchiveEnabled' }
+            @{ ParameterName = 'RemoteDataArchiveUseFederatedServiceAccount' }
+            @{ ParameterName = 'TemporalHistoryRetentionEnabled' }
+            @{ ParameterName = 'TransformNoiseWords' }
+            @{ ParameterName = 'Trustworthy' }
+            @{ ParameterName = 'WarnOnRename' }
+            @{ ParameterName = 'AvailabilityGroupName' }
+            @{ ParameterName = 'AzureServiceObjective' }
+            @{ ParameterName = 'CatalogCollation' }
+            @{ ParameterName = 'Collation' }
+            @{ ParameterName = 'DboLogin' }
+            @{ ParameterName = 'DefaultFileGroup' }
+            @{ ParameterName = 'DefaultFileStreamFileGroup' }
+            @{ ParameterName = 'DefaultFullTextCatalog' }
+            @{ ParameterName = 'DefaultSchema' }
+            @{ ParameterName = 'FilestreamDirectoryName' }
+            @{ ParameterName = 'MirroringPartner' }
+            @{ ParameterName = 'MirroringPartnerInstance' }
+            @{ ParameterName = 'MirroringWitness' }
+            @{ ParameterName = 'Name' }
+            @{ ParameterName = 'Owner' }
+            @{ ParameterName = 'PersistentVersionStoreFileGroup' }
+            @{ ParameterName = 'PrimaryFilePath' }
+            @{ ParameterName = 'RemoteDataArchiveCredential' }
+            @{ ParameterName = 'RemoteDataArchiveEndpoint' }
+            @{ ParameterName = 'RemoteDataArchiveLinkedServer' }
+            @{ ParameterName = 'RemoteDatabaseName' }
+            @{ ParameterName = 'UserName' }
+            @{ ParameterName = 'ActiveConnections' }
+            @{ ParameterName = 'ChangeTrackingRetentionPeriod' }
+            @{ ParameterName = 'DefaultFullTextLanguage' }
+            @{ ParameterName = 'DefaultLanguage' }
+            @{ ParameterName = 'ID' }
+            @{ ParameterName = 'MaxDop' }
+            @{ ParameterName = 'MaxDopForSecondary' }
+            @{ ParameterName = 'MirroringRedoQueueMaxSize' }
+            @{ ParameterName = 'MirroringRoleSequence' }
+            @{ ParameterName = 'MirroringSafetySequence' }
+            @{ ParameterName = 'MirroringTimeout' }
+            @{ ParameterName = 'TargetRecoveryTime' }
+            @{ ParameterName = 'TwoDigitYearCutoff' }
+            @{ ParameterName = 'Version' }
+            @{ ParameterName = 'AvailabilityDatabaseSynchronizationState' }
+            @{ ParameterName = 'ChangeTrackingRetentionPeriodUnits' }
+            @{ ParameterName = 'CompatibilityLevel' }
+            @{ ParameterName = 'ContainmentType' }
+            @{ ParameterName = 'FilestreamNonTransactedAccess' }
+            @{ ParameterName = 'PageVerify' }
+            @{ ParameterName = 'RecoveryModel' }
+            @{ ParameterName = 'UserAccess' }
+        ) {
             $command = Get-Command -Name 'Test-SqlDscDatabaseProperty'
-
-            # Test that all expected parameters are available (using the testPropertyData from BeforeDiscovery)
-            $expectedParameters = @(
-                'AcceleratedRecoveryEnabled', 'ActiveDirectory', 'AnsiNullDefault', 'AnsiNullsEnabled', 'AnsiPaddingEnabled',
-                'AnsiWarningsEnabled', 'ArithmeticAbortEnabled', 'AutoClose', 'AutoCreateIncrementalStatisticsEnabled',
-                'AutoCreateStatisticsEnabled', 'AutoShrink', 'AutoUpdateStatisticsAsync', 'AutoUpdateStatisticsEnabled',
-                'BrokerEnabled', 'CaseSensitive', 'ChangeTrackingAutoCleanUp', 'ChangeTrackingEnabled',
-                'CloseCursorsOnCommitEnabled', 'ConcatenateNullYieldsNull', 'DatabaseOwnershipChaining',
-                'DataRetentionEnabled', 'DateCorrelationOptimization', 'DelayedDurability', 'EncryptionEnabled',
-                'HasDatabaseEncryptionKey', 'HasFileInCloud', 'HasMemoryOptimizedObjects', 'HonorBrokerPriority',
-                'IsAccessible', 'IsDatabaseSnapshot', 'IsDatabaseSnapshotBase', 'IsDbAccessAdmin', 'IsDbBackupOperator',
-                'IsDbDataReader', 'IsDbDataWriter', 'IsDbDdlAdmin', 'IsDbDenyDataReader', 'IsDbDenyDataWriter',
-                'IsDbManager', 'IsDbOwner', 'IsDbSecurityAdmin', 'IsFabricDatabase', 'IsFullTextEnabled',
-                'IsLedger', 'IsLoginManager', 'IsMailHost', 'IsManagementDataWarehouse', 'IsMaxSizeApplicable',
-                'IsMirroringEnabled', 'IsParameterizationForced', 'IsReadCommittedSnapshotOn', 'IsSqlDw',
-                'IsSqlDwEdition', 'IsSystemObject', 'IsVarDecimalStorageFormatEnabled', 'IsVarDecimalStorageFormatSupported',
-                'LegacyCardinalityEstimation', 'LegacyCardinalityEstimationForSecondary', 'LocalCursorsDefault',
-                'NestedTriggersEnabled', 'NumericRoundAbortEnabled', 'ParameterSniffing', 'ParameterSniffingForSecondary',
-                'QueryOptimizerHotfixes', 'QueryOptimizerHotfixesForSecondary', 'QuotedIdentifiersEnabled', 'ReadOnly',
-                'RecursiveTriggersEnabled', 'RemoteDataArchiveEnabled', 'RemoteDataArchiveUseFederatedServiceAccount',
-                'TemporalHistoryRetentionEnabled', 'TransformNoiseWords', 'Trustworthy', 'WarnOnRename',
-                'AvailabilityGroupName', 'AzureServiceObjective', 'CatalogCollation', 'Collation', 'DboLogin',
-                'DefaultFileGroup', 'DefaultFileStreamFileGroup', 'DefaultFullTextCatalog', 'DefaultSchema',
-                'FilestreamDirectoryName', 'MirroringPartner', 'MirroringPartnerInstance', 'MirroringWitness',
-                'Name', 'Owner', 'PersistentVersionStoreFileGroup', 'PrimaryFilePath', 'RemoteDataArchiveCredential',
-                'RemoteDataArchiveEndpoint', 'RemoteDataArchiveLinkedServer', 'RemoteDatabaseName', 'UserName',
-                'ActiveConnections', 'ChangeTrackingRetentionPeriod', 'DefaultFullTextLanguage', 'DefaultLanguage',
-                'ID', 'MaxDop', 'MaxDopForSecondary', 'MirroringRedoQueueMaxSize', 'MirroringRoleSequence',
-                'MirroringSafetySequence', 'MirroringTimeout', 'TargetRecoveryTime', 'TwoDigitYearCutoff', 'Version',
-                'AvailabilityDatabaseSynchronizationState', 'ChangeTrackingRetentionPeriodUnits', 'CompatibilityLevel', 'ContainmentType', 'FilestreamNonTransactedAccess', 'PageVerify', 'RecoveryModel', 'UserAccess'
-            )
-
-            foreach ($parameterName in $expectedParameters)
-            {
-                $command.Parameters.Keys | Should -Contain $parameterName -Because "Parameter '$parameterName' should be available"
-            }
+            $command.Parameters.Keys | Should -Contain $ParameterName
         }
 
         It 'Should return true when property <PropertyName> matches expected value' -ForEach $script:testCases {
