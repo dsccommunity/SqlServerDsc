@@ -19,6 +19,7 @@
         Specifies the collation type for the system catalog. Valid values are
         DATABASE_DEFAULT and SQL_Latin1_General_CP1_CI_AS. This property can
         only be set during database creation and cannot be modified afterward.
+        This parameter requires SQL Server 2019 (version 15) or later.
 
     .PARAMETER CompatibilityLevel
         The version of the SQL compatibility level to use for the new database.
