@@ -336,6 +336,7 @@ stages:
                   'tests/Integration/Commands/ConvertFrom-SqlDscDatabasePermission.Integration.Tests.ps1'
                   'tests/Integration/Commands/New-SqlDscDatabase.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscDatabaseProperty.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscDatabaseOwner.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscIsDatabase.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscDatabaseProperty.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscDatabasePermission.Integration.Tests.ps1'
