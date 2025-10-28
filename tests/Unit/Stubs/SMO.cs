@@ -198,6 +198,13 @@ namespace Microsoft.SqlServer.Management.Smo
         Partial = 1
     }
 
+    public enum CatalogCollationType : int
+    {
+        DatabaseDefault = 0,
+        ContainedDatabaseFixedCollation = 1,
+        SQLLatin1GeneralCP1CIAS = 2 // cSpell:ignore CIAS
+    }
+
     public enum FilestreamNonTransactedAccessType : int
     {
         Off = 0,
