@@ -816,7 +816,7 @@ namespace Microsoft.SqlServer.Management.Smo
         // String Properties
         public string AvailabilityGroupName = "TestAG";
         public string AzureServiceObjective = "S1";
-        public string CatalogCollation = "SQL_Latin1_General_CP1_CI_AS";
+        public CatalogCollationType CatalogCollation = CatalogCollationType.DatabaseDefault;
         public string Collation = "SQL_Latin1_General_CP1_CI_AS";
         public string DboLogin = "sa";
         public string DefaultFileGroup = "PRIMARY";
