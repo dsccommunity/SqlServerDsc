@@ -376,6 +376,7 @@ ConvertFrom-StringData @'
     Database_Set_ShouldProcessCaption = Set database properties on instance
     Set_SqlDscDatabaseProperty_InvalidCompatibilityLevel = The specified compatibility level '{0}' is not a valid compatibility level for the instance '{1}'. (SSDDP0008)
     Set_SqlDscDatabaseProperty_InvalidCollation = The specified collation '{0}' is not a valid collation for the instance '{1}'. (SSDDP0009)
+    Set_SqlDscDatabaseProperty_PropertyNotFound = The property '{0}' does not exist on database '{1}'. This might be due to the property not being supported on this SQL Server version. (SSDDP0010)
 
     ## Get-SqlDscCompatibilityLevel
     GetCompatibilityLevel_GettingForInstance = Getting supported compatibility levels for instance '{0}' (version {1}).
