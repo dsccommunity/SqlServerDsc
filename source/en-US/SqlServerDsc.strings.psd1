@@ -362,7 +362,7 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Database_Create_ShouldProcessCaption = Create database on instance
 
-    ## Set-SqlDscDatabase
+    ## Set-SqlDscDatabaseProperty
     Database_Set = Setting properties of database '{0}' on instance '{1}'.
     Database_Updating = Updating database '{0}'.
     Database_Updated = Database '{0}' was updated successfully.
@@ -374,8 +374,8 @@ ConvertFrom-StringData @'
     Database_Set_ShouldProcessVerboseWarning = Are you sure you want to modify the database '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Database_Set_ShouldProcessCaption = Set database properties on instance
-    Set_SqlDscDatabase_InvalidCompatibilityLevel = The specified compatibility level '{0}' is not a valid compatibility level for the instance '{1}'.
-    Set_SqlDscDatabase_InvalidCollation = The specified collation '{0}' is not a valid collation for the instance '{1}'.
+    Set_SqlDscDatabaseProperty_InvalidCompatibilityLevel = The specified compatibility level '{0}' is not a valid compatibility level for the instance '{1}'.
+    Set_SqlDscDatabaseProperty_InvalidCollation = The specified collation '{0}' is not a valid collation for the instance '{1}'.
 
     ## Get-SqlDscCompatibilityLevel
     GetCompatibilityLevel_GettingForInstance = Getting supported compatibility levels for instance '{0}' (version {1}).
