@@ -29,7 +29,7 @@ BeforeAll {
     Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
 }
 
-Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         $script:mockInstanceName = 'DSCSQLTEST'
         $script:mockComputerName = Get-ComputerName
@@ -69,7 +69,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
     Context 'When setting database properties using ServerObject parameter set' {
         It 'Should set recovery model successfully' {
-            $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Simple' -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Simple' -Force -ErrorAction 'Stop'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
@@ -78,7 +78,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
         It 'Should set compatibility level successfully' {
             # Use Version140 which is supported on all tested versions (SQL 2017+)
-            $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -CompatibilityLevel 'Version140' -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -CompatibilityLevel 'Version140' -Force -ErrorAction 'Stop'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
@@ -86,40 +86,40 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         }
 
         It 'Should set AutoClose successfully' {
-            $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoClose $true -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoClose $true -Force -ErrorAction 'Stop'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
             $updatedDb.AutoClose | Should -BeTrue
 
             # Reset to default
-            $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoClose $false -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoClose $false -Force -ErrorAction 'Stop'
         }
 
         It 'Should set AutoShrink successfully' {
-            $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoShrink $true -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoShrink $true -Force -ErrorAction 'Stop'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
             $updatedDb.AutoShrink | Should -BeTrue
 
             # Reset to default
-            $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoShrink $false -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoShrink $false -Force -ErrorAction 'Stop'
         }
 
         It 'Should set PageVerify successfully' {
-            $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -PageVerify 'TornPageDetection' -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -PageVerify 'TornPageDetection' -Force -ErrorAction 'Stop'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
             $updatedDb.PageVerify | Should -Be 'TornPageDetection'
 
             # Reset to default
-            $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -PageVerify 'Checksum' -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -PageVerify 'Checksum' -Force -ErrorAction 'Stop'
         }
 
         It 'Should set multiple properties successfully' {
-            $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Full' -AutoClose $false -AutoShrink $false -PageVerify 'Checksum' -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Full' -AutoClose $false -AutoShrink $false -PageVerify 'Checksum' -Force -ErrorAction 'Stop'
 
             # Verify the changes
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
@@ -131,10 +131,10 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
         It 'Should be idempotent when property is already set' {
             # Set property
-            $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Simple' -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Simple' -Force -ErrorAction 'Stop'
 
             # Set same property again - should not throw
-            $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Simple' -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Simple' -Force -ErrorAction 'Stop'
 
             # Verify the value is still correct
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
@@ -142,7 +142,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         }
 
         It 'Should throw error when trying to set properties of non-existent database' {
-            { Set-SqlDscDatabase -ServerObject $script:serverObject -Name 'NonExistentDatabase' -RecoveryModel 'Simple' -Force -ErrorAction 'Stop' } |
+            { Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name 'NonExistentDatabase' -RecoveryModel 'Simple' -Force -ErrorAction 'Stop' } |
                 Should -Throw
         }
     }
@@ -151,7 +151,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         It 'Should set recovery model using database object' {
             $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
 
-            $null = Set-SqlDscDatabase -DatabaseObject $databaseObject -RecoveryModel 'Simple' -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -DatabaseObject $databaseObject -RecoveryModel 'Simple' -Force -ErrorAction 'Stop'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
@@ -161,20 +161,20 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         It 'Should set AutoClose using database object' {
             $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
 
-            $null = Set-SqlDscDatabase -DatabaseObject $databaseObject -AutoClose $true -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -DatabaseObject $databaseObject -AutoClose $true -Force -ErrorAction 'Stop'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
             $updatedDb.AutoClose | Should -BeTrue
 
             # Reset to default
-            $null = Set-SqlDscDatabase -DatabaseObject $databaseObject -AutoClose $false -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -DatabaseObject $databaseObject -AutoClose $false -Force -ErrorAction 'Stop'
         }
 
         It 'Should set multiple properties using database object' {
             $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
 
-            $null = Set-SqlDscDatabase -DatabaseObject $databaseObject -RecoveryModel 'Full' -PageVerify 'TornPageDetection' -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -DatabaseObject $databaseObject -RecoveryModel 'Full' -PageVerify 'TornPageDetection' -Force -ErrorAction 'Stop'
 
             # Verify the changes
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
@@ -184,7 +184,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
         It 'Should support pipeline input with database object' {
             $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
-            $null = $databaseObject | Set-SqlDscDatabase -RecoveryModel 'BulkLogged' -Force -ErrorAction 'Stop'
+            $null = $databaseObject | Set-SqlDscDatabaseProperty -RecoveryModel 'BulkLogged' -Force -ErrorAction 'Stop'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
@@ -194,7 +194,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
     Context 'When using the Refresh parameter' {
         It 'Should refresh the database collection before setting properties' {
-            $null = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'BulkLogged' -Refresh -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'BulkLogged' -Refresh -Force -ErrorAction 'Stop'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
@@ -204,7 +204,7 @@ Describe 'Set-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
     Context 'When using the PassThru parameter' {
         It 'Should return the database object when PassThru is specified' {
-            $result = Set-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Simple' -PassThru -Force -ErrorAction 'Stop'
+            $result = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Simple' -PassThru -Force -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
             $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
