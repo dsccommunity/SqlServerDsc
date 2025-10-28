@@ -753,7 +753,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public bool DatabaseOwnershipChaining = false;
         public bool DataRetentionEnabled = false;
         public bool DateCorrelationOptimization = false;
-        public bool DelayedDurability = false;
+        public DelayedDurability DelayedDurability = DelayedDurability.Disabled;
         public bool EncryptionEnabled = false;
         public bool HasDatabaseEncryptionKey = false;
         public bool HasFileInCloud = false;
