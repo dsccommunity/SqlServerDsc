@@ -15,6 +15,11 @@
         The name of the SQL collation to use for the new database.
         Default value is server collation.
 
+    .PARAMETER CatalogCollation
+        Specifies the collation type for the system catalog. Valid values are
+        DATABASE_DEFAULT and SQL_Latin1_General_CP1_CI_AS. This property can
+        only be set during database creation and cannot be modified afterward.
+
     .PARAMETER CompatibilityLevel
         The version of the SQL compatibility level to use for the new database.
         Default value is server version.
@@ -72,6 +77,10 @@ function New-SqlDscDatabase
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Collation,
+
+        [Parameter()]
+        [Microsoft.SqlServer.Management.Smo.CatalogCollationType]
+        $CatalogCollation,
 
         [Parameter()]
         [ValidateSet('Version80', 'Version90', 'Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150', 'Version160')]
@@ -195,6 +204,11 @@ function New-SqlDscDatabase
                 if ($PSBoundParameters.ContainsKey('Collation'))
                 {
                     $sqlDatabaseObjectToCreate.Collation = $Collation
+                }
+
+                if ($PSBoundParameters.ContainsKey('CatalogCollation'))
+                {
+                    $sqlDatabaseObjectToCreate.CatalogCollation = $CatalogCollation
                 }
 
                 if ($PSBoundParameters.ContainsKey('CompatibilityLevel'))
