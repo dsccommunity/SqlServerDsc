@@ -150,6 +150,7 @@ function Set-SqlDscDatabaseOwner
                 try
                 {
                     $sqlDatabaseObject.SetOwner($OwnerName)
+                    $sqlDatabaseObject.Alter()
 
                     <#
                         Refresh the database object to get the updated owner property if:
