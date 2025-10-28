@@ -785,7 +785,7 @@ function Set-SqlDscDatabaseProperty
                 # Check if property exists on the database object
                 if ($sqlDatabaseObject.PSObject.Properties.Name -notcontains $parameterName)
                 {
-                    Write-Error -Message ($script:localizedData.Set_SqlDscDatabaseProperty_PropertyNotFound -f $parameterName, $sqlDatabaseObject.Name) -Category ([System.Management.Automation.ErrorCategory]::InvalidArgument) -ErrorId 'SSDDP0010' -TargetObject $parameterName
+                    Write-Error -Message ($script:localizedData.Set_SqlDscDatabaseProperty_PropertyNotFound -f $parameterName, $sqlDatabaseObject.Name) -Category ([System.Management.Automation.ErrorCategory]::InvalidArgument) -ErrorId 'SSDDP0010' -TargetObject $sqlDatabaseObject
                     continue
                 }
 
