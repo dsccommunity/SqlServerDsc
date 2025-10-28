@@ -76,7 +76,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
             $null = Set-SqlDscDatabaseOwner -ServerObject $script:serverObject -Name $script:testDatabaseName -OwnerName 'sa' -Force -ErrorAction 'Stop'
 
             # Verify the change
-            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
             $updatedDb.Owner | Should -Be 'sa'
         }
 
@@ -85,7 +85,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
             $null = Set-SqlDscDatabaseOwner -ServerObject $script:serverObject -Name $script:testDatabaseName -OwnerName $ownerName -Force -ErrorAction 'Stop'
 
             # Verify the change
-            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
             $updatedDb.Owner | Should -Be $ownerName
         }
 
@@ -99,7 +99,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
             $null = Set-SqlDscDatabaseOwner -ServerObject $script:serverObject -Name $script:testDatabaseName -OwnerName $ownerName -Force -ErrorAction 'Stop'
 
             # Verify the value is still correct
-            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
             $updatedDb.Owner | Should -Be $ownerName
         }
 
@@ -116,7 +116,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
             $null = Set-SqlDscDatabaseOwner -DatabaseObject $databaseObject -OwnerName 'sa' -Force -ErrorAction 'Stop'
 
             # Verify the change
-            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Refresh -ErrorAction 'Stop'
             $updatedDb.Owner | Should -Be 'sa'
         }
 
@@ -127,7 +127,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
             $null = $databaseObject | Set-SqlDscDatabaseOwner -OwnerName $ownerName -Force -ErrorAction 'Stop'
 
             # Verify the change
-            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Refresh -ErrorAction 'Stop'
             $updatedDb.Owner | Should -Be $ownerName
         }
     }
@@ -138,7 +138,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
             $null = Set-SqlDscDatabaseOwner -ServerObject $script:serverObject -Name $script:testDatabaseName -OwnerName $ownerName -Refresh -Force -ErrorAction 'Stop'
 
             # Verify the change
-            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
             $updatedDb.Owner | Should -Be $ownerName
         }
     }
