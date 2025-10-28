@@ -207,7 +207,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
             $result = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Simple' -PassThru -Force -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
+            $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Database])
             $result.Name | Should -Be $script:testDatabaseName
             $result.RecoveryModel | Should -Be 'Simple'
         }
