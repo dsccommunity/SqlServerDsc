@@ -146,6 +146,9 @@
     .PARAMETER IsFullTextEnabled
         Specifies whether full-text search is enabled.
 
+    .PARAMETER IsReadCommittedSnapshotOn
+        Specifies whether READ_COMMITTED_SNAPSHOT isolation is ON.
+
     .PARAMETER LegacyCardinalityEstimation
         Specifies whether the legacy cardinality estimator is enabled for the primary.
 
@@ -300,19 +303,12 @@
 
         - **CatalogCollation**: The catalog-level collation used for metadata and temporary
           objects. This property is marked as ReadOnlyAfterCreation in the SMO Database
-          class and can only be set during database creation (e.g., using New-SqlDscDatabase
+          class and can only be set during database creation (e.g., using `New-SqlDscDatabase`
           or CREATE DATABASE statements).
 
-        The following database properties require method calls instead of direct property
-        assignment and will be supported through separate commands:
-
-        - **DefaultFileGroup**: The default filegroup for the database. Use the
-          `SetDefaultFileGroup()` method via a dedicated command.
-        - **DefaultFileStreamFileGroup**: The default FILESTREAM filegroup. Use the
-          `SetDefaultFileStreamFileGroup()` method via a dedicated command.
-        - **SnapshotIsolationState**: The snapshot isolation state (OFF/ON/IN_TRANSITION).
-          Use the `SetSnapshotIsolation()` method via a dedicated command or ALTER DATABASE
-          T-SQL statements.
+        There are some database properties that require method calls instead of direct
+        property assignment and will be supported through separate commands, e.g.
+        `Set-SqlDscDatabaseDefaultFileGroup`.
 #>
 function Set-SqlDscDatabase
 {
@@ -436,6 +432,10 @@ function Set-SqlDscDatabase
         [Parameter()]
         [System.Boolean]
         $IsFullTextEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsReadCommittedSnapshotOn,
 
         [Parameter()]
         [System.Boolean]

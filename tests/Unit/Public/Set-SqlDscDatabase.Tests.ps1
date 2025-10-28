@@ -52,6 +52,8 @@ AfterAll {
 Describe 'Set-SqlDscDatabase' -Tag 'Public' {
     Context 'When modifying a database using ServerObject and Name' {
         BeforeAll {
+            $script:mockAlterCalled = $false
+
             $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
             $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
             $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Collation' -Value 'SQL_Latin1_General_CP1_CI_AS' -Force
@@ -73,7 +75,7 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
                 return $mockParent
             } -Force
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
-                # Mock implementation
+                $script:mockAlterCalled = $true
             } -Force
 
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
@@ -95,28 +97,55 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should modify database properties successfully' {
+            $script:mockAlterCalled = $false
+            $mockDatabaseObject.RecoveryModel = 'Full' # Reset to initial value
+
             $null = Set-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -RecoveryModel 'Simple' -Force
+
+            $mockDatabaseObject.RecoveryModel | Should -Be 'Simple'
+            $script:mockAlterCalled | Should -BeTrue -Because 'Alter() should have been called'
         }
 
         It 'Should modify multiple properties at once' {
+            $script:mockAlterCalled = $false
+            $mockDatabaseObject.AutoClose = $false # Reset to initial value
+            $mockDatabaseObject.AutoShrink = $false # Reset to initial value
+            $mockDatabaseObject.PageVerify = 'Checksum' # Reset to initial value
+
             $null = Set-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -AutoClose $true -AutoShrink $true -PageVerify 'None' -Force
+
+            $mockDatabaseObject.AutoClose | Should -BeTrue
+            $mockDatabaseObject.AutoShrink | Should -BeTrue
+            $mockDatabaseObject.PageVerify | Should -Be 'None'
+            $script:mockAlterCalled | Should -BeTrue -Because 'Alter() should have been called'
         }
 
         It 'Should return database object when PassThru is specified' {
+            $script:mockAlterCalled = $false
+            $mockDatabaseObject.RecoveryModel = 'Full' # Reset to initial value
+
             $result = Set-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -RecoveryModel 'Simple' -Force -PassThru
 
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'TestDatabase'
+            $mockDatabaseObject.RecoveryModel | Should -Be 'Simple'
+            $script:mockAlterCalled | Should -BeTrue -Because 'Alter() should have been called'
         }
 
         It 'Should throw error when database does not exist' {
+            $script:mockAlterCalled = $false
+
             { Set-SqlDscDatabase -ServerObject $mockServerObject -Name 'NonExistentDatabase' -RecoveryModel 'Simple' -Force -ErrorAction 'Stop' } |
                 Should -Throw -ExpectedMessage '*not found*' -ErrorId 'GSDD0001,Get-SqlDscDatabase'
+
+            $script:mockAlterCalled | Should -BeFalse -Because 'Alter() should not have been called when database does not exist'
         }
     }
 
     Context 'When modifying a database using DatabaseObject' {
         BeforeAll {
+            $script:mockAlterCalled = $false
+
             $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
             $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
             $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Collation' -Value 'SQL_Latin1_General_CP1_CI_AS' -Force
@@ -135,12 +164,17 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
                 return $mockParent
             } -Force
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
-                # Mock implementation
+                $script:mockAlterCalled = $true
             } -Force
         }
 
         It 'Should modify database using database object' {
+            $script:mockAlterCalled = $false
+
             $null = Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -Force
+
+            $mockDatabaseObject.RecoveryModel | Should -Be 'Simple'
+            $script:mockAlterCalled | Should -BeTrue -Because 'Alter() should have been called'
         }
     }
 
@@ -169,15 +203,16 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should allow valid CompatibilityLevel for SQL Server version' {
-            # We only test that the validation passes, not the actual property setting
+            $script:mockAlterCalled = $false
+
             $mockServerObjectWithValidDb = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObjectWithValidDb | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
             $mockServerObjectWithValidDb | Add-Member -MemberType 'NoteProperty' -Name 'VersionMajor' -Value 15 -Force
             $mockDatabaseObjectWithValidProps = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
             $mockDatabaseObjectWithValidProps | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
-            $mockDatabaseObjectWithValidProps | Add-Member -MemberType 'NoteProperty' -Name 'CompatibilityLevel' -Value 'Version150' -Force
+            $mockDatabaseObjectWithValidProps | Add-Member -MemberType 'NoteProperty' -Name 'CompatibilityLevel' -Value 'Version140' -Force
             $mockDatabaseObjectWithValidProps | Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
-                # Mock implementation
+                $script:mockAlterCalled = $true
             } -Force
             $mockServerObjectWithValidDb | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
                 return @{
@@ -191,6 +226,9 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
             } -Force
 
             $null = Set-SqlDscDatabase -ServerObject $mockServerObjectWithValidDb -Name 'TestDatabase' -CompatibilityLevel 'Version150' -Force
+
+            $mockDatabaseObjectWithValidProps.CompatibilityLevel | Should -Be 'Version150'
+            $script:mockAlterCalled | Should -BeTrue -Because 'Alter() should have been called'
         }
     }
 
@@ -223,6 +261,8 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should allow valid Collation' {
+            $script:mockAlterCalled = $false
+
             $mockServerObjectWithValidDb = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObjectWithValidDb | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
             $mockServerObjectWithValidDb | Add-Member -MemberType 'NoteProperty' -Name 'VersionMajor' -Value 15 -Force
@@ -230,7 +270,7 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
             $mockDatabaseObjectWithValidProps | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
             $mockDatabaseObjectWithValidProps | Add-Member -MemberType 'NoteProperty' -Name 'Collation' -Value 'SQL_Latin1_General_CP1_CI_AS' -Force
             $mockDatabaseObjectWithValidProps | Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
-                # Mock implementation
+                $script:mockAlterCalled = $true
             } -Force
             $mockServerObjectWithValidDb | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
                 $databaseCollection = @{
@@ -247,12 +287,17 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
                 )
             } -Force
 
-            $null = Set-SqlDscDatabase -ServerObject $mockServerObjectWithValidDb -Refresh -Name 'TestDatabase' -Collation 'SQL_Latin1_General_CP1_CI_AS' -Force
+            $null = Set-SqlDscDatabase -ServerObject $mockServerObjectWithValidDb -Refresh -Name 'TestDatabase' -Collation 'SQL_Latin1_General_Pref_CP850_CI_AS' -Force
+
+            $mockDatabaseObjectWithValidProps.Collation | Should -Be 'SQL_Latin1_General_Pref_CP850_CI_AS'
+            $script:mockAlterCalled | Should -BeTrue -Because 'Alter() should have been called'
         }
     }
 
     Context 'When property is already set to desired value' {
         BeforeAll {
+            $script:mockAlterCalled = $false
+
             $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
             $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
             $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'RecoveryModel' -Value 'Simple' -Force
@@ -269,16 +314,24 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
                 return $mockParent
             } -Force
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
-                throw 'Alter() should not be called when property is already set'
+                $script:mockAlterCalled = $true
             } -Force
         }
 
         It 'Should not call Alter() when property is already set to desired value' {
+            $script:mockAlterCalled = $false
+
             $null = Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -Force
+
+            $script:mockAlterCalled | Should -BeFalse -Because 'Alter() should not be called when property is already set'
         }
 
         It 'Should not call Alter() when all properties are already set' {
+            $script:mockAlterCalled = $false
+
             $null = Set-SqlDscDatabase -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -AutoClose $true -Force
+
+            $script:mockAlterCalled | Should -BeFalse -Because 'Alter() should not be called when all properties are already set'
         }
     }
 
@@ -313,7 +366,7 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set ServerObjectSet' -ForEach @(
             @{
                 ExpectedParameterSetName = 'ServerObjectSet'
-                ExpectedParameters = '-ServerObject <Server> -Name <string> [-Refresh] [-AcceleratedRecoveryEnabled <bool>] [-AnsiNullDefault <bool>] [-AnsiNullsEnabled <bool>] [-AnsiPaddingEnabled <bool>] [-AnsiWarningsEnabled <bool>] [-ArithmeticAbortEnabled <bool>] [-AutoClose <bool>] [-AutoCreateIncrementalStatisticsEnabled <bool>] [-AutoCreateStatisticsEnabled <bool>] [-AutoShrink <bool>] [-AutoUpdateStatisticsAsync <bool>] [-AutoUpdateStatisticsEnabled <bool>] [-BrokerEnabled <bool>] [-ChangeTrackingAutoCleanUp <bool>] [-ChangeTrackingEnabled <bool>] [-CloseCursorsOnCommitEnabled <bool>] [-ConcatenateNullYieldsNull <bool>] [-DatabaseOwnershipChaining <bool>] [-DataRetentionEnabled <bool>] [-DateCorrelationOptimization <bool>] [-DelayedDurability <bool>] [-EncryptionEnabled <bool>] [-HonorBrokerPriority <bool>] [-IsFullTextEnabled <bool>] [-LegacyCardinalityEstimation <bool>] [-LegacyCardinalityEstimationForSecondary <bool>] [-LocalCursorsDefault <bool>] [-NestedTriggersEnabled <bool>] [-NumericRoundAbortEnabled <bool>] [-ParameterSniffing <bool>] [-ParameterSniffingForSecondary <bool>] [-QueryOptimizerHotfixes <bool>] [-QueryOptimizerHotfixesForSecondary <bool>] [-QuotedIdentifiersEnabled <bool>] [-ReadOnly <bool>] [-RecursiveTriggersEnabled <bool>] [-RemoteDataArchiveEnabled <bool>] [-RemoteDataArchiveUseFederatedServiceAccount <bool>] [-TemporalHistoryRetentionEnabled <bool>] [-TransformNoiseWords <bool>] [-Trustworthy <bool>] [-ChangeTrackingRetentionPeriod <int>] [-DefaultFullTextLanguage <int>] [-DefaultLanguage <int>] [-MaxDop <int>] [-MaxDopForSecondary <int>] [-MirroringRedoQueueMaxSize <int>] [-MirroringTimeout <int>] [-TargetRecoveryTime <int>] [-TwoDigitYearCutoff <int>] [-MaxSizeInBytes <long>] [-AzureServiceObjective <string>] [-Collation <string>] [-DefaultFullTextCatalog <string>] [-DefaultSchema <string>] [-FilestreamDirectoryName <string>] [-MirroringPartner <string>] [-MirroringPartnerInstance <string>] [-MirroringWitness <string>] [-PersistentVersionStoreFileGroup <string>] [-PrimaryFilePath <string>] [-RemoteDataArchiveCredential <string>] [-RemoteDataArchiveEndpoint <string>] [-RemoteDataArchiveLinkedServer <string>] [-RemoteDatabaseName <string>] [-AzureEdition <string>] [-ChangeTrackingRetentionPeriodUnits <RetentionPeriodUnits>] [-CompatibilityLevel <CompatibilityLevel>] [-ContainmentType <ContainmentType>] [-FilestreamNonTransactedAccess <FilestreamNonTransactedAccessType>] [-MirroringSafetyLevel <MirroringSafetyLevel>] [-PageVerify <PageVerify>] [-RecoveryModel <RecoveryModel>] [-UserAccess <DatabaseUserAccess>] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-ServerObject <Server> -Name <string> [-Refresh] [-AcceleratedRecoveryEnabled <bool>] [-AnsiNullDefault <bool>] [-AnsiNullsEnabled <bool>] [-AnsiPaddingEnabled <bool>] [-AnsiWarningsEnabled <bool>] [-ArithmeticAbortEnabled <bool>] [-AutoClose <bool>] [-AutoCreateIncrementalStatisticsEnabled <bool>] [-AutoCreateStatisticsEnabled <bool>] [-AutoShrink <bool>] [-AutoUpdateStatisticsAsync <bool>] [-AutoUpdateStatisticsEnabled <bool>] [-BrokerEnabled <bool>] [-ChangeTrackingAutoCleanUp <bool>] [-ChangeTrackingEnabled <bool>] [-CloseCursorsOnCommitEnabled <bool>] [-ConcatenateNullYieldsNull <bool>] [-DatabaseOwnershipChaining <bool>] [-DataRetentionEnabled <bool>] [-DateCorrelationOptimization <bool>] [-DelayedDurability <bool>] [-EncryptionEnabled <bool>] [-HonorBrokerPriority <bool>] [-IsFullTextEnabled <bool>] [-IsReadCommittedSnapshotOn <bool>] [-LegacyCardinalityEstimation <bool>] [-LegacyCardinalityEstimationForSecondary <bool>] [-LocalCursorsDefault <bool>] [-NestedTriggersEnabled <bool>] [-NumericRoundAbortEnabled <bool>] [-ParameterSniffing <bool>] [-ParameterSniffingForSecondary <bool>] [-QueryOptimizerHotfixes <bool>] [-QueryOptimizerHotfixesForSecondary <bool>] [-QuotedIdentifiersEnabled <bool>] [-ReadOnly <bool>] [-RecursiveTriggersEnabled <bool>] [-RemoteDataArchiveEnabled <bool>] [-RemoteDataArchiveUseFederatedServiceAccount <bool>] [-TemporalHistoryRetentionEnabled <bool>] [-TransformNoiseWords <bool>] [-Trustworthy <bool>] [-ChangeTrackingRetentionPeriod <int>] [-DefaultFullTextLanguage <int>] [-DefaultLanguage <int>] [-MaxDop <int>] [-MaxDopForSecondary <int>] [-MirroringRedoQueueMaxSize <int>] [-MirroringTimeout <int>] [-TargetRecoveryTime <int>] [-TwoDigitYearCutoff <int>] [-MaxSizeInBytes <long>] [-AzureServiceObjective <string>] [-Collation <string>] [-DefaultFullTextCatalog <string>] [-DefaultSchema <string>] [-FilestreamDirectoryName <string>] [-MirroringPartner <string>] [-MirroringPartnerInstance <string>] [-MirroringWitness <string>] [-PersistentVersionStoreFileGroup <string>] [-PrimaryFilePath <string>] [-RemoteDataArchiveCredential <string>] [-RemoteDataArchiveEndpoint <string>] [-RemoteDataArchiveLinkedServer <string>] [-RemoteDatabaseName <string>] [-AzureEdition <string>] [-ChangeTrackingRetentionPeriodUnits <RetentionPeriodUnits>] [-CompatibilityLevel <CompatibilityLevel>] [-ContainmentType <ContainmentType>] [-FilestreamNonTransactedAccess <FilestreamNonTransactedAccessType>] [-MirroringSafetyLevel <MirroringSafetyLevel>] [-PageVerify <PageVerify>] [-RecoveryModel <RecoveryModel>] [-UserAccess <DatabaseUserAccess>] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Set-SqlDscDatabase').ParameterSets |
@@ -330,7 +383,7 @@ Describe 'Set-SqlDscDatabase' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set DatabaseObjectSet' -ForEach @(
             @{
                 ExpectedParameterSetName = 'DatabaseObjectSet'
-                ExpectedParameters = '-DatabaseObject <Database> [-AcceleratedRecoveryEnabled <bool>] [-AnsiNullDefault <bool>] [-AnsiNullsEnabled <bool>] [-AnsiPaddingEnabled <bool>] [-AnsiWarningsEnabled <bool>] [-ArithmeticAbortEnabled <bool>] [-AutoClose <bool>] [-AutoCreateIncrementalStatisticsEnabled <bool>] [-AutoCreateStatisticsEnabled <bool>] [-AutoShrink <bool>] [-AutoUpdateStatisticsAsync <bool>] [-AutoUpdateStatisticsEnabled <bool>] [-BrokerEnabled <bool>] [-ChangeTrackingAutoCleanUp <bool>] [-ChangeTrackingEnabled <bool>] [-CloseCursorsOnCommitEnabled <bool>] [-ConcatenateNullYieldsNull <bool>] [-DatabaseOwnershipChaining <bool>] [-DataRetentionEnabled <bool>] [-DateCorrelationOptimization <bool>] [-DelayedDurability <bool>] [-EncryptionEnabled <bool>] [-HonorBrokerPriority <bool>] [-IsFullTextEnabled <bool>] [-LegacyCardinalityEstimation <bool>] [-LegacyCardinalityEstimationForSecondary <bool>] [-LocalCursorsDefault <bool>] [-NestedTriggersEnabled <bool>] [-NumericRoundAbortEnabled <bool>] [-ParameterSniffing <bool>] [-ParameterSniffingForSecondary <bool>] [-QueryOptimizerHotfixes <bool>] [-QueryOptimizerHotfixesForSecondary <bool>] [-QuotedIdentifiersEnabled <bool>] [-ReadOnly <bool>] [-RecursiveTriggersEnabled <bool>] [-RemoteDataArchiveEnabled <bool>] [-RemoteDataArchiveUseFederatedServiceAccount <bool>] [-TemporalHistoryRetentionEnabled <bool>] [-TransformNoiseWords <bool>] [-Trustworthy <bool>] [-ChangeTrackingRetentionPeriod <int>] [-DefaultFullTextLanguage <int>] [-DefaultLanguage <int>] [-MaxDop <int>] [-MaxDopForSecondary <int>] [-MirroringRedoQueueMaxSize <int>] [-MirroringTimeout <int>] [-TargetRecoveryTime <int>] [-TwoDigitYearCutoff <int>] [-MaxSizeInBytes <long>] [-AzureServiceObjective <string>] [-Collation <string>] [-DefaultFullTextCatalog <string>] [-DefaultSchema <string>] [-FilestreamDirectoryName <string>] [-MirroringPartner <string>] [-MirroringPartnerInstance <string>] [-MirroringWitness <string>] [-PersistentVersionStoreFileGroup <string>] [-PrimaryFilePath <string>] [-RemoteDataArchiveCredential <string>] [-RemoteDataArchiveEndpoint <string>] [-RemoteDataArchiveLinkedServer <string>] [-RemoteDatabaseName <string>] [-AzureEdition <string>] [-ChangeTrackingRetentionPeriodUnits <RetentionPeriodUnits>] [-CompatibilityLevel <CompatibilityLevel>] [-ContainmentType <ContainmentType>] [-FilestreamNonTransactedAccess <FilestreamNonTransactedAccessType>] [-MirroringSafetyLevel <MirroringSafetyLevel>] [-PageVerify <PageVerify>] [-RecoveryModel <RecoveryModel>] [-UserAccess <DatabaseUserAccess>] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-DatabaseObject <Database> [-AcceleratedRecoveryEnabled <bool>] [-AnsiNullDefault <bool>] [-AnsiNullsEnabled <bool>] [-AnsiPaddingEnabled <bool>] [-AnsiWarningsEnabled <bool>] [-ArithmeticAbortEnabled <bool>] [-AutoClose <bool>] [-AutoCreateIncrementalStatisticsEnabled <bool>] [-AutoCreateStatisticsEnabled <bool>] [-AutoShrink <bool>] [-AutoUpdateStatisticsAsync <bool>] [-AutoUpdateStatisticsEnabled <bool>] [-BrokerEnabled <bool>] [-ChangeTrackingAutoCleanUp <bool>] [-ChangeTrackingEnabled <bool>] [-CloseCursorsOnCommitEnabled <bool>] [-ConcatenateNullYieldsNull <bool>] [-DatabaseOwnershipChaining <bool>] [-DataRetentionEnabled <bool>] [-DateCorrelationOptimization <bool>] [-DelayedDurability <bool>] [-EncryptionEnabled <bool>] [-HonorBrokerPriority <bool>] [-IsFullTextEnabled <bool>] [-IsReadCommittedSnapshotOn <bool>] [-LegacyCardinalityEstimation <bool>] [-LegacyCardinalityEstimationForSecondary <bool>] [-LocalCursorsDefault <bool>] [-NestedTriggersEnabled <bool>] [-NumericRoundAbortEnabled <bool>] [-ParameterSniffing <bool>] [-ParameterSniffingForSecondary <bool>] [-QueryOptimizerHotfixes <bool>] [-QueryOptimizerHotfixesForSecondary <bool>] [-QuotedIdentifiersEnabled <bool>] [-ReadOnly <bool>] [-RecursiveTriggersEnabled <bool>] [-RemoteDataArchiveEnabled <bool>] [-RemoteDataArchiveUseFederatedServiceAccount <bool>] [-TemporalHistoryRetentionEnabled <bool>] [-TransformNoiseWords <bool>] [-Trustworthy <bool>] [-ChangeTrackingRetentionPeriod <int>] [-DefaultFullTextLanguage <int>] [-DefaultLanguage <int>] [-MaxDop <int>] [-MaxDopForSecondary <int>] [-MirroringRedoQueueMaxSize <int>] [-MirroringTimeout <int>] [-TargetRecoveryTime <int>] [-TwoDigitYearCutoff <int>] [-MaxSizeInBytes <long>] [-AzureServiceObjective <string>] [-Collation <string>] [-DefaultFullTextCatalog <string>] [-DefaultSchema <string>] [-FilestreamDirectoryName <string>] [-MirroringPartner <string>] [-MirroringPartnerInstance <string>] [-MirroringWitness <string>] [-PersistentVersionStoreFileGroup <string>] [-PrimaryFilePath <string>] [-RemoteDataArchiveCredential <string>] [-RemoteDataArchiveEndpoint <string>] [-RemoteDataArchiveLinkedServer <string>] [-RemoteDatabaseName <string>] [-AzureEdition <string>] [-ChangeTrackingRetentionPeriodUnits <RetentionPeriodUnits>] [-CompatibilityLevel <CompatibilityLevel>] [-ContainmentType <ContainmentType>] [-FilestreamNonTransactedAccess <FilestreamNonTransactedAccessType>] [-MirroringSafetyLevel <MirroringSafetyLevel>] [-PageVerify <PageVerify>] [-RecoveryModel <RecoveryModel>] [-UserAccess <DatabaseUserAccess>] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Set-SqlDscDatabase').ParameterSets |
