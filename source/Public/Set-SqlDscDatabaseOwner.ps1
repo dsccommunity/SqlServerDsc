@@ -150,6 +150,16 @@ function Set-SqlDscDatabaseOwner
                 try
                 {
                     $sqlDatabaseObject.SetOwner($OwnerName)
+
+                    <#
+                        Refresh the database object to get the updated owner property if:
+                        - PassThru is specified (user wants the updated object back)
+                        - Using DatabaseObject parameter set (user's object reference should be updated)
+                    #>
+                    if ($PassThru.IsPresent -or $PSCmdlet.ParameterSetName -eq 'DatabaseObjectSet')
+                    {
+                        $sqlDatabaseObject.Refresh()
+                    }
                 }
                 catch
                 {

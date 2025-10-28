@@ -72,6 +72,9 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
                 param($OwnerName)
                 $this.Owner = $OwnerName
             } -Force
+            $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                # Mock implementation - in real SMO this updates properties from server
+            } -Force
 
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
@@ -124,6 +127,9 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
                 param($OwnerName)
                 $this.Owner = $OwnerName
             } -Force
+            $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                # Mock implementation - in real SMO this updates properties from server
+            } -Force
         }
 
         It 'Should set database owner successfully' {
@@ -158,6 +164,9 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
                 param($OwnerName)
                 $this.Owner = $OwnerName
             } -Force
+            $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                # Mock implementation - in real SMO this updates properties from server
+            } -Force
         }
 
         It 'Should still call SetOwner even when owner is already set to desired value' {
@@ -181,6 +190,9 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'SetOwner' -Value {
                 param($OwnerName)
                 throw 'Simulated SetOwner() failure'
+            } -Force
+            $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                # Mock implementation - in real SMO this updates properties from server
             } -Force
         }
 
