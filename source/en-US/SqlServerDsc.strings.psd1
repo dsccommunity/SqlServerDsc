@@ -357,6 +357,7 @@ ConvertFrom-StringData @'
     Database_AlreadyExists = Database '{0}' already exists on instance '{1}'.
     Database_InvalidCompatibilityLevel = The specified compatibility level '{0}' is not a valid compatibility level for the instance '{1}'.
     Database_InvalidCollation = The specified collation '{0}' is not a valid collation for the instance '{1}'.
+    Database_CatalogCollationNotSupported = The parameter CatalogCollation is not supported on SQL Server instance '{0}' with version '{1}'. This parameter requires SQL Server 2019 (version 15) or later.
     Database_Create_ShouldProcessVerboseDescription = Creating the database '{0}' on the instance '{1}'.
     Database_Create_ShouldProcessVerboseWarning = Are you sure you want to create the database '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.

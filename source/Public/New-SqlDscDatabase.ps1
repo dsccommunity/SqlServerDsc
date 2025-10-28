@@ -187,6 +187,24 @@ function New-SqlDscDatabase
             }
         }
 
+        # Validate CatalogCollation if specified (requires SQL Server 2019+)
+        if ($PSBoundParameters.ContainsKey('CatalogCollation'))
+        {
+            if ($ServerObject.VersionMajor -lt 15)
+            {
+                $errorMessage = $script:localizedData.Database_CatalogCollationNotSupported -f $ServerObject.InstanceName, $ServerObject.VersionMajor
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.InvalidOperationException]::new($errorMessage),
+                        'NSD0005', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $CatalogCollation
+                    )
+                )
+            }
+        }
+
         $verboseDescriptionMessage = $script:localizedData.Database_Create_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
         $verboseWarningMessage = $script:localizedData.Database_Create_ShouldProcessVerboseWarning -f $Name
         $captionMessage = $script:localizedData.Database_Create_ShouldProcessCaption
