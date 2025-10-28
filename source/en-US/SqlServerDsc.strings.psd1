@@ -363,19 +363,19 @@ ConvertFrom-StringData @'
     Database_Create_ShouldProcessCaption = Create database on instance
 
     ## Set-SqlDscDatabaseProperty
-    Database_Set = Setting properties of database '{0}' on instance '{1}'.
-    Database_Updating = Updating database '{0}'.
-    Database_Updated = Database '{0}' was updated successfully.
-    Database_SetFailed = Failed to set properties of database '{0}' on instance '{1}'.
-    Database_UpdatingProperty = Setting property '{0}' to '{1}'.
-    Database_PropertyAlreadySet = Property '{0}' is already set to '{1}'.
-    Database_NoPropertiesChanged = No properties were changed for database '{0}'.
+    Database_Set = Setting properties of database '{0}' on instance '{1}'. (SSDDP0001)
+    Database_Updating = Updating database '{0}'. (SSDDP0002)
+    Database_Updated = Database '{0}' was updated successfully. (SSDDP0003)
+    Database_SetFailed = Failed to set properties of database '{0}' on instance '{1}'. (SSDDP0004)
+    Database_UpdatingProperty = Setting property '{0}' to '{1}'. (SSDDP0005)
+    Database_PropertyAlreadySet = Property '{0}' is already set to '{1}'. (SSDDP0006)
+    Database_NoPropertiesChanged = No properties were changed for database '{0}'. (SSDDP0007)
     Database_Set_ShouldProcessVerboseDescription = Setting properties of the database '{0}' on the instance '{1}'.
     Database_Set_ShouldProcessVerboseWarning = Are you sure you want to modify the database '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Database_Set_ShouldProcessCaption = Set database properties on instance
-    Set_SqlDscDatabaseProperty_InvalidCompatibilityLevel = The specified compatibility level '{0}' is not a valid compatibility level for the instance '{1}'.
-    Set_SqlDscDatabaseProperty_InvalidCollation = The specified collation '{0}' is not a valid collation for the instance '{1}'.
+    Set_SqlDscDatabaseProperty_InvalidCompatibilityLevel = The specified compatibility level '{0}' is not a valid compatibility level for the instance '{1}'. (SSDDP0008)
+    Set_SqlDscDatabaseProperty_InvalidCollation = The specified collation '{0}' is not a valid collation for the instance '{1}'. (SSDDP0009)
 
     ## Get-SqlDscCompatibilityLevel
     GetCompatibilityLevel_GettingForInstance = Getting supported compatibility levels for instance '{0}' (version {1}).
@@ -384,10 +384,10 @@ ConvertFrom-StringData @'
     GetCompatibilityLevel_SmoTooOld = The loaded SMO library does not support SQL Server major version {0}. Returning compatibility levels up to {1} (expected maximum {2}). Consider updating the SqlServer PowerShell module to support newer SQL Server versions.
 
     ## Set-SqlDscDatabaseOwner
-    DatabaseOwner_Updating = Setting owner of database '{0}' to '{1}'.
-    DatabaseOwner_Updated = Owner of database '{0}' was set to '{1}'.
-    DatabaseOwner_OwnerAlreadyCorrect = Owner of database '{0}' is already set to '{1}'.
-    DatabaseOwner_SetFailed = Failed to set owner of database '{0}' to '{1}'.
+    DatabaseOwner_Updating = Setting owner of database '{0}' to '{1}'. (SSDDO0001)
+    DatabaseOwner_Updated = Owner of database '{0}' was set to '{1}'. (SSDDO0002)
+    DatabaseOwner_OwnerAlreadyCorrect = Owner of database '{0}' is already set to '{1}'. (SSDDO0003)
+    DatabaseOwner_SetFailed = Failed to set owner of database '{0}' to '{1}'. (SSDDO0004)
     DatabaseOwner_Set_ShouldProcessVerboseDescription = Setting the owner of the database '{0}' to '{1}' on the instance '{2}'.
     DatabaseOwner_Set_ShouldProcessVerboseWarning = Are you sure you want to change the owner of the database '{0}' to '{1}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
