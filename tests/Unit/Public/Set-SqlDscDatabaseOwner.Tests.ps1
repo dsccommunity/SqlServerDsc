@@ -160,8 +160,11 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
                 $mockParent | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
                 return $mockParent
             } -Force
+            # Track whether SetOwner was called using a script-scoped variable
+            $script:setOwnerCalled = $false
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'SetOwner' -Value {
                 param($OwnerName)
+                $script:setOwnerCalled = $true
                 $this.Owner = $OwnerName
             } -Force
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
@@ -169,10 +172,15 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
             } -Force
         }
 
-        It 'Should still call SetOwner even when owner is already set to desired value' {
-            # The command doesn't check if the owner is already set - it always calls SetOwner()
+        It 'Should not call SetOwner when owner already matches the desired value' {
+            # Reset the flag before the test
+            $script:setOwnerCalled = $false
+            
+            # The command should skip calling SetOwner when the owner already matches
             $null = Set-SqlDscDatabaseOwner -DatabaseObject $mockDatabaseObject -OwnerName 'sa' -Force
-            # SetOwner() is called but owner remains 'sa' since that's what we're setting it to
+            
+            # Verify SetOwner was not called (idempotent behavior)
+            $script:setOwnerCalled | Should -BeFalse -Because 'SetOwner should not be called when the owner already matches'
             $mockDatabaseObject.Owner | Should -Be 'sa'
         }
     }
