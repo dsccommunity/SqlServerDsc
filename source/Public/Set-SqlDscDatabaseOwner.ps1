@@ -30,6 +30,11 @@
     .PARAMETER OwnerName
         Specifies the name of the login that should be the owner of the database.
 
+    .PARAMETER DropExistingUser
+        Specifies whether to drop any existing database users mapped to the specified
+        login before changing the owner. This is required if a non-dbo user account
+        already exists for the login being set as the new owner.
+
     .PARAMETER Force
         Specifies that the database owner should be modified without any confirmation.
 
@@ -41,6 +46,13 @@
         Set-SqlDscDatabaseOwner -ServerObject $serverObject -Name 'MyDatabase' -OwnerName 'sa'
 
         Sets the owner of the database named **MyDatabase** to **sa**.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        Set-SqlDscDatabaseOwner -ServerObject $serverObject -Name 'MyDatabase' -OwnerName 'sa' -DropExistingUser
+
+        Sets the owner of the database named **MyDatabase** to **sa**, dropping any existing
+        user account mapped to the **sa** login before changing the owner.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
@@ -92,6 +104,10 @@ function Set-SqlDscDatabaseOwner
         [ValidateNotNullOrEmpty()]
         [System.String]
         $OwnerName,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $DropExistingUser,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -149,7 +165,15 @@ function Set-SqlDscDatabaseOwner
 
                 try
                 {
-                    $sqlDatabaseObject.SetOwner($OwnerName)
+                    if ($DropExistingUser.IsPresent)
+                    {
+                        $sqlDatabaseObject.SetOwner($OwnerName, $true)
+                    }
+                    else
+                    {
+                        $sqlDatabaseObject.SetOwner($OwnerName)
+                    }
+
                     $sqlDatabaseObject.Alter()
 
                     <#

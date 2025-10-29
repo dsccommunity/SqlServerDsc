@@ -221,10 +221,10 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
             # Reset the flags before the test
             $script:setOwnerCalled = $false
             $script:alterCalled = $false
-            
+
             # The command should skip calling SetOwner and Alter when the owner already matches
             $null = Set-SqlDscDatabaseOwner -DatabaseObject $mockDatabaseObject -OwnerName 'sa' -Force
-            
+
             # Verify SetOwner and Alter were not called (idempotent behavior)
             $script:setOwnerCalled | Should -BeFalse -Because 'SetOwner should not be called when the owner already matches'
             $script:alterCalled | Should -BeFalse -Because 'Alter should not be called when the owner already matches'
@@ -305,11 +305,82 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
         }
     }
 
+    Context 'When using DropExistingUser parameter' {
+        BeforeAll {
+            $script:setOwnerParameters = $null
+
+            $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+            $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
+            $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Owner' -Value 'OldOwner' -Force
+            $mockDatabaseObject | Add-Member -MemberType 'ScriptProperty' -Name 'Parent' -Value {
+                $mockParent = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                $mockParent | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+                return $mockParent
+            } -Force
+            $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'SetOwner' -Value {
+                param(
+                    [Parameter(Position = 0)]
+                    [string]$OwnerName,
+                    [Parameter(Position = 1)]
+                    [bool]$DropExistingUser = $false
+                )
+                $script:setOwnerParameters = @{
+                    OwnerName = $OwnerName
+                    DropExistingUser = $DropExistingUser
+                }
+                $this.Owner = $OwnerName
+            } -Force
+            $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                # Mock implementation
+            } -Force
+            $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                # Mock implementation - in real SMO this updates properties from server
+            } -Force
+        }
+
+        It 'Should call SetOwner with dropExistingUser set to true when DropExistingUser is specified' {
+            $script:setOwnerParameters = $null
+            $null = Set-SqlDscDatabaseOwner -DatabaseObject $mockDatabaseObject -OwnerName 'sa' -DropExistingUser -Force
+
+            $script:setOwnerParameters | Should -Not -BeNullOrEmpty
+            $script:setOwnerParameters.OwnerName | Should -Be 'sa'
+            $script:setOwnerParameters.DropExistingUser | Should -BeTrue
+        }
+
+        It 'Should call SetOwner with only ownerName parameter when DropExistingUser is not specified' {
+            # Reset owner for this test
+            $mockDatabaseObject.Owner = 'OldOwner'
+            $script:setOwnerParameters = $null
+            $null = Set-SqlDscDatabaseOwner -DatabaseObject $mockDatabaseObject -OwnerName 'sa' -Force
+
+            $script:setOwnerParameters | Should -Not -BeNullOrEmpty
+            $script:setOwnerParameters.OwnerName | Should -Be 'sa'
+            $script:setOwnerParameters.DropExistingUser | Should -BeFalse
+        }
+    }
+
+    Context 'When database does not exist' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+            $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                return @{} | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                    # Mock implementation
+                } -PassThru -Force
+            } -Force
+        }
+
+        It 'Should throw error when database does not exist' {
+            { Set-SqlDscDatabaseOwner -ServerObject $mockServerObject -Name 'NonExistentDatabase' -OwnerName 'sa' -Force } |
+                Should -Throw -ExpectedMessage '*Database * was not found*'
+        }
+    }
+
     Context 'Parameter validation' {
         It 'Should have the correct parameters in parameter set ServerObjectSet' -ForEach @(
             @{
                 ExpectedParameterSetName = 'ServerObjectSet'
-                ExpectedParameters = '-ServerObject <Server> -Name <string> -OwnerName <string> [-Refresh] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-ServerObject <Server> -Name <string> -OwnerName <string> [-Refresh] [-DropExistingUser] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Set-SqlDscDatabaseOwner').ParameterSets |
@@ -326,7 +397,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set DatabaseObjectSet' -ForEach @(
             @{
                 ExpectedParameterSetName = 'DatabaseObjectSet'
-                ExpectedParameters = '-DatabaseObject <Database> -OwnerName <string> [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-DatabaseObject <Database> -OwnerName <string> [-DropExistingUser] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Set-SqlDscDatabaseOwner').ParameterSets |
@@ -369,6 +440,14 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
         It 'Should have PassThru parameter to return the database object' {
             $command = Get-Command -Name 'Set-SqlDscDatabaseOwner'
             $command.Parameters.Keys | Should -Contain 'PassThru'
+        }
+
+        It 'Should have DropExistingUser parameter as a switch' {
+            $command = Get-Command -Name 'Set-SqlDscDatabaseOwner'
+            $dropExistingUserParam = $command.Parameters['DropExistingUser']
+
+            $dropExistingUserParam | Should -Not -BeNullOrEmpty
+            $dropExistingUserParam.ParameterType.Name | Should -Be 'SwitchParameter'
         }
     }
 }
