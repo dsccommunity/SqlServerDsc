@@ -912,6 +912,10 @@ namespace Microsoft.SqlServer.Management.Smo
         {
         }
 
+        public void Refresh()
+        {
+        }
+
         public Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[] EnumDatabasePermissions( string granteeName )
         {
             List<Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo> listOfDatabasePermissionInfo = new List<Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo>();
