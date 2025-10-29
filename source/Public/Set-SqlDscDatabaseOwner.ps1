@@ -175,16 +175,6 @@ function Set-SqlDscDatabaseOwner
                     }
 
                     $sqlDatabaseObject.Alter()
-
-                    <#
-                        Refresh the database object to get the updated owner property if:
-                        - PassThru is specified (user wants the updated object back)
-                        - Using DatabaseObject parameter set (user's object reference should be updated)
-                    #>
-                    if ($PassThru.IsPresent -or $PSCmdlet.ParameterSetName -eq 'DatabaseObjectSet')
-                    {
-                        $sqlDatabaseObject.Refresh()
-                    }
                 }
                 catch
                 {
@@ -201,6 +191,18 @@ function Set-SqlDscDatabaseOwner
                 }
 
                 Write-Debug -Message ($script:localizedData.DatabaseOwner_Updated -f $sqlDatabaseObject.Name, $OwnerName)
+            }
+
+            <#
+                Refresh the database object to get the updated owner property if:
+                - PassThru is specified (user wants the updated object back)
+                - Using DatabaseObject parameter set (user's object reference should be updated)
+
+                Refresh even if no change was made to ensure the object is up to date.
+            #>
+            if ($PassThru.IsPresent -or $PSCmdlet.ParameterSetName -eq 'DatabaseObjectSet')
+            {
+                $sqlDatabaseObject.Refresh()
             }
 
             if ($PassThru.IsPresent)
