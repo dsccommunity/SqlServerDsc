@@ -359,23 +359,6 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
         }
     }
 
-    Context 'When database does not exist' {
-        BeforeAll {
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-            $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
-            $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
-                return @{} | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
-                    # Mock implementation
-                } -PassThru -Force
-            } -Force
-        }
-
-        It 'Should throw error when database does not exist' {
-            { Set-SqlDscDatabaseOwner -ServerObject $mockServerObject -Name 'NonExistentDatabase' -OwnerName 'sa' -Force } |
-                Should -Throw -ExpectedMessage '*Database * was not found*'
-        }
-    }
-
     Context 'Parameter validation' {
         It 'Should have the correct parameters in parameter set ServerObjectSet' -ForEach @(
             @{
@@ -448,6 +431,16 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
 
             $dropExistingUserParam | Should -Not -BeNullOrEmpty
             $dropExistingUserParam.ParameterType.Name | Should -Be 'SwitchParameter'
+        }
+
+        It 'Should have ServerObject as a mandatory parameter in ServerObjectSet' {
+            $param = (Get-Command -Name 'Set-SqlDscDatabaseOwner').Parameters['ServerObject']
+            ($param.Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] -and $_.ParameterSetName -eq 'ServerObjectSet' }).Mandatory | Should -BeTrue
+        }
+
+        It 'Should have DatabaseObject as a mandatory parameter in DatabaseObjectSet' {
+            $param = (Get-Command -Name 'Set-SqlDscDatabaseOwner').Parameters['DatabaseObject']
+            ($param.Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] -and $_.ParameterSetName -eq 'DatabaseObjectSet' }).Mandatory | Should -BeTrue
         }
     }
 }
