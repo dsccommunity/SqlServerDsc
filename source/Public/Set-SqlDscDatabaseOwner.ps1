@@ -183,7 +183,7 @@ function Set-SqlDscDatabaseOwner
                     $PSCmdlet.ThrowTerminatingError(
                         [System.Management.Automation.ErrorRecord]::new(
                             [System.InvalidOperationException]::new($errorMessage, $_.Exception),
-                            'SSDDO0001', # cspell: disable-line
+                            'SSDDO0004', # cspell: disable-line
                             [System.Management.Automation.ErrorCategory]::InvalidOperation,
                             $sqlDatabaseObject
                         )
