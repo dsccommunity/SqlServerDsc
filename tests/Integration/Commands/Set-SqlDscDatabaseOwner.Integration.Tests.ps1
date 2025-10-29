@@ -52,6 +52,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
         # Get the current owner to restore later
         $testDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
         $script:originalOwner = $testDb.Owner
+        Write-Verbose -Message "Original owner of database '$($script:testDatabaseName)' is '$($script:originalOwner)'." -Verbose
     }
 
     AfterAll {
@@ -73,7 +74,8 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
 
     Context 'When setting database owner using ServerObject parameter set' {
         It 'Should set owner to sa successfully' {
-            $null = Set-SqlDscDatabaseOwner -ServerObject $script:serverObject -Name $script:testDatabaseName -OwnerName 'sa' -Force -ErrorAction 'Stop'
+            $resultDb = Set-SqlDscDatabaseOwner -ServerObject $script:serverObject -Name $script:testDatabaseName -OwnerName 'sa' -Force -PassThru -ErrorAction 'Stop'
+            $resultDb.Owner | Should -Be 'sa'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
