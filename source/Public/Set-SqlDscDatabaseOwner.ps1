@@ -68,12 +68,14 @@
         Sets the owner and returns the updated database object.
 
     .INPUTS
-        `[Microsoft.SqlServer.Management.Smo.Database]`
+        Microsoft.SqlServer.Management.Smo.Database
 
         The database object to modify (from Get-SqlDscDatabase).
 
     .OUTPUTS
-        None. But when **PassThru** is specified the output is `[Microsoft.SqlServer.Management.Smo.Database]`.
+        None.
+
+        When PassThru is specified the output is [Microsoft.SqlServer.Management.Smo.Database].
 #>
 function Set-SqlDscDatabaseOwner
 {
