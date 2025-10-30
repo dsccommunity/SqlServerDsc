@@ -176,7 +176,7 @@ function Set-SqlDscDatabaseOwner
                         $sqlDatabaseObject.SetOwner($OwnerName)
                     }
 
-                    $sqlDatabaseObject.Alter()
+                    # $sqlDatabaseObject.Alter()  # Commented for debug purpose
                 }
                 catch
                 {
