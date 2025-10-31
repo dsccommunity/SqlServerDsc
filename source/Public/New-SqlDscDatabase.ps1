@@ -15,6 +15,12 @@
         The name of the SQL collation to use for the new database.
         Default value is server collation.
 
+    .PARAMETER CatalogCollation
+        Specifies the collation type for the system catalog. Valid values are
+        DATABASE_DEFAULT and SQL_Latin1_General_CP1_CI_AS. This property can
+        only be set during database creation and cannot be modified afterward.
+        This parameter requires SQL Server 2019 (version 15) or later.
+
     .PARAMETER CompatibilityLevel
         The version of the SQL compatibility level to use for the new database.
         Default value is server version.
@@ -72,6 +78,10 @@ function New-SqlDscDatabase
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Collation,
+
+        [Parameter()]
+        [Microsoft.SqlServer.Management.Smo.CatalogCollationType]
+        $CatalogCollation,
 
         [Parameter()]
         [ValidateSet('Version80', 'Version90', 'Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150', 'Version160')]
@@ -177,6 +187,24 @@ function New-SqlDscDatabase
             }
         }
 
+        # Validate CatalogCollation if specified (requires SQL Server 2019+)
+        if ($PSBoundParameters.ContainsKey('CatalogCollation'))
+        {
+            if ($ServerObject.VersionMajor -lt 15)
+            {
+                $errorMessage = $script:localizedData.Database_CatalogCollationNotSupported -f $ServerObject.InstanceName, $ServerObject.VersionMajor
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.InvalidOperationException]::new($errorMessage),
+                        'NSD0005', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $CatalogCollation
+                    )
+                )
+            }
+        }
+
         $verboseDescriptionMessage = $script:localizedData.Database_Create_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
         $verboseWarningMessage = $script:localizedData.Database_Create_ShouldProcessVerboseWarning -f $Name
         $captionMessage = $script:localizedData.Database_Create_ShouldProcessCaption
@@ -195,6 +223,11 @@ function New-SqlDscDatabase
                 if ($PSBoundParameters.ContainsKey('Collation'))
                 {
                     $sqlDatabaseObjectToCreate.Collation = $Collation
+                }
+
+                if ($PSBoundParameters.ContainsKey('CatalogCollation'))
+                {
+                    $sqlDatabaseObjectToCreate.CatalogCollation = $CatalogCollation
                 }
 
                 if ($PSBoundParameters.ContainsKey('CompatibilityLevel'))

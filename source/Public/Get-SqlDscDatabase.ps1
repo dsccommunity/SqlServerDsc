@@ -88,6 +88,12 @@ function Get-SqlDscDatabase
             }
             else
             {
+                if ($Refresh.IsPresent)
+                {
+                    # Refresh the database object
+                    $databaseObject.Refresh()
+                }
+
                 Write-Verbose -Message ($script:localizedData.Database_Found -f $Name)
             }
         }

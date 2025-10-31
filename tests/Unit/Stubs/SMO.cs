@@ -166,7 +166,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.DatabaseUserAccess
     // Used by:
     //  New-SqlDscDatabase.Tests.ps1
-    //  Set-SqlDscDatabase.Tests.ps1
+    //  Set-SqlDscDatabaseProperty.Tests.ps1
     public enum DatabaseUserAccess : int
     {
         Multiple = 0,
@@ -196,6 +196,13 @@ namespace Microsoft.SqlServer.Management.Smo
     {
         None = 0,
         Partial = 1
+    }
+
+    public enum CatalogCollationType : int
+    {
+        DatabaseDefault = 0,
+        ContainedDatabaseFixedCollation = 1,
+        SQLLatin1GeneralCP1CIAS = 2 // cSpell:ignore CIAS
     }
 
     public enum FilestreamNonTransactedAccessType : int
@@ -256,6 +263,13 @@ namespace Microsoft.SqlServer.Management.Smo
         Unknown = 1,
         Off = 2,
         Full = 3
+    }
+
+    public enum DelayedDurability : int
+    {
+        Disabled = 0,
+        Allowed = 1,
+        Forced = 2
     }
 
     public enum MirroringStatus : int
@@ -452,6 +466,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public string NetName;
         public Hashtable Roles = new Hashtable();
         public Hashtable Version = new Hashtable();
+        public int VersionMajor;
 
         public Server(){}
         public Server(string name)
@@ -479,7 +494,8 @@ namespace Microsoft.SqlServer.Management.Smo
                 NetName = this.NetName,
                 Roles = this.Roles,
                 ServiceName = this.ServiceName,
-                Version = this.Version
+                Version = this.Version,
+                VersionMajor = this.VersionMajor
             };
         }
 
@@ -744,7 +760,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public bool DatabaseOwnershipChaining = false;
         public bool DataRetentionEnabled = false;
         public bool DateCorrelationOptimization = false;
-        public bool DelayedDurability = false;
+        public DelayedDurability DelayedDurability = DelayedDurability.Disabled;
         public bool EncryptionEnabled = false;
         public bool HasDatabaseEncryptionKey = false;
         public bool HasFileInCloud = false;
@@ -800,7 +816,7 @@ namespace Microsoft.SqlServer.Management.Smo
         // String Properties
         public string AvailabilityGroupName = "TestAG";
         public string AzureServiceObjective = "S1";
-        public string CatalogCollation = "SQL_Latin1_General_CP1_CI_AS";
+        public CatalogCollationType CatalogCollation = CatalogCollationType.DatabaseDefault;
         public string Collation = "SQL_Latin1_General_CP1_CI_AS";
         public string DboLogin = "sa";
         public string DefaultFileGroup = "PRIMARY";
@@ -893,6 +909,10 @@ namespace Microsoft.SqlServer.Management.Smo
         }
 
         public void Alter(TerminationClause terminationClause)
+        {
+        }
+
+        public void Refresh()
         {
         }
 

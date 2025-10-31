@@ -157,7 +157,7 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set __AllParameterSets' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-ServerObject] <Server> [-Name] <String> [[-Collation] <String>] [[-CompatibilityLevel] <String>] [[-RecoveryModel] <String>] [[-OwnerName] <String>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '[-ServerObject] <Server> [-Name] <string> [[-Collation] <string>] [[-CatalogCollation] <CatalogCollationType>] [[-CompatibilityLevel] <string>] [[-RecoveryModel] <string>] [[-OwnerName] <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'New-SqlDscDatabase').ParameterSets |
