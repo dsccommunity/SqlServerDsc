@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BREAKING CHANGE: `Set-SqlDscDatabase`
   - Removed parameter `OwnerName` [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
     Use the new command `Set-SqlDscDatabaseOwner` to change database ownership instead.
+- BREAKING CHANGE: `Set-SqlDscDatabaseProperty`
+  - Removed parameters `AzureEdition` and `AzureServiceObjective`. Azure SQL Database
+    service tier and SLO changes should be managed using `Set-AzSqlDatabase` from the
+    Azure PowerShell module instead. See [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
 
 ### Added
 
