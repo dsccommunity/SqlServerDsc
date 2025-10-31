@@ -127,6 +127,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SqlRS`
   - Obtain the Reporting service name from WMI for version 14 and higher.
     [issue #2313](https://github.com/dsccommunity/SqlServerDsc/issues/2313)
+  - Added validation to ensure Configuration.ServiceName is not null or empty
+    for SQL Server version 14 and higher [issue #2342](https://github.com/dsccommunity/SqlServerDsc/issues/2342).
 - `Repair-SqlDscServer`
   - Removed the `Features` parameter from the command as SQL Server Repair action
     does not accept the `/FEATURES` parameter. SQL Server automatically repairs

@@ -296,6 +296,14 @@ function Set-TargetResource
             }
 
             $reportingServicesServiceName = $reportingServicesData.Configuration.ServiceName
+
+            if ( [string]::IsNullOrEmpty($reportingServicesServiceName) )
+            {
+                $errorMessage = $script:localizedData.ServiceNameIsNullOrEmpty -f $InstanceName
+
+                New-InvalidOperationException -Message $errorMessage
+            }
+
             $reportingServicesDatabaseName = 'ReportServer'
         }
         elseif ( $InstanceName -eq 'MSSQLSERVER' )
