@@ -1132,10 +1132,15 @@ function Restart-ReportingServicesService
     {
         # Check if we're dealing with SSRS 2017 or SQL2019
         $ServiceName = 'SQLServerReportingServices'
+
+        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
+        $reportingServicesService = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
     }
 
-    Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
-    $reportingServicesService = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
+    if ($PSCmdlet.ParameterSetName -eq 'ServiceName') {
+        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
+        $reportingServicesService = Get-Service -Name $ServiceName
+    }
 
     if ($null -eq $reportingServicesService)
     {
