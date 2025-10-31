@@ -297,7 +297,7 @@ function Set-TargetResource
 
             $reportingServicesServiceName = $reportingServicesData.Configuration.ServiceName
 
-            if ( [string]::IsNullOrEmpty($reportingServicesServiceName) )
+            if ( [System.String]::IsNullOrEmpty($reportingServicesServiceName) )
             {
                 $errorMessage = $script:localizedData.ServiceNameIsNullOrEmpty -f $InstanceName
 
