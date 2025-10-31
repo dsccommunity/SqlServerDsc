@@ -1137,7 +1137,8 @@ function Restart-ReportingServicesService
         $reportingServicesService = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
     }
 
-    if ($PSCmdlet.ParameterSetName -eq 'ServiceName') {
+    if ($PSCmdlet.ParameterSetName -eq 'ServiceName')
+    {
         Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
         $reportingServicesService = Get-Service -Name $ServiceName
     }
