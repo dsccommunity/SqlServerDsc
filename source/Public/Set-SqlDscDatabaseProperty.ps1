@@ -77,12 +77,6 @@
     .PARAMETER AutoUpdateStatisticsEnabled
         Specifies whether statistics are automatically updated when they are out-of-date.
 
-    .PARAMETER AzureEdition
-        Specifies the Azure SQL Database edition (e.g., Basic/Standard/Premium/GeneralPurpose/BusinessCritical).
-
-    .PARAMETER AzureServiceObjective
-        Specifies the Azure SQL Database service objective (e.g., S3, P1, GP_Gen5_4).
-
     .PARAMETER BrokerEnabled
         Specifies whether Service Broker is enabled for the database.
 
@@ -321,6 +315,10 @@
         There are some database properties that require method calls instead of direct
         property assignment and will be supported through separate commands, e.g.
         `Set-SqlDscDatabaseDefaultFileGroup`.
+
+        Azure SQL Database service tier and service objective changes should be managed
+        using Azure management cmdlets (e.g., `Set-AzSqlDatabase` with `-Edition` and
+        `-RequestedServiceObjectiveName` parameters) rather than through SMO.
 #>
 function Set-SqlDscDatabaseProperty
 {
@@ -573,10 +571,6 @@ function Set-SqlDscDatabaseProperty
 
         # String Properties
         [Parameter()]
-        [System.String]
-        $AzureServiceObjective,
-
-        [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Collation,
@@ -628,10 +622,6 @@ function Set-SqlDscDatabaseProperty
         [Parameter()]
         [System.String]
         $RemoteDatabaseName,
-
-        [Parameter()]
-        [System.String]
-        $AzureEdition,
 
         # Enum Properties
         [Parameter()]
