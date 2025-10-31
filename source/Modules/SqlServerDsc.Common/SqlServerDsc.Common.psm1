@@ -1099,10 +1099,6 @@ function Restart-SqlClusterService
     .SYNOPSIS
         Restarts a Reporting Services instance and associated services
 
-    .PARAMETER InstanceName
-        Name of the instance to be restarted. Default is 'MSSQLSERVER'
-        (the default instance).
-
     .PARAMETER ServiceName
         Name of the service to be restarted.
 
@@ -1112,14 +1108,10 @@ function Restart-SqlClusterService
 #>
 function Restart-ReportingServicesService
 {
-    [CmdletBinding(DefaultParameterSetName = 'InstanceName')]
+    [CmdletBinding()]
     param
     (
-        [Parameter(ParameterSetName = 'InstanceName')]
-        [System.String]
-        $InstanceName = 'MSSQLSERVER',
-
-        [Parameter(ParameterSetName = 'ServiceName', Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ServiceName,
 
@@ -1128,37 +1120,8 @@ function Restart-ReportingServicesService
         $WaitTime = 0
     )
 
-    if ($InstanceName -eq 'SSRS')
-    {
-        # Check if we're dealing with SSRS 2017 or SQL2019
-        $ServiceName = 'SQLServerReportingServices'
-
-        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
-        $reportingServicesService = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
-    }
-
-    if ($PSCmdlet.ParameterSetName -eq 'ServiceName')
-    {
-        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
-        $reportingServicesService = Get-Service -Name $ServiceName
-    }
-
-    if ($null -eq $reportingServicesService)
-    {
-        $ServiceName = 'ReportServer'
-
-        <#
-            Pre-2017 SSRS support multiple instances, check if we're dealing
-            with a named instance.
-        #>
-        if (-not ($InstanceName -eq 'MSSQLSERVER'))
-        {
-            $ServiceName += '${0}' -f $InstanceName
-        }
-
-        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
-        $reportingServicesService = Get-Service -Name $ServiceName
-    }
+    Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
+    $reportingServicesService = Get-Service -Name $ServiceName
 
     <#
         Get all dependent services that are running.

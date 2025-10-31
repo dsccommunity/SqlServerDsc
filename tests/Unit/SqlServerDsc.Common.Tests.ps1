@@ -2816,108 +2816,6 @@ Describe 'SqlServerDsc.Common\Restart-ReportingServicesService' -Tag 'RestartRep
         }
     }
 
-    Context 'When restarting a Report Services default instance' {
-        BeforeAll {
-            $mockServiceName = 'ReportServer'
-            $mockDependedServiceName = 'DependentService'
-
-            $mockDynamicServiceName = $mockServiceName
-            $mockDynamicDependedServiceName = $mockDependedServiceName
-            $mockDynamicServiceDisplayName = 'Reporting Services (MSSQLSERVER)'
-
-            Mock -CommandName Stop-Service
-            Mock -CommandName Start-Service
-            Mock -CommandName Get-Service -MockWith $mockGetService
-        }
-
-        It 'Should restart the service and dependent service' {
-            $null = Restart-ReportingServicesService -InstanceName 'MSSQLSERVER'
-
-            Should -Invoke -CommandName Get-Service -ParameterFilter {
-                $Name -eq $mockServiceName
-            } -Scope It -Exactly -Times 1
-            Should -Invoke -CommandName Stop-Service -Scope It -Exactly -Times 1
-            Should -Invoke -CommandName Start-Service -Scope It -Exactly -Times 2
-        }
-    }
-
-    Context 'When restarting a SQL Server 2017 (or newer) Report Services' {
-        BeforeAll {
-            $mockServiceName = 'SQLServerReportingServices'
-            $mockDependedServiceName = 'DependentService'
-
-            $mockDynamicServiceName = $mockServiceName
-            $mockDynamicDependedServiceName = $mockDependedServiceName
-            $mockDynamicServiceDisplayName = 'Reporting Services'
-
-            Mock -CommandName Stop-Service
-            Mock -CommandName Start-Service
-            Mock -CommandName Get-Service -MockWith $mockGetService
-        }
-
-        It 'Should restart the service and dependent service' {
-            $null = Restart-ReportingServicesService -InstanceName 'SSRS'
-
-            Should -Invoke -CommandName Get-Service -ParameterFilter {
-                $Name -eq $mockServiceName
-            } -Scope It -Exactly -Times 1
-            Should -Invoke -CommandName Stop-Service -Scope It -Exactly -Times 1
-            Should -Invoke -CommandName Start-Service -Scope It -Exactly -Times 2
-        }
-    }
-
-    Context 'When restarting a Report Services named instance' {
-        BeforeAll {
-            $mockServiceName = 'ReportServer$TEST'
-            $mockDependedServiceName = 'DependentService'
-
-            $mockDynamicServiceName = $mockServiceName
-            $mockDynamicDependedServiceName = $mockDependedServiceName
-            $mockDynamicServiceDisplayName = 'Reporting Services (TEST)'
-
-            Mock -CommandName Stop-Service
-            Mock -CommandName Start-Service
-            Mock -CommandName Get-Service -MockWith $mockGetService
-        }
-
-        It 'Should restart the service and dependent service' {
-            $null = Restart-ReportingServicesService -InstanceName 'TEST'
-
-            Should -Invoke -CommandName Get-Service -ParameterFilter {
-                $Name -eq $mockServiceName
-            } -Scope It -Exactly -Times 1
-            Should -Invoke -CommandName Stop-Service -Scope It -Exactly -Times 1
-            Should -Invoke -CommandName Start-Service -Scope It -Exactly -Times 2
-        }
-    }
-
-    Context 'When restarting a Report Services named instance using a wait timer' {
-        BeforeAll {
-            $mockServiceName = 'ReportServer$TEST'
-            $mockDependedServiceName = 'DependentService'
-
-            $mockDynamicServiceName = $mockServiceName
-            $mockDynamicDependedServiceName = $mockDependedServiceName
-            $mockDynamicServiceDisplayName = 'Reporting Services (TEST)'
-
-            Mock -CommandName Start-Sleep
-            Mock -CommandName Stop-Service
-            Mock -CommandName Start-Service
-            Mock -CommandName Get-Service -MockWith $mockGetService
-        }
-
-        It 'Should restart the service and dependent service' {
-            $null = Restart-ReportingServicesService -InstanceName 'TEST' -WaitTime 1
-
-            Should -Invoke -CommandName Get-Service -ParameterFilter {
-                $Name -eq $mockServiceName
-            } -Scope It -Exactly -Times 1
-            Should -Invoke -CommandName Stop-Service -Scope It -Exactly -Times 1
-            Should -Invoke -CommandName Start-Service -Scope It -Exactly -Times 2
-            Should -Invoke -CommandName Start-Sleep -Scope It -Exactly -Times 1
-        }
-    }
-
     Context 'When restarting a Report Services service name is supplied' {
         BeforeAll {
             $mockServiceName = 'ReportServer'
@@ -2941,7 +2839,33 @@ Describe 'SqlServerDsc.Common\Restart-ReportingServicesService' -Tag 'RestartRep
             Should -Invoke -CommandName Stop-Service -Scope It -Exactly -Times 1
             Should -Invoke -CommandName Start-Service -Scope It -Exactly -Times 2
         }
+    }
 
+    Context 'When restarting a Report Services service with wait timer' {
+        BeforeAll {
+            $mockServiceName = 'ReportServer'
+            $mockDependedServiceName = 'DependentService'
+
+            $mockDynamicServiceName = $mockServiceName
+            $mockDynamicDependedServiceName = $mockDependedServiceName
+            $mockDynamicServiceDisplayName = 'Reporting Services (MSSQLSERVER)'
+
+            Mock -CommandName Start-Sleep
+            Mock -CommandName Stop-Service
+            Mock -CommandName Start-Service
+            Mock -CommandName Get-Service -MockWith $mockGetService
+        }
+
+        It 'Should restart the service and dependent service with wait time' {
+            $null = Restart-ReportingServicesService -ServiceName 'ReportServer' -WaitTime 1
+
+            Should -Invoke -CommandName Get-Service -ParameterFilter {
+                $Name -eq $mockServiceName
+            } -Scope It -Exactly -Times 1
+            Should -Invoke -CommandName Stop-Service -Scope It -Exactly -Times 1
+            Should -Invoke -CommandName Start-Service -Scope It -Exactly -Times 2
+            Should -Invoke -CommandName Start-Sleep -Scope It -Exactly -Times 1
+        }
     }
 }
 
