@@ -120,6 +120,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `SqlServerDsc.Common`
+  - `Restart-ReportingServicesService` - Removed deprecated `InstanceName` parameter.
+    All callers now use the `ServiceName` parameter instead.
 - `SqlRS`
   - Obtain the Reporting service name from WMI for version 14 and higher.
     [issue #2313](https://github.com/dsccommunity/SqlServerDsc/issues/2313)
