@@ -1103,18 +1103,25 @@ function Restart-SqlClusterService
         Name of the instance to be restarted. Default is 'MSSQLSERVER'
         (the default instance).
 
+    .PARAMETER ServiceName
+        Name of the service to be restarted.
+
     .PARAMETER WaitTime
         Number of seconds to wait between service stop and service start.
         Default value is 0 seconds.
 #>
 function Restart-ReportingServicesService
 {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'InstanceName')]
     param
     (
-        [Parameter()]
+        [Parameter(ParameterSetName = 'InstanceName')]
         [System.String]
         $InstanceName = 'MSSQLSERVER',
+
+        [Parameter(ParameterSetName = 'ServiceName', Mandatory = $true)]
+        [System.String]
+        $ServiceName,
 
         [Parameter()]
         [System.UInt16]
@@ -1128,6 +1135,12 @@ function Restart-ReportingServicesService
 
         Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
         $reportingServicesService = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
+    }
+
+    if ($PSCmdlet.ParameterSetName -eq 'ServiceName')
+    {
+        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
+        $reportingServicesService = Get-Service -Name $ServiceName
     }
 
     if ($null -eq $reportingServicesService)

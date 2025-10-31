@@ -2917,6 +2917,32 @@ Describe 'SqlServerDsc.Common\Restart-ReportingServicesService' -Tag 'RestartRep
             Should -Invoke -CommandName Start-Sleep -Scope It -Exactly -Times 1
         }
     }
+
+    Context 'When restarting a Report Services service name is supplied' {
+        BeforeAll {
+            $mockServiceName = 'ReportServer'
+            $mockDependedServiceName = 'DependentService'
+
+            $mockDynamicServiceName = $mockServiceName
+            $mockDynamicDependedServiceName = $mockDependedServiceName
+            $mockDynamicServiceDisplayName = 'Reporting Services (MSSQLSERVER)'
+
+            Mock -CommandName Stop-Service
+            Mock -CommandName Start-Service
+            Mock -CommandName Get-Service -MockWith $mockGetService
+        }
+
+        It 'Should restart the service and dependent service' {
+            $null = Restart-ReportingServicesService -ServiceName 'ReportServer'
+
+            Should -Invoke -CommandName Get-Service -ParameterFilter {
+                $Name -eq $mockServiceName
+            } -Scope It -Exactly -Times 1
+            Should -Invoke -CommandName Stop-Service -Scope It -Exactly -Times 1
+            Should -Invoke -CommandName Start-Service -Scope It -Exactly -Times 2
+        }
+
+    }
 }
 
 Describe 'SqlServerDsc.Common\Test-ActiveNode' -Tag 'TestActiveNode' {
