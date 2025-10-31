@@ -10,9 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BREAKING CHANGE: Removed public command `Test-SqlDscDatabase`. Use
   `Test-SqlDscIsDatabase` to check existence. For property checks, use
   `Test-SqlDscDatabaseProperty`. See [issue #2201](https://github.com/dsccommunity/SqlServerDsc/issues/2201).
+- BREAKING CHANGE: `Set-SqlDscDatabase`
+  - Removed parameter `OwnerName` [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
+    Use the new command `Set-SqlDscDatabaseOwner` to change database ownership instead.
 
 ### Added
 
+- Added public command `Set-SqlDscDatabaseOwner` to change the owner of a SQL Server
+  database [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
+  This command uses the SMO `SetOwner()` method and supports both `ServerObject`
+  and `DatabaseObject` parameter sets. This replaces the ownership changes
+  previously done via the `OwnerName` parameter in `Set-SqlDscDatabase`.
 - Added public command `Test-SqlDscIsDatabase` to test if a database exists on a
   SQL Server Database Engine instance ([issue #2201](https://github.com/dsccommunity/SqlServerDsc/issues/2201)).
 - Added public command `Get-SqlDscSetupLog` to retrieve SQL Server setup bootstrap
@@ -220,6 +228,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- BREAKING CHANGE: `Set-SqlDscDatabase` has been renamed to `Set-SqlDscDatabaseProperty`
+  to better reflect its purpose of setting database properties. All existing references
+  should be updated to use the new name.
+- `Set-SqlDscDatabaseProperty` (formerly `Set-SqlDscDatabase`)
+  - BREAKING CHANGE: Completely refactored to support settable SMO Database
+    properties as parameters ([issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177)).
 - `Remove-SqlDscAgentAlert`
   - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
     functions for proper terminating error handling ([issue #2193](https://github.com/dsccommunity/SqlServerDsc/issues/2193)).
@@ -235,7 +249,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `New-SqlDscDatabase`
   - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
     functions for proper terminating error handling ([issue #2200](https://github.com/dsccommunity/SqlServerDsc/issues/2200)).
-- `Set-SqlDscDatabase`
+- `Set-SqlDscDatabaseProperty` (formerly `Set-SqlDscDatabase`)
   - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
     functions for proper terminating error handling ([issue #2198](https://github.com/dsccommunity/SqlServerDsc/issues/2198)).
 - `Add-SqlDscTraceFlag`
