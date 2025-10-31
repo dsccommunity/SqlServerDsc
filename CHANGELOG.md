@@ -120,9 +120,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- `SqlServerDsc.Common`
-  - `Restart-ReportingServicesService` - Removed deprecated `InstanceName` parameter.
-    All callers now use the `ServiceName` parameter instead.
 - `SqlRS`
   - Obtain the Reporting service name from WMI for version 14 and higher.
     [issue #2313](https://github.com/dsccommunity/SqlServerDsc/issues/2313)
@@ -235,9 +232,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `Restart-ReportingServicesService`
-  - Add the ServiceName parameter to restart service with the service name specified.
-  - Introduce parameter sets to maintain backward compatibility with the current
-    version.
+  - BREAKING CHANGE: Removed the deprecated `InstanceName` parameter. All callers
+    must now use the `ServiceName` parameter instead.
+  - Added the `ServiceName` parameter to restart service with the service name specified.
 - BREAKING CHANGE: `Set-SqlDscDatabase` has been renamed to `Set-SqlDscDatabaseProperty`
   to better reflect its purpose of setting database properties. All existing references
   should be updated to use the new name.
