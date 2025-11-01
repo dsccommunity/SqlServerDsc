@@ -51,13 +51,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`Install-SqlDscServer.Integration.PrepareImage.Tests.ps1`) runs in the
   `Integration_Test_Commands_SqlServer_PreparedImage` pipeline job and prepares
   a DSCSQLTEST instance that is later completed by `Complete-SqlDscImage` tests
-
-### Changed
-
-- `New-SqlDscDatabase`
-  - Added support for creating database snapshots through a new `Snapshot`
-    parameter set. Use the `-DatabaseSnapshotBaseName` parameter to specify
-    the source database name when creating a snapshot.
   [issue #2212](https://github.com/dsccommunity/SqlServerDsc/issues/2212).
 - Added integration tests for `Initialize-SqlDscRebuildDatabase` command to ensure
   command reliability. The test runs in group 8, alongside `Repair-SqlDscServer`,
@@ -247,6 +240,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `New-SqlDscDatabase`
+  - Added support for creating database snapshots through a new `Snapshot`
+    parameter set. Use the `-DatabaseSnapshotBaseName` parameter to specify
+    the source database name when creating a snapshot ([issue #2333](https://github.com/dsccommunity/SqlServerDsc/issues/2333)).
 - `Restart-ReportingServicesService`
   - BREAKING CHANGE: Removed the deprecated `InstanceName` parameter. All callers
     must now use the `ServiceName` parameter instead.
