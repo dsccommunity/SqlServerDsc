@@ -693,6 +693,80 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     }
                 }
             }
+
+            Context 'When Configuration.ServiceName is null or empty for SQL Server version 14 and higher' {
+                BeforeAll {
+                    $mockDynamicIsInitialized = $false
+
+                    $mockGetCimInstance_ConfigurationSetting_ServiceNameNull = {
+                        return @(
+                            (
+                                New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList @(
+                                    'MSReportServer_ConfigurationSetting'
+                                    'root/Microsoft/SQLServer/ReportServer/RS_SQL2016/v14/Admin'
+                                ) | Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName" -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $false -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockNamedInstanceName -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value '' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force |
+                                    Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $null -PassThru -Force
+                            )
+                        )
+                    }
+
+                    Mock -CommandName Get-ReportingServicesData -MockWith {
+                        return @{
+                            Configuration          = (& $mockGetCimInstance_ConfigurationSetting_ServiceNameNull)[0]
+                            ReportsApplicationName = 'ReportServerWebApp'
+                            SqlVersion             = 14
+                        }
+                    }
+
+                    Mock -CommandName Get-CimInstance `
+                        -MockWith $mockGetCimInstance_Language `
+                        -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter
+                }
+
+                It 'Should throw the correct error message when ServiceName is null' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockDefaultParameters = @{
+                            InstanceName         = $mockNamedInstanceName
+                            DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                            DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                        }
+
+                        { Set-TargetResource @mockDefaultParameters } | Should -Throw -ExpectedMessage ('*' + ($script:localizedData.ServiceNameIsNullOrEmpty -f $mockNamedInstanceName))
+                    }
+                }
+
+                It 'Should throw the correct error message when ServiceName is empty' {
+                    Mock -CommandName Get-ReportingServicesData -MockWith {
+                        return @{
+                            Configuration          = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList @(
+                                'MSReportServer_ConfigurationSetting'
+                                'root/Microsoft/SQLServer/ReportServer/RS_SQL2016/v14/Admin'
+                            ) | Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value '' -PassThru -Force
+                            ReportsApplicationName = 'ReportServerWebApp'
+                            SqlVersion             = 14
+                        }
+                    }
+
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockDefaultParameters = @{
+                            InstanceName         = $mockNamedInstanceName
+                            DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                            DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                        }
+
+                        { Set-TargetResource @mockDefaultParameters } | Should -Throw -ExpectedMessage ('*' + ($script:localizedData.ServiceNameIsNullOrEmpty -f $mockNamedInstanceName))
+                    }
+                }
+            }
         }
 
         Context "When configuring a named instance that are already initialized (<TestCaseVersionName>)" {
