@@ -877,21 +877,29 @@ namespace Microsoft.SqlServer.Management.Smo
         public DateTime CreateDate;
         public DatabaseEncryptionKey DatabaseEncryptionKey;
         public DateTime LastBackupDate = DateTime.Now;
-        public Hashtable FileGroups;
+        public FileGroupCollection FileGroups { get; set; }
         public Hashtable LogFiles;
+        public string DatabaseSnapshotBaseName;
 
 
-        public Database( Server server, string name ) {
+        public Database( Server server, string name )
+        {
             this.Name = name;
             this.Parent = server;
+            this.FileGroups = new FileGroupCollection();
         }
 
-        public Database( Object server, string name ) {
+        public Database( Object server, string name )
+        {
             this.Name = name;
             this.Parent = (Server)server;
+            this.FileGroups = new FileGroupCollection();
         }
 
-        public Database() {}
+        public Database()
+        {
+            this.FileGroups = new FileGroupCollection();
+        }
 
         public string Name;
         public Server Parent;
@@ -958,6 +966,128 @@ namespace Microsoft.SqlServer.Management.Smo
                 throw new System.Exception("Failed to set default Full-Text catalog");
             }
             this.DefaultFullTextCatalog = catalogName;
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.FileGroup
+    // Used by:
+    //  New-SqlDscDatabase.Tests.ps1
+    //  New-SqlDscDatabaseSnapshot.Tests.ps1
+    public class FileGroup
+    {
+        public FileGroup()
+        {
+            this.Files = new DataFileCollection();
+        }
+
+        public FileGroup(Database database)
+        {
+            this.Parent = database;
+            this.Files = new DataFileCollection();
+        }
+
+        public FileGroup(Database database, string name)
+        {
+            this.Parent = database;
+            this.Name = name;
+            this.Files = new DataFileCollection();
+        }
+
+        public string Name { get; set; }
+        public Database Parent { get; set; }
+        public DataFileCollection Files { get; set; }
+
+        public void Create()
+        {
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.FileGroupCollection
+    // Used by:
+    //  New-SqlDscDatabase.Tests.ps1
+    //  New-SqlDscDatabaseSnapshot.Tests.ps1
+    public class FileGroupCollection : Collection<FileGroup>
+    {
+        public FileGroup this[string name]
+        {
+            get
+            {
+                foreach (FileGroup fileGroup in this)
+                {
+                    if (name == fileGroup.Name)
+                    {
+                        return fileGroup;
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        new public void Add(FileGroup fileGroup)
+        {
+            base.Add(fileGroup);
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.DataFile
+    // Used by:
+    //  New-SqlDscDatabase.Tests.ps1
+    //  New-SqlDscDatabaseSnapshot.Tests.ps1
+    //  New-SqlDscDataFile.Tests.ps1
+    public class DataFile
+    {
+        public DataFile()
+        {
+        }
+
+        public DataFile(FileGroup fileGroup, string name)
+        {
+            this.Parent = fileGroup;
+            this.Name = name;
+        }
+
+        public DataFile(FileGroup fileGroup, string name, string fileName)
+        {
+            this.Parent = fileGroup;
+            this.Name = name;
+            this.FileName = fileName;
+        }
+
+        public string Name { get; set; }
+        public string FileName { get; set; }
+        public FileGroup Parent { get; set; }
+
+        public void Create()
+        {
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.DataFileCollection
+    // Used by:
+    //  New-SqlDscDatabase.Tests.ps1
+    //  New-SqlDscDatabaseSnapshot.Tests.ps1
+    public class DataFileCollection : Collection<DataFile>
+    {
+        public DataFile this[string name]
+        {
+            get
+            {
+                foreach (DataFile dataFile in this)
+                {
+                    if (name == dataFile.Name)
+                    {
+                        return dataFile;
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        new public void Add(DataFile dataFile)
+        {
+            base.Add(dataFile);
         }
     }
 
