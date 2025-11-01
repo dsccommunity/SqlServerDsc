@@ -20,6 +20,11 @@
         .ss extension). For regular databases, this should be the data file
         path (typically with .mdf or .ndf extension).
 
+    .PARAMETER Force
+        Specifies that the DataFile object should be created without prompting for
+        confirmation. By default, the command prompts for confirmation when the FileGroup
+        parameter is provided.
+
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $database = $serverObject.Databases['MyDatabase']
@@ -47,10 +52,10 @@
 function New-SqlDscDataFile
 {
     [OutputType([Microsoft.SqlServer.Management.Smo.DataFile])]
-    [CmdletBinding(DefaultParameterSetName = 'WithFileGroup')]
+    [CmdletBinding(DefaultParameterSetName = 'Standalone', SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     param
     (
-        [Parameter(ParameterSetName = 'WithFileGroup', ValueFromPipeline = $true)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'WithFileGroup', ValueFromPipeline = $true)]
         [Microsoft.SqlServer.Management.Smo.FileGroup]
         $FileGroup,
 
@@ -64,14 +69,32 @@ function New-SqlDscDataFile
         [Parameter(Mandatory = $true, ParameterSetName = 'Standalone')]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $FileName
+        $FileName,
+
+        [Parameter(ParameterSetName = 'WithFileGroup')]
+        [System.Management.Automation.SwitchParameter]
+        $Force
     )
 
     process
     {
+        if ($Force.IsPresent -and -not $Confirm)
+        {
+            $ConfirmPreference = 'None'
+        }
+
+        $dataFileObject = $null
+
         if ($PSCmdlet.ParameterSetName -eq 'WithFileGroup')
         {
-            $dataFileObject = [Microsoft.SqlServer.Management.Smo.DataFile]::new($FileGroup, $Name, $FileName)
+            $descriptionMessage = $script:localizedData.DataFile_Create_ShouldProcessDescription -f $Name, $FileGroup.Name
+            $confirmationMessage = $script:localizedData.DataFile_Create_ShouldProcessConfirmation -f $Name
+            $captionMessage = $script:localizedData.DataFile_Create_ShouldProcessCaption
+
+            if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
+            {
+                $dataFileObject = [Microsoft.SqlServer.Management.Smo.DataFile]::new($FileGroup, $Name, $FileName)
+            }
         }
         else
         {

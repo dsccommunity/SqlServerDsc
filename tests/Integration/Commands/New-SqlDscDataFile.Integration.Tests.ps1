@@ -35,11 +35,12 @@ BeforeAll {
 Describe 'New-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     Context 'When creating a standalone DataFile with real SMO types' {
         It 'Should create a standalone DataFile successfully' {
-            $result = New-SqlDscDataFile -Name 'TestDataFile'
+            $result = New-SqlDscDataFile -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.mdf'
 
             $result | Should -Not -BeNullOrEmpty
             $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
             $result.Name | Should -Be 'TestDataFile'
+            $result.FileName | Should -Be 'C:\Data\TestDataFile.mdf'
             $result.Parent | Should -BeNullOrEmpty
         }
 
@@ -62,7 +63,7 @@ Describe 'New-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         }
 
         It 'Should create a DataFile with FileGroup successfully' {
-            $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'TestDataFile'
+            $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf' -Confirm:$false
 
             $result | Should -Not -BeNullOrEmpty
             $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
@@ -71,7 +72,7 @@ Describe 'New-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         }
 
         It 'Should create a DataFile with FileGroup and FileName' {
-            $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'TestDataFile2' -FileName 'C:\Data\TestDataFile2.ndf'
+            $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'TestDataFile2' -FileName 'C:\Data\TestDataFile2.ndf' -Confirm:$false
 
             $result | Should -Not -BeNullOrEmpty
             $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
@@ -81,32 +82,47 @@ Describe 'New-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         }
 
         It 'Should accept FileGroup parameter from pipeline' {
-            $result = $script:mockFileGroup | New-SqlDscDataFile -Name 'PipelineDataFile'
+            $result = $script:mockFileGroup | New-SqlDscDataFile -Name 'PipelineDataFile' -FileName 'C:\Data\PipelineDataFile.ndf' -Confirm:$false
 
             $result | Should -Not -BeNullOrEmpty
             $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
             $result.Name | Should -Be 'PipelineDataFile'
             $result.Parent | Should -Be $script:mockFileGroup
         }
+
+        It 'Should support Force parameter to bypass confirmation' {
+            $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'ForcedDataFile' -FileName 'C:\Data\ForcedDataFile.ndf' -Force
+
+            $result | Should -Not -BeNullOrEmpty
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
+            $result.Name | Should -Be 'ForcedDataFile'
+            $result.Parent | Should -Be $script:mockFileGroup
+        }
+
+        It 'Should return null when user declines confirmation' {
+            $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'DeclinedDataFile' -FileName 'C:\Data\DeclinedDataFile.ndf' -Confirm:$false -WhatIf
+
+            $result | Should -BeNullOrEmpty
+        }
     }
 
     Context 'When verifying DataFile properties' {
         It 'Should allow setting Size property' {
-            $result = New-SqlDscDataFile -Name 'TestDataFile'
+            $result = New-SqlDscDataFile -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf'
             $result.Size = 1024.0
 
             $result.Size | Should -Be 1024.0
         }
 
         It 'Should allow setting Growth property' {
-            $result = New-SqlDscDataFile -Name 'TestDataFile'
+            $result = New-SqlDscDataFile -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf'
             $result.Growth = 64.0
 
             $result.Growth | Should -Be 64.0
         }
 
         It 'Should allow setting GrowthType property' {
-            $result = New-SqlDscDataFile -Name 'TestDataFile'
+            $result = New-SqlDscDataFile -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf'
             $result.GrowthType = [Microsoft.SqlServer.Management.Smo.FileGrowthType]::Percent
 
             $result.GrowthType | Should -Be 'Percent'

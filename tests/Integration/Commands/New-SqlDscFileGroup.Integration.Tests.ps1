@@ -61,7 +61,7 @@ Describe 'New-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
         }
 
         It 'Should create a FileGroup with Database successfully' {
-            $result = New-SqlDscFileGroup -Database $script:mockDatabase -Name 'TestFileGroup'
+            $result = New-SqlDscFileGroup -Database $script:mockDatabase -Name 'TestFileGroup' -Confirm:$false
 
             $result | Should -Not -BeNullOrEmpty
             $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
@@ -70,12 +70,27 @@ Describe 'New-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
         }
 
         It 'Should accept Database parameter from pipeline' {
-            $result = $script:mockDatabase | New-SqlDscFileGroup -Name 'PipelineFileGroup'
+            $result = $script:mockDatabase | New-SqlDscFileGroup -Name 'PipelineFileGroup' -Confirm:$false
 
             $result | Should -Not -BeNullOrEmpty
             $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
             $result.Name | Should -Be 'PipelineFileGroup'
             $result.Parent | Should -Be $script:mockDatabase
+        }
+
+        It 'Should support Force parameter to bypass confirmation' {
+            $result = New-SqlDscFileGroup -Database $script:mockDatabase -Name 'ForcedFileGroup' -Force
+
+            $result | Should -Not -BeNullOrEmpty
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
+            $result.Name | Should -Be 'ForcedFileGroup'
+            $result.Parent | Should -Be $script:mockDatabase
+        }
+
+        It 'Should return null when user declines confirmation' {
+            $result = New-SqlDscFileGroup -Database $script:mockDatabase -Name 'DeclinedFileGroup' -Confirm:$false -WhatIf
+
+            $result | Should -BeNullOrEmpty
         }
     }
 
@@ -89,3 +104,4 @@ Describe 'New-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
         }
     }
 }
+

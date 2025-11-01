@@ -369,6 +369,18 @@ ConvertFrom-StringData @'
     DatabaseSnapshot_Create = Creating database snapshot '{0}' from source database '{1}' on instance '{2}'. (NSDS0002)
     DatabaseSnapshot_EditionNotSupported = Database snapshots are not supported on SQL Server instance '{0}' with edition '{1}'. Snapshots are only supported in Enterprise, Developer, and Evaluation editions. (NSDS0001)
 
+    ## New-SqlDscFileGroup
+    FileGroup_Create_ShouldProcessDescription = Creating the filegroup '{0}' for database '{1}' on instance '{2}'. (NSDFG0001)
+    FileGroup_Create_ShouldProcessConfirmation = Are you sure you want to create the filegroup '{0}'? (NSDFG0002)
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    FileGroup_Create_ShouldProcessCaption = Create filegroup for database
+
+    ## New-SqlDscDataFile
+    DataFile_Create_ShouldProcessDescription = Creating the data file '{0}' for filegroup '{1}'. (NSDDF0001)
+    DataFile_Create_ShouldProcessConfirmation = Are you sure you want to create the data file '{0}'? (NSDDF0002)
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    DataFile_Create_ShouldProcessCaption = Create data file for filegroup
+
     ## Set-SqlDscDatabaseProperty
     Database_Set = Setting properties of database '{0}' on instance '{1}'. (SSDDP0001)
     Database_Updating = Updating database '{0}'. (SSDDP0002)

@@ -16,6 +16,11 @@
     .PARAMETER Name
         Specifies the name of the FileGroup to create.
 
+    .PARAMETER Force
+        Specifies that the FileGroup object should be created without prompting for
+        confirmation. By default, the command prompts for confirmation when the Database
+        parameter is provided.
+
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $database = $serverObject.Databases['MyDatabase']
@@ -43,7 +48,7 @@
 function New-SqlDscFileGroup
 {
     [OutputType([Microsoft.SqlServer.Management.Smo.FileGroup])]
-    [CmdletBinding(DefaultParameterSetName = 'Standalone')]
+    [CmdletBinding(DefaultParameterSetName = 'Standalone', SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'WithDatabase')]
@@ -54,14 +59,34 @@ function New-SqlDscFileGroup
         [Parameter(Mandatory = $true, ParameterSetName = 'Standalone')]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $Name
+        $Name,
+
+        [Parameter(ParameterSetName = 'WithDatabase')]
+        [System.Management.Automation.SwitchParameter]
+        $Force
     )
 
     process
     {
+        if ($Force.IsPresent -and -not $Confirm)
+        {
+            $ConfirmPreference = 'None'
+        }
+
+        $fileGroupObject = $null
+
         if ($PSCmdlet.ParameterSetName -eq 'WithDatabase')
         {
-            $fileGroupObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.FileGroup' -ArgumentList $Database, $Name
+            $serverObject = $Database.Parent
+
+            $descriptionMessage = $script:localizedData.FileGroup_Create_ShouldProcessDescription -f $Name, $Database.Name, $serverObject.InstanceName
+            $confirmationMessage = $script:localizedData.FileGroup_Create_ShouldProcessConfirmation -f $Name
+            $captionMessage = $script:localizedData.FileGroup_Create_ShouldProcessCaption
+
+            if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
+            {
+                $fileGroupObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.FileGroup' -ArgumentList $Database, $Name
+            }
         }
         else
         {

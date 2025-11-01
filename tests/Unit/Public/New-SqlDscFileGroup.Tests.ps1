@@ -62,7 +62,7 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
             } -ScriptBlock {
                 param ($mockDatabaseObject)
 
-                $result = New-SqlDscFileGroup -Database $mockDatabaseObject -Name 'MyFileGroup'
+                $result = New-SqlDscFileGroup -Database $mockDatabaseObject -Name 'MyFileGroup' -Confirm:$false
 
                 $result | Should -Not -BeNullOrEmpty
                 $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
@@ -77,7 +77,7 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
             } -ScriptBlock {
                 param ($mockDatabaseObject)
 
-                $result = New-SqlDscFileGroup -Database $mockDatabaseObject -Name 'PRIMARY'
+                $result = New-SqlDscFileGroup -Database $mockDatabaseObject -Name 'PRIMARY' -Confirm:$false
 
                 $result | Should -Not -BeNullOrEmpty
                 $result.Name | Should -Be 'PRIMARY'
@@ -91,11 +91,37 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
             } -ScriptBlock {
                 param ($mockDatabaseObject)
 
-                $result = $mockDatabaseObject | New-SqlDscFileGroup -Name 'PipelineFileGroup'
+                $result = $mockDatabaseObject | New-SqlDscFileGroup -Name 'PipelineFileGroup' -Confirm:$false
 
                 $result | Should -Not -BeNullOrEmpty
                 $result.Name | Should -Be 'PipelineFileGroup'
                 $result.Parent | Should -Be $mockDatabaseObject
+            }
+        }
+
+        It 'Should support Force parameter to bypass confirmation' {
+            InModuleScope -Parameters @{
+                mockDatabaseObject = $mockDatabaseObject
+            } -ScriptBlock {
+                param ($mockDatabaseObject)
+
+                $result = New-SqlDscFileGroup -Database $mockDatabaseObject -Name 'ForcedFileGroup' -Force
+
+                $result | Should -Not -BeNullOrEmpty
+                $result.Name | Should -Be 'ForcedFileGroup'
+                $result.Parent | Should -Be $mockDatabaseObject
+            }
+        }
+
+        It 'Should return null when WhatIf is specified' {
+            InModuleScope -Parameters @{
+                mockDatabaseObject = $mockDatabaseObject
+            } -ScriptBlock {
+                param ($mockDatabaseObject)
+
+                $result = New-SqlDscFileGroup -Database $mockDatabaseObject -Name 'WhatIfFileGroup' -WhatIf
+
+                $result | Should -BeNullOrEmpty
             }
         }
     }
@@ -156,5 +182,25 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
             $command = Get-Command -Name 'New-SqlDscFileGroup'
             $command.DefaultParameterSet | Should -Be 'Standalone'
         }
+
+        It 'Should support ShouldProcess' {
+            $command = Get-Command -Name 'New-SqlDscFileGroup'
+            $command.Parameters.ContainsKey('WhatIf') | Should -BeTrue
+            $command.Parameters.ContainsKey('Confirm') | Should -BeTrue
+        }
+
+        It 'Should have Force parameter only in WithDatabase parameter set' {
+            $parameterInfo = (Get-Command -Name 'New-SqlDscFileGroup').Parameters['Force']
+            $parameterInfo | Should -Not -BeNullOrEmpty
+            $parameterInfo.ParameterSets.Keys | Should -Contain 'WithDatabase'
+            $parameterInfo.ParameterSets.Keys | Should -Not -Contain 'Standalone'
+        }
+
+        It 'Should have ConfirmImpact set to High' {
+            $command = Get-Command -Name 'New-SqlDscFileGroup'
+            $command.ScriptBlock.Attributes | Where-Object { $_.TypeId.Name -eq 'CmdletBindingAttribute' } |
+                ForEach-Object { $_.ConfirmImpact } | Should -Be 'High'
+        }
     }
 }
+
