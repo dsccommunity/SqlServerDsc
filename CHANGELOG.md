@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed parameters `AzureEdition` and `AzureServiceObjective`. Azure SQL Database
     service tier and SLO changes should be managed using `Set-AzSqlDatabase` from the
     Azure PowerShell module instead. See [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
+  - Removed parameter `DatabaseSnapshotBaseName`. Database snapshots should be
+    created using the `New-SqlDscDatabaseSnapshot`, or the `New-SqlDscDatabase`
+    command with the `-DatabaseSnapshotBaseName` parameter.
 
 ### Added
 
@@ -48,6 +51,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`Install-SqlDscServer.Integration.PrepareImage.Tests.ps1`) runs in the
   `Integration_Test_Commands_SqlServer_PreparedImage` pipeline job and prepares
   a DSCSQLTEST instance that is later completed by `Complete-SqlDscImage` tests
+
+### Changed
+
+- `New-SqlDscDatabase`
+  - Added support for creating database snapshots through a new `Snapshot`
+    parameter set. Use the `-DatabaseSnapshotBaseName` parameter to specify
+    the source database name when creating a snapshot.
   [issue #2212](https://github.com/dsccommunity/SqlServerDsc/issues/2212).
 - Added integration tests for `Initialize-SqlDscRebuildDatabase` command to ensure
   command reliability. The test runs in group 8, alongside `Repair-SqlDscServer`,
