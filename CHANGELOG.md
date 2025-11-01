@@ -24,9 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added public command `New-SqlDscDatabaseSnapshot` to create database snapshots
-  in a SQL Server Database Engine instance using SMO ([issue #XXXX](https://github.com/dsccommunity/SqlServerDsc/issues/XXXX)).
-  This command provides an automated and DSC-friendly approach to snapshot management
-  by leveraging `New-SqlDscDatabase` for the actual creation.
+  in a SQL Server Database Engine instance using SMO. This command provides an
+  automated and DSC-friendly approach to snapshot management by leveraging
+  `New-SqlDscDatabase` for the actual creation.
 - Added public command `Set-SqlDscDatabaseOwner` to change the owner of a SQL Server
   database [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
   This command uses the SMO `SetOwner()` method and supports both `ServerObject`
