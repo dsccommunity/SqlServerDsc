@@ -365,6 +365,10 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Database_Create_ShouldProcessCaption = Create database on instance
 
+    ## New-SqlDscDatabaseSnapshot
+    DatabaseSnapshot_Create = Creating database snapshot '{0}' from source database '{1}' on instance '{2}'. (NSDS0002)
+    DatabaseSnapshot_EditionNotSupported = Database snapshots are not supported on SQL Server instance '{0}' with edition '{1}'. Snapshots are only supported in Enterprise, Developer, and Evaluation editions. (NSDS0001)
+
     ## Set-SqlDscDatabaseProperty
     Database_Set = Setting properties of database '{0}' on instance '{1}'. (SSDDP0001)
     Database_Updating = Updating database '{0}'. (SSDDP0002)
