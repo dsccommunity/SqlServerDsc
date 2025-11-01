@@ -179,6 +179,66 @@ Describe 'Quality for module' -Tags 'TestQuality' {
     }
 }
 
+Describe 'Comment-based help structure' -Tags 'helpQuality' {
+    Context 'Validating comment-based help structure for <Name>' -ForEach $testCasesAllModuleFunction -Tag 'helpQuality' {
+        BeforeAll {
+            $functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$Name.ps1"
+
+            $scriptFileRawContent = Get-Content -Raw -Path $functionFile.FullName
+        }
+
+        It 'Should not have invalid help directives in comment-based help for <Name>' {
+            # Valid help directives (case-insensitive) from:
+            # https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_comment_based_help
+            $validDirectives = @(
+                'SYNOPSIS'
+                'DESCRIPTION'
+                'PARAMETER'
+                'EXAMPLE'
+                'INPUTS'
+                'OUTPUTS'
+                'NOTES'
+                'LINK'
+                'COMPONENT'
+                'ROLE'
+                'FUNCTIONALITY'
+                'FORWARDHELPTARGETNAME'
+                'FORWARDHELPCATEGORY'
+                'REMOTEHELPRUNSPACE'
+                'EXTERNALHELP'
+            )
+
+            # Find the comment-based help block
+            if ($scriptFileRawContent -match '(?s)<#(.*?)#>')
+            {
+                $helpBlock = $Matches[1]
+
+                # Split into lines to check each one
+                $helpLines = $helpBlock -split "`n"
+
+                $invalidDirectives = @()
+
+                foreach ($line in $helpLines)
+                {
+                    # Check if line starts with whitespace followed by a period and text
+                    if ($line -match '^\s+\.([a-zA-Z]+)')
+                    {
+                        $directive = $Matches[1]
+
+                        # Check if it's a valid directive
+                        if ($directive -notin $validDirectives)
+                        {
+                            $invalidDirectives += $directive
+                        }
+                    }
+                }
+
+                $invalidDirectives | Should -BeNullOrEmpty -Because ('invalid help directives found that will break help parsing: {0}' -f ($invalidDirectives -join ', '))
+            }
+        }
+    }
+}
+
 Describe 'Help for module' -Tags 'helpQuality' {
     Context 'Validating help for <Name>' -ForEach $testCasesAllModuleFunction -Tag 'helpQuality' {
         BeforeAll {
@@ -186,7 +246,16 @@ Describe 'Help for module' -Tags 'helpQuality' {
 
             $scriptFileRawContent = Get-Content -Raw -Path $functionFile.FullName
 
-            $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $null)
+            $parseErrors = $null
+            $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $parseErrors)
+
+            if ($parseErrors)
+            {
+                foreach ($parseError in $parseErrors)
+                {
+                    Write-Warning -Message ('Parse error in {0}: {1}' -f $functionFile.FullName, $parseError.Message)
+                }
+            }
 
             $astSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
 
