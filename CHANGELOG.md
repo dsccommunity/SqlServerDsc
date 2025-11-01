@@ -20,6 +20,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed parameter `DatabaseSnapshotBaseName`. Database snapshots should be
     created using the `New-SqlDscDatabaseSnapshot`, or the `New-SqlDscDatabase`
     command with the `-DatabaseSnapshotBaseName` parameter.
+  - Removed parameter `DefaultSchema`. Default schema is a user-level property,
+    not a database-level property. See [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
+- BREAKING CHANGE: `Test-SqlDscDatabaseProperty`
+  - Removed parameter `DefaultSchema`. Default schema is a user-level property,
+    not a database-level property. See [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
 
 ### Added
 
