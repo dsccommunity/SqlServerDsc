@@ -177,8 +177,7 @@
     .PARAMETER DefaultLanguage
         Specifies the ID of the default language for the database.
 
-    .PARAMETER DefaultSchema
-        Specifies the default schema name for users without an explicit default schema.
+
 
     .PARAMETER DelayedDurability
         Specifies whether delayed transaction log flushes are enabled to improve throughput.
@@ -943,10 +942,6 @@ function Test-SqlDscDatabaseProperty
         [Parameter()]
         [System.String]
         $DefaultFullTextCatalog,
-
-        [Parameter()]
-        [System.String]
-        $DefaultSchema,
 
         [Parameter()]
         [System.String]
