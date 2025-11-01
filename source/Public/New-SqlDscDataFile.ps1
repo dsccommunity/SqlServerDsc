@@ -15,10 +15,10 @@
         Specifies the logical name of the DataFile.
 
     .PARAMETER FileName
-        Specifies the physical path and filename for the DataFile. For database
-        snapshots, this should point to a sparse file location (typically with
-        .ss extension). For regular databases, this should be the data file
-        path (typically with .mdf or .ndf extension).
+        Specifies the physical path and filename for the DataFile. For database snapshots,
+        this should point to a sparse file location (typically with an .ss extension).
+        For regular databases, this should be the data file path (typically with .mdf
+        or .ndf extension).
 
     .PARAMETER Force
         Specifies that the DataFile object should be created without prompting for
@@ -51,8 +51,8 @@
 #>
 function New-SqlDscDataFile
 {
-    [OutputType([Microsoft.SqlServer.Management.Smo.DataFile])]
     [CmdletBinding(DefaultParameterSetName = 'Standalone', SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+    [OutputType([Microsoft.SqlServer.Management.Smo.DataFile])]
     param
     (
         [Parameter(Mandatory = $true, ParameterSetName = 'WithFileGroup', ValueFromPipeline = $true)]

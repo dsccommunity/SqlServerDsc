@@ -47,8 +47,8 @@
 #>
 function New-SqlDscFileGroup
 {
-    [OutputType([Microsoft.SqlServer.Management.Smo.FileGroup])]
     [CmdletBinding(DefaultParameterSetName = 'Standalone', SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+    [OutputType([Microsoft.SqlServer.Management.Smo.FileGroup])]
     param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'WithDatabase')]
