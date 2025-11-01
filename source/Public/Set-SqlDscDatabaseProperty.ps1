@@ -104,9 +104,6 @@
     .PARAMETER DatabaseOwnershipChaining
         Specifies whether ownership chaining across objects within the database is enabled.
 
-    .PARAMETER DatabaseSnapshotBaseName
-        Specifies the base name of the source database from which this database snapshot was created.
-
     .PARAMETER DataRetentionEnabled
         Specifies whether SQL Server data retention policy is enabled at the database level.
 
@@ -311,6 +308,11 @@
           objects. This property is marked as ReadOnlyAfterCreation in the SMO Database
           class and can only be set during database creation (e.g., using `New-SqlDscDatabase`
           or CREATE DATABASE statements).
+
+        - **DatabaseSnapshotBaseName**: The base name of the source database for a database
+          snapshot. This property is marked as ReadOnlyAfterCreation in the SMO Database
+          class. To create database snapshots, use the `New-SqlDscDatabaseSnapshot` or
+          `New-SqlDscDatabase` command with the `-DatabaseSnapshotBaseName` parameter.
 
         There are some database properties that require method calls instead of direct
         property assignment and will be supported through separate commands, e.g.
@@ -574,10 +576,6 @@ function Set-SqlDscDatabaseProperty
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Collation,
-
-        [Parameter()]
-        [System.String]
-        $DatabaseSnapshotBaseName,
 
         [Parameter()]
         [System.String]

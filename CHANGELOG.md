@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed parameters `AzureEdition` and `AzureServiceObjective`. Azure SQL Database
     service tier and SLO changes should be managed using `Set-AzSqlDatabase` from the
     Azure PowerShell module instead. See [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
+  - Removed parameter `DatabaseSnapshotBaseName`. Database snapshots should be
+    created using the `New-SqlDscDatabaseSnapshot`, or the `New-SqlDscDatabase`
+    command with the `-DatabaseSnapshotBaseName` parameter.
 
 ### Added
 
@@ -237,6 +240,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `New-SqlDscDatabase`
+  - Added support for creating database snapshots through a new `Snapshot`
+    parameter set. Use the `-DatabaseSnapshotBaseName` parameter to specify
+    the source database name when creating a snapshot ([issue #2333](https://github.com/dsccommunity/SqlServerDsc/issues/2333)).
 - `Restart-ReportingServicesService`
   - BREAKING CHANGE: Removed the deprecated `InstanceName` parameter. All callers
     must now use the `ServiceName` parameter instead.

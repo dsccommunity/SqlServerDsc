@@ -4,6 +4,7 @@
 
     .DESCRIPTION
         This command creates a new database in a SQL Server Database Engine instance.
+        It supports creating both regular databases and database snapshots.
 
     .PARAMETER ServerObject
         Specifies current server connection object.
@@ -32,6 +33,11 @@
     .PARAMETER OwnerName
         Specifies the name of the login that should be the owner of the database.
 
+    .PARAMETER DatabaseSnapshotBaseName
+        Specifies the name of the source database from which to create a snapshot.
+        When this parameter is specified, a database snapshot will be created instead
+        of a regular database. The snapshot name is specified in the Name parameter.
+
     .PARAMETER Force
         Specifies that the database should be created without any confirmation.
 
@@ -55,6 +61,13 @@
         Creates a new database named **MyDatabase** with the specified collation and recovery model
         without prompting for confirmation.
 
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $serverObject | New-SqlDscDatabase -Name 'MyDatabaseSnapshot' -DatabaseSnapshotBaseName 'MyDatabase' -Force
+
+        Creates a database snapshot named **MyDatabaseSnapshot** from the source database **MyDatabase**
+        without prompting for confirmation.
+
     .OUTPUTS
         `[Microsoft.SqlServer.Management.Smo.Database]`
 #>
@@ -62,7 +75,7 @@ function New-SqlDscDatabase
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
     [OutputType([Microsoft.SqlServer.Management.Smo.Database])]
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'Database')]
     param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
@@ -74,28 +87,33 @@ function New-SqlDscDatabase
         [System.String]
         $Name,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'Database')]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Collation,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'Database')]
         [Microsoft.SqlServer.Management.Smo.CatalogCollationType]
         $CatalogCollation,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'Database')]
         [ValidateSet('Version80', 'Version90', 'Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150', 'Version160')]
         [System.String]
         $CompatibilityLevel,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'Database')]
         [ValidateSet('Simple', 'Full', 'BulkLogged')]
         [System.String]
         $RecoveryModel,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'Database')]
         [System.String]
         $OwnerName,
+
+        [Parameter(Mandatory = $true, ParameterSetName = 'Snapshot')]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $DatabaseSnapshotBaseName,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -205,6 +223,24 @@ function New-SqlDscDatabase
             }
         }
 
+        # Validate source database exists when creating a snapshot
+        if ($PSCmdlet.ParameterSetName -eq 'Snapshot')
+        {
+            if (-not $ServerObject.Databases[$DatabaseSnapshotBaseName])
+            {
+                $errorMessage = $script:localizedData.Database_SnapshotSourceDatabaseNotFound -f $DatabaseSnapshotBaseName, $ServerObject.InstanceName
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.InvalidOperationException]::new($errorMessage),
+                        'NSD0006', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::ObjectNotFound,
+                        $DatabaseSnapshotBaseName
+                    )
+                )
+            }
+        }
+
         $verboseDescriptionMessage = $script:localizedData.Database_Create_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
         $verboseWarningMessage = $script:localizedData.Database_Create_ShouldProcessVerboseWarning -f $Name
         $captionMessage = $script:localizedData.Database_Create_ShouldProcessCaption
@@ -215,24 +251,35 @@ function New-SqlDscDatabase
             {
                 $sqlDatabaseObjectToCreate = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database' -ArgumentList $ServerObject, $Name
 
-                if ($PSBoundParameters.ContainsKey('RecoveryModel'))
+                # Handle database snapshot creation
+                if ($PSCmdlet.ParameterSetName -eq 'Snapshot')
                 {
-                    $sqlDatabaseObjectToCreate.RecoveryModel = $RecoveryModel
-                }
+                    Write-Verbose -Message ($script:localizedData.Database_CreatingSnapshot -f $Name, $DatabaseSnapshotBaseName)
 
-                if ($PSBoundParameters.ContainsKey('Collation'))
-                {
-                    $sqlDatabaseObjectToCreate.Collation = $Collation
+                    $sqlDatabaseObjectToCreate.DatabaseSnapshotBaseName = $DatabaseSnapshotBaseName
                 }
-
-                if ($PSBoundParameters.ContainsKey('CatalogCollation'))
+                else
                 {
-                    $sqlDatabaseObjectToCreate.CatalogCollation = $CatalogCollation
-                }
+                    # Handle regular database creation
+                    if ($PSBoundParameters.ContainsKey('RecoveryModel'))
+                    {
+                        $sqlDatabaseObjectToCreate.RecoveryModel = $RecoveryModel
+                    }
 
-                if ($PSBoundParameters.ContainsKey('CompatibilityLevel'))
-                {
-                    $sqlDatabaseObjectToCreate.CompatibilityLevel = $CompatibilityLevel
+                    if ($PSBoundParameters.ContainsKey('Collation'))
+                    {
+                        $sqlDatabaseObjectToCreate.Collation = $Collation
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('CatalogCollation'))
+                    {
+                        $sqlDatabaseObjectToCreate.CatalogCollation = $CatalogCollation
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('CompatibilityLevel'))
+                    {
+                        $sqlDatabaseObjectToCreate.CompatibilityLevel = $CompatibilityLevel
+                    }
                 }
 
                 Write-Verbose -Message ($script:localizedData.Database_Creating -f $Name)
@@ -243,8 +290,9 @@ function New-SqlDscDatabase
                     This must be run after the object is created because
                     the owner property is read-only and the method cannot
                     be call until the object has been created.
+                    This only applies to regular databases, not snapshots.
                 #>
-                if ($PSBoundParameters.ContainsKey('OwnerName'))
+                if ($PSCmdlet.ParameterSetName -eq 'Database' -and $PSBoundParameters.ContainsKey('OwnerName'))
                 {
                     $sqlDatabaseObjectToCreate.SetOwner($OwnerName)
                 }

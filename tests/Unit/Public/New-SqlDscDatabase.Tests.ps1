@@ -154,10 +154,27 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
     }
 
     Context 'Parameter validation' {
-        It 'Should have the correct parameters in parameter set __AllParameterSets' -ForEach @(
+        It 'Should have the correct parameters in parameter set Database' -ForEach @(
             @{
-                ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-ServerObject] <Server> [-Name] <string> [[-Collation] <string>] [[-CatalogCollation] <CatalogCollationType>] [[-CompatibilityLevel] <string>] [[-RecoveryModel] <string>] [[-OwnerName] <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameterSetName = 'Database'
+                ExpectedParameters = '-ServerObject <Server> -Name <string> [-Collation <string>] [-CatalogCollation <CatalogCollationType>] [-CompatibilityLevel <string>] [-RecoveryModel <string>] [-OwnerName <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            }
+        ) {
+            $result = (Get-Command -Name 'New-SqlDscDatabase').ParameterSets |
+                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
+                Select-Object -Property @(
+                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
+                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
+                )
+
+            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should -Be $ExpectedParameters
+        }
+
+        It 'Should have the correct parameters in parameter set Snapshot' -ForEach @(
+            @{
+                ExpectedParameterSetName = 'Snapshot'
+                ExpectedParameters = '-ServerObject <Server> -Name <string> -DatabaseSnapshotBaseName <string> [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'New-SqlDscDatabase').ParameterSets |
@@ -179,6 +196,62 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDatabase').Parameters['Name']
             $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        }
+
+        It 'Should have DatabaseSnapshotBaseName as a mandatory parameter in Snapshot parameter set' {
+            $parameterInfo = (Get-Command -Name 'New-SqlDscDatabase').Parameters['DatabaseSnapshotBaseName']
+            $snapshotSetAttribute = $parameterInfo.Attributes | Where-Object { $_.ParameterSetName -eq 'Snapshot' }
+            $snapshotSetAttribute.Mandatory | Should -BeTrue
+        }
+    }
+
+    Context 'When creating a database snapshot' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+            $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'VersionMajor' -Value 15 -Force
+
+            # Mock source database
+            $mockSourceDatabase = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+            $mockSourceDatabase | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'SourceDatabase' -Force
+
+            $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                return @{
+                    'SourceDatabase' = $mockSourceDatabase
+                } | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                    # Mock implementation
+                } -PassThru -Force
+            } -Force
+
+            Mock -CommandName 'New-Object' -ParameterFilter { $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Database' } -MockWith {
+                $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+                $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value $ArgumentList[1] -Force
+                $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'DatabaseSnapshotBaseName' -Value $null -Force
+                $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Create' -Value {
+                    # Mock implementation
+                } -Force
+                return $mockDatabaseObject
+            }
+        }
+
+        It 'Should create a database snapshot successfully' {
+            $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestSnapshot' -DatabaseSnapshotBaseName 'SourceDatabase' -Force
+
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be 'TestSnapshot'
+            $result.DatabaseSnapshotBaseName | Should -Be 'SourceDatabase'
+            Should -Invoke -CommandName 'New-Object' -ParameterFilter { $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Database' } -Exactly -Times 1
+        }
+
+        It 'Should throw error when source database does not exist' {
+            $mockServerObjectNoSourceDb = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObjectNoSourceDb | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+            $mockServerObjectNoSourceDb | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                return @{}
+            } -Force
+
+            { New-SqlDscDatabase -ServerObject $mockServerObjectNoSourceDb -Name 'TestSnapshot' -DatabaseSnapshotBaseName 'NonExistentDatabase' -Force } |
+                Should -Throw -ExpectedMessage '*does not exist*'
         }
     }
 }
