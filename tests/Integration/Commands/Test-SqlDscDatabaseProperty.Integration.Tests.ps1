@@ -106,6 +106,7 @@ BeforeDiscovery {
         @{ PropertyName = 'Collation'; DatabaseName = $script:persistentTestDatabase }
         @{ PropertyName = 'Owner'; DatabaseName = $script:persistentTestDatabase }
         @{ PropertyName = 'DefaultFileGroup'; DatabaseName = $script:persistentTestDatabase }
+        @{ PropertyName = 'DefaultSchema'; DatabaseName = $script:persistentTestDatabase }
 
         # Numeric properties - test with actual values from the persistent test database
         @{ PropertyName = 'ID'; DatabaseName = $script:persistentTestDatabase }

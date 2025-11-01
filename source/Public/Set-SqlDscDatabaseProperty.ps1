@@ -117,7 +117,6 @@
         Specifies the ID of the default language for the database.
 
 
-
     .PARAMETER DelayedDurability
         Specifies the delayed durability setting for the database (DISABLED, ALLOWED, FORCED).
 

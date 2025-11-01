@@ -111,6 +111,7 @@ BeforeDiscovery {
         'DefaultFileGroup'                            = @{ Type = 'String'; TestValue = 'PRIMARY'; ExpectedValue = 'PRIMARY' }
         'DefaultFileStreamFileGroup'                  = @{ Type = 'String'; TestValue = 'FileStreamGroup'; ExpectedValue = 'FileStreamGroup' }
         'DefaultFullTextCatalog'                      = @{ Type = 'String'; TestValue = 'TestCatalog'; ExpectedValue = 'TestCatalog' }
+        'DefaultSchema'                               = @{ Type = 'String'; TestValue = 'dbo'; ExpectedValue = 'dbo' }
         'FilestreamDirectoryName'                     = @{ Type = 'String'; TestValue = 'TestDirectory'; ExpectedValue = 'TestDirectory' }
         'MirroringPartner'                            = @{ Type = 'String'; TestValue = 'TestPartner'; ExpectedValue = 'TestPartner' }
         'MirroringPartnerInstance'                    = @{ Type = 'String'; TestValue = 'TestInstance'; ExpectedValue = 'TestInstance' }
