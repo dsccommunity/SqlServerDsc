@@ -691,6 +691,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
             @{ ParameterName = 'DefaultFileGroup' }
             @{ ParameterName = 'DefaultFileStreamFileGroup' }
             @{ ParameterName = 'DefaultFullTextCatalog' }
+            @{ ParameterName = 'DefaultSchema' }
             @{ ParameterName = 'FilestreamDirectoryName' }
             @{ ParameterName = 'MirroringPartner' }
             @{ ParameterName = 'MirroringPartnerInstance' }
