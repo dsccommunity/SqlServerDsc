@@ -130,18 +130,6 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
                 $result | Should -BeNullOrEmpty
             }
         }
-
-        Context 'When creating a standalone DataFile' {
-            It 'Should create a DataFile without FileGroup successfully' {
-                $result = New-SqlDscDataFile -Name 'StandaloneDataFile' -FileName 'C:\Data\StandaloneDataFile.mdf'
-
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
-                $result.Name | Should -Be 'StandaloneDataFile'
-                $result.FileName | Should -Be 'C:\Data\StandaloneDataFile.mdf'
-                $result.Parent | Should -BeNullOrEmpty
-            }
-        }
     }
 
     Context 'Parameter validation' {
@@ -149,41 +137,21 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
             $commandInfo = Get-Command -Name 'New-SqlDscDataFile'
         }
 
-        It 'Should have two parameter sets' {
-            $commandInfo.ParameterSets.Count | Should -Be 2
+        It 'Should have one parameter set' {
+            $commandInfo.ParameterSets.Count | Should -Be 1
         }
 
-        It 'Should have parameter set WithFileGroup' {
-            $commandInfo.ParameterSets.Name | Should -Contain 'WithFileGroup'
-        }
-
-        It 'Should have parameter set Standalone' {
-            $commandInfo.ParameterSets.Name | Should -Contain 'Standalone'
-        }
-
-        It 'Should have Standalone as the default parameter set' {
-            $defaultParameterSet = $commandInfo.ParameterSets | Where-Object { $_.IsDefault }
-            $defaultParameterSet.Name | Should -Be 'Standalone'
-        }
-
-        It 'Should have FileGroup as a mandatory parameter in WithFileGroup set' {
+        It 'Should have FileGroup as a mandatory parameter' {
             $parameterInfo = $commandInfo.Parameters['FileGroup']
-            $withFileGroupAttribute = $parameterInfo.Attributes | Where-Object { $_ -is [Parameter] -and $_.ParameterSetName -eq 'WithFileGroup' }
-            $withFileGroupAttribute.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should -Contain $true
         }
 
-        It 'Should not have FileGroup parameter in Standalone set' {
-            $parameterInfo = $commandInfo.Parameters['FileGroup']
-            $standaloneAttribute = $parameterInfo.Attributes | Where-Object { $_ -is [Parameter] -and $_.ParameterSetName -eq 'Standalone' }
-            $standaloneAttribute | Should -BeNullOrEmpty
-        }
-
-        It 'Should have Name as a mandatory parameter in both parameter sets' {
+        It 'Should have Name as a mandatory parameter' {
             $parameterInfo = $commandInfo.Parameters['Name']
             $parameterInfo.Attributes.Mandatory | Should -Contain $true
         }
 
-        It 'Should have FileName as a mandatory parameter in both parameter sets' {
+        It 'Should have FileName as a mandatory parameter' {
             $parameterInfo = $commandInfo.Parameters['FileName']
             $parameterInfo.Attributes.Mandatory | Should -Contain $true
         }
@@ -198,11 +166,9 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
             $commandInfo.Parameters.ContainsKey('Confirm') | Should -BeTrue
         }
 
-        It 'Should have Force parameter only in WithFileGroup parameter set' {
+        It 'Should have Force parameter' {
             $parameterInfo = $commandInfo.Parameters['Force']
             $parameterInfo | Should -Not -BeNullOrEmpty
-            $parameterInfo.ParameterSets.Keys | Should -Contain 'WithFileGroup'
-            $parameterInfo.ParameterSets.Keys | Should -Not -Contain 'Standalone'
         }
 
         It 'Should have ConfirmImpact set to High' {

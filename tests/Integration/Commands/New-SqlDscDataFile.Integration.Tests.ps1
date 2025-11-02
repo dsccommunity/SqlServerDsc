@@ -33,33 +33,26 @@ BeforeAll {
 }
 
 Describe 'New-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
-    Context 'When creating a standalone DataFile with real SMO types' {
-        It 'Should create a standalone DataFile successfully' {
-            $result = New-SqlDscDataFile -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.mdf'
+        BeforeAll {
+        $script:mockInstanceName = 'DSCSQLTEST'
+        $script:mockComputerName = Get-ComputerName
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
-            $result.Name | Should -Be 'TestDataFile'
-            $result.FileName | Should -Be 'C:\Data\TestDataFile.mdf'
-            $result.Parent | Should -BeNullOrEmpty
-        }
+        $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+        $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
 
-        It 'Should create a standalone DataFile with FileName' {
-            $result = New-SqlDscDataFile -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf'
+        $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
-            $result.Name | Should -Be 'TestDataFile'
-            $result.FileName | Should -Be 'C:\Data\TestDataFile.ndf'
-            $result.Parent | Should -BeNullOrEmpty
-        }
+        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
     }
 
     Context 'When creating a DataFile with a FileGroup object' {
         BeforeAll {
-            # Create a real SMO FileGroup object (not connected to SQL Server)
-            $script:mockFileGroup = [Microsoft.SqlServer.Management.Smo.FileGroup]::new()
-            $script:mockFileGroup.Name = 'TestFileGroup'
+            # Create a real SMO Database object
+            $script:mockDatabase = [Microsoft.SqlServer.Management.Smo.Database]::new()
+            $script:mockDatabase.Name = 'TestDatabase'
+            $script:mockDatabase.Parent = $script:serverObject
+
+            $script:mockFileGroup = New-SqlDscFileGroup -Database $script:mockDatabase -Name 'TestFileGroup' -Confirm:$false
         }
 
         It 'Should create a DataFile with FileGroup successfully' {
@@ -107,22 +100,31 @@ Describe 'New-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_SQL2019
     }
 
     Context 'When verifying DataFile properties' {
+        BeforeAll {
+            # Create a real SMO Database object
+            $script:mockDatabase = [Microsoft.SqlServer.Management.Smo.Database]::new()
+            $script:mockDatabase.Name = 'TestDatabase'
+            $script:mockDatabase.Parent = $script:serverObject
+
+            $script:mockFileGroup = New-SqlDscFileGroup -Database $script:mockDatabase -Name 'TestFileGroup' -Confirm:$false
+        }
+
         It 'Should allow setting Size property' {
-            $result = New-SqlDscDataFile -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf'
+            $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf' -Confirm:$false
             $result.Size = 1024.0
 
             $result.Size | Should -Be 1024.0
         }
 
         It 'Should allow setting Growth property' {
-            $result = New-SqlDscDataFile -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf'
+            $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf' -Confirm:$false
             $result.Growth = 64.0
 
             $result.Growth | Should -Be 64.0
         }
 
         It 'Should allow setting GrowthType property' {
-            $result = New-SqlDscDataFile -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf'
+            $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf' -Confirm:$false
             $result.GrowthType = [Microsoft.SqlServer.Management.Smo.FileGrowthType]::Percent
 
             $result.GrowthType | Should -Be 'Percent'
