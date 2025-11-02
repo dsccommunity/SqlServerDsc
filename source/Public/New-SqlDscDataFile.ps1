@@ -85,27 +85,24 @@ function New-SqlDscDataFile
         $Force
     )
 
-    process
+    if ($Force.IsPresent -and -not $Confirm)
     {
-        if ($Force.IsPresent -and -not $Confirm)
+        $ConfirmPreference = 'None'
+    }
+
+    $descriptionMessage = $script:localizedData.DataFile_Create_ShouldProcessDescription -f $Name, $FileGroup.Name
+    $confirmationMessage = $script:localizedData.DataFile_Create_ShouldProcessConfirmation -f $Name
+    $captionMessage = $script:localizedData.DataFile_Create_ShouldProcessCaption
+
+    if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
+    {
+        $dataFileObject = [Microsoft.SqlServer.Management.Smo.DataFile]::new($FileGroup, $Name, $FileName)
+
+        $FileGroup.Files.Add($dataFileObject)
+
+        if ($PassThru.IsPresent)
         {
-            $ConfirmPreference = 'None'
-        }
-
-        $descriptionMessage = $script:localizedData.DataFile_Create_ShouldProcessDescription -f $Name, $FileGroup.Name
-        $confirmationMessage = $script:localizedData.DataFile_Create_ShouldProcessConfirmation -f $Name
-        $captionMessage = $script:localizedData.DataFile_Create_ShouldProcessCaption
-
-        if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
-        {
-            $dataFileObject = [Microsoft.SqlServer.Management.Smo.DataFile]::new($FileGroup, $Name, $FileName)
-
-            $FileGroup.Files.Add($dataFileObject)
-
-            if ($PassThru.IsPresent)
-            {
-                return $dataFileObject
-            }
+            return $dataFileObject
         }
     }
 }
