@@ -52,8 +52,12 @@ AfterAll {
 Describe 'New-SqlDscFileGroup' -Tag 'Public' {
     Context 'When creating a new FileGroup with a Database' {
         BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject.InstanceName = 'TestInstance'
+
             $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
             $mockDatabaseObject.Name = 'TestDatabase'
+            $mockDatabaseObject.Parent = $mockServerObject
         }
 
         It 'Should create a FileGroup successfully' {
@@ -110,6 +114,16 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
                 $result | Should -Not -BeNullOrEmpty
                 $result.Name | Should -Be 'ForcedFileGroup'
                 $result.Parent | Should -Be $mockDatabaseObject
+            }
+        }
+
+        It 'Should throw terminating error when Database object has no Parent property set' {
+            InModuleScope -ScriptBlock {
+                $mockDatabaseWithoutParent = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+                $mockDatabaseWithoutParent.Name = 'TestDatabaseNoParent'
+
+                { New-SqlDscFileGroup -Database $mockDatabaseWithoutParent -Name 'InvalidFileGroup' -Confirm:$false } |
+                    Should -Throw -ExpectedMessage '*must have a Server object attached to the Parent property*' -ErrorId 'NSDFG0003,New-SqlDscFileGroup'
             }
         }
 
@@ -203,4 +217,3 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
         }
     }
 }
-

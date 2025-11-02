@@ -104,4 +104,3 @@ Describe 'New-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
         }
     }
 }
-

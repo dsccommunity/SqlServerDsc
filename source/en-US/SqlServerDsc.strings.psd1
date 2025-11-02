@@ -374,6 +374,7 @@ ConvertFrom-StringData @'
     FileGroup_Create_ShouldProcessConfirmation = Are you sure you want to create the filegroup '{0}'? (NSDFG0002)
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     FileGroup_Create_ShouldProcessCaption = Create filegroup for database
+    FileGroup_DatabaseMissingServerObject = The Database object must have a Server object attached to the Parent property. (NSDFG0003)
 
     ## New-SqlDscDataFile
     DataFile_Create_ShouldProcessDescription = Creating the data file '{0}' for filegroup '{1}'. (NSDDF0001)

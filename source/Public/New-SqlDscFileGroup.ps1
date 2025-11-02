@@ -77,6 +77,20 @@ function New-SqlDscFileGroup
 
         if ($PSCmdlet.ParameterSetName -eq 'WithDatabase')
         {
+            if (-not $Database.Parent)
+            {
+                $errorMessage = $script:localizedData.FileGroup_DatabaseMissingServerObject
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        $errorMessage,
+                        'NSDFG0003',
+                        [System.Management.Automation.ErrorCategory]::InvalidArgument,
+                        $Database
+                    )
+                )
+            }
+
             $serverObject = $Database.Parent
 
             $descriptionMessage = $script:localizedData.FileGroup_Create_ShouldProcessDescription -f $Name, $Database.Name, $serverObject.InstanceName
