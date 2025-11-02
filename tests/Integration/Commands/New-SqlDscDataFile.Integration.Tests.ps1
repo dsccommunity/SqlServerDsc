@@ -108,7 +108,7 @@ Describe 'New-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_SQL2019
     }
 
     Context 'When verifying DataFile properties' {
-        BeforeAll {
+        BeforeEach {
             # Create a real SMO Database object
             $script:mockDatabase = [Microsoft.SqlServer.Management.Smo.Database]::new()
             $script:mockDatabase.Name = 'TestDatabase'
