@@ -88,6 +88,31 @@ Describe 'Add-SqlDscDataFile' -Tag 'Public' {
             $mockFileGroupObject3.Files.Count | Should -Be 1
             $mockFileGroupObject3.Files[0].Name | Should -Be 'MyDataFile3'
         }
+
+        It 'Should add multiple DataFiles to FileGroup' {
+            $mockFileGroupObject4 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.FileGroup' -ArgumentList @($mockDatabaseObject, 'QUATERNARY')
+            $mockDataFileObject4a = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DataFile' -ArgumentList @($mockFileGroupObject4, 'MyDataFile4a', 'C:\Data\MyDataFile4a.ndf')
+            $mockDataFileObject4b = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DataFile' -ArgumentList @($mockFileGroupObject4, 'MyDataFile4b', 'C:\Data\MyDataFile4b.ndf')
+
+            { Add-SqlDscDataFile -FileGroup $mockFileGroupObject4 -DataFile @($mockDataFileObject4a, $mockDataFileObject4b) } | Should -Not -Throw
+
+            $mockFileGroupObject4.Files.Count | Should -Be 2
+            $mockFileGroupObject4.Files[0].Name | Should -Be 'MyDataFile4a'
+            $mockFileGroupObject4.Files[1].Name | Should -Be 'MyDataFile4b'
+        }
+
+        It 'Should add multiple DataFiles via pipeline and return them with PassThru' {
+            $mockFileGroupObject5 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.FileGroup' -ArgumentList @($mockDatabaseObject, 'QUINARY')
+            $mockDataFileObject5a = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DataFile' -ArgumentList @($mockFileGroupObject5, 'MyDataFile5a', 'C:\Data\MyDataFile5a.ndf')
+            $mockDataFileObject5b = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DataFile' -ArgumentList @($mockFileGroupObject5, 'MyDataFile5b', 'C:\Data\MyDataFile5b.ndf')
+
+            $result = @($mockDataFileObject5a, $mockDataFileObject5b) | Add-SqlDscDataFile -FileGroup $mockFileGroupObject5 -PassThru
+
+            $result | Should -HaveCount 2
+            $result[0].Name | Should -Be 'MyDataFile5a'
+            $result[1].Name | Should -Be 'MyDataFile5b'
+            $mockFileGroupObject5.Files.Count | Should -Be 2
+        }
     }
 
     Context 'Parameter validation' {
@@ -113,6 +138,11 @@ Describe 'Add-SqlDscDataFile' -Tag 'Public' {
         It 'Should have DataFile parameter accept pipeline input' {
             $parameterInfo = $commandInfo.Parameters['DataFile']
             $parameterInfo.Attributes.ValueFromPipeline | Should -Contain $true
+        }
+
+        It 'Should have DataFile parameter accept array input' {
+            $parameterInfo = $commandInfo.Parameters['DataFile']
+            $parameterInfo.ParameterType.Name | Should -Be 'DataFile[]'
         }
     }
 }

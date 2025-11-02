@@ -39,9 +39,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   specified physical file paths, supporting both regular database files (.mdf, .ndf)
   and sparse files for database snapshots (.ss). The `FileGroup` parameter is
   mandatory, requiring DataFile objects to be created with an associated FileGroup.
-- Added public command `Add-SqlDscDataFile` to add an existing DataFile object
-  to a FileGroup. This command provides a clean way to associate DataFile objects
-  with FileGroups after they have been created.
+- Added public command `Add-SqlDscDataFile` to add one or more existing DataFile
+  objects to a FileGroup. This command provides a clean way to associate DataFile
+  objects with FileGroups after they have been created. The command supports
+  accepting multiple DataFile objects as an array or through pipeline input.
 - Added public command `Add-SqlDscFileGroup` to add one or more FileGroup objects
   to a Database. This command provides a clean way to associate FileGroup objects
   with a Database after they have been created.
