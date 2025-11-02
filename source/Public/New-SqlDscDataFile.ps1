@@ -1,14 +1,15 @@
 <#
     .SYNOPSIS
-        Creates a new DataFile object for a SQL Server FileGroup.
+        Creates a new DataFile object for a SQL Server FileGroup and adds it to the FileGroup.
 
     .DESCRIPTION
-        This command creates a new DataFile object that can be added to a FileGroup
-        when creating or modifying SQL Server databases. The DataFile object represents
-        a physical database file (.mdf, .ndf, or .ss for snapshots).
+        This command creates a new DataFile object and automatically adds it to the specified
+        FileGroup's Files collection. The DataFile object represents a physical database file
+        (.mdf, .ndf, or .ss for snapshots).
 
     .PARAMETER FileGroup
-        Specifies the FileGroup object to which this DataFile will belong.
+        Specifies the FileGroup object to which this DataFile will belong. The DataFile
+        will be automatically added to this FileGroup's Files collection.
 
     .PARAMETER Name
         Specifies the logical name of the DataFile.
@@ -19,6 +20,9 @@
         For regular databases, this should be the data file path (typically with .mdf
         or .ndf extension).
 
+    .PARAMETER PassThru
+        Returns the DataFile object that was created and added to the FileGroup.
+
     .PARAMETER Force
         Specifies that the DataFile object should be created without prompting for
         confirmation. By default, the command prompts for confirmation when the FileGroup
@@ -28,20 +32,28 @@
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $database = $serverObject.Databases['MyDatabase']
         $fileGroup = New-SqlDscFileGroup -Database $database -Name 'PRIMARY'
-        $dataFile = New-SqlDscDataFile -FileGroup $fileGroup -Name 'MyDatabase_Data' -FileName 'C:\Data\MyDatabase_Data.mdf'
+        New-SqlDscDataFile -FileGroup $fileGroup -Name 'MyDatabase_Data' -FileName 'C:\Data\MyDatabase_Data.mdf' -Force
 
-        Creates a new DataFile for a regular database with a FileGroup.
+        Creates a new DataFile for a regular database with a FileGroup and adds it to the FileGroup.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $database = $serverObject.Databases['MyDatabase']
         $fileGroup = New-SqlDscFileGroup -Database $database -Name 'PRIMARY'
-        $dataFile = $fileGroup | New-SqlDscDataFile -Name 'MySnapshot_Data' -FileName 'C:\Snapshots\MySnapshot_Data.ss'
+        $dataFile = New-SqlDscDataFile -FileGroup $fileGroup -Name 'MySnapshot_Data' -FileName 'C:\Snapshots\MySnapshot_Data.ss' -PassThru -Force
 
-        Creates a new sparse file for a database snapshot using pipeline input.
+        Creates a new sparse file for a database snapshot and returns the DataFile object.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $database = $serverObject.Databases['MyDatabase']
+        $fileGroup = $database.FileGroups['PRIMARY']
+        $dataFile = New-SqlDscDataFile -FileGroup $fileGroup -Name 'AdditionalData' -FileName 'C:\Data\AdditionalData.ndf' -PassThru -Force
+
+        Creates an additional DataFile and returns it for further processing.
 
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.DataFile]`
+        None. Unless -PassThru is specified, in which case it returns `[Microsoft.SqlServer.Management.Smo.DataFile]`.
 #>
 function New-SqlDscDataFile
 {
@@ -50,7 +62,7 @@ function New-SqlDscDataFile
     [OutputType([Microsoft.SqlServer.Management.Smo.DataFile])]
     param
     (
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(Mandatory = $true)]
         [Microsoft.SqlServer.Management.Smo.FileGroup]
         $FileGroup,
 
@@ -66,6 +78,10 @@ function New-SqlDscDataFile
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
+        $PassThru,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
         $Force
     )
 
@@ -76,8 +92,6 @@ function New-SqlDscDataFile
             $ConfirmPreference = 'None'
         }
 
-        $dataFileObject = $null
-
         $descriptionMessage = $script:localizedData.DataFile_Create_ShouldProcessDescription -f $Name, $FileGroup.Name
         $confirmationMessage = $script:localizedData.DataFile_Create_ShouldProcessConfirmation -f $Name
         $captionMessage = $script:localizedData.DataFile_Create_ShouldProcessCaption
@@ -85,8 +99,13 @@ function New-SqlDscDataFile
         if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
         {
             $dataFileObject = [Microsoft.SqlServer.Management.Smo.DataFile]::new($FileGroup, $Name, $FileName)
-        }
 
-        return $dataFileObject
+            $FileGroup.Files.Add($dataFileObject)
+
+            if ($PassThru.IsPresent)
+            {
+                return $dataFileObject
+            }
+        }
     }
 }

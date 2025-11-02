@@ -58,19 +58,48 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
             $mockFileGroupObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.FileGroup' -ArgumentList $mockDatabaseObject, 'PRIMARY'
         }
 
-        It 'Should create a DataFile successfully' {
+        It 'Should create a DataFile and add it to the FileGroup' {
             InModuleScope -Parameters @{
                 mockFileGroupObject = $mockFileGroupObject
             } -ScriptBlock {
                 param ($mockFileGroupObject)
 
-                $result = New-SqlDscDataFile -FileGroup $mockFileGroupObject -Name 'MyDataFile' -FileName 'C:\Data\MyDataFile.mdf' -Confirm:$false
+                $initialFileCount = $mockFileGroupObject.Files.Count
+
+                New-SqlDscDataFile -FileGroup $mockFileGroupObject -Name 'MyDataFile' -FileName 'C:\Data\MyDataFile.mdf' -Confirm:$false
+
+                $mockFileGroupObject.Files.Count | Should -Be ($initialFileCount + 1)
+                $addedFile = $mockFileGroupObject.Files | Where-Object -FilterScript { $_.Name -eq 'MyDataFile' }
+                $addedFile | Should -Not -BeNullOrEmpty
+                $addedFile.FileName | Should -Be 'C:\Data\MyDataFile.mdf'
+            }
+        }
+
+        It 'Should return the created DataFile when PassThru is specified' {
+            InModuleScope -Parameters @{
+                mockFileGroupObject = $mockFileGroupObject
+            } -ScriptBlock {
+                param ($mockFileGroupObject)
+
+                $result = New-SqlDscDataFile -FileGroup $mockFileGroupObject -Name 'PassThruDataFile' -FileName 'C:\Data\PassThruDataFile.mdf' -PassThru -Confirm:$false
 
                 $result | Should -Not -BeNullOrEmpty
                 $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
-                $result.Name | Should -Be 'MyDataFile'
-                $result.FileName | Should -Be 'C:\Data\MyDataFile.mdf'
+                $result.Name | Should -Be 'PassThruDataFile'
+                $result.FileName | Should -Be 'C:\Data\PassThruDataFile.mdf'
                 $result.Parent | Should -Be $mockFileGroupObject
+            }
+        }
+
+        It 'Should not return anything when PassThru is not specified' {
+            InModuleScope -Parameters @{
+                mockFileGroupObject = $mockFileGroupObject
+            } -ScriptBlock {
+                param ($mockFileGroupObject)
+
+                $result = New-SqlDscDataFile -FileGroup $mockFileGroupObject -Name 'NoPassThruDataFile' -FileName 'C:\Data\NoPassThruDataFile.mdf' -Confirm:$false
+
+                $result | Should -BeNullOrEmpty
             }
         }
 
@@ -80,27 +109,15 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
             } -ScriptBlock {
                 param ($mockFileGroupObject)
 
-                $result = New-SqlDscDataFile -FileGroup $mockFileGroupObject -Name 'MySnapshot_Data' -FileName 'C:\Snapshots\MySnapshot_Data.ss' -Confirm:$false
+                $initialFileCount = $mockFileGroupObject.Files.Count
+
+                $result = New-SqlDscDataFile -FileGroup $mockFileGroupObject -Name 'MySnapshot_Data' -FileName 'C:\Snapshots\MySnapshot_Data.ss' -PassThru -Confirm:$false
 
                 $result | Should -Not -BeNullOrEmpty
                 $result.Name | Should -Be 'MySnapshot_Data'
                 $result.FileName | Should -Be 'C:\Snapshots\MySnapshot_Data.ss'
                 $result.Parent | Should -Be $mockFileGroupObject
-            }
-        }
-
-        It 'Should accept FileGroup parameter from pipeline' {
-            InModuleScope -Parameters @{
-                mockFileGroupObject = $mockFileGroupObject
-            } -ScriptBlock {
-                param ($mockFileGroupObject)
-
-                $result = $mockFileGroupObject | New-SqlDscDataFile -Name 'PipelineDataFile' -FileName 'C:\Data\PipelineDataFile.ndf' -Confirm:$false
-
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be 'PipelineDataFile'
-                $result.FileName | Should -Be 'C:\Data\PipelineDataFile.ndf'
-                $result.Parent | Should -Be $mockFileGroupObject
+                $mockFileGroupObject.Files.Count | Should -Be ($initialFileCount + 1)
             }
         }
 
@@ -110,24 +127,30 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
             } -ScriptBlock {
                 param ($mockFileGroupObject)
 
-                $result = New-SqlDscDataFile -FileGroup $mockFileGroupObject -Name 'ForcedDataFile' -FileName 'C:\Data\ForcedDataFile.mdf' -Force
+                $initialFileCount = $mockFileGroupObject.Files.Count
+
+                $result = New-SqlDscDataFile -FileGroup $mockFileGroupObject -Name 'ForcedDataFile' -FileName 'C:\Data\ForcedDataFile.mdf' -PassThru -Force
 
                 $result | Should -Not -BeNullOrEmpty
                 $result.Name | Should -Be 'ForcedDataFile'
                 $result.FileName | Should -Be 'C:\Data\ForcedDataFile.mdf'
                 $result.Parent | Should -Be $mockFileGroupObject
+                $mockFileGroupObject.Files.Count | Should -Be ($initialFileCount + 1)
             }
         }
 
-        It 'Should return null when WhatIf is specified' {
+        It 'Should not add file when WhatIf is specified' {
             InModuleScope -Parameters @{
                 mockFileGroupObject = $mockFileGroupObject
             } -ScriptBlock {
                 param ($mockFileGroupObject)
 
+                $initialFileCount = $mockFileGroupObject.Files.Count
+
                 $result = New-SqlDscDataFile -FileGroup $mockFileGroupObject -Name 'WhatIfDataFile' -FileName 'C:\Data\WhatIfDataFile.mdf' -WhatIf
 
                 $result | Should -BeNullOrEmpty
+                $mockFileGroupObject.Files.Count | Should -Be $initialFileCount
             }
         }
     }
@@ -156,9 +179,10 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
             $parameterInfo.Attributes.Mandatory | Should -Contain $true
         }
 
-        It 'Should have FileGroup parameter accept pipeline input' {
-            $parameterInfo = $commandInfo.Parameters['FileGroup']
-            $parameterInfo.Attributes.ValueFromPipeline | Should -Contain $true
+        It 'Should have PassThru parameter' {
+            $parameterInfo = $commandInfo.Parameters['PassThru']
+            $parameterInfo | Should -Not -BeNullOrEmpty
+            $parameterInfo.ParameterType.Name | Should -Be 'SwitchParameter'
         }
 
         It 'Should support ShouldProcess' {
@@ -177,4 +201,3 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
         }
     }
 }
-
