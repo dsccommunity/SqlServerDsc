@@ -30,16 +30,28 @@ BeforeAll {
 
     # Import the SMO module to ensure real SMO types are available
     Import-SqlDscPreferredModule
+
+    $script:mockInstanceName = 'DSCSQLTEST'
+    $script:mockComputerName = Get-ComputerName
+
+    $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+    $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+    $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
+
+    $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
 }
 
 Describe 'Add-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     Context 'When adding a DataFile to a FileGroup with real SMO types' {
         BeforeEach {
-            # Create real SMO objects
-            $script:testFileGroup = [Microsoft.SqlServer.Management.Smo.FileGroup]::new()
-            $script:testFileGroup.Name = 'TestFileGroup'
-            $script:testDataFile = [Microsoft.SqlServer.Management.Smo.DataFile]::new()
-            $script:testDataFile.Name = 'TestDataFile'
+            # Create real SMO Database and FileGroup objects
+            $script:testDatabase = [Microsoft.SqlServer.Management.Smo.Database]::new()
+            $script:testDatabase.Name = 'TestDatabase'
+            $script:testDatabase.Parent = $script:serverObject
+
+            $script:testFileGroup = New-SqlDscFileGroup -Database $script:testDatabase -Name 'TestFileGroup' -Confirm:$false
+            $script:testDataFile = New-SqlDscDataFile -FileGroup $script:testFileGroup -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf' -Confirm:$false
         }
 
         It 'Should add a DataFile to FileGroup successfully' {
@@ -68,10 +80,8 @@ Describe 'Add-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         }
 
         It 'Should add multiple DataFiles to FileGroup' {
-            $dataFile1 = [Microsoft.SqlServer.Management.Smo.DataFile]::new()
-            $dataFile1.Name = 'DataFile1'
-            $dataFile2 = [Microsoft.SqlServer.Management.Smo.DataFile]::new()
-            $dataFile2.Name = 'DataFile2'
+            $dataFile1 = New-SqlDscDataFile -FileGroup $script:testFileGroup -Name 'DataFile1' -FileName 'C:\Data\DataFile1.ndf' -Confirm:$false
+            $dataFile2 = New-SqlDscDataFile -FileGroup $script:testFileGroup -Name 'DataFile2' -FileName 'C:\Data\DataFile2.ndf' -Confirm:$false
 
             $initialCount = $script:testFileGroup.Files.Count
 
@@ -83,10 +93,8 @@ Describe 'Add-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         }
 
         It 'Should add multiple DataFiles via pipeline and return them with PassThru' {
-            $dataFile1 = [Microsoft.SqlServer.Management.Smo.DataFile]::new()
-            $dataFile1.Name = 'DataFile1'
-            $dataFile2 = [Microsoft.SqlServer.Management.Smo.DataFile]::new()
-            $dataFile2.Name = 'DataFile2'
+            $dataFile1 = New-SqlDscDataFile -FileGroup $script:testFileGroup -Name 'DataFile1' -FileName 'C:\Data\DataFile1.ndf' -Confirm:$false
+            $dataFile2 = New-SqlDscDataFile -FileGroup $script:testFileGroup -Name 'DataFile2' -FileName 'C:\Data\DataFile2.ndf' -Confirm:$false
 
             $result = @($dataFile1, $dataFile2) | Add-SqlDscDataFile -FileGroup $script:testFileGroup -PassThru
 
@@ -98,10 +106,12 @@ Describe 'Add-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
     Context 'When verifying DataFile parent relationship' {
         BeforeEach {
-            $script:testFileGroup = [Microsoft.SqlServer.Management.Smo.FileGroup]::new()
-            $script:testFileGroup.Name = 'TestFileGroup'
-            $script:testDataFile = [Microsoft.SqlServer.Management.Smo.DataFile]::new()
-            $script:testDataFile.Name = 'TestDataFile'
+            $script:testDatabase = [Microsoft.SqlServer.Management.Smo.Database]::new()
+            $script:testDatabase.Name = 'TestDatabase'
+            $script:testDatabase.Parent = $script:serverObject
+
+            $script:testFileGroup = New-SqlDscFileGroup -Database $script:testDatabase -Name 'TestFileGroup' -Confirm:$false
+            $script:testDataFile = New-SqlDscDataFile -FileGroup $script:testFileGroup -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf' -Confirm:$false
         }
 
         It 'Should update DataFile parent reference when added to FileGroup' {

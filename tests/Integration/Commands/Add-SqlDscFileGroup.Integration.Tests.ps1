@@ -30,16 +30,27 @@ BeforeAll {
 
     # Import the SMO module to ensure real SMO types are available
     Import-SqlDscPreferredModule
+
+    $script:mockInstanceName = 'DSCSQLTEST'
+    $script:mockComputerName = Get-ComputerName
+
+    $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+    $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+    $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
+
+    $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
 }
 
 Describe 'Add-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     Context 'When adding a FileGroup to a Database with real SMO types' {
         BeforeEach {
-            # Create real SMO objects
+            # Create real SMO Database object
             $script:testDatabase = [Microsoft.SqlServer.Management.Smo.Database]::new()
             $script:testDatabase.Name = 'TestDatabase'
-            $script:testFileGroup = [Microsoft.SqlServer.Management.Smo.FileGroup]::new()
-            $script:testFileGroup.Name = 'TestFileGroup'
+            $script:testDatabase.Parent = $script:serverObject
+
+            $script:testFileGroup = New-SqlDscFileGroup -Database $script:testDatabase -Name 'TestFileGroup' -Confirm:$false
         }
 
         It 'Should add a FileGroup to Database successfully' {
@@ -68,10 +79,8 @@ Describe 'Add-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
         }
 
         It 'Should add multiple FileGroups to Database' {
-            $fileGroup1 = [Microsoft.SqlServer.Management.Smo.FileGroup]::new()
-            $fileGroup1.Name = 'FileGroup1'
-            $fileGroup2 = [Microsoft.SqlServer.Management.Smo.FileGroup]::new()
-            $fileGroup2.Name = 'FileGroup2'
+            $fileGroup1 = New-SqlDscFileGroup -Database $script:testDatabase -Name 'FileGroup1' -Confirm:$false
+            $fileGroup2 = New-SqlDscFileGroup -Database $script:testDatabase -Name 'FileGroup2' -Confirm:$false
 
             $initialCount = $script:testDatabase.FileGroups.Count
 
@@ -83,10 +92,8 @@ Describe 'Add-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
         }
 
         It 'Should add multiple FileGroups via pipeline and return them with PassThru' {
-            $fileGroup1 = [Microsoft.SqlServer.Management.Smo.FileGroup]::new()
-            $fileGroup1.Name = 'FileGroup1'
-            $fileGroup2 = [Microsoft.SqlServer.Management.Smo.FileGroup]::new()
-            $fileGroup2.Name = 'FileGroup2'
+            $fileGroup1 = New-SqlDscFileGroup -Database $script:testDatabase -Name 'FileGroup1' -Confirm:$false
+            $fileGroup2 = New-SqlDscFileGroup -Database $script:testDatabase -Name 'FileGroup2' -Confirm:$false
 
             $result = @($fileGroup1, $fileGroup2) | Add-SqlDscFileGroup -Database $script:testDatabase -PassThru
 
@@ -100,8 +107,9 @@ Describe 'Add-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
         BeforeEach {
             $script:testDatabase = [Microsoft.SqlServer.Management.Smo.Database]::new()
             $script:testDatabase.Name = 'TestDatabase'
-            $script:testFileGroup = [Microsoft.SqlServer.Management.Smo.FileGroup]::new()
-            $script:testFileGroup.Name = 'TestFileGroup'
+            $script:testDatabase.Parent = $script:serverObject
+
+            $script:testFileGroup = New-SqlDscFileGroup -Database $script:testDatabase -Name 'TestFileGroup' -Confirm:$false
         }
 
         It 'Should update FileGroup parent reference when added to Database' {
@@ -119,20 +127,18 @@ Describe 'Add-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
         BeforeEach {
             $script:testDatabase = [Microsoft.SqlServer.Management.Smo.Database]::new()
             $script:testDatabase.Name = 'TestDatabase'
+            $script:testDatabase.Parent = $script:serverObject
         }
 
         It 'Should create a complete FileGroup with DataFile structure' {
             # Create FileGroup
-            $fileGroup = [Microsoft.SqlServer.Management.Smo.FileGroup]::new()
-            $fileGroup.Name = 'SecondaryFileGroup'
+            $fileGroup = New-SqlDscFileGroup -Database $script:testDatabase -Name 'SecondaryFileGroup' -Confirm:$false
 
             # Create DataFile
-            $dataFile = [Microsoft.SqlServer.Management.Smo.DataFile]::new()
-            $dataFile.Name = 'SecondaryDataFile'
-            $dataFile.FileName = 'C:\Data\SecondaryDataFile.ndf'
+            $dataFile = New-SqlDscDataFile -FileGroup $fileGroup -Name 'SecondaryDataFile' -FileName 'C:\Data\SecondaryDataFile.ndf' -Confirm:$false
 
             # Add DataFile to FileGroup
-            $fileGroup.Files.Add($dataFile)
+            Add-SqlDscDataFile -FileGroup $fileGroup -DataFile $dataFile
 
             # Add FileGroup to Database
             Add-SqlDscFileGroup -Database $script:testDatabase -FileGroup $fileGroup
