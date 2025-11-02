@@ -137,18 +137,17 @@ Describe 'Add-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
             # Create FileGroup
             $fileGroup = New-SqlDscFileGroup -Database $script:testDatabase -Name 'SecondaryFileGroup' -Confirm:$false
 
-            # Create DataFile
-            $dataFile = New-SqlDscDataFile -FileGroup $fileGroup -Name 'SecondaryDataFile' -FileName 'C:\Data\SecondaryDataFile.ndf' -Confirm:$false
-
-            # Add DataFile to FileGroup
-            Add-SqlDscDataFile -FileGroup $fileGroup -DataFile $dataFile
+            # Create DataFile - it will be automatically added to the FileGroup
+            $null = New-SqlDscDataFile -FileGroup $fileGroup -Name 'SecondaryDataFile' -FileName 'C:\Data\SecondaryDataFile.ndf' -Confirm:$false
 
             # Add FileGroup to Database
             Add-SqlDscFileGroup -Database $script:testDatabase -FileGroup $fileGroup
 
             # Verify structure
             $script:testDatabase.FileGroups[$fileGroup.Name] | Should -Be $fileGroup
-            $script:testDatabase.FileGroups[$fileGroup.Name].Files[$dataFile.Name] | Should -Be $dataFile
+            $addedFile = $script:testDatabase.FileGroups[$fileGroup.Name].Files | Where-Object -FilterScript { $_.Name -eq 'SecondaryDataFile' }
+            $addedFile | Should -Not -BeNullOrEmpty
+            $addedFile.FileName | Should -Be 'C:\Data\SecondaryDataFile.ndf'
         }
     }
 }
