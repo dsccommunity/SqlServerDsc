@@ -59,47 +59,51 @@ Describe 'New-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             $script:mockFileGroup = New-SqlDscFileGroup -Database $script:mockDatabase -Name 'TestFileGroup' -Confirm:$false
         }
 
-        It 'Should create a DataFile with FileGroup successfully' {
+        It 'Should create a DataFile and add it to FileGroup without PassThru' {
+            $initialFileCount = $script:mockFileGroup.Files.Count
+
             $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf' -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
-            $result.Name | Should -Be 'TestDataFile'
-            $result.Parent | Should -Be $script:mockFileGroup
+            $result | Should -BeNullOrEmpty
+            $script:mockFileGroup.Files.Count | Should -Be ($initialFileCount + 1)
+
+            $addedFile = $script:mockFileGroup.Files | Where-Object -FilterScript { $_.Name -eq 'TestDataFile' }
+            $addedFile | Should -Not -BeNullOrEmpty
+            $addedFile.FileName | Should -Be 'C:\Data\TestDataFile.ndf'
         }
 
-        It 'Should create a DataFile with FileGroup and FileName' {
-            $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'TestDataFile2' -FileName 'C:\Data\TestDataFile2.ndf' -Confirm:$false
+        It 'Should create a DataFile and return it with PassThru' {
+            $initialFileCount = $script:mockFileGroup.Files.Count
+
+            $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'TestDataFile2' -FileName 'C:\Data\TestDataFile2.ndf' -PassThru -Confirm:$false
 
             $result | Should -Not -BeNullOrEmpty
             $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
             $result.Name | Should -Be 'TestDataFile2'
             $result.FileName | Should -Be 'C:\Data\TestDataFile2.ndf'
             $result.Parent | Should -Be $script:mockFileGroup
-        }
-
-        It 'Should accept FileGroup parameter from pipeline' {
-            $result = $script:mockFileGroup | New-SqlDscDataFile -Name 'PipelineDataFile' -FileName 'C:\Data\PipelineDataFile.ndf' -Confirm:$false
-
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
-            $result.Name | Should -Be 'PipelineDataFile'
-            $result.Parent | Should -Be $script:mockFileGroup
+            $script:mockFileGroup.Files.Count | Should -Be ($initialFileCount + 1)
         }
 
         It 'Should support Force parameter to bypass confirmation' {
-            $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'ForcedDataFile' -FileName 'C:\Data\ForcedDataFile.ndf' -Force
+            $initialFileCount = $script:mockFileGroup.Files.Count
+
+            $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'ForcedDataFile' -FileName 'C:\Data\ForcedDataFile.ndf' -PassThru -Force
 
             $result | Should -Not -BeNullOrEmpty
             $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
             $result.Name | Should -Be 'ForcedDataFile'
             $result.Parent | Should -Be $script:mockFileGroup
+            $script:mockFileGroup.Files.Count | Should -Be ($initialFileCount + 1)
         }
 
-        It 'Should return null when user declines confirmation' {
+        It 'Should not add file when WhatIf is specified' {
+            $initialFileCount = $script:mockFileGroup.Files.Count
+
             $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'DeclinedDataFile' -FileName 'C:\Data\DeclinedDataFile.ndf' -Confirm:$false -WhatIf
 
             $result | Should -BeNullOrEmpty
+            $script:mockFileGroup.Files.Count | Should -Be $initialFileCount
         }
     }
 
@@ -113,22 +117,22 @@ Describe 'New-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             $script:mockFileGroup = New-SqlDscFileGroup -Database $script:mockDatabase -Name 'TestFileGroup' -Confirm:$false
         }
 
-        It 'Should allow setting Size property' {
-            $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf' -Confirm:$false
+        It 'Should allow setting Size property on returned DataFile' {
+            $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf' -PassThru -Confirm:$false
             $result.Size = 1024.0
 
             $result.Size | Should -Be 1024.0
         }
 
-        It 'Should allow setting Growth property' {
-            $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf' -Confirm:$false
+        It 'Should allow setting Growth property on returned DataFile' {
+            $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf' -PassThru -Confirm:$false
             $result.Growth = 64.0
 
             $result.Growth | Should -Be 64.0
         }
 
-        It 'Should allow setting GrowthType property' {
-            $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf' -Confirm:$false
+        It 'Should allow setting GrowthType property on returned DataFile' {
+            $result = New-SqlDscDataFile -FileGroup $script:mockFileGroup -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf' -PassThru -Confirm:$false
             $result.GrowthType = [Microsoft.SqlServer.Management.Smo.FileGrowthType]::Percent
 
             $result.GrowthType | Should -Be 'Percent'
