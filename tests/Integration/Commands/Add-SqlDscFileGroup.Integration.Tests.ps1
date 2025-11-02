@@ -109,7 +109,7 @@ Describe 'Add-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
             $script:testDatabase.Name = 'TestDatabase'
             $script:testDatabase.Parent = $script:serverObject
 
-            $script:testFileGroup = New-SqlDscFileGroup -Database $script:testDatabase -Name 'TestFileGroup' -Confirm:$false
+            $script:testFileGroup = New-SqlDscFileGroup -Name 'TestFileGroup'
         }
 
         It 'Should update FileGroup parent reference when added to Database' {

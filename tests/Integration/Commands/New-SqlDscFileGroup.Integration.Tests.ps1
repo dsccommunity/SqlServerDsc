@@ -108,8 +108,15 @@ Describe 'New-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
     }
 
     Context 'When verifying FileGroup properties' {
-        It 'Should have Files collection initialized' {
-            $result = New-SqlDscFileGroup -Name 'TestFileGroup'
+        BeforeAll {
+            # Create a real SMO Database object
+            $script:propertyTestDatabase = [Microsoft.SqlServer.Management.Smo.Database]::new()
+            $script:propertyTestDatabase.Name = 'PropertyTestDatabase'
+            $script:propertyTestDatabase.Parent = $script:serverObject
+        }
+
+        It 'Should have Files collection initialized when attached to a Database' {
+            $result = New-SqlDscFileGroup -Database $script:propertyTestDatabase -Name 'TestFileGroup' -Confirm:$false
 
             $result.Files | Should -Not -BeNullOrEmpty
             $result.Files | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFileCollection'
