@@ -38,8 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Server FileGroups. This command simplifies creating DataFile objects with
   specified physical file paths, supporting both regular database files (.mdf, .ndf)
   and sparse files for database snapshots (.ss). The `FileGroup` parameter is
-  optional, allowing DataFile objects to be created standalone and assigned to a
-  FileGroup later.
+  mandatory, requiring DataFile objects to be created with an associated FileGroup.
 - Added public command `Add-SqlDscDataFile` to add an existing DataFile object
   to a FileGroup. This command provides a clean way to associate DataFile objects
   with FileGroups after they have been created.
