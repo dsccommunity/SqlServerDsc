@@ -33,6 +33,18 @@ BeforeAll {
 }
 
 Describe 'New-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+    BeforeAll {
+        $script:mockInstanceName = 'DSCSQLTEST'
+        $script:mockComputerName = Get-ComputerName
+
+        $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+        $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+        $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
+
+        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
+    }
+
     Context 'When creating a standalone FileGroup with real SMO types' {
         It 'Should create a standalone FileGroup successfully' {
             $result = New-SqlDscFileGroup -Name 'TestFileGroup'
@@ -55,9 +67,10 @@ Describe 'New-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
     Context 'When creating a FileGroup with a Database object' {
         BeforeAll {
-            # Create a real SMO Database object (not connected to SQL Server)
+            # Create a real SMO Database object
             $script:mockDatabase = [Microsoft.SqlServer.Management.Smo.Database]::new()
             $script:mockDatabase.Name = 'TestDatabase'
+            $script:mockDatabase.Parent = $script:serverObject
         }
 
         It 'Should create a FileGroup with Database successfully' {
