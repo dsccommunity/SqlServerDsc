@@ -78,8 +78,8 @@
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $sourceDb = $serverObject.Databases['MyDatabase']
-        $fileGroup = New-Object Microsoft.SqlServer.Management.Smo.FileGroup -ArgumentList $sourceDb, 'PRIMARY'
-        $dataFile = New-Object Microsoft.SqlServer.Management.Smo.DataFile -ArgumentList $fileGroup, 'MyDatabase_Data', 'C:\Snapshots\MyDatabase_Data.ss'
+        $fileGroup = New-SqlDscFileGroup -Database $sourceDb -Name 'PRIMARY'
+        $dataFile = New-SqlDscDataFile -FileGroup $fileGroup -Name 'MyDatabase_Data' -Path 'C:\Snapshots\MyDatabase_Data.ss'
         $fileGroup.Files.Add($dataFile)
         $serverObject | New-SqlDscDatabase -Name 'MyDatabaseSnapshot' -DatabaseSnapshotBaseName 'MyDatabase' -FileGroup @($fileGroup) -Force
 
