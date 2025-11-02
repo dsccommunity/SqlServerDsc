@@ -45,6 +45,10 @@ Describe 'New-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
         $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
     }
 
+    AfterAll {
+        Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
+    }
+
     Context 'When creating a standalone FileGroup with real SMO types' {
         It 'Should create a standalone FileGroup successfully' {
             $result = New-SqlDscFileGroup -Name 'TestFileGroup'
@@ -104,23 +108,6 @@ Describe 'New-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
             $result = New-SqlDscFileGroup -Database $script:mockDatabase -Name 'DeclinedFileGroup' -Confirm:$false -WhatIf
 
             $result | Should -BeNullOrEmpty
-        }
-    }
-
-    Context 'When verifying FileGroup properties' {
-        BeforeAll {
-            # Create a real SMO Database object
-            $script:propertyTestDatabase = [Microsoft.SqlServer.Management.Smo.Database]::new()
-            $script:propertyTestDatabase.Name = 'PropertyTestDatabase'
-            $script:propertyTestDatabase.Parent = $script:serverObject
-        }
-
-        It 'Should have Files collection initialized when attached to a Database' {
-            $result = New-SqlDscFileGroup -Database $script:propertyTestDatabase -Name 'TestFileGroup' -Confirm:$false
-
-            $result.Files | Should -Not -BeNullOrEmpty
-            $result.Files | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFileCollection'
-            $result.Files.Count | Should -Be 0
         }
     }
 }

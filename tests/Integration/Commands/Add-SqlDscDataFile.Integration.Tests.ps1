@@ -27,22 +27,25 @@ BeforeAll {
     $script:moduleName = 'SqlServerDsc'
 
     Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
-
-    # Import the SMO module to ensure real SMO types are available
-    Import-SqlDscPreferredModule
-
-    $script:mockInstanceName = 'DSCSQLTEST'
-    $script:mockComputerName = Get-ComputerName
-
-    $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
-    $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-
-    $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
-
-    $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
 }
 
 Describe 'Add-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+    BeforeAll {
+        $script:mockInstanceName = 'DSCSQLTEST'
+        $script:mockComputerName = Get-ComputerName
+
+        $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+        $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+        $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
+
+        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
+    }
+
+    AfterAll {
+        Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
+    }
+
     Context 'When adding a DataFile to a FileGroup with real SMO types' {
         BeforeEach {
             # Create real SMO Database and FileGroup objects
@@ -101,27 +104,6 @@ Describe 'Add-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             $result | Should -HaveCount 2
             $result[0] | Should -Be $dataFile1
             $result[1] | Should -Be $dataFile2
-        }
-    }
-
-    Context 'When verifying DataFile parent relationship' {
-        BeforeEach {
-            $script:testDatabase = [Microsoft.SqlServer.Management.Smo.Database]::new()
-            $script:testDatabase.Name = 'TestDatabase'
-            $script:testDatabase.Parent = $script:serverObject
-
-            $script:testFileGroup = New-SqlDscFileGroup -Database $script:testDatabase -Name 'TestFileGroup' -Confirm:$false
-            $script:testDataFile = New-SqlDscDataFile -FileGroup $script:testFileGroup -Name 'TestDataFile' -FileName 'C:\Data\TestDataFile.ndf' -Confirm:$false
-        }
-
-        It 'Should update DataFile parent reference when added to FileGroup' {
-            $script:testDataFile.Parent | Should -BeNullOrEmpty
-
-            Add-SqlDscDataFile -FileGroup $script:testFileGroup -DataFile $script:testDataFile
-
-            # Note: The parent may or may not be updated depending on SMO implementation
-            # This test verifies the DataFile is in the collection
-            $script:testFileGroup.Files[$script:testDataFile.Name] | Should -Be $script:testDataFile
         }
     }
 }

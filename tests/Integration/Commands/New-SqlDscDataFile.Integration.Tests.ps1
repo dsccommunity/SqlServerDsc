@@ -33,7 +33,7 @@ BeforeAll {
 }
 
 Describe 'New-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
-        BeforeAll {
+    BeforeAll {
         $script:mockInstanceName = 'DSCSQLTEST'
         $script:mockComputerName = Get-ComputerName
 
@@ -43,6 +43,10 @@ Describe 'New-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
 
         $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
+    }
+
+    AfterAll {
+        Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
     }
 
     Context 'When creating a DataFile with a FileGroup object' {

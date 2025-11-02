@@ -27,22 +27,25 @@ BeforeAll {
     $script:moduleName = 'SqlServerDsc'
 
     Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
-
-    # Import the SMO module to ensure real SMO types are available
-    Import-SqlDscPreferredModule
-
-    $script:mockInstanceName = 'DSCSQLTEST'
-    $script:mockComputerName = Get-ComputerName
-
-    $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
-    $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-
-    $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
-
-    $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
 }
 
 Describe 'Add-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+    BeforeAll {
+        $script:mockInstanceName = 'DSCSQLTEST'
+        $script:mockComputerName = Get-ComputerName
+
+        $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+        $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+        $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
+
+        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -ErrorAction 'Stop'
+    }
+
+    AfterAll {
+        Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
+    }
+
     Context 'When adding a FileGroup to a Database with real SMO types' {
         BeforeEach {
             # Create real SMO Database object
