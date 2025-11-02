@@ -116,8 +116,6 @@
     .PARAMETER DefaultLanguage
         Specifies the ID of the default language for the database.
 
-    .PARAMETER DefaultSchema
-        Specifies the default schema name for users without an explicit default schema.
 
     .PARAMETER DelayedDurability
         Specifies the delayed durability setting for the database (DISABLED, ALLOWED, FORCED).
@@ -576,10 +574,6 @@ function Set-SqlDscDatabaseProperty
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Collation,
-
-        [Parameter()]
-        [System.String]
-        $DefaultSchema,
 
         [Parameter()]
         [System.String]
