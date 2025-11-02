@@ -38,6 +38,13 @@
         When this parameter is specified, a database snapshot will be created instead
         of a regular database. The snapshot name is specified in the Name parameter.
 
+    .PARAMETER FileGroup
+        Specifies an array of FileGroup objects to add to the database.
+        Each FileGroup can contain DataFile objects with FileName properties
+        specifying the file paths. For database snapshots, the FileName must
+        point to sparse file locations. For regular databases, this allows
+        custom file and filegroup configuration.
+
     .PARAMETER Force
         Specifies that the database should be created without any confirmation.
 
@@ -67,6 +74,17 @@
 
         Creates a database snapshot named **MyDatabaseSnapshot** from the source database **MyDatabase**
         without prompting for confirmation.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $sourceDb = $serverObject.Databases['MyDatabase']
+        $fileGroup = New-Object Microsoft.SqlServer.Management.Smo.FileGroup -ArgumentList $sourceDb, 'PRIMARY'
+        $dataFile = New-Object Microsoft.SqlServer.Management.Smo.DataFile -ArgumentList $fileGroup, 'MyDatabase_Data', 'C:\Snapshots\MyDatabase_Data.ss'
+        $fileGroup.Files.Add($dataFile)
+        $serverObject | New-SqlDscDatabase -Name 'MyDatabaseSnapshot' -DatabaseSnapshotBaseName 'MyDatabase' -FileGroup @($fileGroup) -Force
+
+        Creates a database snapshot named **MyDatabaseSnapshot** from the source database **MyDatabase**
+        with a specified sparse file location without prompting for confirmation.
 
     .OUTPUTS
         `[Microsoft.SqlServer.Management.Smo.Database]`
@@ -114,6 +132,10 @@ function New-SqlDscDatabase
         [ValidateNotNullOrEmpty()]
         [System.String]
         $DatabaseSnapshotBaseName,
+
+        [Parameter()]
+        [Microsoft.SqlServer.Management.Smo.FileGroup[]]
+        $FileGroup,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -280,6 +302,12 @@ function New-SqlDscDatabase
                     {
                         $sqlDatabaseObjectToCreate.CompatibilityLevel = $CompatibilityLevel
                     }
+                }
+
+                # Add FileGroups if provided (applies to both regular databases and snapshots)
+                if ($PSBoundParameters.ContainsKey('FileGroup'))
+                {
+                    Add-SqlDscFileGroup -Database $sqlDatabaseObjectToCreate -FileGroup $FileGroup
                 }
 
                 Write-Verbose -Message ($script:localizedData.Database_Creating -f $Name)
