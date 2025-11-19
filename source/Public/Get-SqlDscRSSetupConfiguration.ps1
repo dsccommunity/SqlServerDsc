@@ -92,20 +92,20 @@ function Get-SqlDscRSSetupConfiguration
         Write-Verbose -Message ($script:localizedData.Get_SqlDscRSSetupConfiguration_ProcessingInstance -f $instance.InstanceName)
 
         $returnObject = [PSCustomObject]@{
-            InstanceName                  = $instance.InstanceName
-            InstallFolder                 = $null
-            ServiceName                   = $null
-            ErrorDumpDirectory            = $null
-            CurrentVersion                = $null
-            CustomerFeedback              = $null
-            EnableErrorReporting          = $null
-            ProductVersion                = $null
-            VirtualRootServer             = $null
-            ConfigFilePath                = $null
-            EditionID                     = $null
-            EditionName                   = $null
-            IsSharePointIntegrated        = $null
-            InstanceId                    = $null
+            InstanceName           = $instance.InstanceName
+            InstallFolder          = $null
+            ServiceName            = $null
+            ErrorDumpDirectory     = $null
+            CurrentVersion         = $null
+            CustomerFeedback       = $null
+            EnableErrorReporting   = $null
+            ProductVersion         = $null
+            VirtualRootServer      = $null
+            ConfigFilePath         = $null
+            EditionID              = $null
+            EditionName            = $null
+            IsSharePointIntegrated = $null
+            InstanceId             = $instance.InstanceId
         }
 
         Write-Verbose -Message ($script:localizedData.Get_SqlDscRSSetupConfiguration_FoundInstance -f $instance.InstanceName)
@@ -115,11 +115,21 @@ function Get-SqlDscRSSetupConfiguration
         }
 
         # Get values from SSRS\Setup registry key
-        $getRegistryPropertyValueParameters.Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\Setup' -f $instance.InstanceName
+        $getRegistryPropertyValueParameters.Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\Setup' -f $returnObject.InstanceId
 
         # InstallRootDirectory
         $getRegistryPropertyValueParameters.Name = 'InstallRootDirectory'
         $returnObject.InstallFolder = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
+        # Fallback to SQLPath if InstallRootDirectory is not found. This is the case for SQL 2016 and earlier.
+        if ($null -eq $returnObject.InstallFolder)
+        {
+            $getRegistryPropertyValueParameters.Name = 'SQLPath'
+            $returnObject.InstallFolder = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
+            if ($null -ne $returnObject.InstallFolder)
+            {
+                $returnObject.InstallFolder = $returnObject.InstallFolder.TrimEnd('\')
+            }
+        }
 
         # ServiceName
         $getRegistryPropertyValueParameters.Name = 'ServiceName'
@@ -134,7 +144,7 @@ function Get-SqlDscRSSetupConfiguration
         $returnObject.ConfigFilePath = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
 
         # Get values from SSRS\CPE registry key
-        $getRegistryPropertyValueParameters.Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\CPE' -f $instance.InstanceName
+        $getRegistryPropertyValueParameters.Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\CPE' -f $returnObject.InstanceId
 
         # ErrorDumpDir
         $getRegistryPropertyValueParameters.Name = 'ErrorDumpDir'
@@ -149,7 +159,7 @@ function Get-SqlDscRSSetupConfiguration
         $returnObject.EnableErrorReporting = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
 
         # Get values from SSRS\MSSQLServer\CurrentVersion registry key
-        $getRegistryPropertyValueParameters.Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\MSSQLServer\CurrentVersion' -f $instance.InstanceName
+        $getRegistryPropertyValueParameters.Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\MSSQLServer\CurrentVersion' -f $returnObject.InstanceId
 
         # CurrentVersion from registry
         $getRegistryPropertyValueParameters.Name = 'CurrentVersion'
@@ -165,6 +175,9 @@ function Get-SqlDscRSSetupConfiguration
 
             # Get values from MSReportServer_Instance
             $msReportServerInstance = Get-CimInstance -Namespace ('root\Microsoft\SqlServer\ReportServer\RS_{0}\v{1}' -f $instance.InstanceName, $reportServerCurrentVersion.Major) -ClassName 'MSReportServer_Instance' -ErrorAction 'SilentlyContinue'
+            $msReportServerInstance = $msReportServerInstance | Where-Object -FilterScript {
+                $_.InstanceId -eq $returnObject.InstanceId
+            }
 
             if ($msReportServerInstance)
             {
