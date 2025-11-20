@@ -174,11 +174,13 @@ function Get-SqlDscRSSetupConfiguration
             $reportServerCurrentVersion = [System.Version] $returnObject.CurrentVersion
 
             # Get values from MSReportServer_Instance
-            $msReportServerInstance = Get-CimInstance -Namespace ('root\Microsoft\SqlServer\ReportServer\RS_{0}\v{1}' -f $instance.InstanceName, $reportServerCurrentVersion.Major) -ClassName 'MSReportServer_Instance' -ErrorAction 'SilentlyContinue'
-            $msReportServerInstance = $msReportServerInstance | Where-Object -FilterScript {
-                $_.InstanceId -eq $returnObject.InstanceId
+            $getCimInstanceParameters = @{
+                Filter = "InstanceId='{0}'" -f $returnObject.InstanceId
+                Namespace = 'root\Microsoft\SqlServer\ReportServer\RS_{0}\v{1}' -f $instance.InstanceName, $reportServerCurrentVersion.Major
+                ClassName = 'MSReportServer_Instance'
+                ErrorAction = 'SilentlyContinue'
             }
-
+            $msReportServerInstance = Get-CimInstance @getCimInstanceParameters
             if ($msReportServerInstance)
             {
                 $returnObject.EditionID = $msReportServerInstance.EditionID
