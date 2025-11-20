@@ -298,7 +298,6 @@ ConvertFrom-StringData @'
     Get_SqlDscRSConfigurationSetting_CurrentVersionEmpty = Cannot get configuration settings for Reporting Services instance '{0}' because CurrentVersion is not available. The instance may not be properly installed or initialized.
     Get_SqlDscRSConfigurationSetting_InvalidVersion = Cannot parse CurrentVersion '{0}' for Reporting Services instance '{1}'. The version format is invalid.
     Get_SqlDscRSConfigurationSetting_ConfigurationNotFound = Could not find MSReportServer_ConfigurationSetting for instance '{0}' in namespace '{1}'. Error: {2}
-    Get_SqlDscRSConfigurationSetting_InstanceNotFoundInNamespace = Instance '{0}' not found in namespace '{1}'.
 
     ## Test-SqlDscRSInstalled
     Test_SqlDscRSInstalled_Checking = Checking if Reporting Services instance '{0}' is installed.
