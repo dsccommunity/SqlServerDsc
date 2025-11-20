@@ -46,10 +46,10 @@
         - DatabaseLogonType: The database login type.
         - DatabaseLogonAccount: The database login account.
         - ServiceAccount: The Windows service account (from WindowsServiceIdentityActual).
-        - WebServiceVirtualDirectory: The Web service virtual directory (from VirtualDirectoryReportServer).
-        - WebPortalVirtualDirectory: The Web portal virtual directory (from VirtualDirectoryReportManager or VirtualDirectoryReportServerWebApp).
-        - WebPortalApplicationName: The Web portal application name (ReportServerWebApp or ReportManager).
         - WebServiceApplicationName: The Web service application name (ReportServerWebService).
+        - WebServiceVirtualDirectory: The Web service virtual directory (from VirtualDirectoryReportServer).
+        - WebPortalApplicationName: The Web portal application name (ReportServerWebApp or ReportManager).
+        - WebPortalVirtualDirectory: The Web portal virtual directory (from VirtualDirectoryReportManager).
 #>
 function Get-SqlDscRSConfigurationSetting
 {
