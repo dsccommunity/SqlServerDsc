@@ -47,6 +47,25 @@ AfterAll {
 }
 
 Describe 'Get-SqlDscRSConfigurationSetting' {
+    Context 'When validating parameter sets' {
+        It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
+            @{
+                ExpectedParameterSetName = '__AllParameterSets'
+                ExpectedParameters = '[[-InstanceName] <string>] [<CommonParameters>]'
+            }
+        ) {
+            $result = (Get-Command -Name 'Get-SqlDscRSConfigurationSetting').ParameterSets |
+                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
+                Select-Object -Property @(
+                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
+                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
+                )
+
+            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should -Be $ExpectedParameters
+        }
+    }
+
     Context 'When getting all Reporting Services instances' {
         BeforeAll {
             # Mock setup configuration objects
@@ -142,9 +161,9 @@ Describe 'Get-SqlDscRSConfigurationSetting' {
             $ssrsResult.InstanceName | Should -Be 'SSRS'
             $ssrsResult.Version | Should -Be '15.0.1.0'
             $ssrsResult.PathName | Should -Be 'C:\Program Files\Microsoft SQL Server Reporting Services\SSRS'
-            $ssrsResult.IsInitialized | Should -Be $true
+            $ssrsResult.IsInitialized | Should -BeTrue
             $ssrsResult.ServiceAccount | Should -Be 'NT SERVICE\ReportServer'
-            $ssrsResult.IsTlsConfigured | Should -Be $false
+            $ssrsResult.IsTlsConfigured | Should -BeFalse
             $ssrsResult.WebServiceVirtualDirectory | Should -Be 'ReportServer'
             $ssrsResult.WebPortalVirtualDirectory | Should -Be 'Reports'
             $ssrsResult.WebPortalApplicationName | Should -Be 'ReportServerWebApp'
@@ -231,15 +250,8 @@ Describe 'Get-SqlDscRSConfigurationSetting' {
         }
 
         It 'Should throw a terminating error when the currentVersion is null' {
-            try
-            {
-                Get-SqlDscRSConfigurationSetting
-            }
-            catch
-            {
-                $_.CategoryInfo.Category | Should -Be 'InvalidOperation'
-                $_.FullyQualifiedErrorId | Should -Be 'GSDCRSCS0001,Get-SqlDscRSConfigurationSetting'
-            }
+            { Get-SqlDscRSConfigurationSetting } |
+                Should -Throw -ErrorId 'GSDCRSCS0001,Get-SqlDscRSConfigurationSetting'
         }
     }
 
@@ -256,15 +268,8 @@ Describe 'Get-SqlDscRSConfigurationSetting' {
         }
 
         It 'Should throw a terminating error when the currentVersion is invalid' {
-            try
-            {
-                Get-SqlDscRSConfigurationSetting
-            }
-            catch
-            {
-                $_.CategoryInfo.Category | Should -Be 'InvalidArgument'
-                $_.FullyQualifiedErrorId | Should -Be 'GSDCRSCS0002,Get-SqlDscRSConfigurationSetting'
-            }
+            { Get-SqlDscRSConfigurationSetting } |
+                Should -Throw -ErrorId 'GSDCRSCS0002,Get-SqlDscRSConfigurationSetting'
         }
     }
 
@@ -288,15 +293,8 @@ Describe 'Get-SqlDscRSConfigurationSetting' {
         }
 
         It 'Should throw a terminating error when Get-CimInstance throws an error' {
-            try
-            {
-                Get-SqlDscRSConfigurationSetting
-            }
-            catch
-            {
-                $_.CategoryInfo.Category | Should -Be 'InvalidOperation'
-                $_.FullyQualifiedErrorId | Should -Be 'GSDCRSCS0003,Get-SqlDscRSConfigurationSetting'
-            }
+            { Get-SqlDscRSConfigurationSetting } |
+                Should -Throw -ErrorId 'GSDCRSCS0003,Get-SqlDscRSConfigurationSetting'
         }
     }
 
@@ -352,7 +350,7 @@ Describe 'Get-SqlDscRSConfigurationSetting' {
             $result = Get-SqlDscRSConfigurationSetting
 
             $result | Should -Not -BeNullOrEmpty
-            $result[0].IsTlsConfigured | Should -Be $false
+            $result[0].IsTlsConfigured | Should -BeFalse
         }
     }
 
@@ -408,7 +406,7 @@ Describe 'Get-SqlDscRSConfigurationSetting' {
             $result = Get-SqlDscRSConfigurationSetting
 
             $result | Should -Not -BeNullOrEmpty
-            $result[0].IsTlsConfigured | Should -Be $true
+            $result[0].IsTlsConfigured | Should -BeTrue
         }
     }
 
