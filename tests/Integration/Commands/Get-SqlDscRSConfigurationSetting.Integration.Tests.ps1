@@ -33,7 +33,7 @@ Describe 'Get-SqlDscRSConfigurationSetting' {
     Context 'When getting the configuration settings for SQL Server Reporting Services instance' -Tag @('Integration_SQL2017_RS') {
         It 'Should return the correct configuration settings for SSRS instance' {
             # Get the SSRS configuration settings
-            $result = Get-SqlDscRSConfigurationSetting -InstanceName 'SSRS'
+            $result = Get-SqlDscRSConfigurationSetting -InstanceName 'SSRS' -ErrorAction 'Stop'
 
             # Verify the result
             $result | Should -Not -BeNullOrEmpty
@@ -61,13 +61,13 @@ Describe 'Get-SqlDscRSConfigurationSetting' {
     Context 'When getting the configuration settings for SQL Server Reporting Services instance' -Tag @('Integration_SQL2019_RS') {
         It 'Should return the correct configuration settings for SSRS instance' {
             # Get the SSRS configuration settings
-            $result = Get-SqlDscRSConfigurationSetting -InstanceName 'SSRS'
+            $result = Get-SqlDscRSConfigurationSetting -InstanceName 'SSRS' -ErrorAction 'Stop'
 
             # Verify the result
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'SSRS'
             [System.Version] $result.Version | Should -BeGreaterOrEqual ([System.Version] '15.0.1103.41')
-            $result.PathName | Should be 'C:\Program Files\Microsoft SQL Server Reporting Services\SSRS\ReportServer\rsreportserver.config'
+            $result.PathName | Should -Be 'C:\Program Files\Microsoft SQL Server Reporting Services\SSRS\ReportServer\rsreportserver.config'
             $result.InstallationID | Should -Not -BeNullOrEmpty
             $result.IsInitialized | Should -BeTrue
             $result.IsSharePointIntegrated | Should -BeFalse
@@ -89,13 +89,13 @@ Describe 'Get-SqlDscRSConfigurationSetting' {
     Context 'When getting the configuration settings for SQL Server Reporting Services instance' -Tag @('Integration_SQL2022_RS') {
         It 'Should return the correct configuration settings for SSRS instance' {
             # Get the SSRS configuration settings
-            $result = Get-SqlDscRSConfigurationSetting -InstanceName 'SSRS'
+            $result = Get-SqlDscRSConfigurationSetting -InstanceName 'SSRS' -ErrorAction 'Stop'
 
             # Verify the result
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'SSRS'
             [System.Version] $result.Version | Should -BeGreaterOrEqual ([System.Version] '16.0.1116.38')
-            $result.PathName | Should be 'C:\Program Files\Microsoft SQL Server Reporting Services\SSRS\ReportServer\rsreportserver.config'
+            $result.PathName | Should -Be 'C:\Program Files\Microsoft SQL Server Reporting Services\SSRS\ReportServer\rsreportserver.config'
             $result.InstallationID | Should -Not -BeNullOrEmpty
             $result.IsInitialized | Should -BeTrue
             $result.IsSharePointIntegrated | Should -BeFalse
