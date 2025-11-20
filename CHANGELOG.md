@@ -25,6 +25,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added public command `Get-SqlDscRSConfigurationSetting` to retrieve SQL Server
+  Reporting Services configuration settings from the MSReportServer_ConfigurationSetting
+  WMI class. The command returns configuration information including initialization
+  status, database configuration, virtual directories, service account, TLS configuration,
+  and other settings. It supports retrieving settings for all instances or a specific
+  instance by name. The command uses `Get-SqlDscRSSetupConfiguration` to discover
+  instances and determine the SQL version for proper WMI namespace construction.
+  Properties returned are limited to those available in the MSReportServer_ConfigurationSetting
+  class, with `SecureConnectionLevel` converted to boolean `IsTlsConfigured` property
+  [issue #2011](https://github.com/dsccommunity/SqlServerDsc/issues/2011).
 - Added public command `Set-SqlDscDatabaseOwner` to change the owner of a SQL Server
   database [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
   This command uses the SMO `SetOwner()` method and supports both `ServerObject`
