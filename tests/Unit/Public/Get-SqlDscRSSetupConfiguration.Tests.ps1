@@ -521,4 +521,117 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             } -Exactly -Times 0
         }
     }
+
+    Context 'When getting SSRS 2016 instance installed to the drive root' {
+        BeforeAll {
+            $mockSSRS2016Instance = @{
+                InstanceName = 'MSSQLSERVER'
+                InstanceId   = 'MSRS13.MSSQLSERVER'
+                ServiceName  = 'ReportServer'
+            }
+
+            # Mock registry values
+            $mockSQLPath = 'C:\'
+            $mockServiceName = $null
+            $mockVirtualRootServer = 'ReportServer'
+            $mockConfigFilePath = $null
+            $mockErrorDumpDirectory = $null
+            $mockProductVersion = $null
+            $mockCustomerFeedback = 1
+            $mockEnableErrorReporting = 1
+            $mockCurrentVersion = '13.0.6404.1'
+
+            Mock -CommandName Get-SqlDscInstalledInstance -MockWith {
+                return @($mockSSRS2016Instance)
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'InstallRootDirectory'
+            } -MockWith {
+                return $null
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'SQLPath'
+            } -MockWith {
+                return $mockSQLPath
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'ServiceName'
+            } -MockWith {
+                return $mockServiceName
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'RSVirtualRootServer'
+            } -MockWith {
+                return $mockVirtualRootServer
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'RsConfigFilePath'
+            } -MockWith {
+                return $mockConfigFilePath
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\CPE' -and
+                $Name -eq 'ErrorDumpDir'
+            } -MockWith {
+                return $mockErrorDumpDirectory
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\CPE' -and
+                $Name -eq 'CustomerFeedback'
+            } -MockWith {
+                return $mockCustomerFeedback
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\CPE' -and
+                $Name -eq 'EnableErrorReporting'
+            } -MockWith {
+                return $mockEnableErrorReporting
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\MSSQLServer\CurrentVersion' -and
+                $Name -eq 'CurrentVersion'
+            } -MockWith {
+                return $mockCurrentVersion
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\MSSQLServer\CurrentVersion' -and
+                $Name -eq 'ProductVersion'
+            } -MockWith {
+                return $mockProductVersion
+            }
+
+            Mock -CommandName Get-CimInstance -MockWith {
+                return @(
+                    [PSCustomObject] @{
+                        EditionID              = 610778273
+                        EditionName            = 'SQL Server Developer'
+                        IsSharePointIntegrated = $false
+                        InstanceId             = 'MSRS13.MSSQLSERVER'
+                    }
+                )
+            }
+        }
+
+        It 'Should return correct install folder' {
+            $result = Get-SqlDscRSSetupConfiguration -InstanceName 'MSSQLSERVER'
+
+            $result.InstallFolder | Should -Be $mockSQLPath
+
+        }
+    }
 }

@@ -125,7 +125,7 @@ function Get-SqlDscRSSetupConfiguration
         {
             $getRegistryPropertyValueParameters.Name = 'SQLPath'
             $returnObject.InstallFolder = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
-            if ($null -ne $returnObject.InstallFolder)
+            if (($null -ne $returnObject.InstallFolder) -and ($returnObject.InstallFolder -notmatch '^[A-Za-z]:\\?$'))
             {
                 $returnObject.InstallFolder = $returnObject.InstallFolder.TrimEnd('\')
             }
