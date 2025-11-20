@@ -54,7 +54,7 @@
 function Get-SqlDscRSConfigurationSetting
 {
     [CmdletBinding()]
-    [OutputType([PSCustomObject[]])]
+    [OutputType([System.Management.Automation.PSCustomObject])]
     param
     (
         [Parameter()]
