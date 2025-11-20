@@ -156,7 +156,7 @@ function Get-SqlDscRSConfigurationSetting
         }
         catch
         {
-            $errorMessage = $script:localizedData.Get_SqlDscRSConfigurationSetting_ConfigurationNotFound -f $setupConfig.InstanceName, $namespace, $_.Exception.Message
+            $errorMessage = $script:localizedData.Get_SqlDscRSConfigurationSetting_ConfigurationNotFound -f $setupConfig.InstanceName, $getCimInstanceParameters.Namespace, $_.Exception.Message
 
             $PSCmdlet.ThrowTerminatingError(
                 [System.Management.Automation.ErrorRecord]::new(
