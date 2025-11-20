@@ -481,14 +481,12 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             }
 
             Mock -CommandName Get-CimInstance -MockWith {
-                return @(
-                    [PSCustomObject] @{
-                        EditionID              = 610778273
-                        EditionName            = 'SQL Server Developer'
-                        IsSharePointIntegrated = $false
-                        InstanceId             = 'MSRS13.MSSQLSERVER'
-                    }
-                )
+                return [PSCustomObject] @{
+                    EditionID              = 610778273
+                    EditionName            = 'SQL Server Developer'
+                    IsSharePointIntegrated = $false
+                    InstanceId             = 'MSRS13.MSSQLSERVER'
+                }
             }
         }
 
@@ -513,12 +511,60 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
 
             # Verify that registry paths used InstanceId, not InstanceName
             Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
-                $Path -like 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER*'
-            } -Exactly -Times 10
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'InstallRootDirectory'
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'SQLPath'
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'ServiceName'
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'RSVirtualRootServer'
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'RsConfigFilePath'
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\CPE' -and
+                $Name -eq 'ErrorDumpDir'
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\CPE' -and
+                $Name -eq 'CustomerFeedback'
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\CPE' -and
+                $Name -eq 'EnableErrorReporting'
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\MSSQLServer\CurrentVersion' -and
+                $Name -eq 'CurrentVersion'
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\MSSQLServer\CurrentVersion' -and
+                $Name -eq 'ProductVersion'
+            } -Exactly -Times 1
 
             Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
                 $Path -like 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQLSERVER*'
             } -Exactly -Times 0
+
+            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1
         }
     }
 
@@ -545,10 +591,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
                 return @($mockSSRS2016Instance)
             }
 
-            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
-                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
-                $Name -eq 'InstallRootDirectory'
-            } -MockWith {
+            Mock -CommandName Get-RegistryPropertyValue  -MockWith {
                 return $null
             }
 
@@ -557,73 +600,6 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
                 $Name -eq 'SQLPath'
             } -MockWith {
                 return $mockSQLPath
-            }
-
-            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
-                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
-                $Name -eq 'ServiceName'
-            } -MockWith {
-                return $mockServiceName
-            }
-
-            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
-                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
-                $Name -eq 'RSVirtualRootServer'
-            } -MockWith {
-                return $mockVirtualRootServer
-            }
-
-            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
-                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
-                $Name -eq 'RsConfigFilePath'
-            } -MockWith {
-                return $mockConfigFilePath
-            }
-
-            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
-                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\CPE' -and
-                $Name -eq 'ErrorDumpDir'
-            } -MockWith {
-                return $mockErrorDumpDirectory
-            }
-
-            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
-                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\CPE' -and
-                $Name -eq 'CustomerFeedback'
-            } -MockWith {
-                return $mockCustomerFeedback
-            }
-
-            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
-                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\CPE' -and
-                $Name -eq 'EnableErrorReporting'
-            } -MockWith {
-                return $mockEnableErrorReporting
-            }
-
-            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
-                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\MSSQLServer\CurrentVersion' -and
-                $Name -eq 'CurrentVersion'
-            } -MockWith {
-                return $mockCurrentVersion
-            }
-
-            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
-                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\MSSQLServer\CurrentVersion' -and
-                $Name -eq 'ProductVersion'
-            } -MockWith {
-                return $mockProductVersion
-            }
-
-            Mock -CommandName Get-CimInstance -MockWith {
-                return @(
-                    [PSCustomObject] @{
-                        EditionID              = 610778273
-                        EditionName            = 'SQL Server Developer'
-                        IsSharePointIntegrated = $false
-                        InstanceId             = 'MSRS13.MSSQLSERVER'
-                    }
-                )
             }
         }
 
