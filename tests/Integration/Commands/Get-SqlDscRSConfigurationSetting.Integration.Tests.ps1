@@ -117,7 +117,7 @@ Describe 'Get-SqlDscRSConfigurationSetting' {
     Context 'When getting all Reporting Services instances' -Tag @('Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
         It 'Should return configuration settings for all instances' {
             # Get all SSRS configuration settings
-            $result = Get-SqlDscRSConfigurationSetting
+            $result = Get-SqlDscRSConfigurationSetting -ErrorAction 'Stop'
 
             # Verify the result
             $result | Should -Not -BeNullOrEmpty
