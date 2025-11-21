@@ -129,6 +129,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `Get-SqlDscRSSetupConfiguration`
+  - Fixed issue where the function doesn't provide an output for SSRS 2016 instances
+    because registry paths were using `InstanceName` instead of `InstanceId`.
+    [issue #2346](https://github.com/dsccommunity/SqlServerDsc/issues/2346).
+  - Added fallback to `SQLPath` registry value for SQL 2016 and earlier when
+    `InstallRootDirectory` is not found [issue #2346](https://github.com/dsccommunity/SqlServerDsc/issues/2346).
+  - Added filtering to `MSReportServer_Instance` retrieval logic to handle the case
+    with many SSRSs.
 - `SqlRS`
   - Obtain the Reporting service name from WMI for version 14 and higher.
     [issue #2313](https://github.com/dsccommunity/SqlServerDsc/issues/2313)
