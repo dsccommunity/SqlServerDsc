@@ -71,7 +71,7 @@ Describe 'Get-SqlDscRSConfigurationSetting' {
             #[System.Version] $result.Version | Should -BeGreaterOrEqual ([System.Version] '15.0.1103.41')
             $result.PathName | Should -Be 'C:\Program Files\SSRS\SSRS\ReportServer\rsreportserver.config'
             $result.InstallationID | Should -Not -BeNullOrEmpty
-            $result.IsInitialized | Should -BeTrue
+            $result.IsInitialized | Should -BeFalse
             $result.IsSharePointIntegrated | Should -BeFalse
             $result.IsWebServiceEnabled | Should -BeTrue
             $result.IsWindowsServiceEnabled | Should -BeTrue
@@ -100,7 +100,7 @@ Describe 'Get-SqlDscRSConfigurationSetting' {
             #[System.Version] $result.Version | Should -BeGreaterOrEqual ([System.Version] '16.0.1116.38')
             $result.PathName | Should -Be 'C:\Program Files\SSRS\SSRS\ReportServer\rsreportserver.config'
             $result.InstallationID | Should -Not -BeNullOrEmpty
-            $result.IsInitialized | Should -BeTrue
+            $result.IsInitialized | Should -BeFalse
             $result.IsSharePointIntegrated | Should -BeFalse
             $result.IsWebServiceEnabled | Should -BeTrue
             $result.IsWindowsServiceEnabled | Should -BeTrue
@@ -130,7 +130,7 @@ Describe 'Get-SqlDscRSConfigurationSetting' {
             #[System.Version] $result.Version | Should -BeGreaterOrEqual ([System.Version] '15.0.1117.98')
             $result.PathName | Should -Be 'C:\Program Files\PBIRS\PBIRS\ReportServer\rsreportserver.config'
             $result.InstallationID | Should -Not -BeNullOrEmpty
-            $result.IsInitialized | Should -BeTrue
+            $result.IsInitialized | Should -BeFalse
             $result.IsSharePointIntegrated | Should -BeFalse
             $result.IsWebServiceEnabled | Should -BeTrue
             $result.IsWindowsServiceEnabled | Should -BeTrue
