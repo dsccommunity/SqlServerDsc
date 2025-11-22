@@ -13,12 +13,19 @@
     .PARAMETER DataFileSpec
         The DatabaseFileSpec object containing the data file configuration.
 
+    .INPUTS
+        None
+
+        This command does not accept pipeline input.
+
     .OUTPUTS
         Microsoft.SqlServer.Management.Smo.DataFile
 
+        Returns a SMO DataFile object bound to the provided FileGroup.
+
     .EXAMPLE
         $fileSpec = New-SqlDscDataFile -Name 'TestDB_Data' -FileName 'C:\SQLData\TestDB.mdf' -AsSpec
-        $fileGroup = New-Object Microsoft.SqlServer.Management.Smo.FileGroup($database, 'PRIMARY')
+        $fileGroup = [Microsoft.SqlServer.Management.Smo.FileGroup]::new($database, 'PRIMARY')
         $dataFile = ConvertTo-SqlDscDataFile -FileGroupObject $fileGroup -DataFileSpec $fileSpec
 
         Converts a DatabaseFileSpec to a SMO DataFile object.
