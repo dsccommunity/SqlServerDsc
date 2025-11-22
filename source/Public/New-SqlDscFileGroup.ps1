@@ -172,8 +172,6 @@ function New-SqlDscFileGroup
         {
             if ($PSCmdlet.ParameterSetName -eq 'WithDatabaseFromSpec')
             {
-                Write-Verbose -Message ('Creating file group: {0}' -f $FileGroupSpec.Name)
-
                 # Convert the spec object to SMO FileGroup
                 $fileGroupObject = ConvertTo-SqlDscFileGroup -DatabaseObject $Database -FileGroupSpec $FileGroupSpec
             }
