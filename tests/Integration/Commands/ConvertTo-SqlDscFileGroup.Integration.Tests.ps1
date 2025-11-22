@@ -162,7 +162,7 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_
 
             $result | Should -Not -BeNullOrEmpty
             $result.Files.Count | Should -Be 2
-            
+
             # Verify primary file properties
             $result.Files[0].Name | Should -Be 'PrimaryFile'
             $result.Files[0].IsPrimaryFile | Should -Be $true
@@ -170,7 +170,7 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_
             $result.Files[0].MaxSize | Should -Be 2000
             $result.Files[0].Growth | Should -Be 20
             $result.Files[0].GrowthType | Should -Be 'KB'
-            
+
             # Verify secondary file properties
             $result.Files[1].Name | Should -Be 'SecondaryFile'
             $result.Files[1].Size | Should -Be 100
