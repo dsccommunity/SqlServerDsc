@@ -30,6 +30,10 @@
         or passed directly to New-SqlDscDatabase to define data files before
         the database is created.
 
+        When this parameter is used, the command always returns a DatabaseFileSpec
+        object, regardless of the PassThru parameter, and the FileGroup parameter
+        is not available.
+
     .PARAMETER Size
         Specifies the initial size of the data file in kilobytes. Only valid when
         used with the -AsSpec parameter to create a DatabaseFileSpec object.
@@ -57,6 +61,8 @@
 
     .PARAMETER PassThru
         Returns the DataFile object that was created and added to the FileGroup.
+        Only available when using the Standard or FromSpec parameter sets. When
+        using the AsSpec parameter set, a DatabaseFileSpec object is always returned.
 
     .PARAMETER Force
         Specifies that the DataFile object should be created without prompting for
@@ -99,7 +105,9 @@
         Creates a DatabaseFileSpec object with all properties set directly via parameters.
 
     .OUTPUTS
-        None. Unless -PassThru is specified, in which case it returns `[Microsoft.SqlServer.Management.Smo.DataFile]`.
+        None. Unless -PassThru is specified for the Standard or FromSpec parameter
+        sets, in which case it returns `[Microsoft.SqlServer.Management.Smo.DataFile]`.
+        When using the -AsSpec parameter, always returns `[DatabaseFileSpec]`.
 #>
 function New-SqlDscDataFile
 {
@@ -239,8 +247,6 @@ function New-SqlDscDataFile
     {
         if ($PSCmdlet.ParameterSetName -eq 'FromSpec')
         {
-            Write-Verbose -Message ('  Creating data file: {0}' -f $DataFileSpec.Name)
-
             # Convert the spec object to SMO DataFile
             $dataFileObject = ConvertTo-SqlDscDataFile -FileGroupObject $FileGroup -DataFileSpec $DataFileSpec
         }
