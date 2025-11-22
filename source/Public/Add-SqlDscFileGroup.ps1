@@ -21,12 +21,19 @@
         Specifies that the FileGroup should be added without confirmation.
 
     .INPUTS
-        [Microsoft.SqlServer.Management.Smo.FileGroup]
+        Microsoft.SqlServer.Management.Smo.FileGroup
 
         FileGroup objects that will be added to the Database.
 
     .OUTPUTS
-        None, or [Microsoft.SqlServer.Management.Smo.FileGroup[]] if PassThru is specified.
+        None
+
+        This cmdlet does not generate output by default.
+
+    .OUTPUTS
+        Microsoft.SqlServer.Management.Smo.FileGroup[]
+
+        When the PassThru parameter is specified, returns the FileGroup objects that were added.
 
     .EXAMPLE
         Add-SqlDscFileGroup -Database $database -FileGroup $fileGroup

@@ -28,7 +28,7 @@ applyTo: "**/*.[Tt]ests.ps1"
 - Mock variables prefix: 'mock'
 
 ## Structure & Scope
-- Public commands: Never use `InModuleScope` (unless retrieving localized strings)
+- Public commands: Never use `InModuleScope` (unless retrieving localized strings or creating an object using an internal class)
 - Private functions/class resources: Always use `InModuleScope`
 - Each class method = separate `Context` block
 - Each scenario = separate `Context` block

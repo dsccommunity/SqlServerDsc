@@ -73,7 +73,14 @@
         Creates a DatabaseFileGroupSpec object with files and properties set directly via parameters.
 
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.FileGroup]` or `[DatabaseFileGroupSpec]` if -AsSpec is specified.
+        Microsoft.SqlServer.Management.Smo.FileGroup
+
+        When creating a FileGroup with or without an associated Database (not using -AsSpec).
+
+    .OUTPUTS
+        DatabaseFileGroupSpec
+
+        When using the -AsSpec parameter to create a specification object.
 #>
 function New-SqlDscFileGroup
 {

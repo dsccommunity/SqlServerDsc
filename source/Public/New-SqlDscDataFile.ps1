@@ -105,9 +105,19 @@
         Creates a DatabaseFileSpec object with all properties set directly via parameters.
 
     .OUTPUTS
-        None. Unless -PassThru is specified for the Standard or FromSpec parameter
-        sets, in which case it returns `[Microsoft.SqlServer.Management.Smo.DataFile]`.
-        When using the -AsSpec parameter, always returns `[DatabaseFileSpec]`.
+        None
+
+        This cmdlet does not generate output by default when using Standard or FromSpec parameter sets without PassThru.
+
+    .OUTPUTS
+        Microsoft.SqlServer.Management.Smo.DataFile
+
+        When using the Standard or FromSpec parameter sets with the PassThru parameter.
+
+    .OUTPUTS
+        DatabaseFileSpec
+
+        When using the AsSpec parameter to create a specification object.
 #>
 function New-SqlDscDataFile
 {
