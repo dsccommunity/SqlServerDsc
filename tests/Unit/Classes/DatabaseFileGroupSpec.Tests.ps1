@@ -26,6 +26,8 @@ BeforeDiscovery {
 BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
 
+    $env:SqlServerDscCI = $true
+
     $script:moduleUnderTest = Import-Module -Name $script:dscModuleName -PassThru -Force -ErrorAction 'Stop'
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
@@ -34,31 +36,47 @@ BeforeAll {
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
 
+    Remove-Item -Path 'env:SqlServerDscCI'
+
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 }
 
 Describe 'DatabaseFileGroupSpec' -Tag 'DatabaseFileGroupSpec' {
     Context 'When instantiating the class' {
-        It 'Should not throw when instantiated with default constructor' {
-            InModuleScope -ScriptBlock {
-                { [DatabaseFileGroupSpec]::new() } | Should -Not -Throw
+        It 'Should create an instance with default constructor' {
+            $script:instance = InModuleScope -ScriptBlock {
+                [DatabaseFileGroupSpec]::new()
             }
+
+            $instance | Should -Not -BeNullOrEmpty
+            $instance.GetType().Name | Should -Be 'DatabaseFileGroupSpec'
         }
 
-        It 'Should not throw when instantiated with Name only' {
-            InModuleScope -ScriptBlock {
-                { [DatabaseFileGroupSpec]::new('PRIMARY') } | Should -Not -Throw
+        It 'Should create an instance with Name only' {
+            $script:instance = InModuleScope -ScriptBlock {
+                [DatabaseFileGroupSpec]::new('PRIMARY')
             }
+
+            $instance | Should -Not -BeNullOrEmpty
+            $instance.GetType().Name | Should -Be 'DatabaseFileGroupSpec'
+            $instance.Name | Should -Be 'PRIMARY'
         }
 
-        It 'Should not throw when instantiated with Name and Files array' {
-            InModuleScope -ScriptBlock {
+        It 'Should create an instance with Name and Files array' {
+            $script:instance = InModuleScope -ScriptBlock {
                 $files = @(
                     [DatabaseFileSpec]::new('File1', 'C:\Data\File1.mdf')
                 )
-                { [DatabaseFileGroupSpec]::new('PRIMARY', $files) } | Should -Not -Throw
+                [DatabaseFileGroupSpec]::new('PRIMARY', $files)
             }
+
+            $instance | Should -Not -BeNullOrEmpty
+            $instance.GetType().Name | Should -Be 'DatabaseFileGroupSpec'
+            $instance.Name | Should -Be 'PRIMARY'
+            $instance.Files | Should -HaveCount 1
+            $instance.Files[0].Name | Should -Be 'File1'
+            $instance.Files[0].FileName | Should -Be 'C:\Data\File1.mdf'
         }
     }
 
