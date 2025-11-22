@@ -296,6 +296,8 @@ stages:
                   'tests/Integration/Commands/New-SqlDscFileGroup.Integration.Tests.ps1'
                   'tests/Integration/Commands/New-SqlDscDataFile.Integration.Tests.ps1'
                   'tests/Integration/Commands/Add-SqlDscFileGroup.Integration.Tests.ps1'
+                  'tests/Integration/Commands/ConvertTo-SqlDscFileGroup.Integration.Tests.ps1'
+                  'tests/Integration/Commands/ConvertTo-SqlDscDataFile.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscSetupLog.Integration.Tests.ps1'
                   'tests/Integration/Commands/Connect-SqlDscDatabaseEngine.Integration.Tests.ps1'
                   'tests/Integration/Commands/Disconnect-SqlDscDatabaseEngine.Integration.Tests.ps1'

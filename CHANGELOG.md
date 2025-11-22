@@ -44,6 +44,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added public command `Add-SqlDscFileGroup` to add one or more FileGroup objects
   to a Database. This command provides a clean way to associate FileGroup objects
   with a Database after they have been created.
+- Added public command `ConvertTo-SqlDscDataFile` to convert `DatabaseFileSpec`
+  objects to SMO DataFile objects.
+- Added public command `ConvertTo-SqlDscFileGroup` to convert `DatabaseFileGroupSpec`
+  objects to SMO FileGroup objects.
+- Added class `DatabaseFileSpec` to define data file specifications without requiring
+  a database or SMO context.
+- Added class `DatabaseFileGroupSpec` to define file group specifications with
+  associated data files without requiring a database or SMO context.
 - `New-SqlDscDatabase`
   - Added `FileGroup` and `DataFile` parameters to allow specifying custom file
     locations and structure. These parameters apply to both regular databases and
@@ -151,14 +159,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   their expected values, and `$false` otherwise. This command improves maintainability
   of SQL DSC resources and provides granular database configuration testing
   [issue #2306](https://github.com/dsccommunity/SqlServerDsc/issues/2306).
-- Added public command `ConvertTo-SqlDscFileGroup` to convert `DatabaseFileGroupSpec`
-  objects to SMO FileGroup objects.
-- Added public command `ConvertTo-SqlDscDataFile` to convert `DatabaseFileSpec`
-  objects to SMO DataFile objects.
-- Added PowerShell class `DatabaseFileGroupSpec` for defining file group
-  specifications without requiring SMO context.
-- Added PowerShell class `DatabaseFileSpec` for defining data file specifications
-  without requiring SMO context.
 
 ### Fixed
 
