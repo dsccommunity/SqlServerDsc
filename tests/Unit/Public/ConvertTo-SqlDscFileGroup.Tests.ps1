@@ -58,129 +58,87 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag 'Public' {
         }
 
         It 'Should convert a basic file group spec with only required properties' {
-            InModuleScope -Parameters @{
-                mockDatabase = $mockDatabase
-            } -ScriptBlock {
-                param ($mockDatabase)
+            $fileGroupSpec = New-SqlDscFileGroup -Name 'PRIMARY' -AsSpec
 
-                $fileGroupSpec = New-SqlDscFileGroup -Name 'PRIMARY' -AsSpec
+            $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
 
-                $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
-
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
-                $result.Name | Should -Be 'PRIMARY'
-            }
+            $result | Should -Not -BeNullOrEmpty
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
+            $result.Name | Should -Be 'PRIMARY'
         }
 
         It 'Should convert a file group spec with ReadOnly property' {
-            InModuleScope -Parameters @{
-                mockDatabase = $mockDatabase
-            } -ScriptBlock {
-                param ($mockDatabase)
+            $fileGroupSpec = New-SqlDscFileGroup -Name 'READONLY_FG' -ReadOnly -AsSpec
 
-                $fileGroupSpec = New-SqlDscFileGroup -Name 'READONLY_FG' -ReadOnly -AsSpec
+            $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
 
-                $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
-
-                $result.Name | Should -Be 'READONLY_FG'
-                $result.ReadOnly | Should -Be $true
-            }
+            $result.Name | Should -Be 'READONLY_FG'
+            $result.ReadOnly | Should -Be $true
         }
 
         It 'Should convert a file group spec with IsDefault property' {
-            InModuleScope -Parameters @{
-                mockDatabase = $mockDatabase
-            } -ScriptBlock {
-                param ($mockDatabase)
+            $fileGroupSpec = New-SqlDscFileGroup -Name 'PRIMARY' -IsDefault -AsSpec
 
-                $fileGroupSpec = New-SqlDscFileGroup -Name 'PRIMARY' -IsDefault -AsSpec
+            $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
 
-                $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
-
-                $result.Name | Should -Be 'PRIMARY'
-                $result.IsDefault | Should -Be $true
-            }
+            $result.Name | Should -Be 'PRIMARY'
+            $result.IsDefault | Should -Be $true
         }
 
         It 'Should convert a file group spec with a single data file' {
-            InModuleScope -Parameters @{
-                mockDatabase = $mockDatabase
-            } -ScriptBlock {
-                param ($mockDatabase)
+            $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\SQLData\TestFile.mdf' -AsSpec
+            $fileGroupSpec = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($fileSpec) -AsSpec
 
-                $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\SQLData\TestFile.mdf' -AsSpec
-                $fileGroupSpec = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($fileSpec) -AsSpec
+            $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
 
-                $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
-
-                $result.Name | Should -Be 'PRIMARY'
-                $result.Files.Count | Should -Be 1
-                $result.Files[0].Name | Should -Be 'TestFile'
-                $result.Files[0].FileName | Should -Be 'C:\SQLData\TestFile.mdf'
-            }
+            $result.Name | Should -Be 'PRIMARY'
+            $result.Files.Count | Should -Be 1
+            $result.Files[0].Name | Should -Be 'TestFile'
+            $result.Files[0].FileName | Should -Be 'C:\SQLData\TestFile.mdf'
         }
 
         It 'Should convert a file group spec with multiple data files' {
-            InModuleScope -Parameters @{
-                mockDatabase = $mockDatabase
-            } -ScriptBlock {
-                param ($mockDatabase)
+            $fileSpec1 = New-SqlDscDataFile -Name 'TestFile1' -FileName 'C:\SQLData\TestFile1.ndf' -Size 102400 -AsSpec
+            $fileSpec2 = New-SqlDscDataFile -Name 'TestFile2' -FileName 'C:\SQLData\TestFile2.ndf' -Size 204800 -AsSpec
+            $fileGroupSpec = New-SqlDscFileGroup -Name 'SECONDARY' -Files @($fileSpec1, $fileSpec2) -AsSpec
 
-                $fileSpec1 = New-SqlDscDataFile -Name 'TestFile1' -FileName 'C:\SQLData\TestFile1.ndf' -Size 102400 -AsSpec
-                $fileSpec2 = New-SqlDscDataFile -Name 'TestFile2' -FileName 'C:\SQLData\TestFile2.ndf' -Size 204800 -AsSpec
-                $fileGroupSpec = New-SqlDscFileGroup -Name 'SECONDARY' -Files @($fileSpec1, $fileSpec2) -AsSpec
+            $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
 
-                $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
-
-                $result.Name | Should -Be 'SECONDARY'
-                $result.Files.Count | Should -Be 2
-                $result.Files[0].Name | Should -Be 'TestFile1'
-                $result.Files[0].Size | Should -Be 102400
-                $result.Files[1].Name | Should -Be 'TestFile2'
-                $result.Files[1].Size | Should -Be 204800
-            }
+            $result.Name | Should -Be 'SECONDARY'
+            $result.Files.Count | Should -Be 2
+            $result.Files[0].Name | Should -Be 'TestFile1'
+            $result.Files[0].Size | Should -Be 102400
+            $result.Files[1].Name | Should -Be 'TestFile2'
+            $result.Files[1].Size | Should -Be 204800
         }
 
         It 'Should convert a file group spec with all properties and multiple files' {
-            InModuleScope -Parameters @{
-                mockDatabase = $mockDatabase
-            } -ScriptBlock {
-                param ($mockDatabase)
+            $primaryFile = New-SqlDscDataFile -Name 'PrimaryFile' -FileName 'C:\SQLData\Primary.mdf' `
+                -Size 102400 -MaxSize 512000 -Growth 10240 -GrowthType 'KB' -IsPrimaryFile -AsSpec
 
-                $primaryFile = New-SqlDscDataFile -Name 'PrimaryFile' -FileName 'C:\SQLData\Primary.mdf' `
-                    -Size 102400 -MaxSize 512000 -Growth 10240 -GrowthType 'KB' -IsPrimaryFile -AsSpec
+            $secondaryFile = New-SqlDscDataFile -Name 'SecondaryFile' -FileName 'C:\SQLData\Secondary.ndf' `
+                -Size 204800 -MaxSize 1024000 -Growth 20480 -GrowthType 'KB' -AsSpec
 
-                $secondaryFile = New-SqlDscDataFile -Name 'SecondaryFile' -FileName 'C:\SQLData\Secondary.ndf' `
-                    -Size 204800 -MaxSize 1024000 -Growth 20480 -GrowthType 'KB' -AsSpec
+            $fileGroupSpec = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($primaryFile, $secondaryFile) `
+                -IsDefault -AsSpec
 
-                $fileGroupSpec = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($primaryFile, $secondaryFile) `
-                    -IsDefault -AsSpec
+            $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
 
-                $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
-
-                $result.Name | Should -Be 'PRIMARY'
-                $result.IsDefault | Should -Be $true
-                $result.Files.Count | Should -Be 2
-                $result.Files[0].Name | Should -Be 'PrimaryFile'
-                $result.Files[0].IsPrimaryFile | Should -Be $true
-                $result.Files[1].Name | Should -Be 'SecondaryFile'
-            }
+            $result.Name | Should -Be 'PRIMARY'
+            $result.IsDefault | Should -Be $true
+            $result.Files.Count | Should -Be 2
+            $result.Files[0].Name | Should -Be 'PrimaryFile'
+            $result.Files[0].IsPrimaryFile | Should -Be $true
+            $result.Files[1].Name | Should -Be 'SecondaryFile'
         }
 
         It 'Should convert a file group spec without files (empty Files array)' {
-            InModuleScope -Parameters @{
-                mockDatabase = $mockDatabase
-            } -ScriptBlock {
-                param ($mockDatabase)
+            $fileGroupSpec = New-SqlDscFileGroup -Name 'EMPTY_FG' -AsSpec
 
-                $fileGroupSpec = New-SqlDscFileGroup -Name 'EMPTY_FG' -AsSpec
+            $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
 
-                $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
-
-                $result.Name | Should -Be 'EMPTY_FG'
-                $result.Files.Count | Should -Be 0
-            }
+            $result.Name | Should -Be 'EMPTY_FG'
+            $result.Files.Count | Should -Be 0
         }
     }
 

@@ -58,112 +58,70 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag 'Public' {
         }
 
         It 'Should convert a basic file spec with only required properties' {
-            InModuleScope -Parameters @{
-                mockFileGroup = $mockFileGroup
-            } -ScriptBlock {
-                param ($mockFileGroup)
+            $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\SQLData\TestFile.mdf' -AsSpec
 
-                $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\SQLData\TestFile.mdf' -AsSpec
+            $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
 
-                $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
-
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
-                $result.Name | Should -Be 'TestFile'
-                $result.FileName | Should -Be 'C:\SQLData\TestFile.mdf'
-            }
+            $result | Should -Not -BeNullOrEmpty
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
+            $result.Name | Should -Be 'TestFile'
+            $result.FileName | Should -Be 'C:\SQLData\TestFile.mdf'
         }
 
         It 'Should convert a file spec with all optional properties set' {
-            InModuleScope -Parameters @{
-                mockFileGroup = $mockFileGroup
-            } -ScriptBlock {
-                param ($mockFileGroup)
+            $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\SQLData\TestFile.mdf' `
+                -Size 102400 -MaxSize 512000 -Growth 10240 -GrowthType 'KB' -IsPrimaryFile -AsSpec
 
-                $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\SQLData\TestFile.mdf' `
-                    -Size 102400 -MaxSize 512000 -Growth 10240 -GrowthType 'KB' -IsPrimaryFile -AsSpec
+            $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
 
-                $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
-
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be 'TestFile'
-                $result.FileName | Should -Be 'C:\SQLData\TestFile.mdf'
-                $result.Size | Should -Be 102400
-                $result.MaxSize | Should -Be 512000
-                $result.Growth | Should -Be 10240
-                $result.GrowthType | Should -Be 'KB'
-                $result.IsPrimaryFile | Should -Be $true
-            }
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be 'TestFile'
+            $result.FileName | Should -Be 'C:\SQLData\TestFile.mdf'
+            $result.Size | Should -Be 102400
+            $result.MaxSize | Should -Be 512000
+            $result.Growth | Should -Be 10240
+            $result.GrowthType | Should -Be 'KB'
+            $result.IsPrimaryFile | Should -Be $true
         }
 
         It 'Should convert a file spec with Size property' {
-            InModuleScope -Parameters @{
-                mockFileGroup = $mockFileGroup
-            } -ScriptBlock {
-                param ($mockFileGroup)
+            $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\SQLData\TestFile.mdf' -Size 204800 -AsSpec
 
-                $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\SQLData\TestFile.mdf' -Size 204800 -AsSpec
+            $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
 
-                $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
-
-                $result.Size | Should -Be 204800
-            }
+            $result.Size | Should -Be 204800
         }
 
         It 'Should convert a file spec with MaxSize property' {
-            InModuleScope -Parameters @{
-                mockFileGroup = $mockFileGroup
-            } -ScriptBlock {
-                param ($mockFileGroup)
+            $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\SQLData\TestFile.mdf' -MaxSize 1024000 -AsSpec
 
-                $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\SQLData\TestFile.mdf' -MaxSize 1024000 -AsSpec
+            $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
 
-                $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
-
-                $result.MaxSize | Should -Be 1024000
-            }
+            $result.MaxSize | Should -Be 1024000
         }
 
         It 'Should convert a file spec with Growth property' {
-            InModuleScope -Parameters @{
-                mockFileGroup = $mockFileGroup
-            } -ScriptBlock {
-                param ($mockFileGroup)
+            $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\SQLData\TestFile.mdf' -Growth 20480 -AsSpec
 
-                $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\SQLData\TestFile.mdf' -Growth 20480 -AsSpec
+            $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
 
-                $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
-
-                $result.Growth | Should -Be 20480
-            }
+            $result.Growth | Should -Be 20480
         }
 
         It 'Should convert a file spec with GrowthType property set to Percent' {
-            InModuleScope -Parameters @{
-                mockFileGroup = $mockFileGroup
-            } -ScriptBlock {
-                param ($mockFileGroup)
+            $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\SQLData\TestFile.mdf' -GrowthType 'Percent' -AsSpec
 
-                $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\SQLData\TestFile.mdf' -GrowthType 'Percent' -AsSpec
+            $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
 
-                $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
-
-                $result.GrowthType | Should -Be 'Percent'
-            }
+            $result.GrowthType | Should -Be 'Percent'
         }
 
         It 'Should convert a file spec with IsPrimaryFile property' {
-            InModuleScope -Parameters @{
-                mockFileGroup = $mockFileGroup
-            } -ScriptBlock {
-                param ($mockFileGroup)
+            $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\SQLData\TestFile.mdf' -IsPrimaryFile -AsSpec
 
-                $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\SQLData\TestFile.mdf' -IsPrimaryFile -AsSpec
+            $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
 
-                $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
-
-                $result.IsPrimaryFile | Should -Be $true
-            }
+            $result.IsPrimaryFile | Should -Be $true
         }
     }
 
