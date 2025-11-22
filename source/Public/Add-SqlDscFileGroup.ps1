@@ -20,6 +20,11 @@
     .PARAMETER Force
         Specifies that the FileGroup should be added without confirmation.
 
+    .INPUTS
+        [Microsoft.SqlServer.Management.Smo.FileGroup]
+
+        FileGroup objects that will be added to the Database.
+
     .OUTPUTS
         None, or [Microsoft.SqlServer.Management.Smo.FileGroup[]] if PassThru is specified.
 
