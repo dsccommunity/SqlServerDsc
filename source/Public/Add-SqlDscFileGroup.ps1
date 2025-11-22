@@ -88,7 +88,7 @@ function Add-SqlDscFileGroup
 
                 if ($PassThru.IsPresent)
                 {
-                    $fileGroupObject
+                    return $fileGroupObject
                 }
             }
         }
