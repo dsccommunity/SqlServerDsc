@@ -32,7 +32,6 @@ BeforeAll {
 Describe 'New-SqlDscDatabaseSnapshot' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         $script:mockInstanceName = 'DSCSQLTEST'
-        $script:mockComputerName = Get-ComputerName
 
         $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
         $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
@@ -160,9 +159,10 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag @('Integration_SQL2017', 'Integration
             $createdSnapshot | Should -Not -BeNullOrEmpty
             $createdSnapshot.DatabaseSnapshotBaseName | Should -Be $script:persistentSourceDatabase
 
-            # Verify the sparse file was created
+            # Verify the sparse file was created with the correct path
             $createdSnapshot.FileGroups['PRIMARY'] | Should -Not -BeNullOrEmpty
             $createdSnapshot.FileGroups['PRIMARY'].Files.Count | Should -BeGreaterThan 0
+            $createdSnapshot.FileGroups['PRIMARY'].Files[0].FileName | Should -Be $sparseFilePath
         }
     }
 
