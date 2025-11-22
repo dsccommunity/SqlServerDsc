@@ -26,15 +26,19 @@ BeforeDiscovery {
 BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
 
+    Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
+
     $env:SqlServerDscCI = $true
 
-    $script:moduleUnderTest = Import-Module -Name $script:dscModuleName -PassThru -Force -ErrorAction 'Stop'
-
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
+    $PSDefaultParameterValues.Remove('Mock:ModuleName')
+    $PSDefaultParameterValues.Remove('Should:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 
@@ -45,7 +49,7 @@ AfterAll {
 Describe 'DatabaseFileGroupSpec' -Tag 'DatabaseFileGroupSpec' {
     Context 'When instantiating the class' {
         It 'Should create an instance with default constructor' {
-            $script:instance = InModuleScope -ScriptBlock {
+            $instance = InModuleScope -ScriptBlock {
                 [DatabaseFileGroupSpec]::new()
             }
 
@@ -54,7 +58,7 @@ Describe 'DatabaseFileGroupSpec' -Tag 'DatabaseFileGroupSpec' {
         }
 
         It 'Should create an instance with Name only' {
-            $script:instance = InModuleScope -ScriptBlock {
+            $instance = InModuleScope -ScriptBlock {
                 [DatabaseFileGroupSpec]::new('PRIMARY')
             }
 
@@ -64,7 +68,7 @@ Describe 'DatabaseFileGroupSpec' -Tag 'DatabaseFileGroupSpec' {
         }
 
         It 'Should create an instance with Name and Files array' {
-            $script:instance = InModuleScope -ScriptBlock {
+            $instance = InModuleScope -ScriptBlock {
                 $files = @(
                     [DatabaseFileSpec]::new('File1', 'C:\Data\File1.mdf')
                 )
