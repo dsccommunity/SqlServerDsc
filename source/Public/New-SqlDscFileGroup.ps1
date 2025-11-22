@@ -35,9 +35,6 @@
     .PARAMETER IsDefault
         Specifies whether this file group should be the default file group. Only valid when using -AsSpec.
 
-    .PARAMETER PassThru
-        Returns the created FileGroup object. By default, this cmdlet does not generate any output.
-
     .PARAMETER Force
         Specifies that the FileGroup object should be created without prompting for
         confirmation. By default, the command prompts for confirmation when the Database
@@ -116,12 +113,6 @@ function New-SqlDscFileGroup
         [Parameter(ParameterSetName = 'AsSpec')]
         [System.Management.Automation.SwitchParameter]
         $IsDefault,
-
-        [Parameter(ParameterSetName = 'AsSpec')]
-        [Parameter(ParameterSetName = 'WithDatabase')]
-        [Parameter(ParameterSetName = 'WithDatabaseFromSpec')]
-        [System.Management.Automation.SwitchParameter]
-        $PassThru,
 
         [Parameter(ParameterSetName = 'WithDatabase')]
         [Parameter(ParameterSetName = 'WithDatabaseFromSpec')]
