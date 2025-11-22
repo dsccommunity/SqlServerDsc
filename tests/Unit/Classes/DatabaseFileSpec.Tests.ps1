@@ -50,13 +50,13 @@ Describe 'DatabaseFileSpec' -Tag 'DatabaseFileSpec' {
     Context 'When instantiating the class' {
         It 'Should not throw when instantiated with default constructor' {
             InModuleScope -ScriptBlock {
-                { [DatabaseFileSpec]::new() } | Should -Not -Throw
+                [DatabaseFileSpec]::new()
             }
         }
 
         It 'Should not throw when instantiated with Name and FileName' {
             InModuleScope -ScriptBlock {
-                { [DatabaseFileSpec]::new('TestFile', 'C:\Data\TestFile.mdf') } | Should -Not -Throw
+                [DatabaseFileSpec]::new('TestFile', 'C:\Data\TestFile.mdf')
             }
         }
     }
