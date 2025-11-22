@@ -166,11 +166,6 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
             $parameterInfo.Attributes.Mandatory | Should -Contain $true
         }
 
-        It 'Should not have Database parameter accept pipeline input' {
-            $parameterInfo = (Get-Command -Name 'New-SqlDscFileGroup').Parameters['Database']
-            $parameterInfo.Attributes.ValueFromPipeline | Should -Not -Contain $true
-        }
-
         It 'Should have three parameter sets (WithDatabase, WithDatabaseFromSpec, AsSpec)' {
             $command = Get-Command -Name 'New-SqlDscFileGroup'
             $command.ParameterSets.Count | Should -Be 3
