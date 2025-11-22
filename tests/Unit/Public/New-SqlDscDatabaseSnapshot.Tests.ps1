@@ -107,26 +107,24 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
         }
 
         It 'Should pass FileGroup parameter when specified' {
-            InModuleScope -Parameters @{
-                mockServerObject = $mockServerObject
-            } -ScriptBlock {
-                # Create a mock DatabaseFileGroupSpec
+            # Create a mock DatabaseFileGroupSpec using InModuleScope to access internal classes
+            $mockFileGroupSpec = InModuleScope -ScriptBlock {
                 $mockDataFileSpec = [DatabaseFileSpec]@{
                     Name = 'TestData'
                     FileName = 'C:\Snapshots\TestData.ss'
                 }
 
-                $mockFileGroupSpec = [DatabaseFileGroupSpec]@{
+                [DatabaseFileGroupSpec]@{
                     Name = 'PRIMARY'
                     Files = @($mockDataFileSpec)
                 }
-
-                $result = New-SqlDscDatabaseSnapshot -ServerObject $mockServerObject -Name 'TestSnapshot' -DatabaseName 'SourceDatabase' -FileGroup @($mockFileGroupSpec) -Force
-
-                Should -Invoke -CommandName 'New-SqlDscDatabase' -ParameterFilter {
-                    $FileGroup -and $FileGroup.Count -eq 1 -and $FileGroup[0].Name -eq 'PRIMARY'
-                } -Exactly -Times 1
             }
+
+            $result = New-SqlDscDatabaseSnapshot -ServerObject $mockServerObject -Name 'TestSnapshot' -DatabaseName 'SourceDatabase' -FileGroup @($mockFileGroupSpec) -Force
+
+            Should -Invoke -CommandName 'New-SqlDscDatabase' -ParameterFilter {
+                $FileGroup -and $FileGroup.Count -eq 1 -and $FileGroup[0].Name -eq 'PRIMARY'
+            } -Exactly -Times 1
         }
     }
 
