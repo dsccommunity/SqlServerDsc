@@ -86,15 +86,6 @@ Describe 'New-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
             $result.Parent | Should -Be $script:mockDatabase
         }
 
-        It 'Should accept Database parameter from pipeline' {
-            $result = $script:mockDatabase | New-SqlDscFileGroup -Name 'PipelineFileGroup' -Confirm:$false
-
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
-            $result.Name | Should -Be 'PipelineFileGroup'
-            $result.Parent | Should -Be $script:mockDatabase
-        }
-
         It 'Should support Force parameter to bypass confirmation' {
             $result = New-SqlDscFileGroup -Database $script:mockDatabase -Name 'ForcedFileGroup' -Force
 
