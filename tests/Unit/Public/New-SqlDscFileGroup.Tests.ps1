@@ -61,91 +61,61 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
         }
 
         It 'Should create a FileGroup successfully' {
-            InModuleScope -Parameters @{
-                mockDatabaseObject = $mockDatabaseObject
-            } -ScriptBlock {
-                param ($mockDatabaseObject)
+            $result = New-SqlDscFileGroup -Database $mockDatabaseObject -Name 'MyFileGroup' -Confirm:$false
 
-                $result = New-SqlDscFileGroup -Database $mockDatabaseObject -Name 'MyFileGroup' -Confirm:$false
-
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
-                $result.Name | Should -Be 'MyFileGroup'
-                $result.Parent | Should -Be $mockDatabaseObject
-            }
+            $result | Should -Not -BeNullOrEmpty
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
+            $result.Name | Should -Be 'MyFileGroup'
+            $result.Parent | Should -Be $mockDatabaseObject
         }
 
         It 'Should create a PRIMARY FileGroup successfully' {
-            InModuleScope -Parameters @{
-                mockDatabaseObject = $mockDatabaseObject
-            } -ScriptBlock {
-                param ($mockDatabaseObject)
+            $result = New-SqlDscFileGroup -Database $mockDatabaseObject -Name 'PRIMARY' -Confirm:$false
 
-                $result = New-SqlDscFileGroup -Database $mockDatabaseObject -Name 'PRIMARY' -Confirm:$false
-
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be 'PRIMARY'
-                $result.Parent | Should -Be $mockDatabaseObject
-            }
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be 'PRIMARY'
+            $result.Parent | Should -Be $mockDatabaseObject
         }
 
         It 'Should support Force parameter to bypass confirmation' {
-            InModuleScope -Parameters @{
-                mockDatabaseObject = $mockDatabaseObject
-            } -ScriptBlock {
-                param ($mockDatabaseObject)
+            $result = New-SqlDscFileGroup -Database $mockDatabaseObject -Name 'ForcedFileGroup' -Force
 
-                $result = New-SqlDscFileGroup -Database $mockDatabaseObject -Name 'ForcedFileGroup' -Force
-
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be 'ForcedFileGroup'
-                $result.Parent | Should -Be $mockDatabaseObject
-            }
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be 'ForcedFileGroup'
+            $result.Parent | Should -Be $mockDatabaseObject
         }
 
         It 'Should throw terminating error when Database object has no Parent property set' {
-            InModuleScope -ScriptBlock {
-                $mockDatabaseWithoutParent = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
-                $mockDatabaseWithoutParent.Name = 'TestDatabaseNoParent'
+            $mockDatabaseWithoutParent = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+            $mockDatabaseWithoutParent.Name = 'TestDatabaseNoParent'
 
-                { New-SqlDscFileGroup -Database $mockDatabaseWithoutParent -Name 'InvalidFileGroup' -Confirm:$false } |
-                    Should -Throw -ExpectedMessage '*must have a Server object attached to the Parent property*' -ErrorId 'NSDFG0003,New-SqlDscFileGroup'
-            }
+            { New-SqlDscFileGroup -Database $mockDatabaseWithoutParent -Name 'InvalidFileGroup' -Confirm:$false } |
+                Should -Throw -ExpectedMessage '*must have a Server object attached to the Parent property*' -ErrorId 'NSDFG0003,New-SqlDscFileGroup'
         }
 
         It 'Should return null when WhatIf is specified' {
-            InModuleScope -Parameters @{
-                mockDatabaseObject = $mockDatabaseObject
-            } -ScriptBlock {
-                param ($mockDatabaseObject)
+            $result = New-SqlDscFileGroup -Database $mockDatabaseObject -Name 'WhatIfFileGroup' -WhatIf
 
-                $result = New-SqlDscFileGroup -Database $mockDatabaseObject -Name 'WhatIfFileGroup' -WhatIf
-
-                $result | Should -BeNullOrEmpty
-            }
+            $result | Should -BeNullOrEmpty
         }
     }
 
     Context 'When creating a standalone FileGroup' {
         It 'Should create a standalone FileGroup without a Database' {
-            InModuleScope -ScriptBlock {
-                $result = New-SqlDscFileGroup -Name 'StandaloneFileGroup'
+            $result = New-SqlDscFileGroup -Name 'StandaloneFileGroup'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
-                $result.Name | Should -Be 'StandaloneFileGroup'
-                $result.Parent | Should -BeNullOrEmpty
-            }
+            $result | Should -Not -BeNullOrEmpty
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
+            $result.Name | Should -Be 'StandaloneFileGroup'
+            $result.Parent | Should -BeNullOrEmpty
         }
 
         It 'Should create a standalone PRIMARY FileGroup' {
-            InModuleScope -ScriptBlock {
-                $result = New-SqlDscFileGroup -Name 'PRIMARY'
+            $result = New-SqlDscFileGroup -Name 'PRIMARY'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be 'PRIMARY'
-                $result.Parent | Should -BeNullOrEmpty
-            }
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be 'PRIMARY'
+            $result.Parent | Should -BeNullOrEmpty
         }
     }
 
