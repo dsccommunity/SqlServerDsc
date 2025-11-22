@@ -26,13 +26,21 @@ BeforeDiscovery {
 BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
 
-    $script:moduleUnderTest = Import-Module -Name $script:dscModuleName -PassThru -Force -ErrorAction 'Stop'
+    Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
+
+    $env:SqlServerDscCI = $true
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
+    $PSDefaultParameterValues.Remove('Mock:ModuleName')
+    $PSDefaultParameterValues.Remove('Should:ModuleName')
+
+    Remove-Item -Path 'env:SqlServerDscCI'
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
