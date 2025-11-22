@@ -69,7 +69,7 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_
             $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\Data\TestFile.ndf' -AsSpec
             $fileGroupSpec = New-SqlDscFileGroup -Name 'TestFileGroup' -Files @($fileSpec) -AsSpec
 
-            $result = ConvertTo-SqlDscFileGroup -Database $script:testDatabase -DatabaseFileGroupSpec $fileGroupSpec
+            $result = ConvertTo-SqlDscFileGroup -DatabaseObject $script:testDatabase -FileGroupSpec $fileGroupSpec
 
             $result | Should -Not -BeNullOrEmpty
             $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.FileGroup]
@@ -83,7 +83,7 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_
             $fileSpec2 = New-SqlDscDataFile -Name 'TestFile2' -FileName 'C:\Data\TestFile2.ndf' -AsSpec
             $fileGroupSpec = New-SqlDscFileGroup -Name 'TestFileGroup' -Files @($fileSpec1, $fileSpec2) -AsSpec
 
-            $result = ConvertTo-SqlDscFileGroup -Database $script:testDatabase -DatabaseFileGroupSpec $fileGroupSpec
+            $result = ConvertTo-SqlDscFileGroup -DatabaseObject $script:testDatabase -FileGroupSpec $fileGroupSpec
 
             $result | Should -Not -BeNullOrEmpty
             $result.Files.Count | Should -Be 2
@@ -95,7 +95,7 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_
             $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\Data\TestFile.ndf' -AsSpec
             $fileGroupSpec = New-SqlDscFileGroup -Name 'TestFileGroup' -Files @($fileSpec) -ReadOnly $true -AsSpec
 
-            $result = ConvertTo-SqlDscFileGroup -Database $script:testDatabase -DatabaseFileGroupSpec $fileGroupSpec
+            $result = ConvertTo-SqlDscFileGroup -DatabaseObject $script:testDatabase -FileGroupSpec $fileGroupSpec
 
             $result | Should -Not -BeNullOrEmpty
             $result.ReadOnly | Should -Be $true
@@ -105,7 +105,7 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_
             $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\Data\TestFile.ndf' -AsSpec
             $fileGroupSpec = New-SqlDscFileGroup -Name 'TestFileGroup' -Files @($fileSpec) -IsDefault $true -AsSpec
 
-            $result = ConvertTo-SqlDscFileGroup -Database $script:testDatabase -DatabaseFileGroupSpec $fileGroupSpec
+            $result = ConvertTo-SqlDscFileGroup -DatabaseObject $script:testDatabase -FileGroupSpec $fileGroupSpec
 
             $result | Should -Not -BeNullOrEmpty
             $result.IsDefault | Should -Be $true
@@ -116,7 +116,7 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_
             $fileSpec2 = New-SqlDscDataFile -Name 'TestFile2' -FileName 'C:\Data\TestFile2.ndf' -Growth 10 -GrowthType 'Percent' -AsSpec
             $fileGroupSpec = New-SqlDscFileGroup -Name 'TestFileGroup' -Files @($fileSpec1, $fileSpec2) -ReadOnly $false -IsDefault $false -AsSpec
 
-            $result = ConvertTo-SqlDscFileGroup -Database $script:testDatabase -DatabaseFileGroupSpec $fileGroupSpec
+            $result = ConvertTo-SqlDscFileGroup -DatabaseObject $script:testDatabase -FileGroupSpec $fileGroupSpec
 
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'TestFileGroup'
@@ -129,36 +129,12 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_
             $result.IsDefault | Should -Be $false
         }
 
-        It 'Should accept DatabaseFileGroupSpec from pipeline' {
-            $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\Data\TestFile.ndf' -AsSpec
-            $fileGroupSpec = New-SqlDscFileGroup -Name 'TestFileGroup' -Files @($fileSpec) -AsSpec
-
-            $result = $fileGroupSpec | ConvertTo-SqlDscFileGroup -Database $script:testDatabase
-
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.FileGroup]
-            $result.Name | Should -Be 'TestFileGroup'
-        }
-
-        It 'Should convert multiple DatabaseFileGroupSpecs from pipeline' {
-            $fileSpec1 = New-SqlDscDataFile -Name 'TestFile1' -FileName 'C:\Data\TestFile1.ndf' -AsSpec
-            $fileSpec2 = New-SqlDscDataFile -Name 'TestFile2' -FileName 'C:\Data\TestFile2.ndf' -AsSpec
-            $fileGroupSpec1 = New-SqlDscFileGroup -Name 'FileGroup1' -Files @($fileSpec1) -AsSpec
-            $fileGroupSpec2 = New-SqlDscFileGroup -Name 'FileGroup2' -Files @($fileSpec2) -AsSpec
-
-            $result = @($fileGroupSpec1, $fileGroupSpec2) | ConvertTo-SqlDscFileGroup -Database $script:testDatabase
-
-            $result | Should -HaveCount 2
-            $result[0].Name | Should -Be 'FileGroup1'
-            $result[1].Name | Should -Be 'FileGroup2'
-        }
-
         It 'Should preserve file properties when converting FileGroup with complex file configurations' {
             $primaryFile = New-SqlDscDataFile -Name 'PrimaryFile' -FileName 'C:\Data\Primary.mdf' -IsPrimaryFile $true -Size 200 -MaxSize 2000 -Growth 20 -GrowthType 'KB' -AsSpec
             $secondaryFile = New-SqlDscDataFile -Name 'SecondaryFile' -FileName 'C:\Data\Secondary.ndf' -Size 100 -MaxSize 1000 -Growth 10 -GrowthType 'Percent' -AsSpec
             $fileGroupSpec = New-SqlDscFileGroup -Name 'ComplexFileGroup' -Files @($primaryFile, $secondaryFile) -AsSpec
 
-            $result = ConvertTo-SqlDscFileGroup -Database $script:testDatabase -DatabaseFileGroupSpec $fileGroupSpec
+            $result = ConvertTo-SqlDscFileGroup -DatabaseObject $script:testDatabase -FileGroupSpec $fileGroupSpec
 
             $result | Should -Not -BeNullOrEmpty
             $result.Files.Count | Should -Be 2

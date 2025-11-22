@@ -72,7 +72,7 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_S
         It 'Should convert a minimal DatabaseFileSpec to a DataFile object' {
             $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\Data\TestFile.ndf' -AsSpec
 
-            $result = ConvertTo-SqlDscDataFile -FileGroup $script:mockFileGroup -DatabaseFileSpec $fileSpec
+            $result = ConvertTo-SqlDscDataFile -FileGroupObject $script:mockFileGroup -DataFileSpec $fileSpec
 
             $result | Should -Not -BeNullOrEmpty
             $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DataFile]
@@ -83,7 +83,7 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_S
         It 'Should convert a DatabaseFileSpec with Size to a DataFile object' {
             $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\Data\TestFile.ndf' -Size 100 -AsSpec
 
-            $result = ConvertTo-SqlDscDataFile -FileGroup $script:mockFileGroup -DatabaseFileSpec $fileSpec
+            $result = ConvertTo-SqlDscDataFile -FileGroupObject $script:mockFileGroup -DataFileSpec $fileSpec
 
             $result | Should -Not -BeNullOrEmpty
             $result.Size | Should -Be 100
@@ -92,7 +92,7 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_S
         It 'Should convert a DatabaseFileSpec with MaxSize to a DataFile object' {
             $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\Data\TestFile.ndf' -MaxSize 1000 -AsSpec
 
-            $result = ConvertTo-SqlDscDataFile -FileGroup $script:mockFileGroup -DatabaseFileSpec $fileSpec
+            $result = ConvertTo-SqlDscDataFile -FileGroupObject $script:mockFileGroup -DataFileSpec $fileSpec
 
             $result | Should -Not -BeNullOrEmpty
             $result.MaxSize | Should -Be 1000
@@ -101,7 +101,7 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_S
         It 'Should convert a DatabaseFileSpec with Growth to a DataFile object' {
             $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\Data\TestFile.ndf' -Growth 10 -AsSpec
 
-            $result = ConvertTo-SqlDscDataFile -FileGroup $script:mockFileGroup -DatabaseFileSpec $fileSpec
+            $result = ConvertTo-SqlDscDataFile -FileGroupObject $script:mockFileGroup -DataFileSpec $fileSpec
 
             $result | Should -Not -BeNullOrEmpty
             $result.Growth | Should -Be 10
@@ -110,7 +110,7 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_S
         It 'Should convert a DatabaseFileSpec with GrowthType to a DataFile object' {
             $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\Data\TestFile.ndf' -GrowthType 'Percent' -AsSpec
 
-            $result = ConvertTo-SqlDscDataFile -FileGroup $script:mockFileGroup -DatabaseFileSpec $fileSpec
+            $result = ConvertTo-SqlDscDataFile -FileGroupObject $script:mockFileGroup -DataFileSpec $fileSpec
 
             $result | Should -Not -BeNullOrEmpty
             $result.GrowthType | Should -Be 'Percent'
@@ -119,7 +119,7 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_S
         It 'Should convert a DatabaseFileSpec with IsPrimaryFile to a DataFile object' {
             $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\Data\TestFile.mdf' -IsPrimaryFile $true -AsSpec
 
-            $result = ConvertTo-SqlDscDataFile -FileGroup $script:mockFileGroup -DatabaseFileSpec $fileSpec
+            $result = ConvertTo-SqlDscDataFile -FileGroupObject $script:mockFileGroup -DataFileSpec $fileSpec
 
             $result | Should -Not -BeNullOrEmpty
             $result.IsPrimaryFile | Should -Be $true
@@ -128,7 +128,7 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_S
         It 'Should convert a DatabaseFileSpec with all optional properties to a DataFile object' {
             $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\Data\TestFile.ndf' -Size 100 -MaxSize 1000 -Growth 10 -GrowthType 'Percent' -AsSpec
 
-            $result = ConvertTo-SqlDscDataFile -FileGroup $script:mockFileGroup -DatabaseFileSpec $fileSpec
+            $result = ConvertTo-SqlDscDataFile -FileGroupObject $script:mockFileGroup -DataFileSpec $fileSpec
 
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'TestFile'
@@ -139,25 +139,5 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_S
             $result.GrowthType | Should -Be 'Percent'
         }
 
-        It 'Should accept DatabaseFileSpec from pipeline' {
-            $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\Data\TestFile.ndf' -AsSpec
-
-            $result = $fileSpec | ConvertTo-SqlDscDataFile -FileGroup $script:mockFileGroup
-
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DataFile]
-            $result.Name | Should -Be 'TestFile'
-        }
-
-        It 'Should convert multiple DatabaseFileSpecs from pipeline' {
-            $fileSpec1 = New-SqlDscDataFile -Name 'TestFile1' -FileName 'C:\Data\TestFile1.ndf' -AsSpec
-            $fileSpec2 = New-SqlDscDataFile -Name 'TestFile2' -FileName 'C:\Data\TestFile2.ndf' -AsSpec
-
-            $result = @($fileSpec1, $fileSpec2) | ConvertTo-SqlDscDataFile -FileGroup $script:mockFileGroup
-
-            $result | Should -HaveCount 2
-            $result[0].Name | Should -Be 'TestFile1'
-            $result[1].Name | Should -Be 'TestFile2'
-        }
     }
 }
