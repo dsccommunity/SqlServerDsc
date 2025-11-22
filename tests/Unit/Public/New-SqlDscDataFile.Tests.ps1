@@ -140,7 +140,7 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set FromSpec' -ForEach @(
             @{
                 ExpectedParameterSetName = 'FromSpec'
-                ExpectedParameters = '-FileGroup <FileGroup> -DataFileSpec <Object> [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-FileGroup <FileGroup> -DataFileSpec <DatabaseFileSpec> [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'New-SqlDscDataFile').ParameterSets |
@@ -211,6 +211,12 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDataFile').Parameters['DataFileSpec']
             $fromSpecSetAttribute = $parameterInfo.Attributes | Where-Object { $_.ParameterSetName -eq 'FromSpec' }
             $fromSpecSetAttribute.Mandatory | Should -BeTrue
+        }
+
+        It 'Should have ValidateNotNull attribute on DataFileSpec parameter' {
+            $parameterInfo = (Get-Command -Name 'New-SqlDscDataFile').Parameters['DataFileSpec']
+            $validateNotNullAttribute = $parameterInfo.Attributes | Where-Object { $_ -is [System.Management.Automation.ValidateNotNullAttribute] }
+            $validateNotNullAttribute | Should -Not -BeNullOrEmpty
         }
 
         It 'Should have AsSpec as a mandatory parameter in AsSpec parameter set' {

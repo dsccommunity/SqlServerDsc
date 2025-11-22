@@ -104,6 +104,11 @@
 
         Creates a DatabaseFileSpec object with all properties set directly via parameters.
 
+    .INPUTS
+        None
+
+        This cmdlet does not accept input from the pipeline.
+
     .OUTPUTS
         None
 
@@ -145,7 +150,8 @@ function New-SqlDscDataFile
         $FileName,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'FromSpec')]
-        [System.Object]
+        [ValidateNotNull()]
+        [DatabaseFileSpec]
         $DataFileSpec,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'AsSpec')]
