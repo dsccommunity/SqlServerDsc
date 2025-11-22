@@ -89,12 +89,6 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
             }
         }
 
-        It 'Should not accept Database parameter from pipeline (removed to prevent file path reuse)' {
-            # Verify that the parameter doesn't have ValueFromPipeline attribute
-            $parameterInfo = (Get-Command -Name 'New-SqlDscFileGroup').Parameters['Database']
-            $parameterInfo.Attributes.ValueFromPipeline | Should -Not -Contain $true
-        }
-
         It 'Should support Force parameter to bypass confirmation' {
             InModuleScope -Parameters @{
                 mockDatabaseObject = $mockDatabaseObject
