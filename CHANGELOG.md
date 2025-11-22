@@ -151,6 +151,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   their expected values, and `$false` otherwise. This command improves maintainability
   of SQL DSC resources and provides granular database configuration testing
   [issue #2306](https://github.com/dsccommunity/SqlServerDsc/issues/2306).
+- Added public command `ConvertTo-SqlDscFileGroup` to convert `DatabaseFileGroupSpec`
+  objects to SMO FileGroup objects.
+- Added public command `ConvertTo-SqlDscDataFile` to convert `DatabaseFileSpec`
+  objects to SMO DataFile objects.
+- Added PowerShell class `DatabaseFileGroupSpec` for defining file group
+  specifications without requiring SMO context.
+- Added PowerShell class `DatabaseFileSpec` for defining data file specifications
+  without requiring SMO context.
 
 ### Fixed
 
