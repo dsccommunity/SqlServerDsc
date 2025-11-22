@@ -19,6 +19,8 @@ applyTo: "**"
 ## File Organization
 - Public commands: `source/Public/{CommandName}.ps1`
 - Private functions: `source/Private/{FunctionName}.ps1`
+- Classes: `source/Classes/{DependencyGroupNumber}.{ClassName}.ps1`
+- Enums: `source/Enum/{DependencyGroupNumber}.{EnumName}.ps1`
 - Unit tests: `tests/Unit/{Classes|Public|Private}/{Name}.Tests.ps1`
 - Integration tests: `tests/Integration/Commands/{CommandName}.Integration.Tests.ps1`
 

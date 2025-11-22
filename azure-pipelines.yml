@@ -293,6 +293,11 @@ stages:
                   # Group 2
                   'tests/Integration/Commands/PostInstallationConfiguration.Integration.Tests.ps1'
                   # Group 3
+                  'tests/Integration/Commands/New-SqlDscFileGroup.Integration.Tests.ps1'
+                  'tests/Integration/Commands/New-SqlDscDataFile.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Add-SqlDscFileGroup.Integration.Tests.ps1'
+                  'tests/Integration/Commands/ConvertTo-SqlDscFileGroup.Integration.Tests.ps1'
+                  'tests/Integration/Commands/ConvertTo-SqlDscDataFile.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscSetupLog.Integration.Tests.ps1'
                   'tests/Integration/Commands/Connect-SqlDscDatabaseEngine.Integration.Tests.ps1'
                   'tests/Integration/Commands/Disconnect-SqlDscDatabaseEngine.Integration.Tests.ps1'
@@ -335,6 +340,7 @@ stages:
                   'tests/Integration/Commands/Get-SqlDscDatabase.Integration.Tests.ps1'
                   'tests/Integration/Commands/ConvertFrom-SqlDscDatabasePermission.Integration.Tests.ps1'
                   'tests/Integration/Commands/New-SqlDscDatabase.Integration.Tests.ps1'
+                  'tests/Integration/Commands/New-SqlDscDatabaseSnapshot.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscCompatibilityLevel.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscDatabaseProperty.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscDatabaseOwner.Integration.Tests.ps1'

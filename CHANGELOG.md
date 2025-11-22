@@ -25,6 +25,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added public command `New-SqlDscDatabaseSnapshot` to create database snapshots
+  in a SQL Server Database Engine instance using SMO. This command provides an
+  automated and DSC-friendly approach to snapshot management by leveraging
+  `New-SqlDscDatabase` for the actual creation. The command now supports `FileGroup`
+  and `DataFile` parameters to allow control over snapshot file placement and
+  structure ([issue #2341](https://github.com/dsccommunity/SqlServerDsc/issues/2341)).
+- Added public command `New-SqlDscFileGroup` to create FileGroup objects for SQL
+  Server databases. This command simplifies creating FileGroup objects that can be
+  used with `New-SqlDscDatabase` and other database-related commands. The `Database`
+  parameter is optional, allowing FileGroup objects to be created standalone and
+  added to a Database later using `Add-SqlDscFileGroup`.
+- Added public command `New-SqlDscDataFile` to create DataFile objects for SQL
+  Server FileGroups. This command simplifies creating DataFile objects with
+  specified physical file paths, supporting both regular database files (.mdf, .ndf)
+  and sparse files for database snapshots (.ss). The `FileGroup` parameter is
+  mandatory, requiring DataFile objects to be created with an associated FileGroup.
+- Added public command `Add-SqlDscFileGroup` to add one or more FileGroup objects
+  to a Database. This command provides a clean way to associate FileGroup objects
+  with a Database after they have been created.
+- Added public command `ConvertTo-SqlDscDataFile` to convert `DatabaseFileSpec`
+  objects to SMO DataFile objects.
+- Added public command `ConvertTo-SqlDscFileGroup` to convert `DatabaseFileGroupSpec`
+  objects to SMO FileGroup objects.
+- Added class `DatabaseFileSpec` to define data file specifications without requiring
+  a database or SMO context.
+- Added class `DatabaseFileGroupSpec` to define file group specifications with
+  associated data files without requiring a database or SMO context.
+- `New-SqlDscDatabase`
+  - Added `FileGroup` and `DataFile` parameters to allow specifying custom file
+    locations and structure. These parameters apply to both regular databases and
+    database snapshots, enabling control over file placement for snapshots (sparse
+    files) and custom filegroup/datafile configuration for regular databases
+    ([issue #2341](https://github.com/dsccommunity/SqlServerDsc/issues/2341)).
 - Added public command `Set-SqlDscDatabaseOwner` to change the owner of a SQL Server
   database [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
   This command uses the SMO `SetOwner()` method and supports both `ServerObject`
