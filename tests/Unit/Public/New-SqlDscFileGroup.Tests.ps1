@@ -89,18 +89,10 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
             }
         }
 
-        It 'Should accept Database parameter from pipeline' {
-            InModuleScope -Parameters @{
-                mockDatabaseObject = $mockDatabaseObject
-            } -ScriptBlock {
-                param ($mockDatabaseObject)
-
-                $result = $mockDatabaseObject | New-SqlDscFileGroup -Name 'PipelineFileGroup' -Confirm:$false
-
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be 'PipelineFileGroup'
-                $result.Parent | Should -Be $mockDatabaseObject
-            }
+        It 'Should not accept Database parameter from pipeline (removed to prevent file path reuse)' {
+            # Verify that the parameter doesn't have ValueFromPipeline attribute
+            $parameterInfo = (Get-Command -Name 'New-SqlDscFileGroup').Parameters['Database']
+            $parameterInfo.Attributes.ValueFromPipeline | Should -Not -Contain $true
         }
 
         It 'Should support Force parameter to bypass confirmation' {
@@ -180,21 +172,22 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
             $parameterInfo.Attributes.Mandatory | Should -Contain $true
         }
 
-        It 'Should have Database parameter accept pipeline input' {
+        It 'Should not have Database parameter accept pipeline input' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscFileGroup').Parameters['Database']
-            $parameterInfo.Attributes.ValueFromPipeline | Should -Contain $true
+            $parameterInfo.Attributes.ValueFromPipeline | Should -Not -Contain $true
         }
 
-        It 'Should have two parameter sets' {
+        It 'Should have three parameter sets (WithDatabase, WithDatabaseFromSpec, AsSpec)' {
             $command = Get-Command -Name 'New-SqlDscFileGroup'
-            $command.ParameterSets.Count | Should -Be 2
+            $command.ParameterSets.Count | Should -Be 3
             $command.ParameterSets.Name | Should -Contain 'WithDatabase'
-            $command.ParameterSets.Name | Should -Contain 'Standalone'
+            $command.ParameterSets.Name | Should -Contain 'WithDatabaseFromSpec'
+            $command.ParameterSets.Name | Should -Contain 'AsSpec'
         }
 
-        It 'Should have Standalone as the default parameter set' {
+        It 'Should have AsSpec as the default parameter set' {
             $command = Get-Command -Name 'New-SqlDscFileGroup'
-            $command.DefaultParameterSet | Should -Be 'Standalone'
+            $command.DefaultParameterSet | Should -Be 'AsSpec'
         }
 
         It 'Should support ShouldProcess' {

@@ -160,8 +160,11 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
             $commandInfo = Get-Command -Name 'New-SqlDscDataFile'
         }
 
-        It 'Should have one parameter set' {
-            $commandInfo.ParameterSets.Count | Should -Be 1
+        It 'Should have three parameter sets (Standard, FromSpec, AsSpec)' {
+            $commandInfo.ParameterSets.Count | Should -Be 3
+            $commandInfo.ParameterSets.Name | Should -Contain 'Standard'
+            $commandInfo.ParameterSets.Name | Should -Contain 'FromSpec'
+            $commandInfo.ParameterSets.Name | Should -Contain 'AsSpec'
         }
 
         It 'Should have FileGroup as a mandatory parameter' {

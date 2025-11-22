@@ -180,17 +180,15 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         }
 
         It 'Should create a database with custom file groups and data files' {
-            # Create PRIMARY filegroup with data file
-            $primaryFileGroup = New-SqlDscFileGroup -Name 'PRIMARY'
-            $primaryFilePath = Join-Path -Path $script:dataDirectory -ChildPath ($script:testDatabaseWithFileGroups + '_Primary.mdf')
-            $null = New-SqlDscDataFile -FileGroup $primaryFileGroup -Name ($script:testDatabaseWithFileGroups + '_Primary') -FileName $primaryFilePath -Force
+            # Create PRIMARY filegroup specification with data file using -AsSpec parameters
+            $primaryFile = New-SqlDscDataFile -Name ($script:testDatabaseWithFileGroups + '_Primary') -FileName (Join-Path -Path $script:dataDirectory -ChildPath ($script:testDatabaseWithFileGroups + '_Primary.mdf')) -IsPrimaryFile $true -AsSpec
+            $primaryFileGroup = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($primaryFile) -AsSpec
 
-            # Create a secondary filegroup with data file
-            $secondaryFileGroup = New-SqlDscFileGroup -Name 'SecondaryFG'
-            $secondaryFilePath = Join-Path -Path $script:dataDirectory -ChildPath ($script:testDatabaseWithFileGroups + '_Secondary.ndf')
-            $null = New-SqlDscDataFile -FileGroup $secondaryFileGroup -Name ($script:testDatabaseWithFileGroups + '_Secondary') -FileName $secondaryFilePath -Force
+            # Create a secondary filegroup specification with data file using -AsSpec parameters
+            $secondaryFile = New-SqlDscDataFile -Name ($script:testDatabaseWithFileGroups + '_Secondary') -FileName (Join-Path -Path $script:dataDirectory -ChildPath ($script:testDatabaseWithFileGroups + '_Secondary.ndf')) -AsSpec
+            $secondaryFileGroup = New-SqlDscFileGroup -Name 'SecondaryFG' -Files @($secondaryFile) -AsSpec
 
-            # Create database with file groups
+            # Create database with file group specifications
             $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseWithFileGroups -FileGroup @($primaryFileGroup, $secondaryFileGroup) -Force -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty

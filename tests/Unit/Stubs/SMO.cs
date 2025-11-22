@@ -996,6 +996,8 @@ namespace Microsoft.SqlServer.Management.Smo
         public string Name { get; set; }
         public Database Parent { get; set; }
         public DataFileCollection Files { get; set; }
+        public bool ReadOnly { get; set; }
+        public bool IsDefault { get; set; }
 
         public void Create()
         {
@@ -1057,6 +1059,11 @@ namespace Microsoft.SqlServer.Management.Smo
         public string Name { get; set; }
         public string FileName { get; set; }
         public FileGroup Parent { get; set; }
+        public double Size { get; set; }
+        public double MaxSize { get; set; }
+        public double Growth { get; set; }
+        public string GrowthType { get; set; }
+        public bool IsPrimaryFile { get; set; }
 
         public void Create()
         {

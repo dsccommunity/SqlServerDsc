@@ -16,6 +16,28 @@
     .PARAMETER Name
         Specifies the name of the FileGroup to create.
 
+    .PARAMETER FileGroupSpec
+        Specifies a DatabaseFileGroupSpec object that defines the file group configuration
+        including name, properties, and data files.
+
+    .PARAMETER AsSpec
+        Returns a DatabaseFileGroupSpec object instead of a SMO FileGroup object.
+        This specification object can be passed to New-SqlDscDatabase to define
+        file groups before the database is created.
+
+    .PARAMETER Files
+        Specifies an array of DatabaseFileSpec objects to include in the file group.
+        Only valid when using -AsSpec.
+
+    .PARAMETER ReadOnly
+        Specifies whether the file group should be read-only. Only valid when using -AsSpec.
+
+    .PARAMETER IsDefault
+        Specifies whether this file group should be the default file group. Only valid when using -AsSpec.
+
+    .PARAMETER PassThru
+        Returns the created FileGroup object. By default, this cmdlet does not generate any output.
+
     .PARAMETER Force
         Specifies that the FileGroup object should be created without prompting for
         confirmation. By default, the command prompts for confirmation when the Database
@@ -31,9 +53,9 @@
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $database = $serverObject.Databases['MyDatabase']
-        $fileGroup = $database | New-SqlDscFileGroup -Name 'PRIMARY'
+        $fileGroup = New-SqlDscFileGroup -Database $database -Name 'PRIMARY'
 
-        Creates a new PRIMARY FileGroup using pipeline input.
+        Creates a new PRIMARY FileGroup for the specified database.
 
     .EXAMPLE
         $fileGroup = New-SqlDscFileGroup -Name 'MyFileGroup'
@@ -42,73 +64,152 @@
 
         Creates a standalone FileGroup that can be added to a Database later.
 
+    .EXAMPLE
+        $fileGroupSpec = New-SqlDscFileGroup -Name 'PRIMARY' -AsSpec
+
+        Creates a DatabaseFileGroupSpec object that can be passed to New-SqlDscDatabase.
+
+    .EXAMPLE
+        $primaryFile = New-SqlDscDataFile -Name 'MyDB_Primary' -FileName 'D:\SQLData\MyDB.mdf' -Size 102400 -IsPrimaryFile $true -AsSpec
+        $fileGroupSpec = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($primaryFile) -IsDefault $true -AsSpec
+
+        Creates a DatabaseFileGroupSpec object with files and properties set directly via parameters.
+
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.FileGroup]`
+        `[Microsoft.SqlServer.Management.Smo.FileGroup]` or `[DatabaseFileGroupSpec]` if -AsSpec is specified.
 #>
 function New-SqlDscFileGroup
 {
-    [CmdletBinding(DefaultParameterSetName = 'Standalone', SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+    [CmdletBinding(DefaultParameterSetName = 'AsSpec', SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType([Microsoft.SqlServer.Management.Smo.FileGroup])]
+    [OutputType([DatabaseFileGroupSpec])]
     param
     (
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'WithDatabase')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'WithDatabase')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'WithDatabaseFromSpec')]
         [Microsoft.SqlServer.Management.Smo.Database]
         $Database,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'WithDatabase')]
-        [Parameter(Mandatory = $true, ParameterSetName = 'Standalone')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'AsSpec')]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
 
+        [Parameter(Mandatory = $true, ParameterSetName = 'WithDatabaseFromSpec')]
+        [System.Object]
+        $FileGroupSpec,
+
+        [Parameter(ParameterSetName = 'AsSpec')]
+        [System.Management.Automation.SwitchParameter]
+        $AsSpec,
+
+        [Parameter(ParameterSetName = 'AsSpec')]
+        [DatabaseFileSpec[]]
+        $Files,
+
+        [Parameter(ParameterSetName = 'AsSpec')]
+        [System.Boolean]
+        $ReadOnly,
+
+        [Parameter(ParameterSetName = 'AsSpec')]
+        [System.Boolean]
+        $IsDefault,
+
+        [Parameter(ParameterSetName = 'AsSpec')]
         [Parameter(ParameterSetName = 'WithDatabase')]
+        [Parameter(ParameterSetName = 'WithDatabaseFromSpec')]
+        [System.Management.Automation.SwitchParameter]
+        $PassThru,
+
+        [Parameter(ParameterSetName = 'WithDatabase')]
+        [Parameter(ParameterSetName = 'WithDatabaseFromSpec')]
         [System.Management.Automation.SwitchParameter]
         $Force
     )
 
-    process
+    if ($Force.IsPresent -and -not $Confirm)
     {
-        if ($Force.IsPresent -and -not $Confirm)
+        $ConfirmPreference = 'None'
+    }
+
+    $fileGroupObject = $null
+
+    if ($PSCmdlet.ParameterSetName -in @('WithDatabase', 'WithDatabaseFromSpec'))
+    {
+        if (-not $Database.Parent)
         {
-            $ConfirmPreference = 'None'
+            $errorMessage = $script:localizedData.FileGroup_DatabaseMissingServerObject
+
+            $PSCmdlet.ThrowTerminatingError(
+                [System.Management.Automation.ErrorRecord]::new(
+                    $errorMessage,
+                    'NSDFG0003',
+                    [System.Management.Automation.ErrorCategory]::InvalidArgument,
+                    $Database
+                )
+            )
         }
 
-        $fileGroupObject = $null
+        $serverObject = $Database.Parent
 
-        if ($PSCmdlet.ParameterSetName -eq 'WithDatabase')
+        # Determine the file group name based on parameter set
+        $fileGroupName = if ($PSCmdlet.ParameterSetName -eq 'WithDatabaseFromSpec')
         {
-            if (-not $Database.Parent)
-            {
-                $errorMessage = $script:localizedData.FileGroup_DatabaseMissingServerObject
+            $FileGroupSpec.Name
+        }
+        else
+        {
+            $Name
+        }
 
-                $PSCmdlet.ThrowTerminatingError(
-                    [System.Management.Automation.ErrorRecord]::new(
-                        $errorMessage,
-                        'NSDFG0003',
-                        [System.Management.Automation.ErrorCategory]::InvalidArgument,
-                        $Database
-                    )
-                )
+        $descriptionMessage = $script:localizedData.FileGroup_Create_ShouldProcessDescription -f $fileGroupName, $Database.Name, $serverObject.InstanceName
+        $confirmationMessage = $script:localizedData.FileGroup_Create_ShouldProcessConfirmation -f $fileGroupName
+        $captionMessage = $script:localizedData.FileGroup_Create_ShouldProcessCaption
+
+        if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
+        {
+            if ($PSCmdlet.ParameterSetName -eq 'WithDatabaseFromSpec')
+            {
+                Write-Verbose -Message ('Creating file group: {0}' -f $FileGroupSpec.Name)
+
+                # Convert the spec object to SMO FileGroup
+                $fileGroupObject = ConvertTo-SqlDscFileGroup -DatabaseObject $Database -FileGroupSpec $FileGroupSpec
+            }
+            else
+            {
+                $fileGroupObject = [Microsoft.SqlServer.Management.Smo.FileGroup]::new($Database, $Name)
+            }
+        }
+    }
+    else
+    {
+        if ($AsSpec.IsPresent)
+        {
+            $fileGroupObject = [DatabaseFileGroupSpec]::new($Name)
+
+            if ($PSBoundParameters.ContainsKey('Files'))
+            {
+                $fileGroupObject.Files = $Files
             }
 
-            $serverObject = $Database.Parent
-
-            $descriptionMessage = $script:localizedData.FileGroup_Create_ShouldProcessDescription -f $Name, $Database.Name, $serverObject.InstanceName
-            $confirmationMessage = $script:localizedData.FileGroup_Create_ShouldProcessConfirmation -f $Name
-            $captionMessage = $script:localizedData.FileGroup_Create_ShouldProcessCaption
-
-            if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
+            if ($PSBoundParameters.ContainsKey('ReadOnly'))
             {
-                $fileGroupObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.FileGroup' -ArgumentList $Database, $Name
+                $fileGroupObject.ReadOnly = $ReadOnly
+            }
+
+            if ($PSBoundParameters.ContainsKey('IsDefault'))
+            {
+                $fileGroupObject.IsDefault = $IsDefault
             }
         }
         else
         {
-            $fileGroupObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.FileGroup'
+            $fileGroupObject = [Microsoft.SqlServer.Management.Smo.FileGroup]::new()
 
             $fileGroupObject.Name = $Name
         }
-
-        return $fileGroupObject
     }
+
+    return $fileGroupObject
 }

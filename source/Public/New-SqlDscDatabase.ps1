@@ -39,11 +39,17 @@
         of a regular database. The snapshot name is specified in the Name parameter.
 
     .PARAMETER FileGroup
-        Specifies an array of FileGroup objects to add to the database.
-        Each FileGroup can contain DataFile objects with FileName properties
-        specifying the file paths. For database snapshots, the FileName must
-        point to sparse file locations. For regular databases, this allows
-        custom file and filegroup configuration.
+        Specifies an array of DatabaseFileGroupSpec objects that define the file groups
+        and data files for the database. Each DatabaseFileGroupSpec contains the file group
+        name and an array of DatabaseFileSpec objects for the data files.
+
+        This parameter allows you to specify custom file and filegroup configurations
+        before the database is created, avoiding the SMO limitation where DataFile objects
+        require an existing database context.
+
+        For database snapshots, the FileName in each DatabaseFileSpec must point to sparse
+        file locations. For regular databases, this allows full control over PRIMARY and
+        secondary file group configurations.
 
     .PARAMETER Force
         Specifies that the database should be created without any confirmation.
@@ -77,14 +83,18 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $sourceDb = $serverObject.Databases['MyDatabase']
-        $fileGroup = New-SqlDscFileGroup -Database $sourceDb -Name 'PRIMARY'
-        $dataFile = New-SqlDscDataFile -FileGroup $fileGroup -Name 'MyDatabase_Data' -Path 'C:\Snapshots\MyDatabase_Data.ss'
-        $fileGroup.Files.Add($dataFile)
-        $serverObject | New-SqlDscDatabase -Name 'MyDatabaseSnapshot' -DatabaseSnapshotBaseName 'MyDatabase' -FileGroup @($fileGroup) -Force
 
-        Creates a database snapshot named **MyDatabaseSnapshot** from the source database **MyDatabase**
-        with a specified sparse file location without prompting for confirmation.
+        $primaryFile = New-SqlDscDataFile -Name 'MyDatabase_Primary' -FileName 'D:\SQLData\MyDatabase.mdf' -Size 102400 -Growth 10240 -GrowthType 'KB' -IsPrimaryFile $true -AsSpec
+        $primaryFileGroup = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($primaryFile) -IsDefault $true -AsSpec
+
+        $secondaryFile = New-SqlDscDataFile -Name 'MyDatabase_Secondary' -FileName 'E:\SQLData\MyDatabase.ndf' -Size 204800 -AsSpec
+        $secondaryFileGroup = New-SqlDscFileGroup -Name 'SECONDARY' -Files @($secondaryFile) -AsSpec
+
+        $serverObject | New-SqlDscDatabase -Name 'MyDatabase' -FileGroup @($primaryFileGroup, $secondaryFileGroup) -Force
+
+        Creates a new database named **MyDatabase** with custom PRIMARY and SECONDARY file groups
+        using specification objects created with the -AsSpec parameter. All properties are set
+        directly via parameters without prompting for confirmation.
 
     .OUTPUTS
         `[Microsoft.SqlServer.Management.Smo.Database]`
@@ -134,7 +144,7 @@ function New-SqlDscDatabase
         $DatabaseSnapshotBaseName,
 
         [Parameter()]
-        [Microsoft.SqlServer.Management.Smo.FileGroup[]]
+        [DatabaseFileGroupSpec[]]
         $FileGroup,
 
         [Parameter()]
@@ -307,7 +317,14 @@ function New-SqlDscDatabase
                 # Add FileGroups if provided (applies to both regular databases and snapshots)
                 if ($PSBoundParameters.ContainsKey('FileGroup'))
                 {
-                    Add-SqlDscFileGroup -Database $sqlDatabaseObjectToCreate -FileGroup $FileGroup
+                    foreach ($fileGroupSpec in $FileGroup)
+                    {
+                        # Create FileGroup using New-SqlDscFileGroup with spec object
+                        $smoFileGroup = New-SqlDscFileGroup -Database $sqlDatabaseObjectToCreate -FileGroupSpec $fileGroupSpec -Force
+
+                        # Add the file group to the database
+                        Add-SqlDscFileGroup -Database $sqlDatabaseObjectToCreate -FileGroup $smoFileGroup
+                    }
                 }
 
                 Write-Verbose -Message ($script:localizedData.Database_Creating -f $Name)

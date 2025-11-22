@@ -20,6 +20,16 @@
         For regular databases, this should be the data file path (typically with .mdf
         or .ndf extension).
 
+    .PARAMETER DataFileSpec
+        Specifies a DatabaseFileSpec object that defines the data file configuration
+        including name, file path, size, growth, and other properties.
+
+    .PARAMETER AsSpec
+        Returns a DatabaseFileSpec object instead of a SMO DataFile object.
+        This specification object can be used with New-SqlDscFileGroup -AsSpec
+        or passed directly to New-SqlDscDatabase to define data files before
+        the database is created.
+
     .PARAMETER PassThru
         Returns the DataFile object that was created and added to the FileGroup.
 
@@ -52,35 +62,81 @@
 
         Creates an additional DataFile and returns it for further processing.
 
+    .EXAMPLE
+        $dataFileSpec = New-SqlDscDataFile -Name 'MyDB_Primary' -FileName 'D:\SQLData\MyDB.mdf' -AsSpec
+
+        Creates a DatabaseFileSpec object that can be used with New-SqlDscFileGroup -AsSpec
+        or passed to New-SqlDscDatabase.
+
+    .EXAMPLE
+        $dataFileSpec = New-SqlDscDataFile -Name 'MyDB_Primary' -FileName 'D:\SQLData\MyDB.mdf' -Size 102400 -MaxSize 5242880 -Growth 10240 -GrowthType 'KB' -IsPrimaryFile $true -AsSpec
+
+        Creates a DatabaseFileSpec object with all properties set directly via parameters.
+
     .OUTPUTS
         None. Unless -PassThru is specified, in which case it returns `[Microsoft.SqlServer.Management.Smo.DataFile]`.
 #>
 function New-SqlDscDataFile
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+    [CmdletBinding(DefaultParameterSetName = 'Standard', SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType([Microsoft.SqlServer.Management.Smo.DataFile])]
+    [OutputType([DatabaseFileSpec])]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Standard')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'FromSpec')]
         [Microsoft.SqlServer.Management.Smo.FileGroup]
         $FileGroup,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Standard')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'AsSpec')]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Standard')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'AsSpec')]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $FileName,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true, ParameterSetName = 'FromSpec')]
+        [System.Object]
+        $DataFileSpec,
+
+        [Parameter(Mandatory = $true, ParameterSetName = 'AsSpec')]
+        [System.Management.Automation.SwitchParameter]
+        $AsSpec,
+
+        [Parameter(ParameterSetName = 'AsSpec')]
+        [System.Nullable[System.Double]]
+        $Size,
+
+        [Parameter(ParameterSetName = 'AsSpec')]
+        [System.Nullable[System.Double]]
+        $MaxSize,
+
+        [Parameter(ParameterSetName = 'AsSpec')]
+        [System.Nullable[System.Double]]
+        $Growth,
+
+        [Parameter(ParameterSetName = 'AsSpec')]
+        [ValidateSet('KB', 'MB', 'Percent')]
+        [System.String]
+        $GrowthType,
+
+        [Parameter(ParameterSetName = 'AsSpec')]
+        [System.Boolean]
+        $IsPrimaryFile,
+
+        [Parameter(ParameterSetName = 'Standard')]
+        [Parameter(ParameterSetName = 'FromSpec')]
         [System.Management.Automation.SwitchParameter]
         $PassThru,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'Standard')]
+        [Parameter(ParameterSetName = 'FromSpec')]
         [System.Management.Automation.SwitchParameter]
         $Force
     )
@@ -90,13 +146,65 @@ function New-SqlDscDataFile
         $ConfirmPreference = 'None'
     }
 
-    $descriptionMessage = $script:localizedData.DataFile_Create_ShouldProcessDescription -f $Name, $FileGroup.Name
-    $confirmationMessage = $script:localizedData.DataFile_Create_ShouldProcessConfirmation -f $Name
+    if ($PSCmdlet.ParameterSetName -eq 'AsSpec')
+    {
+        $fileSpec = [DatabaseFileSpec]::new($Name, $FileName)
+
+        if ($PSBoundParameters.ContainsKey('Size'))
+        {
+            $fileSpec.Size = $Size
+        }
+
+        if ($PSBoundParameters.ContainsKey('MaxSize'))
+        {
+            $fileSpec.MaxSize = $MaxSize
+        }
+
+        if ($PSBoundParameters.ContainsKey('Growth'))
+        {
+            $fileSpec.Growth = $Growth
+        }
+
+        if ($PSBoundParameters.ContainsKey('GrowthType'))
+        {
+            $fileSpec.GrowthType = $GrowthType
+        }
+
+        if ($PSBoundParameters.ContainsKey('IsPrimaryFile'))
+        {
+            $fileSpec.IsPrimaryFile = $IsPrimaryFile
+        }
+
+        return $fileSpec
+    }
+
+    # Determine the data file name based on parameter set
+    $dataFileName = if ($PSCmdlet.ParameterSetName -eq 'FromSpec')
+    {
+        $DataFileSpec.Name
+    }
+    else
+    {
+        $Name
+    }
+
+    $descriptionMessage = $script:localizedData.DataFile_Create_ShouldProcessDescription -f $dataFileName, $FileGroup.Name
+    $confirmationMessage = $script:localizedData.DataFile_Create_ShouldProcessConfirmation -f $dataFileName
     $captionMessage = $script:localizedData.DataFile_Create_ShouldProcessCaption
 
     if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
     {
-        $dataFileObject = [Microsoft.SqlServer.Management.Smo.DataFile]::new($FileGroup, $Name, $FileName)
+        if ($PSCmdlet.ParameterSetName -eq 'FromSpec')
+        {
+            Write-Verbose -Message ('  Creating data file: {0}' -f $DataFileSpec.Name)
+
+            # Use the spec object's method to create the SMO DataFile
+            $dataFileObject = $DataFileSpec.ToSmoDataFile($FileGroup)
+        }
+        else
+        {
+            $dataFileObject = [Microsoft.SqlServer.Management.Smo.DataFile]::new($FileGroup, $Name, $FileName)
+        }
 
         $FileGroup.Files.Add($dataFileObject)
 
