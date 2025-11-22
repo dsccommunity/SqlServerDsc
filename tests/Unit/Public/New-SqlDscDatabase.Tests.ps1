@@ -351,7 +351,7 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
                 mockServerObject = $mockServerObject
             } -ScriptBlock {
                 # Create file spec with parameters using -AsSpec
-                $primaryFile = New-SqlDscDataFile -Name 'TestDB_Primary' -FileName 'D:\SQLData\TestDB.mdf' -Size 102400 -Growth 10240 -GrowthType 'KB' -IsPrimaryFile $true -AsSpec
+                $primaryFile = New-SqlDscDataFile -Name 'TestDB_Primary' -FileName 'D:\SQLData\TestDB.mdf' -Size 102400 -Growth 10240 -GrowthType 'KB' -IsPrimaryFile -AsSpec
 
                 # Create filegroup spec with parameters using -AsSpec
                 $primaryFileGroup = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($primaryFile) -IsDefault $true -AsSpec
@@ -371,7 +371,7 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
                 mockServerObject = $mockServerObject
             } -ScriptBlock {
                 # Create PRIMARY filegroup
-                $primaryFile = New-SqlDscDataFile -Name 'TestDB_Primary' -FileName 'D:\SQLData\TestDB.mdf' -Size 102400 -IsPrimaryFile $true -AsSpec
+                $primaryFile = New-SqlDscDataFile -Name 'TestDB_Primary' -FileName 'D:\SQLData\TestDB.mdf' -Size 102400 -IsPrimaryFile -AsSpec
                 $primaryFileGroup = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($primaryFile) -IsDefault $true -AsSpec
 
                 # Create secondary filegroup

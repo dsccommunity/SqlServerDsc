@@ -79,7 +79,7 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag 'Public' {
             } -ScriptBlock {
                 param ($mockDatabase)
 
-                $fileGroupSpec = New-SqlDscFileGroup -Name 'READONLY_FG' -ReadOnly $true -AsSpec
+                $fileGroupSpec = New-SqlDscFileGroup -Name 'READONLY_FG' -ReadOnly -AsSpec
 
                 $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
 
@@ -94,7 +94,7 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag 'Public' {
             } -ScriptBlock {
                 param ($mockDatabase)
 
-                $fileGroupSpec = New-SqlDscFileGroup -Name 'PRIMARY' -IsDefault $true -AsSpec
+                $fileGroupSpec = New-SqlDscFileGroup -Name 'PRIMARY' -IsDefault -AsSpec
 
                 $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
 
@@ -149,18 +149,17 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag 'Public' {
                 param ($mockDatabase)
 
                 $primaryFile = New-SqlDscDataFile -Name 'PrimaryFile' -FileName 'C:\SQLData\Primary.mdf' `
-                    -Size 102400 -MaxSize 512000 -Growth 10240 -GrowthType 'KB' -IsPrimaryFile $true -AsSpec
+                    -Size 102400 -MaxSize 512000 -Growth 10240 -GrowthType 'KB' -IsPrimaryFile -AsSpec
 
                 $secondaryFile = New-SqlDscDataFile -Name 'SecondaryFile' -FileName 'C:\SQLData\Secondary.ndf' `
                     -Size 204800 -MaxSize 1024000 -Growth 20480 -GrowthType 'KB' -AsSpec
 
                 $fileGroupSpec = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($primaryFile, $secondaryFile) `
-                    -ReadOnly $false -IsDefault $true -AsSpec
+                    -IsDefault -AsSpec
 
                 $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
 
                 $result.Name | Should -Be 'PRIMARY'
-                $result.ReadOnly | Should -Be $false
                 $result.IsDefault | Should -Be $true
                 $result.Files.Count | Should -Be 2
                 $result.Files[0].Name | Should -Be 'PrimaryFile'

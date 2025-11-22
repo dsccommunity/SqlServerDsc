@@ -51,7 +51,7 @@
         DatabaseFileSpec object.
 
     .PARAMETER IsPrimaryFile
-        Specifies whether this data file is the primary file in the PRIMARY filegroup.
+        Specifies that this data file is the primary file in the PRIMARY filegroup.
         Only valid when used with the -AsSpec parameter to create a DatabaseFileSpec
         object.
 
@@ -94,7 +94,7 @@
         or passed to New-SqlDscDatabase.
 
     .EXAMPLE
-        $dataFileSpec = New-SqlDscDataFile -Name 'MyDB_Primary' -FileName 'D:\SQLData\MyDB.mdf' -Size 102400 -MaxSize 5242880 -Growth 10240 -GrowthType 'KB' -IsPrimaryFile $true -AsSpec
+        $dataFileSpec = New-SqlDscDataFile -Name 'MyDB_Primary' -FileName 'D:\SQLData\MyDB.mdf' -Size 102400 -MaxSize 5242880 -Growth 10240 -GrowthType 'KB' -IsPrimaryFile -AsSpec
 
         Creates a DatabaseFileSpec object with all properties set directly via parameters.
 
@@ -152,7 +152,7 @@ function New-SqlDscDataFile
         $GrowthType,
 
         [Parameter(ParameterSetName = 'AsSpec')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsPrimaryFile,
 
         [Parameter(ParameterSetName = 'Standard')]
@@ -195,12 +195,30 @@ function New-SqlDscDataFile
             $fileSpec.GrowthType = $GrowthType
         }
 
-        if ($PSBoundParameters.ContainsKey('IsPrimaryFile'))
+        if ($IsPrimaryFile.IsPresent)
         {
-            $fileSpec.IsPrimaryFile = $IsPrimaryFile
+            $fileSpec.IsPrimaryFile = $true
         }
 
         return $fileSpec
+    }
+
+    # Validate that primary files can only be in the PRIMARY filegroup
+    if ($PSCmdlet.ParameterSetName -in @('FromSpec'))
+    {
+        $isPrimary = $null -ne $DataFileSpec -and $DataFileSpec.IsPrimaryFile
+
+        if ($isPrimary -and $FileGroup.Name -ne 'PRIMARY')
+        {
+            $PSCmdlet.ThrowTerminatingError(
+                [System.Management.Automation.ErrorRecord]::new(
+                    ($script:localizedData.DataFile_PrimaryFileMustBeInPrimaryFileGroup),
+                    'NSDDF0003',
+                    [System.Management.Automation.ErrorCategory]::InvalidArgument,
+                    $FileGroup
+                )
+            )
+        }
     }
 
     # Determine the data file name based on parameter set
@@ -223,8 +241,8 @@ function New-SqlDscDataFile
         {
             Write-Verbose -Message ('  Creating data file: {0}' -f $DataFileSpec.Name)
 
-            # Use the spec object's method to create the SMO DataFile
-            $dataFileObject = $DataFileSpec.ToSmoDataFile($FileGroup)
+            # Convert the spec object to SMO DataFile
+            $dataFileObject = ConvertTo-SqlDscDataFile -FileGroupObject $FileGroup -DataFileSpec $DataFileSpec
         }
         else
         {

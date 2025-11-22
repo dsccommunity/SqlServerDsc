@@ -203,4 +203,100 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
                 ForEach-Object { $_.ConfirmImpact } | Should -Be 'High'
         }
     }
+
+    Context 'When creating a DataFile with AsSpec parameter set' {
+        It 'Should return a DatabaseFileSpec object' {
+            InModuleScope -ScriptBlock {
+                $result = New-SqlDscDataFile -Name 'MyDB_Primary' -FileName 'D:\SQLData\MyDB.mdf' -AsSpec
+
+                $result | Should -Not -BeNullOrEmpty
+                $result.GetType().Name | Should -Be 'DatabaseFileSpec'
+                $result.Name | Should -Be 'MyDB_Primary'
+                $result.FileName | Should -Be 'D:\SQLData\MyDB.mdf'
+            }
+        }
+
+        It 'Should set IsPrimaryFile when specified' {
+            InModuleScope -ScriptBlock {
+                $result = New-SqlDscDataFile -Name 'MyDB_Primary' -FileName 'D:\SQLData\MyDB.mdf' -IsPrimaryFile -AsSpec
+
+                $result | Should -Not -BeNullOrEmpty
+                $result.IsPrimaryFile | Should -BeTrue
+            }
+        }
+
+        It 'Should set Size, MaxSize, Growth, and GrowthType when specified' {
+            InModuleScope -ScriptBlock {
+                $result = New-SqlDscDataFile -Name 'MyDB_Primary' -FileName 'D:\SQLData\MyDB.mdf' -Size 102400 -MaxSize 5242880 -Growth 10240 -GrowthType 'KB' -AsSpec
+
+                $result | Should -Not -BeNullOrEmpty
+                $result.Size | Should -Be 102400
+                $result.MaxSize | Should -Be 5242880
+                $result.Growth | Should -Be 10240
+                $result.GrowthType | Should -Be 'KB'
+            }
+        }
+    }
+
+    Context 'When creating a DataFile from a DatabaseFileSpec' {
+        BeforeAll {
+            $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+            $mockDatabaseObject.Name = 'TestDatabase'
+        }
+
+        It 'Should create a DataFile from a DatabaseFileSpec in the PRIMARY filegroup' {
+            InModuleScope -Parameters @{
+                mockDatabaseObject = $mockDatabaseObject
+            } -ScriptBlock {
+                param ($mockDatabaseObject)
+
+                $mockFileGroupObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.FileGroup' -ArgumentList $mockDatabaseObject, 'PRIMARY'
+
+                $fileSpec = New-SqlDscDataFile -Name 'MyDB_Primary' -FileName 'D:\SQLData\MyDB.mdf' -IsPrimaryFile -AsSpec
+
+                $initialFileCount = $mockFileGroupObject.Files.Count
+
+                $result = New-SqlDscDataFile -FileGroup $mockFileGroupObject -DataFileSpec $fileSpec -PassThru -Force
+
+                $result | Should -Not -BeNullOrEmpty
+                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
+                $mockFileGroupObject.Files.Count | Should -Be ($initialFileCount + 1)
+            }
+        }
+
+        It 'Should throw an error when IsPrimaryFile is specified but filegroup is not PRIMARY' {
+            InModuleScope -Parameters @{
+                mockDatabaseObject = $mockDatabaseObject
+            } -ScriptBlock {
+                param ($mockDatabaseObject)
+
+                $mockFileGroupObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.FileGroup' -ArgumentList $mockDatabaseObject, 'SECONDARY'
+
+                $fileSpec = New-SqlDscDataFile -Name 'MyDB_Primary' -FileName 'D:\SQLData\MyDB.mdf' -IsPrimaryFile -AsSpec
+
+                { New-SqlDscDataFile -FileGroup $mockFileGroupObject -DataFileSpec $fileSpec -Force -ErrorAction Stop } |
+                    Should -Throw -ExpectedMessage '*The primary file must reside in the PRIMARY filegroup*'
+            }
+        }
+
+        It 'Should create a DataFile from a DatabaseFileSpec without IsPrimaryFile in a non-PRIMARY filegroup' {
+            InModuleScope -Parameters @{
+                mockDatabaseObject = $mockDatabaseObject
+            } -ScriptBlock {
+                param ($mockDatabaseObject)
+
+                $mockFileGroupObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.FileGroup' -ArgumentList $mockDatabaseObject, 'SECONDARY'
+
+                $fileSpec = New-SqlDscDataFile -Name 'MyDB_Secondary' -FileName 'D:\SQLData\MyDB_Secondary.ndf' -AsSpec
+
+                $initialFileCount = $mockFileGroupObject.Files.Count
+
+                $result = New-SqlDscDataFile -FileGroup $mockFileGroupObject -DataFileSpec $fileSpec -PassThru -Force
+
+                $result | Should -Not -BeNullOrEmpty
+                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
+                $mockFileGroupObject.Files.Count | Should -Be ($initialFileCount + 1)
+            }
+        }
+    }
 }

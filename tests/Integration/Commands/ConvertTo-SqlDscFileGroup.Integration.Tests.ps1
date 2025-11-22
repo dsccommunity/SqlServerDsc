@@ -93,7 +93,7 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_
 
         It 'Should convert a DatabaseFileGroupSpec with ReadOnly to a FileGroup object' {
             $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\Data\TestFile.ndf' -AsSpec
-            $fileGroupSpec = New-SqlDscFileGroup -Name 'TestFileGroup' -Files @($fileSpec) -ReadOnly $true -AsSpec
+            $fileGroupSpec = New-SqlDscFileGroup -Name 'TestFileGroup' -Files @($fileSpec) -ReadOnly -AsSpec
 
             $result = ConvertTo-SqlDscFileGroup -DatabaseObject $script:testDatabase -FileGroupSpec $fileGroupSpec
 
@@ -103,7 +103,7 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_
 
         It 'Should convert a DatabaseFileGroupSpec with IsDefault to a FileGroup object' {
             $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\Data\TestFile.ndf' -AsSpec
-            $fileGroupSpec = New-SqlDscFileGroup -Name 'TestFileGroup' -Files @($fileSpec) -IsDefault $true -AsSpec
+            $fileGroupSpec = New-SqlDscFileGroup -Name 'TestFileGroup' -Files @($fileSpec) -IsDefault -AsSpec
 
             $result = ConvertTo-SqlDscFileGroup -DatabaseObject $script:testDatabase -FileGroupSpec $fileGroupSpec
 
@@ -111,10 +111,10 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_
             $result.IsDefault | Should -Be $true
         }
 
-        It 'Should convert a DatabaseFileGroupSpec with all optional properties to a FileGroup object' {
+        It 'Should convert a DatabaseFileGroupSpec with multiple file properties to a FileGroup object' {
             $fileSpec1 = New-SqlDscDataFile -Name 'TestFile1' -FileName 'C:\Data\TestFile1.ndf' -Size 100 -MaxSize 1000 -AsSpec
             $fileSpec2 = New-SqlDscDataFile -Name 'TestFile2' -FileName 'C:\Data\TestFile2.ndf' -Growth 10 -GrowthType 'Percent' -AsSpec
-            $fileGroupSpec = New-SqlDscFileGroup -Name 'TestFileGroup' -Files @($fileSpec1, $fileSpec2) -ReadOnly $false -IsDefault $false -AsSpec
+            $fileGroupSpec = New-SqlDscFileGroup -Name 'TestFileGroup' -Files @($fileSpec1, $fileSpec2) -AsSpec
 
             $result = ConvertTo-SqlDscFileGroup -DatabaseObject $script:testDatabase -FileGroupSpec $fileGroupSpec
 
@@ -125,14 +125,12 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_
             $result.Files[0].MaxSize | Should -Be 1000
             $result.Files[1].Growth | Should -Be 10
             $result.Files[1].GrowthType | Should -Be 'Percent'
-            $result.ReadOnly | Should -Be $false
-            $result.IsDefault | Should -Be $false
         }
 
         It 'Should preserve file properties when converting FileGroup with complex file configurations' {
-            $primaryFile = New-SqlDscDataFile -Name 'PrimaryFile' -FileName 'C:\Data\Primary.mdf' -IsPrimaryFile $true -Size 200 -MaxSize 2000 -Growth 20 -GrowthType 'KB' -AsSpec
+            $primaryFile = New-SqlDscDataFile -Name 'PrimaryFile' -FileName 'C:\Data\Primary.mdf' -IsPrimaryFile -Size 200 -MaxSize 2000 -Growth 20 -GrowthType 'KB' -AsSpec
             $secondaryFile = New-SqlDscDataFile -Name 'SecondaryFile' -FileName 'C:\Data\Secondary.ndf' -Size 100 -MaxSize 1000 -Growth 10 -GrowthType 'Percent' -AsSpec
-            $fileGroupSpec = New-SqlDscFileGroup -Name 'ComplexFileGroup' -Files @($primaryFile, $secondaryFile) -AsSpec
+            $fileGroupSpec = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($primaryFile, $secondaryFile) -AsSpec
 
             $result = ConvertTo-SqlDscFileGroup -DatabaseObject $script:testDatabase -FileGroupSpec $fileGroupSpec
 

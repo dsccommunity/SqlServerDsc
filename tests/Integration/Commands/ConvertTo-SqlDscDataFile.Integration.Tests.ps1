@@ -117,9 +117,12 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_S
         }
 
         It 'Should convert a DatabaseFileSpec with IsPrimaryFile to a DataFile object' {
-            $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\Data\TestFile.mdf' -IsPrimaryFile $true -AsSpec
+            # IsPrimaryFile can only be set for files in the PRIMARY filegroup
+            $primaryFileGroup = $script:testDatabase.FileGroups['PRIMARY']
 
-            $result = ConvertTo-SqlDscDataFile -FileGroupObject $script:mockFileGroup -DataFileSpec $fileSpec
+            $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\Data\TestFile.mdf' -IsPrimaryFile -AsSpec
+
+            $result = ConvertTo-SqlDscDataFile -FileGroupObject $primaryFileGroup -DataFileSpec $fileSpec
 
             $result | Should -Not -BeNullOrEmpty
             $result.IsPrimaryFile | Should -Be $true

@@ -181,7 +181,7 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
         It 'Should create a database with custom file groups and data files' {
             # Create PRIMARY filegroup specification with data file using -AsSpec parameters
-            $primaryFile = New-SqlDscDataFile -Name ($script:testDatabaseWithFileGroups + '_Primary') -FileName (Join-Path -Path $script:dataDirectory -ChildPath ($script:testDatabaseWithFileGroups + '_Primary.mdf')) -IsPrimaryFile $true -AsSpec
+            $primaryFile = New-SqlDscDataFile -Name ($script:testDatabaseWithFileGroups + '_Primary') -FileName (Join-Path -Path $script:dataDirectory -ChildPath ($script:testDatabaseWithFileGroups + '_Primary.mdf')) -IsPrimaryFile -AsSpec
             $primaryFileGroup = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($primaryFile) -AsSpec
 
             # Create a secondary filegroup specification with data file using -AsSpec parameters

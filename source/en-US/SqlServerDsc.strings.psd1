@@ -381,6 +381,7 @@ ConvertFrom-StringData @'
     DataFile_Create_ShouldProcessConfirmation = Are you sure you want to create the data file '{0}'? (NSDDF0002)
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     DataFile_Create_ShouldProcessCaption = Create data file for filegroup
+    DataFile_PrimaryFileMustBeInPrimaryFileGroup = The primary file must reside in the PRIMARY filegroup. (NSDDF0003)
 
     ## Set-SqlDscDatabaseProperty
     Database_Set = Setting properties of database '{0}' on instance '{1}'. (SSDDP0001)

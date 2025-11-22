@@ -33,7 +33,7 @@
         If not specified, defaults to KB.
 
     .PARAMETER IsPrimaryFile
-        Specifies whether this file is the primary file in the PRIMARY file group.
+        Specifies that this file is the primary file in the PRIMARY file group.
         Only one file in the PRIMARY file group should be marked as the primary file.
         This property is typically used for the first file in the PRIMARY file group.
 

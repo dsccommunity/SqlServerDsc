@@ -70,7 +70,7 @@
         Creates a DatabaseFileGroupSpec object that can be passed to New-SqlDscDatabase.
 
     .EXAMPLE
-        $primaryFile = New-SqlDscDataFile -Name 'MyDB_Primary' -FileName 'D:\SQLData\MyDB.mdf' -Size 102400 -IsPrimaryFile $true -AsSpec
+        $primaryFile = New-SqlDscDataFile -Name 'MyDB_Primary' -FileName 'D:\SQLData\MyDB.mdf' -Size 102400 -IsPrimaryFile -AsSpec
         $fileGroupSpec = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($primaryFile) -IsDefault $true -AsSpec
 
         Creates a DatabaseFileGroupSpec object with files and properties set directly via parameters.
@@ -110,11 +110,11 @@ function New-SqlDscFileGroup
         $Files,
 
         [Parameter(ParameterSetName = 'AsSpec')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ReadOnly,
 
         [Parameter(ParameterSetName = 'AsSpec')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsDefault,
 
         [Parameter(ParameterSetName = 'AsSpec')]
@@ -194,14 +194,14 @@ function New-SqlDscFileGroup
                 $fileGroupObject.Files = $Files
             }
 
-            if ($PSBoundParameters.ContainsKey('ReadOnly'))
+            if ($ReadOnly.IsPresent)
             {
-                $fileGroupObject.ReadOnly = $ReadOnly
+                $fileGroupObject.ReadOnly = $true
             }
 
-            if ($PSBoundParameters.ContainsKey('IsDefault'))
+            if ($IsDefault.IsPresent)
             {
-                $fileGroupObject.IsDefault = $IsDefault
+                $fileGroupObject.IsDefault = $true
             }
         }
         else

@@ -81,7 +81,7 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag 'Public' {
                 param ($mockFileGroup)
 
                 $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\SQLData\TestFile.mdf' `
-                    -Size 102400 -MaxSize 512000 -Growth 10240 -GrowthType 'KB' -IsPrimaryFile $true -AsSpec
+                    -Size 102400 -MaxSize 512000 -Growth 10240 -GrowthType 'KB' -IsPrimaryFile -AsSpec
 
                 $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
 
@@ -158,7 +158,7 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag 'Public' {
             } -ScriptBlock {
                 param ($mockFileGroup)
 
-                $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\SQLData\TestFile.mdf' -IsPrimaryFile $true -AsSpec
+                $fileSpec = New-SqlDscDataFile -Name 'TestFile' -FileName 'C:\SQLData\TestFile.mdf' -IsPrimaryFile -AsSpec
 
                 $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
 
