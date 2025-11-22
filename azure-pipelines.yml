@@ -340,7 +340,7 @@ stages:
                   'tests/Integration/Commands/Get-SqlDscDatabase.Integration.Tests.ps1'
                   'tests/Integration/Commands/ConvertFrom-SqlDscDatabasePermission.Integration.Tests.ps1'
                   'tests/Integration/Commands/New-SqlDscDatabase.Integration.Tests.ps1'
-
+                  'tests/Integration/Commands/New-SqlDscDatabaseSnapshot.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscCompatibilityLevel.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscDatabaseProperty.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscDatabaseOwner.Integration.Tests.ps1'
