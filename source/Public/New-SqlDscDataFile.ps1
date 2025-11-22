@@ -30,6 +30,31 @@
         or passed directly to New-SqlDscDatabase to define data files before
         the database is created.
 
+    .PARAMETER Size
+        Specifies the initial size of the data file in kilobytes. Only valid when
+        used with the -AsSpec parameter to create a DatabaseFileSpec object.
+
+    .PARAMETER MaxSize
+        Specifies the maximum size to which the data file can grow, in kilobytes.
+        Only valid when used with the -AsSpec parameter to create a DatabaseFileSpec
+        object.
+
+    .PARAMETER Growth
+        Specifies the amount by which the data file grows when it requires more space.
+        The value is interpreted according to the GrowthType parameter (kilobytes or
+        percentage). Only valid when used with the -AsSpec parameter to create a
+        DatabaseFileSpec object.
+
+    .PARAMETER GrowthType
+        Specifies the type of growth for the data file. Valid values are 'KB', 'MB',
+        or 'Percent'. Only valid when used with the -AsSpec parameter to create a
+        DatabaseFileSpec object.
+
+    .PARAMETER IsPrimaryFile
+        Specifies whether this data file is the primary file in the PRIMARY filegroup.
+        Only valid when used with the -AsSpec parameter to create a DatabaseFileSpec
+        object.
+
     .PARAMETER PassThru
         Returns the DataFile object that was created and added to the FileGroup.
 
