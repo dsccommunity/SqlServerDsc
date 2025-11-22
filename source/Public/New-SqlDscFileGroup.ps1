@@ -72,6 +72,11 @@
 
         Creates a DatabaseFileGroupSpec object with files and properties set directly via parameters.
 
+    .INPUTS
+        None
+
+        This cmdlet does not accept input from the pipeline.
+
     .OUTPUTS
         Microsoft.SqlServer.Management.Smo.FileGroup
 
@@ -103,7 +108,7 @@ function New-SqlDscFileGroup
         $Name,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'WithDatabaseFromSpec')]
-        [System.Object]
+        [DatabaseFileGroupSpec]
         $FileGroupSpec,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'AsSpec')]
