@@ -46,6 +46,7 @@ applyTo: "**/*.[Tt]ests.ps1"
 - Set `$PSDefaultParameterValues` for `Mock:ModuleName`, `Should:ModuleName`, `InModuleScope:ModuleName`
 - Omit `-ModuleName` parameter on Pester commands
 - Never use `Mock` inside `InModuleScope`-block
+- Never use `param()` inside `-MockWith` scriptblocks, parameters are auto-bound
 
 ## File Organization
 - Class resources: `tests/Unit/Classes/{Name}.Tests.ps1`
