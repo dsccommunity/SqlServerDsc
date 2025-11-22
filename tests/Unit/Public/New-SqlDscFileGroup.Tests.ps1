@@ -136,17 +136,18 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
             $parameterInfo.Attributes.Mandatory | Should -Contain $true
         }
 
-        It 'Should have three parameter sets (WithDatabase, WithDatabaseFromSpec, AsSpec)' {
+        It 'Should have four parameter sets (WithDatabase, WithDatabaseFromSpec, AsSpec, Standalone)' {
             $command = Get-Command -Name 'New-SqlDscFileGroup'
-            $command.ParameterSets.Count | Should -Be 3
+            $command.ParameterSets.Count | Should -Be 4
             $command.ParameterSets.Name | Should -Contain 'WithDatabase'
             $command.ParameterSets.Name | Should -Contain 'WithDatabaseFromSpec'
             $command.ParameterSets.Name | Should -Contain 'AsSpec'
+            $command.ParameterSets.Name | Should -Contain 'Standalone'
         }
 
-        It 'Should have AsSpec as the default parameter set' {
+        It 'Should have Standalone as the default parameter set' {
             $command = Get-Command -Name 'New-SqlDscFileGroup'
-            $command.DefaultParameterSet | Should -Be 'AsSpec'
+            $command.DefaultParameterSet | Should -Be 'Standalone'
         }
 
         It 'Should support ShouldProcess' {

@@ -85,7 +85,7 @@
 function New-SqlDscFileGroup
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
-    [CmdletBinding(DefaultParameterSetName = 'AsSpec', SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+    [CmdletBinding(DefaultParameterSetName = 'Standalone', SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType([Microsoft.SqlServer.Management.Smo.FileGroup])]
     [OutputType([DatabaseFileGroupSpec])]
     param
@@ -96,6 +96,7 @@ function New-SqlDscFileGroup
         $Database,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'WithDatabase')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Standalone')]
         [Parameter(Mandatory = $true, ParameterSetName = 'AsSpec')]
         [ValidateNotNullOrEmpty()]
         [System.String]
@@ -105,7 +106,7 @@ function New-SqlDscFileGroup
         [System.Object]
         $FileGroupSpec,
 
-        [Parameter(ParameterSetName = 'AsSpec')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'AsSpec')]
         [System.Management.Automation.SwitchParameter]
         $AsSpec,
 
