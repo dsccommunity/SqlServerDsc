@@ -147,6 +147,23 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag 'Public' {
             $commandInfo = Get-Command -Name 'ConvertTo-SqlDscFileGroup'
         }
 
+        It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
+            @{
+                ExpectedParameterSetName = '__AllParameterSets'
+                ExpectedParameters = '[-DatabaseObject] <Database> [-FileGroupSpec] <DatabaseFileGroupSpec> [<CommonParameters>]'
+            }
+        ) {
+            $result = $commandInfo.ParameterSets |
+                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
+                Select-Object -Property @(
+                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
+                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
+                )
+
+            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should -Be $ExpectedParameters
+        }
+
         It 'Should have DatabaseObject as a mandatory parameter' {
             $parameterInfo = $commandInfo.Parameters['DatabaseObject']
             $parameterInfo.Attributes.Mandatory | Should -Contain $true
