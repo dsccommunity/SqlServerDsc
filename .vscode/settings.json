@@ -175,10 +175,10 @@
         }
     },
     "chat.tools.terminal.terminalProfile.osx": {
-        "path": "pwsh", // bash instead of zsh
-        "args": [], // non-login instead of login on macOS
+        "path": "pwsh",
+        "args": [],
         "env": {
-            "COPILOT": "1" // environment variable that can be used in init scripts
+            "COPILOT": "1"
         }
     },
     "chat.tools.terminal.terminalProfile.linux": {
