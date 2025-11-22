@@ -53,20 +53,20 @@ Describe 'Add-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
             $script:testDatabase.Name = 'TestDatabase'
             $script:testDatabase.Parent = $script:serverObject
 
-            $script:testFileGroup = New-SqlDscFileGroup -Database $script:testDatabase -Name 'TestFileGroup' -Confirm:$false
+            $script:testFileGroup = New-SqlDscFileGroup -Database $script:testDatabase -Name 'TestFileGroup' -Confirm:$false -ErrorAction 'Stop'
         }
 
         It 'Should add a FileGroup to Database successfully' {
             $initialCount = $script:testDatabase.FileGroups.Count
 
-            Add-SqlDscFileGroup -Database $script:testDatabase -FileGroup $script:testFileGroup
+            Add-SqlDscFileGroup -Database $script:testDatabase -FileGroup $script:testFileGroup -ErrorAction 'Stop'
 
             $script:testDatabase.FileGroups.Count | Should -Be ($initialCount + 1)
             $script:testDatabase.FileGroups[$script:testFileGroup.Name] | Should -Be $script:testFileGroup
         }
 
         It 'Should return FileGroup when using PassThru' {
-            $result = Add-SqlDscFileGroup -Database $script:testDatabase -FileGroup $script:testFileGroup -PassThru
+            $result = Add-SqlDscFileGroup -Database $script:testDatabase -FileGroup $script:testFileGroup -PassThru -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
             $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
@@ -76,18 +76,18 @@ Describe 'Add-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
         It 'Should accept FileGroup from pipeline' {
             $initialCount = $script:testDatabase.FileGroups.Count
 
-            $script:testFileGroup | Add-SqlDscFileGroup -Database $script:testDatabase
+            $script:testFileGroup | Add-SqlDscFileGroup -Database $script:testDatabase -ErrorAction 'Stop'
 
             $script:testDatabase.FileGroups.Count | Should -Be ($initialCount + 1)
         }
 
         It 'Should add multiple FileGroups to Database' {
-            $fileGroup1 = New-SqlDscFileGroup -Database $script:testDatabase -Name 'FileGroup1' -Confirm:$false
-            $fileGroup2 = New-SqlDscFileGroup -Database $script:testDatabase -Name 'FileGroup2' -Confirm:$false
+            $fileGroup1 = New-SqlDscFileGroup -Database $script:testDatabase -Name 'FileGroup1' -Confirm:$false -ErrorAction 'Stop'
+            $fileGroup2 = New-SqlDscFileGroup -Database $script:testDatabase -Name 'FileGroup2' -Confirm:$false -ErrorAction 'Stop'
 
             $initialCount = $script:testDatabase.FileGroups.Count
 
-            Add-SqlDscFileGroup -Database $script:testDatabase -FileGroup @($fileGroup1, $fileGroup2)
+            Add-SqlDscFileGroup -Database $script:testDatabase -FileGroup @($fileGroup1, $fileGroup2) -ErrorAction 'Stop'
 
             $script:testDatabase.FileGroups.Count | Should -Be ($initialCount + 2)
             $script:testDatabase.FileGroups[$fileGroup1.Name] | Should -Be $fileGroup1
@@ -95,10 +95,10 @@ Describe 'Add-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
         }
 
         It 'Should add multiple FileGroups via pipeline and return them with PassThru' {
-            $fileGroup1 = New-SqlDscFileGroup -Database $script:testDatabase -Name 'FileGroup1' -Confirm:$false
-            $fileGroup2 = New-SqlDscFileGroup -Database $script:testDatabase -Name 'FileGroup2' -Confirm:$false
+            $fileGroup1 = New-SqlDscFileGroup -Database $script:testDatabase -Name 'FileGroup1' -Confirm:$false -ErrorAction 'Stop'
+            $fileGroup2 = New-SqlDscFileGroup -Database $script:testDatabase -Name 'FileGroup2' -Confirm:$false -ErrorAction 'Stop'
 
-            $result = @($fileGroup1, $fileGroup2) | Add-SqlDscFileGroup -Database $script:testDatabase -PassThru
+            $result = @($fileGroup1, $fileGroup2) | Add-SqlDscFileGroup -Database $script:testDatabase -PassThru -ErrorAction 'Stop'
 
             $result | Should -HaveCount 2
             $result[0] | Should -Be $fileGroup1
@@ -112,13 +112,13 @@ Describe 'Add-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
             $script:testDatabase.Name = 'TestDatabase'
             $script:testDatabase.Parent = $script:serverObject
 
-            $script:testFileGroup = New-SqlDscFileGroup -Name 'TestFileGroup'
+            $script:testFileGroup = New-SqlDscFileGroup -Name 'TestFileGroup' -ErrorAction 'Stop'
         }
 
         It 'Should update FileGroup parent reference when added to Database' {
             $script:testFileGroup.Parent | Should -BeNullOrEmpty
 
-            Add-SqlDscFileGroup -Database $script:testDatabase -FileGroup $script:testFileGroup
+            Add-SqlDscFileGroup -Database $script:testDatabase -FileGroup $script:testFileGroup -ErrorAction 'Stop'
 
             # Note: The parent may or may not be updated depending on SMO implementation
             # This test verifies the FileGroup is in the collection
@@ -135,13 +135,13 @@ Describe 'Add-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
         It 'Should create a complete FileGroup with DataFile structure' {
             # Create FileGroup
-            $fileGroup = New-SqlDscFileGroup -Database $script:testDatabase -Name 'SecondaryFileGroup' -Confirm:$false
+            $fileGroup = New-SqlDscFileGroup -Database $script:testDatabase -Name 'SecondaryFileGroup' -Confirm:$false -ErrorAction 'Stop'
 
             # Create DataFile - it will be automatically added to the FileGroup
-            $null = New-SqlDscDataFile -FileGroup $fileGroup -Name 'SecondaryDataFile' -FileName 'C:\Data\SecondaryDataFile.ndf' -Confirm:$false
+            $null = New-SqlDscDataFile -FileGroup $fileGroup -Name 'SecondaryDataFile' -FileName 'C:\Data\SecondaryDataFile.ndf' -Confirm:$false -ErrorAction 'Stop'
 
             # Add FileGroup to Database
-            Add-SqlDscFileGroup -Database $script:testDatabase -FileGroup $fileGroup
+            Add-SqlDscFileGroup -Database $script:testDatabase -FileGroup $fileGroup -ErrorAction 'Stop'
 
             # Verify structure
             $script:testDatabase.FileGroups[$fileGroup.Name] | Should -Be $fileGroup
