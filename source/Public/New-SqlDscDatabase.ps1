@@ -323,7 +323,7 @@ function New-SqlDscDatabase
                         $smoFileGroup = New-SqlDscFileGroup -Database $sqlDatabaseObjectToCreate -FileGroupSpec $fileGroupSpec -Force
 
                         # Add the file group to the database
-                        Add-SqlDscFileGroup -Database $sqlDatabaseObjectToCreate -FileGroup $smoFileGroup -Confirm:$false
+                        Add-SqlDscFileGroup -Database $sqlDatabaseObjectToCreate -FileGroup $smoFileGroup -Force
                     }
                 }
 

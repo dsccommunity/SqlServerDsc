@@ -376,6 +376,12 @@ ConvertFrom-StringData @'
     FileGroup_Create_ShouldProcessCaption = Create filegroup for database
     FileGroup_DatabaseMissingServerObject = The Database object must have a Server object attached to the Parent property. (NSDFG0003)
 
+    ## Add-SqlDscFileGroup
+    AddSqlDscFileGroup_Add_ShouldProcessDescription = Adding the filegroup '{0}' to database '{1}'. (ASDFG0001)
+    AddSqlDscFileGroup_Add_ShouldProcessConfirmation = Are you sure you want to add the filegroup '{0}'? (ASDFG0002)
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    AddSqlDscFileGroup_Add_ShouldProcessCaption = Add filegroup to database
+
     ## New-SqlDscDataFile
     DataFile_Create_ShouldProcessDescription = Creating the data file '{0}' for filegroup '{1}'. (NSDDF0001)
     DataFile_Create_ShouldProcessConfirmation = Are you sure you want to create the data file '{0}'? (NSDDF0002)

@@ -292,25 +292,35 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
             }
 
             Mock -CommandName 'Add-SqlDscFileGroup'
+
+            # Mock helper commands used in tests
+            Mock -CommandName 'New-SqlDscDataFile' -MockWith {
+                return [DatabaseFileSpec]@{
+                    Name = $Name
+                    FileName = $FileName
+                }
+            }
+
+            Mock -CommandName 'New-SqlDscFileGroup' -ParameterFilter { $null -eq $FileGroupSpec } -MockWith {
+                return [DatabaseFileGroupSpec]@{
+                    Name = $Name
+                    Files = $Files
+                }
+            }
         }
 
         It 'Should create a database snapshot with FileGroup spec successfully' {
-            InModuleScope -Parameters @{
-                mockServerObject = $mockServerObject
-            } -ScriptBlock {
-                # Create file spec using New-SqlDscDataFile with -AsSpec
-                $fileSpec = New-SqlDscDataFile -Name 'TestSnapshot_Data' -FileName 'C:\Snapshots\TestSnapshot_Data.ss' -AsSpec
+            # Create file spec using New-SqlDscDataFile with -AsSpec
+            $fileSpec = New-SqlDscDataFile -Name 'TestSnapshot_Data' -FileName 'C:\Snapshots\TestSnapshot_Data.ss' -AsSpec
 
-                # Create filegroup spec using New-SqlDscFileGroup with -AsSpec
-                $fileGroupSpec = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($fileSpec) -AsSpec
+            # Create filegroup spec using New-SqlDscFileGroup with -AsSpec
+            $fileGroupSpec = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($fileSpec) -AsSpec
 
-                $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestSnapshot' -DatabaseSnapshotBaseName 'SourceDatabase' -FileGroup @($fileGroupSpec) -Force
+            $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestSnapshot' -DatabaseSnapshotBaseName 'SourceDatabase' -FileGroup @($fileGroupSpec) -Force
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be 'TestSnapshot'
-                $result.DatabaseSnapshotBaseName | Should -Be 'SourceDatabase'
-            }
-
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be 'TestSnapshot'
+            $result.DatabaseSnapshotBaseName | Should -Be 'SourceDatabase'
             Should -Invoke -CommandName 'New-SqlDscFileGroup' -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName 'Add-SqlDscFileGroup' -Exactly -Times 1 -Scope It
         }
@@ -344,46 +354,56 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
             }
 
             Mock -CommandName 'Add-SqlDscFileGroup'
+
+            # Mock helper commands used in tests
+            Mock -CommandName 'New-SqlDscDataFile' -MockWith {
+                return [DatabaseFileSpec]@{
+                    Name = $Name
+                    FileName = $FileName
+                    Size = $Size
+                    Growth = $Growth
+                    GrowthType = $GrowthType
+                    IsPrimaryFile = $IsPrimaryFile.IsPresent
+                }
+            }
+
+            Mock -CommandName 'New-SqlDscFileGroup' -ParameterFilter { $null -eq $FileGroupSpec } -MockWith {
+                return [DatabaseFileGroupSpec]@{
+                    Name = $Name
+                    Files = $Files
+                    IsDefault = $IsDefault.IsPresent
+                }
+            }
         }
 
         It 'Should create a database with custom PRIMARY filegroup using -AsSpec parameters' {
-            InModuleScope -Parameters @{
-                mockServerObject = $mockServerObject
-            } -ScriptBlock {
-                # Create file spec with parameters using -AsSpec
-                $primaryFile = New-SqlDscDataFile -Name 'TestDB_Primary' -FileName 'D:\SQLData\TestDB.mdf' -Size 102400 -Growth 10240 -GrowthType 'KB' -IsPrimaryFile -AsSpec
+            # Create file spec with parameters using -AsSpec
+            $primaryFile = New-SqlDscDataFile -Name 'TestDB_Primary' -FileName 'D:\SQLData\TestDB.mdf' -Size 102400 -Growth 10240 -GrowthType 'KB' -IsPrimaryFile -AsSpec
 
-                # Create filegroup spec with parameters using -AsSpec
-                $primaryFileGroup = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($primaryFile) -IsDefault -AsSpec
+            # Create filegroup spec with parameters using -AsSpec
+            $primaryFileGroup = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($primaryFile) -IsDefault -AsSpec
 
-                $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDB' -FileGroup @($primaryFileGroup) -Force
+            $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDB' -FileGroup @($primaryFileGroup) -Force
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be 'TestDB'
-            }
-
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be 'TestDB'
             Should -Invoke -CommandName 'New-SqlDscFileGroup' -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName 'Add-SqlDscFileGroup' -Exactly -Times 1 -Scope It
         }
 
         It 'Should create a database with multiple filegroups using -AsSpec parameters' {
-            InModuleScope -Parameters @{
-                mockServerObject = $mockServerObject
-            } -ScriptBlock {
-                # Create PRIMARY filegroup
-                $primaryFile = New-SqlDscDataFile -Name 'TestDB_Primary' -FileName 'D:\SQLData\TestDB.mdf' -Size 102400 -IsPrimaryFile -AsSpec
-                $primaryFileGroup = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($primaryFile) -IsDefault -AsSpec
+            # Create PRIMARY filegroup
+            $primaryFile = New-SqlDscDataFile -Name 'TestDB_Primary' -FileName 'D:\SQLData\TestDB.mdf' -Size 102400 -IsPrimaryFile -AsSpec
+            $primaryFileGroup = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($primaryFile) -IsDefault -AsSpec
 
-                # Create secondary filegroup
-                $secondaryFile = New-SqlDscDataFile -Name 'TestDB_Secondary' -FileName 'E:\SQLData\TestDB.ndf' -Size 204800 -AsSpec
-                $secondaryFileGroup = New-SqlDscFileGroup -Name 'SECONDARY' -Files @($secondaryFile) -AsSpec
+            # Create secondary filegroup
+            $secondaryFile = New-SqlDscDataFile -Name 'TestDB_Secondary' -FileName 'E:\SQLData\TestDB.ndf' -Size 204800 -AsSpec
+            $secondaryFileGroup = New-SqlDscFileGroup -Name 'SECONDARY' -Files @($secondaryFile) -AsSpec
 
-                $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDB' -FileGroup @($primaryFileGroup, $secondaryFileGroup) -Force
+            $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDB' -FileGroup @($primaryFileGroup, $secondaryFileGroup) -Force
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be 'TestDB'
-            }
-
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be 'TestDB'
             Should -Invoke -CommandName 'New-SqlDscFileGroup' -Exactly -Times 2 -Scope It
             Should -Invoke -CommandName 'Add-SqlDscFileGroup' -Exactly -Times 2 -Scope It
         }

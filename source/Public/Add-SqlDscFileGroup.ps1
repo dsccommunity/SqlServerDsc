@@ -17,6 +17,9 @@
     .PARAMETER PassThru
         Returns the FileGroup objects that were added to the Database.
 
+    .PARAMETER Force
+        Specifies that the FileGroup should be added without confirmation.
+
     .OUTPUTS
         None, or [Microsoft.SqlServer.Management.Smo.FileGroup[]] if PassThru is specified.
 
@@ -33,7 +36,7 @@
 function Add-SqlDscFileGroup
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     [OutputType([Microsoft.SqlServer.Management.Smo.FileGroup[]])]
     param
     (
@@ -47,18 +50,34 @@ function Add-SqlDscFileGroup
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $PassThru
+        $PassThru,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Force
     )
 
     process
     {
+        if ($Force.IsPresent -and -not $Confirm)
+        {
+            $ConfirmPreference = 'None'
+        }
+
         foreach ($fileGroupObject in $FileGroup)
         {
-            $Database.FileGroups.Add($fileGroupObject)
+            $descriptionMessage = $script:localizedData.AddSqlDscFileGroup_Add_ShouldProcessDescription -f $fileGroupObject.Name, $Database.Name
+            $confirmationMessage = $script:localizedData.AddSqlDscFileGroup_Add_ShouldProcessConfirmation -f $fileGroupObject.Name
+            $captionMessage = $script:localizedData.AddSqlDscFileGroup_Add_ShouldProcessCaption
 
-            if ($PassThru.IsPresent)
+            if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
             {
-                $fileGroupObject
+                $Database.FileGroups.Add($fileGroupObject)
+
+                if ($PassThru.IsPresent)
+                {
+                    $fileGroupObject
+                }
             }
         }
     }
