@@ -23,6 +23,13 @@
         Specifies the source database object to snapshot. This parameter can be
         provided via pipeline and is used in the DatabaseObject parameter set.
 
+    .PARAMETER FileGroup
+        Specifies an array of DatabaseFileGroupSpec objects that define the file groups
+        and data files for the database snapshot. Each DatabaseFileGroupSpec contains the
+        file group name and an array of DatabaseFileSpec objects for the sparse files.
+        When not specified, SQL Server will create sparse files in the default data
+        directory with automatically generated names.
+
     .PARAMETER Force
         Specifies that the snapshot should be created without any confirmation.
 
@@ -55,6 +62,18 @@
         Creates a new database snapshot named **MyDB_Snap** from the source database
         **MyDatabase** without prompting for confirmation.
 
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $sourceDb = $serverObject.Databases['MyDatabase']
+
+        $dataFile = New-SqlDscDataFile -Name 'MyDatabase_Data' -FileName 'C:\Snapshots\MyDatabase_Data.ss' -AsSpec
+        $fileGroup = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($dataFile) -AsSpec
+
+        $serverObject | New-SqlDscDatabaseSnapshot -Name 'MyDB_Snap' -DatabaseName 'MyDatabase' -FileGroup @($fileGroup) -Force
+
+        Creates a new database snapshot named **MyDB_Snap** from the source database
+        **MyDatabase** with a specified sparse file location without prompting for confirmation.
+
     .INPUTS
         `[Microsoft.SqlServer.Management.Smo.Server]`
 
@@ -73,6 +92,7 @@
 #>
 function New-SqlDscDatabaseSnapshot
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '', Justification = 'Because ShouldProcess is used in New-SqlDscDatabase')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
     [OutputType([Microsoft.SqlServer.Management.Smo.Database])]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
@@ -95,6 +115,10 @@ function New-SqlDscDatabaseSnapshot
         [ValidateNotNullOrEmpty()]
         [System.String]
         $DatabaseName,
+
+        [Parameter()]
+        [DatabaseFileGroupSpec[]]
+        $FileGroup,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -170,22 +194,17 @@ function New-SqlDscDatabaseSnapshot
             Name = $Name
             DatabaseSnapshotBaseName = $DatabaseName
             Force = $Force
+            WhatIf = $WhatIfPreference
+        }
+
+        if ($PSBoundParameters.ContainsKey('FileGroup'))
+        {
+            $newSqlDscDatabaseParameters['FileGroup'] = $FileGroup
         }
 
         if ($PSCmdlet.ParameterSetName -eq 'ServerObject' -and $Refresh.IsPresent)
         {
             $newSqlDscDatabaseParameters['Refresh'] = $true
-        }
-
-        # Use WhatIf and Confirm from the current cmdlet context
-        if ($PSBoundParameters.ContainsKey('WhatIf'))
-        {
-            $newSqlDscDatabaseParameters['WhatIf'] = $WhatIf
-        }
-
-        if ($PSBoundParameters.ContainsKey('Confirm'))
-        {
-            $newSqlDscDatabaseParameters['Confirm'] = $Confirm
         }
 
         $snapshotDatabaseObject = New-SqlDscDatabase @newSqlDscDatabaseParameters

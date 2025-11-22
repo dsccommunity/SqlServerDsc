@@ -105,6 +105,29 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
                 $Refresh -eq $true
             } -Exactly -Times 1
         }
+
+        It 'Should pass FileGroup parameter when specified' {
+            InModuleScope -Parameters @{
+                mockServerObject = $mockServerObject
+            } -ScriptBlock {
+                # Create a mock DatabaseFileGroupSpec
+                $mockDataFileSpec = [DatabaseFileSpec]@{
+                    Name = 'TestData'
+                    FileName = 'C:\Snapshots\TestData.ss'
+                }
+
+                $mockFileGroupSpec = [DatabaseFileGroupSpec]@{
+                    Name = 'PRIMARY'
+                    Files = @($mockDataFileSpec)
+                }
+
+                $result = New-SqlDscDatabaseSnapshot -ServerObject $mockServerObject -Name 'TestSnapshot' -DatabaseName 'SourceDatabase' -FileGroup @($mockFileGroupSpec) -Force
+
+                Should -Invoke -CommandName 'New-SqlDscDatabase' -ParameterFilter {
+                    $FileGroup -and $FileGroup.Count -eq 1 -and $FileGroup[0].Name -eq 'PRIMARY'
+                } -Exactly -Times 1
+            }
+        }
     }
 
     Context 'When creating a database snapshot using DatabaseObject parameter set' {
@@ -235,7 +258,7 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set ServerObject' -ForEach @(
             @{
                 ExpectedParameterSetName = 'ServerObject'
-                ExpectedParameters = '-ServerObject <Server> -Name <string> -DatabaseName <string> [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-ServerObject <Server> -Name <string> -DatabaseName <string> [-FileGroup <DatabaseFileGroupSpec[]>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'New-SqlDscDatabaseSnapshot').ParameterSets |
@@ -252,7 +275,7 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set DatabaseObject' -ForEach @(
             @{
                 ExpectedParameterSetName = 'DatabaseObject'
-                ExpectedParameters = '-DatabaseObject <Database> -Name <string> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-DatabaseObject <Database> -Name <string> [-FileGroup <DatabaseFileGroupSpec[]>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'New-SqlDscDatabaseSnapshot').ParameterSets |
