@@ -3,7 +3,10 @@
         Returns the database engine settings.
 
     .DESCRIPTION
-        Returns the database engine settings.
+        Returns the database engine settings for the specified SQL Server instance.
+        This command reads the instance's setup registry keys and converts them
+        into an InstalledComponentSetting object suitable for use by DSC resources
+        and automation scripts.
 
     .PARAMETER InstanceId
        Specifies the instance id on which to check if component is installed.
