@@ -79,6 +79,16 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag @('Integration_SQL2017', 'Integration
     }
 
     Context 'When creating a database snapshot using ServerObject parameter set' {
+        AfterEach {
+            # Clean up snapshot created in this context to avoid file conflicts
+            $existingSnapshot = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testSnapshotName -ErrorAction 'SilentlyContinue'
+
+            if ($existingSnapshot)
+            {
+                $null = Remove-SqlDscDatabase -DatabaseObject $existingSnapshot -Force -ErrorAction 'Stop'
+            }
+        }
+
         It 'Should create a database snapshot successfully with minimal parameters' {
             $result = New-SqlDscDatabaseSnapshot -ServerObject $script:serverObject -Name $script:testSnapshotName -DatabaseName $script:persistentSourceDatabase -Force -ErrorAction 'Stop'
 
@@ -94,6 +104,10 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag @('Integration_SQL2017', 'Integration
         }
 
         It 'Should throw error when trying to create a snapshot that already exists' {
+            # First create the snapshot
+            $null = New-SqlDscDatabaseSnapshot -ServerObject $script:serverObject -Name $script:testSnapshotName -DatabaseName $script:persistentSourceDatabase -Force -ErrorAction 'Stop'
+
+            # Then try to create it again - should throw
             { New-SqlDscDatabaseSnapshot -ServerObject $script:serverObject -Name $script:testSnapshotName -DatabaseName $script:persistentSourceDatabase -Force -ErrorAction 'Stop' } |
                 Should -Throw
         }
