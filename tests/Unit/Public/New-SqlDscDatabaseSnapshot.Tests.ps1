@@ -36,6 +36,18 @@ BeforeAll {
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
     $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+
+    # Define platform-appropriate paths for use in mocks and assertions
+    if ($IsWindows -or $PSVersionTable.PSVersion.Major -le 5)
+    {
+        $script:mockDefaultDataPath = 'C:\mssql\data'
+        $script:mockMasterDbPath = 'C:\mssql\master'
+    }
+    else
+    {
+        $script:mockDefaultDataPath = '/var/opt/mssql/data'
+        $script:mockMasterDbPath = '/var/opt/mssql/master'
+    }
 }
 
 AfterAll {
@@ -60,7 +72,7 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
 
             # Mock Settings for default data directory
             $mockSettings = New-Object -TypeName 'PSObject'
-            $mockSettings | Add-Member -MemberType 'NoteProperty' -Name 'DefaultFile' -Value '/var/opt/mssql/data' -Force
+            $mockSettings | Add-Member -MemberType 'NoteProperty' -Name 'DefaultFile' -Value $script:mockDefaultDataPath -Force
             $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'Settings' -Value $mockSettings -Force
 
             # Mock source database with file groups and files
@@ -70,7 +82,7 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
             # Mock file group and data file
             $mockDataFile = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DataFile'
             $mockDataFile | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'SourceDatabase' -Force
-            $mockDataFile | Add-Member -MemberType 'NoteProperty' -Name 'FileName' -Value '/var/opt/mssql/data/SourceDatabase.mdf' -Force
+            $mockDataFile | Add-Member -MemberType 'NoteProperty' -Name 'FileName' -Value (Join-Path -Path $script:mockDefaultDataPath -ChildPath 'SourceDatabase.mdf') -Force
 
             $mockFileGroup = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.FileGroup'
             $mockFileGroup | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'PRIMARY' -Force
@@ -114,12 +126,13 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
             } -Exactly -Times 1
 
             Should -Invoke -CommandName 'New-SqlDscDatabase' -ParameterFilter {
+                $expectedPath = Join-Path -Path $script:mockDefaultDataPath -ChildPath 'SourceDatabase.ss'
                 $FileGroup -and
                 $FileGroup.Count -eq 1 -and
                 $FileGroup[0].Name -eq 'PRIMARY' -and
                 $FileGroup[0].Files.Count -eq 1 -and
                 $FileGroup[0].Files[0].Name -eq 'SourceDatabase' -and
-                $FileGroup[0].Files[0].FileName -eq '/var/opt/mssql/data/SourceDatabase.ss'
+                $FileGroup[0].Files[0].FileName -eq $expectedPath
             } -Exactly -Times 1
         }
 
@@ -182,13 +195,14 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
             $mockServerObjectNoDefaultFile | Add-Member -MemberType 'NoteProperty' -Name 'Settings' -Value $mockSettingsNoDefault -Force
 
             $mockInformation = New-Object -TypeName 'PSObject'
-            $mockInformation | Add-Member -MemberType 'NoteProperty' -Name 'MasterDBPath' -Value '/var/opt/mssql/master' -Force
+            $mockInformation | Add-Member -MemberType 'NoteProperty' -Name 'MasterDBPath' -Value $script:mockMasterDbPath -Force
             $mockServerObjectNoDefaultFile | Add-Member -MemberType 'NoteProperty' -Name 'Information' -Value $mockInformation -Force
 
             $result = New-SqlDscDatabaseSnapshot -ServerObject $mockServerObjectNoDefaultFile -Name 'TestSnapshot' -DatabaseName 'SourceDatabase' -Force
 
             Should -Invoke -CommandName 'New-SqlDscDatabase' -ParameterFilter {
-                $FileGroup[0].Files[0].FileName -eq '/var/opt/mssql/master/SourceDatabase.ss'
+                $expectedPath = Join-Path -Path $script:mockMasterDbPath -ChildPath 'SourceDatabase.ss'
+                $FileGroup[0].Files[0].FileName -eq $expectedPath
             } -Exactly -Times 1
         }
     }
@@ -202,7 +216,7 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
 
             # Mock Settings for default data directory
             $mockSettings = New-Object -TypeName 'PSObject'
-            $mockSettings | Add-Member -MemberType 'NoteProperty' -Name 'DefaultFile' -Value '/var/opt/mssql/data' -Force
+            $mockSettings | Add-Member -MemberType 'NoteProperty' -Name 'DefaultFile' -Value $script:mockDefaultDataPath -Force
             $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'Settings' -Value $mockSettings -Force
 
             $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
@@ -212,7 +226,7 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
             # Mock file group and data file for DatabaseObject
             $mockDataFile = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DataFile'
             $mockDataFile | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'MyDatabase' -Force
-            $mockDataFile | Add-Member -MemberType 'NoteProperty' -Name 'FileName' -Value '/var/opt/mssql/data/MyDatabase.mdf' -Force
+            $mockDataFile | Add-Member -MemberType 'NoteProperty' -Name 'FileName' -Value (Join-Path -Path $script:mockDefaultDataPath -ChildPath 'MyDatabase.mdf') -Force
 
             $mockFileGroup = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.FileGroup'
             $mockFileGroup | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'PRIMARY' -Force
@@ -303,7 +317,7 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
 
             # Mock Settings for default data directory
             $mockSettings = New-Object -TypeName 'PSObject'
-            $mockSettings | Add-Member -MemberType 'NoteProperty' -Name 'DefaultFile' -Value '/var/opt/mssql/data' -Force
+            $mockSettings | Add-Member -MemberType 'NoteProperty' -Name 'DefaultFile' -Value $script:mockDefaultDataPath -Force
             $mockServerObjectDeveloper | Add-Member -MemberType 'NoteProperty' -Name 'Settings' -Value $mockSettings -Force
 
             # Mock source database
@@ -312,7 +326,7 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
 
             $mockDevDataFile = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DataFile'
             $mockDevDataFile | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'MyDatabase' -Force
-            $mockDevDataFile | Add-Member -MemberType 'NoteProperty' -Name 'FileName' -Value '/var/opt/mssql/data/MyDatabase.mdf' -Force
+            $mockDevDataFile | Add-Member -MemberType 'NoteProperty' -Name 'FileName' -Value (Join-Path -Path $script:mockDefaultDataPath -ChildPath 'MyDatabase.mdf') -Force
 
             $mockDevFileGroup = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.FileGroup'
             $mockDevFileGroup | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'PRIMARY' -Force
@@ -354,7 +368,7 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
 
             # Mock Settings for default data directory
             $mockSettings = New-Object -TypeName 'PSObject'
-            $mockSettings | Add-Member -MemberType 'NoteProperty' -Name 'DefaultFile' -Value '/var/opt/mssql/data' -Force
+            $mockSettings | Add-Member -MemberType 'NoteProperty' -Name 'DefaultFile' -Value $script:mockDefaultDataPath -Force
             $mockServerObjectEvaluation | Add-Member -MemberType 'NoteProperty' -Name 'Settings' -Value $mockSettings -Force
 
             # Mock source database
@@ -363,7 +377,7 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
 
             $mockEvalDataFile = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DataFile'
             $mockEvalDataFile | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'MyDatabase' -Force
-            $mockEvalDataFile | Add-Member -MemberType 'NoteProperty' -Name 'FileName' -Value '/var/opt/mssql/data/MyDatabase.mdf' -Force
+            $mockEvalDataFile | Add-Member -MemberType 'NoteProperty' -Name 'FileName' -Value (Join-Path -Path $script:mockDefaultDataPath -ChildPath 'MyDatabase.mdf') -Force
 
             $mockEvalFileGroup = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.FileGroup'
             $mockEvalFileGroup | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'PRIMARY' -Force
