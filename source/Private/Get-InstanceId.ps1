@@ -40,31 +40,34 @@ function Get-InstanceId
         $InstanceName
     )
 
-    switch ($ServiceType)
+    process
     {
-        'DatabaseEngine'
+        switch ($ServiceType)
         {
-            $registryPath = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL'
+            'DatabaseEngine'
+            {
+                $registryPath = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL'
 
-            break
+                break
+            }
+
+            'AnalysisServices'
+            {
+                $registryPath = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\OLAP'
+
+                break
+            }
+
+            'ReportingServices'
+            {
+                $registryPath = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS'
+
+                break
+            }
         }
 
-        'AnalysisServices'
-        {
-            $registryPath = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\OLAP'
+        $instanceId = Get-RegistryPropertyValue -Path $registryPath -Name $InstanceName
 
-            break
-        }
-
-        'ReportingServices'
-        {
-            $registryPath = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS'
-
-            break
-        }
+        $instanceId
     }
-
-    $instanceId = Get-RegistryPropertyValue -Path $registryPath -Name $InstanceName
-
-    return $instanceId
 }
