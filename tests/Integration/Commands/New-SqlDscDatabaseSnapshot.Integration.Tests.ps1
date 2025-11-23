@@ -141,9 +141,14 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag @('Integration_SQL2017', 'Integration
         }
 
         It 'Should create a database snapshot with custom sparse file location' {
+            # Get the logical name of the source database's primary file
+            $sourceDatabase = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:persistentSourceDatabase -ErrorAction 'Stop'
+            $sourceLogicalFileName = $sourceDatabase.FileGroups['PRIMARY'].Files[0].Name
+
             # Create PRIMARY filegroup with sparse file using -AsSpec
+            # IMPORTANT: Must use the same logical name as the source database file
             $sparseFilePath = Join-Path -Path $script:dataDirectory -ChildPath ($script:testSnapshotNameWithFileGroup + '_Sparse.ss')
-            $dataFileSpec = New-SqlDscDataFile -Name ($script:testSnapshotNameWithFileGroup + '_Sparse') -FileName $sparseFilePath -AsSpec
+            $dataFileSpec = New-SqlDscDataFile -Name $sourceLogicalFileName -FileName $sparseFilePath -AsSpec
             $primaryFileGroupSpec = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($dataFileSpec) -AsSpec
 
             # Create snapshot with custom file group

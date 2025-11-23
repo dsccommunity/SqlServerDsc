@@ -188,18 +188,71 @@ function New-SqlDscDatabaseSnapshot
             }
         }
 
+        # If FileGroup is not specified, automatically create file groups based on source database
+        if (-not $PSBoundParameters.ContainsKey('FileGroup'))
+        {
+            # Get the source database object
+            $getSqlDscDatabaseParameters = @{
+                ServerObject = $ServerObject
+                Name = $DatabaseName
+                ErrorAction = 'Stop'
+            }
+
+            if ($PSCmdlet.ParameterSetName -eq 'ServerObject' -and $Refresh.IsPresent)
+            {
+                $getSqlDscDatabaseParameters['Refresh'] = $true
+            }
+
+            $sourceDatabase = Get-SqlDscDatabase @getSqlDscDatabaseParameters
+
+            # Get the default data directory for sparse files
+            $defaultDataDirectory = $ServerObject.Settings.DefaultFile
+
+            if (-not $defaultDataDirectory)
+            {
+                $defaultDataDirectory = $ServerObject.Information.MasterDBPath
+            }
+
+            # Create file group specifications for all file groups in the source database
+            $generatedFileGroups = [System.Collections.Generic.List[DatabaseFileGroupSpec]]::new()
+
+            foreach ($sourceFileGroup in $sourceDatabase.FileGroups)
+            {
+                $fileSpecs = [System.Collections.Generic.List[DatabaseFileSpec]]::new()
+
+                foreach ($sourceFile in $sourceFileGroup.Files)
+                {
+                    # Use the same physical filename as the source file, but with .ss extension
+                    $sourceFileName = [System.IO.Path]::GetFileNameWithoutExtension($sourceFile.FileName)
+                    $sparseFileName = '{0}.ss' -f $sourceFileName
+                    $sparseFilePath = Join-Path -Path $defaultDataDirectory -ChildPath $sparseFileName
+
+                    # Create a file spec using the same logical name as the source database file
+                    $fileSpec = [DatabaseFileSpec]::new()
+                    $fileSpec.Name = $sourceFile.Name
+                    $fileSpec.FileName = $sparseFilePath
+
+                    $fileSpecs.Add($fileSpec)
+                }
+
+                # Create file group spec
+                $fileGroupSpec = [DatabaseFileGroupSpec]::new($sourceFileGroup.Name)
+                $fileGroupSpec.Files = $fileSpecs.ToArray()
+
+                $generatedFileGroups.Add($fileGroupSpec)
+            }
+
+            $FileGroup = $generatedFileGroups.ToArray()
+        }
+
         # Create the snapshot using New-SqlDscDatabase
         $newSqlDscDatabaseParameters = @{
             ServerObject = $ServerObject
             Name = $Name
             DatabaseSnapshotBaseName = $DatabaseName
+            FileGroup = $FileGroup
             Force = $Force
             WhatIf = $WhatIfPreference
-        }
-
-        if ($PSBoundParameters.ContainsKey('FileGroup'))
-        {
-            $newSqlDscDatabaseParameters['FileGroup'] = $FileGroup
         }
 
         if ($PSCmdlet.ParameterSetName -eq 'ServerObject' -and $Refresh.IsPresent)
