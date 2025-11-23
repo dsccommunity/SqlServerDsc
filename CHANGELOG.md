@@ -25,6 +25,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added public command `Get-SqlDscInstalledComponent` to retrieve installed SQL Server
+  components on the system.
+- Added public command `Test-SqlDscIsInstalledComponent` to test whether a specific
+  SQL Server component is installed on the system.
+- Added enum `SqlServerComponent` to define SQL Server component types used by the
+  `Get-SqlDscInstalledComponent` and `Test-SqlDscIsInstalledComponent` commands.
 - Added public command `Test-SqlDscIsInstalledInstance` to test if an instance is
   installed on the current node.
 - Added public command `Set-SqlDscDatabaseOwner` to change the owner of a SQL Server
