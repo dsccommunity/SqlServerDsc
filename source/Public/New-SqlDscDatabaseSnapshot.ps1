@@ -228,18 +228,11 @@ function New-SqlDscDatabaseSnapshot
                     $sparseFilePath = Join-Path -Path $defaultDataDirectory -ChildPath $sparseFileName
 
                     # Create a file spec using the same logical name as the source database file
-                    $fileSpec = [DatabaseFileSpec]::new()
-                    $fileSpec.Name = $sourceFile.Name
-                    $fileSpec.FileName = $sparseFilePath
-
-                    $fileSpecs.Add($fileSpec)
+                    $fileSpecs.Add((New-SqlDscDataFile -Name $sourceFile.Name -FileName $sparseFilePath -AsSpec))
                 }
 
                 # Create file group spec
-                $fileGroupSpec = [DatabaseFileGroupSpec]::new($sourceFileGroup.Name)
-                $fileGroupSpec.Files = $fileSpecs.ToArray()
-
-                $generatedFileGroups.Add($fileGroupSpec)
+                $generatedFileGroups.Add((New-SqlDscFileGroup -Name $sourceFileGroup.Name -Files $fileSpecs.ToArray() -AsSpec))
             }
 
             $FileGroup = $generatedFileGroups.ToArray()
