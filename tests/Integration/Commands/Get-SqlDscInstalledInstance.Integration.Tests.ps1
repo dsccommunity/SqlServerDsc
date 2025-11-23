@@ -30,7 +30,7 @@ BeforeAll {
 }
 
 Describe 'Get-SqlDscInstalledInstance' {
-    Context 'When getting all SQL Server instances' -Tag @('Integration_PowerBI') {
+    Context 'When getting all SQL Server instances' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
         It 'Should not throw an exception' {
             $null = Get-SqlDscInstalledInstance -ErrorAction 'Stop'
         }
@@ -46,13 +46,20 @@ Describe 'Get-SqlDscInstalledInstance' {
         }
     }
 
-    Context 'When getting a specific SQL Server instance by name' -Tag @('Integration_PowerBI') {
-        # cSpell: ignore PBIRS
-        It 'Should return the specified instance when it exists' {
+    Context 'When getting a specific SQL Server instance by name' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
+        # cSpell: ignore PBIRS DSCSQLTEST
+        It 'Should return the specified instance when it exists (PBIRS)' -Tag @('Integration_PowerBI') {
             $result = Get-SqlDscInstalledInstance -InstanceName 'PBIRS'
 
             $result | Should -BeOfType ([System.Management.Automation.PSCustomObject])
             $result.InstanceName | Should -Be 'PBIRS'
+        }
+
+        It 'Should return the specified instance when it exists (DSCSQLTEST)' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+            $result = Get-SqlDscInstalledInstance -InstanceName 'DSCSQLTEST'
+
+            $result | Should -BeOfType ([System.Management.Automation.PSCustomObject])
+            $result.InstanceName | Should -Be 'DSCSQLTEST'
         }
 
         It 'Should return an empty array when the instance does not exist' {
@@ -62,12 +69,19 @@ Describe 'Get-SqlDscInstalledInstance' {
         }
     }
 
-    Context 'When filtering by service type' -Tag @('Integration_PowerBI') {
-        It 'Should filter instances by DatabaseEngine service type' {
+    Context 'When filtering by service type' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
+        It 'Should filter instances by ReportingServices service type' -Tag @('Integration_PowerBI') {
             $result = Get-SqlDscInstalledInstance -ServiceType 'ReportingServices'
 
             $result.InstanceName | Should -Be 'PBIRS'
             $result.ServiceType | Should -Be 'ReportingServices'
+        }
+
+        It 'Should filter instances by DatabaseEngine service type' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+            $result = Get-SqlDscInstalledInstance -ServiceType 'DatabaseEngine'
+
+            $result.InstanceName | Should -Contain 'DSCSQLTEST'
+            $result | Should -HaveCount 1
         }
 
         It 'Should filter instances by multiple service types' {
@@ -81,15 +95,22 @@ Describe 'Get-SqlDscInstalledInstance' {
         }
     }
 
-    Context 'When using both instance name and service type parameters' -Tag @('Integration_PowerBI') {
-        It 'Should filter instances by DatabaseEngine service type' {
+    Context 'When using both instance name and service type parameters' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
+        It 'Should filter by instance name and ReportingServices type (PBIRS)' -Tag @('Integration_PowerBI') {
             $result = Get-SqlDscInstalledInstance -InstanceName 'PBIRS' -ServiceType 'ReportingServices'
 
             $result.InstanceName | Should -Be 'PBIRS'
             $result.ServiceType | Should -Be 'ReportingServices'
         }
 
-        It 'Should return empty when instance name and service type do not match' {
+        It 'Should filter by instance name and DatabaseEngine type (DSCSQLTEST)' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+            $result = Get-SqlDscInstalledInstance -InstanceName 'DSCSQLTEST' -ServiceType 'DatabaseEngine'
+
+            $result.InstanceName | Should -Be 'DSCSQLTEST'
+            $result.ServiceType | Should -Be 'DatabaseEngine'
+        }
+
+        It 'Should return empty when instance name and service type do not match (PBIRS)' -Tag @('Integration_PowerBI') {
             $result = Get-SqlDscInstalledInstance -InstanceName 'PBIRS' -ServiceType 'DatabaseEngine'
 
             $result | Should -BeNullOrEmpty

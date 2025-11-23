@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   SMO `Database.SetOffline()`. Supports Server and Database pipeline input;
   includes `Force` to disconnect active users
   ([issue #2192](https://github.com/dsccommunity/SqlServerDsc/issues/2192)).
+- Added public command `Test-SqlDscIsInstalledInstance` to test if an instance is
+  installed on the current node.
 
 ### Changed
 
