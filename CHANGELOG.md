@@ -25,6 +25,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added public command `Get-SqlDscInstalledComponent` to retrieve installed SQL Server
+  components on the system.
+- Added public command `Test-SqlDscIsInstalledComponent` to test whether a specific
+  SQL Server component is installed on the system.
+- Added enum `SqlServerComponent` to define SQL Server component types used by the
+  `Get-SqlDscInstalledComponent` and `Test-SqlDscIsInstalledComponent` commands.
+- Added public command `Test-SqlDscIsInstalledInstance` to test if an instance is
+  installed on the current node.
 - Added public command `Set-SqlDscDatabaseOwner` to change the owner of a SQL Server
   database [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
   This command uses the SMO `SetOwner()` method and supports both `ServerObject`
@@ -983,6 +991,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- New class-based resource:
+  - `SqlInstall` - Handles the Microsoft SQL Server setup action `Install`.
 - New public commands:
   - `Disconnect-SqlDscDatabaseEngine` - Disconnects from a SQL Server instance
     that was previously connected to using `Connect-SqlDscDatabaseEngine`.
@@ -997,6 +1007,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     for a file.
   - `Assert-Feature` - Throws an exception if a feature is not supported
     for a specific Microsoft SQL Server major version.
+  - `Get-RegistryPropertyValue` - Returns the value of the provided property
+    at the provided registry path.
+  - `ConvertFrom-ServiceStartMode` - Converts the specified start mode to
+    the equivalent normalized startup type.
+  - `Get-InstanceId` - Returns the SQL Server instance id of the specified
+    service type and instance name.
 - SqlServerDsc.Common
   - `Connect-SQL`.
     - Add new parameter `Encrypt`.

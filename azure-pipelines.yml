@@ -307,6 +307,8 @@ stages:
                   'tests/Integration/Commands/Test-SqlDscConfigurationOption.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscStartupParameter.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscIsSupportedFeature.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscInstalledInstance.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Test-SqlDscIsInstalledInstance.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscManagedComputer.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscTraceFlag.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscManagedComputerInstance.Integration.Tests.ps1'
@@ -518,6 +520,7 @@ stages:
                   # Group 2
                   'tests/Integration/Commands/Get-SqlDscInstalledInstance.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSSetupConfiguration.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Test-SqlDscIsInstalledInstance.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscRSInstalled.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscReportingService.Integration.Tests.ps1'
@@ -583,6 +586,7 @@ stages:
                   # Group 2
                   'tests/Integration/Commands/Get-SqlDscInstalledInstance.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSSetupConfiguration.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Test-SqlDscIsInstalledInstance.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscRSInstalled.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscBIReportServer.Integration.Tests.ps1'
