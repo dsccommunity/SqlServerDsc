@@ -191,4 +191,132 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
             $firstService.Parent.Name | Should -Be $script:mockServerName
         }
     }
+
+    Context 'When validating extended properties with WithExtendedProperties parameter' {
+        It 'Should return services with all extended properties added' {
+            $result = Get-SqlDscManagedComputerService -ServerName $script:mockServerName -WithExtendedProperties -ErrorAction 'Stop'
+
+            $result | Should -Not -BeNullOrEmpty
+            $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+
+            # Verify each service has all extended properties
+            foreach ($service in $result)
+            {
+                $service.PSObject.Properties.Name | Should -Contain 'ManagedServiceType'
+                $service.PSObject.Properties.Name | Should -Contain 'ServiceExecutableVersion'
+                $service.PSObject.Properties.Name | Should -Contain 'ServiceStartupType'
+                $service.PSObject.Properties.Name | Should -Contain 'ServiceInstanceName'
+
+                # If the service is a SQL Server service, verify it has a converted type
+                if ($service.Type -eq 'SqlServer')
+                {
+                    $service.ManagedServiceType | Should -Be 'DatabaseEngine'
+                }
+                elseif ($service.Type -eq 'SqlBrowser')
+                {
+                    $service.ManagedServiceType | Should -Be 'SQLServerBrowser'
+                }
+                elseif ($service.Type -eq 'SqlAgent')
+                {
+                    $service.ManagedServiceType | Should -Be 'SqlServerAgent'
+                }
+
+                # Verify ServiceStartupType is normalized
+                if ($service.StartMode -eq 'Auto')
+                {
+                    $service.ServiceStartupType | Should -Be 'Automatic'
+                }
+            }
+        }
+
+        It 'Should have ServiceInstanceName for named instances' {
+            $result = Get-SqlDscManagedComputerService -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -WithExtendedProperties -ErrorAction 'Stop'
+
+            if ($result)
+            {
+                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+
+                # All returned services should have ServiceInstanceName property
+                foreach ($service in $result)
+                {
+                    $service.PSObject.Properties.Name | Should -Contain 'ServiceInstanceName'
+                    $service.ServiceInstanceName | Should -Be $script:mockInstanceName
+                }
+            }
+        }
+
+        It 'Should have ServiceExecutableVersion populated when executable exists' {
+            $result = Get-SqlDscManagedComputerService -ServerName $script:mockServerName -ServiceType 'DatabaseEngine' -WithExtendedProperties -ErrorAction 'Stop'
+
+            $result | Should -Not -BeNullOrEmpty
+
+            # At least one service should have a version
+            $servicesWithVersion = $result | Where-Object -FilterScript { $null -ne $_.ServiceExecutableVersion }
+            $servicesWithVersion | Should -Not -BeNullOrEmpty
+
+            # Verify version is of correct type
+            foreach ($service in $servicesWithVersion)
+            {
+                $service.ServiceExecutableVersion | Should -BeOfType ([System.Version])
+            }
+        }
+
+        Context 'When filtering by ServiceType with WithExtendedProperties' {
+            It 'Should return only Database Engine services with all extended properties' {
+                $result = Get-SqlDscManagedComputerService -ServerName $script:mockServerName -ServiceType 'DatabaseEngine' -WithExtendedProperties -ErrorAction 'Stop'
+
+                $result | Should -Not -BeNullOrEmpty
+                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+
+                # All returned services should be of type SqlServer and have all extended properties
+                foreach ($service in $result)
+                {
+                    $service.Type | Should -Be 'SqlServer'
+                    $service.PSObject.Properties.Name | Should -Contain 'ManagedServiceType'
+                    $service.ManagedServiceType | Should -Be 'DatabaseEngine'
+                    $service.PSObject.Properties.Name | Should -Contain 'ServiceExecutableVersion'
+                    $service.PSObject.Properties.Name | Should -Contain 'ServiceStartupType'
+                    $service.PSObject.Properties.Name | Should -Contain 'ServiceInstanceName'
+                }
+            }
+        }
+
+        Context 'When using managed computer object with WithExtendedProperties' {
+            BeforeAll {
+                $script:managedComputerObjectForExtended = Get-SqlDscManagedComputer -ServerName $script:mockServerName -ErrorAction 'Stop'
+            }
+
+            It 'Should return services with all extended properties from pipeline' {
+                $result = $script:managedComputerObjectForExtended | Get-SqlDscManagedComputerService -WithExtendedProperties -ErrorAction 'Stop'
+
+                $result | Should -Not -BeNullOrEmpty
+                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+
+                # Verify each service has all extended properties
+                foreach ($service in $result)
+                {
+                    $service.PSObject.Properties.Name | Should -Contain 'ManagedServiceType'
+                    $service.PSObject.Properties.Name | Should -Contain 'ServiceExecutableVersion'
+                    $service.PSObject.Properties.Name | Should -Contain 'ServiceStartupType'
+                    $service.PSObject.Properties.Name | Should -Contain 'ServiceInstanceName'
+                }
+            }
+        }
+    }
+
+    Context 'When not using WithExtendedProperties parameter' {
+        It 'Should not add extended properties to service objects' {
+            $result = Get-SqlDscManagedComputerService -ServerName $script:mockServerName -ErrorAction 'Stop'
+
+            $result | Should -Not -BeNullOrEmpty
+            $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+
+            # Verify extended properties are NOT added
+            $firstService = $result | Select-Object -First 1
+            $firstService.PSObject.Properties.Name | Should -Not -Contain 'ManagedServiceType'
+            $firstService.PSObject.Properties.Name | Should -Not -Contain 'ServiceExecutableVersion'
+            $firstService.PSObject.Properties.Name | Should -Not -Contain 'ServiceStartupType'
+            $firstService.PSObject.Properties.Name | Should -Not -Contain 'ServiceInstanceName'
+        }
+    }
 }

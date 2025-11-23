@@ -46,7 +46,7 @@ function Get-SqlDscInstalledComponent
 
     Assert-ElevatedUser -ErrorAction 'Stop'
 
-    $serviceComponent = Get-SqlDscInstalledService -ServerName $ServerName
+    $serviceComponent = Get-SqlDscManagedComputerService -ServerName $ServerName -WithExtendedProperties
 
     $installedComponents = @()
 
@@ -57,7 +57,16 @@ function Get-SqlDscInstalledComponent
             Feature = $null
         }
 
-        switch ($currentServiceComponent.ServiceType)
+        $serviceType = if ($currentServiceComponent.ManagedServiceType)
+        {
+            $currentServiceComponent.ManagedServiceType
+        }
+        else
+        {
+            $currentServiceComponent.Type
+        }
+
+        switch ($serviceType)
         {
             # TODO: Add a Test-command for the path HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL16.SQL2022\ConfigurationState\SQL_FullText_Adv
             '9'

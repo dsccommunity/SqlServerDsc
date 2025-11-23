@@ -19,6 +19,12 @@
     .PARAMETER ServiceType
        Specifies one or more service types to return the services for.
 
+    .PARAMETER WithExtendedProperties
+       Specifies that extended properties should be added to each returned service
+       object. This includes ManagedServiceType, ServiceExecutableVersion,
+       ServiceStartupType, and ServiceInstanceName properties. Note that retrieving
+       the executable version may take additional time.
+
     .EXAMPLE
         Get-SqlDscManagedComputer | Get-SqlDscManagedComputerService
 
@@ -45,16 +51,22 @@
 
         Returns all the managed computer service objects for instance SQL2022.
 
-
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer`
 
         Accepts input via the pipeline.
 
-.OUTPUTS
+    .OUTPUTS
         `Microsoft.SqlServer.Management.Smo.Wmi.Service[]`
 
         An array of managed computer service objects.
+
+    .EXAMPLE
+        Get-SqlDscManagedComputerService -WithExtendedProperties
+
+        Returns all the managed computer service objects for the current node
+        with extended properties (ManagedServiceType, ServiceExecutableVersion,
+        ServiceStartupType, and ServiceInstanceName) added to each service object.
 #>
 function Get-SqlDscManagedComputerService
 {
@@ -79,7 +91,11 @@ function Get-SqlDscManagedComputerService
         [Parameter()]
         [ValidateSet('DatabaseEngine', 'SQLServerAgent', 'Search', 'IntegrationServices', 'AnalysisServices', 'ReportingServices', 'SQLServerBrowser', 'NotificationServices')]
         [System.String[]]
-        $ServiceType
+        $ServiceType,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $WithExtendedProperties
     )
 
     begin
@@ -132,6 +148,39 @@ function Get-SqlDscManagedComputerService
                     Where-Object -FilterScript {
                         $_.Name -match ('\${0}$' -f $InstanceName)
                     }
+            }
+
+            if ($WithExtendedProperties.IsPresent)
+            {
+                foreach ($service in $serviceObject)
+                {
+                    $convertedType = $service.Type | ConvertFrom-ManagedServiceType -ErrorAction 'SilentlyContinue'
+
+                    $service | Add-Member -MemberType 'NoteProperty' -Name 'ManagedServiceType' -Value $convertedType -Force
+
+                    $fileProductVersion = $null
+
+                    $serviceExecutablePath = (($service.PathName -replace '"') -split ' -')[0]
+
+                    if ((Test-Path -Path $serviceExecutablePath))
+                    {
+                        $fileProductVersion = [System.Version] (Get-FileVersionInformation -FilePath $serviceExecutablePath).ProductVersion
+                    }
+
+                    $service | Add-Member -MemberType 'NoteProperty' -Name 'ServiceExecutableVersion' -Value $fileProductVersion -Force
+
+                    $serviceStartupType = $service.StartMode | ConvertFrom-ServiceStartMode
+
+                    $service | Add-Member -MemberType 'NoteProperty' -Name 'ServiceStartupType' -Value $serviceStartupType -Force
+
+                    # Get InstanceName from the service name if it exists.
+                    $serviceInstanceName = if ($service.Name -match '\$(.*)$')
+                    {
+                        $Matches[1]
+                    }
+
+                    $service | Add-Member -MemberType 'NoteProperty' -Name 'ServiceInstanceName' -Value $serviceInstanceName -Force
+                }
             }
         }
 
