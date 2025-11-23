@@ -61,6 +61,8 @@ Get-SqlDscLogin | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST |
 Get-SqlDscConfigurationOption | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Test-SqlDscConfigurationOption | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Test-SqlDscIsSupportedFeature | 4 | 0 (Prerequisites) | - | -
+Get-SqlDscInstalledInstance | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Test-SqlDscIsInstalledInstance | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Get-SqlDscManagedComputer | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Get-SqlDscManagedComputerInstance | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Get-SqlDscManagedComputerService | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
@@ -158,6 +160,7 @@ Import-SqlDscPreferredModule | 0 | - | - | -
 Install-SqlDscReportingService | 1 | 0 (Prerequisites) | - | SSRS instance
 Get-SqlDscInstalledInstance | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Get-SqlDscRSSetupConfiguration | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Test-SqlDscIsInstalledInstance | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Test-SqlDscRSInstalled | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Repair-SqlDscReportingService | 8 | 1 (Install-SqlDscReportingService) | SSRS | -
 Uninstall-SqlDscReportingService | 9 | 8 (Repair-SqlDscReportingService) | - | -
@@ -176,6 +179,7 @@ Import-SqlDscPreferredModule | 0 | - | - | -
 Install-SqlDscBIReportServer | 1 | 0 (Prerequisites) | - | PBIRS instance
 Get-SqlDscInstalledInstance | 2 | 1 (Install-SqlDscBIReportServer), 0 (Prerequisites) | PBIRS | -
 Get-SqlDscRSSetupConfiguration | 2 | 1 (Install-SqlDscBIReportServer), 0 (Prerequisites) | PBIRS | -
+Test-SqlDscIsInstalledInstance | 2 | 1 (Install-SqlDscBIReportServer), 0 (Prerequisites) | PBIRS | -
 Test-SqlDscRSInstalled | 2 | 1 (Install-SqlDscBIReportServer), 0 (Prerequisites) | PBIRS | -
 Repair-SqlDscBIReportServer | 8 | 1 (Install-SqlDscBIReportServer) | PBIRS | -
 Uninstall-SqlDscBIReportServer | 9 | 8 (Repair-SqlDscBIReportServer) | - | -

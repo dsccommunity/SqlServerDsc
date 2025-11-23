@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added public command `Test-SqlDscIsInstalledInstance` to test if an instance is
+  installed on the current node.
 - Added public command `Set-SqlDscDatabaseOwner` to change the owner of a SQL Server
   database [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
   This command uses the SMO `SetOwner()` method and supports both `ServerObject`
