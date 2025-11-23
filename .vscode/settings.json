@@ -110,6 +110,7 @@
         "checkpointing",
         "SSMS",
         "HKEY",
+        "HKLM",
         "POWERPIVOT",
         "NPENABLED",
         "TCPENABLED",
