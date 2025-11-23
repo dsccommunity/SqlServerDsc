@@ -340,7 +340,7 @@
 
         This example shows how to call the resource using Invoke-DscResource.
 #>
-[DscResource(RunAsCredential = 'Optional')]
+#[DscResource(RunAsCredential = 'Optional')]
 class SqlInstall : SqlSetupBase
 {
     [DscProperty(Mandatory)]
@@ -818,9 +818,9 @@ class SqlInstall : SqlSetupBase
             Should call a Get-SqlDscInstalledComponents (optional parameter is InstanceName).
             Result is InstanceName, list of features, and for each Feature all needed properties.
         #>
-        $currentInstalledServiceNames = (Get-SqlDscManagedComputerService).Name
+        #$currentInstalledServiceNames = (Get-SqlDscManagedComputerService).Name
 
-        $serverObject = $this.GetServerObject()
+        #$serverObject = $this.GetServerObject()
 
         # TODO: Should call commands that can return the installed state.
 
@@ -848,6 +848,7 @@ class SqlInstall : SqlSetupBase
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
         # TODO: There might be a need to assert properties, if not this should be removed.
+        Write-Verbose -Message 'AssertProperties called.'
     }
 }
 # This has intentionally been put last in the file: cSpell: ignore PBDMS AZUREEXTENSION
