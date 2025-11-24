@@ -27,8 +27,10 @@
         Specifies an array of DatabaseFileGroupSpec objects that define the file groups
         and data files for the database snapshot. Each DatabaseFileGroupSpec contains the
         file group name and an array of DatabaseFileSpec objects for the sparse files.
-        When not specified, SQL Server will create sparse files in the default data
-        directory with automatically generated names.
+        When not specified, the cmdlet automatically generates DatabaseFileGroupSpec
+        and DatabaseFileSpec entries based on the source database's file structure,
+        resulting in sparse files being created in the default data directory with
+        automatically generated names.
 
     .PARAMETER Force
         Specifies that the snapshot should be created without any confirmation.
@@ -77,10 +79,17 @@
     .INPUTS
         `[Microsoft.SqlServer.Management.Smo.Server]`
 
+        Specifies the SQL Server connection object to create the snapshot in.
+
+    .INPUTS
         `[Microsoft.SqlServer.Management.Smo.Database]`
+
+        Specifies the source database object to create a snapshot from.
 
     .OUTPUTS
         `[Microsoft.SqlServer.Management.Smo.Database]`
+
+        Returns the newly created database snapshot object.
 
     .NOTES
         This command is for snapshot creation only and does not support modification
