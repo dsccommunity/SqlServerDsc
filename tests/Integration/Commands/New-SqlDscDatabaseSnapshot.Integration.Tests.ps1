@@ -119,6 +119,16 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag @('Integration_SQL2017', 'Integration
             $script:sourceDatabaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:persistentSourceDatabase -ErrorAction 'Stop'
         }
 
+        AfterEach {
+            # Clean up snapshot created in this context to avoid file conflicts
+            $existingSnapshot = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testSnapshotNameFromDbObject -ErrorAction 'SilentlyContinue'
+
+            if ($existingSnapshot)
+            {
+                $null = Remove-SqlDscDatabase -DatabaseObject $existingSnapshot -Force -ErrorAction 'Stop'
+            }
+        }
+
         It 'Should create a database snapshot from DatabaseObject successfully' {
             $result = New-SqlDscDatabaseSnapshot -DatabaseObject $script:sourceDatabaseObject -Name $script:testSnapshotNameFromDbObject -Force -ErrorAction 'Stop'
 
@@ -152,6 +162,16 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag @('Integration_SQL2017', 'Integration
 
             # Get the source database for file group creation
             $script:sourceDatabaseForFG = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:persistentSourceDatabase -ErrorAction 'Stop'
+        }
+
+        AfterEach {
+            # Clean up snapshot created in this context to avoid file conflicts
+            $existingSnapshot = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testSnapshotNameWithFileGroup -ErrorAction 'SilentlyContinue'
+
+            if ($existingSnapshot)
+            {
+                $null = Remove-SqlDscDatabase -DatabaseObject $existingSnapshot -Force -ErrorAction 'Stop'
+            }
         }
 
         It 'Should create a database snapshot with custom sparse file location' {
