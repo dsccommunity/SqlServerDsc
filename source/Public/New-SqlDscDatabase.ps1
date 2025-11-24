@@ -38,6 +38,19 @@
         When this parameter is specified, a database snapshot will be created instead
         of a regular database. The snapshot name is specified in the Name parameter.
 
+    .PARAMETER FileGroup
+        Specifies an array of DatabaseFileGroupSpec objects that define the file groups
+        and data files for the database. Each DatabaseFileGroupSpec contains the file group
+        name and an array of DatabaseFileSpec objects for the data files.
+
+        This parameter allows you to specify custom file and filegroup configurations
+        before the database is created, avoiding the SMO limitation where DataFile objects
+        require an existing database context.
+
+        For database snapshots, the FileName in each DatabaseFileSpec must point to sparse
+        file locations. For regular databases, this allows full control over PRIMARY and
+        secondary file group configurations.
+
     .PARAMETER Force
         Specifies that the database should be created without any confirmation.
 
@@ -67,6 +80,21 @@
 
         Creates a database snapshot named **MyDatabaseSnapshot** from the source database **MyDatabase**
         without prompting for confirmation.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+
+        $primaryFile = New-SqlDscDataFile -Name 'MyDatabase_Primary' -FileName 'D:\SQLData\MyDatabase.mdf' -Size 102400 -Growth 10240 -GrowthType 'KB' -IsPrimaryFile -AsSpec
+        $primaryFileGroup = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($primaryFile) -IsDefault $true -AsSpec
+
+        $secondaryFile = New-SqlDscDataFile -Name 'MyDatabase_Secondary' -FileName 'E:\SQLData\MyDatabase.ndf' -Size 204800 -AsSpec
+        $secondaryFileGroup = New-SqlDscFileGroup -Name 'SECONDARY' -Files @($secondaryFile) -AsSpec
+
+        $serverObject | New-SqlDscDatabase -Name 'MyDatabase' -FileGroup @($primaryFileGroup, $secondaryFileGroup) -Force
+
+        Creates a new database named **MyDatabase** with custom PRIMARY and SECONDARY file groups
+        using specification objects created with the -AsSpec parameter. All properties are set
+        directly via parameters without prompting for confirmation.
 
     .OUTPUTS
         `[Microsoft.SqlServer.Management.Smo.Database]`
@@ -114,6 +142,10 @@ function New-SqlDscDatabase
         [ValidateNotNullOrEmpty()]
         [System.String]
         $DatabaseSnapshotBaseName,
+
+        [Parameter()]
+        [DatabaseFileGroupSpec[]]
+        $FileGroup,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -279,6 +311,19 @@ function New-SqlDscDatabase
                     if ($PSBoundParameters.ContainsKey('CompatibilityLevel'))
                     {
                         $sqlDatabaseObjectToCreate.CompatibilityLevel = $CompatibilityLevel
+                    }
+                }
+
+                # Add FileGroups if provided (applies to both regular databases and snapshots)
+                if ($PSBoundParameters.ContainsKey('FileGroup'))
+                {
+                    foreach ($fileGroupSpec in $FileGroup)
+                    {
+                        # Create FileGroup using New-SqlDscFileGroup with spec object
+                        $smoFileGroup = New-SqlDscFileGroup -Database $sqlDatabaseObjectToCreate -FileGroupSpec $fileGroupSpec -Force
+
+                        # Add the file group to the database
+                        Add-SqlDscFileGroup -Database $sqlDatabaseObjectToCreate -FileGroup $smoFileGroup -Force
                     }
                 }
 

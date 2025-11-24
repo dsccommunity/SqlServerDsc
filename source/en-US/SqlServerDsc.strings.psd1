@@ -365,6 +365,30 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Database_Create_ShouldProcessCaption = Create database on instance
 
+    ## New-SqlDscDatabaseSnapshot
+    DatabaseSnapshot_Create = Creating database snapshot '{0}' from source database '{1}' on instance '{2}'. (NSDS0002)
+    DatabaseSnapshot_EditionNotSupported = Database snapshots are not supported on SQL Server instance '{0}' with edition '{1}'. Snapshots are only supported in Enterprise, Developer, and Evaluation editions. (NSDS0001)
+
+    ## New-SqlDscFileGroup
+    FileGroup_Create_ShouldProcessDescription = Creating the filegroup '{0}' for database '{1}' on instance '{2}'. (NSDFG0001)
+    FileGroup_Create_ShouldProcessConfirmation = Are you sure you want to create the filegroup '{0}'? (NSDFG0002)
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    FileGroup_Create_ShouldProcessCaption = Create filegroup for database
+    FileGroup_DatabaseMissingServerObject = The Database object must have a Server object attached to the Parent property. (NSDFG0003)
+
+    ## Add-SqlDscFileGroup
+    AddSqlDscFileGroup_Add_ShouldProcessDescription = Adding the filegroup '{0}' to database '{1}'. (ASDFG0001)
+    AddSqlDscFileGroup_Add_ShouldProcessConfirmation = Are you sure you want to add the filegroup '{0}'? (ASDFG0002)
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    AddSqlDscFileGroup_Add_ShouldProcessCaption = Add filegroup to database
+
+    ## New-SqlDscDataFile
+    DataFile_Create_ShouldProcessDescription = Creating the data file '{0}' for filegroup '{1}'. (NSDDF0001)
+    DataFile_Create_ShouldProcessConfirmation = Are you sure you want to create the data file '{0}'? (NSDDF0002)
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    DataFile_Create_ShouldProcessCaption = Create data file for filegroup
+    DataFile_PrimaryFileMustBeInPrimaryFileGroup = The primary file must reside in the PRIMARY filegroup. (NSDDF0003)
+
     ## Set-SqlDscDatabaseProperty
     Database_Set = Setting properties of database '{0}' on instance '{1}'. (SSDDP0001)
     Database_Updating = Updating database '{0}'. (SSDDP0002)
