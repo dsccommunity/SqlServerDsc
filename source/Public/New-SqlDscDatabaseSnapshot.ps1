@@ -146,8 +146,6 @@ function New-SqlDscDatabaseSnapshot
             $DatabaseName = $DatabaseObject.Name
         }
 
-        Write-Verbose -Message ($script:localizedData.DatabaseSnapshot_Create -f $Name, $DatabaseName, $ServerObject.InstanceName)
-
         # Validate SQL Server edition supports snapshots
         $supportedEditions = @('Enterprise', 'Developer', 'EnterpriseCore', 'EnterpriseOrDeveloper')
 
@@ -187,6 +185,8 @@ function New-SqlDscDatabaseSnapshot
                 )
             }
         }
+
+        Write-Verbose -Message ($script:localizedData.DatabaseSnapshot_Create -f $Name, $DatabaseName, $ServerObject.InstanceName)
 
         # If FileGroup is not specified, automatically create file groups based on source database
         if (-not $PSBoundParameters.ContainsKey('FileGroup'))
