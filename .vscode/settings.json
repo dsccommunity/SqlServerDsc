@@ -173,5 +173,26 @@
             "path": "bash",
             "args": []
         }
+    },
+    "chat.tools.terminal.terminalProfile.osx": {
+        "path": "pwsh",
+        "args": [],
+        "env": {
+            "COPILOT": "1"
+        }
+    },
+    "chat.tools.terminal.terminalProfile.linux": {
+        "path": "pwsh",
+        "args": [],
+        "env": {
+            "COPILOT": "1"
+        }
+    },
+    "chat.tools.terminal.terminalProfile.windows": {
+        "path": "pwsh.exe",
+        "args": [],
+        "env": {
+            "COPILOT": "1"
+        }
     }
 }

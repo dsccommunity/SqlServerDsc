@@ -28,7 +28,7 @@ applyTo: "**/*.[Tt]ests.ps1"
 - Mock variables prefix: 'mock'
 
 ## Structure & Scope
-- Public commands: Never use `InModuleScope` (unless retrieving localized strings)
+- Public commands: Never use `InModuleScope` (unless retrieving localized strings or creating an object using an internal class)
 - Private functions/class resources: Always use `InModuleScope`
 - Each class method = separate `Context` block
 - Each scenario = separate `Context` block
@@ -46,6 +46,7 @@ applyTo: "**/*.[Tt]ests.ps1"
 - Set `$PSDefaultParameterValues` for `Mock:ModuleName`, `Should:ModuleName`, `InModuleScope:ModuleName`
 - Omit `-ModuleName` parameter on Pester commands
 - Never use `Mock` inside `InModuleScope`-block
+- Never use `param()` inside `-MockWith` scriptblocks, parameters are auto-bound
 
 ## File Organization
 - Class resources: `tests/Unit/Classes/{Name}.Tests.ps1`
