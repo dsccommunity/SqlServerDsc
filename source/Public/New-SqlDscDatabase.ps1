@@ -266,6 +266,24 @@ function New-SqlDscDatabase
             }
         }
 
+        # Validate IsLedger if specified (requires SQL Server 2022+)
+        if ($PSBoundParameters.ContainsKey('IsLedger'))
+        {
+            if ($ServerObject.VersionMajor -lt 16)
+            {
+                $errorMessage = $script:localizedData.Database_IsLedgerNotSupported -f $ServerObject.InstanceName, $ServerObject.VersionMajor
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        [System.InvalidOperationException]::new($errorMessage),
+                        'NSD0007', # cspell: disable-line
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $IsLedger
+                    )
+                )
+            }
+        }
+
         # Validate source database exists when creating a snapshot
         if ($PSCmdlet.ParameterSetName -eq 'Snapshot')
         {

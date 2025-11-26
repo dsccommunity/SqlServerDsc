@@ -104,7 +104,17 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should create a ledger database with IsLedger set to true' {
-            $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'LedgerDatabase' -IsLedger $true -Force
+            # Create a mock server for SQL Server 2022 (version 16) which supports IsLedger
+            $mockServerObject2022 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject2022 | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance2022' -Force
+            $mockServerObject2022 | Add-Member -MemberType 'NoteProperty' -Name 'VersionMajor' -Value 16 -Force
+            $mockServerObject2022 | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                return @{} | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                    # Mock implementation
+                } -PassThru -Force
+            } -Force
+
+            $result = New-SqlDscDatabase -ServerObject $mockServerObject2022 -Name 'LedgerDatabase' -IsLedger $true -Force
 
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'LedgerDatabase'
@@ -159,6 +169,16 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
             $errorRecord.FullyQualifiedErrorId | Should -Be 'NSD0004,New-SqlDscDatabase'
             $errorRecord.CategoryInfo.Category | Should -Be 'InvalidArgument'
             $errorRecord.CategoryInfo.TargetName | Should -Be 'InvalidCollation'
+        }
+
+        It 'Should throw error when IsLedger is used on SQL Server version older than 2022' {
+            $errorRecord = { New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDB' -IsLedger $true -Force } |
+                Should -Throw -ExpectedMessage '*IsLedger is not supported*' -PassThru
+
+            $errorRecord.Exception.Message | Should -BeLike '*IsLedger is not supported*'
+            $errorRecord.FullyQualifiedErrorId | Should -Be 'NSD0007,New-SqlDscDatabase'
+            $errorRecord.CategoryInfo.Category | Should -Be 'InvalidOperation'
+            $errorRecord.CategoryInfo.TargetName | Should -Be 'True'
         }
     }
 
