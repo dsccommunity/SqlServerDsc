@@ -62,7 +62,12 @@
     .OUTPUTS
         None.
 
-        When PassThru is specified the output is [Microsoft.SqlServer.Management.Smo.Database].
+        By default, no output is returned.
+
+    .OUTPUTS
+        Microsoft.SqlServer.Management.Smo.Database
+
+        When PassThru is specified, the updated database object is returned.
 #>
 function Enable-SqlDscDatabaseSnapshotIsolation
 {
@@ -128,11 +133,11 @@ function Enable-SqlDscDatabaseSnapshotIsolation
             }
         }
 
-        $verboseDescriptionMessage = $script:localizedData.DatabaseSnapshotIsolation_Enable_ShouldProcessVerboseDescription -f $sqlDatabaseObject.Name, $sqlDatabaseObject.Parent.InstanceName
-        $verboseWarningMessage = $script:localizedData.DatabaseSnapshotIsolation_Enable_ShouldProcessVerboseWarning -f $sqlDatabaseObject.Name
+        $descriptionMessage = $script:localizedData.DatabaseSnapshotIsolation_Enable_ShouldProcessVerboseDescription -f $sqlDatabaseObject.Name, $sqlDatabaseObject.Parent.InstanceName
+        $confirmationMessage = $script:localizedData.DatabaseSnapshotIsolation_Enable_ShouldProcessVerboseWarning -f $sqlDatabaseObject.Name
         $captionMessage = $script:localizedData.DatabaseSnapshotIsolation_Enable_ShouldProcessCaption
 
-        if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
         {
             # Check if snapshot isolation is already enabled (idempotence)
             if ($sqlDatabaseObject.SnapshotIsolationState -eq 'Enabled')

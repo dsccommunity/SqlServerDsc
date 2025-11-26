@@ -130,4 +130,30 @@ Describe 'Disable-SqlDscDatabaseSnapshotIsolation' -Tag @('Integration_SQL2017',
             $updatedDb.SnapshotIsolationState | Should -Be 'Disabled'
         }
     }
+
+    Context 'When using the Refresh parameter' {
+        It 'Should refresh the database collection before disabling snapshot isolation' {
+            # First ensure it's enabled
+            $null = Enable-SqlDscDatabaseSnapshotIsolation -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction 'Stop'
+
+            $null = Disable-SqlDscDatabaseSnapshotIsolation -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -Force -ErrorAction 'Stop'
+
+            # Verify the change
+            $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
+            $updatedDb.SnapshotIsolationState | Should -Be 'Disabled'
+        }
+    }
+
+    Context 'When using the PassThru parameter' {
+        It 'Should return the database object when PassThru is specified' {
+            # First ensure it's enabled
+            $null = Enable-SqlDscDatabaseSnapshotIsolation -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction 'Stop'
+
+            $resultDb = Disable-SqlDscDatabaseSnapshotIsolation -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -PassThru -ErrorAction 'Stop'
+
+            $resultDb | Should -Not -BeNullOrEmpty
+            $resultDb.Name | Should -Be $script:testDatabaseName
+            $resultDb.SnapshotIsolationState | Should -Be 'Disabled'
+        }
+    }
 }
