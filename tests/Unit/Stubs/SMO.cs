@@ -967,6 +967,18 @@ namespace Microsoft.SqlServer.Management.Smo
             }
             this.DefaultFullTextCatalog = catalogName;
         }
+
+        public void SetSnapshotIsolation( bool enable )
+        {
+            if (enable)
+            {
+                this.SnapshotIsolationState = SnapshotIsolationState.Enabled;
+            }
+            else
+            {
+                this.SnapshotIsolationState = SnapshotIsolationState.Disabled;
+            }
+        }
     }
 
     // TypeName: Microsoft.SqlServer.Management.Smo.FileGroup
