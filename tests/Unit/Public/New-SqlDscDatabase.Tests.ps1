@@ -73,6 +73,7 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
                 $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'RecoveryModel' -Value $null -Force
                 $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Collation' -Value $null -Force
                 $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'CompatibilityLevel' -Value $null -Force
+                $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'IsLedger' -Value $false -Force
                 $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Create' -Value {
                     # Mock implementation
                 } -Force
@@ -100,6 +101,14 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
             $result.RecoveryModel | Should -Be 'Simple'
             $result.Collation | Should -Be 'SQL_Latin1_General_CP1_CI_AS'
             $result.CompatibilityLevel | Should -Be 'Version150'
+        }
+
+        It 'Should create a ledger database with IsLedger set to true' {
+            $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'LedgerDatabase' -IsLedger $true -Force
+
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be 'LedgerDatabase'
+            $result.IsLedger | Should -BeTrue
         }
 
         It 'Should throw error when database already exists' {
@@ -157,7 +166,7 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set Database' -ForEach @(
             @{
                 ExpectedParameterSetName = 'Database'
-                ExpectedParameters = '-ServerObject <Server> -Name <string> [-Collation <string>] [-CatalogCollation <CatalogCollationType>] [-CompatibilityLevel <string>] [-RecoveryModel <string>] [-OwnerName <string>] [-FileGroup <DatabaseFileGroupSpec[]>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-ServerObject <Server> -Name <string> [-Collation <string>] [-CatalogCollation <CatalogCollationType>] [-CompatibilityLevel <string>] [-RecoveryModel <string>] [-OwnerName <string>] [-IsLedger <bool>] [-FileGroup <DatabaseFileGroupSpec[]>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'New-SqlDscDatabase').ParameterSets |
@@ -202,6 +211,12 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDatabase').Parameters['DatabaseSnapshotBaseName']
             $snapshotSetAttribute = $parameterInfo.Attributes | Where-Object { $_.ParameterSetName -eq 'Snapshot' }
             $snapshotSetAttribute.Mandatory | Should -BeTrue
+        }
+
+        It 'Should have IsLedger as a parameter in Database parameter set' {
+            $parameterInfo = (Get-Command -Name 'New-SqlDscDatabase').Parameters['IsLedger']
+            $databaseSetAttribute = $parameterInfo.Attributes | Where-Object { $_.ParameterSetName -eq 'Database' }
+            $databaseSetAttribute | Should -Not -BeNullOrEmpty
         }
     }
 

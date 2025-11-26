@@ -33,6 +33,13 @@
     .PARAMETER OwnerName
         Specifies the name of the login that should be the owner of the database.
 
+    .PARAMETER IsLedger
+        Specifies whether to create a ledger database. Ledger databases provide
+        tamper-evidence capabilities and are immutable once created. This parameter
+        can only be set during database creation - ledger status cannot be changed
+        after the database is created. This parameter requires SQL Server 2022
+        (version 16) or later, or Azure SQL Database.
+
     .PARAMETER DatabaseSnapshotBaseName
         Specifies the name of the source database from which to create a snapshot.
         When this parameter is specified, a database snapshot will be created instead
@@ -137,6 +144,10 @@ function New-SqlDscDatabase
         [Parameter(ParameterSetName = 'Database')]
         [System.String]
         $OwnerName,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $IsLedger,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'Snapshot')]
         [ValidateNotNullOrEmpty()]
@@ -311,6 +322,11 @@ function New-SqlDscDatabase
                     if ($PSBoundParameters.ContainsKey('CompatibilityLevel'))
                     {
                         $sqlDatabaseObjectToCreate.CompatibilityLevel = $CompatibilityLevel
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('IsLedger'))
+                    {
+                        $sqlDatabaseObjectToCreate.IsLedger = $IsLedger
                     }
                 }
 
