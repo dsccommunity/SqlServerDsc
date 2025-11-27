@@ -293,22 +293,13 @@ function Set-TargetResource
                         $script:localizedData.UpdatingSnapshotIsolation -f $SnapshotIsolation
                     )
 
-                    try
+                    if ($SnapshotIsolation)
                     {
-                        if ($SnapshotIsolation)
-                        {
-                            Enable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $sqlDatabaseObject -Force -ErrorAction 'Stop'
-                        }
-                        else
-                        {
-                            Disable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $sqlDatabaseObject -Force -ErrorAction 'Stop'
-                        }
+                        Enable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $sqlDatabaseObject -Force -ErrorAction 'Stop'
                     }
-                    catch
+                    else
                     {
-                        $errorMessage = $script:localizedData.FailedToUpdateSnapshotIsolation -f $SnapshotIsolation, $Name
-
-                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                        Disable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $sqlDatabaseObject -Force -ErrorAction 'Stop'
                     }
                 }
 
@@ -363,6 +354,17 @@ function Set-TargetResource
                         if ($PSBoundParameters.ContainsKey('OwnerName'))
                         {
                             $sqlDatabaseObjectToCreate.SetOwner($OwnerName)
+                        }
+
+                        <#
+                            This must be run after the object is created because
+                            snapshot isolation can only be set on an existing database.
+                            Snapshot isolation is disabled by default, so we only need
+                            to enable it if explicitly requested.
+                        #>
+                        if ($PSBoundParameters.ContainsKey('SnapshotIsolation') -and $SnapshotIsolation)
+                        {
+                            Enable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $sqlDatabaseObjectToCreate -Force -ErrorAction 'Stop'
                         }
                     }
                 }

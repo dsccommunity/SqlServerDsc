@@ -23,6 +23,5 @@ ConvertFrom-StringData @'
     UpdatingOwner = Changing the database owner to '{0}'.
     FailedToUpdateOwner = Failed changing to owner to '{0}' for the database '{1}'.
     UpdatingSnapshotIsolation = Updating snapshot isolation to '{0}'.
-    FailedToUpdateSnapshotIsolation = Failed changing snapshot isolation to '{0}' for the database '{1}'.
     SnapshotIsolationWrong = The database '{0}' exists and has snapshot isolation set to '{1}', but expected it to have snapshot isolation set to '{2}'.
 '@

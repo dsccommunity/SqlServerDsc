@@ -46,6 +46,9 @@ BeforeAll {
     # Load the correct SQL Module stub
     $script:stubModuleName = Import-SQLModuleStub -PassThru
 
+    # Loading mocked SMO types required for mocking Enable/Disable-SqlDscDatabaseSnapshotIsolation
+    Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
+
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
@@ -83,7 +86,8 @@ Describe 'SqlDatabase\Get-TargetResource' {
                                     Add-Member -MemberType NoteProperty -Name 'Collation' -Value 'SQL_Latin1_General_CP1_CS_AS' -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'CompatibilityLevel' -Value 'Version130' -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'RecoveryModel' -Value 'Full' -PassThru |
-                                    Add-Member -MemberType NoteProperty -Name 'Owner' -Value 'sa' -PassThru -Force
+                                    Add-Member -MemberType NoteProperty -Name 'Owner' -Value 'sa' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'SnapshotIsolationState' -Value 'Enabled' -PassThru -Force
                             }
                         } -PassThru -Force
                 )
@@ -194,6 +198,7 @@ Describe 'SqlDatabase\Get-TargetResource' {
                     $result.CompatibilityLevel | Should -Be 'Version130'
                     $result.RecoveryModel | Should -Be 'Full'
                     $result.OwnerName | Should -Be 'sa'
+                    $result.SnapshotIsolation | Should -BeTrue
                 }
             }
         }
@@ -231,6 +236,7 @@ Describe 'SqlDatabase\Test-TargetResource' {
                         CompatibilityLevel = $null
                         RecoveryModel      = $null
                         OwnerName          = $null
+                        SnapshotIsolation  = $null
                     }
                 }
             }
@@ -262,6 +268,7 @@ Describe 'SqlDatabase\Test-TargetResource' {
                         CompatibilityLevel = 'Version130'
                         RecoveryModel      = 'Full'
                         OwnerName          = 'sa'
+                        SnapshotIsolation  = $true
                     }
                 }
             }
@@ -296,6 +303,10 @@ Describe 'SqlDatabase\Test-TargetResource' {
                 PropertyName = 'OwnerName'
                 PropertyValue = 'sa'
             }
+            @{
+                PropertyName = 'SnapshotIsolation'
+                PropertyValue = $true
+            }
         ) {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
@@ -308,6 +319,7 @@ Describe 'SqlDatabase\Test-TargetResource' {
                         CompatibilityLevel = 'Version130'
                         RecoveryModel      = 'Full'
                         OwnerName          = 'sa'
+                        SnapshotIsolation  = $true
                     }
                 }
             }
@@ -341,6 +353,7 @@ Describe 'SqlDatabase\Test-TargetResource' {
                         CompatibilityLevel = $null
                         RecoveryModel      = $null
                         OwnerName          = $null
+                        SnapshotIsolation  = $null
                     }
                 }
             }
@@ -407,6 +420,10 @@ Describe 'SqlDatabase\Test-TargetResource' {
             @{
                 PropertyName = 'OwnerName'
                 PropertyValue = 'dbOwner1'
+            }
+            @{
+                PropertyName = 'SnapshotIsolation'
+                PropertyValue = $false
             }
         ) {
             BeforeAll {
@@ -796,6 +813,175 @@ Describe 'SqlDatabase\Set-TargetResource' {
                     $mockErrorMessage = $script:localizedData.FailedToUpdateOwner -f 'NewOwner', 'AdventureWorks'
 
                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw ('*' + $mockErrorMessage + '*')
+                }
+            }
+        }
+
+        Context 'When updating an existing database' {
+            BeforeAll {
+                # Create a mock Connect-SQL that returns a Server with a real SMO Database object
+                $mockConnectSQLWithSmoDatabase = {
+                    $server = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    $server.Name = 'localhost'
+                    $server.InstanceName = 'MSSQLSERVER'
+                    $server.ComputerNamePhysicalNetBIOS = 'localhost'
+
+                    # Create a real SMO Database object
+                    $database = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database' -ArgumentList $server, 'AdventureWorks'
+
+                    # Mock the Databases collection as a hashtable
+                    $server | Add-Member -MemberType ScriptProperty -Name 'Databases' -Value {
+                        return @{
+                            'AdventureWorks' = $database
+                        }
+                    }.GetNewClosure() -Force
+
+                    return $server
+                }
+
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQLWithSmoDatabase
+                Mock -CommandName Enable-SqlDscDatabaseSnapshotIsolation
+                Mock -CommandName Disable-SqlDscDatabaseSnapshotIsolation
+            }
+
+            Context 'When enabling snapshot isolation' {
+                It 'Should call Enable-SqlDscDatabaseSnapshotIsolation' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockSetTargetResourceParameters['SnapshotIsolation'] = $true
+
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
+                    }
+
+                    Should -Invoke -CommandName Enable-SqlDscDatabaseSnapshotIsolation -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Disable-SqlDscDatabaseSnapshotIsolation -Exactly -Times 0 -Scope It
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When disabling snapshot isolation' {
+                It 'Should call Disable-SqlDscDatabaseSnapshotIsolation' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockSetTargetResourceParameters['SnapshotIsolation'] = $false
+
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
+                    }
+
+                    Should -Invoke -CommandName Enable-SqlDscDatabaseSnapshotIsolation -Exactly -Times 0 -Scope It
+                    Should -Invoke -CommandName Disable-SqlDscDatabaseSnapshotIsolation -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+            }
+        }
+
+        Context 'When creating a new database' {
+            BeforeAll {
+                $mockNewObjectDatabase = {
+                    $database = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+                    $database.Name = 'NewDatabase'
+
+                    $database | Add-Member -MemberType 'ScriptMethod' -Name 'Create' -Value {
+                        if ($mockInvalidOperationForCreateMethod)
+                        {
+                            throw 'Mock Create Method was called with invalid operation.'
+                        }
+
+                        if ($this.Name -ne $mockExpectedDatabaseNameToCreate)
+                        {
+                            throw "Called mocked Create() method without adding the right database. Expected '{0}'. But was '{1}'." `
+                                -f $mockExpectedDatabaseNameToCreate, $this.Name
+                        }
+
+                        InModuleScope -ScriptBlock {
+                            $script:newObjectMethodCreateWasCalled += 1
+                        }
+                    } -Force
+
+                    $database | Add-Member -MemberType 'ScriptMethod' -Name 'SetOwner' -Value {
+                        InModuleScope -ScriptBlock {
+                            $script:newObjectMethodSetOwnerWasCalled += 1
+                        }
+                    } -Force
+
+                    return $database
+                }
+
+                Mock -CommandName New-Object -MockWith $mockNewObjectDatabase -ParameterFilter {
+                    $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Database'
+                }
+
+                Mock -CommandName Enable-SqlDscDatabaseSnapshotIsolation
+            }
+
+            BeforeEach {
+                InModuleScope -ScriptBlock {
+                    $script:newObjectMethodCreateWasCalled = 0
+                    $script:newObjectMethodSetOwnerWasCalled = 0
+                }
+            }
+
+            Context 'When SnapshotIsolation is false' {
+                It 'Should not call Enable-SqlDscDatabaseSnapshotIsolation' {
+                    $mockExpectedDatabaseNameToCreate = 'NewDatabase'
+
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockSetTargetResourceParameters['Ensure'] = 'Present'
+                        $script:mockSetTargetResourceParameters['Name'] = 'NewDatabase'
+                        $script:mockSetTargetResourceParameters['SnapshotIsolation'] = $false
+
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
+
+                        $script:newObjectMethodCreateWasCalled | Should -Be 1
+                    }
+
+                    Should -Invoke -CommandName Enable-SqlDscDatabaseSnapshotIsolation -Exactly -Times 0 -Scope It
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When SnapshotIsolation is not specified' {
+                It 'Should not call Enable-SqlDscDatabaseSnapshotIsolation' {
+                    $mockExpectedDatabaseNameToCreate = 'NewDatabase'
+
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockSetTargetResourceParameters['Ensure'] = 'Present'
+                        $script:mockSetTargetResourceParameters['Name'] = 'NewDatabase'
+
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
+
+                        $script:newObjectMethodCreateWasCalled | Should -Be 1
+                    }
+
+                    Should -Invoke -CommandName Enable-SqlDscDatabaseSnapshotIsolation -Exactly -Times 0 -Scope It
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When SnapshotIsolation is true' {
+                It 'Should call Enable-SqlDscDatabaseSnapshotIsolation' {
+                    $mockExpectedDatabaseNameToCreate = 'NewDatabase'
+
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockSetTargetResourceParameters['Ensure'] = 'Present'
+                        $script:mockSetTargetResourceParameters['Name'] = 'NewDatabase'
+                        $script:mockSetTargetResourceParameters['SnapshotIsolation'] = $true
+
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
+
+                        $script:newObjectMethodCreateWasCalled | Should -Be 1
+                    }
+
+                    Should -Invoke -CommandName Enable-SqlDscDatabaseSnapshotIsolation -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
             }
         }
