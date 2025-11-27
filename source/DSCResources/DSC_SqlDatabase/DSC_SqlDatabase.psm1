@@ -433,6 +433,9 @@ function Set-TargetResource
 
     .PARAMETER OwnerName
         Specifies the name of the login that should be the owner of the database.
+
+    .PARAMETER SnapshotIsolation
+        Specifies whether snapshot isolation should be enabled for the database.
 #>
 function Test-TargetResource
 {
