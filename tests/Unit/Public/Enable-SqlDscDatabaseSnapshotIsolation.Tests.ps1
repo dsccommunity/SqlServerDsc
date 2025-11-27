@@ -6,7 +6,7 @@
         Unit tests for Enable-SqlDscDatabaseSnapshotIsolation.
 #>
 
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
 BeforeDiscovery {
@@ -87,15 +87,21 @@ Describe 'Enable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
         }
 
         It 'Should have ServerObject as a mandatory parameter' {
-            $command.Parameters['ServerObject'].Attributes.Mandatory | Should -Contain $true
+            $parameterInfo = $command.Parameters['ServerObject']
+
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
 
         It 'Should have Name as a mandatory parameter' {
-            $command.Parameters['Name'].Attributes.Mandatory | Should -Contain $true
+            $parameterInfo = $command.Parameters['Name']
+
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
 
         It 'Should have DatabaseObject as a mandatory parameter' {
-            $command.Parameters['DatabaseObject'].Attributes.Mandatory | Should -Contain $true
+            $parameterInfo = $command.Parameters['DatabaseObject']
+
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
     }
 
