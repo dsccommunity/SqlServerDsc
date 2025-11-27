@@ -81,6 +81,24 @@ Describe 'Disable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
         }
     }
 
+    Context 'When verifying parameter properties' {
+        BeforeAll {
+            $command = Get-Command -Name 'Disable-SqlDscDatabaseSnapshotIsolation'
+        }
+
+        It 'Should have ServerObject as a mandatory parameter' {
+            $command.Parameters['ServerObject'].Attributes.Mandatory | Should -Contain $true
+        }
+
+        It 'Should have Name as a mandatory parameter' {
+            $command.Parameters['Name'].Attributes.Mandatory | Should -Contain $true
+        }
+
+        It 'Should have DatabaseObject as a mandatory parameter' {
+            $command.Parameters['DatabaseObject'].Attributes.Mandatory | Should -Contain $true
+        }
+    }
+
     Context 'When disabling snapshot isolation using ServerObject and Name' {
         BeforeAll {
             $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
