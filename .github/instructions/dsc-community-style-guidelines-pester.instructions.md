@@ -35,6 +35,7 @@ applyTo: "**/*.[Tt]ests.ps1"
 - Use nested `Context` blocks for complex scenarios
 - Mocking in `BeforeAll` (`BeforeEach` only when required)
 - Setup/teardown in `BeforeAll`,`BeforeEach`/`AfterAll`,`AfterEach` close to usage
+- Spacing between blocks, arrange, act, and assert for readability
 
 ## Syntax Rules
 - PascalCase: `Describe`, `Context`, `It`, `Should`, `BeforeAll`, `BeforeEach`, `AfterAll`, `AfterEach`
