@@ -385,6 +385,7 @@ Describe 'SqlDatabase\Test-TargetResource' {
                         CompatibilityLevel = 'Version130'
                         RecoveryModel      = 'Full'
                         OwnerName          = 'sa'
+                        SnapshotIsolation  = $true
                     }
                 }
             }
@@ -437,6 +438,7 @@ Describe 'SqlDatabase\Test-TargetResource' {
                         CompatibilityLevel = 'Version130'
                         RecoveryModel      = 'Full'
                         OwnerName          = 'sa'
+                        SnapshotIsolation  = $true
                     }
                 }
             }
