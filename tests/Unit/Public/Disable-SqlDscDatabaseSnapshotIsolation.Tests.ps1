@@ -95,6 +95,7 @@ Describe 'Disable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
 
             $script:setSnapshotIsolationCalled = $false
             $script:setSnapshotIsolationValue = $null
+            $script:refreshCalled = $false
 
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'SetSnapshotIsolation' -Value {
                 param($Enable)
@@ -114,6 +115,7 @@ Describe 'Disable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
 
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
                 # Mock implementation - in real SMO this updates properties from server
+                $script:refreshCalled = $true
             } -Force
 
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
@@ -153,10 +155,12 @@ Describe 'Disable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
             # Reset state for this test
             $mockDatabaseObject.SnapshotIsolationState = 'Enabled'
             $script:setSnapshotIsolationCalled = $false
+            $script:refreshCalled = $false
 
             $null = Disable-SqlDscDatabaseSnapshotIsolation -ServerObject $mockServerObject -Name 'TestDatabase' -Force -Refresh
 
             $mockDatabaseObject.SnapshotIsolationState | Should -Be 'Disabled'
+            $script:refreshCalled | Should -BeTrue -Because 'Refresh should be called when -Refresh is specified'
         }
     }
 
