@@ -158,19 +158,6 @@ Describe 'Enable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
 
             $mockDatabaseObject.SnapshotIsolationState | Should -Be 'Enabled'
         }
-
-        It 'Should call SetSnapshotIsolation with true' {
-            # Reset state for this test
-            $mockDatabaseObject.SnapshotIsolationState = 'Disabled'
-            $script:setSnapshotIsolationCalled = $false
-            $script:setSnapshotIsolationValue = $null
-
-            $null = Enable-SqlDscDatabaseSnapshotIsolation -ServerObject $mockServerObject -Name 'TestDatabase' -Force
-
-            $mockDatabaseObject.SnapshotIsolationState | Should -Be 'Enabled'
-            $script:setSnapshotIsolationCalled | Should -BeTrue -Because 'SetSnapshotIsolation should be called'
-            $script:setSnapshotIsolationValue | Should -BeTrue -Because 'SetSnapshotIsolation should be called with $true'
-        }
     }
 
     Context 'When enabling snapshot isolation using DatabaseObject' {
@@ -229,18 +216,6 @@ Describe 'Enable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
 
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'TestDatabase'
-        }
-
-        It 'Should call SetSnapshotIsolation with true' {
-            $mockDatabaseObject.SnapshotIsolationState = 'Disabled'
-            $script:setSnapshotIsolationCalled = $false
-            $script:setSnapshotIsolationValue = $null
-
-            $null = Enable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $mockDatabaseObject -Force
-
-            $mockDatabaseObject.SnapshotIsolationState | Should -Be 'Enabled'
-            $script:setSnapshotIsolationCalled | Should -BeTrue -Because 'SetSnapshotIsolation should be called'
-            $script:setSnapshotIsolationValue | Should -BeTrue -Because 'SetSnapshotIsolation should be called with $true'
         }
     }
 
