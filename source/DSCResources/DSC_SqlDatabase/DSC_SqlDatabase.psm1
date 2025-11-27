@@ -295,7 +295,14 @@ function Set-TargetResource
 
                     try
                     {
-                        $sqlDatabaseObject.SetSnapshotIsolation($SnapshotIsolation)
+                        if ($SnapshotIsolation)
+                        {
+                            Enable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $sqlDatabaseObject -Force
+                        }
+                        else
+                        {
+                            Disable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $sqlDatabaseObject -Force
+                        }
                     }
                     catch
                     {
