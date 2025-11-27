@@ -144,7 +144,7 @@ function Get-TargetResource
         Specifies the name of the login that should be the owner of the database.
 
     .PARAMETER SnapshotIsolation
-        Specifics whether snapshot isolation should be enabled for the new database.
+        Specifies whether snapshot isolation should be enabled for the database.
 #>
 function Set-TargetResource
 {
