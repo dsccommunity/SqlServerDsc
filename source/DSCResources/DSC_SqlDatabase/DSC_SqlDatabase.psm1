@@ -297,11 +297,11 @@ function Set-TargetResource
                     {
                         if ($SnapshotIsolation)
                         {
-                            Enable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $sqlDatabaseObject -Force
+                            Enable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $sqlDatabaseObject -Force -ErrorAction 'Stop'
                         }
                         else
                         {
-                            Disable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $sqlDatabaseObject -Force
+                            Disable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $sqlDatabaseObject -Force -ErrorAction 'Stop'
                         }
                     }
                     catch
