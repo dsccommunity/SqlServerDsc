@@ -135,9 +135,6 @@
     .PARAMETER IsFullTextEnabled
         Specifies whether full-text search is enabled.
 
-    .PARAMETER IsLedger
-        Specifies whether the database is a ledger database.
-
     .PARAMETER IsParameterizationForced
         Specifies whether forced parameterization is enabled for the database.
 
@@ -312,6 +309,11 @@
           class. To create database snapshots, use the `New-SqlDscDatabaseSnapshot` or
           `New-SqlDscDatabase` command with the `-DatabaseSnapshotBaseName` parameter.
 
+        - **IsLedger**: Specifies whether the database is a ledger database. Ledger
+          status can only be set during database creation using the `New-SqlDscDatabase`
+          command with the `-IsLedger` parameter. Once a database is created, its ledger
+          status cannot be changed.
+
         There are some database properties that require method calls instead of direct
         property assignment and will be supported through separate commands, e.g.
         `Set-SqlDscDatabaseDefaultFileGroup`.
@@ -438,10 +440,6 @@ function Set-SqlDscDatabaseProperty
         [Parameter()]
         [System.Boolean]
         $IsFullTextEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $IsLedger,
 
         [Parameter()]
         [System.Boolean]
