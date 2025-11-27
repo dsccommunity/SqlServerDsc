@@ -66,14 +66,19 @@ Describe 'Enable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
             $mockDatabaseObject | Add-Member -MemberType 'ScriptProperty' -Name 'Parent' -Value {
                 $mockParent = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
                 $mockParent | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+
                 return $mockParent
             } -Force
+
             $script:setSnapshotIsolationCalled = $false
             $script:setSnapshotIsolationValue = $null
+
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'SetSnapshotIsolation' -Value {
                 param($Enable)
+
                 $script:setSnapshotIsolationCalled = $true
                 $script:setSnapshotIsolationValue = $Enable
+
                 if ($Enable)
                 {
                     $this.SnapshotIsolationState = 'Enabled'
@@ -83,6 +88,7 @@ Describe 'Enable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
                     $this.SnapshotIsolationState = 'Disabled'
                 }
             } -Force
+
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
                 # Mock implementation - in real SMO this updates properties from server
             } -Force
@@ -101,7 +107,9 @@ Describe 'Enable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
         It 'Should enable snapshot isolation successfully' {
             $script:setSnapshotIsolationCalled = $false
             $script:setSnapshotIsolationValue = $null
+
             $null = Enable-SqlDscDatabaseSnapshotIsolation -ServerObject $mockServerObject -Name 'TestDatabase' -Force
+
             $mockDatabaseObject.SnapshotIsolationState | Should -Be 'Enabled'
             $script:setSnapshotIsolationCalled | Should -BeTrue -Because 'SetSnapshotIsolation should be called to enable snapshot isolation'
             $script:setSnapshotIsolationValue | Should -BeTrue -Because 'SetSnapshotIsolation should be called with $true'
@@ -111,7 +119,9 @@ Describe 'Enable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
             # Reset state to ensure the test starts with snapshot isolation disabled
             $mockDatabaseObject.SnapshotIsolationState = 'Disabled'
             $script:setSnapshotIsolationCalled = $false
+
             $result = Enable-SqlDscDatabaseSnapshotIsolation -ServerObject $mockServerObject -Name 'TestDatabase' -Force -PassThru
+
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'TestDatabase'
         }
@@ -120,7 +130,9 @@ Describe 'Enable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
             # Reset state for this test
             $mockDatabaseObject.SnapshotIsolationState = 'Disabled'
             $script:setSnapshotIsolationCalled = $false
+
             $null = Enable-SqlDscDatabaseSnapshotIsolation -ServerObject $mockServerObject -Name 'TestDatabase' -Force -Refresh
+
             $mockDatabaseObject.SnapshotIsolationState | Should -Be 'Enabled'
         }
 
@@ -129,7 +141,9 @@ Describe 'Enable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
             $mockDatabaseObject.SnapshotIsolationState = 'Disabled'
             $script:setSnapshotIsolationCalled = $false
             $script:setSnapshotIsolationValue = $null
+
             $null = Enable-SqlDscDatabaseSnapshotIsolation -ServerObject $mockServerObject -Name 'TestDatabase' -Force
+
             $mockDatabaseObject.SnapshotIsolationState | Should -Be 'Enabled'
             $script:setSnapshotIsolationCalled | Should -BeTrue -Because 'SetSnapshotIsolation should be called'
             $script:setSnapshotIsolationValue | Should -BeTrue -Because 'SetSnapshotIsolation should be called with $true'
@@ -144,14 +158,19 @@ Describe 'Enable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
             $mockDatabaseObject | Add-Member -MemberType 'ScriptProperty' -Name 'Parent' -Value {
                 $mockParent = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
                 $mockParent | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+
                 return $mockParent
             } -Force
+
             $script:setSnapshotIsolationCalled = $false
             $script:setSnapshotIsolationValue = $null
+
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'SetSnapshotIsolation' -Value {
                 param($Enable)
+
                 $script:setSnapshotIsolationCalled = $true
                 $script:setSnapshotIsolationValue = $Enable
+
                 if ($Enable)
                 {
                     $this.SnapshotIsolationState = 'Enabled'
@@ -161,6 +180,7 @@ Describe 'Enable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
                     $this.SnapshotIsolationState = 'Disabled'
                 }
             } -Force
+
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
                 # Mock implementation - in real SMO this updates properties from server
             } -Force
@@ -169,7 +189,9 @@ Describe 'Enable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
         It 'Should enable snapshot isolation successfully' {
             $script:setSnapshotIsolationCalled = $false
             $script:setSnapshotIsolationValue = $null
+
             $null = Enable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $mockDatabaseObject -Force
+
             $mockDatabaseObject.SnapshotIsolationState | Should -Be 'Enabled'
             $script:setSnapshotIsolationCalled | Should -BeTrue -Because 'SetSnapshotIsolation should be called'
             $script:setSnapshotIsolationValue | Should -BeTrue -Because 'SetSnapshotIsolation should be called with $true'
@@ -179,7 +201,9 @@ Describe 'Enable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
             # Reset state to ensure the test starts with snapshot isolation disabled
             $mockDatabaseObject.SnapshotIsolationState = 'Disabled'
             $script:setSnapshotIsolationCalled = $false
+
             $result = Enable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $mockDatabaseObject -Force -PassThru
+
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'TestDatabase'
         }
@@ -188,7 +212,9 @@ Describe 'Enable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
             $mockDatabaseObject.SnapshotIsolationState = 'Disabled'
             $script:setSnapshotIsolationCalled = $false
             $script:setSnapshotIsolationValue = $null
+
             $null = Enable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $mockDatabaseObject -Force
+
             $mockDatabaseObject.SnapshotIsolationState | Should -Be 'Enabled'
             $script:setSnapshotIsolationCalled | Should -BeTrue -Because 'SetSnapshotIsolation should be called'
             $script:setSnapshotIsolationValue | Should -BeTrue -Because 'SetSnapshotIsolation should be called with $true'
@@ -203,13 +229,18 @@ Describe 'Enable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
             $mockDatabaseObject | Add-Member -MemberType 'ScriptProperty' -Name 'Parent' -Value {
                 $mockParent = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
                 $mockParent | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+
                 return $mockParent
             } -Force
+
             # Track whether SetSnapshotIsolation was called using script-scoped variables
             $script:setSnapshotIsolationCalled = $false
+
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'SetSnapshotIsolation' -Value {
                 param($Enable)
+
                 $script:setSnapshotIsolationCalled = $true
+
                 if ($Enable)
                 {
                     $this.SnapshotIsolationState = 'Enabled'
@@ -219,6 +250,7 @@ Describe 'Enable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
                     $this.SnapshotIsolationState = 'Disabled'
                 }
             } -Force
+
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
                 # Mock implementation - in real SMO this updates properties from server
             } -Force
@@ -228,10 +260,8 @@ Describe 'Enable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
             # Reset the flags before the test
             $script:setSnapshotIsolationCalled = $false
 
-            # The command should skip calling SetSnapshotIsolation when already enabled
             $null = Enable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $mockDatabaseObject -Force
 
-            # Verify SetSnapshotIsolation was not called (idempotent behavior)
             $script:setSnapshotIsolationCalled | Should -BeFalse -Because 'SetSnapshotIsolation should not be called when snapshot isolation is already enabled'
             $mockDatabaseObject.SnapshotIsolationState | Should -Be 'Enabled'
         }
@@ -245,12 +275,16 @@ Describe 'Enable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
             $mockDatabaseObject | Add-Member -MemberType 'ScriptProperty' -Name 'Parent' -Value {
                 $mockParent = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
                 $mockParent | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+
                 return $mockParent
             } -Force
+
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'SetSnapshotIsolation' -Value {
                 param($Enable)
+
                 throw 'Simulated SetSnapshotIsolation() failure'
             } -Force
+
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
                 # Mock implementation - in real SMO this updates properties from server
             } -Force
