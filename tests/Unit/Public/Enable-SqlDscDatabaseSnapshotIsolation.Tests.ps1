@@ -58,6 +58,29 @@ AfterAll {
 }
 
 Describe 'Enable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
+    Context 'When the command has proper parameter sets' {
+        It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
+            @{
+                ExpectedParameterSetName = 'ServerObjectSet'
+                ExpectedParameters = '-ServerObject <Server> -Name <string> [-Refresh] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            }
+            @{
+                ExpectedParameterSetName = 'DatabaseObjectSet'
+                ExpectedParameters = '-DatabaseObject <Database> [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            }
+        ) {
+            $result = (Get-Command -Name 'Enable-SqlDscDatabaseSnapshotIsolation').ParameterSets |
+                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
+                Select-Object -Property @(
+                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
+                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
+                )
+
+            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should -Be $ExpectedParameters
+        }
+    }
+
     Context 'When enabling snapshot isolation using ServerObject and Name' {
         BeforeAll {
             $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
