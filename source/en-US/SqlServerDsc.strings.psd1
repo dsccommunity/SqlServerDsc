@@ -422,6 +422,26 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     DatabaseOwner_Set_ShouldProcessCaption = Set database owner on instance
 
+    ## Enable-SqlDscDatabaseSnapshotIsolation
+    DatabaseSnapshotIsolation_Enabling = Enabling snapshot isolation for database '{0}'. (ESDSI0002)
+    DatabaseSnapshotIsolation_Enabled = Snapshot isolation for database '{0}' was enabled. (ESDSI0003)
+    DatabaseSnapshotIsolation_AlreadyEnabled = Snapshot isolation for database '{0}' is already enabled. (ESDSI0004)
+    DatabaseSnapshotIsolation_EnableFailed = Failed to enable snapshot isolation for database '{0}'. (ESDSI0001)
+    DatabaseSnapshotIsolation_Enable_ShouldProcessVerboseDescription = Enabling snapshot isolation for the database '{0}' on the instance '{1}'.
+    DatabaseSnapshotIsolation_Enable_ShouldProcessVerboseWarning = Are you sure you want to enable snapshot isolation for the database '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    DatabaseSnapshotIsolation_Enable_ShouldProcessCaption = Enable snapshot isolation on database
+
+    ## Disable-SqlDscDatabaseSnapshotIsolation
+    DatabaseSnapshotIsolation_Disabling = Disabling snapshot isolation for database '{0}'. (DSDSI0002)
+    DatabaseSnapshotIsolation_Disabled = Snapshot isolation for database '{0}' was disabled. (DSDSI0003)
+    DatabaseSnapshotIsolation_AlreadyDisabled = Snapshot isolation for database '{0}' is already disabled. (DSDSI0004)
+    DatabaseSnapshotIsolation_DisableFailed = Failed to disable snapshot isolation for database '{0}'. (DSDSI0001)
+    DatabaseSnapshotIsolation_Disable_ShouldProcessVerboseDescription = Disabling snapshot isolation for the database '{0}' on the instance '{1}'.
+    DatabaseSnapshotIsolation_Disable_ShouldProcessVerboseWarning = Are you sure you want to disable snapshot isolation for the database '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    DatabaseSnapshotIsolation_Disable_ShouldProcessCaption = Disable snapshot isolation on database
+
     ## Remove-SqlDscDatabase
     Database_RemoveFailed = Failed to remove database '{0}' from instance '{1}'.
     Database_CannotRemoveSystem = Cannot remove system database '{0}'.
