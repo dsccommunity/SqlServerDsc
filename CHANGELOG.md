@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     command with the `-DatabaseSnapshotBaseName` parameter.
   - Removed parameter `DefaultSchema`. Default schema is a user-level property,
     not a database-level property. See [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
+  - Removed parameter `IsLedger`. Ledger status is read-only after database creation.
+    Use `New-SqlDscDatabase` with the `-IsLedger` parameter to create ledger databases
+    [issue #2351](https://github.com/dsccommunity/SqlServerDsc/issues/2351).
 
 ### Added
 
@@ -66,6 +69,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     database snapshots, enabling control over file placement for snapshots (sparse
     files) and custom filegroup/datafile configuration for regular databases
     ([issue #2341](https://github.com/dsccommunity/SqlServerDsc/issues/2341)).
+  - Added `IsLedger` parameter to support creating ledger databases at creation time.
+    Ledger status is read-only after database creation and can only be set when
+    creating a new database ([issue #2351](https://github.com/dsccommunity/SqlServerDsc/issues/2351)).
 - Added public command `Set-SqlDscDatabaseOwner` to change the owner of a SQL Server
   database [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
   This command uses the SMO `SetOwner()` method and supports both `ServerObject`
