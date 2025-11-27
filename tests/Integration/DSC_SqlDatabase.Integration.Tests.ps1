@@ -79,7 +79,7 @@ try
                 # Same as the instance collation
                 $resourceCurrentState.Collation | Should -Be 'Finnish_Swedish_CI_AS'
                 $resourceCurrentState.RecoveryModel | Should -Be 'Full'
-                $resourceCurrentState.OwnerName | Should -Be ('{0}\SqlAdmin' -f $env:COMPUTERNAME)
+                $resourceCurrentState.OwnerName | Should -Be ('{0}\SqlAdmin' -f (Get-ComputerName))
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
