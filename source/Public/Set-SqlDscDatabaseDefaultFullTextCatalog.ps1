@@ -157,9 +157,6 @@ function Set-SqlDscDatabaseDefaultFullTextCatalog
                 try
                 {
                     $sqlDatabaseObject.SetDefaultFullTextCatalog($CatalogName)
-
-                    # Refresh the database object to get the updated DefaultFullTextCatalog value from the server
-                    $sqlDatabaseObject.Refresh()
                 }
                 catch
                 {
@@ -180,6 +177,9 @@ function Set-SqlDscDatabaseDefaultFullTextCatalog
 
             if ($PassThru.IsPresent)
             {
+                # Refresh the database object to get the updated DefaultFullTextCatalog value from the server
+                $sqlDatabaseObject.Refresh()
+
                 return $sqlDatabaseObject
             }
         }
