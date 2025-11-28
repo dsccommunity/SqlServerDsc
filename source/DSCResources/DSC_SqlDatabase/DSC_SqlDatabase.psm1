@@ -76,6 +76,7 @@ function Get-TargetResource
         CompatibilityLevel = $null
         RecoveryModel      = $null
         OwnerName          = $null
+        SnapshotIsolation  = $null
     }
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
@@ -92,6 +93,7 @@ function Get-TargetResource
             $returnValue['CompatibilityLevel'] = $sqlDatabaseObject.CompatibilityLevel
             $returnValue['RecoveryModel'] = $sqlDatabaseObject.RecoveryModel
             $returnValue['OwnerName'] = $sqlDatabaseObject.Owner
+            $returnValue['SnapshotIsolation'] = $sqlDatabaseObject.SnapshotIsolationState -eq 'Enabled'
 
             Write-Verbose -Message (
                 $script:localizedData.DatabasePresent -f $Name
@@ -140,6 +142,9 @@ function Get-TargetResource
 
     .PARAMETER OwnerName
         Specifies the name of the login that should be the owner of the database.
+
+    .PARAMETER SnapshotIsolation
+        Specifies whether snapshot isolation should be enabled for the database.
 #>
 function Set-TargetResource
 {
@@ -184,7 +189,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        $OwnerName
+        $OwnerName,
+
+        [Parameter()]
+        [System.Boolean]
+        $SnapshotIsolation
     )
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
@@ -278,6 +287,22 @@ function Set-TargetResource
                     $wasUpdate = $true
                 }
 
+                if ($PSBoundParameters.ContainsKey('SnapshotIsolation'))
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.UpdatingSnapshotIsolation -f $SnapshotIsolation
+                    )
+
+                    if ($SnapshotIsolation)
+                    {
+                        Enable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $sqlDatabaseObject -Force -ErrorAction 'Stop'
+                    }
+                    else
+                    {
+                        Disable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $sqlDatabaseObject -Force -ErrorAction 'Stop'
+                    }
+                }
+
                 try
                 {
                     if ($wasUpdate)
@@ -329,6 +354,17 @@ function Set-TargetResource
                         if ($PSBoundParameters.ContainsKey('OwnerName'))
                         {
                             $sqlDatabaseObjectToCreate.SetOwner($OwnerName)
+                        }
+
+                        <#
+                            This must be run after the object is created because
+                            snapshot isolation can only be set on an existing database.
+                            Snapshot isolation is disabled by default, so we only need
+                            to enable it if explicitly requested.
+                        #>
+                        if ($PSBoundParameters.ContainsKey('SnapshotIsolation') -and $SnapshotIsolation)
+                        {
+                            Enable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $sqlDatabaseObjectToCreate -Force -ErrorAction 'Stop'
                         }
                     }
                 }
@@ -397,6 +433,9 @@ function Set-TargetResource
 
     .PARAMETER OwnerName
         Specifies the name of the login that should be the owner of the database.
+
+    .PARAMETER SnapshotIsolation
+        Specifies whether snapshot isolation should be enabled for the database.
 #>
 function Test-TargetResource
 {
@@ -443,7 +482,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        $OwnerName
+        $OwnerName,
+
+        [Parameter()]
+        [System.Boolean]
+        $SnapshotIsolation
     )
 
     Write-Verbose -Message (
@@ -517,6 +560,15 @@ function Test-TargetResource
                 {
                     Write-Verbose -Message (
                         $script:localizedData.OwnerNameWrong -f $Name, $getTargetResourceResult.OwnerName, $OwnerName
+                    )
+
+                    $isDatabaseInDesiredState = $false
+                }
+
+                if ($PSBoundParameters.ContainsKey('SnapshotIsolation') -and $getTargetResourceResult.SnapshotIsolation -ne $SnapshotIsolation)
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.SnapshotIsolationWrong -f $Name, $getTargetResourceResult.SnapshotIsolation, $SnapshotIsolation
                     )
 
                     $isDatabaseInDesiredState = $false

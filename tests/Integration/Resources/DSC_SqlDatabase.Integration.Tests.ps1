@@ -329,6 +329,60 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
     }
 
     Context ('When using configuration <_>') -ForEach @(
+        "$($script:dscResourceName)_AddDatabase6_Config"
+    ) {
+        BeforeAll {
+            $configurationName = $_
+        }
+
+        AfterEach {
+            Wait-ForIdleLcm
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            $configurationParameters = @{
+                OutputPath           = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData    = $ConfigurationData
+            }
+
+            $null = & $configurationName @configurationParameters
+
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
+
+            $null = Start-DscConfiguration @startDscConfigurationParameters
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
+        }
+
+        It 'Should have set the resource and all the parameters should match' {
+            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                $_.ConfigurationName -eq $configurationName `
+                -and $_.ResourceId -eq $resourceId
+            }
+
+            $resourceCurrentState.Ensure | Should -Be 'Present'
+            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DatabaseName6
+            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName  | Should -Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.SnapshotIsolation | Should -Be $ConfigurationData.AllNodes.SnapshotIsolation
+        }
+
+        It 'Should return $true when Test-DscConfiguration is run' {
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+        }
+    }
+
+    Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_RemoveDatabase2_Config"
     ) {
         BeforeAll {
@@ -378,6 +432,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.OwnerName | Should -BeNullOrEmpty
             $resourceCurrentState.RecoveryModel | Should -BeNullOrEmpty
             $resourceCurrentState.CompatibilityLevel | Should -BeNullOrEmpty
+            $resourceCurrentState.SnapshotIsolation | Should -BeNullOrEmpty
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
