@@ -36,6 +36,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   isolation for a database in a SQL Server Database Engine instance. This command
   uses the SMO `SetSnapshotIsolation()` method to disable row-versioning and snapshot
   isolation settings ([issue #2329](https://github.com/dsccommunity/SqlServerDsc/issues/2329)).
+- Added public command `Set-SqlDscDatabaseDefaultFullTextCatalog` to set the default
+  full-text catalog for a database in a SQL Server Database Engine instance. This
+  command uses the SMO `SetDefaultFullTextCatalog()` method to configure the default
+  catalog ([issue #2330](https://github.com/dsccommunity/SqlServerDsc/issues/2330)).
 - Added public command `New-SqlDscDatabaseSnapshot` to create database snapshots
   in a SQL Server Database Engine instance using SMO. This command provides an
   automated and DSC-friendly approach to snapshot management by leveraging
