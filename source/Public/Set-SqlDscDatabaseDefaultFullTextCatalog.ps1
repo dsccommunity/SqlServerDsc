@@ -177,10 +177,9 @@ function Set-SqlDscDatabaseDefaultFullTextCatalog
             }
 
             <#
-                Refresh the database object even if no change was made to ensure
-                the object is up to date when:
+                Refresh the database object if:
                 - PassThru is specified (user wants the updated object back)
-                - Using DatabaseObject parameter set (user's object reference should be updated)
+                - DefaultFullTextCatalog is different than the requested catalog
             #>
             if ($PassThru.IsPresent -and $sqlDatabaseObject.DefaultFullTextCatalog -ne $CatalogName)
             {
