@@ -157,6 +157,7 @@ function Set-SqlDscDatabaseDefaultFullTextCatalog
                 try
                 {
                     $sqlDatabaseObject.SetDefaultFullTextCatalog($CatalogName)
+                    $sqlDatabaseObject.Alter()
                 }
                 catch
                 {
@@ -176,13 +177,12 @@ function Set-SqlDscDatabaseDefaultFullTextCatalog
             }
 
             <#
-                Refresh the database object to get the updated DefaultFullTextCatalog property if:
+                Refresh the database object even if no change was made to ensure
+                the object is up to date when:
                 - PassThru is specified (user wants the updated object back)
                 - Using DatabaseObject parameter set (user's object reference should be updated)
-
-                Refresh even if no change was made to ensure the object is up to date.
             #>
-            if ($PassThru.IsPresent -or $PSCmdlet.ParameterSetName -eq 'DatabaseObjectSet')
+            if ($PassThru.IsPresent -and $sqlDatabaseObject.DefaultFullTextCatalog -ne $CatalogName)
             {
                 $sqlDatabaseObject.Refresh()
             }
