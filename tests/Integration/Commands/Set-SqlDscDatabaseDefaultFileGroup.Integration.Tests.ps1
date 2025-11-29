@@ -80,7 +80,7 @@ ADD FILE (
     FILEGROWTH = 5MB
 ) TO FILEGROUP [SecondaryFileGroup]
 GO
-"@ -ErrorAction 'Stop'
+"@ -Force -ErrorAction 'Stop'
 
         # Create second test database
         $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'master' -Query @"
@@ -102,7 +102,7 @@ ADD FILE (
     FILEGROWTH = 5MB
 ) TO FILEGROUP [ObjectTestFileGroup]
 GO
-"@ -ErrorAction 'Stop'
+"@ -Force -ErrorAction 'Stop'
 
         # Create third test database for FILESTREAM testing (if FILESTREAM is enabled)
         try
@@ -123,7 +123,7 @@ ADD FILE (
     FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.DSCSQLTEST\MSSQL\DATA\FileStreamData1'
 ) TO FILEGROUP [FileStreamFileGroup]
 GO
-"@ -ErrorAction 'Stop'
+"@ -Force -ErrorAction 'Stop'
 
             $script:fileStreamSupported = $true
         }
