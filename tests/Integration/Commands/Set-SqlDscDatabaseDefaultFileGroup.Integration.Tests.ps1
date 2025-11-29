@@ -45,6 +45,16 @@ Describe 'Set-SqlDscDatabaseDefaultFileGroup' -Tag @('Integration_SQL2017', 'Int
         $script:testDatabaseNameForObject = 'SqlDscTestSetDefaultFGObj_' + (Get-Random)
         $script:testDatabaseNameForFileStream = 'SqlDscTestSetDefaultFSFG_' + (Get-Random)
 
+        # Get the default data path dynamically
+        $script:dataPath = $script:serverObject.Settings.DefaultFile
+
+        if (-not $script:dataPath)
+        {
+            $script:dataPath = $script:serverObject.Information.MasterDBPath
+        }
+
+        $script:dataPath = $script:dataPath.TrimEnd('\')
+
         # Create test databases with filegroups
         $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'master' -Query @"
 CREATE DATABASE [$($script:testDatabaseName)]
@@ -59,7 +69,7 @@ GO
 ALTER DATABASE [$($script:testDatabaseName)]
 ADD FILE (
     NAME = N'UserData1',
-    FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.DSCSQLTEST\MSSQL\DATA\UserData1.ndf',
+    FILENAME = N'$($script:dataPath)\UserData1.ndf',
     SIZE = 5MB,
     MAXSIZE = UNLIMITED,
     FILEGROWTH = 5MB
@@ -73,7 +83,7 @@ GO
 ALTER DATABASE [$($script:testDatabaseName)]
 ADD FILE (
     NAME = N'SecondaryData1',
-    FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.DSCSQLTEST\MSSQL\DATA\SecondaryData1.ndf',
+    FILENAME = N'$($script:dataPath)\SecondaryData1.ndf',
     SIZE = 5MB,
     MAXSIZE = UNLIMITED,
     FILEGROWTH = 5MB
@@ -95,7 +105,7 @@ GO
 ALTER DATABASE [$($script:testDatabaseNameForObject)]
 ADD FILE (
     NAME = N'ObjectTest1',
-    FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.DSCSQLTEST\MSSQL\DATA\ObjectTest1.ndf',
+    FILENAME = N'$($script:dataPath)\ObjectTest1.ndf',
     SIZE = 5MB,
     MAXSIZE = UNLIMITED,
     FILEGROWTH = 5MB
@@ -119,7 +129,7 @@ GO
 ALTER DATABASE [$($script:testDatabaseNameForFileStream)]
 ADD FILE (
     NAME = N'FileStreamData1',
-    FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.DSCSQLTEST\MSSQL\DATA\FileStreamData1'
+    FILENAME = N'$($script:dataPath)\FileStreamData1'
 ) TO FILEGROUP [FileStreamFileGroup]
 GO
 "@ -Force -ErrorAction 'Stop'
