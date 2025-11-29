@@ -2828,9 +2828,7 @@ Describe 'SqlDatabaseObjectPermission\Assert-PermissionEnsureProperty' -Tag 'Hel
                     } `
                     -ClientOnly
 
-                $mockErrorMessage = InModuleScope -ScriptBlock {
-                    $script:localizedData.InvalidPermissionValue
-                }
+                $mockErrorMessage = $script:localizedData.InvalidPermissionValue
 
                 { Assert-PermissionEnsureProperty -Permission $mockPermission } |
                     Should -Throw -ExpectedMessage '*Delete,Insert,Select*'
