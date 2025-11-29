@@ -14,9 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed parameter `OwnerName` [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
     Use the new command `Set-SqlDscDatabaseOwner` to change database ownership instead.
 - BREAKING CHANGE: `Set-SqlDscDatabaseProperty`
-  - Removed parameters `AzureEdition` and `AzureServiceObjective`. Azure SQL Database
-    service tier and SLO changes should be managed using `Set-AzSqlDatabase` from the
-    Azure PowerShell module instead. See [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
+  - Removed parameters `AzureEdition` and `AzureServiceObjective`. Azure SQL
+    Database service tier and SLO changes should be managed using
+    `Set-AzSqlDatabase` from the Azure PowerShell module instead. See
+    [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
   - Removed parameter `DatabaseSnapshotBaseName`. Database snapshots should be
     created using the `New-SqlDscDatabaseSnapshot`, or the `New-SqlDscDatabase`
     command with the `-DatabaseSnapshotBaseName` parameter.
@@ -49,6 +50,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   added to a Database later using `Add-SqlDscFileGroup`.
 - Added public command `New-SqlDscDataFile` to create DataFile objects for SQL
   Server FileGroups. This command simplifies creating DataFile objects with
+- Added public command `Set-SqlDscDatabaseDefaultFileGroup` to set the default
+  filegroup or default FILESTREAM filegroup for a database in a SQL Server Database
+  Engine instance. This command uses the SMO `SetDefaultFileGroup()` or
+  `SetDefaultFileStreamFileGroup()` methods to change the default filegroup settings
+  ([issue #2328](https://github.com/dsccommunity/SqlServerDsc/issues/2328)).
   specified physical file paths, supporting both regular database files (.mdf, .ndf)
   and sparse files for database snapshots (.ss). The `FileGroup` parameter is
   mandatory, requiring DataFile objects to be created with an associated FileGroup.
