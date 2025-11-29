@@ -908,6 +908,14 @@ function Assert-PermissionEnsureProperty
 
     foreach ($desiredPermission in $Permission)
     {
+        # Validate that Permission only contains a single permission name.
+        if ($desiredPermission.Permission -notmatch '^\w+$')
+        {
+            $errorMessage = $script:localizedData.InvalidPermissionValue -f $desiredPermission.Permission
+
+            New-ArgumentException -ArgumentName 'Permission' -Message $errorMessage
+        }
+
         if (-not $desiredPermission.Ensure)
         {
             $desiredPermission.Ensure = 'Present'
