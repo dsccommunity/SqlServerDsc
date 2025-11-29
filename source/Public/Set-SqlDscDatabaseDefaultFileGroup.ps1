@@ -64,6 +64,13 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $databaseObject = $serverObject | Get-SqlDscDatabase -Name 'MyDatabase'
+        Set-SqlDscDatabaseDefaultFileGroup -DatabaseObject $databaseObject -DefaultFileStreamFileGroup 'FileStreamData'
+
+        Sets the default FILESTREAM filegroup of the database using a database object.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         Set-SqlDscDatabaseDefaultFileGroup -ServerObject $serverObject -Name 'MyDatabase' -DefaultFileGroup 'UserData' -PassThru
 
         Sets the default filegroup and returns the updated database object.
@@ -74,9 +81,14 @@
         The database object to modify (from Get-SqlDscDatabase).
 
     .OUTPUTS
-        None.
+        None
 
-        When PassThru is specified the output is [Microsoft.SqlServer.Management.Smo.Database].
+        No output is returned by default.
+
+    .OUTPUTS
+        Microsoft.SqlServer.Management.Smo.Database
+
+        Returns the database object when PassThru is specified.
 #>
 function Set-SqlDscDatabaseDefaultFileGroup
 {
@@ -257,7 +269,7 @@ function Set-SqlDscDatabaseDefaultFileGroup
 
             if ($PassThru.IsPresent)
             {
-                return $sqlDatabaseObject
+                $sqlDatabaseObject
             }
         }
     }

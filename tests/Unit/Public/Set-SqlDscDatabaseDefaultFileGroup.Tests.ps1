@@ -58,6 +58,37 @@ AfterAll {
 }
 
 Describe 'Set-SqlDscDatabaseDefaultFileGroup' -Tag 'Public' {
+    Context 'When validating parameter sets' {
+        It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
+            @{
+                ExpectedParameterSetName = 'ServerObjectSet'
+                ExpectedParameters = '-ServerObject <Server> -Name <string> -DefaultFileGroup <string> [-Refresh] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            }
+            @{
+                ExpectedParameterSetName = 'ServerObjectSetFileStream'
+                ExpectedParameters = '-ServerObject <Server> -Name <string> -DefaultFileStreamFileGroup <string> [-Refresh] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            }
+            @{
+                ExpectedParameterSetName = 'DatabaseObjectSet'
+                ExpectedParameters = '-DatabaseObject <Database> -DefaultFileGroup <string> [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            }
+            @{
+                ExpectedParameterSetName = 'DatabaseObjectSetFileStream'
+                ExpectedParameters = '-DatabaseObject <Database> -DefaultFileStreamFileGroup <string> [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            }
+        ) {
+            $result = (Get-Command -Name 'Set-SqlDscDatabaseDefaultFileGroup').ParameterSets |
+                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
+                Select-Object -Property @(
+                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
+                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
+                )
+
+            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should -Be $ExpectedParameters
+        }
+    }
+
     Context 'When setting default filegroup using ServerObject and Name' {
         BeforeAll {
             $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
