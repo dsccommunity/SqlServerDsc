@@ -128,7 +128,7 @@ function Set-SqlDscDatabaseDefaultFullTextCatalog
                 $ErrorActionPreference = 'Stop'
 
                 $sqlDatabaseObject = $ServerObject |
-                    Get-SqlDscDatabase -Name $Name -Refresh:$Refresh -ErrorAction 'Stop'
+                    Get-SqlDscDatabase -Name $Name -Refresh:($Refresh.IsPresent) -ErrorAction 'Stop'
 
                 $ErrorActionPreference = $previousErrorActionPreference
             }

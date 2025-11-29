@@ -78,7 +78,7 @@ Describe 'Set-SqlDscDatabaseDefaultFullTextCatalog' -Tag @('Integration_SQL2017'
 
     Context 'When setting default full-text catalog using ServerObject parameter set' {
         It 'Should set default catalog successfully' {
-            $resultDb = Set-SqlDscDatabaseDefaultFullTextCatalog -ServerObject $script:serverObject -Name $script:testDatabaseName -CatalogName $script:testCatalogName1 -Force -PassThru -ErrorAction 'Stop'
+            $resultDb = Set-SqlDscDatabaseDefaultFullTextCatalog -ServerObject $script:serverObject -Name $script:testDatabaseName -CatalogName $script:testCatalogName1 -Force -Refresh -PassThru -ErrorAction 'Stop'
             $resultDb.DefaultFullTextCatalog | Should -Be $script:testCatalogName1
 
             # Verify the change
