@@ -176,6 +176,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `SqlDatabaseObjectPermission`
+  - Added validation to ensure each `DSC_DatabaseObjectPermission` instance
+    only contains a single permission name. Specifying multiple permissions
+    as a comma-separated string now throws a descriptive error
+    ([issue #2345](https://github.com/dsccommunity/SqlServerDsc/issues/2345)).
 - `Get-SqlDscRSSetupConfiguration`
   - Fixed issue where the function doesn't provide an output for SSRS 2016 instances
     because registry paths were using `InstanceName` instead of `InstanceId`.

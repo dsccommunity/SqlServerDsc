@@ -12,4 +12,5 @@ ConvertFrom-StringData @'
     PermissionStateInDesiredState = The permission state '{0}' is already in desired state for database object '{1}'. (SDOP0010)
     RevokePermissionWithGrant = One or more of the permissions was granted with the 'With Grant' permission for the user '{1}' on the database object '{2}' of type '{3}' in the database '{4}'. For the permissions ('{0}') the 'With Grant' permission is revoked, and the revoke is cascaded. (SDOP0011)
     GrantCantBeSetBecauseRevokeIsNotOptedIn = One or more of the permissions was granted with the 'With Grant' permission for the user '{1}' on the database object '{2}' of type '{3}' in the database '{4}'. For the permissions ('{0}') the 'With Grant' permission must be revoked, and the revoke must be cascaded, to enforce the desired state. If this desired state should be enforced then set the parameter Force to $true.
+    InvalidPermissionValue = The permission value '{0}' is invalid. Each DSC_DatabaseObjectPermission instance can only contain a single permission name. Specify each permission in a separate DSC_DatabaseObjectPermission instance. (SDOP0012)
 '@
