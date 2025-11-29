@@ -161,19 +161,19 @@ function Set-SqlDscDatabaseDefaultFileGroup
         # Determine which filegroup type to set
         if ($PSBoundParameters.ContainsKey('DefaultFileGroup'))
         {
-            $fileGroupType = 'DefaultFileGroup'
             $fileGroupName = $DefaultFileGroup
             $currentFileGroup = $sqlDatabaseObject.DefaultFileGroup
+            $verboseDescriptionMessage = $script:localizedData.DatabaseDefaultFileGroup_Set_ShouldProcessVerboseDescription_DefaultFileGroup -f $sqlDatabaseObject.Name, $fileGroupName, $sqlDatabaseObject.Parent.InstanceName
+            $verboseWarningMessage = $script:localizedData.DatabaseDefaultFileGroup_Set_ShouldProcessVerboseWarning_DefaultFileGroup -f $sqlDatabaseObject.Name, $fileGroupName
         }
         else
         {
-            $fileGroupType = 'DefaultFileStreamFileGroup'
             $fileGroupName = $DefaultFileStreamFileGroup
             $currentFileGroup = $sqlDatabaseObject.DefaultFileStreamFileGroup
+            $verboseDescriptionMessage = $script:localizedData.DatabaseDefaultFileGroup_Set_ShouldProcessVerboseDescription_DefaultFileStreamFileGroup -f $sqlDatabaseObject.Name, $fileGroupName, $sqlDatabaseObject.Parent.InstanceName
+            $verboseWarningMessage = $script:localizedData.DatabaseDefaultFileGroup_Set_ShouldProcessVerboseWarning_DefaultFileStreamFileGroup -f $sqlDatabaseObject.Name, $fileGroupName
         }
 
-        $verboseDescriptionMessage = $script:localizedData."DatabaseDefaultFileGroup_Set_ShouldProcessVerboseDescription_$fileGroupType" -f $sqlDatabaseObject.Name, $fileGroupName, $sqlDatabaseObject.Parent.InstanceName
-        $verboseWarningMessage = $script:localizedData."DatabaseDefaultFileGroup_Set_ShouldProcessVerboseWarning_$fileGroupType" -f $sqlDatabaseObject.Name, $fileGroupName
         $captionMessage = $script:localizedData.DatabaseDefaultFileGroup_Set_ShouldProcessCaption
 
         if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
@@ -181,15 +181,29 @@ function Set-SqlDscDatabaseDefaultFileGroup
             # Check if the default filegroup is already correct (idempotence)
             if ($currentFileGroup -eq $fileGroupName)
             {
-                Write-Debug -Message ($script:localizedData."DatabaseDefaultFileGroup_AlreadyCorrect_$fileGroupType" -f $sqlDatabaseObject.Name, $fileGroupName)
+                if ($PSBoundParameters.ContainsKey('DefaultFileGroup'))
+                {
+                    Write-Debug -Message ($script:localizedData.DatabaseDefaultFileGroup_AlreadyCorrect_DefaultFileGroup -f $sqlDatabaseObject.Name, $fileGroupName)
+                }
+                else
+                {
+                    Write-Debug -Message ($script:localizedData.DatabaseDefaultFileGroup_AlreadyCorrect_DefaultFileStreamFileGroup -f $sqlDatabaseObject.Name, $fileGroupName)
+                }
             }
             else
             {
-                Write-Debug -Message ($script:localizedData."DatabaseDefaultFileGroup_Updating_$fileGroupType" -f $sqlDatabaseObject.Name, $fileGroupName)
+                if ($PSBoundParameters.ContainsKey('DefaultFileGroup'))
+                {
+                    Write-Debug -Message ($script:localizedData.DatabaseDefaultFileGroup_Updating_DefaultFileGroup -f $sqlDatabaseObject.Name, $fileGroupName)
+                }
+                else
+                {
+                    Write-Debug -Message ($script:localizedData.DatabaseDefaultFileGroup_Updating_DefaultFileStreamFileGroup -f $sqlDatabaseObject.Name, $fileGroupName)
+                }
 
                 try
                 {
-                    if ($fileGroupType -eq 'DefaultFileGroup')
+                    if ($PSBoundParameters.ContainsKey('DefaultFileGroup'))
                     {
                         $sqlDatabaseObject.SetDefaultFileGroup($fileGroupName)
                     }
@@ -200,7 +214,14 @@ function Set-SqlDscDatabaseDefaultFileGroup
                 }
                 catch
                 {
-                    $errorMessage = $script:localizedData."DatabaseDefaultFileGroup_SetFailed_$fileGroupType" -f $sqlDatabaseObject.Name, $fileGroupName
+                    if ($PSBoundParameters.ContainsKey('DefaultFileGroup'))
+                    {
+                        $errorMessage = $script:localizedData.DatabaseDefaultFileGroup_SetFailed_DefaultFileGroup -f $sqlDatabaseObject.Name, $fileGroupName
+                    }
+                    else
+                    {
+                        $errorMessage = $script:localizedData.DatabaseDefaultFileGroup_SetFailed_DefaultFileStreamFileGroup -f $sqlDatabaseObject.Name, $fileGroupName
+                    }
 
                     $PSCmdlet.ThrowTerminatingError(
                         [System.Management.Automation.ErrorRecord]::new(
@@ -212,7 +233,14 @@ function Set-SqlDscDatabaseDefaultFileGroup
                     )
                 }
 
-                Write-Debug -Message ($script:localizedData."DatabaseDefaultFileGroup_Updated_$fileGroupType" -f $sqlDatabaseObject.Name, $fileGroupName)
+                if ($PSBoundParameters.ContainsKey('DefaultFileGroup'))
+                {
+                    Write-Debug -Message ($script:localizedData.DatabaseDefaultFileGroup_Updated_DefaultFileGroup -f $sqlDatabaseObject.Name, $fileGroupName)
+                }
+                else
+                {
+                    Write-Debug -Message ($script:localizedData.DatabaseDefaultFileGroup_Updated_DefaultFileStreamFileGroup -f $sqlDatabaseObject.Name, $fileGroupName)
+                }
             }
 
             <#
