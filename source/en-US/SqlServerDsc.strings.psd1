@@ -422,6 +422,16 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     DatabaseOwner_Set_ShouldProcessCaption = Set database owner on instance
 
+    ## Set-SqlDscDatabaseDefaultFullTextCatalog
+    DatabaseDefaultFullTextCatalog_Updating = Setting default full-text catalog of database '{0}' to '{1}'. (SSDDF0001)
+    DatabaseDefaultFullTextCatalog_Updated = Default full-text catalog of database '{0}' was set to '{1}'. (SSDDF0002)
+    DatabaseDefaultFullTextCatalog_AlreadyCorrect = Default full-text catalog of database '{0}' is already set to '{1}'. (SSDDF0003)
+    DatabaseDefaultFullTextCatalog_SetFailed = Failed to set default full-text catalog of database '{0}' to '{1}'. (SSDDF0004)
+    DatabaseDefaultFullTextCatalog_Set_ShouldProcessVerboseDescription = Setting the default full-text catalog of the database '{0}' to '{1}' on the instance '{2}'.
+    DatabaseDefaultFullTextCatalog_Set_ShouldProcessVerboseWarning = Are you sure you want to change the default full-text catalog of the database '{0}' to '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    DatabaseDefaultFullTextCatalog_Set_ShouldProcessCaption = Set database default full-text catalog on instance
+
     ## Enable-SqlDscDatabaseSnapshotIsolation
     DatabaseSnapshotIsolation_Enabling = Enabling snapshot isolation for database '{0}'. (ESDSI0002)
     DatabaseSnapshotIsolation_Enabled = Snapshot isolation for database '{0}' was enabled. (ESDSI0003)

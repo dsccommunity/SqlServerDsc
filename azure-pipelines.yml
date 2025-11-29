@@ -344,6 +344,7 @@ stages:
                   'tests/Integration/Commands/Get-SqlDscCompatibilityLevel.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscDatabaseProperty.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscDatabaseOwner.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscDatabaseDefaultFullTextCatalog.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscIsDatabase.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscDatabaseProperty.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscDatabasePermission.Integration.Tests.ps1'
