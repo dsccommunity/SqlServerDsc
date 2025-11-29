@@ -29,7 +29,10 @@ block. Specifying multiple permissions as a comma-separated string (e.g.,
 `'DELETE,INSERT,SELECT'`) will cause an error similar to:
 
 ```text
-Cannot bind argument to parameter 'ReferenceObject' because it is null.
+The permission value 'DELETE,INSERT,SELECT' is invalid. Each
+DSC_DatabaseObjectPermission instance can only contain a single permission
+name. Specify each permission in a separate DSC_DatabaseObjectPermission
+instance.
 ```
 
 **Incorrect usage:**

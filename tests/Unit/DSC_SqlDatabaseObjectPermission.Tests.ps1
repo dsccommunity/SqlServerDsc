@@ -2791,3 +2791,66 @@ Describe 'SqlDatabaseObjectPermission\Get-DatabaseObject' -Tag 'Helper' {
         }
     }
 }
+
+Describe 'SqlDatabaseObjectPermission\Assert-PermissionEnsureProperty' -Tag 'Helper' {
+    Context 'When permission value is valid' {
+        It 'Should not throw an error for a single permission name' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockPermission = New-CimInstance `
+                    -ClassName 'DSC_DatabaseObjectPermission' `
+                    -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
+                    -Property @{
+                        State      = 'Grant'
+                        Permission = 'Select'
+                    } `
+                    -ClientOnly
+
+                { Assert-PermissionEnsureProperty -Permission $mockPermission } | Should -Not -Throw
+            }
+        }
+    }
+
+    Context 'When permission value is invalid' {
+        It 'Should throw an error for comma-separated permissions' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockPermission = New-CimInstance `
+                    -ClassName 'DSC_DatabaseObjectPermission' `
+                    -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
+                    -Property @{
+                        State      = 'Grant'
+                        Permission = 'Delete,Insert,Select'
+                    } `
+                    -ClientOnly
+
+                $mockErrorMessage = InModuleScope -ScriptBlock {
+                    $script:localizedData.InvalidPermissionValue
+                }
+
+                { Assert-PermissionEnsureProperty -Permission $mockPermission } |
+                    Should -Throw -ExpectedMessage '*Delete,Insert,Select*'
+            }
+        }
+
+        It 'Should throw an error for permissions with spaces' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockPermission = New-CimInstance `
+                    -ClassName 'DSC_DatabaseObjectPermission' `
+                    -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
+                    -Property @{
+                        State      = 'Grant'
+                        Permission = 'Delete Insert'
+                    } `
+                    -ClientOnly
+
+                { Assert-PermissionEnsureProperty -Permission $mockPermission } |
+                    Should -Throw -ExpectedMessage '*Delete Insert*'
+            }
+        }
+    }
+}

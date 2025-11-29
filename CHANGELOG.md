@@ -177,9 +177,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `SqlDatabaseObjectPermission`
-  - Added documentation clarifying that each `DSC_DatabaseObjectPermission`
-    instance can only contain a single permission name. Specifying multiple
-    permissions as a comma-separated string causes an error
+  - Added validation to ensure each `DSC_DatabaseObjectPermission` instance
+    only contains a single permission name. Specifying multiple permissions
+    as a comma-separated string now throws a descriptive error
     ([issue #2020](https://github.com/dsccommunity/SqlServerDsc/issues/2020)).
 - `Get-SqlDscRSSetupConfiguration`
   - Fixed issue where the function doesn't provide an output for SSRS 2016 instances
