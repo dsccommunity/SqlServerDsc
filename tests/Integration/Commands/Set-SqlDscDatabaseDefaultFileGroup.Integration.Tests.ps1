@@ -47,7 +47,7 @@ Describe 'Set-SqlDscDatabaseDefaultFileGroup' -Tag @('Integration_SQL2017', 'Int
         $script:testDatabaseNameForFileStream = 'SqlDscTestSetDefaultFSFG_' + (Get-Random)
 
         # Create test databases with filegroups
-        $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -Database 'master' -Query @"
+        $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'master' -Query @"
 CREATE DATABASE [$($script:testDatabaseName)]
 GO
 USE [$($script:testDatabaseName)]
@@ -83,7 +83,7 @@ GO
 "@ -ErrorAction 'Stop'
 
         # Create second test database
-        $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -Database 'master' -Query @"
+        $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'master' -Query @"
 CREATE DATABASE [$($script:testDatabaseNameForObject)]
 GO
 USE [$($script:testDatabaseNameForObject)]
@@ -107,7 +107,7 @@ GO
         # Create third test database for FILESTREAM testing (if FILESTREAM is enabled)
         try
         {
-            $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -Database 'master' -Query @"
+            $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'master' -Query @"
 CREATE DATABASE [$($script:testDatabaseNameForFileStream)]
 GO
 USE [$($script:testDatabaseNameForFileStream)]
