@@ -2804,6 +2804,7 @@ Describe 'SqlDatabaseObjectPermission\Assert-PermissionEnsureProperty' -Tag 'Hel
                     -Property @{
                         State      = 'Grant'
                         Permission = 'Select'
+                        Ensure     = ''
                     } `
                     -ClientOnly
 
@@ -2823,6 +2824,7 @@ Describe 'SqlDatabaseObjectPermission\Assert-PermissionEnsureProperty' -Tag 'Hel
                     -Property @{
                         State      = 'Grant'
                         Permission = 'Delete,Insert,Select'
+                        Ensure     = ''
                     } `
                     -ClientOnly
 
@@ -2845,6 +2847,7 @@ Describe 'SqlDatabaseObjectPermission\Assert-PermissionEnsureProperty' -Tag 'Hel
                     -Property @{
                         State      = 'Grant'
                         Permission = 'Delete Insert'
+                        Ensure     = ''
                     } `
                     -ClientOnly
 
