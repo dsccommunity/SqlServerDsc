@@ -89,6 +89,118 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             $createdDb.RecoveryModel | Should -Be 'Simple'
         }
 
+        It 'Should create a database with additional boolean properties set during creation' {
+            $testDbWithBoolProps = 'SqlDscTestDbBoolProps_' + (Get-Random)
+
+            try
+            {
+                $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithBoolProps -AutoClose $false -AutoShrink $false -ReadOnly $false -Force -ErrorAction 'Stop'
+
+                $result | Should -Not -BeNullOrEmpty
+                $result.Name | Should -Be $testDbWithBoolProps
+                $result.AutoClose | Should -BeFalse
+                $result.AutoShrink | Should -BeFalse
+                $result.ReadOnly | Should -BeFalse
+
+                # Verify the database exists with correct properties
+                $createdDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithBoolProps -ErrorAction 'Stop'
+                $createdDb.AutoClose | Should -BeFalse
+                $createdDb.AutoShrink | Should -BeFalse
+                $createdDb.ReadOnly | Should -BeFalse
+            }
+            finally
+            {
+                $dbToRemove = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithBoolProps -ErrorAction 'SilentlyContinue'
+                if ($dbToRemove)
+                {
+                    $null = Remove-SqlDscDatabase -DatabaseObject $dbToRemove -Force
+                }
+            }
+        }
+
+        It 'Should create a database with integer properties set during creation' {
+            $testDbWithIntProps = 'SqlDscTestDbIntProps_' + (Get-Random)
+
+            try
+            {
+                $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithIntProps -TargetRecoveryTime 60 -Force -ErrorAction 'Stop'
+
+                $result | Should -Not -BeNullOrEmpty
+                $result.Name | Should -Be $testDbWithIntProps
+                $result.TargetRecoveryTime | Should -Be 60
+
+                # Verify the database exists with correct properties
+                $createdDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithIntProps -ErrorAction 'Stop'
+                $createdDb.TargetRecoveryTime | Should -Be 60
+            }
+            finally
+            {
+                $dbToRemove = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithIntProps -ErrorAction 'SilentlyContinue'
+                if ($dbToRemove)
+                {
+                    $null = Remove-SqlDscDatabase -DatabaseObject $dbToRemove -Force
+                }
+            }
+        }
+
+        It 'Should create a database with enum properties set during creation' {
+            $testDbWithEnumProps = 'SqlDscTestDbEnumProps_' + (Get-Random)
+
+            try
+            {
+                $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithEnumProps -PageVerify 'Checksum' -UserAccess 'Multiple' -Force -ErrorAction 'Stop'
+
+                $result | Should -Not -BeNullOrEmpty
+                $result.Name | Should -Be $testDbWithEnumProps
+                $result.PageVerify | Should -Be 'Checksum'
+                $result.UserAccess | Should -Be 'Multiple'
+
+                # Verify the database exists with correct properties
+                $createdDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithEnumProps -ErrorAction 'Stop'
+                $createdDb.PageVerify | Should -Be 'Checksum'
+                $createdDb.UserAccess | Should -Be 'Multiple'
+            }
+            finally
+            {
+                $dbToRemove = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithEnumProps -ErrorAction 'SilentlyContinue'
+                if ($dbToRemove)
+                {
+                    $null = Remove-SqlDscDatabase -DatabaseObject $dbToRemove -Force
+                }
+            }
+        }
+
+        It 'Should create a database with multiple property types set during creation' {
+            $testDbWithMixedProps = 'SqlDscTestDbMixedProps_' + (Get-Random)
+
+            try
+            {
+                $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithMixedProps -RecoveryModel 'Simple' -AutoClose $false -TargetRecoveryTime 30 -PageVerify 'TornPageDetection' -Force -ErrorAction 'Stop'
+
+                $result | Should -Not -BeNullOrEmpty
+                $result.Name | Should -Be $testDbWithMixedProps
+                $result.RecoveryModel | Should -Be 'Simple'
+                $result.AutoClose | Should -BeFalse
+                $result.TargetRecoveryTime | Should -Be 30
+                $result.PageVerify | Should -Be 'TornPageDetection'
+
+                # Verify the database exists with correct properties
+                $createdDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithMixedProps -ErrorAction 'Stop'
+                $createdDb.RecoveryModel | Should -Be 'Simple'
+                $createdDb.AutoClose | Should -BeFalse
+                $createdDb.TargetRecoveryTime | Should -Be 30
+                $createdDb.PageVerify | Should -Be 'TornPageDetection'
+            }
+            finally
+            {
+                $dbToRemove = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithMixedProps -ErrorAction 'SilentlyContinue'
+                if ($dbToRemove)
+                {
+                    $null = Remove-SqlDscDatabase -DatabaseObject $dbToRemove -Force
+                }
+            }
+        }
+
         It 'Should throw error when trying to create a database that already exists' {
             { New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction 'Stop' } |
                 Should -Throw

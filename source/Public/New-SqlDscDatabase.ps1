@@ -40,6 +40,219 @@
         after the database is created. This parameter requires SQL Server 2022
         (version 16) or later, or Azure SQL Database.
 
+    .PARAMETER AcceleratedRecoveryEnabled
+        Specifies whether Accelerated Database Recovery (ADR) is enabled for the database.
+
+    .PARAMETER AnsiNullDefault
+        Specifies whether new columns allow NULL by default unless explicitly specified (when ON).
+
+    .PARAMETER AnsiNullsEnabled
+        Specifies whether comparisons to NULL follow ANSI SQL behavior (when ON, x = NULL yields UNKNOWN).
+
+    .PARAMETER AnsiPaddingEnabled
+        Specifies whether padding for variable-length columns (e.g., CHAR/VARCHAR) follows ANSI rules.
+
+    .PARAMETER AnsiWarningsEnabled
+        Specifies whether ANSI warnings are generated for certain conditions (when ON, e.g., divide by zero).
+
+    .PARAMETER ArithmeticAbortEnabled
+        Specifies whether a query is terminated when an overflow or divide-by-zero error occurs.
+
+    .PARAMETER AutoClose
+        Specifies whether the database closes after the last user exits.
+
+    .PARAMETER AutoCreateIncrementalStatisticsEnabled
+        Specifies whether creation of incremental statistics on partitioned tables is allowed.
+
+    .PARAMETER AutoCreateStatisticsEnabled
+        Specifies whether single-column statistics are automatically created for query optimization.
+
+    .PARAMETER AutoShrink
+        Specifies whether the database automatically shrinks files when free space is detected.
+
+    .PARAMETER AutoUpdateStatisticsAsync
+        Specifies whether statistics are updated asynchronously, allowing queries to proceed with old stats.
+
+    .PARAMETER AutoUpdateStatisticsEnabled
+        Specifies whether statistics are automatically updated when they are out-of-date.
+
+    .PARAMETER BrokerEnabled
+        Specifies whether Service Broker is enabled for the database.
+
+    .PARAMETER ChangeTrackingAutoCleanUp
+        Specifies whether automatic cleanup of change tracking information is enabled.
+
+    .PARAMETER ChangeTrackingEnabled
+        Specifies whether change tracking is enabled for the database.
+
+    .PARAMETER ChangeTrackingRetentionPeriod
+        Specifies the retention period value for change tracking information.
+
+    .PARAMETER ChangeTrackingRetentionPeriodUnits
+        Specifies the units for the retention period (e.g., DAYS, HOURS).
+
+    .PARAMETER CloseCursorsOnCommitEnabled
+        Specifies whether open cursors are closed when a transaction is committed.
+
+    .PARAMETER ConcatenateNullYieldsNull
+        Specifies whether concatenation with NULL results in NULL (when ON).
+
+    .PARAMETER ContainmentType
+        Specifies the containment level of the database (NONE or PARTIAL).
+
+    .PARAMETER DatabaseOwnershipChaining
+        Specifies whether ownership chaining across objects within the database is enabled.
+
+    .PARAMETER DataRetentionEnabled
+        Specifies whether SQL Server data retention policy is enabled at the database level.
+
+    .PARAMETER DateCorrelationOptimization
+        Specifies whether date correlation optimization is enabled to speed up temporal joins.
+
+    .PARAMETER DefaultFullTextLanguage
+        Specifies the LCID of the default full-text language.
+
+    .PARAMETER DefaultLanguage
+        Specifies the ID of the default language for the database.
+
+    .PARAMETER DelayedDurability
+        Specifies the delayed durability setting for the database (DISABLED, ALLOWED, FORCED).
+
+    .PARAMETER EncryptionEnabled
+        Specifies whether Transparent Data Encryption (TDE) is enabled.
+
+    .PARAMETER FilestreamDirectoryName
+        Specifies the directory name used for FILESTREAM data.
+
+    .PARAMETER FilestreamNonTransactedAccess
+        Specifies the FILESTREAM access level for non-transactional access.
+
+    .PARAMETER HonorBrokerPriority
+        Specifies whether honoring Service Broker conversation priority is enabled.
+
+    .PARAMETER IsFullTextEnabled
+        Specifies whether full-text search is enabled.
+
+    .PARAMETER IsParameterizationForced
+        Specifies whether forced parameterization is enabled for the database.
+
+    .PARAMETER IsReadCommittedSnapshotOn
+        Specifies whether READ_COMMITTED_SNAPSHOT isolation is ON.
+
+    .PARAMETER IsSqlDw
+        Specifies whether the database is a SQL Data Warehouse database.
+
+    .PARAMETER IsVarDecimalStorageFormatEnabled
+        Specifies whether vardecimal compression is enabled.
+
+    .PARAMETER LegacyCardinalityEstimation
+        Specifies whether the legacy cardinality estimator is enabled for the primary.
+
+    .PARAMETER LegacyCardinalityEstimationForSecondary
+        Specifies whether the legacy cardinality estimator is enabled for secondary replicas.
+
+    .PARAMETER LocalCursorsDefault
+        Specifies whether cursors are local by default instead of global (when ON).
+
+    .PARAMETER MaxDop
+        Specifies the MAXDOP database-scoped configuration for primary replicas.
+
+    .PARAMETER MaxDopForSecondary
+        Specifies the MAXDOP database-scoped configuration for secondary replicas.
+
+    .PARAMETER MaxSizeInBytes
+        Specifies the maximum size of the database in bytes.
+
+    .PARAMETER MirroringPartner
+        Specifies the mirroring partner server name (if configured).
+
+    .PARAMETER MirroringPartnerInstance
+        Specifies the mirroring partner instance name (if configured).
+
+    .PARAMETER MirroringRedoQueueMaxSize
+        Specifies the redo queue maximum size for mirroring/AGs.
+
+    .PARAMETER MirroringSafetyLevel
+        Specifies the mirroring safety level (FULL/Off/HighPerformance).
+
+    .PARAMETER MirroringTimeout
+        Specifies the timeout in seconds for mirroring sessions.
+
+    .PARAMETER MirroringWitness
+        Specifies the mirroring witness server (if used).
+
+    .PARAMETER NestedTriggersEnabled
+        Specifies whether triggers are allowed to fire other triggers (nested triggers).
+
+    .PARAMETER NumericRoundAbortEnabled
+        Specifies whether an error is raised on loss of precision due to rounding (when ON).
+
+    .PARAMETER PageVerify
+        Specifies the page verification setting (NONE, TORN_PAGE_DETECTION, CHECKSUM).
+
+    .PARAMETER ParameterSniffing
+        Specifies whether parameter sniffing behavior is enabled on the primary.
+
+    .PARAMETER ParameterSniffingForSecondary
+        Specifies whether parameter sniffing is enabled on secondary replicas.
+
+    .PARAMETER PersistentVersionStoreFileGroup
+        Specifies the filegroup used for the Persistent Version Store (PVS).
+
+    .PARAMETER PrimaryFilePath
+        Specifies the path of the primary data files directory.
+
+    .PARAMETER QueryOptimizerHotfixes
+        Specifies whether query optimizer hotfixes are enabled on the primary.
+
+    .PARAMETER QueryOptimizerHotfixesForSecondary
+        Specifies whether query optimizer hotfixes are enabled on secondary replicas.
+
+    .PARAMETER QuotedIdentifiersEnabled
+        Specifies whether identifiers can be delimited by double quotes (when ON).
+
+    .PARAMETER ReadOnly
+        Specifies whether the database is in read-only mode.
+
+    .PARAMETER RecursiveTriggersEnabled
+        Specifies whether a trigger is allowed to fire itself recursively.
+
+    .PARAMETER RemoteDataArchiveCredential
+        Specifies the credential name for Stretch Database/remote data archive.
+
+    .PARAMETER RemoteDataArchiveEnabled
+        Specifies whether Stretch Database (remote data archive) is enabled.
+
+    .PARAMETER RemoteDataArchiveEndpoint
+        Specifies the endpoint URL for remote data archive.
+
+    .PARAMETER RemoteDataArchiveLinkedServer
+        Specifies the linked server used by remote data archive.
+
+    .PARAMETER RemoteDataArchiveUseFederatedServiceAccount
+        Specifies whether to use federated service account for remote data archive.
+
+    .PARAMETER RemoteDatabaseName
+        Specifies the remote database name for remote data archive.
+
+    .PARAMETER TargetRecoveryTime
+        Specifies the target recovery time (seconds) for indirect checkpointing.
+
+    .PARAMETER TemporalHistoryRetentionEnabled
+        Specifies whether automatic cleanup of system-versioned temporal history is enabled.
+
+    .PARAMETER TransformNoiseWords
+        Specifies how full-text noise word behavior is controlled during queries.
+
+    .PARAMETER Trustworthy
+        Specifies whether implicit access to external resources by modules is allowed (use with caution).
+
+    .PARAMETER TwoDigitYearCutoff
+        Specifies the two-digit year cutoff used for date conversion.
+
+    .PARAMETER UserAccess
+        Specifies the database user access mode (MULTI_USER, RESTRICTED_USER, SINGLE_USER).
+
     .PARAMETER DatabaseSnapshotBaseName
         Specifies the name of the source database from which to create a snapshot.
         When this parameter is specified, a database snapshot will be created instead
@@ -148,6 +361,295 @@ function New-SqlDscDatabase
         [Parameter(ParameterSetName = 'Database')]
         [System.Boolean]
         $IsLedger,
+
+        # Boolean Properties
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $AcceleratedRecoveryEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $AnsiNullDefault,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $AnsiNullsEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $AnsiPaddingEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $AnsiWarningsEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $ArithmeticAbortEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $AutoClose,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $AutoCreateIncrementalStatisticsEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $AutoCreateStatisticsEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $AutoShrink,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $AutoUpdateStatisticsAsync,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $AutoUpdateStatisticsEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $BrokerEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $ChangeTrackingAutoCleanUp,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $ChangeTrackingEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $CloseCursorsOnCommitEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $ConcatenateNullYieldsNull,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $DatabaseOwnershipChaining,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $DataRetentionEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $DateCorrelationOptimization,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $EncryptionEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $HonorBrokerPriority,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $IsFullTextEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $IsParameterizationForced,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $IsReadCommittedSnapshotOn,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $IsSqlDw,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $IsVarDecimalStorageFormatEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $LegacyCardinalityEstimation,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $LegacyCardinalityEstimationForSecondary,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $LocalCursorsDefault,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $NestedTriggersEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $NumericRoundAbortEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $ParameterSniffing,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $ParameterSniffingForSecondary,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $QueryOptimizerHotfixes,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $QueryOptimizerHotfixesForSecondary,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $QuotedIdentifiersEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $ReadOnly,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $RecursiveTriggersEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $RemoteDataArchiveEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $RemoteDataArchiveUseFederatedServiceAccount,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $TemporalHistoryRetentionEnabled,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $TransformNoiseWords,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Boolean]
+        $Trustworthy,
+
+        # Integer Properties
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Int32]
+        $ChangeTrackingRetentionPeriod,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Int32]
+        $DefaultFullTextLanguage,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Int32]
+        $DefaultLanguage,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Int32]
+        $MaxDop,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Int32]
+        $MaxDopForSecondary,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Int32]
+        $MirroringRedoQueueMaxSize,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Int32]
+        $MirroringTimeout,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Int32]
+        $TargetRecoveryTime,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Int32]
+        $TwoDigitYearCutoff,
+
+        # Long Integer Properties
+        [Parameter(ParameterSetName = 'Database')]
+        [System.Double]
+        $MaxSizeInBytes,
+
+        # String Properties
+        [Parameter(ParameterSetName = 'Database')]
+        [System.String]
+        $FilestreamDirectoryName,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.String]
+        $MirroringPartner,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.String]
+        $MirroringPartnerInstance,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.String]
+        $MirroringWitness,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.String]
+        $PersistentVersionStoreFileGroup,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.String]
+        $PrimaryFilePath,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.String]
+        $RemoteDataArchiveCredential,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.String]
+        $RemoteDataArchiveEndpoint,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.String]
+        $RemoteDataArchiveLinkedServer,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [System.String]
+        $RemoteDatabaseName,
+
+        # Enum Properties
+        [Parameter(ParameterSetName = 'Database')]
+        [Microsoft.SqlServer.Management.Smo.RetentionPeriodUnits]
+        $ChangeTrackingRetentionPeriodUnits,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [Microsoft.SqlServer.Management.Smo.ContainmentType]
+        $ContainmentType,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [Microsoft.SqlServer.Management.Smo.DelayedDurability]
+        $DelayedDurability,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [Microsoft.SqlServer.Management.Smo.FilestreamNonTransactedAccessType]
+        $FilestreamNonTransactedAccess,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [Microsoft.SqlServer.Management.Smo.MirroringSafetyLevel]
+        $MirroringSafetyLevel,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [Microsoft.SqlServer.Management.Smo.PageVerify]
+        $PageVerify,
+
+        [Parameter(ParameterSetName = 'Database')]
+        [Microsoft.SqlServer.Management.Smo.DatabaseUserAccess]
+        $UserAccess,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'Snapshot')]
         [ValidateNotNullOrEmpty()]
@@ -345,6 +847,366 @@ function New-SqlDscDatabase
                     if ($PSBoundParameters.ContainsKey('IsLedger'))
                     {
                         $sqlDatabaseObjectToCreate.IsLedger = $IsLedger
+                    }
+
+                    # Boolean Properties
+                    if ($PSBoundParameters.ContainsKey('AcceleratedRecoveryEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.AcceleratedRecoveryEnabled = $AcceleratedRecoveryEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('AnsiNullDefault'))
+                    {
+                        $sqlDatabaseObjectToCreate.AnsiNullDefault = $AnsiNullDefault
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('AnsiNullsEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.AnsiNullsEnabled = $AnsiNullsEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('AnsiPaddingEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.AnsiPaddingEnabled = $AnsiPaddingEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('AnsiWarningsEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.AnsiWarningsEnabled = $AnsiWarningsEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('ArithmeticAbortEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.ArithmeticAbortEnabled = $ArithmeticAbortEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('AutoClose'))
+                    {
+                        $sqlDatabaseObjectToCreate.AutoClose = $AutoClose
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('AutoCreateIncrementalStatisticsEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.AutoCreateIncrementalStatisticsEnabled = $AutoCreateIncrementalStatisticsEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('AutoCreateStatisticsEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.AutoCreateStatisticsEnabled = $AutoCreateStatisticsEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('AutoShrink'))
+                    {
+                        $sqlDatabaseObjectToCreate.AutoShrink = $AutoShrink
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('AutoUpdateStatisticsAsync'))
+                    {
+                        $sqlDatabaseObjectToCreate.AutoUpdateStatisticsAsync = $AutoUpdateStatisticsAsync
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('AutoUpdateStatisticsEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.AutoUpdateStatisticsEnabled = $AutoUpdateStatisticsEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('BrokerEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.BrokerEnabled = $BrokerEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('ChangeTrackingAutoCleanUp'))
+                    {
+                        $sqlDatabaseObjectToCreate.ChangeTrackingAutoCleanUp = $ChangeTrackingAutoCleanUp
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('ChangeTrackingEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.ChangeTrackingEnabled = $ChangeTrackingEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('CloseCursorsOnCommitEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.CloseCursorsOnCommitEnabled = $CloseCursorsOnCommitEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('ConcatenateNullYieldsNull'))
+                    {
+                        $sqlDatabaseObjectToCreate.ConcatenateNullYieldsNull = $ConcatenateNullYieldsNull
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('DatabaseOwnershipChaining'))
+                    {
+                        $sqlDatabaseObjectToCreate.DatabaseOwnershipChaining = $DatabaseOwnershipChaining
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('DataRetentionEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.DataRetentionEnabled = $DataRetentionEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('DateCorrelationOptimization'))
+                    {
+                        $sqlDatabaseObjectToCreate.DateCorrelationOptimization = $DateCorrelationOptimization
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('EncryptionEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.EncryptionEnabled = $EncryptionEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('HonorBrokerPriority'))
+                    {
+                        $sqlDatabaseObjectToCreate.HonorBrokerPriority = $HonorBrokerPriority
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('IsFullTextEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.IsFullTextEnabled = $IsFullTextEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('IsParameterizationForced'))
+                    {
+                        $sqlDatabaseObjectToCreate.IsParameterizationForced = $IsParameterizationForced
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('IsReadCommittedSnapshotOn'))
+                    {
+                        $sqlDatabaseObjectToCreate.IsReadCommittedSnapshotOn = $IsReadCommittedSnapshotOn
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('IsSqlDw'))
+                    {
+                        $sqlDatabaseObjectToCreate.IsSqlDw = $IsSqlDw
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('IsVarDecimalStorageFormatEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.IsVarDecimalStorageFormatEnabled = $IsVarDecimalStorageFormatEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('LegacyCardinalityEstimation'))
+                    {
+                        $sqlDatabaseObjectToCreate.LegacyCardinalityEstimation = $LegacyCardinalityEstimation
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('LegacyCardinalityEstimationForSecondary'))
+                    {
+                        $sqlDatabaseObjectToCreate.LegacyCardinalityEstimationForSecondary = $LegacyCardinalityEstimationForSecondary
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('LocalCursorsDefault'))
+                    {
+                        $sqlDatabaseObjectToCreate.LocalCursorsDefault = $LocalCursorsDefault
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('NestedTriggersEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.NestedTriggersEnabled = $NestedTriggersEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('NumericRoundAbortEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.NumericRoundAbortEnabled = $NumericRoundAbortEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('ParameterSniffing'))
+                    {
+                        $sqlDatabaseObjectToCreate.ParameterSniffing = $ParameterSniffing
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('ParameterSniffingForSecondary'))
+                    {
+                        $sqlDatabaseObjectToCreate.ParameterSniffingForSecondary = $ParameterSniffingForSecondary
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('QueryOptimizerHotfixes'))
+                    {
+                        $sqlDatabaseObjectToCreate.QueryOptimizerHotfixes = $QueryOptimizerHotfixes
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('QueryOptimizerHotfixesForSecondary'))
+                    {
+                        $sqlDatabaseObjectToCreate.QueryOptimizerHotfixesForSecondary = $QueryOptimizerHotfixesForSecondary
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('QuotedIdentifiersEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.QuotedIdentifiersEnabled = $QuotedIdentifiersEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('ReadOnly'))
+                    {
+                        $sqlDatabaseObjectToCreate.ReadOnly = $ReadOnly
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('RecursiveTriggersEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.RecursiveTriggersEnabled = $RecursiveTriggersEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('RemoteDataArchiveEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.RemoteDataArchiveEnabled = $RemoteDataArchiveEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('RemoteDataArchiveUseFederatedServiceAccount'))
+                    {
+                        $sqlDatabaseObjectToCreate.RemoteDataArchiveUseFederatedServiceAccount = $RemoteDataArchiveUseFederatedServiceAccount
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('TemporalHistoryRetentionEnabled'))
+                    {
+                        $sqlDatabaseObjectToCreate.TemporalHistoryRetentionEnabled = $TemporalHistoryRetentionEnabled
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('TransformNoiseWords'))
+                    {
+                        $sqlDatabaseObjectToCreate.TransformNoiseWords = $TransformNoiseWords
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('Trustworthy'))
+                    {
+                        $sqlDatabaseObjectToCreate.Trustworthy = $Trustworthy
+                    }
+
+                    # Integer Properties
+                    if ($PSBoundParameters.ContainsKey('ChangeTrackingRetentionPeriod'))
+                    {
+                        $sqlDatabaseObjectToCreate.ChangeTrackingRetentionPeriod = $ChangeTrackingRetentionPeriod
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('DefaultFullTextLanguage'))
+                    {
+                        $sqlDatabaseObjectToCreate.DefaultFullTextLanguage = $DefaultFullTextLanguage
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('DefaultLanguage'))
+                    {
+                        $sqlDatabaseObjectToCreate.DefaultLanguage = $DefaultLanguage
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('MaxDop'))
+                    {
+                        $sqlDatabaseObjectToCreate.MaxDop = $MaxDop
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('MaxDopForSecondary'))
+                    {
+                        $sqlDatabaseObjectToCreate.MaxDopForSecondary = $MaxDopForSecondary
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('MirroringRedoQueueMaxSize'))
+                    {
+                        $sqlDatabaseObjectToCreate.MirroringRedoQueueMaxSize = $MirroringRedoQueueMaxSize
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('MirroringTimeout'))
+                    {
+                        $sqlDatabaseObjectToCreate.MirroringTimeout = $MirroringTimeout
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('TargetRecoveryTime'))
+                    {
+                        $sqlDatabaseObjectToCreate.TargetRecoveryTime = $TargetRecoveryTime
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('TwoDigitYearCutoff'))
+                    {
+                        $sqlDatabaseObjectToCreate.TwoDigitYearCutoff = $TwoDigitYearCutoff
+                    }
+
+                    # Long Integer Properties
+                    if ($PSBoundParameters.ContainsKey('MaxSizeInBytes'))
+                    {
+                        $sqlDatabaseObjectToCreate.MaxSizeInBytes = $MaxSizeInBytes
+                    }
+
+                    # String Properties
+                    if ($PSBoundParameters.ContainsKey('FilestreamDirectoryName'))
+                    {
+                        $sqlDatabaseObjectToCreate.FilestreamDirectoryName = $FilestreamDirectoryName
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('MirroringPartner'))
+                    {
+                        $sqlDatabaseObjectToCreate.MirroringPartner = $MirroringPartner
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('MirroringPartnerInstance'))
+                    {
+                        $sqlDatabaseObjectToCreate.MirroringPartnerInstance = $MirroringPartnerInstance
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('MirroringWitness'))
+                    {
+                        $sqlDatabaseObjectToCreate.MirroringWitness = $MirroringWitness
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('PersistentVersionStoreFileGroup'))
+                    {
+                        $sqlDatabaseObjectToCreate.PersistentVersionStoreFileGroup = $PersistentVersionStoreFileGroup
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('PrimaryFilePath'))
+                    {
+                        $sqlDatabaseObjectToCreate.PrimaryFilePath = $PrimaryFilePath
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('RemoteDataArchiveCredential'))
+                    {
+                        $sqlDatabaseObjectToCreate.RemoteDataArchiveCredential = $RemoteDataArchiveCredential
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('RemoteDataArchiveEndpoint'))
+                    {
+                        $sqlDatabaseObjectToCreate.RemoteDataArchiveEndpoint = $RemoteDataArchiveEndpoint
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('RemoteDataArchiveLinkedServer'))
+                    {
+                        $sqlDatabaseObjectToCreate.RemoteDataArchiveLinkedServer = $RemoteDataArchiveLinkedServer
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('RemoteDatabaseName'))
+                    {
+                        $sqlDatabaseObjectToCreate.RemoteDatabaseName = $RemoteDatabaseName
+                    }
+
+                    # Enum Properties
+                    if ($PSBoundParameters.ContainsKey('ChangeTrackingRetentionPeriodUnits'))
+                    {
+                        $sqlDatabaseObjectToCreate.ChangeTrackingRetentionPeriodUnits = $ChangeTrackingRetentionPeriodUnits
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('ContainmentType'))
+                    {
+                        $sqlDatabaseObjectToCreate.ContainmentType = $ContainmentType
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('DelayedDurability'))
+                    {
+                        $sqlDatabaseObjectToCreate.DelayedDurability = $DelayedDurability
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('FilestreamNonTransactedAccess'))
+                    {
+                        $sqlDatabaseObjectToCreate.FilestreamNonTransactedAccess = $FilestreamNonTransactedAccess
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('MirroringSafetyLevel'))
+                    {
+                        $sqlDatabaseObjectToCreate.MirroringSafetyLevel = $MirroringSafetyLevel
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('PageVerify'))
+                    {
+                        $sqlDatabaseObjectToCreate.PageVerify = $PageVerify
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('UserAccess'))
+                    {
+                        $sqlDatabaseObjectToCreate.UserAccess = $UserAccess
                     }
                 }
 
