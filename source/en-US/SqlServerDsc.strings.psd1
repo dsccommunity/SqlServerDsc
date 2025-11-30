@@ -384,8 +384,10 @@ ConvertFrom-StringData @'
     Database_AlreadyOffline = Database '{0}' is already offline.
     Database_TakingOffline = Taking database '{0}' offline.
     Database_TakingOfflineWithForce = Taking database '{0}' offline with force (disconnecting active users).
+    Database_KillingProcesses = Killing all processes for database '{0}'.
     Database_TakenOffline = Database '{0}' was taken offline successfully.
     Database_SuspendFailed = Failed to take database '{0}' offline.
+    Database_KillProcessesFailed = Failed to kill processes for database '{0}'.
 
     ## New-SqlDscDatabaseSnapshot
     DatabaseSnapshot_Create = Creating database snapshot '{0}' from source database '{1}' on instance '{2}'. (NSDS0002)

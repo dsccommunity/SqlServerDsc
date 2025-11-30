@@ -160,6 +160,27 @@ function Suspend-SqlDscDatabase
                 if ($Force.IsPresent)
                 {
                     Write-Debug -Message ($script:localizedData.Database_TakingOfflineWithForce -f $sqlDatabaseObject.Name)
+
+                    # Kill all processes before taking the database offline
+                    Write-Debug -Message ($script:localizedData.Database_KillingProcesses -f $sqlDatabaseObject.Name)
+
+                    try
+                    {
+                        $sqlDatabaseObject.Parent.KillAllProcesses($sqlDatabaseObject.Name)
+                    }
+                    catch
+                    {
+                        $errorMessage = $script:localizedData.Database_KillProcessesFailed -f $sqlDatabaseObject.Name
+
+                        $PSCmdlet.ThrowTerminatingError(
+                            [System.Management.Automation.ErrorRecord]::new(
+                                [System.InvalidOperationException]::new($errorMessage, $_.Exception),
+                                'SSDD0002', # cspell: disable-line
+                                [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                                $sqlDatabaseObject
+                            )
+                        )
+                    }
                 }
                 else
                 {
@@ -168,7 +189,7 @@ function Suspend-SqlDscDatabase
 
                 try
                 {
-                    $sqlDatabaseObject.SetOffline($Force.IsPresent)
+                    $sqlDatabaseObject.SetOffline()
                 }
                 catch
                 {
