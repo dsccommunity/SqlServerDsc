@@ -119,7 +119,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should take the database offline and not throw' {
-            { Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force } | Should -Not -Throw
+            $null = Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force
 
             $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
 
@@ -129,7 +129,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
         It 'Should call Get-SqlDscDatabase with Refresh when specified' {
             $mockDatabaseObject.Status = [Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal
 
-            { Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Refresh -Force } | Should -Not -Throw
+            $null = Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Refresh -Force
 
             Should -Invoke -CommandName 'Get-SqlDscDatabase' -ParameterFilter {
                 $Refresh -eq $true
@@ -148,7 +148,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
         It 'Should not take the database offline when database is already offline' {
             $mockDatabaseObject.Status = [Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline
 
-            { Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force } | Should -Not -Throw
+            $null = Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force
 
             $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
         }
@@ -164,7 +164,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should take the database offline using DatabaseObject parameter' {
-            { Suspend-SqlDscDatabase -DatabaseObject $mockDatabaseObject -Force } | Should -Not -Throw
+            $null = Suspend-SqlDscDatabase -DatabaseObject $mockDatabaseObject -Force
 
             $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
         }
@@ -193,7 +193,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should take the database offline via pipeline' {
-            { $mockServerObject | Suspend-SqlDscDatabase -Name 'TestDatabase' -Force } | Should -Not -Throw
+            $null = $mockServerObject | Suspend-SqlDscDatabase -Name 'TestDatabase' -Force
 
             $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
         }
@@ -209,7 +209,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should take the database offline via pipeline' {
-            { $mockDatabaseObject | Suspend-SqlDscDatabase -Force } | Should -Not -Throw
+            $null = $mockDatabaseObject | Suspend-SqlDscDatabase -Force
 
             $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
         }
@@ -267,7 +267,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should not take the database offline when WhatIf is specified' {
-            { Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -WhatIf } | Should -Not -Throw
+            $null = Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -WhatIf
 
             $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
         }

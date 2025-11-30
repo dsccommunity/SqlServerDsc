@@ -119,7 +119,7 @@ Describe 'Resume-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should bring the database online and not throw' {
-            { Resume-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force } | Should -Not -Throw
+            $null = Resume-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force
 
             $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
 
@@ -129,7 +129,7 @@ Describe 'Resume-SqlDscDatabase' -Tag 'Public' {
         It 'Should call Get-SqlDscDatabase with Refresh when specified' {
             $mockDatabaseObject.Status = [Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline
 
-            { Resume-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Refresh -Force } | Should -Not -Throw
+            $null = Resume-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Refresh -Force
 
             Should -Invoke -CommandName 'Get-SqlDscDatabase' -ParameterFilter {
                 $Refresh -eq $true
@@ -148,7 +148,7 @@ Describe 'Resume-SqlDscDatabase' -Tag 'Public' {
         It 'Should not bring the database online when database is already online' {
             $mockDatabaseObject.Status = [Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal
 
-            { Resume-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force } | Should -Not -Throw
+            $null = Resume-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force
 
             $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
         }
@@ -164,7 +164,7 @@ Describe 'Resume-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should bring the database online using DatabaseObject parameter' {
-            { Resume-SqlDscDatabase -DatabaseObject $mockDatabaseObject -Force } | Should -Not -Throw
+            $null = Resume-SqlDscDatabase -DatabaseObject $mockDatabaseObject -Force
 
             $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
         }
@@ -193,7 +193,7 @@ Describe 'Resume-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should bring the database online via pipeline' {
-            { $mockServerObject | Resume-SqlDscDatabase -Name 'TestDatabase' -Force } | Should -Not -Throw
+            $null = $mockServerObject | Resume-SqlDscDatabase -Name 'TestDatabase' -Force
 
             $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
         }
@@ -209,7 +209,7 @@ Describe 'Resume-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should bring the database online via pipeline' {
-            { $mockDatabaseObject | Resume-SqlDscDatabase -Force } | Should -Not -Throw
+            $null = $mockDatabaseObject | Resume-SqlDscDatabase -Force
 
             $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
         }
@@ -229,7 +229,7 @@ Describe 'Resume-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should not bring the database online when WhatIf is specified' {
-            { Resume-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -WhatIf } | Should -Not -Throw
+            $null = Resume-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -WhatIf
 
             $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
         }
