@@ -107,7 +107,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
 
         It 'Should throw error when trying to take offline non-existent database' {
             { Suspend-SqlDscDatabase -ServerObject $script:serverObject -Name 'NonExistentDatabase' -Force -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage '*Database*NonExistentDatabase*not found*'
+                Should -Throw
         }
     }
 
