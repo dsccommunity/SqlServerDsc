@@ -28,6 +28,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added public command `Resume-SqlDscDatabase` to bring a SQL Server database back
+  online. This command uses the SMO `Database.SetOnline()` method to make databases
+  available after maintenance or downtime. The command supports both Server and
+  Database object pipeline input for flexible usage ([issue #2191](https://github.com/dsccommunity/SqlServerDsc/issues/2191)).
+- Added public command `Suspend-SqlDscDatabase` to take a SQL Server database offline.
+  This command uses the SMO `Database.SetOffline()` method to temporarily make
+  databases unavailable for maintenance scenarios. The command includes a `Force`
+  parameter to disconnect active users when necessary and supports both Server and
+  Database object pipeline input ([issue #2192](https://github.com/dsccommunity/SqlServerDsc/issues/2192)).
 - Added public command `Enable-SqlDscDatabaseSnapshotIsolation` to enable snapshot
   isolation for a database in a SQL Server Database Engine instance. This command
   uses the SMO `SetSnapshotIsolation()` method to enable row-versioning and snapshot

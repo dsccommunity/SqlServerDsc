@@ -979,6 +979,16 @@ namespace Microsoft.SqlServer.Management.Smo
                 this.SnapshotIsolationState = SnapshotIsolationState.Disabled;
             }
         }
+
+        public void SetOnline()
+        {
+            this.Status = DatabaseStatus.Normal;
+        }
+
+        public void SetOffline(bool forceDisconnect = false)
+        {
+            this.Status = DatabaseStatus.Offline;
+        }
     }
 
     // TypeName: Microsoft.SqlServer.Management.Smo.FileGroup
