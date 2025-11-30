@@ -255,20 +255,11 @@ function Set-SqlDscDatabaseDefaultFileGroup
                 }
             }
 
-            <#
-                Refresh the database object to get the updated default filegroup property if:
-                - PassThru is specified (user wants the updated object back)
-                - Using DatabaseObject parameter set (user's object reference should be updated)
-
-                Refresh even if no change was made to ensure the object is up to date.
-            #>
-            if ($PassThru.IsPresent -or $PSCmdlet.ParameterSetName -match 'DatabaseObjectSet')
-            {
-                $sqlDatabaseObject.Refresh()
-            }
-
             if ($PassThru.IsPresent)
             {
+                # Refresh the database object to get the updated default filegroup property
+                $sqlDatabaseObject.Refresh()
+
                 $sqlDatabaseObject
             }
         }
