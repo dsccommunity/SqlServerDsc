@@ -223,14 +223,13 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
             $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database' -ArgumentList @($mockServerObject, 'TestDatabase')
             $mockDatabaseObject.Status = [Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal
 
-            $script:setOfflineForceValue = $null
+            $script:killAllProcessesCalled = $false
 
-            # Override SetOffline to track the Force parameter
-            $mockDatabaseObject | Add-Member -MemberType ScriptMethod -Name SetOffline -Value {
-                param($ForceDisconnect = $false)
+            # Override KillAllProcesses to track if it was called
+            $mockServerObject | Add-Member -MemberType ScriptMethod -Name KillAllProcesses -Value {
+                param($DatabaseName)
 
-                $script:setOfflineForceValue = $ForceDisconnect
-                $this.Status = [Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline
+                $script:killAllProcessesCalled = $true
             } -Force
 
             Mock -CommandName 'Get-SqlDscDatabase' -MockWith {
@@ -238,18 +237,21 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
             }
         }
 
-        It 'Should call SetOffline with Force when Force parameter is specified' {
+        It 'Should call KillAllProcesses when Force parameter is specified' {
+            $script:killAllProcessesCalled = $false
+
             Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force -Confirm:$false
 
-            $script:setOfflineForceValue | Should -BeTrue
+            $script:killAllProcessesCalled | Should -BeTrue
         }
 
-        It 'Should call SetOffline without Force when Force parameter is not specified' {
+        It 'Should not call KillAllProcesses when Force parameter is not specified' {
             $mockDatabaseObject.Status = [Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal
+            $script:killAllProcessesCalled = $false
 
             Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Confirm:$false
 
-            $script:setOfflineForceValue | Should -BeFalse
+            $script:killAllProcessesCalled | Should -BeFalse
         }
     }
 
@@ -292,7 +294,16 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should throw a terminating error when SetOffline fails' {
-            { Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force } | Should -Throw -ExpectedMessage '*Failed to take database*offline*'
+            { Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Confirm:$false } | Should -Throw -ExpectedMessage '*Failed to take database*offline*'
+        }
+
+        It 'Should throw a terminating error when KillAllProcesses fails' {
+            # Override KillAllProcesses to throw an exception
+            $mockServerObject | Add-Member -MemberType ScriptMethod -Name KillAllProcesses -Value {
+                throw 'Failed to kill processes'
+            } -Force
+
+            { Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force -Confirm:$false } | Should -Throw -ExpectedMessage '*Failed to kill processes*'
         }
     }
 }
