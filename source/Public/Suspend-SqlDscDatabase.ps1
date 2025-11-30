@@ -153,17 +153,17 @@ function Suspend-SqlDscDatabase
             # Check if database is already offline (idempotence)
             if ($sqlDatabaseObject.Status -eq [Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
             {
-                Write-Verbose -Message ($script:localizedData.Database_AlreadyOffline -f $sqlDatabaseObject.Name)
+                Write-Debug -Message ($script:localizedData.Database_AlreadyOffline -f $sqlDatabaseObject.Name)
             }
             else
             {
                 if ($Force.IsPresent)
                 {
-                    Write-Verbose -Message ($script:localizedData.Database_TakingOfflineWithForce -f $sqlDatabaseObject.Name)
+                    Write-Debug -Message ($script:localizedData.Database_TakingOfflineWithForce -f $sqlDatabaseObject.Name)
                 }
                 else
                 {
-                    Write-Verbose -Message ($script:localizedData.Database_TakingOffline -f $sqlDatabaseObject.Name)
+                    Write-Debug -Message ($script:localizedData.Database_TakingOffline -f $sqlDatabaseObject.Name)
                 }
 
                 try
@@ -184,7 +184,7 @@ function Suspend-SqlDscDatabase
                     )
                 }
 
-                Write-Verbose -Message ($script:localizedData.Database_TakenOffline -f $sqlDatabaseObject.Name)
+                Write-Debug -Message ($script:localizedData.Database_TakenOffline -f $sqlDatabaseObject.Name)
             }
 
             if ($PassThru.IsPresent)

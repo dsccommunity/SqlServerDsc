@@ -150,11 +150,11 @@ function Resume-SqlDscDatabase
             # Check if database is already online (idempotence)
             if ($sqlDatabaseObject.Status -eq [Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
             {
-                Write-Verbose -Message ($script:localizedData.Database_AlreadyOnline -f $sqlDatabaseObject.Name)
+                Write-Debug -Message ($script:localizedData.Database_AlreadyOnline -f $sqlDatabaseObject.Name)
             }
             else
             {
-                Write-Verbose -Message ($script:localizedData.Database_BringingOnline -f $sqlDatabaseObject.Name)
+                Write-Debug -Message ($script:localizedData.Database_BringingOnline -f $sqlDatabaseObject.Name)
 
                 try
                 {
@@ -174,7 +174,7 @@ function Resume-SqlDscDatabase
                     )
                 }
 
-                Write-Verbose -Message ($script:localizedData.Database_BroughtOnline -f $sqlDatabaseObject.Name)
+                Write-Debug -Message ($script:localizedData.Database_BroughtOnline -f $sqlDatabaseObject.Name)
             }
 
             if ($PassThru.IsPresent)
