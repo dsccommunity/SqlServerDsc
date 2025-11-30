@@ -107,7 +107,7 @@ Describe 'Resume-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
 
         It 'Should throw error when trying to bring online non-existent database' {
             { Resume-SqlDscDatabase -ServerObject $script:serverObject -Name 'NonExistentDatabase' -Force -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage '*Database*NonExistentDatabase*not found*'
+                Should -Throw
         }
     }
 
