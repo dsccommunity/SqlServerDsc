@@ -229,7 +229,7 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
 
             $parameterSet | Should -Not -BeNullOrEmpty
             $parameterSet.Name | Should -Be $ExpectedParameterSetName
-            
+
             # Verify core parameters are present
             foreach ($paramName in $ExpectedCoreParameters)
             {
