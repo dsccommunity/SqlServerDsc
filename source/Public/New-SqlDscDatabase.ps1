@@ -42,6 +42,7 @@
 
     .PARAMETER AcceleratedRecoveryEnabled
         Specifies whether Accelerated Database Recovery (ADR) is enabled for the database.
+        This parameter requires SQL Server 2019 (version 15) or later.
 
     .PARAMETER AnsiNullDefault
         Specifies whether new columns allow NULL by default unless explicitly specified (when ON).
@@ -105,6 +106,7 @@
 
     .PARAMETER DataRetentionEnabled
         Specifies whether SQL Server data retention policy is enabled at the database level.
+        This parameter requires SQL Server 2017 (version 14) or later.
 
     .PARAMETER DateCorrelationOptimization
         Specifies whether date correlation optimization is enabled to speed up temporal joins.
@@ -198,6 +200,7 @@
 
     .PARAMETER PersistentVersionStoreFileGroup
         Specifies the filegroup used for the Persistent Version Store (PVS).
+        This parameter requires SQL Server 2019 (version 15) or later.
 
     .PARAMETER PrimaryFilePath
         Specifies the path of the primary data files directory.
@@ -240,6 +243,7 @@
 
     .PARAMETER TemporalHistoryRetentionEnabled
         Specifies whether automatic cleanup of system-versioned temporal history is enabled.
+        This parameter requires SQL Server 2017 (version 14) or later.
 
     .PARAMETER TransformNoiseWords
         Specifies how full-text noise word behavior is controlled during queries.
@@ -251,7 +255,7 @@
         Specifies the two-digit year cutoff used for date conversion.
 
     .PARAMETER UserAccess
-        Specifies the database user access mode (MULTI_USER, RESTRICTED_USER, SINGLE_USER).
+        Specifies the database user access mode. Valid values are Multiple, Restricted, and Single.
 
     .PARAMETER DatabaseSnapshotBaseName
         Specifies the name of the source database from which to create a snapshot.
