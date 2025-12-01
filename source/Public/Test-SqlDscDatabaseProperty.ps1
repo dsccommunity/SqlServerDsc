@@ -460,7 +460,7 @@
         Specifies the two-digit year cutoff used for date conversion.
 
     .PARAMETER UserAccess
-        Specifies the database user access mode (MULTI_USER, RESTRICTED_USER, SINGLE_USER).
+        Specifies the database user access mode (Multiple, Restricted, Single).
 
     .PARAMETER UserName
         Specifies the user name for the current connection context (as seen by SMO).
