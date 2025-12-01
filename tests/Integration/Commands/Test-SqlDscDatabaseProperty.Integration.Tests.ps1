@@ -87,6 +87,7 @@ BeforeDiscovery {
         @{ PropertyName = 'AutoUpdateStatisticsEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'AutoUpdateStatisticsAsync'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'AutoCreateIncrementalStatisticsEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        # Database-scoped configuration properties (enum-based, tested via non-Boolean path)
         @{ PropertyName = 'ParameterSniffing'; DatabaseName = $script:persistentTestDatabase }
         @{ PropertyName = 'LegacyCardinalityEstimation'; DatabaseName = $script:persistentTestDatabase }
         @{ PropertyName = 'QueryOptimizerHotfixes'; DatabaseName = $script:persistentTestDatabase }
@@ -98,6 +99,7 @@ BeforeDiscovery {
         @{ PropertyName = 'TemporalHistoryRetentionEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         # TODO: AcceleratedRecoveryEnabled - Commented out because this property requires specific database configuration or SQL Server edition that is not available in the persistent test database
         # @{ PropertyName = 'AcceleratedRecoveryEnabled'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
+        # Database-scoped configuration properties (enum-based, tested via non-Boolean path)
         @{ PropertyName = 'DelayedDurability'; DatabaseName = $script:persistentTestDatabase }
         @{ PropertyName = 'HonorBrokerPriority'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
         @{ PropertyName = 'TransformNoiseWords'; DatabaseName = $script:persistentTestDatabase; TestValue = $true }
