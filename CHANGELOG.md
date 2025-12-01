@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     only available in `Set-SqlDscDatabaseProperty`
     ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
 
+### Changed
+
+- `Set-SqlDscDatabaseProperty`
+  - Updated comment-based help help to reference correct enum values.
+  - Added SQL Server version requirements to version-specific parameter help.
+
 ## [17.3.0] - 2025-12-01
 
 ### Removed
