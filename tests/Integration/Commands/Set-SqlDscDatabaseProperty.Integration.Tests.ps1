@@ -86,25 +86,25 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
         }
 
         It 'Should set AutoClose successfully' {
-            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoClose $true -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoClose -Force -ErrorAction 'Stop'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
             $updatedDb.AutoClose | Should -BeTrue
 
             # Reset to default
-            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoClose $false -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoClose:$false -Force -ErrorAction 'Stop'
         }
 
         It 'Should set AutoShrink successfully' {
-            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoShrink $true -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoShrink -Force -ErrorAction 'Stop'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
             $updatedDb.AutoShrink | Should -BeTrue
 
             # Reset to default
-            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoShrink $false -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoShrink:$false -Force -ErrorAction 'Stop'
         }
 
         It 'Should set PageVerify successfully' {
@@ -119,7 +119,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
         }
 
         It 'Should set multiple properties successfully' {
-            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Full' -AutoClose $false -AutoShrink $false -PageVerify 'Checksum' -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Full' -AutoClose:$false -AutoShrink:$false -PageVerify 'Checksum' -Force -ErrorAction 'Stop'
 
             # Verify the changes
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
@@ -161,14 +161,14 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
         It 'Should set AutoClose using database object' {
             $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
 
-            $null = Set-SqlDscDatabaseProperty -DatabaseObject $databaseObject -AutoClose $true -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -DatabaseObject $databaseObject -AutoClose -Force -ErrorAction 'Stop'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
             $updatedDb.AutoClose | Should -BeTrue
 
             # Reset to default
-            $null = Set-SqlDscDatabaseProperty -DatabaseObject $databaseObject -AutoClose $false -Force -ErrorAction 'Stop'
+            $null = Set-SqlDscDatabaseProperty -DatabaseObject $databaseObject -AutoClose:$false -Force -ErrorAction 'Stop'
         }
 
         It 'Should set multiple properties using database object' {

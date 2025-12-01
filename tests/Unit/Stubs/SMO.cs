@@ -272,6 +272,13 @@ namespace Microsoft.SqlServer.Management.Smo
         Forced = 2
     }
 
+    public enum DatabaseScopedConfigurationOnOff : int
+    {
+        Off = 0,
+        On = 1,
+        Primary = 2
+    }
+
     public enum MirroringStatus : int
     {
         None = 0,
