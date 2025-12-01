@@ -280,13 +280,13 @@
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $databaseObject = $serverObject | Get-SqlDscDatabase -Name 'MyDatabase'
-        Set-SqlDscDatabaseProperty -DatabaseObject $databaseObject -ReadOnly $false -AutoClose $false
+        Set-SqlDscDatabaseProperty -DatabaseObject $databaseObject -ReadOnly:$false -AutoClose:$false
 
         Sets multiple database properties at once using a database object.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        Set-SqlDscDatabaseProperty -ServerObject $serverObject -Name 'MyDatabase' -CompatibilityLevel 'Version160' -Trustworthy $false -Force
+        Set-SqlDscDatabaseProperty -ServerObject $serverObject -Name 'MyDatabase' -CompatibilityLevel 'Version160' -Trustworthy:$false -Force
 
         Sets the compatibility level and trustworthy property of the database without prompting for confirmation.
 
