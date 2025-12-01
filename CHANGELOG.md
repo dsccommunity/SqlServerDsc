@@ -5,6 +5,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `New-SqlDscDatabase`
+  - Added comprehensive set of settable database properties that were previously
+    only available in `Set-SqlDscDatabaseProperty`
+    ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
+
 ## [17.3.0] - 2025-12-01
 
 ### Removed
@@ -30,10 +37,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `New-SqlDscDatabase`
-  - Added comprehensive set of settable database properties that were previously
-    only available in `Set-SqlDscDatabaseProperty
-    ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
 - Added public command `Enable-SqlDscDatabaseSnapshotIsolation` to enable snapshot
   isolation for a database in a SQL Server Database Engine instance. This command
   uses the SMO `SetSnapshotIsolation()` method to enable row-versioning and snapshot
