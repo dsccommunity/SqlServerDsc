@@ -360,111 +360,111 @@ function Set-SqlDscDatabaseProperty
 
         # Boolean Properties
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AcceleratedRecoveryEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AnsiNullDefault,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AnsiNullsEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AnsiPaddingEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AnsiWarningsEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ArithmeticAbortEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoClose,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoCreateIncrementalStatisticsEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoCreateStatisticsEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoShrink,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoUpdateStatisticsAsync,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoUpdateStatisticsEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $BrokerEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ChangeTrackingAutoCleanUp,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ChangeTrackingEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $CloseCursorsOnCommitEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ConcatenateNullYieldsNull,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $DatabaseOwnershipChaining,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $DataRetentionEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $DateCorrelationOptimization,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $EncryptionEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $HonorBrokerPriority,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsFullTextEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsParameterizationForced,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsReadCommittedSnapshotOn,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsSqlDw,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsVarDecimalStorageFormatEnabled,
 
         [Parameter()]
@@ -476,15 +476,15 @@ function Set-SqlDscDatabaseProperty
         $LegacyCardinalityEstimationForSecondary,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $LocalCursorsDefault,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $NestedTriggersEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $NumericRoundAbortEnabled,
 
         [Parameter()]
@@ -504,35 +504,35 @@ function Set-SqlDscDatabaseProperty
         $QueryOptimizerHotfixesForSecondary,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $QuotedIdentifiersEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ReadOnly,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $RecursiveTriggersEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $RemoteDataArchiveEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $RemoteDataArchiveUseFederatedServiceAccount,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $TemporalHistoryRetentionEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $TransformNoiseWords,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $Trustworthy,
 
         # Integer Properties
@@ -781,6 +781,12 @@ function Set-SqlDscDatabaseProperty
 
                 $currentValue = $sqlDatabaseObject.$parameterName
                 $newValue = $boundParameters.$parameterName
+
+                # Convert SwitchParameter to Boolean for SMO properties
+                if ($newValue -is [System.Management.Automation.SwitchParameter])
+                {
+                    $newValue = $newValue.IsPresent
+                }
 
                 # Only update if the value is different
                 if ($currentValue -ne $newValue)

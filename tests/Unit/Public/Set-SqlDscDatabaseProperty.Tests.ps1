@@ -112,7 +112,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag 'Public' {
             $mockDatabaseObject.AutoShrink = $false # Reset to initial value
             $mockDatabaseObject.PageVerify = 'Checksum' # Reset to initial value
 
-            $null = Set-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'TestDatabase' -AutoClose $true -AutoShrink $true -PageVerify 'None' -Force
+            $null = Set-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'TestDatabase' -AutoClose -AutoShrink -PageVerify 'None' -Force
 
             $mockDatabaseObject.AutoClose | Should -BeTrue
             $mockDatabaseObject.AutoShrink | Should -BeTrue
@@ -329,7 +329,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag 'Public' {
         It 'Should not call Alter() when all properties are already set' {
             $script:mockAlterCalled = $false
 
-            $null = Set-SqlDscDatabaseProperty -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -AutoClose $true -Force
+            $null = Set-SqlDscDatabaseProperty -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -AutoClose -Force
 
             $script:mockAlterCalled | Should -BeFalse -Because 'Alter() should not be called when all properties are already set'
         }
