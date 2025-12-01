@@ -50,7 +50,7 @@ BeforeDiscovery {
         'DatabaseOwnershipChaining'                   = @{ Type = 'Boolean'; TestValue = $false; ExpectedValue = $false }
         'DataRetentionEnabled'                        = @{ Type = 'Boolean'; TestValue = $false; ExpectedValue = $false }
         'DateCorrelationOptimization'                 = @{ Type = 'Boolean'; TestValue = $false; ExpectedValue = $false }
-        'DelayedDurability'                           = @{ Type = 'Boolean'; TestValue = $false; ExpectedValue = $false }
+        'DelayedDurability'                           = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Smo.DelayedDurability]::Disabled; ExpectedValue = [Microsoft.SqlServer.Management.Smo.DelayedDurability]::Disabled }
         'EncryptionEnabled'                           = @{ Type = 'Boolean'; TestValue = $false; ExpectedValue = $false }
         'HasDatabaseEncryptionKey'                    = @{ Type = 'Boolean'; TestValue = $false; ExpectedValue = $false }
         'HasFileInCloud'                              = @{ Type = 'Boolean'; TestValue = $false; ExpectedValue = $false }
@@ -84,15 +84,15 @@ BeforeDiscovery {
         'IsSystemObject'                              = @{ Type = 'Boolean'; TestValue = $false; ExpectedValue = $false }
         'IsVarDecimalStorageFormatEnabled'            = @{ Type = 'Boolean'; TestValue = $false; ExpectedValue = $false }
         'IsVarDecimalStorageFormatSupported'          = @{ Type = 'Boolean'; TestValue = $true; ExpectedValue = $true }
-        'LegacyCardinalityEstimation'                 = @{ Type = 'Boolean'; TestValue = $false; ExpectedValue = $false }
-        'LegacyCardinalityEstimationForSecondary'     = @{ Type = 'Boolean'; TestValue = $false; ExpectedValue = $false }
+        'LegacyCardinalityEstimation'                 = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]::Off; ExpectedValue = [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]::Off }
+        'LegacyCardinalityEstimationForSecondary'     = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]::Off; ExpectedValue = [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]::Off }
         'LocalCursorsDefault'                         = @{ Type = 'Boolean'; TestValue = $false; ExpectedValue = $false }
         'NestedTriggersEnabled'                       = @{ Type = 'Boolean'; TestValue = $true; ExpectedValue = $true }
         'NumericRoundAbortEnabled'                    = @{ Type = 'Boolean'; TestValue = $false; ExpectedValue = $false }
-        'ParameterSniffing'                           = @{ Type = 'Boolean'; TestValue = $true; ExpectedValue = $true }
-        'ParameterSniffingForSecondary'               = @{ Type = 'Boolean'; TestValue = $true; ExpectedValue = $true }
-        'QueryOptimizerHotfixes'                      = @{ Type = 'Boolean'; TestValue = $false; ExpectedValue = $false }
-        'QueryOptimizerHotfixesForSecondary'          = @{ Type = 'Boolean'; TestValue = $false; ExpectedValue = $false }
+        'ParameterSniffing'                           = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]::On; ExpectedValue = [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]::On }
+        'ParameterSniffingForSecondary'               = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]::On; ExpectedValue = [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]::On }
+        'QueryOptimizerHotfixes'                      = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]::Off; ExpectedValue = [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]::Off }
+        'QueryOptimizerHotfixesForSecondary'          = @{ Type = 'Enum'; TestValue = [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]::Off; ExpectedValue = [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]::Off }
         'QuotedIdentifiersEnabled'                    = @{ Type = 'Boolean'; TestValue = $true; ExpectedValue = $true }
         'ReadOnly'                                    = @{ Type = 'Boolean'; TestValue = $false; ExpectedValue = $false }
         'RecursiveTriggersEnabled'                    = @{ Type = 'Boolean'; TestValue = $false; ExpectedValue = $false }
@@ -221,6 +221,10 @@ BeforeDiscovery {
                     {
                         [Microsoft.SqlServer.Management.Smo.ContainmentType]::Partial
                     }
+                    'DelayedDurability'
+                    {
+                        [Microsoft.SqlServer.Management.Smo.DelayedDurability]::Allowed
+                    }
                     'DatabaseEngineEdition'
                     {
                         [Microsoft.SqlServer.Management.Common.DatabaseEngineEdition]::Enterprise
@@ -232,6 +236,30 @@ BeforeDiscovery {
                     'FilestreamNonTransactedAccess'
                     {
                         [Microsoft.SqlServer.Management.Smo.FilestreamNonTransactedAccessType]::ReadOnly
+                    }
+                    'LegacyCardinalityEstimation'
+                    {
+                        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]::On
+                    }
+                    'LegacyCardinalityEstimationForSecondary'
+                    {
+                        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]::On
+                    }
+                    'ParameterSniffing'
+                    {
+                        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]::Off
+                    }
+                    'ParameterSniffingForSecondary'
+                    {
+                        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]::Off
+                    }
+                    'QueryOptimizerHotfixes'
+                    {
+                        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]::On
+                    }
+                    'QueryOptimizerHotfixesForSecondary'
+                    {
+                        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]::On
                     }
                     'LogReuseWaitStatus'
                     {
