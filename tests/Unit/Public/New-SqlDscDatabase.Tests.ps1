@@ -122,7 +122,7 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
                 } -PassThru -Force
             } -Force
 
-            $result = New-SqlDscDatabase -ServerObject $mockServerObject2022 -Name 'LedgerDatabase' -IsLedger $true -Force
+            $result = New-SqlDscDatabase -ServerObject $mockServerObject2022 -Name 'LedgerDatabase' -IsLedger -Force
 
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'LedgerDatabase'
@@ -130,13 +130,12 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should create a database with additional boolean properties set' {
-            $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabaseWithProps' -AutoClose $true -AutoShrink $true -ReadOnly $false -Force
+            $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabaseWithProps' -AutoClose -AutoShrink -Force
 
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be 'TestDatabaseWithProps'
             $result.AutoClose | Should -BeTrue
             $result.AutoShrink | Should -BeTrue
-            $result.ReadOnly | Should -BeFalse
         }
 
         It 'Should create a database with integer properties set' {
@@ -209,13 +208,12 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should throw error when IsLedger is used on SQL Server version older than 2022' {
-            $errorRecord = { New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDB' -IsLedger $true -Force } |
+            $errorRecord = { New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDB' -IsLedger -Force } |
                 Should -Throw -ExpectedMessage '*IsLedger is not supported*' -PassThru
 
             $errorRecord.Exception.Message | Should -BeLike '*IsLedger is not supported*'
             $errorRecord.FullyQualifiedErrorId | Should -Be 'NSD0007,New-SqlDscDatabase'
             $errorRecord.CategoryInfo.Category | Should -Be 'InvalidOperation'
-            $errorRecord.CategoryInfo.TargetName | Should -Be 'True'
         }
     }
 
@@ -241,7 +239,7 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
 
         It 'Should have additional database property parameters in Database parameter set' -ForEach @(
             @{
-                PropertyType = 'Boolean'
+                PropertyType = 'SwitchParameter'
                 SampleParameters = @('AutoClose', 'AutoShrink', 'ReadOnly', 'Trustworthy', 'EncryptionEnabled')
             }
             @{

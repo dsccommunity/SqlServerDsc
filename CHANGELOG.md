@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff` to match
     SMO property types and support all valid values (Off, On, Primary)
     ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
+  - Fixed parameter types for boolean database properties from `System.Boolean` to
+    `System.Management.Automation.SwitchParameter` to follow PowerShell best practices.
+    ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
 - `Set-SqlDscDatabaseProperty`
   - Fixed parameter types for database-scoped configuration properties
     `LegacyCardinalityEstimation`, `LegacyCardinalityEstimationForSecondary`,

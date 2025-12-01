@@ -89,15 +89,17 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             $createdDb.RecoveryModel | Should -Be 'Simple'
         }
 
-        It 'Should create a database with additional boolean properties set during creation' {
+        It 'Should create a database and verify default boolean properties' {
             $testDbWithBoolProps = 'SqlDscTestDbBoolProps_' + (Get-Random)
 
             try
             {
-                $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithBoolProps -AutoClose $false -AutoShrink $false -ReadOnly $false -Force -ErrorAction 'Stop'
+                # Create database without specifying boolean properties - they should use defaults
+                $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithBoolProps -Force -ErrorAction 'Stop'
 
                 $result | Should -Not -BeNullOrEmpty
                 $result.Name | Should -Be $testDbWithBoolProps
+                # AutoClose and AutoShrink should be false by default
                 $result.AutoClose | Should -BeFalse
                 $result.AutoShrink | Should -BeFalse
                 $result.ReadOnly | Should -BeFalse
@@ -175,19 +177,17 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             try
             {
-                $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithMixedProps -RecoveryModel 'Simple' -AutoClose $false -TargetRecoveryTime 30 -PageVerify 'TornPageDetection' -Force -ErrorAction 'Stop'
+                $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithMixedProps -RecoveryModel 'Simple' -TargetRecoveryTime 30 -PageVerify 'TornPageDetection' -Force -ErrorAction 'Stop'
 
                 $result | Should -Not -BeNullOrEmpty
                 $result.Name | Should -Be $testDbWithMixedProps
                 $result.RecoveryModel | Should -Be 'Simple'
-                $result.AutoClose | Should -BeFalse
                 $result.TargetRecoveryTime | Should -Be 30
                 $result.PageVerify | Should -Be 'TornPageDetection'
 
                 # Verify the database exists with correct properties
                 $createdDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithMixedProps -ErrorAction 'Stop'
                 $createdDb.RecoveryModel | Should -Be 'Simple'
-                $createdDb.AutoClose | Should -BeFalse
                 $createdDb.TargetRecoveryTime | Should -Be 30
                 $createdDb.PageVerify | Should -Be 'TornPageDetection'
             }

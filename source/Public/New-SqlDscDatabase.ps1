@@ -378,116 +378,116 @@ function New-SqlDscDatabase
         $OwnerName,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsLedger,
 
         # Boolean Properties
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AcceleratedRecoveryEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AnsiNullDefault,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AnsiNullsEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AnsiPaddingEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AnsiWarningsEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ArithmeticAbortEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoClose,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoCreateIncrementalStatisticsEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoCreateStatisticsEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoShrink,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoUpdateStatisticsAsync,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoUpdateStatisticsEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $BrokerEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ChangeTrackingAutoCleanUp,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ChangeTrackingEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $CloseCursorsOnCommitEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ConcatenateNullYieldsNull,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $DatabaseOwnershipChaining,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $DataRetentionEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $DateCorrelationOptimization,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $EncryptionEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $HonorBrokerPriority,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsFullTextEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsParameterizationForced,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsReadCommittedSnapshotOn,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsSqlDw,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsVarDecimalStorageFormatEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
@@ -499,15 +499,15 @@ function New-SqlDscDatabase
         $LegacyCardinalityEstimationForSecondary,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $LocalCursorsDefault,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $NestedTriggersEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $NumericRoundAbortEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
@@ -527,35 +527,35 @@ function New-SqlDscDatabase
         $QueryOptimizerHotfixesForSecondary,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $QuotedIdentifiersEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ReadOnly,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $RecursiveTriggersEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $RemoteDataArchiveEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $RemoteDataArchiveUseFederatedServiceAccount,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $TemporalHistoryRetentionEnabled,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $TransformNoiseWords,
 
         [Parameter(ParameterSetName = 'Database')]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $Trustworthy,
 
         # Integer Properties
@@ -865,143 +865,143 @@ function New-SqlDscDatabase
 
                     if ($PSBoundParameters.ContainsKey('IsLedger'))
                     {
-                        $sqlDatabaseObjectToCreate.IsLedger = $IsLedger
+                        $sqlDatabaseObjectToCreate.IsLedger = $IsLedger.IsPresent
                     }
 
                     # Boolean Properties
                     if ($PSBoundParameters.ContainsKey('AcceleratedRecoveryEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.AcceleratedRecoveryEnabled = $AcceleratedRecoveryEnabled
+                        $sqlDatabaseObjectToCreate.AcceleratedRecoveryEnabled = $AcceleratedRecoveryEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('AnsiNullDefault'))
                     {
-                        $sqlDatabaseObjectToCreate.AnsiNullDefault = $AnsiNullDefault
+                        $sqlDatabaseObjectToCreate.AnsiNullDefault = $AnsiNullDefault.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('AnsiNullsEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.AnsiNullsEnabled = $AnsiNullsEnabled
+                        $sqlDatabaseObjectToCreate.AnsiNullsEnabled = $AnsiNullsEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('AnsiPaddingEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.AnsiPaddingEnabled = $AnsiPaddingEnabled
+                        $sqlDatabaseObjectToCreate.AnsiPaddingEnabled = $AnsiPaddingEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('AnsiWarningsEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.AnsiWarningsEnabled = $AnsiWarningsEnabled
+                        $sqlDatabaseObjectToCreate.AnsiWarningsEnabled = $AnsiWarningsEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('ArithmeticAbortEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.ArithmeticAbortEnabled = $ArithmeticAbortEnabled
+                        $sqlDatabaseObjectToCreate.ArithmeticAbortEnabled = $ArithmeticAbortEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('AutoClose'))
                     {
-                        $sqlDatabaseObjectToCreate.AutoClose = $AutoClose
+                        $sqlDatabaseObjectToCreate.AutoClose = $AutoClose.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('AutoCreateIncrementalStatisticsEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.AutoCreateIncrementalStatisticsEnabled = $AutoCreateIncrementalStatisticsEnabled
+                        $sqlDatabaseObjectToCreate.AutoCreateIncrementalStatisticsEnabled = $AutoCreateIncrementalStatisticsEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('AutoCreateStatisticsEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.AutoCreateStatisticsEnabled = $AutoCreateStatisticsEnabled
+                        $sqlDatabaseObjectToCreate.AutoCreateStatisticsEnabled = $AutoCreateStatisticsEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('AutoShrink'))
                     {
-                        $sqlDatabaseObjectToCreate.AutoShrink = $AutoShrink
+                        $sqlDatabaseObjectToCreate.AutoShrink = $AutoShrink.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('AutoUpdateStatisticsAsync'))
                     {
-                        $sqlDatabaseObjectToCreate.AutoUpdateStatisticsAsync = $AutoUpdateStatisticsAsync
+                        $sqlDatabaseObjectToCreate.AutoUpdateStatisticsAsync = $AutoUpdateStatisticsAsync.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('AutoUpdateStatisticsEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.AutoUpdateStatisticsEnabled = $AutoUpdateStatisticsEnabled
+                        $sqlDatabaseObjectToCreate.AutoUpdateStatisticsEnabled = $AutoUpdateStatisticsEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('BrokerEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.BrokerEnabled = $BrokerEnabled
+                        $sqlDatabaseObjectToCreate.BrokerEnabled = $BrokerEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('ChangeTrackingAutoCleanUp'))
                     {
-                        $sqlDatabaseObjectToCreate.ChangeTrackingAutoCleanUp = $ChangeTrackingAutoCleanUp
+                        $sqlDatabaseObjectToCreate.ChangeTrackingAutoCleanUp = $ChangeTrackingAutoCleanUp.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('ChangeTrackingEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.ChangeTrackingEnabled = $ChangeTrackingEnabled
+                        $sqlDatabaseObjectToCreate.ChangeTrackingEnabled = $ChangeTrackingEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('CloseCursorsOnCommitEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.CloseCursorsOnCommitEnabled = $CloseCursorsOnCommitEnabled
+                        $sqlDatabaseObjectToCreate.CloseCursorsOnCommitEnabled = $CloseCursorsOnCommitEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('ConcatenateNullYieldsNull'))
                     {
-                        $sqlDatabaseObjectToCreate.ConcatenateNullYieldsNull = $ConcatenateNullYieldsNull
+                        $sqlDatabaseObjectToCreate.ConcatenateNullYieldsNull = $ConcatenateNullYieldsNull.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('DatabaseOwnershipChaining'))
                     {
-                        $sqlDatabaseObjectToCreate.DatabaseOwnershipChaining = $DatabaseOwnershipChaining
+                        $sqlDatabaseObjectToCreate.DatabaseOwnershipChaining = $DatabaseOwnershipChaining.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('DataRetentionEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.DataRetentionEnabled = $DataRetentionEnabled
+                        $sqlDatabaseObjectToCreate.DataRetentionEnabled = $DataRetentionEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('DateCorrelationOptimization'))
                     {
-                        $sqlDatabaseObjectToCreate.DateCorrelationOptimization = $DateCorrelationOptimization
+                        $sqlDatabaseObjectToCreate.DateCorrelationOptimization = $DateCorrelationOptimization.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('EncryptionEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.EncryptionEnabled = $EncryptionEnabled
+                        $sqlDatabaseObjectToCreate.EncryptionEnabled = $EncryptionEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('HonorBrokerPriority'))
                     {
-                        $sqlDatabaseObjectToCreate.HonorBrokerPriority = $HonorBrokerPriority
+                        $sqlDatabaseObjectToCreate.HonorBrokerPriority = $HonorBrokerPriority.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('IsFullTextEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.IsFullTextEnabled = $IsFullTextEnabled
+                        $sqlDatabaseObjectToCreate.IsFullTextEnabled = $IsFullTextEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('IsParameterizationForced'))
                     {
-                        $sqlDatabaseObjectToCreate.IsParameterizationForced = $IsParameterizationForced
+                        $sqlDatabaseObjectToCreate.IsParameterizationForced = $IsParameterizationForced.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('IsReadCommittedSnapshotOn'))
                     {
-                        $sqlDatabaseObjectToCreate.IsReadCommittedSnapshotOn = $IsReadCommittedSnapshotOn
+                        $sqlDatabaseObjectToCreate.IsReadCommittedSnapshotOn = $IsReadCommittedSnapshotOn.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('IsSqlDw'))
                     {
-                        $sqlDatabaseObjectToCreate.IsSqlDw = $IsSqlDw
+                        $sqlDatabaseObjectToCreate.IsSqlDw = $IsSqlDw.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('IsVarDecimalStorageFormatEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.IsVarDecimalStorageFormatEnabled = $IsVarDecimalStorageFormatEnabled
+                        $sqlDatabaseObjectToCreate.IsVarDecimalStorageFormatEnabled = $IsVarDecimalStorageFormatEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('LegacyCardinalityEstimation'))
@@ -1016,17 +1016,17 @@ function New-SqlDscDatabase
 
                     if ($PSBoundParameters.ContainsKey('LocalCursorsDefault'))
                     {
-                        $sqlDatabaseObjectToCreate.LocalCursorsDefault = $LocalCursorsDefault
+                        $sqlDatabaseObjectToCreate.LocalCursorsDefault = $LocalCursorsDefault.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('NestedTriggersEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.NestedTriggersEnabled = $NestedTriggersEnabled
+                        $sqlDatabaseObjectToCreate.NestedTriggersEnabled = $NestedTriggersEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('NumericRoundAbortEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.NumericRoundAbortEnabled = $NumericRoundAbortEnabled
+                        $sqlDatabaseObjectToCreate.NumericRoundAbortEnabled = $NumericRoundAbortEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('ParameterSniffing'))
@@ -1051,42 +1051,42 @@ function New-SqlDscDatabase
 
                     if ($PSBoundParameters.ContainsKey('QuotedIdentifiersEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.QuotedIdentifiersEnabled = $QuotedIdentifiersEnabled
+                        $sqlDatabaseObjectToCreate.QuotedIdentifiersEnabled = $QuotedIdentifiersEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('ReadOnly'))
                     {
-                        $sqlDatabaseObjectToCreate.ReadOnly = $ReadOnly
+                        $sqlDatabaseObjectToCreate.ReadOnly = $ReadOnly.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('RecursiveTriggersEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.RecursiveTriggersEnabled = $RecursiveTriggersEnabled
+                        $sqlDatabaseObjectToCreate.RecursiveTriggersEnabled = $RecursiveTriggersEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('RemoteDataArchiveEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.RemoteDataArchiveEnabled = $RemoteDataArchiveEnabled
+                        $sqlDatabaseObjectToCreate.RemoteDataArchiveEnabled = $RemoteDataArchiveEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('RemoteDataArchiveUseFederatedServiceAccount'))
                     {
-                        $sqlDatabaseObjectToCreate.RemoteDataArchiveUseFederatedServiceAccount = $RemoteDataArchiveUseFederatedServiceAccount
+                        $sqlDatabaseObjectToCreate.RemoteDataArchiveUseFederatedServiceAccount = $RemoteDataArchiveUseFederatedServiceAccount.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('TemporalHistoryRetentionEnabled'))
                     {
-                        $sqlDatabaseObjectToCreate.TemporalHistoryRetentionEnabled = $TemporalHistoryRetentionEnabled
+                        $sqlDatabaseObjectToCreate.TemporalHistoryRetentionEnabled = $TemporalHistoryRetentionEnabled.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('TransformNoiseWords'))
                     {
-                        $sqlDatabaseObjectToCreate.TransformNoiseWords = $TransformNoiseWords
+                        $sqlDatabaseObjectToCreate.TransformNoiseWords = $TransformNoiseWords.IsPresent
                     }
 
                     if ($PSBoundParameters.ContainsKey('Trustworthy'))
                     {
-                        $sqlDatabaseObjectToCreate.Trustworthy = $Trustworthy
+                        $sqlDatabaseObjectToCreate.Trustworthy = $Trustworthy.IsPresent
                     }
 
                     # Integer Properties
