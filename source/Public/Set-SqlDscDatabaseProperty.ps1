@@ -150,10 +150,12 @@
         Specifies whether vardecimal compression is enabled.
 
     .PARAMETER LegacyCardinalityEstimation
-        Specifies whether the legacy cardinality estimator is enabled for the primary.
+        Specifies the legacy cardinality estimator setting for the primary.
+        Valid values are Off, On, or Primary (for secondary replicas to use primary's setting).
 
     .PARAMETER LegacyCardinalityEstimationForSecondary
-        Specifies whether the legacy cardinality estimator is enabled for secondary replicas.
+        Specifies the legacy cardinality estimator setting for secondary replicas.
+        Valid values are Off, On, or Primary (to use primary's setting).
 
     .PARAMETER LocalCursorsDefault
         Specifies whether cursors are local by default instead of global (when ON).
@@ -195,10 +197,12 @@
         Specifies the page verification setting (NONE, TORN_PAGE_DETECTION, CHECKSUM).
 
     .PARAMETER ParameterSniffing
-        Specifies whether parameter sniffing behavior is enabled on the primary.
+        Specifies the parameter sniffing setting for the primary.
+        Valid values are Off, On, or Primary (for secondary replicas to use primary's setting).
 
     .PARAMETER ParameterSniffingForSecondary
-        Specifies whether parameter sniffing is enabled on secondary replicas.
+        Specifies the parameter sniffing setting for secondary replicas.
+        Valid values are Off, On, or Primary (to use primary's setting).
 
     .PARAMETER PersistentVersionStoreFileGroup
         Specifies the filegroup used for the Persistent Version Store (PVS).
@@ -208,10 +212,12 @@
         Specifies the path of the primary data files directory.
 
     .PARAMETER QueryOptimizerHotfixes
-        Specifies whether query optimizer hotfixes are enabled on the primary.
+        Specifies the query optimizer hotfixes setting for the primary.
+        Valid values are Off, On, or Primary (for secondary replicas to use primary's setting).
 
     .PARAMETER QueryOptimizerHotfixesForSecondary
-        Specifies whether query optimizer hotfixes are enabled on secondary replicas.
+        Specifies the query optimizer hotfixes setting for secondary replicas.
+        Valid values are Off, On, or Primary (to use primary's setting).
 
     .PARAMETER QuotedIdentifiersEnabled
         Specifies whether identifiers can be delimited by double quotes (when ON).
@@ -462,11 +468,11 @@ function Set-SqlDscDatabaseProperty
         $IsVarDecimalStorageFormatEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]
         $LegacyCardinalityEstimation,
 
         [Parameter()]
-        [System.Boolean]
+        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]
         $LegacyCardinalityEstimationForSecondary,
 
         [Parameter()]
@@ -482,19 +488,19 @@ function Set-SqlDscDatabaseProperty
         $NumericRoundAbortEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]
         $ParameterSniffing,
 
         [Parameter()]
-        [System.Boolean]
+        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]
         $ParameterSniffingForSecondary,
 
         [Parameter()]
-        [System.Boolean]
+        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]
         $QueryOptimizerHotfixes,
 
         [Parameter()]
-        [System.Boolean]
+        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]
         $QueryOptimizerHotfixesForSecondary,
 
         [Parameter()]

@@ -12,6 +12,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     only available in `Set-SqlDscDatabaseProperty`
     ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
 
+### Fixed
+
+- `New-SqlDscDatabase`
+  - Fixed parameter types for database-scoped configuration properties
+    `LegacyCardinalityEstimation`, `LegacyCardinalityEstimationForSecondary`,
+    `ParameterSniffing`, `ParameterSniffingForSecondary`, `QueryOptimizerHotfixes`,
+    and `QueryOptimizerHotfixesForSecondary` from `System.Boolean` to
+    `Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff` to match
+    SMO property types and support all valid values (Off, On, Primary)
+    ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
+- `Set-SqlDscDatabaseProperty`
+  - Fixed parameter types for database-scoped configuration properties
+    `LegacyCardinalityEstimation`, `LegacyCardinalityEstimationForSecondary`,
+    `ParameterSniffing`, `ParameterSniffingForSecondary`, `QueryOptimizerHotfixes`,
+    and `QueryOptimizerHotfixesForSecondary` from `System.Boolean` to
+    `Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff` to match
+    SMO property types and support all valid values (Off, On, Primary)
+    ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
+
 ### Changed
 
 - `Set-SqlDscDatabaseProperty`
