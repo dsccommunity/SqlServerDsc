@@ -82,7 +82,8 @@ Describe 'Suspend-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
 
             # Verify database is online
             $onlineDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
-            $onlineDb.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
+            $onlineDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeFalse
+            $onlineDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal) | Should -BeTrue
 
             # Take the database offline
             $resultDb = Suspend-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -PassThru -ErrorAction 'Stop'
@@ -118,7 +119,8 @@ Describe 'Suspend-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
 
             # Get the database object
             $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Refresh -ErrorAction 'Stop'
-            $databaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
+            $databaseObject.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeFalse
+            $databaseObject.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal) | Should -BeTrue
 
             # Take the database offline
             $resultDb = Suspend-SqlDscDatabase -DatabaseObject $databaseObject -Force -PassThru -ErrorAction 'Stop'
@@ -136,7 +138,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $null = Resume-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction 'Stop'
 
             # Take offline via pipeline
-            $resultDb = $script:serverObject | Suspend-SqlDscDatabase -Name $script:testDatabaseName -Force -PassThru -ErrorAction 'Stop'
+            $resultDb = $script:serverObject | Suspend-SqlDscDatabase -Name $script:testDatabaseName -Force -Refresh -PassThru -ErrorAction 'Stop'
             $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeTrue
         }
 

@@ -371,7 +371,7 @@ ConvertFrom-StringData @'
     Database_Resume_ShouldProcessVerboseWarning = Are you sure you want to bring the database '{0}' online?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Database_Resume_ShouldProcessCaption = Bring database online
-    Database_AlreadyOnline = Database '{0}' is already online.
+    Database_AlreadyOnline = Database '{0}' is already online (Status: {1}).
     Database_BringingOnline = Bringing database '{0}' online.
     Database_BroughtOnline = Database '{0}' was brought online successfully.
     Database_ResumeFailed = Failed to bring database '{0}' online.
@@ -381,7 +381,7 @@ ConvertFrom-StringData @'
     Database_Suspend_ShouldProcessVerboseWarning = Are you sure you want to take the database '{0}' offline?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Database_Suspend_ShouldProcessCaption = Take database offline
-    Database_AlreadyOffline = Database '{0}' is already offline.
+    Database_AlreadyOffline = Database '{0}' is already offline (Status: {1}).
     Database_TakingOffline = Taking database '{0}' offline.
     Database_TakingOfflineWithForce = Taking database '{0}' offline with force (disconnecting active users).
     Database_KillingProcesses = Killing all processes for database '{0}'.

@@ -150,10 +150,20 @@ function Suspend-SqlDscDatabase
 
         if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
         {
-            # Check if database is already offline (idempotence)
-            if ($sqlDatabaseObject.Status -eq [Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
+            <#
+                Refresh the database object to get the current status if using DatabaseObject
+                and if Refresh was specified. If ServerObject and Name parameters are used, the
+                database object is already fresh as Refresh was passed to Get-SqlDscDatabase.
+            #>
+            if ($PSCmdlet.ParameterSetName -eq 'DatabaseObjectSet' -and $Refresh.IsPresent)
             {
-                Write-Debug -Message ($script:localizedData.Database_AlreadyOffline -f $sqlDatabaseObject.Name)
+                $sqlDatabaseObject.Refresh()
+            }
+
+            # Check if database is already offline (idempotence)
+            if ($sqlDatabaseObject.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline))
+            {
+                Write-Debug -Message ($script:localizedData.Database_AlreadyOffline -f $sqlDatabaseObject.Name, ($sqlDatabaseObject.Status -join ', '))
             }
             else
             {
