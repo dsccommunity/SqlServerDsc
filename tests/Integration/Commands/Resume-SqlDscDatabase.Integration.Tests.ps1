@@ -138,17 +138,17 @@ Describe 'Resume-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
     Context 'When using pipeline input' {
         It 'Should bring the database online via pipeline using ServerObject' {
             # First take the database offline
-            $null = Suspend-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction 'Stop'
+            $null = Suspend-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -Force -ErrorAction 'Stop'
 
             # Bring online via pipeline
-            $resultDb = $script:serverObject | Resume-SqlDscDatabase -Name $script:testDatabaseName -Force -PassThru -ErrorAction 'Stop'
+            $resultDb = $script:serverObject | Resume-SqlDscDatabase -Name $script:testDatabaseName -Force -Refresh -PassThru -ErrorAction 'Stop'
             $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeFalse
             $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal) | Should -BeTrue
         }
 
         It 'Should bring the database online via pipeline using DatabaseObject' {
             # First take the database offline
-            $null = Suspend-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Force -ErrorAction 'Stop'
+            $null = Suspend-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Refresh -Force -ErrorAction 'Stop'
 
             # Get the database object and bring online via pipeline
             $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Refresh -ErrorAction 'Stop'

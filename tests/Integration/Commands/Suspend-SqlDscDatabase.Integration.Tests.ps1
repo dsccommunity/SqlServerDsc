@@ -159,7 +159,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $null = Resume-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction 'Stop'
 
             # Take offline using pipeline
-            $resultDb = $script:serverObject | Get-SqlDscDatabase -Name $script:testDatabaseName | Suspend-SqlDscDatabase -Force -PassThru -ErrorAction 'Stop'
+            $resultDb = $script:serverObject | Get-SqlDscDatabase -Name $script:testDatabaseName -Refresh | Suspend-SqlDscDatabase -Force -PassThru -ErrorAction 'Stop'
             $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeTrue
         }
     }
