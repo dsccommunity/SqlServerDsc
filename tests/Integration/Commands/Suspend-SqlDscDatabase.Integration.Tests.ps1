@@ -63,7 +63,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             if ($existingDb)
             {
                 # Ensure database is online before removing
-                if ($existingDb.Status -eq [Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
+                if ($existingDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline))
                 {
                     $null = Resume-SqlDscDatabase -DatabaseObject $existingDb -Force -ErrorAction 'SilentlyContinue'
                 }
@@ -86,11 +86,11 @@ Describe 'Suspend-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
 
             # Take the database offline
             $resultDb = Suspend-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -PassThru -ErrorAction 'Stop'
-            $resultDb.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
+            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeTrue
 
             # Verify the change
             $offlineDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
-            $offlineDb.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
+            $offlineDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeTrue
         }
 
         It 'Should be idempotent when database is already offline' {
@@ -102,7 +102,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
 
             # Verify the database is still offline
             $offlineDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
-            $offlineDb.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
+            $offlineDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeTrue
         }
 
         It 'Should throw error when trying to take offline non-existent database' {
@@ -122,11 +122,11 @@ Describe 'Suspend-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
 
             # Take the database offline
             $resultDb = Suspend-SqlDscDatabase -DatabaseObject $databaseObject -Force -PassThru -ErrorAction 'Stop'
-            $resultDb.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
+            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeTrue
 
             # Verify the change
             $offlineDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Refresh -ErrorAction 'Stop'
-            $offlineDb.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
+            $offlineDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeTrue
         }
     }
 
@@ -137,7 +137,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
 
             # Take offline via pipeline
             $resultDb = $script:serverObject | Suspend-SqlDscDatabase -Name $script:testDatabaseName -Force -PassThru -ErrorAction 'Stop'
-            $resultDb.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
+            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeTrue
         }
 
         It 'Should take the database offline via pipeline using DatabaseObject' {
@@ -147,7 +147,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             # Get the database object and take offline via pipeline
             $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Refresh -ErrorAction 'Stop'
             $resultDb = $databaseObject | Suspend-SqlDscDatabase -Force -PassThru -ErrorAction 'Stop'
-            $resultDb.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
+            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeTrue
         }
     }
 
@@ -158,7 +158,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
 
             # Take offline using pipeline
             $resultDb = $script:serverObject | Get-SqlDscDatabase -Name $script:testDatabaseName | Suspend-SqlDscDatabase -Force -PassThru -ErrorAction 'Stop'
-            $resultDb.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
+            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeTrue
         }
     }
 }

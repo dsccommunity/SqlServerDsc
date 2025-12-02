@@ -63,7 +63,7 @@ Describe 'Resume-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
             if ($existingDb)
             {
                 # Ensure database is online before removing
-                if ($existingDb.Status -eq [Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
+                if ($existingDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline))
                 {
                     $null = Resume-SqlDscDatabase -DatabaseObject $existingDb -Force -ErrorAction 'SilentlyContinue'
                 }
@@ -82,7 +82,7 @@ Describe 'Resume-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
 
             # Verify database is offline
             $offlineDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
-            $offlineDb.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
+            $offlineDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeTrue
 
             # Bring the database online
             $resultDb = Resume-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -PassThru -ErrorAction 'Stop'
@@ -118,7 +118,7 @@ Describe 'Resume-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
 
             # Get the database object
             $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Refresh -ErrorAction 'Stop'
-            $databaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
+            $databaseObject.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeTrue
 
             # Bring the database online
             $resultDb = Resume-SqlDscDatabase -DatabaseObject $databaseObject -Force -PassThru -ErrorAction 'Stop'
