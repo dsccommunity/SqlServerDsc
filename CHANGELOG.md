@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added comprehensive set of settable database properties that were previously
     only available in `Set-SqlDscDatabaseProperty`
     ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
+- Added public command `Resume-SqlDscDatabase` to bring a database online using
+  SMO `Database.SetOnline()`. Supports Server and Database pipeline input
+  ([issue #2191](https://github.com/dsccommunity/SqlServerDsc/issues/2191)).
+- Added public command `Suspend-SqlDscDatabase` to take a database offline using
+  SMO `Database.SetOffline()`. Supports Server and Database pipeline input;
+  includes `Force` to disconnect active users
+  ([issue #2192](https://github.com/dsccommunity/SqlServerDsc/issues/2192)).
 
 ### Changed
 
@@ -62,13 +69,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added public command `Resume-SqlDscDatabase` to bring a database online using
-  SMO `Database.SetOnline()`. Supports Server and Database pipeline input
-  ([issue #2191](https://github.com/dsccommunity/SqlServerDsc/issues/2191)).
-- Added public command `Suspend-SqlDscDatabase` to take a database offline using
-  SMO `Database.SetOffline()`. Supports Server and Database pipeline input;
-  includes `Force` to disconnect active users
-  ([issue #2192](https://github.com/dsccommunity/SqlServerDsc/issues/2192)).
 - Added public command `Enable-SqlDscDatabaseSnapshotIsolation` to enable snapshot
   isolation for a database in a SQL Server Database Engine instance. This command
   uses the SMO `SetSnapshotIsolation()` method to enable row-versioning and snapshot
