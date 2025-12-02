@@ -43,6 +43,7 @@
 
     .PARAMETER AcceleratedRecoveryEnabled
         Specifies whether Accelerated Database Recovery (ADR) is enabled for the database.
+        This parameter requires SQL Server 2019 (version 15) or later.
 
     .PARAMETER AnsiNullDefault
         Specifies whether new columns allow NULL by default unless explicitly specified (when ON).
@@ -106,6 +107,7 @@
 
     .PARAMETER DataRetentionEnabled
         Specifies whether SQL Server data retention policy is enabled at the database level.
+        This parameter requires SQL Server 2017 (version 14) or later.
 
     .PARAMETER DateCorrelationOptimization
         Specifies whether date correlation optimization is enabled to speed up temporal joins.
@@ -148,10 +150,12 @@
         Specifies whether vardecimal compression is enabled.
 
     .PARAMETER LegacyCardinalityEstimation
-        Specifies whether the legacy cardinality estimator is enabled for the primary.
+        Specifies the legacy cardinality estimator setting for the primary.
+        Valid values are Off, On, or Primary (for secondary replicas to use primary's setting).
 
     .PARAMETER LegacyCardinalityEstimationForSecondary
-        Specifies whether the legacy cardinality estimator is enabled for secondary replicas.
+        Specifies the legacy cardinality estimator setting for secondary replicas.
+        Valid values are Off, On, or Primary (to use primary's setting).
 
     .PARAMETER LocalCursorsDefault
         Specifies whether cursors are local by default instead of global (when ON).
@@ -193,22 +197,27 @@
         Specifies the page verification setting (NONE, TORN_PAGE_DETECTION, CHECKSUM).
 
     .PARAMETER ParameterSniffing
-        Specifies whether parameter sniffing behavior is enabled on the primary.
+        Specifies the parameter sniffing setting for the primary.
+        Valid values are Off, On, or Primary (for secondary replicas to use primary's setting).
 
     .PARAMETER ParameterSniffingForSecondary
-        Specifies whether parameter sniffing is enabled on secondary replicas.
+        Specifies the parameter sniffing setting for secondary replicas.
+        Valid values are Off, On, or Primary (to use primary's setting).
 
     .PARAMETER PersistentVersionStoreFileGroup
         Specifies the filegroup used for the Persistent Version Store (PVS).
+        This parameter requires SQL Server 2019 (version 15) or later.
 
     .PARAMETER PrimaryFilePath
         Specifies the path of the primary data files directory.
 
     .PARAMETER QueryOptimizerHotfixes
-        Specifies whether query optimizer hotfixes are enabled on the primary.
+        Specifies the query optimizer hotfixes setting for the primary.
+        Valid values are Off, On, or Primary (for secondary replicas to use primary's setting).
 
     .PARAMETER QueryOptimizerHotfixesForSecondary
-        Specifies whether query optimizer hotfixes are enabled on secondary replicas.
+        Specifies the query optimizer hotfixes setting for secondary replicas.
+        Valid values are Off, On, or Primary (to use primary's setting).
 
     .PARAMETER QuotedIdentifiersEnabled
         Specifies whether identifiers can be delimited by double quotes (when ON).
@@ -242,6 +251,7 @@
 
     .PARAMETER TemporalHistoryRetentionEnabled
         Specifies whether automatic cleanup of system-versioned temporal history is enabled.
+        This parameter requires SQL Server 2017 (version 14) or later.
 
     .PARAMETER TransformNoiseWords
         Specifies how full-text noise word behavior is controlled during queries.
@@ -253,7 +263,7 @@
         Specifies the two-digit year cutoff used for date conversion.
 
     .PARAMETER UserAccess
-        Specifies the database user access mode (MULTI_USER, RESTRICTED_USER, SINGLE_USER).
+        Specifies the database user access mode. Valid values are Multiple, Restricted, and Single.
 
     .PARAMETER Force
         Specifies that the database should be modified without any confirmation.
@@ -270,13 +280,13 @@
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $databaseObject = $serverObject | Get-SqlDscDatabase -Name 'MyDatabase'
-        Set-SqlDscDatabaseProperty -DatabaseObject $databaseObject -ReadOnly $false -AutoClose $false
+        Set-SqlDscDatabaseProperty -DatabaseObject $databaseObject -ReadOnly:$false -AutoClose:$false
 
         Sets multiple database properties at once using a database object.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        Set-SqlDscDatabaseProperty -ServerObject $serverObject -Name 'MyDatabase' -CompatibilityLevel 'Version160' -Trustworthy $false -Force
+        Set-SqlDscDatabaseProperty -ServerObject $serverObject -Name 'MyDatabase' -CompatibilityLevel 'Version160' -Trustworthy:$false -Force
 
         Sets the compatibility level and trustworthy property of the database without prompting for confirmation.
 
@@ -350,179 +360,179 @@ function Set-SqlDscDatabaseProperty
 
         # Boolean Properties
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AcceleratedRecoveryEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AnsiNullDefault,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AnsiNullsEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AnsiPaddingEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AnsiWarningsEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ArithmeticAbortEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoClose,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoCreateIncrementalStatisticsEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoCreateStatisticsEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoShrink,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoUpdateStatisticsAsync,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoUpdateStatisticsEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $BrokerEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ChangeTrackingAutoCleanUp,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ChangeTrackingEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $CloseCursorsOnCommitEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ConcatenateNullYieldsNull,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $DatabaseOwnershipChaining,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $DataRetentionEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $DateCorrelationOptimization,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $EncryptionEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $HonorBrokerPriority,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsFullTextEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsParameterizationForced,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsReadCommittedSnapshotOn,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsSqlDw,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsVarDecimalStorageFormatEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]
         $LegacyCardinalityEstimation,
 
         [Parameter()]
-        [System.Boolean]
+        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]
         $LegacyCardinalityEstimationForSecondary,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $LocalCursorsDefault,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $NestedTriggersEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $NumericRoundAbortEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]
         $ParameterSniffing,
 
         [Parameter()]
-        [System.Boolean]
+        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]
         $ParameterSniffingForSecondary,
 
         [Parameter()]
-        [System.Boolean]
+        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]
         $QueryOptimizerHotfixes,
 
         [Parameter()]
-        [System.Boolean]
+        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]
         $QueryOptimizerHotfixesForSecondary,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $QuotedIdentifiersEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ReadOnly,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $RecursiveTriggersEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $RemoteDataArchiveEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $RemoteDataArchiveUseFederatedServiceAccount,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $TemporalHistoryRetentionEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $TransformNoiseWords,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $Trustworthy,
 
         # Integer Properties
@@ -771,6 +781,12 @@ function Set-SqlDscDatabaseProperty
 
                 $currentValue = $sqlDatabaseObject.$parameterName
                 $newValue = $boundParameters.$parameterName
+
+                # Convert SwitchParameter to Boolean for SMO properties
+                if ($newValue -is [System.Management.Automation.SwitchParameter])
+                {
+                    $newValue = $newValue.IsPresent
+                }
 
                 # Only update if the value is different
                 if ($currentValue -ne $newValue)

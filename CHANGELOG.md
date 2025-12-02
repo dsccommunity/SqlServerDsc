@@ -5,6 +5,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `New-SqlDscDatabase`
+  - Added comprehensive set of settable database properties that were previously
+    only available in `Set-SqlDscDatabaseProperty`
+    ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
+
+### Changed
+
+- `Set-SqlDscDatabaseProperty`
+  - Updated comment-based help to reference correct enum values.
+  - Added SQL Server version requirements to version-specific parameter help.
+
+### Fixed
+
+- `New-SqlDscDatabase`
+  - Fixed parameter types for database-scoped configuration properties from
+    `System.Boolean` to `Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff`
+    to match SMO property types and support all valid values (Off, On, Primary)
+    ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
+  - Fixed parameter types for boolean database properties from `System.Boolean` to
+    `System.Management.Automation.SwitchParameter` to follow PowerShell best practices.
+    ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
+- `Set-SqlDscDatabaseProperty`
+  - Fixed parameter types for database-scoped configuration properties from
+    `System.Boolean` to `Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff`
+    to match SMO property types and support all valid values (Off, On, Primary)
+    ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
+  - Fixed parameter types for boolean database properties from `System.Boolean` to
+    `System.Management.Automation.SwitchParameter` to follow PowerShell best practices.
+    ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
+
+## [17.3.0] - 2025-12-01
+
 ### Removed
 
 - BREAKING CHANGE: Removed public command `Test-SqlDscDatabase`. Use

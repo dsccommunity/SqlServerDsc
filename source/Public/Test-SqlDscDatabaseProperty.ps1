@@ -460,7 +460,7 @@
         Specifies the two-digit year cutoff used for date conversion.
 
     .PARAMETER UserAccess
-        Specifies the database user access mode (MULTI_USER, RESTRICTED_USER, SINGLE_USER).
+        Specifies the database user access mode (Multiple, Restricted, Single).
 
     .PARAMETER UserName
         Specifies the user name for the current connection context (as seen by SMO).
@@ -486,9 +486,9 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        Test-SqlDscDatabaseProperty -ServerObject $serverObject -Name 'MyDatabase' -Owner 'sa' -AutoClose $false -Trustworthy $false
+        Test-SqlDscDatabaseProperty -ServerObject $serverObject -Name 'MyDatabase' -Owner 'sa' -AutoClose:$false -Trustworthy:$false
 
-        Tests multiple database properties at once.
+        Tests multiple database properties at once. Switch parameters can be explicitly set to $false using the colon syntax.
 
     .INPUTS
         `[Microsoft.SqlServer.Management.Smo.Database]`
@@ -525,299 +525,299 @@ function Test-SqlDscDatabaseProperty
 
         # Boolean Properties
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AcceleratedRecoveryEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ActiveDirectory,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AnsiNullDefault,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AnsiNullsEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AnsiPaddingEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AnsiWarningsEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ArithmeticAbortEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoClose,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoCreateIncrementalStatisticsEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoCreateStatisticsEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoShrink,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoUpdateStatisticsAsync,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $AutoUpdateStatisticsEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $BrokerEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $CaseSensitive,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ChangeTrackingAutoCleanUp,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ChangeTrackingEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $CloseCursorsOnCommitEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ConcatenateNullYieldsNull,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $DatabaseOwnershipChaining,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $DataRetentionEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $DateCorrelationOptimization,
 
         [Parameter()]
-        [System.Boolean]
+        [Microsoft.SqlServer.Management.Smo.DelayedDurability]
         $DelayedDurability,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $EncryptionEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $HasDatabaseEncryptionKey,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $HasFileInCloud,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $HasMemoryOptimizedObjects,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $HonorBrokerPriority,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsAccessible,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsDatabaseSnapshot,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsDatabaseSnapshotBase,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsDbAccessAdmin,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsDbBackupOperator,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsDbDataReader,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsDbDataWriter,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsDbDdlAdmin,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsDbDenyDataReader,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsDbDenyDataWriter,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsDbManager,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsDbOwner,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsDbSecurityAdmin,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsFabricDatabase,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsFullTextEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsLedger,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsLoginManager,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsMailHost,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsManagementDataWarehouse,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsMaxSizeApplicable,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsMirroringEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsParameterizationForced,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsReadCommittedSnapshotOn,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsSqlDw,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsSqlDwEdition,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsSystemObject,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsVarDecimalStorageFormatEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $IsVarDecimalStorageFormatSupported,
 
         [Parameter()]
-        [System.Boolean]
+        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]
         $LegacyCardinalityEstimation,
 
         [Parameter()]
-        [System.Boolean]
+        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]
         $LegacyCardinalityEstimationForSecondary,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $LocalCursorsDefault,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $NestedTriggersEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $NumericRoundAbortEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]
         $ParameterSniffing,
 
         [Parameter()]
-        [System.Boolean]
+        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]
         $ParameterSniffingForSecondary,
 
         [Parameter()]
-        [System.Boolean]
+        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]
         $QueryOptimizerHotfixes,
 
         [Parameter()]
-        [System.Boolean]
+        [Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff]
         $QueryOptimizerHotfixesForSecondary,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $QuotedIdentifiersEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $ReadOnly,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $RecursiveTriggersEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $RemoteDataArchiveEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $RemoteDataArchiveUseFederatedServiceAccount,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $TemporalHistoryRetentionEnabled,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $TransformNoiseWords,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $Trustworthy,
 
         [Parameter()]
-        [System.Boolean]
+        [System.Management.Automation.SwitchParameter]
         $WarnOnRename,
 
         # Integer Properties
@@ -1157,6 +1157,12 @@ function Test-SqlDscDatabaseProperty
 
             $expectedValue = $boundParameters.$parameterName
             $actualValue = $sqlDatabaseObject.$parameterName
+
+            # Convert SwitchParameter to Boolean for comparison with SMO properties
+            if ($expectedValue -is [System.Management.Automation.SwitchParameter])
+            {
+                $expectedValue = $expectedValue.IsPresent
+            }
 
             # Use a robust comparison that handles empty strings, nulls, and different types
             $valuesMatch = $false
