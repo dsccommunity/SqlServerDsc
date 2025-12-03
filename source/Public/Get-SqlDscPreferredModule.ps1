@@ -50,8 +50,6 @@
 
         Returns a PSModuleInfo object for the preferred module, or $null if not found.
 
-    .NOTES
-
 #>
 function Get-SqlDscPreferredModule
 {
