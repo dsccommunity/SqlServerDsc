@@ -19,7 +19,7 @@
     .OUTPUTS
         `System.Boolean`
 
-        Returns the output object.
+        Returns $true if the principal exists as a login; otherwise $false.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
