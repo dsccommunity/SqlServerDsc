@@ -63,8 +63,13 @@
     .OUTPUTS
         `System.Int32`
 
-        When PassThru is specified the function will return the setup process exit
-        code.
+        The exit code from the setup process when PassThru is specified.
+
+    .OUTPUTS
+        None.
+
+        No output is generated when PassThru is not specified.
+
     .EXAMPLE
         Install-SqlDscBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe'
 
