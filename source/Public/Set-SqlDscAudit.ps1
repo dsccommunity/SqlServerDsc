@@ -87,7 +87,12 @@
     .OUTPUTS
         `Microsoft.SqlServer.Management.Smo.Audit`
 
-        When passing parameter **PassThru**.
+        Returns the updated audit object when using the **PassThru** parameter.
+
+    .OUTPUTS
+        None.
+
+        No output when the **PassThru** parameter is not specified.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
