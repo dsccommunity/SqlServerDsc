@@ -42,6 +42,11 @@
 
         Accepts a SQL Server server object via the pipeline.
 
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Audit`
+
+        Accepts an audit object via the pipeline.
+
     .OUTPUTS
         None.
 #>
