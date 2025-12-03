@@ -37,7 +37,6 @@
         Returns configuration information about the Power BI Report Server
         instance 'PBIRS'.
 
-
     .INPUTS
         None.
 
