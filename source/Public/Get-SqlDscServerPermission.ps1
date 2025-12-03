@@ -38,12 +38,22 @@
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Server`
 
-        Accepts input via the pipeline.
+        Server object accepted from the pipeline.
 
-.OUTPUTS
-        `Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[`
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Login`
 
-        Returns the output object.]
+        Login object accepted from the pipeline.
+
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.ServerRole`
+
+        ServerRole object accepted from the pipeline.
+
+    .OUTPUTS
+        `Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[]`
+
+        Returns server permissions for the specified principal.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
