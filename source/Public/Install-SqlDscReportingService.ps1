@@ -60,10 +60,14 @@
         None.
 
     .OUTPUTS
+        None.
+
+        This command does not generate any output by default.
+
+    .OUTPUTS
         `System.Int32`
 
-        Returns the setup process exit code when PassThru is specified; otherwise
-        the command does not generate any output.
+        Returns the setup process exit code when PassThru is specified.
 
     .EXAMPLE
         Install-SqlDscReportingService -AcceptLicensingTerms -MediaPath 'E:\SQLServerReportingServices.exe'
@@ -95,6 +99,7 @@ function Install-SqlDscReportingService
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '', Justification = 'Because ShouldProcess is used in Invoke-SetupAction')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+    [OutputType()]
     [OutputType([System.Int32])]
     param
     (
