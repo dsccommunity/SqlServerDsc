@@ -524,6 +524,10 @@ namespace Microsoft.SqlServer.Management.Smo
         {
         }
 
+        public void KillAllProcesses( string databaseName )
+        {
+        }
+
         // Property for SQL Agent support
         public Microsoft.SqlServer.Management.Smo.Agent.JobServer JobServer { get; set; }
 
@@ -985,6 +989,16 @@ namespace Microsoft.SqlServer.Management.Smo
             {
                 this.SnapshotIsolationState = SnapshotIsolationState.Disabled;
             }
+        }
+
+        public void SetOnline()
+        {
+            this.Status = DatabaseStatus.Normal;
+        }
+
+        public void SetOffline()
+        {
+            this.Status = DatabaseStatus.Offline;
         }
     }
 

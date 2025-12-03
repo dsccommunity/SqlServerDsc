@@ -366,6 +366,29 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Database_Create_ShouldProcessCaption = Create database on instance
 
+    ## Resume-SqlDscDatabase
+    Database_Resume_ShouldProcessVerboseDescription = Bringing the database '{0}' online on the instance '{1}'.
+    Database_Resume_ShouldProcessVerboseWarning = Are you sure you want to bring the database '{0}' online?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Database_Resume_ShouldProcessCaption = Bring database online
+    Database_AlreadyOnline = Database '{0}' is already online (Status: {1}).
+    Database_BringingOnline = Bringing database '{0}' online.
+    Database_BroughtOnline = Database '{0}' was brought online successfully.
+    Database_ResumeFailed = Failed to bring database '{0}' online.
+
+    ## Suspend-SqlDscDatabase
+    Database_Suspend_ShouldProcessVerboseDescription = Taking the database '{0}' offline on the instance '{1}'.
+    Database_Suspend_ShouldProcessVerboseWarning = Are you sure you want to take the database '{0}' offline?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Database_Suspend_ShouldProcessCaption = Take database offline
+    Database_AlreadyOffline = Database '{0}' is already offline (Status: {1}).
+    Database_TakingOffline = Taking database '{0}' offline.
+    Database_TakingOfflineWithForce = Taking database '{0}' offline with force (disconnecting active users).
+    Database_KillingProcesses = Killing all processes for database '{0}'.
+    Database_TakenOffline = Database '{0}' was taken offline successfully.
+    Database_SuspendFailed = Failed to take database '{0}' offline.
+    Database_KillProcessesFailed = Failed to kill processes for database '{0}'.
+
     ## New-SqlDscDatabaseSnapshot
     DatabaseSnapshot_Create = Creating database snapshot '{0}' from source database '{1}' on instance '{2}'. (NSDS0002)
     DatabaseSnapshot_EditionNotSupported = Database snapshots are not supported on SQL Server instance '{0}' with edition '{1}'. Snapshots are only supported in Enterprise, Developer, and Evaluation editions. (NSDS0001)
