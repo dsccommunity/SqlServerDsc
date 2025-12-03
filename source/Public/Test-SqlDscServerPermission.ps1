@@ -39,7 +39,6 @@
         When this parameter is not used, the test will return true if the specified
         permissions are present, regardless of any additional permissions.
 
-    
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Login`
 
