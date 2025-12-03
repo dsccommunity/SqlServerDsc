@@ -36,9 +36,7 @@
     .OUTPUTS
         `System.Boolean`
 
-        Returns the output object.
-
-        Returns $true if the login is enabled, $false if the login is disabled.
+        Returns $true if the login is enabled; otherwise $false.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
