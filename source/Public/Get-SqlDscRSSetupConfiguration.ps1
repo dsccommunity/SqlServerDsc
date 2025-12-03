@@ -41,24 +41,12 @@
     .INPUTS
         None.
 
-.OUTPUTS
-        `PSCustomObject`
+    .OUTPUTS
+        `PSCustomObject[]`
 
-        - InstanceName: The name of the Reporting Services instance.
-        - InstallFolder: The installation folder path.
-        - ServiceName: The name of the service.
-        - ErrorDumpDirectory: The path to the error dump directory.
-        - CustomerFeedback: Whether customer feedback is enabled.
-        - EnableErrorReporting: Whether error reporting is enabled.
-        - ProductVersion: The product version from registry.
-        - CurrentVersion: The current version from registry.
-        - VirtualRootServer: The virtual root server value.
-        - ConfigFilePath: The path to the report server configuration file.
-        - EditionID: The edition ID of the Reporting Services instance.
-        - EditionName: The edition name of the Reporting Services instance.
-        - IsSharePointIntegrated: Whether the instance is SharePoint integrated.
-          MSReportServer_Instance.
-        - InstanceId: The instance ID of the Reporting Services instance.
+        Returns an array of custom objects containing Reporting Services configuration
+        information including instance name, installation folder, service details, version
+        information, and additional properties.
 #>
 function Get-SqlDscRSSetupConfiguration
 {
