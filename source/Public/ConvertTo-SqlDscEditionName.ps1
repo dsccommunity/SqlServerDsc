@@ -27,10 +27,8 @@
     .OUTPUTS
         `System.Management.Automation.PSCustomObject`
 
-        Returns a custom object with EditionName and FriendlyEditionName properties.
+        Returns a custom object with EditionId, Edition, and EditionName properties.
 
-    .NOTES
-        Author: SqlServerDsc
 #>
 function ConvertTo-SqlDscEditionName
 {
