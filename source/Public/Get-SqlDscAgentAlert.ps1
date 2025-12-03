@@ -28,8 +28,9 @@
         When using the All parameter set, returns an array of SQL Agent Alert objects.
 
     .OUTPUTS
-        None
-        Returns nothing when no alerts are found for the specified criteria.
+        None.
+
+Returns nothing when no alerts are found for the specified criteria.
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine
         Get-SqlDscAgentAlert -ServerObject $serverObject

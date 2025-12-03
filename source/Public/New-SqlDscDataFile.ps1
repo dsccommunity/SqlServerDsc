@@ -110,9 +110,9 @@
         This cmdlet does not accept input from the pipeline.
 
     .OUTPUTS
-        None
+        None.
 
-        This cmdlet does not generate output by default when using Standard or FromSpec parameter sets without PassThru.
+This cmdlet does not generate output by default when using Standard or FromSpec parameter sets without PassThru.
 
     .OUTPUTS
         Microsoft.SqlServer.Management.Smo.DataFile

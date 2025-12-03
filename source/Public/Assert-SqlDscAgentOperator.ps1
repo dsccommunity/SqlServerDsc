@@ -14,12 +14,12 @@
         Specifies the name of the operator to check for.
 
     .INPUTS
-        [Microsoft.SqlServer.Management.Smo.Server]
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Accepts a SQL Server server object via the pipeline.
 
     .OUTPUTS
         None.
-
-        This command does not return anything if the operator exists.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'

@@ -18,7 +18,9 @@
         SQL Server Database Engine instance object.
 
     .OUTPUTS
-        [System.Boolean]
+        `System.Boolean`
+
+        Returns the output object.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'

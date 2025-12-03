@@ -14,6 +14,16 @@
         ConvertFrom-ManagedServiceType -ServiceType 'SqlServer'
 
         Returns the normalized service type name 'DatabaseEngine' .
+
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType`
+
+        Accepts a managed service type via the pipeline.
+
+    .OUTPUTS
+        `System.String`
+
+        Returns the normalized service type name.
 #>
 function ConvertFrom-ManagedServiceType
 {

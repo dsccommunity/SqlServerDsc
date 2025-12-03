@@ -26,7 +26,13 @@
     .PARAMETER Force
         Specifies that the permissions should be granted without any confirmation.
 
-    .OUTPUTS
+    
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Login`
+
+        Accepts input via the pipeline.
+
+.OUTPUTS
         None.
 
     .EXAMPLE

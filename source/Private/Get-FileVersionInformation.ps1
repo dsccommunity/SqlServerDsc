@@ -18,8 +18,15 @@
 
         Returns the version information for the file setup.exe.
 
+    .INPUTS
+        `System.IO.FileInfo`
+
+        Accepts a file path via the pipeline.
+
     .OUTPUTS
-        [System.String]
+        `System.Diagnostics.FileVersionInfo`
+
+        Returns the file version information.
 #>
 function Get-FileVersionInformation
 {

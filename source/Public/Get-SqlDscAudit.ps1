@@ -24,9 +24,15 @@
 
         Get the audit named **MyFileAudit**.
 
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Accepts a SQL Server server object via the pipeline.
+
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Audit[]]`
-        Array of SMO Audit objects from the target SQL Server instance.
+        `Microsoft.SqlServer.Management.Smo.Audit[]`
+
+        Returns an array of SMO Audit objects from the target SQL Server instance.
 #>
 function Get-SqlDscAudit
 {

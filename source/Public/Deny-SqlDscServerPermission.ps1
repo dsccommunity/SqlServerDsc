@@ -22,6 +22,16 @@
     .PARAMETER Force
         Specifies that the permissions should be denied without any confirmation.
 
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Login`
+
+        Accepts a SQL Server login object via the pipeline.
+
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.ServerRole`
+
+        Accepts a SQL Server server role object via the pipeline.
+
     .OUTPUTS
         None.
 

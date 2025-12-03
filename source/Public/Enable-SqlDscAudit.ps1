@@ -35,7 +35,12 @@
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $sqlServerObject | Enable-SqlDscAudit -Name 'MyFileAudit'
 
-        Enables the audit named **MyFileAudit**.
+        Enables the audit named 'MyFileAudit'.
+
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Accepts a SQL Server server object via the pipeline.
 
     .OUTPUTS
         None.

@@ -17,6 +17,9 @@
 
         Throws an exception if the bound parameters are not in the correct state.
 
+    .INPUTS
+        None.
+
     .OUTPUTS
         None.
 

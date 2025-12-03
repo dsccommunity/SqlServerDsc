@@ -58,7 +58,13 @@
         without prompting for confirmation. This is useful when the database has active
         connections that prevent removal.
 
-    .OUTPUTS
+    
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Accepts input via the pipeline.
+
+.OUTPUTS
         None.
 #>
 function Remove-SqlDscDatabase

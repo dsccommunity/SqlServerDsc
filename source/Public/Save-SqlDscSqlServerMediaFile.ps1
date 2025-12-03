@@ -63,6 +63,14 @@
         Save-SqlDscSqlServerMediaFile -Url 'https://download.microsoft.com/download/9/0/7/907AD35F-9F9C-43A5-9789-52470555DB90/ENU/SQLServer2016SP1-FullSlipstream-x64-ENU.iso' -DestinationPath 'C:\path\to\destination'
 
         This downloads the SQL Server 2016 media and saves it to the specified destination path.
+
+    .INPUTS
+        None.
+
+    .OUTPUTS
+        `System.IO.FileInfo`
+
+        Returns a FileInfo object representing the downloaded media file.
 #>
 function Save-SqlDscSqlServerMediaFile
 {

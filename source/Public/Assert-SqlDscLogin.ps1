@@ -25,6 +25,14 @@
 
         Asserts that the principal 'MyLogin' exists as a login.
 
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Accepts a SQL Server server object via the pipeline.
+
+    .OUTPUTS
+        None.
+
     .NOTES
         This command throws a terminating error if the specified SQL Server
         principal does not exist as a SQL server login.

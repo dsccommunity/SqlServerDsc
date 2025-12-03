@@ -38,7 +38,13 @@
         Creates a new server role named **MyCustomRole** with the specified owner
         without prompting for confirmation.
 
-    .OUTPUTS
+    
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Accepts input via the pipeline.
+
+.OUTPUTS
         `[Microsoft.SqlServer.Management.Smo.ServerRole]`
 #>
 function New-SqlDscRole

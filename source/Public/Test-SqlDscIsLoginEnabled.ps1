@@ -33,7 +33,9 @@
         Login object accepted from the pipeline.
 
     .OUTPUTS
-        [System.Boolean]
+        `System.Boolean`
+
+        Returns the output object.
 
         Returns $true if the login is enabled, $false if the login is disabled.
 

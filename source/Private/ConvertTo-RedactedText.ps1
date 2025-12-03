@@ -27,6 +27,16 @@
         ConvertTo-RedactedText -Text 'My secret phrase: secret123' -RedactPhrase 'secret123' -RedactWith '----'
 
         Returns the text with the phrases redacted to '----'.
+
+    .INPUTS
+        `System.String`
+
+        Accepts text to be redacted via the pipeline.
+
+    .OUTPUTS
+        `System.String`
+
+        Returns the redacted text.
 #>
 function ConvertTo-RedactedText
 {

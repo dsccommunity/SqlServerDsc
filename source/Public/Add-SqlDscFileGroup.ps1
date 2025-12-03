@@ -26,9 +26,9 @@
         FileGroup objects that will be added to the Database.
 
     .OUTPUTS
-        None
+        None.
 
-        This cmdlet does not generate output by default.
+This cmdlet does not generate output by default.
 
     .OUTPUTS
         Microsoft.SqlServer.Management.Smo.FileGroup[]

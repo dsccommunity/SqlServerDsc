@@ -35,7 +35,9 @@
         SQL Agent Alert object.
 
     .OUTPUTS
-        [System.Boolean]
+        `System.Boolean`
+
+        Returns the output object.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'

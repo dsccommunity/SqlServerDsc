@@ -21,9 +21,9 @@
         None.
 
     .OUTPUTS
-        Microsoft.SqlServer.Management.Smo.Agent.Operator
+        `Microsoft.SqlServer.Management.Smo.Agent.Operator`
 
-        Returns the operator object if found.
+        Returns the operator object if found, or $null if not found.
 
     .EXAMPLE
         $operatorObject = Get-AgentOperatorObject -ServerObject $serverObject -Name 'TestOperator'

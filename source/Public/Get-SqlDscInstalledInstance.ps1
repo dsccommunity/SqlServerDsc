@@ -12,7 +12,11 @@
         Specifies the service type to filter instances by. Valid values are
         'DatabaseEngine', 'AnalysisServices', and 'ReportingServices'.
 
-    .OUTPUTS
+    
+    .INPUTS
+        None.
+
+.OUTPUTS
         `[System.Object[]]`
 
     .EXAMPLE

@@ -19,8 +19,15 @@
         Returns an object of `[Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]`
         with all the permissions set to $true that was part of the `[DatabasePermission]`.
 
+    .INPUTS
+        `DatabasePermission`
+
+        Accepts a DatabasePermission object via the pipeline.
+
     .OUTPUTS
-        [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]
+        `Microsoft.SqlServer.Management.Smo.DatabasePermissionSet`
+
+        Returns a database permission set object.
 #>
 function ConvertFrom-SqlDscDatabasePermission
 {

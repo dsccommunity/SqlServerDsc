@@ -59,8 +59,13 @@
 
         Connects to the default instance on the local server using the SQL login 'sa'.
 
+    .INPUTS
+        None.
+
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Server]`
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Returns the SQL Server server object.
 #>
 function Connect-SqlDscDatabaseEngine
 {

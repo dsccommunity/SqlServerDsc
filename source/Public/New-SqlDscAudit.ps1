@@ -66,7 +66,13 @@
     .PARAMETER PassThru
         If specified the created audit object will be returned.
 
-    .OUTPUTS
+    
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Accepts input via the pipeline.
+
+.OUTPUTS
         `[Microsoft.SqlServer.Management.Smo.Audit]` is passing parameter **PassThru**,
          otherwise none.
 

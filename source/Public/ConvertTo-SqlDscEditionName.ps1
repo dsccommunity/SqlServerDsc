@@ -21,6 +21,14 @@
 
         Returns information about the edition ID 2017617798.
 
+    .INPUTS
+        None.
+
+    .OUTPUTS
+        `System.Management.Automation.PSCustomObject`
+
+        Returns a custom object with EditionName and FriendlyEditionName properties.
+
     .NOTES
         Author: SqlServerDsc
 #>

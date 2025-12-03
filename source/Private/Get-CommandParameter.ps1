@@ -15,10 +15,10 @@
         Common parameters and optional common parameters are always excluded.
 
     .INPUTS
-        None.
+        None
 
     .OUTPUTS
-        System.String[]
+        `System.String[]`
 
         Returns an array of parameter names that are not excluded.
 

@@ -13,8 +13,11 @@
     .PARAMETER Exclude
         Array of parameter names to exclude from the formatted output.
 
+    .INPUTS
+        None.
+
     .OUTPUTS
-        System.String
+        `System.String`
 
         Returns a formatted string with parameters and their values.
 

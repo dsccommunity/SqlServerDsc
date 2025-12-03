@@ -11,8 +11,16 @@
     .PARAMETER Name
         Specifies the name of the server principal.
 
-    .OUTPUTS
-        [System.Boolean]
+    
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Accepts input via the pipeline.
+
+.OUTPUTS
+        `System.Boolean`
+
+        Returns the output object.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine

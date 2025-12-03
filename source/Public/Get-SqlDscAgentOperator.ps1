@@ -28,8 +28,9 @@
         When using the All parameter set, returns an array of SQL Agent Operator objects.
 
     .OUTPUTS
-        None
-        Returns nothing when no operators are found for the specified criteria.
+        None.
+
+Returns nothing when no operators are found for the specified criteria.
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine
         Get-SqlDscAgentOperator -ServerObject $serverObject

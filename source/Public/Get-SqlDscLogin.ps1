@@ -25,7 +25,13 @@
 
         Get the login named **MyLogin**.
 
-    .OUTPUTS
+    
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Accepts input via the pipeline.
+
+.OUTPUTS
         `[Microsoft.SqlServer.Management.Smo.Login]`
 
         Returns a single Login object when the Name parameter is specified and a

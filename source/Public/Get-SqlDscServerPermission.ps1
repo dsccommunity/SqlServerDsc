@@ -34,8 +34,16 @@
         Specifies the ServerRole object for which the permissions are returned.
         This parameter accepts pipeline input.
 
-    .OUTPUTS
-        [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[]]
+    
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Accepts input via the pipeline.
+
+.OUTPUTS
+        `Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[`
+
+        Returns the output object.]
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine

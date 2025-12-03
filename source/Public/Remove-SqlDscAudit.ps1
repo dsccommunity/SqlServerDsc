@@ -37,7 +37,13 @@
 
         Removes the audit named **MyFileAudit**.
 
-    .OUTPUTS
+    
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Accepts input via the pipeline.
+
+.OUTPUTS
         None.
 #>
 function Remove-SqlDscAudit

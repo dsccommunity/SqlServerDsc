@@ -30,7 +30,11 @@
     .PARAMETER PassThru
         Specifies whether the command will return the setup process exit code.
 
-    .OUTPUTS
+    
+    .INPUTS
+        None.
+
+.OUTPUTS
         When PassThru is specified the function will return the setup process exit
         code as System.Int32. Otherwise, the function does not generate any output.
 

@@ -39,6 +39,12 @@
 
         Imports the specified preferred module OtherSqlModule if it exist, otherwise
         it will try to import the module SQLPS.
+
+    .INPUTS
+        None.
+
+    .OUTPUTS
+        None.
 #>
 function Import-SqlDscPreferredModule
 {

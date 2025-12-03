@@ -351,7 +351,11 @@
     .LINK
         https://docs.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt
 
-    .OUTPUTS
+    
+    .INPUTS
+        None.
+
+.OUTPUTS
         None.
 
     .EXAMPLE

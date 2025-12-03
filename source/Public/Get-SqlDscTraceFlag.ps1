@@ -40,7 +40,11 @@
         Get all the trace flags from the Database Engine instance 'SQL2022' on the
         server where the command in run.
 
-    .OUTPUTS
+    
+    .INPUTS
+        None.
+
+.OUTPUTS
         `[System.UInt32[]]`
 #>
 function Get-SqlDscTraceFlag

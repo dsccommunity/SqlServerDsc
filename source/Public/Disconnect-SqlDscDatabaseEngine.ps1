@@ -22,6 +22,11 @@
 
         Connects and then disconnects from the default instance on the local server.
 
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Accepts a SQL Server server object via the pipeline.
+
     .OUTPUTS
         None.
 #>

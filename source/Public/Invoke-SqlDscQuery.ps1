@@ -48,7 +48,13 @@
     .PARAMETER Force
         Specifies that the query should be executed without any confirmation.
 
-    .OUTPUTS
+    
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Accepts input via the pipeline.
+
+.OUTPUTS
         `[System.Data.DataSet]` when passing parameter **PassThru**, otherwise
         outputs none.
 

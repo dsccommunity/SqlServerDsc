@@ -70,9 +70,13 @@
         https://learn.microsoft.com/en-us/power-bi/report-server/install-report-server
         https://learn.microsoft.com/en-us/sql/reporting-services/install-windows/install-reporting-services
 
+    .INPUTS
+        None.
+
     .OUTPUTS
-        When PassThru is specified the function will return the setup process exit
-        code as System.Int32. Otherwise, the function does not generate any output.
+        `System.Int32`
+
+        When PassThru is specified, returns the setup process exit code. Otherwise, no output is generated.
 
     .EXAMPLE
         Invoke-ReportServerSetupAction -Install -AcceptLicensingTerms -MediaPath 'E:\SQLServerReportingServices.exe'

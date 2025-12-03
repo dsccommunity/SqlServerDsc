@@ -11,15 +11,13 @@
     .PARAMETER Name
         Specifies the name of the SQL Agent Alert.
 
-    .OUTPUTS
-        Microsoft.SqlServer.Management.Smo.Agent.Alert
-
-        Returns the SQL Agent Alert object when an alert with the specified name is found.
-
-    .OUTPUTS
+    .INPUTS
         None.
 
-        When no alert with the specified name is found.
+    .OUTPUTS
+        `Microsoft.SqlServer.Management.Smo.Agent.Alert`
+
+        Returns the SQL Agent Alert object when an alert with the specified name is found, or $null if not found.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine

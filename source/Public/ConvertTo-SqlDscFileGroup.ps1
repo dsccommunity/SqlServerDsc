@@ -14,6 +14,9 @@
     .PARAMETER FileGroupSpec
         The DatabaseFileGroupSpec object containing the file group configuration.
 
+    .INPUTS
+        None.
+
     .OUTPUTS
         Microsoft.SqlServer.Management.Smo.FileGroup
 
