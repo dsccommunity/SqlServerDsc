@@ -34,7 +34,7 @@
         Specifies the ServerRole object for which the permissions are returned.
         This parameter accepts pipeline input.
 
-    
+
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Server`
 
