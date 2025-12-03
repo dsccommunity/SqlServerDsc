@@ -27,13 +27,17 @@
     .PARAMETER Force
         Specifies that the permissions should be revoked without any confirmation.
 
-    
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Login`
 
         Accepts input via the pipeline.
 
-.OUTPUTS
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.ServerRole`
+
+        Accepts input via the pipeline.
+
+    .OUTPUTS
         None.
 
     .EXAMPLE
