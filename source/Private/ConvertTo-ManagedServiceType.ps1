@@ -28,6 +28,7 @@
 function ConvertTo-ManagedServiceType
 {
     [CmdletBinding()]
+    [OutputType([Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType])]
     param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
