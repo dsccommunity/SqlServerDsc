@@ -31,8 +31,14 @@
         SQL Server Database Engine instance object.
 
     .OUTPUTS
-        `Microsoft.SqlServer.Management.Smo.Agent.Alert` if passing parameter **PassThru**,
-         otherwise none.
+        `Microsoft.SqlServer.Management.Smo.Agent.Alert`
+
+        Returns the created alert object when using the **PassThru** parameter.
+
+    .OUTPUTS
+        None.
+
+        No output when the **PassThru** parameter is not specified.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
