@@ -19,7 +19,6 @@
 
         Returns the managed computer object for the server 'MyServer'.
 
-    
     .INPUTS
         None.
 
