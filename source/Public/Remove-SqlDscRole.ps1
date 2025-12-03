@@ -43,13 +43,17 @@
 
         Removes the role named **MyCustomRole** without prompting for confirmation.
 
-    
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Server`
 
         Accepts input via the pipeline.
 
-.OUTPUTS
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.ServerRole`
+
+        Accepts input via the pipeline.
+
+    .OUTPUTS
         None.
 #>
 function Remove-SqlDscRole
