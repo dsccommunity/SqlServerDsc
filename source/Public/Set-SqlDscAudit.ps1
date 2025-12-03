@@ -74,11 +74,15 @@
     .PARAMETER PassThru
         If specified the changed audit object will be returned.
 
-
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Server`
 
-        Accepts input via the pipeline.
+        Accepts a SQL Server server object via the pipeline.
+
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Audit`
+
+        Accepts a SQL Server audit object via the pipeline.
 
     .OUTPUTS
         `Microsoft.SqlServer.Management.Smo.Audit`
