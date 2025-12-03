@@ -32,12 +32,12 @@
         the server object's databases collection first.
 
     .OUTPUTS
-        `[System.Boolean]`
+        `System.Boolean`
 
         Returns `$true` if the target object is a database; otherwise, `$false`.
 
     .INPUTS
-        `[Microsoft.SqlServer.Management.Smo.Server]`
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         The server object can be provided via the pipeline to **ServerObject**.
 #>

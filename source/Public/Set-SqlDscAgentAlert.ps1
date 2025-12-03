@@ -35,20 +35,22 @@
         Specifies that the alert should be updated without prompting for confirmation.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Server
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         SQL Server Database Engine instance object.
 
-        Microsoft.SqlServer.Management.Smo.Agent.Alert
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Agent.Alert`
 
         SQL Agent Alert object to update.
 
     .OUTPUTS
-        Microsoft.SqlServer.Management.Smo.Agent.Alert
-            Returned when parameter **PassThru** is specified.
+        `Microsoft.SqlServer.Management.Smo.Agent.Alert`
 
-        None
-            No output is returned unless **PassThru** is specified.
+        Returned when parameter **PassThru** is specified.
+
+    .OUTPUTS
+        None.
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         Set-SqlDscAgentAlert -ServerObject $serverObject -Name 'MyAlert' -Severity 16

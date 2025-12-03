@@ -74,15 +74,16 @@
     .PARAMETER PassThru
         If specified the changed audit object will be returned.
 
-    
+
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Server`
 
         Accepts input via the pipeline.
 
-.OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Audit]` is passing parameter **PassThru**,
-         otherwise none.
+    .OUTPUTS
+        `Microsoft.SqlServer.Management.Smo.Audit`
+
+        When passing parameter **PassThru**.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'

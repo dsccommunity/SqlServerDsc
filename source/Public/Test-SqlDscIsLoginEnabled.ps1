@@ -24,11 +24,12 @@
         sure the **ServerObject** is recent enough, or pass in **LoginObject**.
 
     .INPUTS
-        [Microsoft.SqlServer.Management.Smo.Server]
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         Server object accepted from the pipeline.
 
-        [Microsoft.SqlServer.Management.Smo.Login]
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Login`
 
         Login object accepted from the pipeline.
 

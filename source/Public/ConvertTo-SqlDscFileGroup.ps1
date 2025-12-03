@@ -18,7 +18,7 @@
         None.
 
     .OUTPUTS
-        Microsoft.SqlServer.Management.Smo.FileGroup
+        `Microsoft.SqlServer.Management.Smo.FileGroup`
 
     .EXAMPLE
         $fileSpec = New-SqlDscDataFile -Name 'TestDB_Data' -FileName 'C:\SQLData\TestDB.mdf' -AsSpec

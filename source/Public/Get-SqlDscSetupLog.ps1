@@ -34,7 +34,7 @@
         None. This command does not accept pipeline input.
 
     .OUTPUTS
-        `[System.String[]]`
+        `System.String[]`
 
         Returns the content of the setup log file, or null if no log file is found.
 #>

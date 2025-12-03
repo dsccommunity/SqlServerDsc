@@ -19,12 +19,12 @@
         sure the **ServerObject** is recent enough.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Server
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         SQL Server Database Engine instance object.
 
     .OUTPUTS
-        System.Boolean
+        `System.Boolean`
 
         Returns $true if the operator exists, $false otherwise.
 

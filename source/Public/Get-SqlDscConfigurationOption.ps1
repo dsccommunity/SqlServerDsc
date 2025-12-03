@@ -49,11 +49,11 @@
         Get all configuration options as raw SMO ConfigProperty objects.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Server
+        `Microsoft.SqlServer.Management.Smo.Server`
         SQL Server Management Objects (SMO) Server object representing a SQL Server instance.
 
     .OUTPUTS
-        PSCustomObject[]
+        `PSCustomObject[]`
         Returns user-friendly metadata objects with configuration option details (default behavior).
 
         Microsoft.SqlServer.Management.Smo.ConfigProperty[]

@@ -13,17 +13,17 @@
         all operators are returned.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Server
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         SQL Server Database Engine instance object.
 
     .OUTPUTS
-        Microsoft.SqlServer.Management.Smo.Agent.Operator
+        `Microsoft.SqlServer.Management.Smo.Agent.Operator`
 
         When using the ByName parameter set, returns a single SQL Agent Operator object.
 
     .OUTPUTS
-        Microsoft.SqlServer.Management.Smo.Agent.Operator[]
+        `Microsoft.SqlServer.Management.Smo.Agent.Operator[]`
 
         When using the All parameter set, returns an array of SQL Agent Operator objects.
 

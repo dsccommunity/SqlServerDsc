@@ -45,14 +45,14 @@
 
         Returns all the managed computer service objects for instance SQL2022.
 
-    
+
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer`
 
         Accepts input via the pipeline.
 
 .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Wmi.Service[]]`
+        `Microsoft.SqlServer.Management.Smo.Wmi.Service[]`
 #>
 function Get-SqlDscManagedComputerService
 {

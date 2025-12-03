@@ -34,12 +34,12 @@
         Returns all supported compatibility levels for SQL Server 2022 (version 16).
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Server
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         The server object to get supported compatibility levels for.
 
     .OUTPUTS
-        System.String[]
+        `System.String[]`
 
         Returns an array of supported compatibility level names (e.g., 'Version160', 'Version150').
 #>

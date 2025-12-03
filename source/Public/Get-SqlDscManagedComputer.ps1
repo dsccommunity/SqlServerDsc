@@ -24,7 +24,7 @@
         None.
 
 .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer]`
+        `Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer`
 #>
 function Get-SqlDscManagedComputer
 {

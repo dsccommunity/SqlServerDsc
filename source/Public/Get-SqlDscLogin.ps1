@@ -25,20 +25,20 @@
 
         Get the login named **MyLogin**.
 
-    
+
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Server`
 
         Accepts input via the pipeline.
 
 .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Login]`
+        `Microsoft.SqlServer.Management.Smo.Login`
 
         Returns a single Login object when the Name parameter is specified and a
         match is found.
 
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Login[]]`
+        `Microsoft.SqlServer.Management.Smo.Login[]`
 
         Returns an array of Login objects when the Name parameter is not specified
         (returns all logins) or when multiple matches are found.

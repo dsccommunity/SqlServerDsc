@@ -58,12 +58,12 @@
         Brings the database online using pipeline input without prompting for confirmation.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Server
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         The server object from Connect-SqlDscDatabaseEngine.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Database
+        `Microsoft.SqlServer.Management.Smo.Database`
 
         The database object to bring online (from Get-SqlDscDatabase).
 
@@ -73,7 +73,7 @@
         By default, no output is returned.
 
     .OUTPUTS
-        Microsoft.SqlServer.Management.Smo.Database
+        `Microsoft.SqlServer.Management.Smo.Database`
 
         When PassThru is specified, the updated database object is returned.
 #>

@@ -45,7 +45,7 @@
         Accepts input via the pipeline.
 
 .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.ServerRole]`
+        `Microsoft.SqlServer.Management.Smo.ServerRole`
 #>
 function New-SqlDscRole
 {

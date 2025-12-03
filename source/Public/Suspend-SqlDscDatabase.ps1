@@ -61,12 +61,12 @@
         Takes the database offline using pipeline input, forcing disconnection of any active users.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Server
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         The server object from Connect-SqlDscDatabaseEngine.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Database
+        `Microsoft.SqlServer.Management.Smo.Database`
 
         The database object to take offline (from Get-SqlDscDatabase).
 
@@ -76,7 +76,7 @@
         By default, no output is returned.
 
     .OUTPUTS
-        Microsoft.SqlServer.Management.Smo.Database
+        `Microsoft.SqlServer.Management.Smo.Database`
 
         When PassThru is specified, the updated database object is returned.
 #>

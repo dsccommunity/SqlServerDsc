@@ -26,12 +26,12 @@
         Forces the action without prompting for confirmation.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Server
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         SQL Server Database Engine instance object.
 
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Agent.Alert]` if passing parameter **PassThru**,
+        `Microsoft.SqlServer.Management.Smo.Agent.Alert` if passing parameter **PassThru**,
          otherwise none.
 
     .EXAMPLE

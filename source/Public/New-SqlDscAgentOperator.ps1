@@ -58,13 +58,14 @@
         sure the **ServerObject** is recent enough.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Server
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         SQL Server Database Engine instance object.
 
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Agent.Operator]` if passing parameter **PassThru**,
-         otherwise none.
+        `Microsoft.SqlServer.Management.Smo.Agent.Operator`
+
+        if passing parameter **PassThru**.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'

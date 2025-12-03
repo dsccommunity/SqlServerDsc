@@ -291,7 +291,7 @@
         Sets the compatibility level and trustworthy property of the database without prompting for confirmation.
 
     .INPUTS
-        `[Microsoft.SqlServer.Management.Smo.Database]`
+        `Microsoft.SqlServer.Management.Smo.Database`
 
         The database object to modify (from Get-SqlDscDatabase).
 
@@ -301,7 +301,7 @@
         When PassThru is not specified, no output is returned.
 
     .OUTPUTS
-        Microsoft.SqlServer.Management.Smo.Database
+        `Microsoft.SqlServer.Management.Smo.Database`
 
         When PassThru is specified, returns the updated database object.
 

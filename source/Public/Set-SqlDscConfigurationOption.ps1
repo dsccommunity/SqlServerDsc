@@ -45,7 +45,8 @@
         Sets the "cost threshold for parallelism" configuration option to 25 without prompting for confirmation.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Server
+        `Microsoft.SqlServer.Management.Smo.Server`
+
         SQL Server Management Objects (SMO) Server object representing a SQL Server instance.
 
     .OUTPUTS

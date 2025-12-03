@@ -49,11 +49,12 @@
 
         Refreshes the server logins collection before disabling **MyLogin**.
     .INPUTS
-        [Microsoft.SqlServer.Management.Smo.Server]
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         Server object accepted from the pipeline (ServerObject parameter set).
 
-        [Microsoft.SqlServer.Management.Smo.Login]
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Login`
 
         Login object accepted from the pipeline (LoginObject parameter set).
 

@@ -30,13 +30,15 @@
     .PARAMETER PassThru
         Specifies whether the command will return the setup process exit code.
 
-    
+
     .INPUTS
         None.
 
 .OUTPUTS
+        `System.Int32`
+
         When PassThru is specified the function will return the setup process exit
-        code as System.Int32. Otherwise, the function does not generate any output.
+        code.
 
     .EXAMPLE
         Uninstall-SqlDscReportingService -MediaPath 'E:\SQLServerReportingServices.exe'

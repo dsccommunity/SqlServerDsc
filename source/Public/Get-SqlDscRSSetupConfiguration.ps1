@@ -37,12 +37,13 @@
         Returns configuration information about the Power BI Report Server
         instance 'PBIRS'.
 
-    
+
     .INPUTS
         None.
 
 .OUTPUTS
-        Returns a PSCustomObject with the following properties:
+        `PSCustomObject`
+
         - InstanceName: The name of the Reporting Services instance.
         - InstallFolder: The installation folder path.
         - ServiceName: The name of the service.
