@@ -38,13 +38,12 @@
         **ExcludeRoles**, **ExcludeApplicationRoles**), only the collections that will
         be used are refreshed to improve performance.
 
-    
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Server`
 
         Accepts input via the pipeline.
 
-.OUTPUTS
+    .OUTPUTS
         `System.Boolean`
 
         Returns the output object.
