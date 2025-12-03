@@ -66,7 +66,6 @@
     .PARAMETER PassThru
         If specified the created audit object will be returned.
 
-
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Server`
 
