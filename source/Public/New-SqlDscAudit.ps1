@@ -70,7 +70,7 @@
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Server`
 
-        Accepts input via the pipeline.
+        Specifies the SQL Server instance for audit creation.
 
     .OUTPUTS
         `Microsoft.SqlServer.Management.Smo.Audit`
