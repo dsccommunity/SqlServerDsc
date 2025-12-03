@@ -62,9 +62,14 @@
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Server`
 
-        Accepts input via the pipeline.
+        Server object accepted from the pipeline (ServerObject parameter set).
 
-.OUTPUTS
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Database`
+
+        Database object accepted from the pipeline (DatabaseObject parameter set).
+
+    .OUTPUTS
         None.
 #>
 function Remove-SqlDscDatabase
