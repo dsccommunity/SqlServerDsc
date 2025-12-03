@@ -22,7 +22,7 @@
     .INPUTS
         None.
 
-.OUTPUTS
+    .OUTPUTS
         `Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer`
 
         A managed computer object representing the SQL Server instance.
