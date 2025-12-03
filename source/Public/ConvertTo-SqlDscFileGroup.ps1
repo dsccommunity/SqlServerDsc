@@ -20,6 +20,8 @@
     .OUTPUTS
         `Microsoft.SqlServer.Management.Smo.FileGroup`
 
+        Returns a FileGroup object configured with the specified properties and data files.
+
     .EXAMPLE
         $fileSpec = New-SqlDscDataFile -Name 'TestDB_Data' -FileName 'C:\SQLData\TestDB.mdf' -AsSpec
         $fileGroupSpec = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($fileSpec) -AsSpec
