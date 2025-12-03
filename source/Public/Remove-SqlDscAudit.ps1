@@ -41,9 +41,14 @@
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Server`
 
-        Accepts input via the pipeline.
+        Accepts server objects via the pipeline.
 
-.OUTPUTS
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Audit`
+
+        Accepts audit objects via the pipeline.
+
+    .OUTPUTS
         None.
 #>
 function Remove-SqlDscAudit
