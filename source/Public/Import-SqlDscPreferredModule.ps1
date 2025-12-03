@@ -49,6 +49,7 @@
 function Import-SqlDscPreferredModule
 {
     [CmdletBinding()]
+    [OutputType()]
     param
     (
         [Parameter()]
