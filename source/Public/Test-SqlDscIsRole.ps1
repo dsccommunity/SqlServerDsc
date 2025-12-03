@@ -17,7 +17,7 @@
 
         Accepts input via the pipeline.
 
-.OUTPUTS
+    .OUTPUTS
         `System.Boolean`
 
         Returns the output object.
