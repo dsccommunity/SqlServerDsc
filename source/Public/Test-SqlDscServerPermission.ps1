@@ -45,10 +45,15 @@
 
         Accepts input via the pipeline.
 
-.OUTPUTS
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.ServerRole`
+
+        Accepts input via the pipeline.
+
+    .OUTPUTS
         `System.Boolean`
 
-        Returns the output object.
+        Returns $true if the permissions are in the desired state; otherwise $false.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
