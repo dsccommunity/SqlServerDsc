@@ -497,6 +497,8 @@
 
     .OUTPUTS
         `System.Boolean`
+
+        Returns `$true` if the database properties are in the desired state; otherwise `$false`.
 #>
 function Test-SqlDscDatabaseProperty
 {
