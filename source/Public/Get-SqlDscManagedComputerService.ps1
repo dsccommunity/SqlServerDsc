@@ -53,6 +53,8 @@
 
 .OUTPUTS
         `Microsoft.SqlServer.Management.Smo.Wmi.Service[]`
+
+        An array of managed computer service objects.
 #>
 function Get-SqlDscManagedComputerService
 {
