@@ -37,7 +37,7 @@
     .OUTPUTS
         `System.Boolean`
 
-        Returns the output object.
+        Returns `$true` if the alert has the specified properties; otherwise `$false`.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
