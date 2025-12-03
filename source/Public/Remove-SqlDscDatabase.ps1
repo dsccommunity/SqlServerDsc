@@ -58,7 +58,6 @@
         without prompting for confirmation. This is useful when the database has active
         connections that prevent removal.
 
-    
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Server`
 
