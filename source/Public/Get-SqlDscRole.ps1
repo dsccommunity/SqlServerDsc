@@ -32,14 +32,15 @@
 
         Get the server role named **MyCustomRole**.
 
-
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Server`
 
         Accepts input via the pipeline.
 
-.OUTPUTS
+    .OUTPUTS
         `Microsoft.SqlServer.Management.Smo.ServerRole[]`
+
+        Returns the server role objects from the instance.
 #>
 function Get-SqlDscRole
 {
