@@ -30,7 +30,8 @@
     .OUTPUTS
         None.
 
-Returns nothing when no alerts are found for the specified criteria.
+        Returns nothing when no alerts are found for the specified criteria.
+
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine
         Get-SqlDscAgentAlert -ServerObject $serverObject
