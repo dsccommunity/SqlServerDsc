@@ -23,16 +23,15 @@
         amount of principals it might be better to make sure the **ServerObject**
         is recent enough.
 
-    
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Server`
 
         Accepts input via the pipeline.
 
-.OUTPUTS
-        `Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[`
+    .OUTPUTS
+        `Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]`
 
-        Returns the output object.]
+        Returns an array of database permission information objects.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
