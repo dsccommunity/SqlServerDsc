@@ -37,7 +37,6 @@
 
         Removes the audit named **MyFileAudit**.
 
-    
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Server`
 
