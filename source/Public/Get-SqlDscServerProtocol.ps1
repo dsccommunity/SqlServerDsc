@@ -65,7 +65,8 @@
 
         A managed computer object can be piped to this command.
 
-        Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance`
 
         A server instance object can be piped to this command.
 
