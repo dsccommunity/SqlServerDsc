@@ -39,8 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `System.Management.Automation.SwitchParameter` to follow PowerShell best practices.
     ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
 - `New-SqlDscRole`
-  - Fixed duplicate verbose output by removing manual Write-Verbose call, as
-    PSCmdlet.ShouldProcess already generates appropriate verbose output
+  - Fixed duplicate verbose output by removing manual `Write-Verbose` call, as
+    `$PSCmdlet.ShouldProcess()` already generates appropriate verbose output
     ([issue #2156](https://github.com/dsccommunity/SqlServerDsc/issues/2156)).
 - `Set-SqlDscDatabaseProperty`
   - Fixed parameter types for database-scoped configuration properties from
