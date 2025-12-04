@@ -51,6 +51,7 @@
 
     .OUTPUTS
         None.
+
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         Set-SqlDscAgentAlert -ServerObject $serverObject -Name 'MyAlert' -Severity 16
