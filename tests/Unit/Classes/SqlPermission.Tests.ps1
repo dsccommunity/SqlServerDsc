@@ -1147,7 +1147,16 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                     return $true
                 }
 
-                Mock -CommandName Set-SqlDscServerPermission
+                Mock -CommandName Get-SqlDscLogin -MockWith {
+                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
+                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                        'MockUserName'
+                    )
+                }
+
+                Mock -CommandName Grant-SqlDscServerPermission
+                Mock -CommandName Deny-SqlDscServerPermission
+                Mock -CommandName Revoke-SqlDscServerPermission
             }
 
             It 'Should call the correct mock with the correct parameter values' {
@@ -1171,13 +1180,13 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 }
 
                 # Grants
-                Should -Invoke -CommandName Set-SqlDscServerPermission -ParameterFilter {
-                    $State -eq 'Grant' -and $Permission.ConnectSql -eq $true
+                Should -Invoke -CommandName Grant-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'ConnectSql' -and -not $PSBoundParameters.ContainsKey('WithGrant')
                 } -Exactly -Times 1 -Scope It
 
                 # GrantWithGrants
-                Should -Invoke -CommandName Set-SqlDscServerPermission -ParameterFilter {
-                    $State -eq 'Grant' -and $Permission.AlterAnyEndpoint -eq $true
+                Should -Invoke -CommandName Grant-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'AlterAnyEndpoint' -and $WithGrant -eq $true
                 } -Exactly -Times 1 -Scope It
             }
         }
@@ -1234,7 +1243,16 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                     return $true
                 }
 
-                Mock -CommandName Set-SqlDscServerPermission
+                Mock -CommandName Get-SqlDscLogin -MockWith {
+                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
+                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                        'MockUserName'
+                    )
+                }
+
+                Mock -CommandName Grant-SqlDscServerPermission
+                Mock -CommandName Deny-SqlDscServerPermission
+                Mock -CommandName Revoke-SqlDscServerPermission
             }
 
             It 'Should call the correct mock with the correct parameter values' {
@@ -1258,23 +1276,23 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 }
 
                 # Revoking Grants
-                Should -Invoke -CommandName Set-SqlDscServerPermission -ParameterFilter {
-                    $State -eq 'Revoke' -and $Permission.AlterAnyAvailabilityGroup -eq $true -and $Permission.ViewServerState -eq $true
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'AlterAnyAvailabilityGroup' -and $Permission -contains 'ViewServerState' -and -not $PSBoundParameters.ContainsKey('WithGrant')
                 } -Exactly -Times 1 -Scope It
 
                 # Revoking GrantWithGrants
-                Should -Invoke -CommandName Set-SqlDscServerPermission -ParameterFilter {
-                    $State -eq 'Revoke' -and $Permission.ControlServer -eq $true
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'ControlServer' -and $WithGrant -eq $true
                 } -Exactly -Times 1 -Scope It
 
                 # Revoking Denies
-                Should -Invoke -CommandName Set-SqlDscServerPermission -ParameterFilter {
-                    $State -eq 'Revoke' -and $Permission.CreateEndpoint -eq $true
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'CreateEndpoint' -and -not $PSBoundParameters.ContainsKey('WithGrant')
                 } -Exactly -Times 1 -Scope It
 
                 # Adding new Grant
-                Should -Invoke -CommandName Set-SqlDscServerPermission -ParameterFilter {
-                    $State -eq 'Grant' -and $Permission.ConnectSql -eq $true
+                Should -Invoke -CommandName Grant-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'ConnectSql' -and -not $PSBoundParameters.ContainsKey('WithGrant')
                 } -Exactly -Times 1 -Scope It
             }
         }
@@ -1333,7 +1351,16 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                     return $true
                 }
 
-                Mock -CommandName Set-SqlDscServerPermission
+                Mock -CommandName Get-SqlDscLogin -MockWith {
+                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
+                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                        'MockUserName'
+                    )
+                }
+
+                Mock -CommandName Grant-SqlDscServerPermission
+                Mock -CommandName Deny-SqlDscServerPermission
+                Mock -CommandName Revoke-SqlDscServerPermission
             }
 
             It 'Should call the correct mock with the correct parameter values' {
@@ -1357,13 +1384,13 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 }
 
                 # Grants
-                Should -Invoke -CommandName Set-SqlDscServerPermission -ParameterFilter {
-                    $State -eq 'Grant' -and $Permission.ConnectSql -eq $true
+                Should -Invoke -CommandName Grant-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'ConnectSql' -and -not $PSBoundParameters.ContainsKey('WithGrant')
                 } -Exactly -Times 1 -Scope It
 
                 # GrantWithGrants
-                Should -Invoke -CommandName Set-SqlDscServerPermission -ParameterFilter {
-                    $State -eq 'Grant' -and $Permission.AlterAnyEndpoint -eq $true
+                Should -Invoke -CommandName Grant-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'AlterAnyEndpoint' -and $WithGrant -eq $true
                 } -Exactly -Times 1 -Scope It
             }
         }
@@ -1422,7 +1449,16 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                     return $true
                 }
 
-                Mock -CommandName Set-SqlDscServerPermission
+                Mock -CommandName Get-SqlDscLogin -MockWith {
+                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
+                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                        'MockUserName'
+                    )
+                }
+
+                Mock -CommandName Grant-SqlDscServerPermission
+                Mock -CommandName Deny-SqlDscServerPermission
+                Mock -CommandName Revoke-SqlDscServerPermission
             }
 
             It 'Should call the correct mock with the correct parameter values' {
@@ -1446,19 +1482,19 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 }
 
                 # Revoking Grants
-                Should -Invoke -CommandName Set-SqlDscServerPermission -ParameterFilter {
-                    $State -eq 'Revoke' -and $Permission.ConnectSql -eq $true
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'ConnectSql' -and -not $PSBoundParameters.ContainsKey('WithGrant')
                 } -Exactly -Times 1 -Scope It
 
                 # Revoking GrantWithGrants
-                Should -Invoke -CommandName Set-SqlDscServerPermission -ParameterFilter {
-                    $State -eq 'Revoke' -and $Permission.AlterAnyEndpoint -eq $true
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'AlterAnyEndpoint' -and $WithGrant -eq $true
                 } -Exactly -Times 1 -Scope It
             }
         }
     }
 
-    Context 'When Set-SqlDscServerPermission fails to change permission' {
+    Context 'When Grant/Deny/Revoke commands fail to change permission' {
         Context 'When granting permissions' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
@@ -1511,7 +1547,20 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                     return $true
                 }
 
-                Mock -CommandName Set-SqlDscServerPermission -MockWith {
+                Mock -CommandName Get-SqlDscLogin -MockWith {
+                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
+                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                        'MockUserName'
+                    )
+                }
+
+                Mock -CommandName Grant-SqlDscServerPermission -MockWith {
+                    throw 'Mocked error'
+                }
+                Mock -CommandName Deny-SqlDscServerPermission -MockWith {
+                    throw 'Mocked error'
+                }
+                Mock -CommandName Revoke-SqlDscServerPermission -MockWith {
                     throw 'Mocked error'
                 }
             }
@@ -1602,7 +1651,20 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                     return $true
                 }
 
-                Mock -CommandName Set-SqlDscServerPermission -MockWith {
+                Mock -CommandName Get-SqlDscLogin -MockWith {
+                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
+                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                        'MockUserName'
+                    )
+                }
+
+                Mock -CommandName Grant-SqlDscServerPermission -MockWith {
+                    throw 'Mocked error'
+                }
+                Mock -CommandName Deny-SqlDscServerPermission -MockWith {
+                    throw 'Mocked error'
+                }
+                Mock -CommandName Revoke-SqlDscServerPermission -MockWith {
                     throw 'Mocked error'
                 }
             }

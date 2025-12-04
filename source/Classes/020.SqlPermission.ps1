@@ -371,6 +371,18 @@ class SqlPermission : SqlResourceBase
             New-InvalidOperationException -Message $missingPrincipalMessage
         }
 
+        # Get the principal object (Login or ServerRole)
+        $principalObject = $null
+
+        if ($isLogin)
+        {
+            $principalObject = $serverObject | Get-SqlDscLogin -Name $this.Name -ErrorAction 'Stop'
+        }
+        else
+        {
+            $principalObject = $serverObject | Get-SqlDscRole -Name $this.Name -ErrorAction 'Stop'
+        }
+
         # This holds each state and their permissions to be revoked.
         [ServerPermission[]] $permissionsToRevoke = @()
         [ServerPermission[]] $permissionsToGrantOrDeny = @()
@@ -455,32 +467,41 @@ class SqlPermission : SqlResourceBase
             #>
             foreach ($currentStateToRevoke in $permissionsToRevoke)
             {
-                $revokePermissionSet = $currentStateToRevoke | ConvertFrom-SqlDscServerPermission
+                # Convert ServerPermission to array of SqlServerPermission enum values
+                $permissionsToRevokeArray = $currentStateToRevoke.Permission
 
-                $setSqlDscServerPermissionParameters = @{
-                    ServerObject = $serverObject
-                    Name         = $this.Name
-                    Permission   = $revokePermissionSet
-                    State        = 'Revoke'
-                    Force        = $true
-                }
-
-                if ($currentStateToRevoke.State -eq 'GrantWithGrant')
+                # Only revoke if there are permissions to revoke
+                if ($permissionsToRevokeArray.Count -gt 0)
                 {
-                    $setSqlDscServerPermissionParameters.WithGrant = $true
-                }
+                    $revokeSqlDscServerPermissionParameters = @{
+                        Permission = $permissionsToRevokeArray
+                        Force      = $true
+                    }
 
-                try
-                {
-                    Set-SqlDscServerPermission @setSqlDscServerPermissionParameters
-                }
-                catch
-                {
-                    $errorMessage = $this.localizedData.FailedToRevokePermissionFromCurrentState -f @(
-                        $this.Name
-                    )
+                    if ($currentStateToRevoke.State -eq 'GrantWithGrant')
+                    {
+                        $revokeSqlDscServerPermissionParameters.WithGrant = $true
+                    }
 
-                    New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                    try
+                    {
+                        if ($isLogin)
+                        {
+                            Revoke-SqlDscServerPermission -Login $principalObject @revokeSqlDscServerPermissionParameters
+                        }
+                        else
+                        {
+                            Revoke-SqlDscServerPermission -ServerRole $principalObject @revokeSqlDscServerPermissionParameters
+                        }
+                    }
+                    catch
+                    {
+                        $errorMessage = $this.localizedData.FailedToRevokePermissionFromCurrentState -f @(
+                            $this.Name
+                        )
+
+                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                    }
                 }
             }
         }
@@ -496,27 +517,63 @@ class SqlPermission : SqlResourceBase
                 # If there is not an empty array, change permissions.
                 if (-not [System.String]::IsNullOrEmpty($currentDesiredPermissionState.Permission))
                 {
-                    $permissionSet = $currentDesiredPermissionState | ConvertFrom-SqlDscServerPermission
-
-                    $setSqlDscServerPermissionParameters = @{
-                        ServerObject = $serverObject
-                        Name         = $this.Name
-                        Permission   = $permissionSet
-                        Force        = $true
-                    }
+                    # Convert ServerPermission to array of SqlServerPermission enum values
+                    $permissionsArray = $currentDesiredPermissionState.Permission
 
                     try
                     {
                         switch ($currentDesiredPermissionState.State)
                         {
-                            'GrantWithGrant'
+                            'Grant'
                             {
-                                Set-SqlDscServerPermission @setSqlDscServerPermissionParameters -State 'Grant' -WithGrant
+                                $grantParameters = @{
+                                    Permission = $permissionsArray
+                                    Force      = $true
+                                }
+
+                                if ($isLogin)
+                                {
+                                    Grant-SqlDscServerPermission -Login $principalObject @grantParameters
+                                }
+                                else
+                                {
+                                    Grant-SqlDscServerPermission -ServerRole $principalObject @grantParameters
+                                }
                             }
 
-                            default
+                            'GrantWithGrant'
                             {
-                                Set-SqlDscServerPermission @setSqlDscServerPermissionParameters -State $currentDesiredPermissionState.State
+                                $grantParameters = @{
+                                    Permission = $permissionsArray
+                                    WithGrant  = $true
+                                    Force      = $true
+                                }
+
+                                if ($isLogin)
+                                {
+                                    Grant-SqlDscServerPermission -Login $principalObject @grantParameters
+                                }
+                                else
+                                {
+                                    Grant-SqlDscServerPermission -ServerRole $principalObject @grantParameters
+                                }
+                            }
+
+                            'Deny'
+                            {
+                                $denyParameters = @{
+                                    Permission = $permissionsArray
+                                    Force      = $true
+                                }
+
+                                if ($isLogin)
+                                {
+                                    Deny-SqlDscServerPermission -Login $principalObject @denyParameters
+                                }
+                                else
+                                {
+                                    Deny-SqlDscServerPermission -ServerRole $principalObject @denyParameters
+                                }
                             }
                         }
                     }
