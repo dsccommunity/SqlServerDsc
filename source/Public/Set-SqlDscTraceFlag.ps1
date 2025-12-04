@@ -53,13 +53,12 @@
         Removes all the trace flags from the Database Engine instance 'SQL2022'
         on the server where the command in run.
 
-    
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Wmi.Service`
 
         Accepts input via the pipeline.
 
-.OUTPUTS
+    .OUTPUTS
         None.
 #>
 function Set-SqlDscTraceFlag

@@ -17,13 +17,12 @@
 
         Returns $true if the feature is supported.
 
-    
     .INPUTS
         `System.String`
 
         Accepts input via the pipeline.
 
-.OUTPUTS
+    .OUTPUTS
         `System.Boolean`
 
         Returns the output object.

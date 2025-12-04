@@ -11,7 +11,6 @@
     .PARAMETER MediaPath
         Specifies the path where to find the SQL Server installation media. On this
         path the SQL Server setup executable must be found.
-
     .PARAMETER Timeout
         Specifies how long to wait for the setup process to finish. Default value
         is `7200` seconds (2 hours). If the setup process does not finish before
@@ -57,11 +56,10 @@
     .LINK
         https://docs.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt
 
-    
     .INPUTS
         None.
 
-.OUTPUTS
+    .OUTPUTS
         None.
 
     .EXAMPLE
