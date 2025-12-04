@@ -34,7 +34,7 @@
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Server`
 
-        Accepts input via the pipeline.
+        The SQL Server instance connection object to configure.
 
     .OUTPUTS
         None.
