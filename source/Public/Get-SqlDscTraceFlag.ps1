@@ -44,7 +44,7 @@
     .INPUTS
         None.
 
-.OUTPUTS
+    .OUTPUTS
         `System.UInt32[]`
 #>
 function Get-SqlDscTraceFlag
