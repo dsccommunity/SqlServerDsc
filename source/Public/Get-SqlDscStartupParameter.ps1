@@ -15,12 +15,12 @@
         Specifies the instance name to return the startup parameters for.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Wmi.Service
+        `Microsoft.SqlServer.Management.Smo.Wmi.Service`
 
         A service object representing the Database Engine service.
 
     .OUTPUTS
-        StartupParameters
+        `StartupParameters`
 
         Returns a StartupParameters object containing the startup parameters
         for the specified Database Engine instance.

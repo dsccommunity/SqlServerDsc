@@ -13,23 +13,20 @@
         all operators are returned.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Server
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         SQL Server Database Engine instance object.
 
     .OUTPUTS
-        Microsoft.SqlServer.Management.Smo.Agent.Operator
+        `Microsoft.SqlServer.Management.Smo.Agent.Operator`
 
-        When using the ByName parameter set, returns a single SQL Agent Operator object.
-
-    .OUTPUTS
-        Microsoft.SqlServer.Management.Smo.Agent.Operator[]
-
-        When using the All parameter set, returns an array of SQL Agent Operator objects.
+        Returns a single SQL Agent Operator object when using the ByName parameter set.
 
     .OUTPUTS
-        None
-        Returns nothing when no operators are found for the specified criteria.
+        `Microsoft.SqlServer.Management.Smo.Agent.Operator[]`
+
+        Returns an array of SQL Agent Operator objects when using the All parameter set.
+
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine
         Get-SqlDscAgentOperator -ServerObject $serverObject

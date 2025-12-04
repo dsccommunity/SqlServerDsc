@@ -35,7 +35,12 @@
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $sqlServerObject | Disable-SqlDscAudit -Name 'MyFileAudit'
 
-        Disables the audit named **MyFileAudit**.
+        Disables the audit named 'MyFileAudit'.
+
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Accepts a SQL Server server object via the pipeline.
 
     .OUTPUTS
         None.

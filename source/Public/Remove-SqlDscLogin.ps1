@@ -37,12 +37,12 @@
         Removes the login named **MyLogin**.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Server
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         Specifies a server connection object.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Login
+        `Microsoft.SqlServer.Management.Smo.Login`
 
         Specifies a login object.
 

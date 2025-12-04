@@ -13,12 +13,14 @@
         Specifies the name of the SQL Agent Alert to test.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Server
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         SQL Server Database Engine instance object.
 
     .OUTPUTS
-        [System.Boolean]
+        `System.Boolean`
+
+        Returns the output object.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'

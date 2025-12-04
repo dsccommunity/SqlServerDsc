@@ -17,8 +17,15 @@
 
         Returns $true if the feature is supported.
 
+    .INPUTS
+        `System.String`
+
+        Accepts input via the pipeline.
+
     .OUTPUTS
-        [System.Boolean]
+        `System.Boolean`
+
+        Returns the output object.
 #>
 function Test-SqlDscIsSupportedFeature
 {

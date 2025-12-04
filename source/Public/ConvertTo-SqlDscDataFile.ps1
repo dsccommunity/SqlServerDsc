@@ -14,12 +14,12 @@
         The DatabaseFileSpec object containing the data file configuration.
 
     .INPUTS
-        None
+        None.
 
         This command does not accept pipeline input.
 
     .OUTPUTS
-        Microsoft.SqlServer.Management.Smo.DataFile
+        `Microsoft.SqlServer.Management.Smo.DataFile`
 
         Returns a SMO DataFile object bound to the provided FileGroup.
 

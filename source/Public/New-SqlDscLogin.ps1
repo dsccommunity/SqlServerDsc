@@ -151,11 +151,14 @@
         Creates a new disabled Windows user login and returns the Login object.
 
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Login]` when passing parameter **PassThru**,
-         otherwise none.
+        `Microsoft.SqlServer.Management.Smo.Login`
+
+        When passing parameter **PassThru**.
 
     .INPUTS
-        `[Microsoft.SqlServer.Management.Smo.Server]` Accepted from the pipeline. This cmdlet accepts a SMO Server
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Accepted from the pipeline. This cmdlet accepts a SMO Server
         object (for example, the output of `Connect-SqlDscDatabaseEngine`) via the pipeline.
 
     .NOTES

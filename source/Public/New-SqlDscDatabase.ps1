@@ -334,8 +334,15 @@
         legacy cardinality estimation enabled, parameter sniffing disabled, and query optimizer
         hotfixes enabled, without prompting for confirmation.
 
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Accepts input via the pipeline.
+
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Database]`
+        `Microsoft.SqlServer.Management.Smo.Database`
+
+        The newly created database object.
 #>
 function New-SqlDscDatabase
 {

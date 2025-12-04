@@ -37,6 +37,16 @@
 
         Removes the audit named **MyFileAudit**.
 
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Accepts server objects via the pipeline.
+
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Audit`
+
+        Accepts audit objects via the pipeline.
+
     .OUTPUTS
         None.
 #>

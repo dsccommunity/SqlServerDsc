@@ -13,23 +13,25 @@
         all alerts are returned.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Server
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         SQL Server Database Engine instance object.
 
     .OUTPUTS
-        Microsoft.SqlServer.Management.Smo.Agent.Alert
+        `Microsoft.SqlServer.Management.Smo.Agent.Alert`
 
         When using the ByName parameter set, returns a single SQL Agent Alert object.
 
     .OUTPUTS
-        Microsoft.SqlServer.Management.Smo.Agent.Alert[]
+        `Microsoft.SqlServer.Management.Smo.Agent.Alert[]`
 
         When using the All parameter set, returns an array of SQL Agent Alert objects.
 
     .OUTPUTS
-        None
+        None.
+
         Returns nothing when no alerts are found for the specified criteria.
+
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine
         Get-SqlDscAgentAlert -ServerObject $serverObject

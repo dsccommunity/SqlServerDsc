@@ -14,8 +14,13 @@
     .PARAMETER FileGroupSpec
         The DatabaseFileGroupSpec object containing the file group configuration.
 
+    .INPUTS
+        None.
+
     .OUTPUTS
-        Microsoft.SqlServer.Management.Smo.FileGroup
+        `Microsoft.SqlServer.Management.Smo.FileGroup`
+
+        Returns a FileGroup object configured with the specified properties and data files.
 
     .EXAMPLE
         $fileSpec = New-SqlDscDataFile -Name 'TestDB_Data' -FileName 'C:\SQLData\TestDB.mdf' -AsSpec

@@ -43,10 +43,10 @@
         Returns all available protocol name mappings.
 
     .INPUTS
-        None
+        None.
 
     .OUTPUTS
-        System.Management.Automation.PSCustomObject
+        `System.Management.Automation.PSCustomObject`
 
         Returns a PSCustomObject with the properties Name, DisplayName, and ShortName.
 

@@ -51,12 +51,12 @@
         Specifies that the operator should be updated without any confirmation.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Server
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         SQL Server Database Engine instance object.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Agent.Operator
+        `Microsoft.SqlServer.Management.Smo.Agent.Operator`
 
         SQL Agent Operator object.
 

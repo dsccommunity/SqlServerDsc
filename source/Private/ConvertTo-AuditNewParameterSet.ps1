@@ -28,12 +28,10 @@
         Converts an existing audit object to a parameter set with a custom GUID.
 
     .INPUTS
-        None
-
-        This function does not accept pipeline input.
+        None.
 
     .OUTPUTS
-        System.Collections.Hashtable
+        `System.Collections.Hashtable`
 
         Returns a hashtable of parameters for New-SqlDscAudit.
 #>

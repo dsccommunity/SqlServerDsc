@@ -25,17 +25,19 @@
         If specified, the command will return $true only if the alert exists and has this message ID.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Server
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         SQL Server Database Engine instance object.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Agent.Alert
+        `Microsoft.SqlServer.Management.Smo.Agent.Alert`
 
         SQL Agent Alert object.
 
     .OUTPUTS
-        [System.Boolean]
+        `System.Boolean`
+
+        Returns `$true` if the alert has the specified properties; otherwise `$false`.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'

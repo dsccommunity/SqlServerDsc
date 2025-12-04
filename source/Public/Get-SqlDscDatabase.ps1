@@ -32,8 +32,15 @@
 
         Get the database named **MyDatabase**.
 
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Accepts input via the pipeline.
+
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Database[]]`
+        `Microsoft.SqlServer.Management.Smo.Database[]`
+
+        Returns one or more database objects from the SQL Server instance.
 #>
 function Get-SqlDscDatabase
 {

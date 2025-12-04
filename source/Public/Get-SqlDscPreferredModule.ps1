@@ -42,7 +42,13 @@
         return SQLPS PSModuleInfo object if is is installed. If neither is installed
         `$null` is returned.
 
-    .NOTES
+    .INPUTS
+        None.
+
+    .OUTPUTS
+        `PSModuleInfo`
+
+        Returns a PSModuleInfo object for the preferred module, or $null if not found.
 
 #>
 function Get-SqlDscPreferredModule

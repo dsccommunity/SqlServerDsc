@@ -40,12 +40,12 @@
         Uses pipeline input to retrieve a specific instance from a managed computer object.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer
+        `Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer`
 
         A managed computer object can be piped to this command.
 
     .OUTPUTS
-        Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance
+        `Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance`
 
         Returns server instance objects from SMO (SQL Server Management Objects).
 

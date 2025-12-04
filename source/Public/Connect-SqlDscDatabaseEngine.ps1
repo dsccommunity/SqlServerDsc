@@ -59,11 +59,18 @@
 
         Connects to the default instance on the local server using the SQL login 'sa'.
 
+    .INPUTS
+        None.
+
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Server]`
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Returns the SQL Server server object.
 #>
 function Connect-SqlDscDatabaseEngine
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when the output type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
+    [OutputType([Microsoft.SqlServer.Management.Smo.Server])]
     [CmdletBinding(DefaultParameterSetName = 'SqlServer')]
     param
     (

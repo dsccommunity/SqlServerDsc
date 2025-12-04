@@ -50,12 +50,12 @@
         Refreshes the server operators collection before disabling **MyOperator**.
 
     .INPUTS
-        [Microsoft.SqlServer.Management.Smo.Server]
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         Server object accepted from the pipeline (ServerObject parameter set).
 
     .INPUTS
-        [Microsoft.SqlServer.Management.Smo.Agent.Operator]
+        `Microsoft.SqlServer.Management.Smo.Agent.Operator`
 
         Operator object accepted from the pipeline (OperatorObject parameter set).
 

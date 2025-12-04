@@ -24,18 +24,19 @@
         sure the **ServerObject** is recent enough, or pass in **LoginObject**.
 
     .INPUTS
-        [Microsoft.SqlServer.Management.Smo.Server]
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         Server object accepted from the pipeline.
 
-        [Microsoft.SqlServer.Management.Smo.Login]
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Login`
 
         Login object accepted from the pipeline.
 
     .OUTPUTS
-        [System.Boolean]
+        `System.Boolean`
 
-        Returns $true if the login is enabled, $false if the login is disabled.
+        Returns $true if the login is enabled; otherwise $false.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'

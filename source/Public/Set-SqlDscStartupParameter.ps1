@@ -35,19 +35,26 @@
 
     .EXAMPLE
         $serviceObject = Get-SqlDscManagedComputerService -ServiceType 'DatabaseEngine'
-        Set-SqlDscTraceFlag -ServiceObject $serviceObject -TraceFlag 4199
+        Set-SqlDscStartupParameter -ServiceObject $serviceObject -TraceFlag 4199
 
         Replaces the trace flags with 4199 on the Database Engine default instance
         on the server where the command in run.
 
     .EXAMPLE
-        Set-SqlDscTraceFlag -InstanceName 'SQL2022' -TraceFlag @()
+        Set-SqlDscStartupParameter -InstanceName 'SQL2022' -TraceFlag @()
 
         Removes all the trace flags from the Database Engine instance 'SQL2022'
         on the server where the command in run.
 
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Wmi.Service`
+
+        Accepts input via the pipeline.
+
     .OUTPUTS
         None.
+
+        This command does not generate any output.
 
     .NOTES
         This command should support setting the values according to this documentation:

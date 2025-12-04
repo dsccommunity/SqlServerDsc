@@ -38,11 +38,14 @@
         Enables the login named **MyLogin**.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Server
-            When using the ServerObject parameter set, a Server object can be piped in.
+        `Microsoft.SqlServer.Management.Smo.Server`
 
-        Microsoft.SqlServer.Management.Smo.Login
-            When using the LoginObject parameter set, a Login object can be piped in.
+        Server object accepted from the pipeline (ServerObject parameter set).
+
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Login`
+
+        Login object accepted from the pipeline (LoginObject parameter set).
 
     .OUTPUTS
         None.

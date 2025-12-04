@@ -47,6 +47,11 @@
         Adds the trace flags 4199 and 3226 on the Database Engine instance
         'SQL2022' on the server where the command in run.
 
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Wmi.Service`
+
+        Accepts a SQL Server managed service object via the pipeline.
+
     .OUTPUTS
         None.
 #>

@@ -35,11 +35,13 @@
         Tests if the "max degree of parallelism" option is set to 4.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Server
+        `Microsoft.SqlServer.Management.Smo.Server`
+
         SQL Server Management Objects (SMO) Server object representing a SQL Server instance.
 
     .OUTPUTS
-        System.Boolean
+        `System.Boolean`
+
         Returns $true if the configuration option has the specified value, $false otherwise.
 
     .NOTES

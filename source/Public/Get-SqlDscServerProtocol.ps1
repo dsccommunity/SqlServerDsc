@@ -61,16 +61,17 @@
         protocol information.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer
+        `Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer`
 
         A managed computer object can be piped to this command.
 
-        Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance`
 
         A server instance object can be piped to this command.
 
     .OUTPUTS
-        Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol
+        `Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol`
 
         Returns server protocol objects from SMO (SQL Server Management Objects).
 #>

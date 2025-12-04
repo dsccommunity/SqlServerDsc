@@ -24,8 +24,12 @@
         Tests if a Power BI Report Server instance named 'PBIRS' is installed.
         Returns $true if the instance exists and $false if it does not.
 
+
+    .INPUTS
+        None.
+
     .OUTPUTS
-        System.Boolean
+        `System.Boolean`
 
         Returns $true if the specified instance exists and $false if it does not.
 #>

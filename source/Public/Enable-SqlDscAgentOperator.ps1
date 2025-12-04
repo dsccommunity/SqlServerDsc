@@ -38,12 +38,12 @@
         Enables the operator named **MyOperator**.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Server
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         When using the ServerObject parameter set, a Server object can be piped in.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Agent.Operator
+        `Microsoft.SqlServer.Management.Smo.Agent.Operator`
 
         When using the OperatorObject parameter set, an Operator object can be piped in.
 

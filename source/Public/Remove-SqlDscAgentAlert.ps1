@@ -23,11 +23,12 @@
         been modified outside of the **ServerObject**, for example through T-SQL.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Server
+        `Microsoft.SqlServer.Management.Smo.Server`
 
         SQL Server Database Engine instance object.
 
-        Microsoft.SqlServer.Management.Smo.Agent.Alert
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Agent.Alert`
 
         SQL Agent Alert object to remove.
 

@@ -11,8 +11,15 @@
     .PARAMETER Name
         Specifies the name of the server principal.
 
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Accepts input via the pipeline.
+
     .OUTPUTS
-        [System.Boolean]
+        `System.Boolean`
+
+        Returns $true if the principal exists as a login; otherwise $false.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine

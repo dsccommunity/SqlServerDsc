@@ -73,17 +73,17 @@
         Creates a DatabaseFileGroupSpec object with files and properties set directly via parameters.
 
     .INPUTS
-        None
+        None.
 
         This cmdlet does not accept input from the pipeline.
 
     .OUTPUTS
-        Microsoft.SqlServer.Management.Smo.FileGroup
+        `Microsoft.SqlServer.Management.Smo.FileGroup`
 
         When creating a FileGroup with or without an associated Database (not using -AsSpec).
 
     .OUTPUTS
-        DatabaseFileGroupSpec
+        `DatabaseFileGroupSpec`
 
         When using the -AsSpec parameter to create a specification object.
 #>

@@ -55,7 +55,7 @@
         Enables snapshot isolation and returns the updated database object.
 
     .INPUTS
-        Microsoft.SqlServer.Management.Smo.Database
+        `Microsoft.SqlServer.Management.Smo.Database`
 
         The database object to modify (from Get-SqlDscDatabase).
 
@@ -65,7 +65,7 @@
         By default, no output is returned.
 
     .OUTPUTS
-        Microsoft.SqlServer.Management.Smo.Database
+        `Microsoft.SqlServer.Management.Smo.Database`
 
         When PassThru is specified, the updated database object is returned.
 #>

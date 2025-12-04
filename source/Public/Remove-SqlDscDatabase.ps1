@@ -58,6 +58,16 @@
         without prompting for confirmation. This is useful when the database has active
         connections that prevent removal.
 
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Server object accepted from the pipeline (ServerObject parameter set).
+
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Database`
+
+        Database object accepted from the pipeline (DatabaseObject parameter set).
+
     .OUTPUTS
         None.
 #>

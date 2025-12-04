@@ -39,8 +39,20 @@
         When this parameter is not used, the test will return true if the specified
         permissions are present, regardless of any additional permissions.
 
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Login`
+
+        Accepts input via the pipeline.
+
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.ServerRole`
+
+        Accepts input via the pipeline.
+
     .OUTPUTS
-        [System.Boolean]
+        `System.Boolean`
+
+        Returns $true if the permissions are in the desired state; otherwise $false.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine

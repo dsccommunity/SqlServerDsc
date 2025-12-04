@@ -66,9 +66,15 @@
     .PARAMETER PassThru
         If specified the created audit object will be returned.
 
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Specifies the SQL Server instance for audit creation.
+
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Audit]` is passing parameter **PassThru**,
-         otherwise none.
+        `Microsoft.SqlServer.Management.Smo.Audit`
+
+        When passing parameter **PassThru**.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'

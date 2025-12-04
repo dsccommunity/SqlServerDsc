@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Updated comment-based help `.INPUTS` and `.OUTPUTS` sections across all public
+  commands and private functions to comply with DSC community style guidelines
+  ([issue #2103](https://github.com/dsccommunity/SqlServerDsc/issues/2103)).
 - `Set-SqlDscDatabaseProperty`
   - Updated comment-based help to reference correct enum values.
   - Added SQL Server version requirements to version-specific parameter help.

@@ -105,22 +105,22 @@
         Creates a DatabaseFileSpec object with all properties set directly via parameters.
 
     .INPUTS
-        None
+        None.
 
         This cmdlet does not accept input from the pipeline.
 
     .OUTPUTS
-        None
+        None.
 
         This cmdlet does not generate output by default when using Standard or FromSpec parameter sets without PassThru.
 
     .OUTPUTS
-        Microsoft.SqlServer.Management.Smo.DataFile
+        `Microsoft.SqlServer.Management.Smo.DataFile`
 
         When using the Standard or FromSpec parameter sets with the PassThru parameter.
 
     .OUTPUTS
-        DatabaseFileSpec
+        `DatabaseFileSpec`
 
         When using the AsSpec parameter to create a specification object.
 #>

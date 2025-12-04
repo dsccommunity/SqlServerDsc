@@ -18,7 +18,7 @@
         None.
 
     .OUTPUTS
-        System.String[]
+        `System.String[]`
 
         Returns an array of parameter names that are not excluded.
 

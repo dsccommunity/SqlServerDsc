@@ -40,8 +40,13 @@
         Get all the trace flags from the Database Engine instance 'SQL2022' on the
         server where the command in run.
 
+    .INPUTS
+        None.
+
     .OUTPUTS
-        `[System.UInt32[]]`
+        `System.UInt32[]`
+
+        Returns an array of trace flags as unsigned 32-bit integer values.
 #>
 function Get-SqlDscTraceFlag
 {

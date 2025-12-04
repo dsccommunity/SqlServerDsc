@@ -491,12 +491,14 @@
         Tests multiple database properties at once. Switch parameters can be explicitly set to $false using the colon syntax.
 
     .INPUTS
-        `[Microsoft.SqlServer.Management.Smo.Database]`
+        `Microsoft.SqlServer.Management.Smo.Database`
 
         The database object to test properties for (from Get-SqlDscDatabase).
 
     .OUTPUTS
-        `[System.Boolean]`
+        `System.Boolean`
+
+        Returns `$true` if the database properties are in the desired state; otherwise `$false`.
 #>
 function Test-SqlDscDatabaseProperty
 {

@@ -29,9 +29,18 @@
     .PARAMETER PassThru
         If specified the command will return the setup process exit code.
 
+    .INPUTS
+        None.
+
     .OUTPUTS
-        When PassThru is specified the function will return the setup process exit
-        code as System.Int32. Otherwise, the function does not generate any output.
+        `System.Int32`
+
+        The setup process exit code when PassThru is specified.
+
+    .OUTPUTS
+        None.
+
+        No output when PassThru is not specified.
 
     .EXAMPLE
         Uninstall-SqlDscBIReportServer -MediaPath 'E:\PowerBIReportServer.exe'

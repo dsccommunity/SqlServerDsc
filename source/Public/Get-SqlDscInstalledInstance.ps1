@@ -12,8 +12,12 @@
         Specifies the service type to filter instances by. Valid values are
         'DatabaseEngine', 'AnalysisServices', and 'ReportingServices'.
 
-    .OUTPUTS
-        `[System.Object[]]`
+
+    .INPUTS
+        None.
+
+.OUTPUTS
+        `System.Object[]`
 
     .EXAMPLE
         Get-SqlDscInstalledInstance
