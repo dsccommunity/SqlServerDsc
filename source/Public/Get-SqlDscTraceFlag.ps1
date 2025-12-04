@@ -45,6 +45,8 @@
 
     .OUTPUTS
         `System.UInt32[]`
+
+        Returns an array of trace flags as unsigned 32-bit integer values.
 #>
 function Get-SqlDscTraceFlag
 {
