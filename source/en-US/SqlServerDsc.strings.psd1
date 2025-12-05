@@ -317,7 +317,6 @@ ConvertFrom-StringData @'
     Get_SqlDscRole_NotFound = Server role '{0}' was not found. (GSDR0001)
 
     ## New-SqlDscRole
-    Role_Create = Creating server role '{0}' on instance '{1}'.
     Role_CreateFailed = Failed to create server role '{0}' on instance '{1}'.
     Role_AlreadyExists = Server role '{0}' already exists on instance '{1}'.
     Role_Create_ShouldProcessDescription = Creating the server role '{0}' on the instance '{1}'.
