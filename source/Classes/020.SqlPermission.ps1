@@ -384,6 +384,20 @@ class SqlPermission : SqlResourceBase
             $principalObject = $serverObject | Get-SqlDscRole -Name $this.Name -ErrorAction 'Stop'
         }
 
+        # Create splatting parameter for principal to avoid repeated if/else blocks
+        $principalParameter = if ($isLogin)
+        {
+            @{
+                Login = $principalObject
+            }
+        }
+        else
+        {
+            @{
+                ServerRole = $principalObject
+            }
+        }
+
         # This holds each state and their permissions to be revoked.
         [ServerPermission[]] $permissionsToRevoke = @()
         [ServerPermission[]] $permissionsToGrantOrDeny = @()
@@ -486,14 +500,7 @@ class SqlPermission : SqlResourceBase
 
                     try
                     {
-                        if ($isLogin)
-                        {
-                            Revoke-SqlDscServerPermission -Login $principalObject @revokeSqlDscServerPermissionParameters
-                        }
-                        else
-                        {
-                            Revoke-SqlDscServerPermission -ServerRole $principalObject @revokeSqlDscServerPermissionParameters
-                        }
+                        Revoke-SqlDscServerPermission @principalParameter @revokeSqlDscServerPermissionParameters
                     }
                     catch
                     {
@@ -532,14 +539,7 @@ class SqlPermission : SqlResourceBase
                                     Force      = $true
                                 }
 
-                                if ($isLogin)
-                                {
-                                    Grant-SqlDscServerPermission -Login $principalObject @grantParameters
-                                }
-                                else
-                                {
-                                    Grant-SqlDscServerPermission -ServerRole $principalObject @grantParameters
-                                }
+                                Grant-SqlDscServerPermission @principalParameter @grantParameters
                             }
 
                             'GrantWithGrant'
@@ -550,14 +550,7 @@ class SqlPermission : SqlResourceBase
                                     Force      = $true
                                 }
 
-                                if ($isLogin)
-                                {
-                                    Grant-SqlDscServerPermission -Login $principalObject @grantParameters
-                                }
-                                else
-                                {
-                                    Grant-SqlDscServerPermission -ServerRole $principalObject @grantParameters
-                                }
+                                Grant-SqlDscServerPermission @principalParameter @grantParameters
                             }
 
                             'Deny'
@@ -567,14 +560,7 @@ class SqlPermission : SqlResourceBase
                                     Force      = $true
                                 }
 
-                                if ($isLogin)
-                                {
-                                    Deny-SqlDscServerPermission -Login $principalObject @denyParameters
-                                }
-                                else
-                                {
-                                    Deny-SqlDscServerPermission -ServerRole $principalObject @denyParameters
-                                }
+                                Deny-SqlDscServerPermission @principalParameter @denyParameters
                             }
                         }
                     }

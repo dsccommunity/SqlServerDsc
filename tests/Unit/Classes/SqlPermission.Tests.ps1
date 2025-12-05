@@ -1253,6 +1253,10 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                     return $true
                 }
 
+                Mock -CommandName Test-SqlDscIsRole -MockWith {
+                    return $false
+                }
+
                 Mock -CommandName Get-SqlDscLogin -MockWith {
                     $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
                     $mockServerObject.InstanceName = 'NamedInstance'
