@@ -353,15 +353,16 @@ class SqlPermission : SqlResourceBase
     {
         $serverObject = $this.GetServerObject()
 
-        $testSqlDscIsLoginParameters = @{
+        $testSqlDscIsPrincipalParameters = @{
             ServerObject = $serverObject
             Name         = $this.Name
         }
 
-        # This will test wether the principal exist.
-        $isLogin = Test-SqlDscIsLogin @testSqlDscIsLoginParameters
+        # This will test whether the principal exist.
+        $isLogin = Test-SqlDscIsLogin @testSqlDscIsPrincipalParameters
+        $isRole = Test-SqlDscIsRole @testSqlDscIsPrincipalParameters
 
-        if (-not $isLogin)
+        if (-not $isLogin -and -not $isRole)
         {
             $missingPrincipalMessage = $this.localizedData.NameIsMissing -f @(
                 $this.Name,
