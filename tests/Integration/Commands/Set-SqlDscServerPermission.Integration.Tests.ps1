@@ -63,7 +63,7 @@ Describe 'Set-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
     }
 
-    Context 'When setting server permissions to Grant state for login' {
+    Context 'When setting exact permissions for a login' {
         BeforeEach {
             # Get the login object for testing
             $script:loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
@@ -71,165 +71,155 @@ Describe 'Set-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
             # Clean up any existing permissions
             Revoke-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
             Revoke-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewAnyDatabase' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewAnyDefinition' -Force -ErrorAction 'SilentlyContinue'
             Revoke-SqlDscServerPermission -Login $script:loginObject -Permission 'CreateAnyDatabase' -WithGrant -Force -ErrorAction 'SilentlyContinue'
         }
 
-        It 'Should set ViewServerState permission to Grant state' {
-            $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
-            $permissionSet.ViewServerState = $true
-
-            $null = Set-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName -State 'Grant' -Permission $permissionSet -Force -ErrorAction 'Stop'
-
-            # Verify the permission was granted
-            $result = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission @('ViewServerState') -ErrorAction 'Stop'
-            $result | Should -BeTrue
-        }
-
-        It 'Should set multiple permissions to Grant state' {
-            $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
-            $permissionSet.ViewServerState = $true
-            $permissionSet.ViewAnyDatabase = $true
-
-            $null = Set-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName -State 'Grant' -Permission $permissionSet -Force -ErrorAction 'Stop'
+        It 'Should set exact Grant permissions' {
+            Set-SqlDscServerPermission -Login $script:loginObject -Grant 'ViewServerState', 'ViewAnyDatabase' -Force -ErrorAction 'Stop'
 
             # Verify the permissions were granted
-            $result1 = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission @('ViewServerState') -ErrorAction 'Stop'
-            $result1 | Should -BeTrue
-
-            $result2 = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission @('ViewAnyDatabase') -ErrorAction 'Stop'
-            $result2 | Should -BeTrue
+            $result = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission 'ViewServerState', 'ViewAnyDatabase' -ExactMatch -ErrorAction 'Stop'
+            $result | Should -BeTrue
         }
 
-        It 'Should set permission to Grant state with WithGrant option' {
-            $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
-            $permissionSet.CreateAnyDatabase = $true
-
-            $null = Set-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName -State 'Grant' -Permission $permissionSet -WithGrant -Force -ErrorAction 'Stop'
+        It 'Should set exact GrantWithGrant permissions' {
+            Set-SqlDscServerPermission -Login $script:loginObject -GrantWithGrant 'CreateAnyDatabase' -Force -ErrorAction 'Stop'
 
             # Verify the permission was granted with grant option
-            $result = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission @('CreateAnyDatabase') -WithGrant -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission 'CreateAnyDatabase' -WithGrant -ErrorAction 'Stop'
             $result | Should -BeTrue
         }
 
-        It 'Should accept ServerObject from pipeline' {
-            $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
-            $permissionSet.ViewAnyDatabase = $true
+        It 'Should set exact Deny permissions' {
+            Set-SqlDscServerPermission -Login $script:loginObject -Deny 'ViewAnyDefinition' -Force -ErrorAction 'Stop'
 
-            $null = $script:serverObject | Set-SqlDscServerPermission -Name $script:testLoginName -State 'Grant' -Permission $permissionSet -Force -ErrorAction 'Stop'
-
-            # Verify the permission was granted
-            $result = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission @('ViewAnyDatabase') -ErrorAction 'Stop'
+            # Verify the permission was denied
+            $result = Test-SqlDscServerPermission -Login $script:loginObject -Deny -Permission 'ViewAnyDefinition' -ErrorAction 'Stop'
             $result | Should -BeTrue
+        }
+
+        It 'Should set combined Grant, GrantWithGrant, and Deny permissions' {
+            Set-SqlDscServerPermission -Login $script:loginObject `
+                -Grant 'ViewServerState' `
+                -GrantWithGrant 'CreateAnyDatabase' `
+                -Deny 'ViewAnyDefinition' `
+                -Force -ErrorAction 'Stop'
+
+            # Verify Grant permission
+            $grantResult = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission 'ViewServerState' -ErrorAction 'Stop'
+            $grantResult | Should -BeTrue
+
+            # Verify GrantWithGrant permission
+            $grantWithGrantResult = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission 'CreateAnyDatabase' -WithGrant -ErrorAction 'Stop'
+            $grantWithGrantResult | Should -BeTrue
+
+            # Verify Deny permission
+            $denyResult = Test-SqlDscServerPermission -Login $script:loginObject -Deny -Permission 'ViewAnyDefinition' -ErrorAction 'Stop'
+            $denyResult | Should -BeTrue
         }
     }
 
-    Context 'When setting server permissions to Deny state for login' {
-        BeforeEach {
-            # Get the login object for testing
-            $script:loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
-
-            # Clean up any existing permissions
-            Revoke-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
-            Revoke-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewAnyDefinition' -Force -ErrorAction 'SilentlyContinue'
-        }
-
-        It 'Should set ViewServerState permission to Deny state' {
-            $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
-            $permissionSet.ViewServerState = $true
-
-            $null = Set-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName -State 'Deny' -Permission $permissionSet -Force -ErrorAction 'Stop'
-
-            # Verify the permission was denied
-            $result = Test-SqlDscServerPermission -Login $script:loginObject -Deny -Permission @('ViewServerState') -ErrorAction 'Stop'
-            $result | Should -BeTrue
-        }
-
-        It 'Should set permission to Deny state and ignore WithGrant parameter' {
-            $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
-            $permissionSet.ViewAnyDefinition = $true
-
-            # WithGrant should be ignored for Deny state (should show warning)
-            $null = Set-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName -State 'Deny' -Permission $permissionSet -WithGrant -Force -ErrorAction 'Stop'
-
-            # Verify the permission was denied
-            $result = Test-SqlDscServerPermission -Login $script:loginObject -Deny -Permission @('ViewAnyDefinition') -ErrorAction 'Stop'
-            $result | Should -BeTrue
-        }
-    }
-
-    Context 'When setting server permissions to Revoke state for login' {
+    Context 'When revoking permissions by setting empty arrays' {
         BeforeEach {
             # Get the login object for testing
             $script:loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
             # Set up known permissions to revoke
-            $null = Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('ViewServerState') -Force -ErrorAction 'Stop'
-            $null = Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('CreateAnyDatabase') -WithGrant -Force -ErrorAction 'Stop'
+            Grant-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewServerState', 'ViewAnyDatabase' -Force -ErrorAction 'Stop'
         }
 
-        It 'Should revoke ViewServerState permission' {
-            $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
-            $permissionSet.ViewServerState = $true
+        It 'Should revoke all Grant permissions when empty Grant array is specified' {
+            Set-SqlDscServerPermission -Login $script:loginObject -Grant @() -Force -ErrorAction 'Stop'
 
-            $null = Set-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName -State 'Revoke' -Permission $permissionSet -Force -ErrorAction 'Stop'
+            # Verify the permissions were revoked
+            $result1 = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission 'ViewServerState' -ErrorAction 'Stop'
+            $result1 | Should -BeFalse
 
-            # Verify the permission was revoked
-            $result = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission @('ViewServerState') -ErrorAction 'Stop'
-            $result | Should -BeFalse
-        }
-
-        It 'Should revoke permission with WithGrant option (cascade revoke)' {
-            $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
-            $permissionSet.CreateAnyDatabase = $true
-
-            $null = Set-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName -State 'Revoke' -Permission $permissionSet -WithGrant -Force -ErrorAction 'Stop'
-
-            # Verify the permission with grant was revoked
-            $result = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission @('CreateAnyDatabase') -WithGrant -ErrorAction 'Stop'
-            $result | Should -BeFalse
+            $result2 = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission 'ViewAnyDatabase' -ErrorAction 'Stop'
+            $result2 | Should -BeFalse
         }
     }
 
-    Context 'When setting server permissions for role' {
+    Context 'When replacing existing permissions with new ones' {
+        BeforeEach {
+            # Get the login object for testing
+            $script:loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
+
+            # Set up initial permissions
+            Revoke-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewAnyDatabase' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewAnyDefinition' -Force -ErrorAction 'SilentlyContinue'
+
+            Grant-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewServerState', 'ViewAnyDatabase' -Force -ErrorAction 'Stop'
+        }
+
+        It 'Should replace existing permissions with new specified permissions' {
+            # Change from ViewServerState,ViewAnyDatabase to ViewAnyDefinition
+            Set-SqlDscServerPermission -Login $script:loginObject -Grant 'ViewAnyDefinition' -Force -ErrorAction 'Stop'
+
+            # Verify old permissions were revoked
+            $result1 = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission 'ViewServerState' -ErrorAction 'Stop'
+            $result1 | Should -BeFalse
+
+            $result2 = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission 'ViewAnyDatabase' -ErrorAction 'Stop'
+            $result2 | Should -BeFalse
+
+            # Verify new permission was granted
+            $result3 = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission 'ViewAnyDefinition' -ErrorAction 'Stop'
+            $result3 | Should -BeTrue
+        }
+    }
+
+    Context 'When using pipeline input' {
+        BeforeEach {
+            # Get the login object for testing
+            $script:loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
+
+            # Clean up
+            Revoke-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
+        }
+
+        It 'Should accept Login object from pipeline' {
+            $script:loginObject | Set-SqlDscServerPermission -Grant 'ViewServerState' -Force -ErrorAction 'Stop'
+
+            # Verify the permission was granted
+            $result = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission 'ViewServerState' -ErrorAction 'Stop'
+            $result | Should -BeTrue
+        }
+    }
+
+    Context 'When setting permissions for a server role' {
         BeforeEach {
             # Get the role object for testing
             $script:roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
 
             # Clean up any existing permissions
             Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewAnyDatabase' -Force -ErrorAction 'SilentlyContinue'
         }
 
-        It 'Should set ViewServerState permission to Grant state for role' {
-            $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
-            $permissionSet.ViewServerState = $true
+        AfterAll {
+            # Clean up role permissions
+            $script:roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewAnyDatabase' -Force -ErrorAction 'SilentlyContinue'
+        }
 
-            $null = Set-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testRoleName -State 'Grant' -Permission $permissionSet -Force -ErrorAction 'Stop'
+        It 'Should set exact Grant permissions for role' {
+            Set-SqlDscServerPermission -ServerRole $script:roleObject -Grant 'ViewServerState' -Force -ErrorAction 'Stop'
 
             # Verify the permission was granted
-            $result = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission @('ViewServerState') -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission 'ViewServerState' -ErrorAction 'Stop'
             $result | Should -BeTrue
         }
 
-        It 'Should set ViewServerState permission to Deny state for role' {
-            $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
-            $permissionSet.ViewServerState = $true
+        It 'Should accept ServerRole object from pipeline' {
+            $script:roleObject | Set-SqlDscServerPermission -Grant 'ViewAnyDatabase' -Force -ErrorAction 'Stop'
 
-            $null = Set-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testRoleName -State 'Deny' -Permission $permissionSet -Force -ErrorAction 'Stop'
-
-            # Verify the permission was denied
-            $result = Test-SqlDscServerPermission -ServerRole $script:roleObject -Deny -Permission @('ViewServerState') -ErrorAction 'Stop'
+            # Verify the permission was granted
+            $result = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission 'ViewAnyDatabase' -ErrorAction 'Stop'
             $result | Should -BeTrue
-        }
-    }
-
-    Context 'When attempting to set permissions for non-existent principal' {
-        It 'Should throw an error for non-existent principal' {
-            $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
-            $permissionSet.ViewServerState = $true
-
-            {
-                Set-SqlDscServerPermission -ServerObject $script:serverObject -Name 'NonExistentPrincipal' -State 'Grant' -Permission $permissionSet -Force -ErrorAction 'Stop'
-            } | Should -Throw
         }
     }
 }

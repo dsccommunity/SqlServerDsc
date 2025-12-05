@@ -50,809 +50,376 @@ AfterAll {
 }
 
 Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
-    Context 'When the principal does not exist' {
+    Context 'When using parameter WhatIf' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'MockInstance'
 
-            Mock -CommandName Test-SqlDscIsLogin -MockWith {
-                return $false
-            }
+            $mockLoginObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @($mockServerObject, 'DOMAIN\MyLogin')
 
-            Mock -CommandName Test-SqlDscIsRole -MockWith {
-                return $false
-            }
-
-            $script:mockDefaultParameters = @{
-                Name         = 'UnknownUser'
-                State        = 'Grant'
-                Permission   = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]::new()
-            }
+            Mock -CommandName Get-SqlDscServerPermission
+            Mock -CommandName Grant-SqlDscServerPermission
+            Mock -CommandName Deny-SqlDscServerPermission
+            Mock -CommandName Revoke-SqlDscServerPermission
+            Mock -CommandName ConvertTo-SqlDscServerPermission
         }
 
-        It 'Should throw the correct error' {
-            $mockErrorMessage = InModuleScope -ScriptBlock {
-                $script:localizedData.ServerPermission_MissingPrincipal
-            }
+        It 'Should not call any permission commands' {
+            Set-SqlDscServerPermission -Login $mockLoginObject -Grant 'ConnectSql' -WhatIf
 
-            { Set-SqlDscServerPermission -ServerObject $mockServerObject @mockDefaultParameters } |
-                Should -Throw -ExpectedMessage ($mockErrorMessage -f 'UnknownUser', 'MockInstance')
+            Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 0 -Scope It
+            Should -Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Times 0 -Scope It
+            Should -Invoke -CommandName Deny-SqlDscServerPermission -Exactly -Times 0 -Scope It
+            Should -Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -Times 0 -Scope It
         }
     }
 
-    Context 'When the login exists' {
-        Context 'When using parameter Confirm with value $false for a login' {
+    Context 'When setting permissions for a login' {
+        Context 'When no current permissions exist' {
             BeforeAll {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                    Add-Member -MemberType 'ScriptMethod' -Name 'Deny' -Value {
-                        $script:mockMethodDenyCallCount += 1
-                    } -PassThru -Force
+                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                $mockServerObject.InstanceName = 'MockInstance'
 
-                Mock -CommandName Test-SqlDscIsLogin -MockWith {
-                    return $true
+                $mockLoginObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @($mockServerObject, 'DOMAIN\MyLogin')
+
+                Mock -CommandName Get-SqlDscServerPermission -MockWith {
+                    return $null
                 }
 
-                Mock -CommandName Test-SqlDscIsRole -MockWith {
-                    return $false
-                }
-
-                $script:mockDefaultParameters = @{
-                    Confirm      = $false
-                    Name         = 'DOMAIN\MyLogin'
-                    State        = 'Deny'
-                    Permission   = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-                        ConnectSql = $true
-                    }
-                }
+                Mock -CommandName Grant-SqlDscServerPermission
+                Mock -CommandName Deny-SqlDscServerPermission
+                Mock -CommandName Revoke-SqlDscServerPermission
             }
 
-            BeforeEach {
-                $script:mockMethodDenyCallCount = 0
+            It 'Should grant the specified permissions' {
+                Set-SqlDscServerPermission -Login $mockLoginObject -Grant 'ConnectSql', 'ViewServerState' -Force
+
+                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Grant-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'ConnectSql' -and $Permission -contains 'ViewServerState'
+                } -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Deny-SqlDscServerPermission -Exactly -Times 0 -Scope It
             }
 
-            It 'Should call the correct mocked method' {
-                $null = Set-SqlDscServerPermission -ServerObject $mockServerObject @mockDefaultParameters
+            It 'Should deny the specified permissions' {
+                Set-SqlDscServerPermission -Login $mockLoginObject -Deny 'ViewAnyDatabase' -Force
 
-                $script:mockMethodDenyCallCount | Should -Be 1
+                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Deny-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'ViewAnyDatabase'
+                } -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -Times 0 -Scope It
+            }
+
+            It 'Should grant with grant option the specified permissions' {
+                Set-SqlDscServerPermission -Login $mockLoginObject -GrantWithGrant 'AlterAnyDatabase' -Force
+
+                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Grant-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'AlterAnyDatabase' -and $WithGrant -eq $true
+                } -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Deny-SqlDscServerPermission -Exactly -Times 0 -Scope It
             }
         }
 
-        Context 'When using parameter Force for a login' {
+        Context 'When current permissions exist and need to be revoked' {
             BeforeAll {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                    Add-Member -MemberType 'ScriptMethod' -Name 'Deny' -Value {
-                        $script:mockMethodDenyCallCount += 1
-                    } -PassThru -Force
+                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                $mockServerObject.InstanceName = 'MockInstance'
 
+                $mockLoginObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @($mockServerObject, 'DOMAIN\MyLogin')
 
-                Mock -CommandName Test-SqlDscIsLogin -MockWith {
-                    return $true
+                # Create mock ServerPermissionInfo objects
+                $mockServerPermissionInfo = @(
+                    New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionInfo'
+                )
+
+                Mock -CommandName Get-SqlDscServerPermission -MockWith {
+                    return $mockServerPermissionInfo
                 }
 
-                Mock -CommandName Test-SqlDscIsRole -MockWith {
-                    return $false
-                }
-
-                $script:mockDefaultParameters = @{
-                    Force        = $true
-                    Name         = 'DOMAIN\MyLogin'
-                    State        = 'Deny'
-                    Permission   = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-                        ConnectSql = $true
-                    }
-                }
-            }
-
-            BeforeEach {
-                $script:mockMethodDenyCallCount = 0
-            }
-
-            It 'Should call the correct mocked method' {
-                $null = Set-SqlDscServerPermission -ServerObject $mockServerObject @mockDefaultParameters
-
-                $script:mockMethodDenyCallCount | Should -Be 1
-            }
-        }
-
-        Context 'When using parameter WhatIf for a login' {
-            BeforeAll {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                    Add-Member -MemberType 'ScriptMethod' -Name 'Deny' -Value {
-                        $script:mockMethodDenyCallCount += 1
-                    } -PassThru -Force
-
-
-                Mock -CommandName Test-SqlDscIsLogin -MockWith {
-                    return $true
-                }
-
-                Mock -CommandName Test-SqlDscIsRole -MockWith {
-                    return $false
-                }
-
-                $script:mockDefaultParameters = @{
-                    WhatIf       = $true
-                    Name         = 'DOMAIN\MyLogin'
-                    State        = 'Deny'
-                    Permission   = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-                        ConnectSql = $true
-                    }
-                }
-            }
-
-            BeforeEach {
-                $script:mockMethodDenyCallCount = 0
-            }
-
-            It 'Should not call the mocked method' {
-                $null = Set-SqlDscServerPermission -ServerObject $mockServerObject @mockDefaultParameters
-
-                $script:mockMethodDenyCallCount | Should -Be 0
-            }
-        }
-
-        Context 'When permission should be granted for a login' {
-            BeforeAll {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                Add-Member -MemberType 'ScriptMethod' -Name 'Grant' -Value {
-                    $script:mockMethodGrantCallCount += 1
-                } -PassThru -Force
-
-                Mock -CommandName Test-SqlDscIsLogin -MockWith {
-                    return $true
-                }
-
-                Mock -CommandName Test-SqlDscIsRole -MockWith {
-                    return $false
-                }
-
-                $script:mockDefaultParameters = @{
-                    Confirm      = $false
-                    Name         = 'DOMAIN\MyLogin'
-                    State        = 'Grant'
-                    Permission   = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-                        ConnectSql = $true
-                    }
-                }
-            }
-
-            BeforeEach {
-                $script:mockMethodGrantCallCount = 0
-            }
-
-            It 'Should call the correct mocked method' {
-                $null = Set-SqlDscServerPermission -ServerObject $mockServerObject @mockDefaultParameters
-
-                $script:mockMethodGrantCallCount | Should -Be 1
-            }
-
-            Context 'When passing ServerObject over the pipeline' {
-                It 'Should call the correct mocked method' {
-                    $null = $mockServerObject | Set-SqlDscServerPermission @mockDefaultParameters
-
-                    $script:mockMethodGrantCallCount | Should -Be 1
-                }
-            }
-        }
-
-        Context 'When permission should be granted for a login and using parameter WithGrant' {
-            BeforeAll {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                    Add-Member -MemberType 'ScriptMethod' -Name 'Grant' -Value {
-                        param
-                        (
-                            [Parameter()]
-                            $Permission,
-
-                            [Parameter()]
-                            $Name,
-
-                            [Parameter()]
-                            $WithGrant
+                # Mock ConvertTo-SqlDscServerPermission to return the permissions we want
+                # Using InModuleScope to access the ServerPermission type
+                InModuleScope -ScriptBlock {
+                    Mock -CommandName ConvertTo-SqlDscServerPermission -MockWith {
+                        return @(
+                            [ServerPermission]@{
+                                State      = 'Grant'
+                                Permission = @('ConnectSql', 'ViewServerState')
+                            }
+                            [ServerPermission]@{
+                                State      = 'GrantWithGrant'
+                                Permission = @()
+                            }
+                            [ServerPermission]@{
+                                State      = 'Deny'
+                                Permission = @('ViewAnyDatabase')
+                            }
                         )
-
-                        if ($WithGrant)
-                        {
-                            $script:mockMethodGrantUsingWithGrantCallCount += 1
-                        }
-                    } -PassThru -Force
-
-
-                Mock -CommandName Test-SqlDscIsLogin -MockWith {
-                    return $true
-                }
-
-                Mock -CommandName Test-SqlDscIsRole -MockWith {
-                    return $false
-                }
-
-                $script:mockDefaultParameters = @{
-                    Confirm      = $false
-                    Name         = 'DOMAIN\MyLogin'
-                    State        = 'Grant'
-                    WithGrant    = $true
-                    Permission   = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-                        ConnectSql = $true
                     }
                 }
+
+                Mock -CommandName Grant-SqlDscServerPermission
+                Mock -CommandName Deny-SqlDscServerPermission
+                Mock -CommandName Revoke-SqlDscServerPermission
             }
 
-            BeforeEach {
-                $script:mockMethodGrantUsingWithGrantCallCount = 0
+            It 'Should revoke unwanted permissions and grant new ones' {
+                # Desired: Grant only ConnectSql (ViewServerState should be revoked)
+                Set-SqlDscServerPermission -Login $mockLoginObject -Grant 'ConnectSql' -Deny @() -Force
+
+                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+
+                # Should revoke ViewServerState (was granted, no longer desired)
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'ViewServerState'
+                } -Exactly -Times 1 -Scope It
+
+                # Should revoke ViewAnyDatabase (was denied, no longer desired)
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'ViewAnyDatabase'
+                } -Exactly -Times 1 -Scope It
+
+                # ConnectSql is already granted, so no Grant call needed
+                Should -Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Times 0 -Scope It
             }
 
-            It 'Should call the correct mocked method' {
-                $null = Set-SqlDscServerPermission -ServerObject $mockServerObject @mockDefaultParameters
+            It 'Should add new permissions while keeping existing ones' {
+                # Desired: Grant ConnectSql, ViewServerState, AlterAnyDatabase
+                Set-SqlDscServerPermission -Login $mockLoginObject -Grant 'ConnectSql', 'ViewServerState', 'AlterAnyDatabase' -Deny @() -Force
 
-                $script:mockMethodGrantUsingWithGrantCallCount | Should -Be 1
-            }
+                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
 
-            Context 'When passing ServerObject over the pipeline' {
-                It 'Should call the correct mocked method' {
-                    $null = $mockServerObject | Set-SqlDscServerPermission @mockDefaultParameters
+                # Should grant AlterAnyDatabase (new)
+                Should -Invoke -CommandName Grant-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'AlterAnyDatabase'
+                } -Exactly -Times 1 -Scope It
 
-                    $script:mockMethodGrantUsingWithGrantCallCount | Should -Be 1
-                }
+                # Should revoke ViewAnyDatabase (was denied, no longer desired)
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'ViewAnyDatabase'
+                } -Exactly -Times 1 -Scope It
             }
         }
 
-        Context 'When permission for a login should be revoked' {
+        Context 'When using pipeline input' {
             BeforeAll {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                    Add-Member -MemberType 'ScriptMethod' -Name 'Revoke' -Value {
-                        $script:mockMethodRevokeCallCount += 1
-                    } -PassThru -Force
+                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                $mockServerObject.InstanceName = 'MockInstance'
 
-                Mock -CommandName Test-SqlDscIsLogin -MockWith {
-                    return $true
+                $mockLoginObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @($mockServerObject, 'DOMAIN\MyLogin')
+
+                Mock -CommandName Get-SqlDscServerPermission -MockWith {
+                    return $null
                 }
 
-                Mock -CommandName Test-SqlDscIsRole -MockWith {
-                    return $false
-                }
-
-                $script:mockDefaultParameters = @{
-                    Confirm      = $false
-                    Name         = 'DOMAIN\MyLogin'
-                    State        = 'Revoke'
-                    Permission   = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-                        ConnectSql = $true
-                    }
-                }
+                Mock -CommandName Grant-SqlDscServerPermission
+                Mock -CommandName Deny-SqlDscServerPermission
+                Mock -CommandName Revoke-SqlDscServerPermission
             }
 
-            BeforeEach {
-                $script:mockMethodRevokeCallCount = 0
-            }
+            It 'Should accept Login object from pipeline' {
+                $mockLoginObject | Set-SqlDscServerPermission -Grant 'ConnectSql' -Force
 
-            It 'Should call the correct mocked method' {
-                $null = Set-SqlDscServerPermission -ServerObject $mockServerObject @mockDefaultParameters
-
-                $script:mockMethodRevokeCallCount | Should -Be 1
-            }
-
-            Context 'When passing ServerObject over the pipeline' {
-                It 'Should call the correct mocked method' {
-                    $null = $mockServerObject | Set-SqlDscServerPermission @mockDefaultParameters
-
-                    $script:mockMethodRevokeCallCount | Should -Be 1
-                }
+                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Times 1 -Scope It
             }
         }
 
-        Context 'When permission for a login should be revoked and using parameter WithGrant' {
+        Context 'When revoking all permissions using empty arrays' {
             BeforeAll {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                    Add-Member -MemberType 'ScriptMethod' -Name 'Revoke' -Value {
-                        param
-                        (
-                            [Parameter()]
-                            $Permission,
+                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                $mockServerObject.InstanceName = 'MockInstance'
 
-                            [Parameter()]
-                            $Name,
+                $mockLoginObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @($mockServerObject, 'DOMAIN\MyLogin')
 
-                            [Parameter()]
-                            $RevokeGrant,
+                # Create mock ServerPermissionInfo objects
+                $mockServerPermissionInfo = @(
+                    New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionInfo'
+                )
 
-                            [Parameter()]
-                            $Cascade
+                Mock -CommandName Get-SqlDscServerPermission -MockWith {
+                    return $mockServerPermissionInfo
+                }
+
+                InModuleScope -ScriptBlock {
+                    Mock -CommandName ConvertTo-SqlDscServerPermission -MockWith {
+                        return @(
+                            [ServerPermission]@{
+                                State      = 'Grant'
+                                Permission = @('ConnectSql')
+                            }
+                            [ServerPermission]@{
+                                State      = 'GrantWithGrant'
+                                Permission = @()
+                            }
+                            [ServerPermission]@{
+                                State      = 'Deny'
+                                Permission = @()
+                            }
                         )
-
-                        if (-not $RevokeGrant -and $Cascade)
-                        {
-                            $script:mockMethodRevokeUsingWithGrantCallCount += 1
-                        }
-                    } -PassThru -Force
-
-                Mock -CommandName Test-SqlDscIsLogin -MockWith {
-                    return $true
-                }
-
-                Mock -CommandName Test-SqlDscIsRole -MockWith {
-                    return $false
-                }
-
-                $script:mockDefaultParameters = @{
-                    Confirm      = $false
-                    Name         = 'DOMAIN\MyLogin'
-                    State        = 'Revoke'
-                    WithGrant    = $true
-                    Permission   = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-                        ConnectSql = $true
                     }
                 }
+
+                Mock -CommandName Grant-SqlDscServerPermission
+                Mock -CommandName Deny-SqlDscServerPermission
+                Mock -CommandName Revoke-SqlDscServerPermission
             }
 
-            BeforeEach {
-                $script:mockMethodRevokeUsingWithGrantCallCount = 0
-            }
+            It 'Should revoke all permissions when empty Grant array is specified' {
+                Set-SqlDscServerPermission -Login $mockLoginObject -Grant @() -Force
 
-            It 'Should call the correct mocked method' {
-                $null = Set-SqlDscServerPermission -ServerObject $mockServerObject @mockDefaultParameters
+                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
 
-                $script:mockMethodRevokeUsingWithGrantCallCount | Should -Be 1
-            }
+                # Should revoke ConnectSql
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'ConnectSql'
+                } -Exactly -Times 1 -Scope It
 
-            Context 'When passing ServerObject over the pipeline' {
-                It 'Should call the correct mocked method' {
-                    $null = $mockServerObject | Set-SqlDscServerPermission @mockDefaultParameters
-
-                    $script:mockMethodGrantUsingWithGrantCallCount | Should -Be 1
-                }
-            }
-        }
-
-        Context 'When permission for a login should be denied' {
-            BeforeAll {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                    Add-Member -MemberType 'ScriptMethod' -Name 'Deny' -Value {
-                        $script:mockMethodDenyCallCount += 1
-                    } -PassThru -Force
-
-                Mock -CommandName Test-SqlDscIsLogin -MockWith {
-                    return $true
-                }
-
-                Mock -CommandName Test-SqlDscIsRole -MockWith {
-                    return $false
-                }
-
-                $script:mockDefaultParameters = @{
-                    Confirm      = $false
-                    Name         = 'DOMAIN\MyLogin'
-                    State        = 'Deny'
-                    Permission   = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-                        ConnectSql = $true
-                    }
-                }
-            }
-
-            BeforeEach {
-                $script:mockMethodDenyCallCount = 0
-            }
-
-            It 'Should call the correct mocked method' {
-                $null = Set-SqlDscServerPermission -ServerObject $mockServerObject @mockDefaultParameters
-
-                $script:mockMethodDenyCallCount | Should -Be 1
-            }
-
-            Context 'When passing ServerObject over the pipeline' {
-                It 'Should call the correct mocked method' {
-                    $null = $mockServerObject | Set-SqlDscServerPermission @mockDefaultParameters
-
-                    $script:mockMethodDenyCallCount | Should -Be 1
-                }
-            }
-
-            Context 'When passing WithGrant' {
-                BeforeAll {
-                    Mock -CommandName Write-Warning
-                }
-
-                It 'Should output the correct warning message and return the correct values' {
-                    $mockWarningMessage = InModuleScope -ScriptBlock {
-                        $script:localizedData.ServerPermission_IgnoreWithGrantForStateDeny
-                    }
-
-                    $null = $mockServerObject | Set-SqlDscServerPermission -WithGrant @mockDefaultParameters
-
-                    $script:mockMethodDenyCallCount | Should -Be 1
-
-                    Should -Invoke -CommandName 'Write-Warning' -ParameterFilter {
-                        $Message -eq $mockWarningMessage
-                    }
-                }
+                Should -Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Times 0 -Scope It
             }
         }
     }
 
-    Context 'When the role exists' {
-        Context 'When using parameter Confirm with value $false for a role' {
+    Context 'When setting permissions for a server role' {
+        Context 'When no current permissions exist' {
             BeforeAll {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                    Add-Member -MemberType 'ScriptMethod' -Name 'Deny' -Value {
-                        $script:mockMethodDenyCallCount += 1
-                    } -PassThru -Force
+                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                $mockServerObject.InstanceName = 'MockInstance'
 
-                Mock -CommandName Test-SqlDscIsLogin -MockWith {
-                    return $false
+                $mockServerRoleObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList @($mockServerObject, 'MyServerRole')
+
+                Mock -CommandName Get-SqlDscServerPermission -MockWith {
+                    return $null
                 }
 
-                Mock -CommandName Test-SqlDscIsRole -MockWith {
-                    return $true
-                }
-
-                $script:mockDefaultParameters = @{
-                    Confirm      = $false
-                    Name         = 'JuniorDBA'
-                    State        = 'Deny'
-                    Permission   = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-                        ConnectSql = $true
-                    }
-                }
+                Mock -CommandName Grant-SqlDscServerPermission
+                Mock -CommandName Deny-SqlDscServerPermission
+                Mock -CommandName Revoke-SqlDscServerPermission
             }
 
-            BeforeEach {
-                $script:mockMethodDenyCallCount = 0
-            }
+            It 'Should grant the specified permissions to the role' {
+                Set-SqlDscServerPermission -ServerRole $mockServerRoleObject -Grant 'AlterAnyDatabase' -Force
 
-            It 'Should call the correct mocked method' {
-                $null = Set-SqlDscServerPermission -ServerObject $mockServerObject @mockDefaultParameters
-
-                $script:mockMethodDenyCallCount | Should -Be 1
+                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Grant-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'AlterAnyDatabase'
+                } -Exactly -Times 1 -Scope It
             }
         }
 
-        Context 'When using parameter Force for a role' {
+        Context 'When using pipeline input' {
             BeforeAll {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                    Add-Member -MemberType 'ScriptMethod' -Name 'Deny' -Value {
-                        $script:mockMethodDenyCallCount += 1
-                    } -PassThru -Force
+                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                $mockServerObject.InstanceName = 'MockInstance'
 
+                $mockServerRoleObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList @($mockServerObject, 'MyServerRole')
 
-                Mock -CommandName Test-SqlDscIsLogin -MockWith {
-                    return $false
+                Mock -CommandName Get-SqlDscServerPermission -MockWith {
+                    return $null
                 }
 
-                Mock -CommandName Test-SqlDscIsRole -MockWith {
-                    return $true
-                }
-
-                $script:mockDefaultParameters = @{
-                    Force        = $true
-                    Name         = 'JuniorDBA'
-                    State        = 'Deny'
-                    Permission   = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-                        ConnectSql = $true
-                    }
-                }
+                Mock -CommandName Grant-SqlDscServerPermission
+                Mock -CommandName Deny-SqlDscServerPermission
+                Mock -CommandName Revoke-SqlDscServerPermission
             }
 
-            BeforeEach {
-                $script:mockMethodDenyCallCount = 0
-            }
+            It 'Should accept ServerRole object from pipeline' {
+                $mockServerRoleObject | Set-SqlDscServerPermission -Grant 'AlterAnyDatabase' -Force
 
-            It 'Should call the correct mocked method' {
-                $null = Set-SqlDscServerPermission -ServerObject $mockServerObject @mockDefaultParameters
-
-                $script:mockMethodDenyCallCount | Should -Be 1
+                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Times 1 -Scope It
             }
         }
+    }
 
-        Context 'When using parameter WhatIf for a role' {
-            BeforeAll {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                    Add-Member -MemberType 'ScriptMethod' -Name 'Deny' -Value {
-                        $script:mockMethodDenyCallCount += 1
-                    } -PassThru -Force
+    Context 'When setting multiple permission states at once' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject.InstanceName = 'MockInstance'
 
+            $mockLoginObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @($mockServerObject, 'DOMAIN\MyLogin')
 
-                Mock -CommandName Test-SqlDscIsLogin -MockWith {
-                    return $false
-                }
-
-                Mock -CommandName Test-SqlDscIsRole -MockWith {
-                    return $true
-                }
-
-                $script:mockDefaultParameters = @{
-                    WhatIf       = $true
-                    Name         = 'JuniorDBA'
-                    State        = 'Deny'
-                    Permission   = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-                        ConnectSql = $true
-                    }
-                }
+            Mock -CommandName Get-SqlDscServerPermission -MockWith {
+                return $null
             }
 
-            BeforeEach {
-                $script:mockMethodDenyCallCount = 0
-            }
-
-            It 'Should not call the mocked method' {
-                $null = Set-SqlDscServerPermission -ServerObject $mockServerObject @mockDefaultParameters
-
-                $script:mockMethodDenyCallCount | Should -Be 0
-            }
+            Mock -CommandName Grant-SqlDscServerPermission
+            Mock -CommandName Deny-SqlDscServerPermission
+            Mock -CommandName Revoke-SqlDscServerPermission
         }
 
-        Context 'When permission for a role should be granted' {
-            BeforeAll {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                Add-Member -MemberType 'ScriptMethod' -Name 'Grant' -Value {
-                    $script:mockMethodGrantCallCount += 1
-                } -PassThru -Force
+        It 'Should grant, grant with grant, and deny the specified permissions' {
+            Set-SqlDscServerPermission -Login $mockLoginObject `
+                -Grant 'ConnectSql' `
+                -GrantWithGrant 'AlterAnyDatabase' `
+                -Deny 'ViewAnyDatabase' `
+                -Force
 
-                Mock -CommandName Test-SqlDscIsLogin -MockWith {
-                    return $false
-                }
+            Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
 
-                Mock -CommandName Test-SqlDscIsRole -MockWith {
-                    return $true
-                }
+            # Should grant ConnectSql
+            Should -Invoke -CommandName Grant-SqlDscServerPermission -ParameterFilter {
+                $Permission -contains 'ConnectSql' -and -not $WithGrant
+            } -Exactly -Times 1 -Scope It
 
-                $script:mockDefaultParameters = @{
-                    Confirm      = $false
-                    Name         = 'JuniorDBA'
-                    State        = 'Grant'
-                    Permission   = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-                        ConnectSql = $true
-                    }
-                }
+            # Should grant AlterAnyDatabase with grant
+            Should -Invoke -CommandName Grant-SqlDscServerPermission -ParameterFilter {
+                $Permission -contains 'AlterAnyDatabase' -and $WithGrant -eq $true
+            } -Exactly -Times 1 -Scope It
+
+            # Should deny ViewAnyDatabase
+            Should -Invoke -CommandName Deny-SqlDscServerPermission -ParameterFilter {
+                $Permission -contains 'ViewAnyDatabase'
+            } -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When using parameter Force' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject.InstanceName = 'MockInstance'
+
+            $mockLoginObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @($mockServerObject, 'DOMAIN\MyLogin')
+
+            Mock -CommandName Get-SqlDscServerPermission -MockWith {
+                return $null
             }
 
-            BeforeEach {
-                $script:mockMethodGrantCallCount = 0
-            }
-
-            It 'Should call the correct mocked method' {
-                $null = Set-SqlDscServerPermission -ServerObject $mockServerObject @mockDefaultParameters
-
-                $script:mockMethodGrantCallCount | Should -Be 1
-            }
-
-            Context 'When passing ServerObject over the pipeline' {
-                It 'Should call the correct mocked method' {
-                    $null = $mockServerObject | Set-SqlDscServerPermission @mockDefaultParameters
-
-                    $script:mockMethodGrantCallCount | Should -Be 1
-                }
-            }
+            Mock -CommandName Grant-SqlDscServerPermission
         }
 
-        Context 'When permission for a role should be granted and using parameter WithGrant' {
-            BeforeAll {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                    Add-Member -MemberType 'ScriptMethod' -Name 'Grant' -Value {
-                        param
-                        (
-                            [Parameter()]
-                            $Permission,
+        It 'Should not prompt for confirmation when Force is specified' {
+            # This test verifies that Force parameter works by ensuring the operation completes
+            Set-SqlDscServerPermission -Login $mockLoginObject -Grant 'ConnectSql' -Force
 
-                            [Parameter()]
-                            $Name,
+            Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Times 1 -Scope It
+        }
+    }
 
-                            [Parameter()]
-                            $WithGrant
-                        )
+    Context 'When using parameter Confirm with value $false' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject.InstanceName = 'MockInstance'
 
-                        if ($WithGrant)
-                        {
-                            $script:mockMethodGrantUsingWithGrantCallCount += 1
-                        }
-                    } -PassThru -Force
+            $mockLoginObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @($mockServerObject, 'DOMAIN\MyLogin')
 
-
-                Mock -CommandName Test-SqlDscIsLogin -MockWith {
-                    return $false
-                }
-
-                Mock -CommandName Test-SqlDscIsRole -MockWith {
-                    return $true
-                }
-
-                $script:mockDefaultParameters = @{
-                    Confirm      = $false
-                    Name         = 'JuniorDBA'
-                    State        = 'Grant'
-                    WithGrant    = $true
-                    Permission   = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-                        ConnectSql = $true
-                    }
-                }
+            Mock -CommandName Get-SqlDscServerPermission -MockWith {
+                return $null
             }
 
-            BeforeEach {
-                $script:mockMethodGrantUsingWithGrantCallCount = 0
-            }
-
-            It 'Should call the correct mocked method' {
-                $null = Set-SqlDscServerPermission -ServerObject $mockServerObject @mockDefaultParameters
-
-                $script:mockMethodGrantUsingWithGrantCallCount | Should -Be 1
-            }
-
-            Context 'When passing ServerObject over the pipeline' {
-                It 'Should call the correct mocked method' {
-                    $null = $mockServerObject | Set-SqlDscServerPermission @mockDefaultParameters
-
-                    $script:mockMethodGrantUsingWithGrantCallCount | Should -Be 1
-                }
-            }
+            Mock -CommandName Grant-SqlDscServerPermission
         }
 
-        Context 'When permission for a role should be revoked' {
-            BeforeAll {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                    Add-Member -MemberType 'ScriptMethod' -Name 'Revoke' -Value {
-                        $script:mockMethodRevokeCallCount += 1
-                    } -PassThru -Force
+        It 'Should not prompt for confirmation when Confirm is $false' {
+            Set-SqlDscServerPermission -Login $mockLoginObject -Grant 'ConnectSql' -Confirm:$false
 
-                Mock -CommandName Test-SqlDscIsLogin -MockWith {
-                    return $false
-                }
-
-                Mock -CommandName Test-SqlDscIsRole -MockWith {
-                    return $true
-                }
-
-                $script:mockDefaultParameters = @{
-                    Confirm      = $false
-                    Name         = 'JuniorDBA'
-                    State        = 'Revoke'
-                    Permission   = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-                        ConnectSql = $true
-                    }
-                }
-            }
-
-            BeforeEach {
-                $script:mockMethodRevokeCallCount = 0
-            }
-
-            It 'Should call the correct mocked method' {
-                $null = Set-SqlDscServerPermission -ServerObject $mockServerObject @mockDefaultParameters
-
-                $script:mockMethodRevokeCallCount | Should -Be 1
-            }
-
-            Context 'When passing ServerObject over the pipeline' {
-                It 'Should call the correct mocked method' {
-                    $null = $mockServerObject | Set-SqlDscServerPermission @mockDefaultParameters
-
-                    $script:mockMethodRevokeCallCount | Should -Be 1
-                }
-            }
-        }
-
-        Context 'When permission for a role should be revoked and using parameter WithGrant' {
-            BeforeAll {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                    Add-Member -MemberType 'ScriptMethod' -Name 'Revoke' -Value {
-                        param
-                        (
-                            [Parameter()]
-                            $Permission,
-
-                            [Parameter()]
-                            $Name,
-
-                            [Parameter()]
-                            $RevokeGrant,
-
-                            [Parameter()]
-                            $Cascade
-                        )
-
-                        if (-not $RevokeGrant -and $Cascade)
-                        {
-                            $script:mockMethodRevokeUsingWithGrantCallCount += 1
-                        }
-                    } -PassThru -Force
-
-                Mock -CommandName Test-SqlDscIsLogin -MockWith {
-                    return $false
-                }
-
-                Mock -CommandName Test-SqlDscIsRole -MockWith {
-                    return $true
-                }
-
-                $script:mockDefaultParameters = @{
-                    Confirm      = $false
-                    Name         = 'JuniorDBA'
-                    State        = 'Revoke'
-                    WithGrant    = $true
-                    Permission   = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-                        ConnectSql = $true
-                    }
-                }
-            }
-
-            BeforeEach {
-                $script:mockMethodRevokeUsingWithGrantCallCount = 0
-            }
-
-            It 'Should call the correct mocked method' {
-                $null = Set-SqlDscServerPermission -ServerObject $mockServerObject @mockDefaultParameters
-
-                $script:mockMethodRevokeUsingWithGrantCallCount | Should -Be 1
-            }
-
-            Context 'When passing ServerObject over the pipeline' {
-                It 'Should call the correct mocked method' {
-                    $null = $mockServerObject | Set-SqlDscServerPermission @mockDefaultParameters
-
-                    $script:mockMethodGrantUsingWithGrantCallCount | Should -Be 1
-                }
-            }
-        }
-
-        Context 'When permission for a role should be denied' {
-            BeforeAll {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                    Add-Member -MemberType 'ScriptMethod' -Name 'Deny' -Value {
-                        $script:mockMethodDenyCallCount += 1
-                    } -PassThru -Force
-
-                Mock -CommandName Test-SqlDscIsLogin -MockWith {
-                    return $false
-                }
-
-                Mock -CommandName Test-SqlDscIsRole -MockWith {
-                    return $true
-                }
-
-                $script:mockDefaultParameters = @{
-                    Confirm      = $false
-                    Name         = 'JuniorDBA'
-                    State        = 'Deny'
-                    Permission   = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-                        ConnectSql = $true
-                    }
-                }
-            }
-
-            BeforeEach {
-                $script:mockMethodDenyCallCount = 0
-            }
-
-            It 'Should call the correct mocked method' {
-                $null = Set-SqlDscServerPermission -ServerObject $mockServerObject @mockDefaultParameters
-
-                $script:mockMethodDenyCallCount | Should -Be 1
-            }
-
-            Context 'When passing ServerObject over the pipeline' {
-                It 'Should call the correct mocked method' {
-                    $null = $mockServerObject | Set-SqlDscServerPermission @mockDefaultParameters
-
-                    $script:mockMethodDenyCallCount | Should -Be 1
-                }
-            }
-
-            Context 'When passing WithGrant' {
-                BeforeAll {
-                    Mock -CommandName Write-Warning
-                }
-
-                It 'Should output the correct warning message and return the correct values' {
-                    $mockWarningMessage = InModuleScope -ScriptBlock {
-                        $script:localizedData.ServerPermission_IgnoreWithGrantForStateDeny
-                    }
-
-                    $null = $mockServerObject | Set-SqlDscServerPermission -WithGrant @mockDefaultParameters
-
-                    $script:mockMethodDenyCallCount | Should -Be 1
-
-                    Should -Invoke -CommandName 'Write-Warning' -ParameterFilter {
-                        $Message -eq $mockWarningMessage
-                    }
-                }
-            }
+            Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Times 1 -Scope It
         }
     }
 }
