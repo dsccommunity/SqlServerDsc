@@ -93,8 +93,6 @@ function New-SqlDscRole
             $ServerObject.Roles.Refresh()
         }
 
-        Write-Verbose -Message ($script:localizedData.Role_Create -f $Name, $ServerObject.InstanceName)
-
         # Check if the role already exists
         if ($ServerObject.Roles[$Name])
         {
