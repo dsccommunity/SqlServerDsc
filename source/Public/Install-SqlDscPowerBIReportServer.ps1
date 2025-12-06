@@ -98,6 +98,7 @@
 function Install-SqlDscPowerBIReportServer
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '', Justification = 'Because ShouldProcess is used in Invoke-SetupAction')]
+    [Alias('Install-SqlDscBIReportServer', 'Install-SqlDscPBIReportServer')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType([System.Int32])]
     param
@@ -155,6 +156,3 @@ function Install-SqlDscPowerBIReportServer
         return $exitCode
     }
 }
-
-Set-Alias -Name 'Install-SqlDscBIReportServer' -Value 'Install-SqlDscPowerBIReportServer'
-Set-Alias -Name 'Install-SqlDscPBIReportServer' -Value 'Install-SqlDscPowerBIReportServer'

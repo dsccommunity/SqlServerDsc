@@ -65,6 +65,7 @@
 function Uninstall-SqlDscPowerBIReportServer
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '', Justification = 'Because ShouldProcess is used in Invoke-SetupAction')]
+    [Alias('Uninstall-SqlDscBIReportServer', 'Uninstall-SqlDscPBIReportServer')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType([System.Int32])]
     param
@@ -101,6 +102,3 @@ function Uninstall-SqlDscPowerBIReportServer
         return $exitCode
     }
 }
-
-Set-Alias -Name 'Uninstall-SqlDscBIReportServer' -Value 'Uninstall-SqlDscPowerBIReportServer'
-Set-Alias -Name 'Uninstall-SqlDscPBIReportServer' -Value 'Uninstall-SqlDscPowerBIReportServer'

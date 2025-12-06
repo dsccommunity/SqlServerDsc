@@ -89,6 +89,7 @@
 function Repair-SqlDscPowerBIReportServer
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '', Justification = 'Because ShouldProcess is used in Invoke-SetupAction')]
+    [Alias('Repair-SqlDscBIReportServer', 'Repair-SqlDscPBIReportServer')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType([System.Int32])]
     param
@@ -146,6 +147,3 @@ function Repair-SqlDscPowerBIReportServer
         return $exitCode
     }
 }
-
-Set-Alias -Name 'Repair-SqlDscBIReportServer' -Value 'Repair-SqlDscPowerBIReportServer'
-Set-Alias -Name 'Repair-SqlDscPBIReportServer' -Value 'Repair-SqlDscPowerBIReportServer'
