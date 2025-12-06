@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `SqlPermission`
+  - Added integration tests for server role permissions to complement the
+    existing login permission tests.
 - `New-SqlDscDatabase`
   - Added comprehensive set of settable database properties that were previously
     only available in `Set-SqlDscDatabaseProperty`
