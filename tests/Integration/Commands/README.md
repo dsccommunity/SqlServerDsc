@@ -174,12 +174,12 @@ Command | Run order # | Depends on # | Use instance | Creates persistent objects
 Prerequisites | 0 | - | - | Sets up dependencies
 Save-SqlDscSqlServerMediaFile | 0 | - | - | Downloads SQL Server media files
 Import-SqlDscPreferredModule | 0 | - | - | -
-Install-SqlDscBIReportServer | 1 | 0 (Prerequisites) | - | PBIRS instance
-Get-SqlDscInstalledInstance | 2 | 1 (Install-SqlDscBIReportServer), 0 (Prerequisites) | PBIRS | -
-Get-SqlDscRSSetupConfiguration | 2 | 1 (Install-SqlDscBIReportServer), 0 (Prerequisites) | PBIRS | -
-Test-SqlDscRSInstalled | 2 | 1 (Install-SqlDscBIReportServer), 0 (Prerequisites) | PBIRS | -
-Repair-SqlDscBIReportServer | 8 | 1 (Install-SqlDscBIReportServer) | PBIRS | -
-Uninstall-SqlDscBIReportServer | 9 | 8 (Repair-SqlDscBIReportServer) | - | -
+Install-SqlDscPowerBIReportServer | 1 | 0 (Prerequisites) | - | PBIRS instance
+Get-SqlDscInstalledInstance | 2 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Get-SqlDscRSSetupConfiguration | 2 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Test-SqlDscRSInstalled | 2 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Repair-SqlDscPowerBIReportServer | 8 | 1 (Install-SqlDscPowerBIReportServer) | PBIRS | -
+Uninstall-SqlDscPowerBIReportServer | 9 | 8 (Repair-SqlDscPowerBIReportServer) | - | -
 <!-- markdownlint-enable MD013 -->
 
 ## Integration Tests
