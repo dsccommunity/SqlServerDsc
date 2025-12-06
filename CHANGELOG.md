@@ -32,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     ([issue #2159](https://github.com/dsccommunity/SqlServerDsc/issues/2159)).
   - Updated documentation to clarify that the resource supports both logins
     and server roles as principals.
+  - Added a note in documentation clarifying that if a name exists as both
+    a login and a server role, the login will take precedence.
 - Updated comment-based help `.INPUTS` and `.OUTPUTS` sections across all public
   commands and private functions to comply with DSC community style guidelines
   ([issue #2103](https://github.com/dsccommunity/SqlServerDsc/issues/2103)).

@@ -13,6 +13,12 @@
         > grantee and _all the other users the grantee has granted the same permission_
         > _to_, will also get their permission revoked.
 
+        > [!NOTE]
+        > The parameter **Name** can specify either a login or a server role. If
+        > a name exists as both a login and a server role, the login will take
+        > precedence. To avoid ambiguity, use unique names for logins and server
+        > roles.
+
         ## Requirements
 
         * Target machine must be running Windows Server 2012 or later.
