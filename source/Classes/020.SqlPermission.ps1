@@ -360,7 +360,13 @@ class SqlPermission : SqlResourceBase
 
         # This will test whether the principal exist.
         $isLogin = Test-SqlDscIsLogin @testSqlDscIsPrincipalParameters
-        $isRole = Test-SqlDscIsRole @testSqlDscIsPrincipalParameters
+        $isRole = $false
+
+        # Only test for role if not already found as a login.
+        if (-not $isLogin)
+        {
+            $isRole = Test-SqlDscIsRole @testSqlDscIsPrincipalParameters
+        }
 
         if (-not $isLogin -and -not $isRole)
         {
