@@ -95,6 +95,7 @@ New-SqlDscDatabaseSnapshot | 5 | 4 (New-SqlDscDatabase), 1 (Install-SqlDscServer
 Get-SqlDscCompatibilityLevel | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Set-SqlDscDatabaseProperty | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Set-SqlDscDatabaseOwner | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
+Set-SqlDscDatabaseDefaultFileGroup | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Test-SqlDscIsDatabase | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Test-SqlDscDatabaseProperty | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | -
 Get-SqlDscDatabasePermission | 4 | 1 (Install-SqlDscServer), 0 (Prerequisites) | DSCSQLTEST | Test database, Test user
