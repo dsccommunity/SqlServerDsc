@@ -100,11 +100,16 @@ Describe 'Set-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
         }
 
         It 'Should set combined Grant, GrantWithGrant, and Deny permissions' {
-            Set-SqlDscServerPermission -Login $script:loginObject `
-                -Grant 'ViewServerState' `
-                -GrantWithGrant 'CreateAnyDatabase' `
-                -Deny 'ViewAnyDefinition' `
-                -Force -ErrorAction 'Stop'
+            $setPermissionParams = @{
+                Login          = $script:loginObject
+                Grant          = 'ViewServerState'
+                GrantWithGrant = 'CreateAnyDatabase'
+                Deny           = 'ViewAnyDefinition'
+                Force          = $true
+                ErrorAction    = 'Stop'
+            }
+
+            Set-SqlDscServerPermission @setPermissionParams
 
             # Verify Grant permission
             $grantResult = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission 'ViewServerState' -ErrorAction 'Stop'
@@ -235,11 +240,16 @@ Describe 'Set-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
         }
 
         It 'Should set combined Grant, GrantWithGrant, and Deny permissions for role' {
-            Set-SqlDscServerPermission -ServerRole $script:roleObject `
-                -Grant 'ViewServerState' `
-                -GrantWithGrant 'CreateAnyDatabase' `
-                -Deny 'ViewAnyDefinition' `
-                -Force -ErrorAction 'Stop'
+            $setPermissionParams = @{
+                ServerRole     = $script:roleObject
+                Grant          = 'ViewServerState'
+                GrantWithGrant = 'CreateAnyDatabase'
+                Deny           = 'ViewAnyDefinition'
+                Force          = $true
+                ErrorAction    = 'Stop'
+            }
+
+            Set-SqlDscServerPermission @setPermissionParams
 
             # Verify Grant permission
             $grantResult = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission 'ViewServerState' -ErrorAction 'Stop'
@@ -342,6 +352,56 @@ Describe 'Set-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
             # Verify the permission was granted
             $result = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission 'ViewServerState' -ErrorAction 'Stop'
             $result | Should -BeTrue
+        }
+    }
+
+    Context 'When specifying invalid permission values' {
+        BeforeEach {
+            # Get the login object for testing
+            $script:loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
+        }
+
+        It 'Should throw when specifying an invalid permission name' {
+            {
+                Set-SqlDscServerPermission -Login $script:loginObject -Grant 'InvalidPermissionName' -Force -ErrorAction 'Stop'
+            } | Should -Throw
+        }
+    }
+
+    Context 'When specifying a non-existent principal' {
+        It 'Should throw when using a login object that no longer exists' {
+            # Create a temporary login
+            $tempLoginName = 'TempLoginForErrorTest'
+            $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+            New-SqlDscLogin -ServerObject $script:serverObject -Name $tempLoginName -LoginType 'SqlLogin' -SecureString $mockPassword -Force -ErrorAction 'Stop'
+
+            $tempLoginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $tempLoginName -ErrorAction 'Stop'
+
+            # Remove the login
+            Remove-SqlDscLogin -LoginObject $tempLoginObject -Force -ErrorAction 'Stop'
+
+            # Attempt to set permissions on the removed login should throw
+            {
+                Set-SqlDscServerPermission -Login $tempLoginObject -Grant 'ViewServerState' -Force -ErrorAction 'Stop'
+            } | Should -Throw
+        }
+
+        It 'Should throw when using a server role object that no longer exists' {
+            # Create a temporary role
+            $tempRoleName = 'TempRoleForErrorTest'
+
+            New-SqlDscRole -ServerObject $script:serverObject -Name $tempRoleName -Force -ErrorAction 'Stop'
+
+            $tempRoleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $tempRoleName -ErrorAction 'Stop'
+
+            # Remove the role
+            Remove-SqlDscRole -RoleObject $tempRoleObject -Force -ErrorAction 'Stop'
+
+            # Attempt to set permissions on the removed role should throw
+            {
+                Set-SqlDscServerPermission -ServerRole $tempRoleObject -Grant 'ViewServerState' -Force -ErrorAction 'Stop'
+            } | Should -Throw
         }
     }
 }
