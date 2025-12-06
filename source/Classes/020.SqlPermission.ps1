@@ -1,12 +1,12 @@
 <#
     .SYNOPSIS
         The `SqlPermission` DSC resource is used to grant, deny or revoke
-        server permissions for a login.
+        server permissions for a login or server role.
 
     .DESCRIPTION
         The `SqlPermission` DSC resource is used to grant, deny or revoke
-        Server permissions for a login. For more information about permissions,
-        please read the article [Permissions (Database Engine)](https://docs.microsoft.com/en-us/sql/relational-databases/security/permissions-database-engine).
+        server permissions for a login or server role. For more information about
+        permissions, please read the article [Permissions (Database Engine)](https://docs.microsoft.com/en-us/sql/relational-databases/security/permissions-database-engine).
 
         > [!CAUTION]
         > When revoking permission with PermissionState 'GrantWithGrant', both the
@@ -61,7 +61,8 @@
         ```
 
     .PARAMETER Name
-        The name of the user that should be granted or denied the permission.
+        The name of the principal (login or server role) that should be granted
+        or denied the permission.
 
     .PARAMETER Permission
         An array of server permissions to enforce. Any permission that is not
