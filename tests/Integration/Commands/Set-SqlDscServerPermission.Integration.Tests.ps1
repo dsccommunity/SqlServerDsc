@@ -189,7 +189,7 @@ Describe 'Set-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
         }
     }
 
-    Context 'When setting permissions for a server role' {
+    Context 'When setting exact permissions for a server role' {
         BeforeEach {
             # Get the role object for testing
             $script:roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
@@ -197,6 +197,71 @@ Describe 'Set-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
             # Clean up any existing permissions
             Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
             Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewAnyDatabase' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewAnyDefinition' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'CreateAnyDatabase' -WithGrant -Force -ErrorAction 'SilentlyContinue'
+        }
+
+        AfterAll {
+            # Clean up role permissions
+            $script:roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewAnyDatabase' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewAnyDefinition' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'CreateAnyDatabase' -WithGrant -Force -ErrorAction 'SilentlyContinue'
+        }
+
+        It 'Should set exact Grant permissions for role' {
+            Set-SqlDscServerPermission -ServerRole $script:roleObject -Grant 'ViewServerState', 'ViewAnyDatabase' -Force -ErrorAction 'Stop'
+
+            # Verify the permissions were granted
+            $result = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission 'ViewServerState', 'ViewAnyDatabase' -ExactMatch -ErrorAction 'Stop'
+            $result | Should -BeTrue
+        }
+
+        It 'Should set exact GrantWithGrant permissions for role' {
+            Set-SqlDscServerPermission -ServerRole $script:roleObject -GrantWithGrant 'CreateAnyDatabase' -Force -ErrorAction 'Stop'
+
+            # Verify the permission was granted with grant option
+            $result = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission 'CreateAnyDatabase' -WithGrant -ErrorAction 'Stop'
+            $result | Should -BeTrue
+        }
+
+        It 'Should set exact Deny permissions for role' {
+            Set-SqlDscServerPermission -ServerRole $script:roleObject -Deny 'ViewAnyDefinition' -Force -ErrorAction 'Stop'
+
+            # Verify the permission was denied
+            $result = Test-SqlDscServerPermission -ServerRole $script:roleObject -Deny -Permission 'ViewAnyDefinition' -ErrorAction 'Stop'
+            $result | Should -BeTrue
+        }
+
+        It 'Should set combined Grant, GrantWithGrant, and Deny permissions for role' {
+            Set-SqlDscServerPermission -ServerRole $script:roleObject `
+                -Grant 'ViewServerState' `
+                -GrantWithGrant 'CreateAnyDatabase' `
+                -Deny 'ViewAnyDefinition' `
+                -Force -ErrorAction 'Stop'
+
+            # Verify Grant permission
+            $grantResult = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission 'ViewServerState' -ErrorAction 'Stop'
+            $grantResult | Should -BeTrue
+
+            # Verify GrantWithGrant permission
+            $grantWithGrantResult = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission 'CreateAnyDatabase' -WithGrant -ErrorAction 'Stop'
+            $grantWithGrantResult | Should -BeTrue
+
+            # Verify Deny permission
+            $denyResult = Test-SqlDscServerPermission -ServerRole $script:roleObject -Deny -Permission 'ViewAnyDefinition' -ErrorAction 'Stop'
+            $denyResult | Should -BeTrue
+        }
+    }
+
+    Context 'When revoking permissions for a server role by setting empty arrays' {
+        BeforeEach {
+            # Get the role object for testing
+            $script:roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
+
+            # Set up known permissions to revoke
+            Grant-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewServerState', 'ViewAnyDatabase' -Force -ErrorAction 'Stop'
         }
 
         AfterAll {
@@ -206,19 +271,76 @@ Describe 'Set-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
             Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewAnyDatabase' -Force -ErrorAction 'SilentlyContinue'
         }
 
-        It 'Should set exact Grant permissions for role' {
-            Set-SqlDscServerPermission -ServerRole $script:roleObject -Grant 'ViewServerState' -Force -ErrorAction 'Stop'
+        It 'Should revoke all Grant permissions for role when empty Grant array is specified' {
+            Set-SqlDscServerPermission -ServerRole $script:roleObject -Grant @() -Force -ErrorAction 'Stop'
 
-            # Verify the permission was granted
-            $result = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission 'ViewServerState' -ErrorAction 'Stop'
-            $result | Should -BeTrue
+            # Verify the permissions were revoked
+            $result1 = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission 'ViewServerState' -ErrorAction 'Stop'
+            $result1 | Should -BeFalse
+
+            $result2 = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission 'ViewAnyDatabase' -ErrorAction 'Stop'
+            $result2 | Should -BeFalse
+        }
+    }
+
+    Context 'When replacing existing permissions with new ones for a server role' {
+        BeforeEach {
+            # Get the role object for testing
+            $script:roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
+
+            # Set up initial permissions
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewAnyDatabase' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewAnyDefinition' -Force -ErrorAction 'SilentlyContinue'
+
+            Grant-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewServerState', 'ViewAnyDatabase' -Force -ErrorAction 'Stop'
+        }
+
+        AfterAll {
+            # Clean up role permissions
+            $script:roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewAnyDatabase' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewAnyDefinition' -Force -ErrorAction 'SilentlyContinue'
+        }
+
+        It 'Should replace existing permissions with new specified permissions for role' {
+            # Change from ViewServerState,ViewAnyDatabase to ViewAnyDefinition
+            Set-SqlDscServerPermission -ServerRole $script:roleObject -Grant 'ViewAnyDefinition' -Force -ErrorAction 'Stop'
+
+            # Verify old permissions were revoked
+            $result1 = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission 'ViewServerState' -ErrorAction 'Stop'
+            $result1 | Should -BeFalse
+
+            $result2 = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission 'ViewAnyDatabase' -ErrorAction 'Stop'
+            $result2 | Should -BeFalse
+
+            # Verify new permission was granted
+            $result3 = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission 'ViewAnyDefinition' -ErrorAction 'Stop'
+            $result3 | Should -BeTrue
+        }
+    }
+
+    Context 'When using pipeline input for a server role' {
+        BeforeEach {
+            # Get the role object for testing
+            $script:roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
+
+            # Clean up
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
+        }
+
+        AfterAll {
+            # Clean up role permissions
+            $script:roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
         }
 
         It 'Should accept ServerRole object from pipeline' {
-            $script:roleObject | Set-SqlDscServerPermission -Grant 'ViewAnyDatabase' -Force -ErrorAction 'Stop'
+            $script:roleObject | Set-SqlDscServerPermission -Grant 'ViewServerState' -Force -ErrorAction 'Stop'
 
             # Verify the permission was granted
-            $result = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission 'ViewAnyDatabase' -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission 'ViewServerState' -ErrorAction 'Stop'
             $result | Should -BeTrue
         }
     }
