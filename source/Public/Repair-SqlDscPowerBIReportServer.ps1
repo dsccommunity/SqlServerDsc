@@ -66,27 +66,27 @@
         code as System.Int32.
 
     .EXAMPLE
-        Repair-SqlDscBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe'
+        Repair-SqlDscPowerBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe'
 
         Repairs Power BI Report Server with default settings.
 
     .EXAMPLE
-        Repair-SqlDscBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -ProductKey '12345-12345-12345-12345-12345' -EditionUpgrade
+        Repair-SqlDscPowerBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -ProductKey '12345-12345-12345-12345-12345' -EditionUpgrade
 
         Repairs Power BI Report Server and upgrades the edition using a
         product key.
 
     .EXAMPLE
-        Repair-SqlDscBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -LogPath 'C:\Logs\PowerBIReportServer_Repair.log'
+        Repair-SqlDscPowerBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -LogPath 'C:\Logs\PowerBIReportServer_Repair.log'
 
         Repairs Power BI Report Server and specifies a custom log path.
 
     .EXAMPLE
-        $exitCode = Repair-SqlDscBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -PassThru
+        $exitCode = Repair-SqlDscPowerBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -PassThru
 
         Repairs Power BI Report Server with default settings and returns the setup exit code.
 #>
-function Repair-SqlDscBIReportServer
+function Repair-SqlDscPowerBIReportServer
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '', Justification = 'Because ShouldProcess is used in Invoke-SetupAction')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
@@ -146,3 +146,6 @@ function Repair-SqlDscBIReportServer
         return $exitCode
     }
 }
+
+Set-Alias -Name 'Repair-SqlDscBIReportServer' -Value 'Repair-SqlDscPowerBIReportServer'
+Set-Alias -Name 'Repair-SqlDscPBIReportServer' -Value 'Repair-SqlDscPowerBIReportServer'

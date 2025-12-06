@@ -71,31 +71,31 @@
         No output is generated when PassThru is not specified.
 
     .EXAMPLE
-        Install-SqlDscBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe'
+        Install-SqlDscPowerBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe'
 
         Installs Power BI Report Server with default settings.
 
     .EXAMPLE
-        Install-SqlDscBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -ProductKey '12345-12345-12345-12345-12345'
+        Install-SqlDscPowerBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -ProductKey '12345-12345-12345-12345-12345'
 
         Installs Power BI Report Server using a product key.
 
     .EXAMPLE
-        Install-SqlDscBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -Edition 'Evaluation' -InstallFolder 'C:\Program Files\Power BI Report Server'
+        Install-SqlDscPowerBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -Edition 'Evaluation' -InstallFolder 'C:\Program Files\Power BI Report Server'
 
         Installs Power BI Report Server in evaluation edition to a custom folder.
 
     .EXAMPLE
-        Install-SqlDscBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -ProductKey '12345-12345-12345-12345-12345' -EditionUpgrade -LogPath 'C:\Logs\PowerBIReportServer_Install.log'
+        Install-SqlDscPowerBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -ProductKey '12345-12345-12345-12345-12345' -EditionUpgrade -LogPath 'C:\Logs\PowerBIReportServer_Install.log'
 
         Installs Power BI Report Server and upgrades the edition using a product key. Also specifies a custom log path.
 
     .EXAMPLE
-        $exitCode = Install-SqlDscBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -PassThru
+        $exitCode = Install-SqlDscPowerBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -PassThru
 
         Installs Power BI Report Server with default settings and returns the setup exit code.
 #>
-function Install-SqlDscBIReportServer
+function Install-SqlDscPowerBIReportServer
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '', Justification = 'Because ShouldProcess is used in Invoke-SetupAction')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
@@ -155,3 +155,6 @@ function Install-SqlDscBIReportServer
         return $exitCode
     }
 }
+
+Set-Alias -Name 'Install-SqlDscBIReportServer' -Value 'Install-SqlDscPowerBIReportServer'
+Set-Alias -Name 'Install-SqlDscPBIReportServer' -Value 'Install-SqlDscPowerBIReportServer'

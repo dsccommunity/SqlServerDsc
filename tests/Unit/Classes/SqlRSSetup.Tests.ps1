@@ -866,7 +866,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         }
                     }
 
-                    Mock -CommandName Uninstall-SqlDscBIReportServer -MockWith {
+                    Mock -CommandName Uninstall-SqlDscPowerBIReportServer -MockWith {
                         return 0
                     }
                 }
@@ -882,7 +882,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                             }
                         )
 
-                        Should -Invoke -CommandName 'Uninstall-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName 'Uninstall-SqlDscPowerBIReportServer' -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -897,7 +897,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         }
                     }
 
-                    Mock -CommandName Uninstall-SqlDscBIReportServer -MockWith {
+                    Mock -CommandName Uninstall-SqlDscPowerBIReportServer -MockWith {
                         return 3010
                     }
 
@@ -915,7 +915,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                             }
                         )
 
-                        Should -Invoke -CommandName 'Uninstall-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName 'Uninstall-SqlDscPowerBIReportServer' -Exactly -Times 1 -Scope It
 
                         Should -Invoke -CommandName 'Set-DscMachineRebootRequired' -Exactly -Times 1 -Scope It
                     }

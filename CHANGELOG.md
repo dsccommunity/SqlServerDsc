@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Renamed commands `*-SqlDscBIReportServer` to `*-SqlDscPowerBIReportServer` for
+  clarity. The old names `*-SqlDscBIReportServer` and `*-SqlDscPBIReportServer`
+  are available as aliases for backward compatibility.
 - `SqlPermission`
   - Refactored to use the new object-based server permission commands
     (`Grant-SqlDscServerPermission`, `Deny-SqlDscServerPermission`,
