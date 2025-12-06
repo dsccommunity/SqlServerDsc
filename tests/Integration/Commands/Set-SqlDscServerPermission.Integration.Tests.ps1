@@ -87,7 +87,7 @@ Describe 'Set-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
             Set-SqlDscServerPermission -Login $script:loginObject -GrantWithGrant 'CreateAnyDatabase' -Force -ErrorAction 'Stop'
 
             # Verify the permission was granted with grant option
-            $result = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission 'CreateAnyDatabase' -WithGrant -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission 'CreateAnyDatabase' -WithGrant -ExactMatch -ErrorAction 'Stop'
             $result | Should -BeTrue
         }
 
@@ -95,7 +95,7 @@ Describe 'Set-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
             Set-SqlDscServerPermission -Login $script:loginObject -Deny 'ViewAnyDefinition' -Force -ErrorAction 'Stop'
 
             # Verify the permission was denied
-            $result = Test-SqlDscServerPermission -Login $script:loginObject -Deny -Permission 'ViewAnyDefinition' -ErrorAction 'Stop'
+            $result = Test-SqlDscServerPermission -Login $script:loginObject -Deny -Permission 'ViewAnyDefinition' -ExactMatch -ErrorAction 'Stop'
             $result | Should -BeTrue
         }
 
@@ -130,11 +130,17 @@ Describe 'Set-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
             # Get the login object for testing
             $script:loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
-            # Set up known permissions to revoke
-            Grant-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewServerState', 'ViewAnyDatabase' -Force -ErrorAction 'Stop'
+            # Clean up any existing permissions before each test
+            Revoke-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewAnyDatabase' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewAnyDefinition' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -Login $script:loginObject -Permission 'CreateAnyDatabase' -WithGrant -Force -ErrorAction 'SilentlyContinue'
         }
 
         It 'Should revoke all Grant permissions when empty Grant array is specified' {
+            # Set up known Grant permissions to revoke
+            Grant-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewServerState', 'ViewAnyDatabase' -Force -ErrorAction 'Stop'
+
             Set-SqlDscServerPermission -Login $script:loginObject -Grant @() -Force -ErrorAction 'Stop'
 
             # Verify the permissions were revoked
@@ -143,6 +149,50 @@ Describe 'Set-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
 
             $result2 = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission 'ViewAnyDatabase' -ErrorAction 'Stop'
             $result2 | Should -BeFalse
+        }
+
+        It 'Should revoke all GrantWithGrant permissions when empty GrantWithGrant array is specified' {
+            # Set up known GrantWithGrant permissions to revoke
+            Grant-SqlDscServerPermission -Login $script:loginObject -Permission 'CreateAnyDatabase' -WithGrant -Force -ErrorAction 'Stop'
+
+            Set-SqlDscServerPermission -Login $script:loginObject -GrantWithGrant @() -Force -ErrorAction 'Stop'
+
+            # Verify the permission was revoked
+            $result = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission 'CreateAnyDatabase' -WithGrant -ErrorAction 'Stop'
+            $result | Should -BeFalse
+        }
+
+        It 'Should revoke all Deny permissions when empty Deny array is specified' {
+            # Set up known Deny permissions to revoke
+            Deny-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewAnyDefinition' -Force -ErrorAction 'Stop'
+
+            Set-SqlDscServerPermission -Login $script:loginObject -Deny @() -Force -ErrorAction 'Stop'
+
+            # Verify the permission was revoked
+            $result = Test-SqlDscServerPermission -Login $script:loginObject -Deny -Permission 'ViewAnyDefinition' -ErrorAction 'Stop'
+            $result | Should -BeFalse
+        }
+
+        It 'Should only affect Grant permissions when empty Grant array is specified with existing GrantWithGrant and Deny' {
+            # Set up permissions in all categories
+            Grant-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewServerState' -Force -ErrorAction 'Stop'
+            Grant-SqlDscServerPermission -Login $script:loginObject -Permission 'CreateAnyDatabase' -WithGrant -Force -ErrorAction 'Stop'
+            Deny-SqlDscServerPermission -Login $script:loginObject -Permission 'ViewAnyDefinition' -Force -ErrorAction 'Stop'
+
+            # Revoke only Grant permissions
+            Set-SqlDscServerPermission -Login $script:loginObject -Grant @() -Force -ErrorAction 'Stop'
+
+            # Verify Grant permission was revoked
+            $grantResult = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission 'ViewServerState' -ErrorAction 'Stop'
+            $grantResult | Should -BeFalse
+
+            # Verify GrantWithGrant permission still exists
+            $grantWithGrantResult = Test-SqlDscServerPermission -Login $script:loginObject -Grant -Permission 'CreateAnyDatabase' -WithGrant -ErrorAction 'Stop'
+            $grantWithGrantResult | Should -BeTrue
+
+            # Verify Deny permission still exists
+            $denyResult = Test-SqlDscServerPermission -Login $script:loginObject -Deny -Permission 'ViewAnyDefinition' -ErrorAction 'Stop'
+            $denyResult | Should -BeTrue
         }
     }
 
@@ -270,8 +320,11 @@ Describe 'Set-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
             # Get the role object for testing
             $script:roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
 
-            # Set up known permissions to revoke
-            Grant-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewServerState', 'ViewAnyDatabase' -Force -ErrorAction 'Stop'
+            # Clean up any existing permissions before each test
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewAnyDatabase' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewAnyDefinition' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'CreateAnyDatabase' -WithGrant -Force -ErrorAction 'SilentlyContinue'
         }
 
         AfterAll {
@@ -279,9 +332,14 @@ Describe 'Set-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
             $script:roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
             Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewServerState' -Force -ErrorAction 'SilentlyContinue'
             Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewAnyDatabase' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewAnyDefinition' -Force -ErrorAction 'SilentlyContinue'
+            Revoke-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'CreateAnyDatabase' -WithGrant -Force -ErrorAction 'SilentlyContinue'
         }
 
         It 'Should revoke all Grant permissions for role when empty Grant array is specified' {
+            # Set up known Grant permissions to revoke
+            Grant-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewServerState', 'ViewAnyDatabase' -Force -ErrorAction 'Stop'
+
             Set-SqlDscServerPermission -ServerRole $script:roleObject -Grant @() -Force -ErrorAction 'Stop'
 
             # Verify the permissions were revoked
@@ -290,6 +348,50 @@ Describe 'Set-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
 
             $result2 = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission 'ViewAnyDatabase' -ErrorAction 'Stop'
             $result2 | Should -BeFalse
+        }
+
+        It 'Should revoke all GrantWithGrant permissions for role when empty GrantWithGrant array is specified' {
+            # Set up known GrantWithGrant permissions to revoke
+            Grant-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'CreateAnyDatabase' -WithGrant -Force -ErrorAction 'Stop'
+
+            Set-SqlDscServerPermission -ServerRole $script:roleObject -GrantWithGrant @() -Force -ErrorAction 'Stop'
+
+            # Verify the permission was revoked
+            $result = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission 'CreateAnyDatabase' -WithGrant -ErrorAction 'Stop'
+            $result | Should -BeFalse
+        }
+
+        It 'Should revoke all Deny permissions for role when empty Deny array is specified' {
+            # Set up known Deny permissions to revoke
+            Deny-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewAnyDefinition' -Force -ErrorAction 'Stop'
+
+            Set-SqlDscServerPermission -ServerRole $script:roleObject -Deny @() -Force -ErrorAction 'Stop'
+
+            # Verify the permission was revoked
+            $result = Test-SqlDscServerPermission -ServerRole $script:roleObject -Deny -Permission 'ViewAnyDefinition' -ErrorAction 'Stop'
+            $result | Should -BeFalse
+        }
+
+        It 'Should only affect Grant permissions for role when empty Grant array is specified with existing GrantWithGrant and Deny' {
+            # Set up permissions in all categories
+            Grant-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewServerState' -Force -ErrorAction 'Stop'
+            Grant-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'CreateAnyDatabase' -WithGrant -Force -ErrorAction 'Stop'
+            Deny-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'ViewAnyDefinition' -Force -ErrorAction 'Stop'
+
+            # Revoke only Grant permissions
+            Set-SqlDscServerPermission -ServerRole $script:roleObject -Grant @() -Force -ErrorAction 'Stop'
+
+            # Verify Grant permission was revoked
+            $grantResult = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission 'ViewServerState' -ErrorAction 'Stop'
+            $grantResult | Should -BeFalse
+
+            # Verify GrantWithGrant permission still exists
+            $grantWithGrantResult = Test-SqlDscServerPermission -ServerRole $script:roleObject -Grant -Permission 'CreateAnyDatabase' -WithGrant -ErrorAction 'Stop'
+            $grantWithGrantResult | Should -BeTrue
+
+            # Verify Deny permission still exists
+            $denyResult = Test-SqlDscServerPermission -ServerRole $script:roleObject -Deny -Permission 'ViewAnyDefinition' -ErrorAction 'Stop'
+            $denyResult | Should -BeTrue
         }
     }
 
@@ -374,7 +476,7 @@ Describe 'Set-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
             $tempLoginName = 'TempLoginForErrorTest'
             $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
 
-            New-SqlDscLogin -ServerObject $script:serverObject -Name $tempLoginName -LoginType 'SqlLogin' -SecureString $mockPassword -Force -ErrorAction 'Stop'
+            New-SqlDscLogin -ServerObject $script:serverObject -Name $tempLoginName -SqlLogin -SecurePassword $mockPassword -Force -ErrorAction 'Stop'
 
             $tempLoginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $tempLoginName -ErrorAction 'Stop'
 
