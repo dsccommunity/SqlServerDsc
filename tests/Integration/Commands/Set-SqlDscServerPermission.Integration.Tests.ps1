@@ -57,7 +57,7 @@ Describe 'Set-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
 
         # Restore the expected permissions that other tests depend on
         # Based on Grant test setup and Test command ExactMatch test expectations
-        Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('ViewServerState') -Force -ErrorAction 'SilentlyContinue'
+        Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('ConnectSql', 'ViewServerState') -Force -ErrorAction 'SilentlyContinue'
         Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('ViewAnyDefinition') -Force -ErrorAction 'SilentlyContinue'
 
         # Restore the CreateEndpoint permission on the persistent role that other tests depend on
