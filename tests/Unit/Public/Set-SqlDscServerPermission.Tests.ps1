@@ -73,6 +73,38 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
         }
     }
 
+    Context 'When validating parameter properties' {
+        It 'Should have Login as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Set-SqlDscServerPermission').Parameters['Login']
+
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        }
+
+        It 'Should have ServerRole as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Set-SqlDscServerPermission').Parameters['ServerRole']
+
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        }
+
+        It 'Should have Grant parameter accept pipeline input' {
+            $parameterInfo = (Get-Command -Name 'Set-SqlDscServerPermission').Parameters['Grant']
+
+            $parameterInfo.Attributes.ValueFromPipeline | Should -BeFalse
+        }
+
+        It 'Should have GrantWithGrant parameter accept pipeline input' {
+            $parameterInfo = (Get-Command -Name 'Set-SqlDscServerPermission').Parameters['GrantWithGrant']
+
+            $parameterInfo.Attributes.ValueFromPipeline | Should -BeFalse
+        }
+
+        It 'Should have Deny parameter accept pipeline input' {
+            $parameterInfo = (Get-Command -Name 'Set-SqlDscServerPermission').Parameters['Deny']
+
+            $parameterInfo.Attributes.ValueFromPipeline | Should -BeFalse
+        }
+    }
+
     Context 'When using parameter WhatIf' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
