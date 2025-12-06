@@ -23,16 +23,23 @@
         This parameter accepts pipeline input.
 
     .PARAMETER Grant
-        Specifies the permissions that should be granted. Any existing granted
-        permissions not in this list will be revoked.
+        Specifies the permissions that should be granted. The permissions specified
+        will be the exact granted permissions - any existing granted permissions not
+        in this list will be revoked. If this parameter is omitted (not specified),
+        existing Grant permissions are left unchanged.
 
     .PARAMETER GrantWithGrant
         Specifies the permissions that should be granted with the grant option.
-        Any existing grant-with-grant permissions not in this list will be revoked.
+        The permissions specified will be the exact grant-with-grant permissions -
+        any existing grant-with-grant permissions not in this list will be revoked.
+        If this parameter is omitted (not specified), existing GrantWithGrant
+        permissions are left unchanged.
 
     .PARAMETER Deny
-        Specifies the permissions that should be denied. Any existing denied
-        permissions not in this list will be revoked.
+        Specifies the permissions that should be denied. The permissions specified
+        will be the exact denied permissions - any existing denied permissions not
+        in this list will be revoked. If this parameter is omitted (not specified),
+        existing Deny permissions are left unchanged.
 
     .PARAMETER Force
         Specifies that the permissions should be set without any confirmation.
@@ -83,6 +90,15 @@
         where the permissions will be set. If specifying `-ErrorAction 'SilentlyContinue'`
         then the command will silently continue if any errors occur. If specifying
         `-ErrorAction 'Stop'` the command will throw an error on any failure.
+
+        > [!IMPORTANT]
+        > This command only modifies permission categories that are explicitly specified.
+        > If you omit a parameter (e.g., don't specify `-Grant`), permissions in that
+        > category are left unchanged. However, if you specify a parameter (even as an
+        > empty array like `-Grant @()`), the command sets exact permissions for that
+        > category only - revoking any permissions not in the list. This allows you to
+        > independently manage Grant, GrantWithGrant, and Deny permissions without
+        > affecting the other categories.
 #>
 function Set-SqlDscServerPermission
 {
@@ -103,17 +119,17 @@ function Set-SqlDscServerPermission
         [Parameter()]
         [AllowEmptyCollection()]
         [SqlServerPermission[]]
-        $Grant = @(),
+        $Grant,
 
         [Parameter()]
         [AllowEmptyCollection()]
         [SqlServerPermission[]]
-        $GrantWithGrant = @(),
+        $GrantWithGrant,
 
         [Parameter()]
         [AllowEmptyCollection()]
         [SqlServerPermission[]]
-        $Deny = @(),
+        $Deny,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -185,15 +201,35 @@ function Set-SqlDscServerPermission
             }
         }
 
-        # Calculate what needs to be revoked (permissions in current state but not in desired state)
-        $grantToRevoke = $currentGrant | Where-Object -FilterScript { $_ -notin $Grant }
-        $grantWithGrantToRevoke = $currentGrantWithGrant | Where-Object -FilterScript { $_ -notin $GrantWithGrant }
-        $denyToRevoke = $currentDeny | Where-Object -FilterScript { $_ -notin $Deny }
+        # Calculate what needs to be revoked and added
+        # Only process permission categories that were explicitly specified via parameters
+        $grantToRevoke = @()
+        $grantToAdd = @()
+        $grantWithGrantToRevoke = @()
+        $grantWithGrantToAdd = @()
+        $denyToRevoke = @()
+        $denyToAdd = @()
 
-        # Calculate what needs to be granted/denied (permissions in desired state but not in current state)
-        $grantToAdd = $Grant | Where-Object -FilterScript { $_ -notin $currentGrant }
-        $grantWithGrantToAdd = $GrantWithGrant | Where-Object -FilterScript { $_ -notin $currentGrantWithGrant }
-        $denyToAdd = $Deny | Where-Object -FilterScript { $_ -notin $currentDeny }
+        # Only process Grant permissions if the parameter was explicitly specified
+        if ($PSBoundParameters.ContainsKey('Grant'))
+        {
+            $grantToRevoke = $currentGrant | Where-Object -FilterScript { $_ -notin $Grant }
+            $grantToAdd = $Grant | Where-Object -FilterScript { $_ -notin $currentGrant }
+        }
+
+        # Only process GrantWithGrant permissions if the parameter was explicitly specified
+        if ($PSBoundParameters.ContainsKey('GrantWithGrant'))
+        {
+            $grantWithGrantToRevoke = $currentGrantWithGrant | Where-Object -FilterScript { $_ -notin $GrantWithGrant }
+            $grantWithGrantToAdd = $GrantWithGrant | Where-Object -FilterScript { $_ -notin $currentGrantWithGrant }
+        }
+
+        # Only process Deny permissions if the parameter was explicitly specified
+        if ($PSBoundParameters.ContainsKey('Deny'))
+        {
+            $denyToRevoke = $currentDeny | Where-Object -FilterScript { $_ -notin $Deny }
+            $denyToAdd = $Deny | Where-Object -FilterScript { $_ -notin $currentDeny }
+        }
 
         # Revoke permissions that should no longer exist
         if ($grantToRevoke -and $grantToRevoke.Count -gt 0)

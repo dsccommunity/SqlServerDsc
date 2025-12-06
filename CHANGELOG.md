@@ -49,6 +49,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `Set-SqlDscServerPermission`
+  - Fixed an issue where unspecified permission parameters would incorrectly
+    revoke existing permissions. The command now only processes permission
+    categories that are explicitly specified via parameters. For example,
+    specifying only `-Grant @()` will now correctly revoke only Grant permissions
+    while leaving GrantWithGrant and Deny permissions unchanged
+    ([issue #2159](https://github.com/dsccommunity/SqlServerDsc/issues/2159)).
 - `New-SqlDscDatabase`
   - Fixed parameter types for database-scoped configuration properties from
     `System.Boolean` to `Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff`

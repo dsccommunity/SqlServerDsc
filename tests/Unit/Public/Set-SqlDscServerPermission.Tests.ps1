@@ -304,6 +304,110 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
                 Should -Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Times 0 -Scope It
             }
         }
+
+        Context 'When revoking only specific permission categories while preserving others' {
+            BeforeAll {
+                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                $mockServerObject.InstanceName = 'MockInstance'
+
+                $mockLoginObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @($mockServerObject, 'DOMAIN\MyLogin')
+
+                # Create mock ServerPermissionInfo objects
+                $mockServerPermissionInfo = @(
+                    New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionInfo'
+                )
+
+                Mock -CommandName Get-SqlDscServerPermission -MockWith {
+                    return $mockServerPermissionInfo
+                }
+
+                Mock -CommandName ConvertTo-SqlDscServerPermission -MockWith {
+                    return InModuleScope -ScriptBlock {
+                        @(
+                            [ServerPermission]@{
+                                State      = 'Grant'
+                                Permission = @('ViewServerState')
+                            }
+                            [ServerPermission]@{
+                                State      = 'GrantWithGrant'
+                                Permission = @('CreateAnyDatabase')
+                            }
+                            [ServerPermission]@{
+                                State      = 'Deny'
+                                Permission = @('ViewAnyDefinition')
+                            }
+                        )
+                    }
+                }
+
+                Mock -CommandName Grant-SqlDscServerPermission
+                Mock -CommandName Deny-SqlDscServerPermission
+                Mock -CommandName Revoke-SqlDscServerPermission
+            }
+
+            It 'Should revoke only Grant permissions when only Grant parameter is specified' {
+                # Specify only Grant parameter with empty array - should revoke Grant permissions only
+                Set-SqlDscServerPermission -Login $mockLoginObject -Grant @() -Force
+
+                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+
+                # Should revoke ViewServerState (Grant permission)
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'ViewServerState' -and -not $WithGrant
+                } -Exactly -Times 1 -Scope It
+
+                # Should NOT revoke GrantWithGrant or Deny permissions
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'CreateAnyDatabase'
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'ViewAnyDefinition'
+                } -Exactly -Times 0 -Scope It
+            }
+
+            It 'Should revoke only GrantWithGrant permissions when only GrantWithGrant parameter is specified' {
+                # Specify only GrantWithGrant parameter with empty array
+                Set-SqlDscServerPermission -Login $mockLoginObject -GrantWithGrant @() -Force
+
+                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+
+                # Should revoke CreateAnyDatabase (GrantWithGrant permission)
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'CreateAnyDatabase' -and $WithGrant -eq $true
+                } -Exactly -Times 1 -Scope It
+
+                # Should NOT revoke Grant or Deny permissions
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'ViewServerState'
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'ViewAnyDefinition'
+                } -Exactly -Times 0 -Scope It
+            }
+
+            It 'Should revoke only Deny permissions when only Deny parameter is specified' {
+                # Specify only Deny parameter with empty array
+                Set-SqlDscServerPermission -Login $mockLoginObject -Deny @() -Force
+
+                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+
+                # Should revoke ViewAnyDefinition (Deny permission)
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'ViewAnyDefinition' -and -not $WithGrant
+                } -Exactly -Times 1 -Scope It
+
+                # Should NOT revoke Grant or GrantWithGrant permissions
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'ViewServerState'
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'CreateAnyDatabase'
+                } -Exactly -Times 0 -Scope It
+            }
+        }
     }
 
     Context 'When setting permissions for a server role' {
