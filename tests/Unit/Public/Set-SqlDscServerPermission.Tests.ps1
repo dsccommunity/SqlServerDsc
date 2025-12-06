@@ -50,6 +50,29 @@ AfterAll {
 }
 
 Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
+    Context 'When validating parameter sets' {
+        It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
+            @{
+                ExpectedParameterSetName = 'Login'
+                ExpectedParameters = '-Login <Login> [-Grant <SqlServerPermission[]>] [-GrantWithGrant <SqlServerPermission[]>] [-Deny <SqlServerPermission[]>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            }
+            @{
+                ExpectedParameterSetName = 'ServerRole'
+                ExpectedParameters = '-ServerRole <ServerRole> [-Grant <SqlServerPermission[]>] [-GrantWithGrant <SqlServerPermission[]>] [-Deny <SqlServerPermission[]>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            }
+        ) {
+            $result = (Get-Command -Name 'Set-SqlDscServerPermission').ParameterSets |
+                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
+                Select-Object -Property @(
+                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
+                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
+                )
+
+            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should -Be $ExpectedParameters
+        }
+    }
+
     Context 'When using parameter WhatIf' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
@@ -142,10 +165,9 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
                 }
 
                 # Mock ConvertTo-SqlDscServerPermission to return the permissions we want
-                # Using InModuleScope to access the ServerPermission type
-                InModuleScope -ScriptBlock {
-                    Mock -CommandName ConvertTo-SqlDscServerPermission -MockWith {
-                        return @(
+                Mock -CommandName ConvertTo-SqlDscServerPermission -MockWith {
+                    return InModuleScope -ScriptBlock {
+                        @(
                             [ServerPermission]@{
                                 State      = 'Grant'
                                 Permission = @('ConnectSql', 'ViewServerState')
@@ -245,9 +267,9 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
                     return $mockServerPermissionInfo
                 }
 
-                InModuleScope -ScriptBlock {
-                    Mock -CommandName ConvertTo-SqlDscServerPermission -MockWith {
-                        return @(
+                Mock -CommandName ConvertTo-SqlDscServerPermission -MockWith {
+                    return InModuleScope -ScriptBlock {
+                        @(
                             [ServerPermission]@{
                                 State      = 'Grant'
                                 Permission = @('ConnectSql')
