@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `SqlPermission`
+  - Refactored to use the new object-based server permission commands
+    (`Grant-SqlDscServerPermission`, `Deny-SqlDscServerPermission`,
+    `Revoke-SqlDscServerPermission`, and `Get-SqlDscServerPermission`)
+    instead of the deprecated `Set-SqlDscServerPermission` command
+    ([issue #2159](https://github.com/dsccommunity/SqlServerDsc/issues/2159)).
 - Updated comment-based help `.INPUTS` and `.OUTPUTS` sections across all public
   commands and private functions to comply with DSC community style guidelines
   ([issue #2103](https://github.com/dsccommunity/SqlServerDsc/issues/2103)).
