@@ -86,19 +86,19 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
             $parameterInfo.Attributes.Mandatory | Should -BeTrue
         }
 
-        It 'Should have Grant parameter accept pipeline input' {
+        It 'Should have Grant parameter not accept pipeline input' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscServerPermission').Parameters['Grant']
 
             $parameterInfo.Attributes.ValueFromPipeline | Should -BeFalse
         }
 
-        It 'Should have GrantWithGrant parameter accept pipeline input' {
+        It 'Should have GrantWithGrant parameter not accept pipeline input' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscServerPermission').Parameters['GrantWithGrant']
 
             $parameterInfo.Attributes.ValueFromPipeline | Should -BeFalse
         }
 
-        It 'Should have Deny parameter accept pipeline input' {
+        It 'Should have Deny parameter not accept pipeline input' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscServerPermission').Parameters['Deny']
 
             $parameterInfo.Attributes.ValueFromPipeline | Should -BeFalse
@@ -490,6 +490,60 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
 
                 Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When revoking permissions' {
+            BeforeAll {
+                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                $mockServerObject.InstanceName = 'MockInstance'
+
+                $mockServerRoleObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList @($mockServerObject, 'MyServerRole')
+
+                # Create mock ServerPermissionInfo objects
+                $mockServerPermissionInfo = @(
+                    New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionInfo'
+                )
+
+                Mock -CommandName Get-SqlDscServerPermission -MockWith {
+                    return $mockServerPermissionInfo
+                }
+
+                Mock -CommandName ConvertTo-SqlDscServerPermission -MockWith {
+                    return InModuleScope -ScriptBlock {
+                        @(
+                            [ServerPermission]@{
+                                State      = 'Grant'
+                                Permission = @('ConnectSql')
+                            }
+                            [ServerPermission]@{
+                                State      = 'GrantWithGrant'
+                                Permission = @()
+                            }
+                            [ServerPermission]@{
+                                State      = 'Deny'
+                                Permission = @()
+                            }
+                        )
+                    }
+                }
+
+                Mock -CommandName Grant-SqlDscServerPermission
+                Mock -CommandName Deny-SqlDscServerPermission
+                Mock -CommandName Revoke-SqlDscServerPermission
+            }
+
+            It 'Should revoke all permissions when empty Grant array is specified' {
+                Set-SqlDscServerPermission -ServerRole $mockServerRoleObject -Grant @() -Force
+
+                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+
+                # Should revoke ConnectSql
+                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                    $Permission -contains 'ConnectSql'
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Times 0 -Scope It
             }
         }
     }
