@@ -60,6 +60,10 @@ Describe 'Set-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
         Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('ViewServerState') -Force -ErrorAction 'SilentlyContinue'
         Grant-SqlDscServerPermission -Login $script:loginObject -Permission @('ViewAnyDefinition') -Force -ErrorAction 'SilentlyContinue'
 
+        # Restore the CreateEndpoint permission on the persistent role that other tests depend on
+        $script:roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
+        Grant-SqlDscServerPermission -ServerRole $script:roleObject -Permission 'CreateEndpoint' -Force -ErrorAction 'SilentlyContinue'
+
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
     }
 
