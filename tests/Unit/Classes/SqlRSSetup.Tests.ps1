@@ -728,7 +728,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         }
                     }
 
-                    Mock -CommandName Install-SqlDscBIReportServer -MockWith {
+                    Mock -CommandName Install-SqlDscPowerBIReportServer -MockWith {
                         return 0
                     }
                 }
@@ -744,7 +744,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                             }
                         )
 
-                        Should -Invoke -CommandName 'Install-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName 'Install-SqlDscPowerBIReportServer' -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -759,7 +759,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         }
                     }
 
-                    Mock -CommandName Install-SqlDscBIReportServer -MockWith {
+                    Mock -CommandName Install-SqlDscPowerBIReportServer -MockWith {
                         return 3010
                     }
 
@@ -777,7 +777,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                             }
                         )
 
-                        Should -Invoke -CommandName 'Install-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName 'Install-SqlDscPowerBIReportServer' -Exactly -Times 1 -Scope It
 
                         Should -Invoke -CommandName 'Set-DscMachineRebootRequired' -Exactly -Times 1 -Scope It
                     }
@@ -1004,7 +1004,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         }
                     }
 
-                    Mock -CommandName Repair-SqlDscBIReportServer -MockWith {
+                    Mock -CommandName Repair-SqlDscPowerBIReportServer -MockWith {
                         return 0
                     }
                 }
@@ -1020,7 +1020,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                             }
                         )
 
-                        Should -Invoke -CommandName 'Repair-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName 'Repair-SqlDscPowerBIReportServer' -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -1035,7 +1035,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         }
                     }
 
-                    Mock -CommandName Repair-SqlDscBIReportServer -MockWith {
+                    Mock -CommandName Repair-SqlDscPowerBIReportServer -MockWith {
                         return 3010
                     }
 
@@ -1053,7 +1053,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                             }
                         )
 
-                        Should -Invoke -CommandName 'Repair-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName 'Repair-SqlDscPowerBIReportServer' -Exactly -Times 1 -Scope It
 
                         Should -Invoke -CommandName 'Set-DscMachineRebootRequired' -Exactly -Times 1 -Scope It
                     }
