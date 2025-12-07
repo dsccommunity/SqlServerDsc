@@ -44,6 +44,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Set-SqlDscDatabaseProperty`
   - Updated comment-based help to reference correct enum values.
   - Added SQL Server version requirements to version-specific parameter help.
+- Updated CONTRIBUTING.md error handling documentation to clarify proper usage
+  of `Write-Error` vs `$PSCmdlet.ThrowTerminatingError()` in public commands
+  ([issue #2193](https://github.com/dsccommunity/SqlServerDsc/issues/2193)).
 
 ### Fixed
 
