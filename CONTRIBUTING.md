@@ -365,8 +365,10 @@ throws a **command-terminating error** which has unexpected behavior when called
 from another command.
 
 **The Problem**: When a command uses `$PSCmdlet.ThrowTerminatingError()`, the
-error behaves like a non-terminating error to the caller unless the caller
-explicitly uses `-ErrorAction 'Stop'`. This creates confusing behavior:
+error is command-terminating (stops that command) but NOT script-terminating. The
+calling function continues executing unless the caller sets
+`$ErrorActionPreference = 'Stop'` or wraps the call in try-catch. This creates
+confusing behavior:
 
 ```powershell
 function Get-Something
@@ -398,8 +400,8 @@ function Start-Operation
     Write-Output 'Operation completed'
 }
 
-# Caller must use -ErrorAction 'Stop' to prevent continued execution
-Start-Operation -ErrorAction 'Stop'
+# Caller must set ErrorActionPreference = 'Stop' or use try-catch to prevent continued execution
+Start-Operation -ErrorAction 'Stop'  # This alone is NOT sufficient!
 ```
 
 Because of this behavior, **use `Write-Error` instead** in public commands.
@@ -444,8 +446,9 @@ how exceptions are caught:
 
 This example shows a state-changing command using `$PSCmdlet.ThrowTerminatingError()`
 in a catch block. This is acceptable for commands with `SupportsShouldProcess` where
-operation failures must terminate. Note that callers must use `-ErrorAction 'Stop'`
-to catch this error.
+operation failures must terminate. **Important:** Callers must set
+`$ErrorActionPreference = 'Stop'` or wrap the call in try-catch to stop execution
+on error (using `-ErrorAction 'Stop'` alone is insufficient).
 
 For non-state-changing commands (like Get/Test commands), prefer `Write-Error` in
 catch blocks instead.
