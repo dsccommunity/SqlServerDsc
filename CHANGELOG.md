@@ -31,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Get-SqlDscInstalledComponent` and `Test-SqlDscIsInstalledComponent` commands.
 - Added public command `Test-SqlDscIsInstalledInstance` to test if an instance is
   installed on the current node.
+- New class-based resource:
+  - `SqlInstall` - Handles the Microsoft SQL Server setup action `Install`.
 
 ### Changed
 
@@ -1114,8 +1116,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- New class-based resource:
-  - `SqlInstall` - Handles the Microsoft SQL Server setup action `Install`.
 - New public commands:
   - `Disconnect-SqlDscDatabaseEngine` - Disconnects from a SQL Server instance
     that was previously connected to using `Connect-SqlDscDatabaseEngine`.
