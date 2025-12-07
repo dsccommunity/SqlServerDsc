@@ -313,7 +313,8 @@ commands are located in the folder `./source/Public`.
 Public commands should primarily use `Write-Error` for error handling, as it
 provides the most flexible and predictable behavior for callers. The statement
 `throw` shall never be used in public commands except within parameter
-validation attributes like `[ValidateScript()]` where it is the only option.
+validation attributes like `[ValidateScript()]` where it is the only valid
+mechanism for validation failures.
 
 ##### When to Use Write-Error
 
@@ -411,8 +412,12 @@ Use `$PSCmdlet.ThrowTerminatingError()` only in these limited scenarios:
    is well understood
 2. **Assert-style commands** (like `Assert-SqlDscLogin`) whose purpose is to
    throw on failure
-3. **Commands with `SupportsShouldProcess`** where an error in the
-   `ShouldProcess` block must terminate (before state changes)
+3. **Commands with `SupportsShouldProcess`** where an operation failure in the
+   `ShouldProcess` block must terminate (common for state-changing operations
+   that cannot be partially completed)
+4. **Catch blocks in state-changing commands** where a critical operation
+   failure must be communicated as a terminating error to prevent further
+   state changes
 
 In these cases, ensure callers are aware of the behavior and use
 `-ErrorAction 'Stop'` when calling the command from other commands.
@@ -434,9 +439,13 @@ how exceptions are caught:
 
 **Recommended pattern for .NET methods:**
 
-This example shows using `$PSCmdlet.ThrowTerminatingError()` in a catch block,
-which is acceptable when catching exceptions from .NET methods. The caller must
-use `-ErrorAction 'Stop'` to catch this error.
+This example shows a state-changing command using `$PSCmdlet.ThrowTerminatingError()`
+in a catch block. This is acceptable for commands with `SupportsShouldProcess` where
+operation failures must terminate. Note that callers must use `-ErrorAction 'Stop'`
+to catch this error.
+
+For non-state-changing commands (like Get/Test commands), prefer `Write-Error` in
+catch blocks instead.
 
 ```powershell
 try
@@ -461,10 +470,10 @@ catch
 }
 ```
 
-**Pattern for cmdlets with blanket error handling:**
+**Pattern for blanket error handling:**
 
-Only use `$ErrorActionPreference = 'Stop'` when you have multiple cmdlets
-and don't want to add `-ErrorAction 'Stop'` to each one:
+Use `$ErrorActionPreference = 'Stop'` when you need blanket error handling for
+multiple cmdlets or when calling commands that use `$PSCmdlet.ThrowTerminatingError()`:
 
 ```powershell
 try
@@ -487,6 +496,12 @@ finally
 }
 ```
 
+> [!NOTE]
+> Setting `$ErrorActionPreference = 'Stop'` is particularly useful when calling
+> commands that use `$PSCmdlet.ThrowTerminatingError()`. Without it (or
+> `-ErrorAction 'Stop'` on each call), these command-terminating errors will not
+> stop the calling function - it will continue executing after the error.
+
 > [!IMPORTANT]
 > **Do not** use the pattern `$ErrorActionPreference = 'Stop'` followed by
 > `-ErrorAction 'Stop'` on the same cmdlet - this is redundant. The
@@ -495,9 +510,12 @@ finally
 
 > [!NOTE]
 > The pattern of setting `$ErrorActionPreference = 'Stop'` in a try block
-> with restoration in finally is useful for blanket error handling, but NOT
-> necessary for .NET method calls (they always throw) or when using
-> `-ErrorAction 'Stop'` on individual cmdlets.
+> with restoration in finally is useful for:
+> - Blanket error handling across multiple cmdlets
+> - Catching errors from commands that use `$PSCmdlet.ThrowTerminatingError()`
+>   (without this, those errors won't stop the caller)
+> - However, it's NOT necessary for .NET method calls (they always throw) or
+>   when using `-ErrorAction 'Stop'` on individual cmdlets.
 
 ##### Parameter Validation with ValidateScript
 
@@ -582,9 +600,11 @@ $results = $items | Process-Items -ErrorAction 'Stop'
 | General error handling in public commands | `Write-Error` | Provides consistent, predictable behavior; allows caller to control termination |
 | Pipeline processing with multiple items | `Write-Error` | Allows processing to continue for remaining items |
 | Catching .NET method exceptions | try-catch without setting `$ErrorActionPreference` | .NET exceptions are always caught automatically |
-| Blanket error handling for multiple cmdlets | Set `$ErrorActionPreference = 'Stop'` in try, restore in finally | Avoids adding `-ErrorAction 'Stop'` to each cmdlet |
+| Blanket error handling for multiple cmdlets | Set `$ErrorActionPreference = 'Stop'` in try, restore in finally | Avoids adding `-ErrorAction 'Stop'` to each cmdlet; also catches ThrowTerminatingError from child commands |
 | Single cmdlet error handling | Use `-ErrorAction 'Stop'` on the cmdlet | Simpler and more explicit than setting `$ErrorActionPreference` |
+| Calling commands that use ThrowTerminatingError | Set `$ErrorActionPreference = 'Stop'` or use `-ErrorAction 'Stop'` | Required to catch these command-terminating errors; without it, caller continues after error |
 | Assert-style commands | `$PSCmdlet.ThrowTerminatingError()` | Command purpose is to throw on failure |
+| State-changing commands (catch blocks) | `$PSCmdlet.ThrowTerminatingError()` | Prevents partial state changes; caller must use `-ErrorAction 'Stop'` or set `$ErrorActionPreference` |
 | Private functions (internal use only) | `$PSCmdlet.ThrowTerminatingError()` or `Write-Error` | Behavior is understood by internal callers |
 | Parameter validation in `[ValidateScript()]` | `throw` | Only valid option within validation attributes |
 | Any other scenario in commands | Never use `throw` | Poor error messages; unpredictable behavior |
