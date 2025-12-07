@@ -261,9 +261,18 @@ function Backup-SqlDscDatabase
         # Determine the backup type description for messages
         $backupTypeDescription = switch ($BackupType)
         {
-            'Full' { 'full' }
-            'Differential' { 'differential' }
-            'Log' { 'transaction log' }
+            'Full'
+            {
+                'full'
+            }
+            'Differential'
+            {
+                'differential'
+            }
+            'Log'
+            {
+                'transaction log'
+            }
         }
 
         $descriptionMessage = $script:localizedData.Database_Backup_ShouldProcessVerboseDescription -f $backupTypeDescription, $Name, $BackupFile

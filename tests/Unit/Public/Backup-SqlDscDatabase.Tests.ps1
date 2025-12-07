@@ -255,7 +255,7 @@ Describe 'Backup-SqlDscDatabase' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set ServerObject' -ForEach @(
             @{
                 ExpectedParameterSetName = 'ServerObject'
-                ExpectedParameters = '-ServerObject <Server> -Name <string> -BackupFile <string> [-BackupType <string>] [-CopyOnly] [-Compress] [-Checksum] [-Description <string>] [-RetainDays <int>] [-Initialize] [-Refresh] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters       = '-ServerObject <Server> -Name <string> -BackupFile <string> [-BackupType <string>] [-CopyOnly] [-Compress] [-Checksum] [-Description <string>] [-RetainDays <int>] [-Initialize] [-Refresh] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Backup-SqlDscDatabase').ParameterSets |
@@ -272,7 +272,7 @@ Describe 'Backup-SqlDscDatabase' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set DatabaseObject' -ForEach @(
             @{
                 ExpectedParameterSetName = 'DatabaseObject'
-                ExpectedParameters = '-DatabaseObject <Database> -BackupFile <string> [-BackupType <string>] [-CopyOnly] [-Compress] [-Checksum] [-Description <string>] [-RetainDays <int>] [-Initialize] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters       = '-DatabaseObject <Database> -BackupFile <string> [-BackupType <string>] [-CopyOnly] [-Compress] [-Checksum] [-Description <string>] [-RetainDays <int>] [-Initialize] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Backup-SqlDscDatabase').ParameterSets |
