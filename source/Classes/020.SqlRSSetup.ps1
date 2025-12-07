@@ -474,7 +474,7 @@ class SqlRSSetup : ResourceBase
                 {
                     Write-Verbose -Message $this.localizedData.Installing_PowerBIReportServer
 
-                    $exitCode = Install-SqlDscBIReportServer @commandParameters -PassThru -Force -ErrorAction 'Stop'
+                    $exitCode = Install-SqlDscPowerBIReportServer @commandParameters -PassThru -Force -ErrorAction 'Stop'
 
                     break
                 }
@@ -483,7 +483,7 @@ class SqlRSSetup : ResourceBase
                 {
                     Write-Verbose -Message $this.localizedData.Repairing_PowerBIReportServer
 
-                    $exitCode = Repair-SqlDscBIReportServer @commandParameters -PassThru -Force -ErrorAction 'Stop'
+                    $exitCode = Repair-SqlDscPowerBIReportServer @commandParameters -PassThru -Force -ErrorAction 'Stop'
 
                     break
                 }
@@ -492,7 +492,7 @@ class SqlRSSetup : ResourceBase
                 {
                     Write-Verbose -Message $this.localizedData.Uninstalling_PowerBIReportServer
 
-                    $exitCode = Uninstall-SqlDscBIReportServer @commandParameters -PassThru -Force -ErrorAction 'Stop'
+                    $exitCode = Uninstall-SqlDscPowerBIReportServer @commandParameters -PassThru -Force -ErrorAction 'Stop'
 
                     break
                 }

@@ -318,6 +318,253 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         These tests assumes that only permission left for test user 'User1' is
         a grant for permission 'ConnectSql'.
     #>
+
+    Context ('When using configuration <_>') -ForEach @(
+        "$($script:dscResourceName)_Role_Grant_Config"
+    ) {
+        BeforeAll {
+            $configurationName = $_
+        }
+
+        AfterEach {
+            Wait-ForIdleLcm
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            $configurationParameters = @{
+                OutputPath           = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData    = $ConfigurationData
+            }
+
+            $null = & $configurationName @configurationParameters
+
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
+
+            $null = Start-DscConfiguration @startDscConfigurationParameters
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
+        }
+
+        It 'Should have set the resource and all the parameters should match' {
+            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                $_.ConfigurationName -eq $configurationName `
+                -and $_.ResourceId -eq $resourceId
+            }
+
+            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.Role1_Name
+            $resourceCurrentState.Permission | Should -HaveCount 3
+
+            $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
+
+            $grantState.State | Should -Be 'Grant'
+            $grantState.Permission | Should -HaveCount 2
+            $grantState.Permission | Should -Contain 'ViewServerState'
+            $grantState.Permission | Should -Contain 'AlterAnyEndpoint'
+        }
+
+        It 'Should return $true when Test-DscConfiguration is run' {
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+        }
+    }
+
+    Context ('When using configuration <_>') -ForEach @(
+        "$($script:dscResourceName)_Role_RemoveGrant_Config"
+    ) {
+        BeforeAll {
+            $configurationName = $_
+        }
+
+        AfterEach {
+            Wait-ForIdleLcm
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            $configurationParameters = @{
+                OutputPath           = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData    = $ConfigurationData
+            }
+
+            $null = & $configurationName @configurationParameters
+
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
+
+            $null = Start-DscConfiguration @startDscConfigurationParameters
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
+        }
+
+        It 'Should have set the resource and all the parameters should match' {
+            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                $_.ConfigurationName -eq $configurationName `
+                -and $_.ResourceId -eq $resourceId
+            }
+
+            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.Role1_Name
+            $resourceCurrentState.Permission | Should -HaveCount 3
+
+            $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
+
+            $grantState.State | Should -Be 'Grant'
+            $grantState.Permission | Should -BeNullOrEmpty
+        }
+
+        It 'Should return $true when Test-DscConfiguration is run' {
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+        }
+    }
+
+    Context ('When using configuration <_>') -ForEach @(
+        "$($script:dscResourceName)_Role_Deny_Config"
+    ) {
+        BeforeAll {
+            $configurationName = $_
+        }
+
+        AfterEach {
+            Wait-ForIdleLcm
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            $configurationParameters = @{
+                OutputPath           = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData    = $ConfigurationData
+            }
+
+            $null = & $configurationName @configurationParameters
+
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
+
+            $null = Start-DscConfiguration @startDscConfigurationParameters
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
+        }
+
+        It 'Should have set the resource and all the parameters should match' {
+            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                $_.ConfigurationName -eq $configurationName `
+                -and $_.ResourceId -eq $resourceId
+            }
+
+            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.Role1_Name
+            $resourceCurrentState.Permission | Should -HaveCount 3
+
+            $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
+
+            $grantState.State | Should -Be 'Grant'
+            $grantState.Permission | Should -BeNullOrEmpty
+
+            $denyState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Deny' })
+
+            $denyState.State | Should -Be 'Deny'
+            $denyState.Permission | Should -HaveCount 2
+            $denyState.Permission | Should -Contain 'ViewServerState'
+            $denyState.Permission | Should -Contain 'AlterAnyEndpoint'
+        }
+
+        It 'Should return $true when Test-DscConfiguration is run' {
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+        }
+    }
+
+    Context ('When using configuration <_>') -ForEach @(
+        "$($script:dscResourceName)_Role_RemoveDeny_Config"
+    ) {
+        BeforeAll {
+            $configurationName = $_
+        }
+
+        AfterEach {
+            Wait-ForIdleLcm
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            $configurationParameters = @{
+                OutputPath           = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData    = $ConfigurationData
+            }
+
+            $null = & $configurationName @configurationParameters
+
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
+
+            $null = Start-DscConfiguration @startDscConfigurationParameters
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
+        }
+
+        It 'Should have set the resource and all the parameters should match' {
+            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                $_.ConfigurationName -eq $configurationName `
+                -and $_.ResourceId -eq $resourceId
+            }
+
+            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.Role1_Name
+            $resourceCurrentState.Permission | Should -HaveCount 3
+
+            $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
+
+            $grantState.State | Should -Be 'Grant'
+            $grantState.Permission | Should -BeNullOrEmpty
+
+            $denyState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Deny' })
+
+            $denyState.State | Should -Be 'Deny'
+            $denyState.Permission | Should -BeNullOrEmpty
+        }
+
+        It 'Should return $true when Test-DscConfiguration is run' {
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+        }
+    }
+
     Context 'When using Invoke-DscResource' {
         BeforeAll {
             <#

@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Set-SqlDscServerPermission`
   - Added integration tests for negative test scenarios including invalid
     permission names and non-existent principals.
+- `SqlPermission`
+  - Added integration tests for server role permissions to complement the
+    existing login permission tests.
 - `New-SqlDscDatabase`
   - Added comprehensive set of settable database properties that were previously
     only available in `Set-SqlDscDatabaseProperty`
@@ -24,12 +27,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Renamed commands `*-SqlDscBIReportServer` to `*-SqlDscPowerBIReportServer` for
+  clarity. The old names `*-SqlDscBIReportServer` and `*-SqlDscPBIReportServer`
+  are available as aliases for backward compatibility
+  ([issue #2071](https://github.com/dsccommunity/SqlServerDsc/issues/2071)).
 - `SqlPermission`
   - Refactored to use the new object-based server permission commands
     (`Grant-SqlDscServerPermission`, `Deny-SqlDscServerPermission`,
     `Revoke-SqlDscServerPermission`, and `Get-SqlDscServerPermission`)
     instead of the deprecated `Set-SqlDscServerPermission` command
     ([issue #2159](https://github.com/dsccommunity/SqlServerDsc/issues/2159)).
+  - Updated documentation to clarify that the resource supports both logins
+    and server roles as principals.
+  - Added a note in documentation clarifying that if a name exists as both
+    a login and a server role, the login will take precedence.
 - BREAKING CHANGE: `Set-SqlDscServerPermission`
   - Completely refactored to set exact server permissions for a principal. The
     command now accepts Login or ServerRole objects (same as `Grant-SqlDscServerPermission`,
