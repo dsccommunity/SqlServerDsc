@@ -82,8 +82,6 @@ applyTo: "{**/*.ps1,**/*.psm1,**/*.psd1}"
   - `$PSCmdlet.ShouldProcess` must use required pattern
   - Inside `$PSCmdlet.ShouldProcess`-block, avoid using `Write-Verbose`
 - Never use backtick as line continuation in production code.
-- For blanket error handling across multiple cmdlets, set `$ErrorActionPreference = 'Stop'` in try block and restore in finally block
-- When calling commands that use `$PSCmdlet.ThrowTerminatingError()`, set `$ErrorActionPreference = 'Stop'` OR wrap in try-catch (using `-ErrorAction 'Stop'` alone is insufficient)
 - Use `[Alias()]` attribute for function aliases, never `Set-Alias` or `New-Alias`
 
 ## Output streams
@@ -93,15 +91,16 @@ applyTo: "{**/*.ps1,**/*.psm1,**/*.psd1}"
 - Use `Write-Verbose` for: High-level execution flow only; User-actionable information
 - Use `Write-Information` for: User-facing status updates; Important operational messages; Non-error state changes
 - Use `Write-Warning` for: Non-fatal issues requiring attention; Deprecated functionality usage; Configuration problems that don't block execution
-- **Prefer `Write-Error` for public commands** - provides standard PowerShell non-terminating error behavior; callers control termination via `-ErrorAction 'Stop'`
+- **Use `Write-Error` for all error handling in public commands**
+  - For terminating errors: Add `-ErrorAction 'Stop'` parameter to `Write-Error`
+  - For non-terminating errors: Omit `-ErrorAction` parameter (caller controls via `-ErrorAction`)
   - Always include `-Message` (localized string), `-Category` (relevant error category), `-ErrorId` (unique ID matching localized string ID), `-TargetObject` (object causing error)
   - In catch blocks, pass original exception using `-Exception`
   - Always use `return` after `Write-Error` to avoid further processing
-- **Avoid `$PSCmdlet.ThrowTerminatingError()` in public commands** - creates command-terminating (not script-terminating) errors; callers must set `$ErrorActionPreference = 'Stop'` OR use try-catch (using `-ErrorAction 'Stop'` alone is insufficient)
-  - Acceptable only in: private functions, or state-changing catch blocks where operation failures must prevent further state changes
-  - Assert-style commands should use `Write-Error` for standard behavior
-- Use `throw` only in `[ValidateScript()]` parameter validation attributes - it's the only valid mechanism there
-- .NET method exceptions (e.g., SMO methods) are always caught in try-catch blocks without needing to set `$ErrorActionPreference`
+- **Never use `$PSCmdlet.ThrowTerminatingError()` in public commands** - it creates command-terminating (not script-terminating) errors; use `Write-Error` with `-ErrorAction 'Stop'` instead
+  - May be used in private functions where behavior is understood by internal callers
+- **Never use `throw` in public commands** except in `[ValidateScript()]` parameter validation attributes (it's the only valid mechanism there)
+- .NET method exceptions (e.g., SMO methods) are always caught in try-catch blocks - no special handling needed
 
 ## ShouldProcess Required Pattern
 

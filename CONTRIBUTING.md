@@ -357,207 +357,63 @@ $db = Get-Database -Name 'NonExistent' -ErrorAction 'Stop'
 > command. Without `return`, the command continues executing, which may cause
 > unexpected behavior or additional errors.
 
-##### Understanding $PSCmdlet.ThrowTerminatingError
+##### Error Handling in Public Commands
 
-The `$PSCmdlet.ThrowTerminatingError()` method is **not recommended** for public
-commands despite its name suggesting it throws a terminating error. It actually
-throws a **command-terminating error** which has unexpected behavior when called
-from another command.
+**Always use `Write-Error` in public commands.** For errors that should terminate execution:
 
-**The Problem**: When a command uses `$PSCmdlet.ThrowTerminatingError()`, the
-error is command-terminating (stops that command) but NOT script-terminating. The
-calling function continues executing unless the caller sets
-`$ErrorActionPreference = 'Stop'` or wraps the call in try-catch. This creates
-confusing behavior:
+```powershell
+function Get-Database
+{
+    [CmdletBinding()]
+    param ([Parameter(Mandatory = $true)] [System.String] $Name)
+
+    if (-not (Test-DatabaseExists $Name))
+    {
+        Write-Error -Message "Database '$Name' not found" `
+            -Category ObjectNotFound `
+            -ErrorId 'GD0001' `
+            -TargetObject $Name `
+            -ErrorAction 'Stop'
+        
+        return
+    }
+
+    # Continue processing...
+}
+```
+
+With this pattern:
+- The error terminates execution (stops the function and the caller)
+- Callers don't need special error handling
+- Standard PowerShell behavior - simple and predictable
+
+##### Why Not $PSCmdlet.ThrowTerminatingError?
+
+The `$PSCmdlet.ThrowTerminatingError()` method creates **command-terminating** errors,
+not script-terminating errors. The calling function continues executing after the error
+unless the caller uses `$ErrorActionPreference = 'Stop'` or try-catch:
 
 ```powershell
 function Get-Something
 {
-    [CmdletBinding()]
-    param ()
-
-    $PSCmdlet.ThrowTerminatingError(
-        [System.Management.Automation.ErrorRecord]::new(
-            'Database not found',
-            'GS0001',
-            [System.Management.Automation.ErrorCategory]::ObjectNotFound,
-            'MyDatabase'
-        )
-    )
-
-    # This line never executes (correctly stopped)
-    Write-Output 'After error'
+    $PSCmdlet.ThrowTerminatingError(...)  # Stops Get-Something
 }
 
 function Start-Operation
 {
-    [CmdletBinding()]
-    param ()
-
-    Get-Something
-
-    # BUG: This line DOES execute even though Get-Something threw an error!
-    Write-Output 'Operation completed'
-}
-
-# Caller must set ErrorActionPreference = 'Stop' or use try-catch to prevent continued execution
-Start-Operation -ErrorAction 'Stop'  # This alone is NOT sufficient!
-```
-
-Because of this behavior, **use `Write-Error` instead** in public commands.
-
-##### When $PSCmdlet.ThrowTerminatingError Can Be Used
-
-Use `$PSCmdlet.ThrowTerminatingError()` only in these limited scenarios:
-
-1. **Private functions** that are only called internally and where the behavior
-   is well understood
-2. **Commands with `SupportsShouldProcess`** where an operation failure in the
-   `ShouldProcess` block must terminate (common for state-changing operations
-   that cannot be partially completed)
-3. **Catch blocks in state-changing commands** where a critical operation
-   failure must be communicated as a terminating error to prevent further
-   state changes
-
-**Note:** Assert-style commands should use `Write-Error` instead - this provides
-standard PowerShell behavior where `-ErrorAction 'Stop'` alone works correctly.
-
-In these cases, ensure callers are aware of the behavior. **Important:** When calling
-these commands, using `-ErrorAction 'Stop'` alone is NOT sufficient to stop the calling
-function. Callers must ALSO either:
-- Wrap the call in try-catch, OR
-- Set `$ErrorActionPreference = 'Stop'` in the calling function
-
-##### Handling Errors from .NET Methods and Cmdlets
-
-When working with .NET methods (like SMO objects) and PowerShell cmdlets, understand
-how exceptions are caught:
-
-**For .NET methods (.NET Framework/Core APIs and SMO):**
-- Exceptions are **always caught** in try-catch blocks
-- No need to set `$ErrorActionPreference` - the exceptions throw naturally
-- Example: `$alertObject.Drop()`, `$database.Create()`, `[System.IO.File]::OpenRead()`
-
-**For PowerShell cmdlets:**
-- Use `-ErrorAction 'Stop'` to make errors catchable in try-catch
-- **Do not** set `$ErrorActionPreference = 'Stop'` when using `-ErrorAction 'Stop'` - it's redundant
-- Only set `$ErrorActionPreference = 'Stop'` if you need blanket error handling for multiple cmdlets
-
-**Recommended pattern for .NET methods:**
-
-This example shows a state-changing command using `$PSCmdlet.ThrowTerminatingError()`
-in a catch block. This is acceptable for commands with `SupportsShouldProcess` where
-operation failures must terminate. **Important:** Callers must set
-`$ErrorActionPreference = 'Stop'` or wrap the call in try-catch to stop execution
-on error (using `-ErrorAction 'Stop'` alone is insufficient).
-
-For non-state-changing commands (like Get/Test commands), prefer `Write-Error` in
-catch blocks instead.
-
-```powershell
-try
-{
-    # .NET methods throw exceptions automatically - no ErrorActionPreference needed
-    $alertObject.Drop()
-
-    Write-Verbose -Message ($script:localizedData.AlertRemoved -f $alertObject.Name)
-}
-catch
-{
-    $errorMessage = $script:localizedData.RemoveFailed -f $alertObject.Name
-
-    $PSCmdlet.ThrowTerminatingError(
-        [System.Management.Automation.ErrorRecord]::new(
-            [System.InvalidOperationException]::new($errorMessage, $_.Exception),
-            'RSAA0001',
-            [System.Management.Automation.ErrorCategory]::InvalidOperation,
-            $alertObject
-        )
-    )
+    Get-Something  # Error occurs
+    Write-Output 'Continues'  # BUG: This executes!
 }
 ```
 
-**Pattern for blanket error handling:**
-
-Use `$ErrorActionPreference = 'Stop'` when you need blanket error handling for
-multiple cmdlets or when calling commands that use `$PSCmdlet.ThrowTerminatingError()`:
-
-```powershell
-try
-{
-    $originalErrorActionPreference = $ErrorActionPreference
-    $ErrorActionPreference = 'Stop'
-
-    # Multiple cmdlets without -ErrorAction on each
-    $instance = Get-SqlDscManagedComputerInstance -InstanceName $InstanceName
-    $protocol = Get-SqlDscServerProtocolName -ProtocolName $ProtocolName
-    $serverProtocol = $instance.ServerProtocols[$protocol.ShortName]
-}
-catch
-{
-    # Handle error
-}
-finally
-{
-    $ErrorActionPreference = $originalErrorActionPreference
-}
-```
-
-> [!NOTE]
-> Setting `$ErrorActionPreference = 'Stop'` is particularly useful when calling
-> commands that use `$PSCmdlet.ThrowTerminatingError()`. **Important:**
-> Using `-ErrorAction 'Stop'` alone when calling such commands is NOT sufficient
-> to stop the calling function - it will continue executing after the error.
-> You must set `$ErrorActionPreference = 'Stop'` OR wrap the call in try-catch.
-
-> [!TIP]
-> **Prefer `Write-Error` in public commands instead of `$PSCmdlet.ThrowTerminatingError()`.**
-> With `Write-Error`, callers can use `-ErrorAction 'Stop'` alone and it works as
-> expected - the caller stops executing. This is standard PowerShell behavior and
-> avoids the need for `$ErrorActionPreference` or try-catch in callers.
-
-> [!IMPORTANT]
-> **Do not** use the pattern `$ErrorActionPreference = 'Stop'` followed by
-> `-ErrorAction 'Stop'` on the same cmdlet - this is redundant. The
-> `-ErrorAction` parameter takes precedence over `$ErrorActionPreference`
-> for that specific cmdlet call.
-
-> [!NOTE]
-> The pattern of setting `$ErrorActionPreference = 'Stop'` in a try block
-> with restoration in finally is useful for:
-> - Blanket error handling across multiple cmdlets
-> - Catching errors from commands that use `$PSCmdlet.ThrowTerminatingError()`
->   (without this, those errors won't stop the caller)
-> - However, it's NOT necessary for .NET method calls (they always throw) or
->   when using `-ErrorAction 'Stop'` on individual cmdlets.
-
-##### Parameter Validation with ValidateScript
-
-When using `[ValidateScript()]` attribute on parameters, you **must** use
-`throw` for validation failures, as it is the only mechanism that works
-within validation attributes:
-
-```powershell
-[Parameter()]
-[ValidateScript({
-        if (-not (Test-Path -Path $_))
-        {
-            throw ($script:localizedData.Audit_PathParameterValueInvalid -f $_)
-        }
-
-        return $true
-    })]
-[System.String]
-$Path
-```
-
-This is the **only acceptable use** of `throw` in public commands and private
-functions.
+**Do not use `$PSCmdlet.ThrowTerminatingError()` in public commands.** It may be used
+in private functions where the behavior is well understood by internal callers only.
 
 ##### Exception Handling in Commands
 
-When catching exceptions in try-catch blocks, re-throw errors using `Write-Error`
-with the original exception:
+When catching exceptions in try-catch blocks, use `Write-Error` with the original exception.
+
+**For terminating errors** (execution should stop):
 
 ```powershell
 try
@@ -567,11 +423,83 @@ try
 catch
 {
     $errorMessage = $script:localizedData.CreateDatabaseFailed -f $DatabaseName
-
-    Write-Error -Message $errorMessage -Category 'InvalidOperation' -ErrorId 'CD0001' -TargetObject $DatabaseName -Exception $_.Exception
-
+    
+    Write-Error -Message $errorMessage `
+        -Category 'InvalidOperation' `
+        -ErrorId 'CD0001' `
+        -TargetObject $DatabaseName `
+        -Exception $_.Exception `
+        -ErrorAction 'Stop'
+    
     return
 }
+```
+
+**For non-terminating errors** (allow caller to control):
+
+```powershell
+try
+{
+    $database.Create()
+}
+catch
+{
+    $errorMessage = $script:localizedData.CreateDatabaseFailed -f $DatabaseName
+    
+    Write-Error -Message $errorMessage `
+        -Category 'InvalidOperation' `
+        -ErrorId 'CD0001' `
+        -TargetObject $DatabaseName `
+        -Exception $_.Exception
+    
+    return
+}
+```
+
+##### .NET Method Exceptions
+
+.NET methods (like SMO objects) throw exceptions automatically - no special error
+handling needed. Just use try-catch:
+
+```powershell
+try
+{
+    $alertObject.Drop()  # Throws exception on failure
+    Write-Verbose -Message ($script:localizedData.AlertRemoved -f $alertObject.Name)
+}
+catch
+{
+    $errorMessage = $script:localizedData.RemoveFailed -f $alertObject.Name
+    
+    Write-Error -Message $errorMessage `
+        -Category 'InvalidOperation' `
+        -ErrorId 'RMA0001' `
+        -TargetObject $alertObject `
+        -Exception $_.Exception `
+        -ErrorAction 'Stop'
+    
+    return
+}
+```
+
+##### Parameter Validation with ValidateScript
+
+When using `[ValidateScript()]` attribute, use `throw` for validation failures
+(this is the only mechanism that works within validation attributes):
+
+```powershell
+[Parameter()]
+[ValidateScript({
+        if (-not (Test-Path -Path $_))
+        {
+            throw ($script:localizedData.PathParameterInvalid -f $_)
+        }
+        
+        return $true
+    })]
+[System.String]
+$Path
+```
 ```
 
 ##### Pipeline Processing Considerations
@@ -609,17 +537,13 @@ $results = $items | Process-Items -ErrorAction 'Stop'
 ##### Summary
 
 <!-- markdownlint-disable MD013 - Line length -->
-| Scenario | Use | Why |
-|----------|-----|-----|
-| General error handling in public commands | `Write-Error` | Provides consistent, predictable behavior; allows caller to control termination |
-| Pipeline processing with multiple items | `Write-Error` | Allows processing to continue for remaining items |
-| Catching .NET method exceptions | try-catch without setting `$ErrorActionPreference` | .NET exceptions are always caught automatically |
-| Blanket error handling for multiple cmdlets | Set `$ErrorActionPreference = 'Stop'` in try, restore in finally | Avoids adding `-ErrorAction 'Stop'` to each cmdlet; also catches ThrowTerminatingError from child commands |
-| Single cmdlet error handling | Use `-ErrorAction 'Stop'` on the cmdlet | Simpler and more explicit than setting `$ErrorActionPreference` |
-| Calling commands that use ThrowTerminatingError | Set `$ErrorActionPreference = 'Stop'` in caller OR wrap in try-catch | Using `-ErrorAction 'Stop'` alone is NOT sufficient; caller continues after error |
-| Assert-style commands | `Write-Error` | Provides standard behavior; `-ErrorAction 'Stop'` alone works correctly for callers |
-| State-changing commands (catch blocks) | `$PSCmdlet.ThrowTerminatingError()` | Prevents partial state changes; caller must set `$ErrorActionPreference = 'Stop'` OR wrap in try-catch |
-| Private functions (internal use only) | `$PSCmdlet.ThrowTerminatingError()` or `Write-Error` | Behavior is understood by internal callers |
+| Scenario | Use | Notes |
+|----------|-----|-------|
+| Terminating errors in public commands | `Write-Error` with `-ErrorAction 'Stop'` | Simple and standard PowerShell behavior |
+| Non-terminating errors in public commands | `Write-Error` without `-ErrorAction` | Allows caller to control termination via `-ErrorAction` |
+| Pipeline processing with multiple items | `Write-Error` without `-ErrorAction` | Allows processing to continue for remaining items |
+| Catching .NET method exceptions | try-catch with `Write-Error` | .NET exceptions are always caught automatically |
 | Parameter validation in `[ValidateScript()]` | `throw` | Only valid option within validation attributes |
-| Any other scenario in commands | Never use `throw` | Poor error messages; unpredictable behavior |
+| Private functions (internal use only) | `Write-Error` or `$PSCmdlet.ThrowTerminatingError()` | Behavior is understood by internal callers |
+| Public commands | Never use `throw` or `$PSCmdlet.ThrowTerminatingError()` | Use `Write-Error` instead |
 <!-- markdownlint-enable MD013 - Line length -->
