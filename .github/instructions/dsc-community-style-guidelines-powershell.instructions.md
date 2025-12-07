@@ -96,7 +96,7 @@ applyTo: "{**/*.ps1,**/*.psm1,**/*.psd1}"
   - For non-terminating errors: Omit `-ErrorAction` parameter (caller controls via `-ErrorAction`)
   - Always include `-Message` (localized string), `-Category` (relevant error category), `-ErrorId` (unique ID matching localized string ID), `-TargetObject` (object causing error)
   - In catch blocks, pass original exception using `-Exception`
-  - Always use `return` after `Write-Error` to avoid further processing
+  - Use `return` only after non-terminating `Write-Error` to stop further processing. Omit `return` when using `-ErrorAction 'Stop'`.
 - **Never use `$PSCmdlet.ThrowTerminatingError()` in public commands** - it creates command-terminating (not script-terminating) errors; use `Write-Error` with `-ErrorAction 'Stop'` instead
   - May be used in private functions where behavior is understood by internal callers
 - **Never use `throw` in public commands** except in `[ValidateScript()]` parameter validation attributes (it's the only valid mechanism there)

@@ -353,9 +353,9 @@ $db = Get-Database -Name 'NonExistent' -ErrorAction 'Stop'
 ```
 
 > [!IMPORTANT]
-> Always use `return` after `Write-Error` to prevent further processing in the
-> command. Without `return`, the command continues executing, which may cause
-> unexpected behavior or additional errors.
+> Use `return` after `Write-Error` only for non-terminating errors (no `-ErrorAction 'Stop'`)
+> to stop further processing in the current function. Omit `return` when using
+> `-ErrorAction 'Stop'`, as execution stops automatically.
 
 ##### Error Handling in Public Commands
 
@@ -374,8 +374,6 @@ function Get-Database
             -ErrorId 'GD0001' `
             -TargetObject $Name `
             -ErrorAction 'Stop'
-        
-        return
     }
 
     # Continue processing...
@@ -507,9 +505,8 @@ $results = $items | Process-Items -ErrorAction 'Stop'
 
 ##### Summary
 
-<!-- markdownlint-disable MD013 - Line length -->
 | Scenario | Use | Notes |
-|----------|-----|-------|
+| --- | --- | --- |
 | Terminating errors in public commands | `Write-Error` with `-ErrorAction 'Stop'` | Simple and standard PowerShell behavior |
 | Non-terminating errors in public commands | `Write-Error` without `-ErrorAction` | Allows caller to control termination via `-ErrorAction` |
 | Pipeline processing with multiple items | `Write-Error` without `-ErrorAction` | Allows processing to continue for remaining items |
@@ -517,4 +514,3 @@ $results = $items | Process-Items -ErrorAction 'Stop'
 | Parameter validation in `[ValidateScript()]` | `throw` | Only valid option within validation attributes |
 | Private functions (internal use only) | `Write-Error` or `$PSCmdlet.ThrowTerminatingError()` | Behavior is understood by internal callers |
 | Public commands | Never use `throw` or `$PSCmdlet.ThrowTerminatingError()` | Use `Write-Error` instead |
-<!-- markdownlint-enable MD013 - Line length -->
