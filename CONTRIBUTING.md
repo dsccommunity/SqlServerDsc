@@ -430,8 +430,6 @@ catch
         -TargetObject $DatabaseName `
         -Exception $_.Exception `
         -ErrorAction 'Stop'
-    
-    return
 }
 ```
 
@@ -456,32 +454,6 @@ catch
 }
 ```
 
-##### .NET Method Exceptions
-
-.NET methods (like SMO objects) throw exceptions automatically - no special error
-handling needed. Just use try-catch:
-
-```powershell
-try
-{
-    $alertObject.Drop()  # Throws exception on failure
-    Write-Verbose -Message ($script:localizedData.AlertRemoved -f $alertObject.Name)
-}
-catch
-{
-    $errorMessage = $script:localizedData.RemoveFailed -f $alertObject.Name
-    
-    Write-Error -Message $errorMessage `
-        -Category 'InvalidOperation' `
-        -ErrorId 'RMA0001' `
-        -TargetObject $alertObject `
-        -Exception $_.Exception `
-        -ErrorAction 'Stop'
-    
-    return
-}
-```
-
 ##### Parameter Validation with ValidateScript
 
 When using `[ValidateScript()]` attribute, use `throw` for validation failures
@@ -499,7 +471,6 @@ When using `[ValidateScript()]` attribute, use `throw` for validation failures
     })]
 [System.String]
 $Path
-```
 ```
 
 ##### Pipeline Processing Considerations
