@@ -1,35 +1,56 @@
 <#
     .SYNOPSIS
-        Set permission for a server principal.
+        Sets exact server permissions for a principal.
 
     .DESCRIPTION
-        This command sets the permissions for a existing principal on a SQL Server
-        Database Engine instance.
+        This command sets the exact server permissions for a principal on a SQL Server
+        Database Engine instance. The permissions passed in will be the only permissions
+        set for the principal - any existing permissions not specified will be revoked.
 
-    .PARAMETER ServerObject
-        Specifies current server connection object.
+        The principal can be specified as either a Login object (from Get-SqlDscLogin)
+        or a ServerRole object (from Get-SqlDscRole).
 
-    .PARAMETER Name
-        Specifies the name of the principal for which the permissions are set.
+        This command internally uses Get-SqlDscServerPermission, Grant-SqlDscServerPermission,
+        Deny-SqlDscServerPermission, and Revoke-SqlDscServerPermission to ensure the
+        principal has exactly the permissions specified.
 
-    .PARAMETER State
-        Specifies the state of the permission.
+    .PARAMETER Login
+        Specifies the Login object for which the permissions are set.
+        This parameter accepts pipeline input.
 
-    .PARAMETER Permission
-        Specifies the permissions.
+    .PARAMETER ServerRole
+        Specifies the ServerRole object for which the permissions are set.
+        This parameter accepts pipeline input.
 
-    .PARAMETER WithGrant
-        Specifies that the principal should also be granted the right to grant
-        other principals the same permission. This parameter is only valid when
-        parameter **State** is set to `Grant` or `Revoke`. When the parameter
-        **State** is set to `Revoke` the right to grant will also be revoked,
-        and the revocation will cascade.
+    .PARAMETER Grant
+        Specifies the permissions that should be granted. The permissions specified
+        will be the exact granted permissions - any existing granted permissions not
+        in this list will be revoked. If this parameter is omitted (not specified),
+        existing Grant permissions are left unchanged.
+
+    .PARAMETER GrantWithGrant
+        Specifies the permissions that should be granted with the grant option.
+        The permissions specified will be the exact grant-with-grant permissions -
+        any existing grant-with-grant permissions not in this list will be revoked.
+        If this parameter is omitted (not specified), existing GrantWithGrant
+        permissions are left unchanged.
+
+    .PARAMETER Deny
+        Specifies the permissions that should be denied. The permissions specified
+        will be the exact denied permissions - any existing denied permissions not
+        in this list will be revoked. If this parameter is omitted (not specified),
+        existing Deny permissions are left unchanged.
 
     .PARAMETER Force
         Specifies that the permissions should be set without any confirmation.
 
     .INPUTS
-        `Microsoft.SqlServer.Management.Smo.Server`
+        `Microsoft.SqlServer.Management.Smo.Login`
+
+        Accepts input via the pipeline.
+
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.ServerRole`
 
         Accepts input via the pipeline.
 
@@ -38,20 +59,46 @@
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
+        $login = $serverInstance | Get-SqlDscLogin -Name 'MyLogin'
 
-        $setPermission = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet] @{
-            Connect = $true
-            Update = $true
-        }
+        Set-SqlDscServerPermission -Login $login -Grant ConnectSql, ViewServerState
 
-        Set-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal' -State 'Grant' -Permission $setPermission
+        Sets the exact granted permissions for the login 'MyLogin'. Any other
+        granted permissions will be revoked.
 
-        Sets the permissions for the principal 'MyPrincipal'.
+    .EXAMPLE
+        $serverInstance = Connect-SqlDscDatabaseEngine
+        $login = $serverInstance | Get-SqlDscLogin -Name 'MyLogin'
+
+        Set-SqlDscServerPermission -Login $login -Grant ConnectSql -GrantWithGrant AlterAnyDatabase -Deny ViewAnyDatabase
+
+        Sets exact permissions for the login 'MyLogin': grants ConnectSql,
+        grants AlterAnyDatabase with grant option, and denies ViewAnyDatabase.
+        Any other permissions will be revoked.
+
+    .EXAMPLE
+        $serverInstance = Connect-SqlDscDatabaseEngine
+        $role = $serverInstance | Get-SqlDscRole -Name 'MyRole'
+
+        $role | Set-SqlDscServerPermission -Grant @() -Force
+
+        Revokes all granted permissions from the role 'MyRole' without prompting
+        for confirmation.
 
     .NOTES
-        If specifying `-ErrorAction 'SilentlyContinue'` then the command will silently
-        ignore if the principal is not present. If specifying `-ErrorAction 'Stop'` the
-        command will throw an error if the principal is missing.
+        The Login or ServerRole object must come from the same SQL Server instance
+        where the permissions will be set. If specifying `-ErrorAction 'SilentlyContinue'`
+        then the command will silently continue if any errors occur. If specifying
+        `-ErrorAction 'Stop'` the command will throw an error on any failure.
+
+        > [!IMPORTANT]
+        > This command only modifies permission categories that are explicitly specified.
+        > If you omit a parameter (e.g., don't specify `-Grant`), permissions in that
+        > category are left unchanged. However, if you specify a parameter (even as an
+        > empty array like `-Grant @()`), the command sets exact permissions for that
+        > category only - revoking any permissions not in the list. This allows you to
+        > independently manage Grant, GrantWithGrant, and Deny permissions without
+        > affecting the other categories.
 #>
 function Set-SqlDscServerPermission
 {
@@ -61,26 +108,28 @@ function Set-SqlDscServerPermission
     [OutputType()]
     param
     (
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
-        [Microsoft.SqlServer.Management.Smo.Server]
-        $ServerObject,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Login')]
+        [Microsoft.SqlServer.Management.Smo.Login]
+        $Login,
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('Grant', 'Deny', 'Revoke')]
-        [System.String]
-        $State,
-
-        [Parameter(Mandatory = $true)]
-        [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]
-        $Permission,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'ServerRole')]
+        [Microsoft.SqlServer.Management.Smo.ServerRole]
+        $ServerRole,
 
         [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $WithGrant,
+        [AllowEmptyCollection()]
+        [SqlServerPermission[]]
+        $Grant,
+
+        [Parameter()]
+        [AllowEmptyCollection()]
+        [SqlServerPermission[]]
+        $GrantWithGrant,
+
+        [Parameter()]
+        [AllowEmptyCollection()]
+        [SqlServerPermission[]]
+        $Deny,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -89,100 +138,154 @@ function Set-SqlDscServerPermission
 
     process
     {
-        if ($State -eq 'Deny' -and $WithGrant.IsPresent)
-        {
-            Write-Warning -Message $script:localizedData.ServerPermission_IgnoreWithGrantForStateDeny
-        }
-
         if ($Force.IsPresent -and -not $Confirm)
         {
             $ConfirmPreference = 'None'
         }
 
-        $testSqlDscIsPrincipalParameters = @{
-            ServerObject = $ServerObject
-            Name         = $Name
-        }
-
-        $isLogin = Test-SqlDscIsLogin @testSqlDscIsPrincipalParameters
-        $isRole = Test-SqlDscIsRole @testSqlDscIsPrincipalParameters
-
-        if ($isLogin -or $isRole)
+        # Determine which principal object we're working with
+        if ($PSCmdlet.ParameterSetName -eq 'Login')
         {
-            # Get the permissions names that are set to $true in the ServerPermissionSet.
-            $permissionName = $Permission |
-                Get-Member -MemberType 'Property' |
-                Select-Object -ExpandProperty 'Name' |
-                Where-Object -FilterScript {
-                    $Permission.$_
-                }
-
-            $verboseDescriptionMessage = $script:localizedData.ServerPermission_ChangePermissionShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
-            $verboseWarningMessage = $script:localizedData.ServerPermission_ChangePermissionShouldProcessVerboseWarning -f $Name
-            $captionMessage = $script:localizedData.ServerPermission_ChangePermissionShouldProcessCaption
-
-            if (-not $PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
-            {
-                # Return without doing anything if the user did not want to continue processing.
-                return
-            }
-
-            switch ($State)
-            {
-                'Grant'
-                {
-                    Write-Verbose -Message (
-                        $script:localizedData.ServerPermission_GrantPermission -f ($permissionName -join ','), $Name
-                    )
-
-                    if ($WithGrant.IsPresent)
-                    {
-                        $ServerObject.Grant($Permission, $Name, $true)
-                    }
-                    else
-                    {
-                        $ServerObject.Grant($Permission, $Name)
-                    }
-                }
-
-                'Deny'
-                {
-                    Write-Verbose -Message (
-                        $script:localizedData.ServerPermission_DenyPermission -f ($permissionName -join ','), $Name
-                    )
-
-                    $ServerObject.Deny($Permission, $Name)
-                }
-
-                'Revoke'
-                {
-                    Write-Verbose -Message (
-                        $script:localizedData.ServerPermission_RevokePermission -f ($permissionName -join ','), $Name
-                    )
-
-                    if ($WithGrant.IsPresent)
-                    {
-                        $ServerObject.Revoke($Permission, $Name, $false, $true)
-                    }
-                    else
-                    {
-                        $ServerObject.Revoke($Permission, $Name)
-                    }
-                }
-            }
+            $principalObject = $Login
+            $principalName = $Login.Name
+            $serverObject = $Login.Parent
         }
         else
         {
-            $missingPrincipalMessage = $script:localizedData.ServerPermission_MissingPrincipal -f $Name, $ServerObject.InstanceName
+            $principalObject = $ServerRole
+            $principalName = $ServerRole.Name
+            $serverObject = $ServerRole.Parent
+        }
 
-            $PSCmdlet.ThrowTerminatingError(
-                [System.Management.Automation.ErrorRecord]::new(
-                    $missingPrincipalMessage,
-                    'GSDDP0001', # cSpell: disable-line
-                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                    $Name
-                )
+        $verboseDescriptionMessage = $script:localizedData.ServerPermission_Set_ShouldProcessVerboseDescription -f $principalName, $serverObject.InstanceName
+        $verboseWarningMessage = $script:localizedData.ServerPermission_Set_ShouldProcessVerboseWarning -f $principalName
+        $captionMessage = $script:localizedData.ServerPermission_Set_ShouldProcessCaption
+
+        if (-not $PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        {
+            # Return without doing anything if the user did not want to continue processing.
+            return
+        }
+
+        # Get current permissions for the principal
+        $currentPermissionInfo = $principalObject | Get-SqlDscServerPermission -ErrorAction 'SilentlyContinue'
+
+        # Convert current permissions to categorized arrays
+        $currentGrant = @()
+        $currentGrantWithGrant = @()
+        $currentDeny = @()
+
+        if ($currentPermissionInfo)
+        {
+            $currentServerPermission = $currentPermissionInfo | ConvertTo-SqlDscServerPermission
+
+            foreach ($permissionState in $currentServerPermission)
+            {
+                switch ($permissionState.State)
+                {
+                    'Grant'
+                    {
+                        $currentGrant = $permissionState.Permission
+                    }
+
+                    'GrantWithGrant'
+                    {
+                        $currentGrantWithGrant = $permissionState.Permission
+                    }
+
+                    'Deny'
+                    {
+                        $currentDeny = $permissionState.Permission
+                    }
+                }
+            }
+        }
+
+        # Calculate what needs to be revoked and added
+        # Only process permission categories that were explicitly specified via parameters
+        $grantToRevoke = @()
+        $grantToAdd = @()
+        $grantWithGrantToRevoke = @()
+        $grantWithGrantToAdd = @()
+        $denyToRevoke = @()
+        $denyToAdd = @()
+
+        # Only process Grant permissions if the parameter was explicitly specified
+        if ($PSBoundParameters.ContainsKey('Grant'))
+        {
+            $grantToRevoke = $currentGrant | Where-Object -FilterScript { $_ -notin $Grant }
+            $grantToAdd = $Grant | Where-Object -FilterScript { $_ -notin $currentGrant }
+        }
+
+        # Only process GrantWithGrant permissions if the parameter was explicitly specified
+        if ($PSBoundParameters.ContainsKey('GrantWithGrant'))
+        {
+            $grantWithGrantToRevoke = $currentGrantWithGrant | Where-Object -FilterScript { $_ -notin $GrantWithGrant }
+            $grantWithGrantToAdd = $GrantWithGrant | Where-Object -FilterScript { $_ -notin $currentGrantWithGrant }
+        }
+
+        # Only process Deny permissions if the parameter was explicitly specified
+        if ($PSBoundParameters.ContainsKey('Deny'))
+        {
+            $denyToRevoke = $currentDeny | Where-Object -FilterScript { $_ -notin $Deny }
+            $denyToAdd = $Deny | Where-Object -FilterScript { $_ -notin $currentDeny }
+        }
+
+        # Revoke permissions that should no longer exist
+        if ($grantToRevoke -and $grantToRevoke.Count -gt 0)
+        {
+            Write-Verbose -Message (
+                $script:localizedData.ServerPermission_RevokePermission -f ($grantToRevoke -join ', '), $principalName
             )
+
+            $principalObject | Revoke-SqlDscServerPermission -Permission $grantToRevoke -Force
+        }
+
+        if ($grantWithGrantToRevoke -and $grantWithGrantToRevoke.Count -gt 0)
+        {
+            Write-Verbose -Message (
+                $script:localizedData.ServerPermission_RevokePermission -f ($grantWithGrantToRevoke -join ', '), $principalName
+            )
+
+            $principalObject | Revoke-SqlDscServerPermission -Permission $grantWithGrantToRevoke -WithGrant -Force
+        }
+
+        if ($denyToRevoke -and $denyToRevoke.Count -gt 0)
+        {
+            Write-Verbose -Message (
+                $script:localizedData.ServerPermission_RevokePermission -f ($denyToRevoke -join ', '), $principalName
+            )
+
+            $principalObject | Revoke-SqlDscServerPermission -Permission $denyToRevoke -Force
+        }
+
+        # Grant permissions that should be added
+        if ($grantToAdd -and $grantToAdd.Count -gt 0)
+        {
+            Write-Verbose -Message (
+                $script:localizedData.ServerPermission_GrantPermission -f ($grantToAdd -join ', '), $principalName
+            )
+
+            $principalObject | Grant-SqlDscServerPermission -Permission $grantToAdd -Force
+        }
+
+        if ($grantWithGrantToAdd -and $grantWithGrantToAdd.Count -gt 0)
+        {
+            Write-Verbose -Message (
+                $script:localizedData.ServerPermission_GrantPermission -f ($grantWithGrantToAdd -join ', '), $principalName
+            )
+
+            $principalObject | Grant-SqlDscServerPermission -Permission $grantWithGrantToAdd -WithGrant -Force
+        }
+
+        # Deny permissions that should be added
+        if ($denyToAdd -and $denyToAdd.Count -gt 0)
+        {
+            Write-Verbose -Message (
+                $script:localizedData.ServerPermission_DenyPermission -f ($denyToAdd -join ', '), $principalName
+            )
+
+            $principalObject | Deny-SqlDscServerPermission -Permission $denyToAdd -Force
         }
     }
 }

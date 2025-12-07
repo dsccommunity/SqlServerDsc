@@ -7,12 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+
 - Added public command `Backup-SqlDscDatabase` to perform database backups using
   SMO's `Microsoft.SqlServer.Management.Smo.Backup` class. Supports full,
   differential, and transaction log backups with options for compression,
   copy-only, checksum, and retention. Accepts both Server and Database objects
   via pipeline
   ([issue #2365](https://github.com/dsccommunity/SqlServerDsc/issues/2365)).
+- `Set-SqlDscServerPermission`
+  - Added integration tests for negative test scenarios including invalid
+    permission names and non-existent principals.
 - `SqlPermission`
   - Added integration tests for server role permissions to complement the
     existing login permission tests.
@@ -44,6 +48,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     and server roles as principals.
   - Added a note in documentation clarifying that if a name exists as both
     a login and a server role, the login will take precedence.
+- BREAKING CHANGE: `Set-SqlDscServerPermission`
+  - Completely refactored to set exact server permissions for a principal. The
+    command now accepts Login or ServerRole objects (same as `Grant-SqlDscServerPermission`,
+    `Deny-SqlDscServerPermission`, and `Revoke-SqlDscServerPermission`) and uses
+    `-Grant`, `-GrantWithGrant`, and `-Deny` parameters to specify the exact
+    permissions that should exist within each specified category. Within a
+    specified category, any existing permissions not listed are revoked;
+    categories not specified are left unchanged. The command internally uses
+    `Get-SqlDscServerPermission`, `Grant-SqlDscServerPermission`,
+    `Deny-SqlDscServerPermission`, and `Revoke-SqlDscServerPermission` to
+    achieve this
+    ([issue #2159](https://github.com/dsccommunity/SqlServerDsc/issues/2159)).
 - Updated comment-based help `.INPUTS` and `.OUTPUTS` sections across all public
   commands and private functions to comply with DSC community style guidelines
   ([issue #2103](https://github.com/dsccommunity/SqlServerDsc/issues/2103)).
@@ -53,6 +69,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `Set-SqlDscServerPermission`
+  - Fixed an issue where unspecified permission parameters would incorrectly
+    revoke existing permissions. The command now only processes permission
+    categories that are explicitly specified via parameters. For example,
+    specifying only `-Grant @()` will now correctly revoke only Grant permissions
+    while leaving GrantWithGrant and Deny permissions unchanged
+    ([issue #2159](https://github.com/dsccommunity/SqlServerDsc/issues/2159)).
 - `New-SqlDscDatabase`
   - Fixed parameter types for database-scoped configuration properties from
     `System.Boolean` to `Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff`

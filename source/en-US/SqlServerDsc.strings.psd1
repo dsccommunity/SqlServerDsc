@@ -28,11 +28,10 @@ ConvertFrom-StringData @'
     ServerPermission_MissingPrincipal = The principal '{0}' is not a login nor role on the instance '{1}'.
 
     ## Set-SqlDscServerPermission
-    ServerPermission_IgnoreWithGrantForStateDeny = The parameter WithGrant cannot be used together with the state Deny, the parameter WithGrant is ignored.
-    ServerPermission_ChangePermissionShouldProcessVerboseDescription = Changing the permission for the principal '{0}' on the instance '{1}'.
-    ServerPermission_ChangePermissionShouldProcessVerboseWarning = Are you sure you want to change the permission for the principal '{0}'?
+    ServerPermission_Set_ShouldProcessVerboseDescription = Setting exact server permissions for the principal '{0}' on the instance '{1}'.
+    ServerPermission_Set_ShouldProcessVerboseWarning = Are you sure you want to set exact server permissions for the principal '{0}'? This will revoke any permissions not specified.
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
-    ServerPermission_ChangePermissionShouldProcessCaption = Change permission on principal
+    ServerPermission_Set_ShouldProcessCaption = Set exact server permissions
     ServerPermission_GrantPermission = Grant the permissions '{0}' for the principal '{1}'.
     ServerPermission_DenyPermission = Deny the permissions '{0}' for the principal '{1}'.
     ServerPermission_RevokePermission = Revoke the permissions '{0}' for the principal '{1}'.
