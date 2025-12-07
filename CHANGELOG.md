@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `SqlPermission`
+  - Added integration tests for server role permissions to complement the
+    existing login permission tests.
 - `New-SqlDscDatabase`
   - Added comprehensive set of settable database properties that were previously
     only available in `Set-SqlDscDatabaseProperty`
@@ -31,6 +34,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `Revoke-SqlDscServerPermission`, and `Get-SqlDscServerPermission`)
     instead of the deprecated `Set-SqlDscServerPermission` command
     ([issue #2159](https://github.com/dsccommunity/SqlServerDsc/issues/2159)).
+  - Updated documentation to clarify that the resource supports both logins
+    and server roles as principals.
+  - Added a note in documentation clarifying that if a name exists as both
+    a login and a server role, the login will take precedence.
 - Updated comment-based help `.INPUTS` and `.OUTPUTS` sections across all public
   commands and private functions to comply with DSC community style guidelines
   ([issue #2103](https://github.com/dsccommunity/SqlServerDsc/issues/2103)).
