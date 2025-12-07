@@ -46,14 +46,14 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'Install-SqlDscBIReportServer' -Tag 'Public' {
+Describe 'Repair-SqlDscPowerBIReportServer' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
             MockParameterSetName   = '__AllParameterSets'
             MockExpectedParameters = '[-MediaPath] <string> [[-ProductKey] <string>] [[-Edition] <string>] [[-LogPath] <string>] [[-InstallFolder] <string>] [[-Timeout] <uint>] -AcceptLicensingTerms [-EditionUpgrade] [-SuppressRestart] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
-        $result = (Get-Command -Name 'Install-SqlDscBIReportServer').ParameterSets |
+        $result = (Get-Command -Name 'Repair-SqlDscPowerBIReportServer').ParameterSets |
             Where-Object -FilterScript {
                 $_.Name -eq $mockParameterSetName
             } |
@@ -72,10 +72,10 @@ Describe 'Install-SqlDscBIReportServer' -Tag 'Public' {
         $result.ParameterListAsString | Should -Be $MockExpectedParameters
     }
 
-    Context 'When installing SQL Server Power BI Report Server' {
+    Context 'When repairing SQL Server Power BI Report Server' {
         BeforeAll {
             Mock -CommandName Invoke-ReportServerSetupAction -RemoveParameterValidation @(
-                'MediaPath'
+                'MediaPath',
                 'InstallFolder'
             )
         }
@@ -90,11 +90,11 @@ Describe 'Install-SqlDscBIReportServer' -Tag 'Public' {
             }
 
             Context 'When using parameter Confirm with value $false' {
-                It 'Should call the Invoke-ReportServerSetupAction with Install action' {
-                    Install-SqlDscBIReportServer -Confirm:$false @mockDefaultParameters
+                It 'Should call the Invoke-ReportServerSetupAction with Repair action' {
+                    Repair-SqlDscPowerBIReportServer -Confirm:$false @mockDefaultParameters
 
                     Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
-                        $Install -eq $true -and
+                        $Repair -eq $true -and
                         $AcceptLicensingTerms -eq $true -and
                         $MediaPath -eq '\PowerBIReportServer.exe'
                     } -Exactly -Times 1 -Scope It
@@ -102,11 +102,11 @@ Describe 'Install-SqlDscBIReportServer' -Tag 'Public' {
             }
 
             Context 'When using parameter Force' {
-                It 'Should call the Invoke-ReportServerSetupAction with Install action' {
-                    Install-SqlDscBIReportServer -Force @mockDefaultParameters
+                It 'Should call the Invoke-ReportServerSetupAction with Repair action' {
+                    Repair-SqlDscPowerBIReportServer -Force @mockDefaultParameters
 
                     Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
-                        $Install -eq $true -and
+                        $Repair -eq $true -and
                         $Force -eq $true
                     } -Exactly -Times 1 -Scope It
                 }
@@ -114,21 +114,21 @@ Describe 'Install-SqlDscBIReportServer' -Tag 'Public' {
 
             Context 'When using parameter WhatIf' {
                 It 'Should call Invoke-ReportServerSetupAction' {
-                    Install-SqlDscBIReportServer -WhatIf @mockDefaultParameters
+                    Repair-SqlDscPowerBIReportServer -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Invoke-ReportServerSetupAction -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Invoke-ReportServerSetupAction -Exactly -Times 1     -Scope It
                 }
             }
         }
 
         Context 'When using optional parameters' {
             BeforeAll {
-                $installParameters = @{
+                $repairParameters = @{
                     AcceptLicensingTerms = $true
                     MediaPath           = '\PowerBIReportServer.exe'
                     ProductKey          = '12345-12345-12345-12345-12345'
                     EditionUpgrade      = $true
-                    LogPath             = 'C:\Logs\Install.log'
+                    LogPath             = 'C:\Logs\Repair.log'
                     InstallFolder       = 'C:\Program Files\Power BI Report Server'
                     SuppressRestart     = $true
                     Timeout             = 3600
@@ -138,15 +138,15 @@ Describe 'Install-SqlDscBIReportServer' -Tag 'Public' {
             }
 
             It 'Should pass all parameters to Invoke-ReportServerSetupAction' {
-                Install-SqlDscBIReportServer @installParameters
+                Repair-SqlDscPowerBIReportServer @repairParameters
 
                 Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
-                    $Install -eq $true -and
+                    $Repair -eq $true -and
                     $AcceptLicensingTerms -eq $true -and
                     $MediaPath -eq '\PowerBIReportServer.exe' -and
                     $ProductKey -eq '12345-12345-12345-12345-12345' -and
                     $EditionUpgrade -eq $true -and
-                    $LogPath -eq 'C:\Logs\Install.log' -and
+                    $LogPath -eq 'C:\Logs\Repair.log' -and
                     $InstallFolder -eq 'C:\Program Files\Power BI Report Server' -and
                     $SuppressRestart -eq $true -and
                     $Timeout -eq 3600 -and
@@ -157,21 +157,21 @@ Describe 'Install-SqlDscBIReportServer' -Tag 'Public' {
 
         Context 'When using Edition instead of ProductKey' {
             BeforeAll {
-                $installParameters = @{
+                $repairParameters = @{
                     AcceptLicensingTerms = $true
                     MediaPath           = '\PowerBIReportServer.exe'
-                    Edition             = 'Evaluation'
+                    Edition             = 'Developer'
                     Force               = $true
                     ErrorAction         = 'Stop'
                 }
             }
 
             It 'Should pass the Edition parameter to Invoke-ReportServerSetupAction' {
-                Install-SqlDscBIReportServer @installParameters
+                Repair-SqlDscPowerBIReportServer @repairParameters
 
                 Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
-                    $Install -eq $true -and
-                    $Edition -eq 'Evaluation'
+                    $Repair -eq $true -and
+                    $Edition -eq 'Developer'
                 } -Exactly -Times 1 -Scope It
             }
         }
@@ -192,7 +192,7 @@ Describe 'Install-SqlDscBIReportServer' -Tag 'Public' {
             }
 
             It 'Should return the exit code when PassThru is specified' {
-                $result = Install-SqlDscBIReportServer -PassThru @mockDefaultParameters
+                $result = Repair-SqlDscPowerBIReportServer -PassThru @mockDefaultParameters
 
                 $result | Should -Be 3010
                 $result | Should -BeOfType [System.Int32]
@@ -201,7 +201,7 @@ Describe 'Install-SqlDscBIReportServer' -Tag 'Public' {
             }
 
             It 'Should not return an exit code when PassThru is not specified' {
-                $result = Install-SqlDscBIReportServer @mockDefaultParameters
+                $result = Repair-SqlDscPowerBIReportServer @mockDefaultParameters
 
                 $result | Should -BeNullOrEmpty
 

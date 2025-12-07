@@ -43,28 +43,29 @@
         No output when PassThru is not specified.
 
     .EXAMPLE
-        Uninstall-SqlDscBIReportServer -MediaPath 'E:\PowerBIReportServer.exe'
+        Uninstall-SqlDscPowerBIReportServer -MediaPath 'E:\PowerBIReportServer.exe'
 
         Uninstalls Power BI Report Server.
 
     .EXAMPLE
-        Uninstall-SqlDscBIReportServer -MediaPath 'E:\PowerBIReportServer.exe' -LogPath 'C:\Logs\PowerBIReportServer_Uninstall.log'
+        Uninstall-SqlDscPowerBIReportServer -MediaPath 'E:\PowerBIReportServer.exe' -LogPath 'C:\Logs\PowerBIReportServer_Uninstall.log'
 
         Uninstalls Power BI Report Server and specifies a custom log path.
 
     .EXAMPLE
-        Uninstall-SqlDscBIReportServer -MediaPath 'E:\PowerBIReportServer.exe' -Force
+        Uninstall-SqlDscPowerBIReportServer -MediaPath 'E:\PowerBIReportServer.exe' -Force
 
         Uninstalls Power BI Report Server without prompting for confirmation.
 
     .EXAMPLE
-        $exitCode = Uninstall-SqlDscBIReportServer -MediaPath 'E:\PowerBIReportServer.exe' -PassThru
+        $exitCode = Uninstall-SqlDscPowerBIReportServer -MediaPath 'E:\PowerBIReportServer.exe' -PassThru
 
         Uninstalls Power BI Report Server and returns the setup exit code.
 #>
-function Uninstall-SqlDscBIReportServer
+function Uninstall-SqlDscPowerBIReportServer
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '', Justification = 'Because ShouldProcess is used in Invoke-SetupAction')]
+    [Alias('Uninstall-SqlDscBIReportServer', 'Uninstall-SqlDscPBIReportServer')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType([System.Int32])]
     param

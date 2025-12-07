@@ -29,7 +29,7 @@ BeforeAll {
     Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
 }
 
-Describe 'Uninstall-SqlDscBIReportServer' -Tag @('Integration_PowerBI') {
+Describe 'Repair-SqlDscPowerBIReportServer' -Tag @('Integration_PowerBI') {
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
 
@@ -48,23 +48,27 @@ Describe 'Uninstall-SqlDscBIReportServer' -Tag @('Integration_PowerBI') {
         $getServiceResult.Status | Should -Be 'Running'
     }
 
-    Context 'When uninstalling BI Report Server' {
+    Context 'When repairing BI Report Server' {
         It 'Should run the command without throwing' {
-            # Set splatting parameters for Uninstall-SqlDscBIReportServer
-            $uninstallSqlDscBIReportServerParameters = @{
-                MediaPath       = $powerBIReportServerExecutable
-                LogPath         = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Uninstall.log'
-                SuppressRestart = $true
-                Verbose         = $true
-                ErrorAction     = 'Stop'
-                Force           = $true
+            # Set splatting parameters for Repair-SqlDscPowerBIReportServer
+            $repairSqlDscBIReportServerParameters = @{
+                AcceptLicensingTerms = $true
+                MediaPath            = $powerBIReportServerExecutable
+                LogPath              = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Repair.log'
+                SuppressRestart      = $true
+                Verbose              = $true
+                ErrorAction          = 'Stop'
+                Force                = $true
             }
 
-            $null = Uninstall-SqlDscBIReportServer @uninstallSqlDscBIReportServerParameters
+            $null = Repair-SqlDscPowerBIReportServer @repairSqlDscBIReportServerParameters
         }
 
-        It 'Should not have a Power BI Report Server service' {
-            Get-Service -Name 'PowerBIReportServer' -ErrorAction 'Ignore' | Should -BeNullOrEmpty
+        It 'Should still have a Power BI Report Server service running after repair' {
+            $getServiceResult = Get-Service -Name 'PowerBIReportServer' -ErrorAction 'Stop'
+
+            $getServiceResult | Should -Not -BeNullOrEmpty
+            $getServiceResult.Status | Should -Be 'Running'
         }
     }
 }

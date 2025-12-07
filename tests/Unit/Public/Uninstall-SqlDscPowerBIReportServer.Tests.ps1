@@ -46,14 +46,14 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'Repair-SqlDscBIReportServer' -Tag 'Public' {
+Describe 'Uninstall-SqlDscPowerBIReportServer' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
             MockParameterSetName   = '__AllParameterSets'
-            MockExpectedParameters = '[-MediaPath] <string> [[-ProductKey] <string>] [[-Edition] <string>] [[-LogPath] <string>] [[-InstallFolder] <string>] [[-Timeout] <uint>] -AcceptLicensingTerms [-EditionUpgrade] [-SuppressRestart] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '[-MediaPath] <string> [[-LogPath] <string>] [[-Timeout] <uint>] [-SuppressRestart] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
-        $result = (Get-Command -Name 'Repair-SqlDscBIReportServer').ParameterSets |
+        $result = (Get-Command -Name 'Uninstall-SqlDscPowerBIReportServer').ParameterSets |
             Where-Object -FilterScript {
                 $_.Name -eq $mockParameterSetName
             } |
@@ -72,41 +72,38 @@ Describe 'Repair-SqlDscBIReportServer' -Tag 'Public' {
         $result.ParameterListAsString | Should -Be $MockExpectedParameters
     }
 
-    Context 'When repairing SQL Server Power BI Report Server' {
+    Context 'When uninstalling SQL Server BI Report Server' {
         BeforeAll {
             Mock -CommandName Invoke-ReportServerSetupAction -RemoveParameterValidation @(
-                'MediaPath',
-                'InstallFolder'
+                'MediaPath'
             )
         }
 
         Context 'When using mandatory parameters only' {
             BeforeAll {
                 $mockDefaultParameters = @{
-                    AcceptLicensingTerms = $true
-                    MediaPath           = '\PowerBIReportServer.exe'
-                    ErrorAction         = 'Stop'
+                    MediaPath   = '\PowerBIReportServer.exe'
+                    ErrorAction = 'Stop'
                 }
             }
 
             Context 'When using parameter Confirm with value $false' {
-                It 'Should call the Invoke-ReportServerSetupAction with Repair action' {
-                    Repair-SqlDscBIReportServer -Confirm:$false @mockDefaultParameters
+                It 'Should call the Invoke-ReportServerSetupAction with Uninstall action' {
+                    Uninstall-SqlDscPowerBIReportServer -Confirm:$false @mockDefaultParameters
 
                     Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
-                        $Repair -eq $true -and
-                        $AcceptLicensingTerms -eq $true -and
+                        $Uninstall -eq $true -and
                         $MediaPath -eq '\PowerBIReportServer.exe'
                     } -Exactly -Times 1 -Scope It
                 }
             }
 
             Context 'When using parameter Force' {
-                It 'Should call the Invoke-ReportServerSetupAction with Repair action' {
-                    Repair-SqlDscBIReportServer -Force @mockDefaultParameters
+                It 'Should call the Invoke-ReportServerSetupAction with Uninstall action' {
+                    Uninstall-SqlDscPowerBIReportServer -Force @mockDefaultParameters
 
                     Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
-                        $Repair -eq $true -and
+                        $Uninstall -eq $true -and
                         $Force -eq $true
                     } -Exactly -Times 1 -Scope It
                 }
@@ -114,7 +111,7 @@ Describe 'Repair-SqlDscBIReportServer' -Tag 'Public' {
 
             Context 'When using parameter WhatIf' {
                 It 'Should call Invoke-ReportServerSetupAction' {
-                    Repair-SqlDscBIReportServer -WhatIf @mockDefaultParameters
+                    Uninstall-SqlDscPowerBIReportServer -WhatIf @mockDefaultParameters
 
                     Should -Invoke -CommandName Invoke-ReportServerSetupAction -Exactly -Times 1     -Scope It
                 }
@@ -123,31 +120,23 @@ Describe 'Repair-SqlDscBIReportServer' -Tag 'Public' {
 
         Context 'When using optional parameters' {
             BeforeAll {
-                $repairParameters = @{
-                    AcceptLicensingTerms = $true
-                    MediaPath           = '\PowerBIReportServer.exe'
-                    ProductKey          = '12345-12345-12345-12345-12345'
-                    EditionUpgrade      = $true
-                    LogPath             = 'C:\Logs\Repair.log'
-                    InstallFolder       = 'C:\Program Files\Power BI Report Server'
-                    SuppressRestart     = $true
-                    Timeout             = 3600
-                    Force               = $true
-                    ErrorAction         = 'Stop'
+                $uninstallParameters = @{
+                    MediaPath       = '\PowerBIReportServer.exe'
+                    LogPath         = 'C:\Logs\Uninstall.log'
+                    SuppressRestart = $true
+                    Timeout         = 3600
+                    Force           = $true
+                    ErrorAction     = 'Stop'
                 }
             }
 
             It 'Should pass all parameters to Invoke-ReportServerSetupAction' {
-                Repair-SqlDscBIReportServer @repairParameters
+                Uninstall-SqlDscPowerBIReportServer @uninstallParameters
 
                 Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
-                    $Repair -eq $true -and
-                    $AcceptLicensingTerms -eq $true -and
+                    $Uninstall -eq $true -and
                     $MediaPath -eq '\PowerBIReportServer.exe' -and
-                    $ProductKey -eq '12345-12345-12345-12345-12345' -and
-                    $EditionUpgrade -eq $true -and
-                    $LogPath -eq 'C:\Logs\Repair.log' -and
-                    $InstallFolder -eq 'C:\Program Files\Power BI Report Server' -and
+                    $LogPath -eq 'C:\Logs\Uninstall.log' -and
                     $SuppressRestart -eq $true -and
                     $Timeout -eq 3600 -and
                     $Force -eq $true
@@ -155,31 +144,9 @@ Describe 'Repair-SqlDscBIReportServer' -Tag 'Public' {
             }
         }
 
-        Context 'When using Edition instead of ProductKey' {
-            BeforeAll {
-                $repairParameters = @{
-                    AcceptLicensingTerms = $true
-                    MediaPath           = '\PowerBIReportServer.exe'
-                    Edition             = 'Developer'
-                    Force               = $true
-                    ErrorAction         = 'Stop'
-                }
-            }
-
-            It 'Should pass the Edition parameter to Invoke-ReportServerSetupAction' {
-                Repair-SqlDscBIReportServer @repairParameters
-
-                Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
-                    $Repair -eq $true -and
-                    $Edition -eq 'Developer'
-                } -Exactly -Times 1 -Scope It
-            }
-        }
-
         Context 'When using PassThru parameter' {
             BeforeAll {
                 $mockDefaultParameters = @{
-                    AcceptLicensingTerms = $true
                     MediaPath           = '\PowerBIReportServer.exe'
                     Force               = $true
                     ErrorAction         = 'Stop'
@@ -192,7 +159,7 @@ Describe 'Repair-SqlDscBIReportServer' -Tag 'Public' {
             }
 
             It 'Should return the exit code when PassThru is specified' {
-                $result = Repair-SqlDscBIReportServer -PassThru @mockDefaultParameters
+                $result = Uninstall-SqlDscPowerBIReportServer -PassThru @mockDefaultParameters
 
                 $result | Should -Be 3010
                 $result | Should -BeOfType [System.Int32]
@@ -201,7 +168,7 @@ Describe 'Repair-SqlDscBIReportServer' -Tag 'Public' {
             }
 
             It 'Should not return an exit code when PassThru is not specified' {
-                $result = Repair-SqlDscBIReportServer @mockDefaultParameters
+                $result = Uninstall-SqlDscPowerBIReportServer @mockDefaultParameters
 
                 $result | Should -BeNullOrEmpty
 

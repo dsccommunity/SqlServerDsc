@@ -587,15 +587,15 @@ stages:
                   'tests/Integration/Commands/Save-SqlDscSqlServerMediaFile.Integration.Tests.ps1'
                   'tests/Integration/Commands/Import-SqlDscPreferredModule.Integration.Tests.ps1'
                   # Group 1
-                  'tests/Integration/Commands/Install-SqlDscBIReportServer.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Install-SqlDscPowerBIReportServer.Integration.Tests.ps1'
                   # Group 2
                   'tests/Integration/Commands/Get-SqlDscInstalledInstance.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSSetupConfiguration.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscRSInstalled.Integration.Tests.ps1'
                   # Group 8
-                  'tests/Integration/Commands/Repair-SqlDscBIReportServer.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Repair-SqlDscPowerBIReportServer.Integration.Tests.ps1'
                   # Group 9
-                  'tests/Integration/Commands/Uninstall-SqlDscBIReportServer.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Uninstall-SqlDscPowerBIReportServer.Integration.Tests.ps1'
               )
             name: test
             displayName: 'Run Integration Test'

@@ -1,13 +1,13 @@
 <#
     .SYNOPSIS
-        Repairs an existing SQL Server Power BI Report Server installation.
+        Installs SQL Server Power BI Report Server.
 
     .DESCRIPTION
-        Repairs an existing SQL Server Power BI Report Server installation using
-        the provided setup executable.
+        Installs SQL Server Power BI Report Server using the provided setup executable.
 
     .PARAMETER AcceptLicensingTerms
-        Required parameter to be able to run unattended repair. By specifying this
+        Specifies that the acceptance of all license terms and notices for the
+        specified features is required to be able to run unattended install. By specifying this
         parameter you acknowledge the acceptance of all license terms and notices for
         the specified features, the terms and notices that the setup executable
         normally asks for.
@@ -17,31 +17,32 @@
         path the SQL Server setup executable must be found.
 
     .PARAMETER ProductKey
-        Specifies the product key to use for the repair, e.g. '12345-12345-12345-12345-12345'.
+        Specifies the product key to use for the installation, e.g. '12345-12345-12345-12345-12345'.
         This parameter is mutually exclusive with the parameter Edition.
 
     .PARAMETER EditionUpgrade
-        Upgrades the edition of the installed product. Requires that either the
+        Specifies whether to upgrade the edition of the installed product. Requires that either the
         ProductKey or the Edition parameter is also assigned. By default no edition
         upgrade is performed.
 
     .PARAMETER Edition
-        Specifies a free custom edition to use for the repair. This parameter
+        Specifies a free custom edition to use for the installation. This parameter
         is mutually exclusive with the parameter ProductKey.
 
     .PARAMETER LogPath
-        Specifies the file path where to write the log files, e.g. 'C:\Logs\Repair.log'.
+        Specifies the file path where to write the log files, e.g. 'C:\Logs\Install.log'.
         By default log files are created under %TEMP%.
 
     .PARAMETER InstallFolder
         Specifies the folder where to install the product, e.g. 'C:\Program Files\Power BI Report Server'.
         By default the product is installed under the default installation folder.
 
+        Reporting Services: %ProgramFiles%\Microsoft SQL Server Reporting Services
         PI Report Server: %ProgramFiles%\Microsoft Power BI Report Server
 
     .PARAMETER SuppressRestart
-        Suppresses the restart of the computer after the repair is finished.
-        By default the computer is restarted after the repair is finished.
+        Specifies whether to suppress the restart of the computer after the installation is finished.
+        By default the computer is restarted after the installation is finished.
 
     .PARAMETER Timeout
         Specifies how long to wait for the setup process to finish. Default value
@@ -49,11 +50,11 @@
         this time, an exception will be thrown.
 
     .PARAMETER Force
-        If specified the command will not ask for confirmation. Same as if Confirm:$false
+        Specifies whether the command will not ask for confirmation. Same as if Confirm:$false
         is used.
 
     .PARAMETER PassThru
-        If specified the command will return the setup process exit code.
+        Specifies whether the command will return the setup process exit code.
 
 
     .INPUTS
@@ -62,33 +63,42 @@
     .OUTPUTS
         `System.Int32`
 
-        When PassThru is specified the function will return the setup process exit
-        code as System.Int32.
+        The exit code from the setup process when PassThru is specified.
+
+    .OUTPUTS
+        None.
+
+        No output is generated when PassThru is not specified.
 
     .EXAMPLE
-        Repair-SqlDscBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe'
+        Install-SqlDscPowerBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe'
 
-        Repairs Power BI Report Server with default settings.
-
-    .EXAMPLE
-        Repair-SqlDscBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -ProductKey '12345-12345-12345-12345-12345' -EditionUpgrade
-
-        Repairs Power BI Report Server and upgrades the edition using a
-        product key.
+        Installs Power BI Report Server with default settings.
 
     .EXAMPLE
-        Repair-SqlDscBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -LogPath 'C:\Logs\PowerBIReportServer_Repair.log'
+        Install-SqlDscPowerBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -ProductKey '12345-12345-12345-12345-12345'
 
-        Repairs Power BI Report Server and specifies a custom log path.
+        Installs Power BI Report Server using a product key.
 
     .EXAMPLE
-        $exitCode = Repair-SqlDscBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -PassThru
+        Install-SqlDscPowerBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -Edition 'Evaluation' -InstallFolder 'C:\Program Files\Power BI Report Server'
 
-        Repairs Power BI Report Server with default settings and returns the setup exit code.
+        Installs Power BI Report Server in evaluation edition to a custom folder.
+
+    .EXAMPLE
+        Install-SqlDscPowerBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -ProductKey '12345-12345-12345-12345-12345' -EditionUpgrade -LogPath 'C:\Logs\PowerBIReportServer_Install.log'
+
+        Installs Power BI Report Server and upgrades the edition using a product key. Also specifies a custom log path.
+
+    .EXAMPLE
+        $exitCode = Install-SqlDscPowerBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -PassThru
+
+        Installs Power BI Report Server with default settings and returns the setup exit code.
 #>
-function Repair-SqlDscBIReportServer
+function Install-SqlDscPowerBIReportServer
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '', Justification = 'Because ShouldProcess is used in Invoke-SetupAction')]
+    [Alias('Install-SqlDscBIReportServer', 'Install-SqlDscPBIReportServer')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType([System.Int32])]
     param
@@ -139,7 +149,7 @@ function Repair-SqlDscBIReportServer
         $PassThru
     )
 
-    $exitCode = Invoke-ReportServerSetupAction -Repair @PSBoundParameters
+    $exitCode = Invoke-ReportServerSetupAction -Install @PSBoundParameters
 
     if ($PassThru.IsPresent)
     {
