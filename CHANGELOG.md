@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added public command `Backup-SqlDscDatabase` to perform database backups using
+  SMO's `Microsoft.SqlServer.Management.Smo.Backup` class. Supports full,
+  differential, and transaction log backups with options for compression,
+  copy-only, checksum, and retention. Accepts both Server and Database objects
+  via pipeline
+  ([issue #2365](https://github.com/dsccommunity/SqlServerDsc/issues/2365)).
 - `SqlPermission`
   - Added integration tests for server role permissions to complement the
     existing login permission tests.

@@ -331,6 +331,39 @@ namespace Microsoft.SqlServer.Management.Smo
         AutoClosed = 512
     }
 
+    // TypeName: Microsoft.SqlServer.Management.Smo.BackupActionType
+    // Used by:
+    //  Backup-SqlDscDatabase.Tests.ps1
+    public enum BackupActionType : int
+    {
+        Database = 0,
+        Files = 1,
+        Log = 2
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.BackupCompressionOptions
+    // Used by:
+    //  Backup-SqlDscDatabase.Tests.ps1
+    public enum BackupCompressionOptions : int
+    {
+        Default = 0,
+        On = 1,
+        Off = 2
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.DeviceType
+    // Used by:
+    //  Backup-SqlDscDatabase.Tests.ps1
+    public enum DeviceType : int
+    {
+        LogicalDevice = 0,
+        Tape = 1,
+        File = 2,
+        Pipe = 3,
+        VirtualDevice = 4,
+        Url = 5
+    }
+
     #endregion Public Enums
 
     #region Public Classes
@@ -1592,6 +1625,70 @@ namespace Microsoft.SqlServer.Management.Smo
             {
                 Properties = ConfigPropertyCollection.CreateTypeInstance()
             };
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.BackupDeviceItem
+    // Used by:
+    //  Backup-SqlDscDatabase.Tests.ps1
+    public class BackupDeviceItem
+    {
+        // Constructor
+        public BackupDeviceItem() { }
+        public BackupDeviceItem(System.String name, DeviceType deviceType)
+        {
+            this.Name = name;
+            this.DeviceType = deviceType;
+        }
+
+        // Properties
+        public System.String Name { get; set; }
+        public DeviceType DeviceType { get; set; }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.BackupDeviceList
+    // Used by:
+    //  Backup-SqlDscDatabase.Tests.ps1
+    public class BackupDeviceList : Collection<BackupDeviceItem>
+    {
+        public BackupDeviceList() { }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Backup
+    // Used by:
+    //  Backup-SqlDscDatabase.Tests.ps1
+    public class Backup
+    {
+        // Constructor
+        public Backup() { Devices = new BackupDeviceList(); }
+
+        // Properties
+        public BackupActionType Action { get; set; }
+        public System.String Database { get; set; }
+        public BackupDeviceList Devices { get; set; }
+        public System.Boolean Incremental { get; set; }
+        public System.Boolean CopyOnly { get; set; }
+        public BackupCompressionOptions CompressionOption { get; set; }
+        public System.Boolean Checksum { get; set; }
+        public System.String BackupSetDescription { get; set; }
+        public System.String BackupSetName { get; set; }
+        public System.Int32 RetainDays { get; set; }
+        public System.Boolean Initialize { get; set; }
+        public System.DateTime ExpirationDate { get; set; }
+
+        // Mock tracking properties for testing
+        public int MockSqlBackupCalled { get; set; }
+        public bool MockShouldThrowOnSqlBackup { get; set; }
+
+        // Method
+        public void SqlBackup(Server serverObject)
+        {
+            MockSqlBackupCalled++;
+
+            if (MockShouldThrowOnSqlBackup)
+            {
+                throw new System.Exception("Simulated SqlBackup() failure for testing purposes.");
+            }
         }
     }
 
