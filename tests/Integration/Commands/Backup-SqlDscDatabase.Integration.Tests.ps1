@@ -85,7 +85,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
         }
 
         It 'Should perform a full backup successfully' {
-            { Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:fullBackupFile -Force } | Should -Not -Throw
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:fullBackupFile -Force
 
             # Verify the backup file was created
             Test-Path -Path $script:fullBackupFile | Should -BeTrue
@@ -108,7 +108,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
         }
 
         It 'Should perform a full backup successfully using database object' {
-            { $script:testDatabase | Backup-SqlDscDatabase -BackupFile $script:fullBackupFileFromObject -Force } | Should -Not -Throw
+            $null = $script:testDatabase | Backup-SqlDscDatabase -BackupFile $script:fullBackupFileFromObject -Force
 
             # Verify the backup file was created
             Test-Path -Path $script:fullBackupFileFromObject | Should -BeTrue
@@ -128,7 +128,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
         }
 
         It 'Should perform a copy-only backup successfully' {
-            { Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:copyOnlyBackupFile -CopyOnly -Force } | Should -Not -Throw
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:copyOnlyBackupFile -CopyOnly -Force
 
             # Verify the backup file was created
             Test-Path -Path $script:copyOnlyBackupFile | Should -BeTrue
@@ -141,7 +141,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
             $script:baseFullBackupFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:testDatabaseName + '_BaseFull.bak')
             $script:diffBackupFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:testDatabaseName + '_Diff.bak')
 
-            Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:baseFullBackupFile -Force
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:baseFullBackupFile -Force
         }
 
         AfterAll {
@@ -157,7 +157,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
         }
 
         It 'Should perform a differential backup successfully' {
-            { Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:diffBackupFile -BackupType 'Differential' -Force } | Should -Not -Throw
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:diffBackupFile -BackupType 'Differential' -Force
 
             # Verify the backup file was created
             Test-Path -Path $script:diffBackupFile | Should -BeTrue
@@ -170,7 +170,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
             $script:baseFullBackupForLog = Join-Path -Path $script:backupDirectory -ChildPath ($script:testDatabaseName + '_BaseFullForLog.bak')
             $script:logBackupFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:testDatabaseName + '_Log.trn')
 
-            Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:baseFullBackupForLog -Force
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:baseFullBackupForLog -Force
         }
 
         AfterAll {
@@ -186,7 +186,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
         }
 
         It 'Should perform a transaction log backup successfully' {
-            { Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:logBackupFile -BackupType 'Log' -Force } | Should -Not -Throw
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:logBackupFile -BackupType 'Log' -Force
 
             # Verify the backup file was created
             Test-Path -Path $script:logBackupFile | Should -BeTrue
@@ -206,7 +206,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
         }
 
         It 'Should perform a compressed backup with checksum successfully' {
-            { Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:compressedBackupFile -Compress -Checksum -Force } | Should -Not -Throw
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:compressedBackupFile -Compress -Checksum -Force
 
             # Verify the backup file was created
             Test-Path -Path $script:compressedBackupFile | Should -BeTrue
@@ -226,7 +226,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
         }
 
         It 'Should perform a backup with description and retention days successfully' {
-            { Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:backupWithDescFile -Description 'Integration test backup' -RetainDays 7 -Force } | Should -Not -Throw
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:backupWithDescFile -Description 'Integration test backup' -RetainDays 7 -Force
 
             # Verify the backup file was created
             Test-Path -Path $script:backupWithDescFile | Should -BeTrue
