@@ -614,7 +614,7 @@ $results = $items | Process-Items -ErrorAction 'Stop'
 | Single cmdlet error handling | Use `-ErrorAction 'Stop'` on the cmdlet | Simpler and more explicit than setting `$ErrorActionPreference` |
 | Calling commands that use ThrowTerminatingError | Set `$ErrorActionPreference = 'Stop'` in caller OR wrap in try-catch | Using `-ErrorAction 'Stop'` alone is NOT sufficient; caller continues after error |
 | Assert-style commands | `$PSCmdlet.ThrowTerminatingError()` | Command purpose is to throw on failure |
-| State-changing commands (catch blocks) | `$PSCmdlet.ThrowTerminatingError()` | Prevents partial state changes; caller must use `-ErrorAction 'Stop'` or set `$ErrorActionPreference` |
+| State-changing commands (catch blocks) | `$PSCmdlet.ThrowTerminatingError()` | Prevents partial state changes; caller must set `$ErrorActionPreference = 'Stop'` OR wrap in try-catch |
 | Private functions (internal use only) | `$PSCmdlet.ThrowTerminatingError()` or `Write-Error` | Behavior is understood by internal callers |
 | Parameter validation in `[ValidateScript()]` | `throw` | Only valid option within validation attributes |
 | Any other scenario in commands | Never use `throw` | Poor error messages; unpredictable behavior |
