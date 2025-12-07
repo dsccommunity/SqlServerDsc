@@ -152,7 +152,6 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integ
             # Get permissions for the SqlDscIntegrationTestRole_Persistent server role
             $serverPermissionInfo = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestRole_Persistent' -ErrorAction 'Stop'
 
-            # Only proceed if we have permission data to work with
             $result = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $serverPermissionInfo
 
             # Validate the result structure
@@ -170,10 +169,9 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integ
 
             # Verify that the CreateEndpoint permission granted by Grant-SqlDscServerPermission test is present
             $grantPermission = $result | Where-Object { $_.State -eq 'Grant' }
-            if ($grantPermission)
-            {
-                $grantPermission.Permission | Should -Contain 'CreateEndpoint' -Because 'CreateEndpoint permission should have been granted by Grant-SqlDscServerPermission integration test'
-            }
+
+            $grantPermission | Should -Not -BeNullOrEmpty
+            $grantPermission.Permission | Should -Contain 'CreateEndpoint' -Because 'CreateEndpoint permission should have been granted by Grant-SqlDscServerPermission integration test'
         }
     }
 
