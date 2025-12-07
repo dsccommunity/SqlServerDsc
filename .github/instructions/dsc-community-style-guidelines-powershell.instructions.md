@@ -82,7 +82,7 @@ applyTo: "{**/*.ps1,**/*.psm1,**/*.psd1}"
   - `$PSCmdlet.ShouldProcess` must use required pattern
   - Inside `$PSCmdlet.ShouldProcess`-block, avoid using `Write-Verbose`
 - Never use backtick as line continuation in production code.
-- Set `$ErrorActionPreference = 'Stop'` before commands using `-ErrorAction 'Stop'`; restore previous value directly after invocation (do not use try-catch-finally)
+- For blanket error handling across multiple cmdlets, set `$ErrorActionPreference = 'Stop'` in try block and restore in finally block; for single cmdlet use `-ErrorAction 'Stop'` instead
 - Use `[Alias()]` attribute for function aliases, never `Set-Alias` or `New-Alias`
 
 ## Output streams
@@ -92,11 +92,13 @@ applyTo: "{**/*.ps1,**/*.psm1,**/*.psd1}"
 - Use `Write-Verbose` for: High-level execution flow only; User-actionable information
 - Use `Write-Information` for: User-facing status updates; Important operational messages; Non-error state changes
 - Use `Write-Warning` for: Non-fatal issues requiring attention; Deprecated functionality usage; Configuration problems that don't block execution
-- Use `$PSCmdlet.ThrowTerminatingError()` for terminating errors (except for classes), use relevant error category, in try-catch include exception with localized message
-- Use `Write-Error` for non-terminating errors
+- Use `Write-Error` for most error scenarios in public commands
   - Always include `-Message` (localized string), `-Category` (relevant error category), `-ErrorId` (unique ID matching localized string ID), `-TargetObject` (object causing error)
   - In catch blocks, pass original exception using `-Exception`
   - Always use `return` after `Write-Error` to avoid further processing
+- Use `$PSCmdlet.ThrowTerminatingError()` only in limited scenarios: assert-style commands, private functions, or catch blocks; note that callers must use `-ErrorAction 'Stop'` to catch these errors
+- Use `throw` only in `[ValidateScript()]` parameter validation attributes
+- .NET method exceptions (e.g., SMO methods) are always caught in try-catch blocks without needing to set `$ErrorActionPreference`
 
 ## ShouldProcess Required Pattern
 

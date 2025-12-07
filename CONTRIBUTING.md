@@ -434,6 +434,10 @@ how exceptions are caught:
 
 **Recommended pattern for .NET methods:**
 
+This example shows using `$PSCmdlet.ThrowTerminatingError()` in a catch block,
+which is acceptable when catching exceptions from .NET methods. The caller must
+use `-ErrorAction 'Stop'` to catch this error.
+
 ```powershell
 try
 {
@@ -486,7 +490,8 @@ finally
 > [!IMPORTANT]
 > **Do not** use the pattern `$ErrorActionPreference = 'Stop'` followed by
 > `-ErrorAction 'Stop'` on the same cmdlet - this is redundant. The
-> `-ErrorAction` parameter always takes precedence over `$ErrorActionPreference`.
+> `-ErrorAction` parameter takes precedence over `$ErrorActionPreference`
+> for that specific cmdlet call.
 
 > [!NOTE]
 > The pattern of setting `$ErrorActionPreference = 'Stop'` in a try block
