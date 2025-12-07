@@ -412,14 +412,15 @@ Use `$PSCmdlet.ThrowTerminatingError()` only in these limited scenarios:
 
 1. **Private functions** that are only called internally and where the behavior
    is well understood
-2. **Assert-style commands** (like `Assert-SqlDscLogin`) whose purpose is to
-   throw on failure
-3. **Commands with `SupportsShouldProcess`** where an operation failure in the
+2. **Commands with `SupportsShouldProcess`** where an operation failure in the
    `ShouldProcess` block must terminate (common for state-changing operations
    that cannot be partially completed)
-4. **Catch blocks in state-changing commands** where a critical operation
+3. **Catch blocks in state-changing commands** where a critical operation
    failure must be communicated as a terminating error to prevent further
    state changes
+
+**Note:** Assert-style commands should use `Write-Error` instead - this provides
+standard PowerShell behavior where `-ErrorAction 'Stop'` alone works correctly.
 
 In these cases, ensure callers are aware of the behavior. **Important:** When calling
 these commands, using `-ErrorAction 'Stop'` alone is NOT sufficient to stop the calling
@@ -616,7 +617,7 @@ $results = $items | Process-Items -ErrorAction 'Stop'
 | Blanket error handling for multiple cmdlets | Set `$ErrorActionPreference = 'Stop'` in try, restore in finally | Avoids adding `-ErrorAction 'Stop'` to each cmdlet; also catches ThrowTerminatingError from child commands |
 | Single cmdlet error handling | Use `-ErrorAction 'Stop'` on the cmdlet | Simpler and more explicit than setting `$ErrorActionPreference` |
 | Calling commands that use ThrowTerminatingError | Set `$ErrorActionPreference = 'Stop'` in caller OR wrap in try-catch | Using `-ErrorAction 'Stop'` alone is NOT sufficient; caller continues after error |
-| Assert-style commands | `$PSCmdlet.ThrowTerminatingError()` | Command purpose is to throw on failure |
+| Assert-style commands | `Write-Error` | Provides standard behavior; `-ErrorAction 'Stop'` alone works correctly for callers |
 | State-changing commands (catch blocks) | `$PSCmdlet.ThrowTerminatingError()` | Prevents partial state changes; caller must set `$ErrorActionPreference = 'Stop'` OR wrap in try-catch |
 | Private functions (internal use only) | `$PSCmdlet.ThrowTerminatingError()` or `Write-Error` | Behavior is understood by internal callers |
 | Parameter validation in `[ValidateScript()]` | `throw` | Only valid option within validation attributes |

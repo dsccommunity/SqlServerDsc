@@ -98,7 +98,8 @@ applyTo: "{**/*.ps1,**/*.psm1,**/*.psd1}"
   - In catch blocks, pass original exception using `-Exception`
   - Always use `return` after `Write-Error` to avoid further processing
 - **Avoid `$PSCmdlet.ThrowTerminatingError()` in public commands** - creates command-terminating (not script-terminating) errors; callers must set `$ErrorActionPreference = 'Stop'` OR use try-catch (using `-ErrorAction 'Stop'` alone is insufficient)
-  - Acceptable only in: assert-style commands, private functions, or state-changing catch blocks where operation failures must prevent further state changes
+  - Acceptable only in: private functions, or state-changing catch blocks where operation failures must prevent further state changes
+  - Assert-style commands should use `Write-Error` for standard behavior
 - Use `throw` only in `[ValidateScript()]` parameter validation attributes - it's the only valid mechanism there
 - .NET method exceptions (e.g., SMO methods) are always caught in try-catch blocks without needing to set `$ErrorActionPreference`
 
