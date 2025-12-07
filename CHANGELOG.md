@@ -46,10 +46,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     command now accepts Login or ServerRole objects (same as `Grant-SqlDscServerPermission`,
     `Deny-SqlDscServerPermission`, and `Revoke-SqlDscServerPermission`) and uses
     `-Grant`, `-GrantWithGrant`, and `-Deny` parameters to specify the exact
-    permissions that should exist. Any existing permissions not specified will
-    be revoked. The command internally uses `Get-SqlDscServerPermission`,
-    `Grant-SqlDscServerPermission`, `Deny-SqlDscServerPermission`, and
-    `Revoke-SqlDscServerPermission` to achieve this
+    permissions that should exist within each specified category. Within a
+    specified category, any existing permissions not listed are revoked;
+    categories not specified are left unchanged. The command internally uses
+    `Get-SqlDscServerPermission`, `Grant-SqlDscServerPermission`,
+    `Deny-SqlDscServerPermission`, and `Revoke-SqlDscServerPermission` to
+    achieve this
     ([issue #2159](https://github.com/dsccommunity/SqlServerDsc/issues/2159)).
 - Updated comment-based help `.INPUTS` and `.OUTPUTS` sections across all public
   commands and private functions to comply with DSC community style guidelines
