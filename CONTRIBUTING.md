@@ -470,6 +470,7 @@ $results = $items | Process-Items -ErrorAction 'Stop'
 
 ##### Summary
 
+<!-- markdownlint-disable MD013 - Line length -->
 | Scenario | Use | Why |
 |----------|-----|-----|
 | General error handling in public commands | `Write-Error` | Provides consistent, predictable behavior; allows caller to control termination |
@@ -478,3 +479,4 @@ $results = $items | Process-Items -ErrorAction 'Stop'
 | Private functions (internal use only) | `$PSCmdlet.ThrowTerminatingError()` or `Write-Error` | Behavior is understood by internal callers |
 | Any command | Never use `throw` | Poor error messages; unpredictable behavior |
 | Parameter validation attributes | `throw` | Only valid option within `[ValidateScript()]` |
+<!-- markdownlint-enable MD013 - Line length -->
