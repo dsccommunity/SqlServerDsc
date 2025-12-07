@@ -312,7 +312,8 @@ commands are located in the folder `./source/Public`.
 
 Public commands should primarily use `Write-Error` for error handling, as it
 provides the most flexible and predictable behavior for callers. The statement
-`throw` shall never be used in public commands.
+`throw` shall never be used in public commands except within parameter
+validation attributes like `[ValidateScript()]` where it is the only option.
 
 ##### When to Use Write-Error
 
@@ -416,6 +417,106 @@ Use `$PSCmdlet.ThrowTerminatingError()` only in these limited scenarios:
 In these cases, ensure callers are aware of the behavior and use
 `-ErrorAction 'Stop'` when calling the command from other commands.
 
+##### Handling Errors from .NET Methods and Cmdlets
+
+When working with .NET methods (like SMO objects) and PowerShell cmdlets, understand
+how exceptions are caught:
+
+**For .NET methods (.NET Framework/Core APIs and SMO):**
+- Exceptions are **always caught** in try-catch blocks
+- No need to set `$ErrorActionPreference` - the exceptions throw naturally
+- Example: `$alertObject.Drop()`, `$database.Create()`, `[System.IO.File]::OpenRead()`
+
+**For PowerShell cmdlets:**
+- Use `-ErrorAction 'Stop'` to make errors catchable in try-catch
+- **Do not** set `$ErrorActionPreference = 'Stop'` when using `-ErrorAction 'Stop'` - it's redundant
+- Only set `$ErrorActionPreference = 'Stop'` if you need blanket error handling for multiple cmdlets
+
+**Recommended pattern for .NET methods:**
+
+```powershell
+try
+{
+    # .NET methods throw exceptions automatically - no ErrorActionPreference needed
+    $alertObject.Drop()
+
+    Write-Verbose -Message ($script:localizedData.AlertRemoved -f $alertObject.Name)
+}
+catch
+{
+    $errorMessage = $script:localizedData.RemoveFailed -f $alertObject.Name
+
+    $PSCmdlet.ThrowTerminatingError(
+        [System.Management.Automation.ErrorRecord]::new(
+            [System.InvalidOperationException]::new($errorMessage, $_.Exception),
+            'RSAA0001',
+            [System.Management.Automation.ErrorCategory]::InvalidOperation,
+            $alertObject
+        )
+    )
+}
+```
+
+**Pattern for cmdlets with blanket error handling:**
+
+Only use `$ErrorActionPreference = 'Stop'` when you have multiple cmdlets
+and don't want to add `-ErrorAction 'Stop'` to each one:
+
+```powershell
+try
+{
+    $originalErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = 'Stop'
+
+    # Multiple cmdlets without -ErrorAction on each
+    $instance = Get-SqlDscManagedComputerInstance -InstanceName $InstanceName
+    $protocol = Get-SqlDscServerProtocolName -ProtocolName $ProtocolName
+    $serverProtocol = $instance.ServerProtocols[$protocol.ShortName]
+}
+catch
+{
+    # Handle error
+}
+finally
+{
+    $ErrorActionPreference = $originalErrorActionPreference
+}
+```
+
+> [!IMPORTANT]
+> **Do not** use the pattern `$ErrorActionPreference = 'Stop'` followed by
+> `-ErrorAction 'Stop'` on the same cmdlet - this is redundant. The
+> `-ErrorAction` parameter always takes precedence over `$ErrorActionPreference`.
+
+> [!NOTE]
+> The pattern of setting `$ErrorActionPreference = 'Stop'` in a try block
+> with restoration in finally is useful for blanket error handling, but NOT
+> necessary for .NET method calls (they always throw) or when using
+> `-ErrorAction 'Stop'` on individual cmdlets.
+
+##### Parameter Validation with ValidateScript
+
+When using `[ValidateScript()]` attribute on parameters, you **must** use
+`throw` for validation failures, as it is the only mechanism that works
+within validation attributes:
+
+```powershell
+[Parameter()]
+[ValidateScript({
+        if (-not (Test-Path -Path $_))
+        {
+            throw ($script:localizedData.Audit_PathParameterValueInvalid -f $_)
+        }
+
+        return $true
+    })]
+[System.String]
+$Path
+```
+
+This is the **only acceptable use** of `throw` in public commands and private
+functions.
+
 ##### Exception Handling in Commands
 
 When catching exceptions in try-catch blocks, re-throw errors using `Write-Error`
@@ -475,8 +576,11 @@ $results = $items | Process-Items -ErrorAction 'Stop'
 |----------|-----|-----|
 | General error handling in public commands | `Write-Error` | Provides consistent, predictable behavior; allows caller to control termination |
 | Pipeline processing with multiple items | `Write-Error` | Allows processing to continue for remaining items |
+| Catching .NET method exceptions | try-catch without setting `$ErrorActionPreference` | .NET exceptions are always caught automatically |
+| Blanket error handling for multiple cmdlets | Set `$ErrorActionPreference = 'Stop'` in try, restore in finally | Avoids adding `-ErrorAction 'Stop'` to each cmdlet |
+| Single cmdlet error handling | Use `-ErrorAction 'Stop'` on the cmdlet | Simpler and more explicit than setting `$ErrorActionPreference` |
 | Assert-style commands | `$PSCmdlet.ThrowTerminatingError()` | Command purpose is to throw on failure |
 | Private functions (internal use only) | `$PSCmdlet.ThrowTerminatingError()` or `Write-Error` | Behavior is understood by internal callers |
-| Any command | Never use `throw` | Poor error messages; unpredictable behavior |
-| Parameter validation attributes | `throw` | Only valid option within `[ValidateScript()]` |
+| Parameter validation in `[ValidateScript()]` | `throw` | Only valid option within validation attributes |
+| Any other scenario in commands | Never use `throw` | Poor error messages; unpredictable behavior |
 <!-- markdownlint-enable MD013 - Line length -->
