@@ -281,7 +281,7 @@ function Backup-SqlDscDatabase
 
         if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
         {
-            Write-Verbose -Message ($script:localizedData.Database_Backup_BackingUp -f $backupTypeDescription, $Name, $BackupFile)
+            Write-Debug -Message ($script:localizedData.Database_Backup_BackingUp -f $backupTypeDescription, $Name, $BackupFile)
 
             try
             {
@@ -350,7 +350,7 @@ function Backup-SqlDscDatabase
                 # Perform the backup
                 $backup.SqlBackup($ServerObject)
 
-                Write-Verbose -Message ($script:localizedData.Database_Backup_Success -f $backupTypeDescription, $Name)
+                Write-Debug -Message ($script:localizedData.Database_Backup_Success -f $backupTypeDescription, $Name)
             }
             catch
             {
