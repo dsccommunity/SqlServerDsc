@@ -31,6 +31,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Get-SqlDscInstalledComponent` and `Test-SqlDscIsInstalledComponent` commands.
 - Added public command `Test-SqlDscIsInstalledInstance` to test if an instance is
   installed on the current node.
+- New private commands:
+  - `ConvertFrom-ServiceStartMode` - Converts the specified start mode to
+    the equivalent normalized startup type.
+  - `Get-InstanceId` - Returns the SQL Server instance id of the specified
+    service type and instance name.
+  - SqlServerDsc.Common
 - New class-based resource:
   - `SqlInstall` - Handles the Microsoft SQL Server setup action `Install`.
 
@@ -1130,13 +1136,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     for a file.
   - `Assert-Feature` - Throws an exception if a feature is not supported
     for a specific Microsoft SQL Server major version.
-  - `Get-RegistryPropertyValue` - Returns the value of the provided property
-    at the provided registry path.
-  - `ConvertFrom-ServiceStartMode` - Converts the specified start mode to
-    the equivalent normalized startup type.
-  - `Get-InstanceId` - Returns the SQL Server instance id of the specified
-    service type and instance name.
-- SqlServerDsc.Common
   - `Connect-SQL`.
     - Add new parameter `Encrypt`.
 - `Connect-SqlDscDatabaseEngine`
