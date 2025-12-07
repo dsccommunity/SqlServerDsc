@@ -419,8 +419,11 @@ Use `$PSCmdlet.ThrowTerminatingError()` only in these limited scenarios:
    failure must be communicated as a terminating error to prevent further
    state changes
 
-In these cases, ensure callers are aware of the behavior and use
-`-ErrorAction 'Stop'` when calling the command from other commands.
+In these cases, ensure callers are aware of the behavior. **Important:** When calling
+these commands, using `-ErrorAction 'Stop'` alone is NOT sufficient to stop the calling
+function. Callers must ALSO either:
+- Wrap the call in try-catch, OR
+- Set `$ErrorActionPreference = 'Stop'` in the calling function
 
 ##### Handling Errors from .NET Methods and Cmdlets
 
@@ -498,9 +501,16 @@ finally
 
 > [!NOTE]
 > Setting `$ErrorActionPreference = 'Stop'` is particularly useful when calling
-> commands that use `$PSCmdlet.ThrowTerminatingError()`. Without it (or
-> `-ErrorAction 'Stop'` on each call), these command-terminating errors will not
-> stop the calling function - it will continue executing after the error.
+> commands that use `$PSCmdlet.ThrowTerminatingError()`. **Important:**
+> Using `-ErrorAction 'Stop'` alone when calling such commands is NOT sufficient
+> to stop the calling function - it will continue executing after the error.
+> You must set `$ErrorActionPreference = 'Stop'` OR wrap the call in try-catch.
+
+> [!TIP]
+> **Prefer `Write-Error` in public commands instead of `$PSCmdlet.ThrowTerminatingError()`.**
+> With `Write-Error`, callers can use `-ErrorAction 'Stop'` alone and it works as
+> expected - the caller stops executing. This is standard PowerShell behavior and
+> avoids the need for `$ErrorActionPreference` or try-catch in callers.
 
 > [!IMPORTANT]
 > **Do not** use the pattern `$ErrorActionPreference = 'Stop'` followed by
@@ -602,7 +612,7 @@ $results = $items | Process-Items -ErrorAction 'Stop'
 | Catching .NET method exceptions | try-catch without setting `$ErrorActionPreference` | .NET exceptions are always caught automatically |
 | Blanket error handling for multiple cmdlets | Set `$ErrorActionPreference = 'Stop'` in try, restore in finally | Avoids adding `-ErrorAction 'Stop'` to each cmdlet; also catches ThrowTerminatingError from child commands |
 | Single cmdlet error handling | Use `-ErrorAction 'Stop'` on the cmdlet | Simpler and more explicit than setting `$ErrorActionPreference` |
-| Calling commands that use ThrowTerminatingError | Set `$ErrorActionPreference = 'Stop'` or use `-ErrorAction 'Stop'` | Required to catch these command-terminating errors; without it, caller continues after error |
+| Calling commands that use ThrowTerminatingError | Set `$ErrorActionPreference = 'Stop'` in caller OR wrap in try-catch | Using `-ErrorAction 'Stop'` alone is NOT sufficient; caller continues after error |
 | Assert-style commands | `$PSCmdlet.ThrowTerminatingError()` | Command purpose is to throw on failure |
 | State-changing commands (catch blocks) | `$PSCmdlet.ThrowTerminatingError()` | Prevents partial state changes; caller must use `-ErrorAction 'Stop'` or set `$ErrorActionPreference` |
 | Private functions (internal use only) | `$PSCmdlet.ThrowTerminatingError()` or `Write-Error` | Behavior is understood by internal callers |
