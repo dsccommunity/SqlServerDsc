@@ -19,8 +19,8 @@
 
     .PARAMETER BackupFile
         Specifies the full path to the backup file. For full and differential
-        backups, use the .bak extension. For transaction log backups, use the
-        .trn extension.
+        backups, use the `.bak` extension. For transaction log backups, use
+        the `.trn` extension.
 
     .PARAMETER BackupType
         Specifies the type of backup to perform. Valid values are 'Full',
