@@ -141,7 +141,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
             $script:baseFullBackupFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:testDatabaseName + '_BaseFull.bak')
             $script:diffBackupFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:testDatabaseName + '_Diff.bak')
 
-            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:baseFullBackupFile -Force
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:baseFullBackupFile -Force -ErrorAction 'Stop'
         }
 
         AfterAll {
@@ -170,7 +170,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
             $script:baseFullBackupForLog = Join-Path -Path $script:backupDirectory -ChildPath ($script:testDatabaseName + '_BaseFullForLog.bak')
             $script:logBackupFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:testDatabaseName + '_Log.trn')
 
-            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:baseFullBackupForLog -Force
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:baseFullBackupForLog -Force -ErrorAction 'Stop'
         }
 
         AfterAll {
@@ -302,6 +302,45 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
             $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:refreshBackupFile -Refresh -Force -ErrorAction 'Stop'
 
             Test-Path -Path $script:refreshBackupFile | Should -BeTrue
+        }
+    }
+
+    Context 'When performing a backup with Verify parameter' {
+        BeforeAll {
+            $script:verifyBackupFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:testDatabaseName + '_Verify.bak')
+        }
+
+        AfterAll {
+            if (Test-Path -Path $script:verifyBackupFile)
+            {
+                Remove-Item -Path $script:verifyBackupFile -Force -ErrorAction 'SilentlyContinue'
+            }
+        }
+
+        It 'Should perform a backup with verification successfully' {
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:verifyBackupFile -Verify -Force -ErrorAction 'Stop'
+
+            Test-Path -Path $script:verifyBackupFile | Should -BeTrue
+        }
+    }
+
+    Context 'When performing a backup with PassThru parameter' {
+        BeforeAll {
+            $script:passThruBackupFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:testDatabaseName + '_PassThru.bak')
+        }
+
+        AfterAll {
+            if (Test-Path -Path $script:passThruBackupFile)
+            {
+                Remove-Item -Path $script:passThruBackupFile -Force -ErrorAction 'SilentlyContinue'
+            }
+        }
+
+        It 'Should return database object when PassThru is specified' {
+            $result = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:passThruBackupFile -PassThru -Force -ErrorAction 'Stop'
+
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be $script:testDatabaseName
         }
     }
 }
