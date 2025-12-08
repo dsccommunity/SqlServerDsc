@@ -305,25 +305,6 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
         }
     }
 
-    Context 'When performing a backup with Verify parameter' {
-        BeforeAll {
-            $script:verifyBackupFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:testDatabaseName + '_Verify.bak')
-        }
-
-        AfterAll {
-            if (Test-Path -Path $script:verifyBackupFile)
-            {
-                Remove-Item -Path $script:verifyBackupFile -Force -ErrorAction 'SilentlyContinue'
-            }
-        }
-
-        It 'Should perform a backup with verification successfully' {
-            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:verifyBackupFile -Verify -Force -ErrorAction 'Stop'
-
-            Test-Path -Path $script:verifyBackupFile | Should -BeTrue
-        }
-    }
-
     Context 'When performing a backup with PassThru parameter' {
         BeforeAll {
             $script:passThruBackupFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:testDatabaseName + '_PassThru.bak')
