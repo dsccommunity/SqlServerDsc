@@ -85,7 +85,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
         }
 
         It 'Should perform a full backup successfully' {
-            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:fullBackupFile -Force
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:fullBackupFile -Force -ErrorAction 'Stop'
 
             # Verify the backup file was created
             Test-Path -Path $script:fullBackupFile | Should -BeTrue
@@ -108,7 +108,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
         }
 
         It 'Should perform a full backup successfully using database object' {
-            $null = $script:testDatabase | Backup-SqlDscDatabase -BackupFile $script:fullBackupFileFromObject -Force
+            $null = $script:testDatabase | Backup-SqlDscDatabase -BackupFile $script:fullBackupFileFromObject -Force -ErrorAction 'Stop'
 
             # Verify the backup file was created
             Test-Path -Path $script:fullBackupFileFromObject | Should -BeTrue
@@ -128,7 +128,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
         }
 
         It 'Should perform a copy-only backup successfully' {
-            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:copyOnlyBackupFile -CopyOnly -Force
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:copyOnlyBackupFile -CopyOnly -Force -ErrorAction 'Stop'
 
             # Verify the backup file was created
             Test-Path -Path $script:copyOnlyBackupFile | Should -BeTrue
@@ -157,7 +157,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
         }
 
         It 'Should perform a differential backup successfully' {
-            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:diffBackupFile -BackupType 'Differential' -Force
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:diffBackupFile -BackupType 'Differential' -Force -ErrorAction 'Stop'
 
             # Verify the backup file was created
             Test-Path -Path $script:diffBackupFile | Should -BeTrue
@@ -186,7 +186,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
         }
 
         It 'Should perform a transaction log backup successfully' {
-            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:logBackupFile -BackupType 'Log' -Force
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:logBackupFile -BackupType 'Log' -Force -ErrorAction 'Stop'
 
             # Verify the backup file was created
             Test-Path -Path $script:logBackupFile | Should -BeTrue
@@ -206,7 +206,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
         }
 
         It 'Should perform a compressed backup with checksum successfully' {
-            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:compressedBackupFile -Compress -Checksum -Force
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:compressedBackupFile -Compress -Checksum -Force -ErrorAction 'Stop'
 
             # Verify the backup file was created
             Test-Path -Path $script:compressedBackupFile | Should -BeTrue
@@ -226,7 +226,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
         }
 
         It 'Should perform a backup with description and retention days successfully' {
-            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:backupWithDescFile -Description 'Integration test backup' -RetainDays 7 -Force
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:backupWithDescFile -Description 'Integration test backup' -RetainDays 7 -Force -ErrorAction 'Stop'
 
             # Verify the backup file was created
             Test-Path -Path $script:backupWithDescFile | Should -BeTrue
@@ -261,6 +261,47 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
             $logBackupFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:simpleDbName + '.trn')
 
             { Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:simpleDbName -BackupFile $logBackupFile -BackupType 'Log' -Force } | Should -Throw -ErrorId 'BSDD0002,Backup-SqlDscDatabase'
+        }
+    }
+
+    Context 'When performing a backup with Initialize to overwrite existing backup' {
+        BeforeAll {
+            $script:initializeBackupFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:testDatabaseName + '_Initialize.bak')
+
+            # Create initial backup
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:initializeBackupFile -Force -ErrorAction 'Stop'
+        }
+
+        AfterAll {
+            if (Test-Path -Path $script:initializeBackupFile)
+            {
+                Remove-Item -Path $script:initializeBackupFile -Force -ErrorAction 'SilentlyContinue'
+            }
+        }
+
+        It 'Should overwrite existing backup file when Initialize is specified' {
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:initializeBackupFile -Initialize -Force -ErrorAction 'Stop'
+
+            Test-Path -Path $script:initializeBackupFile | Should -BeTrue
+        }
+    }
+
+    Context 'When performing a backup with Refresh parameter' {
+        BeforeAll {
+            $script:refreshBackupFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:testDatabaseName + '_Refresh.bak')
+        }
+
+        AfterAll {
+            if (Test-Path -Path $script:refreshBackupFile)
+            {
+                Remove-Item -Path $script:refreshBackupFile -Force -ErrorAction 'SilentlyContinue'
+            }
+        }
+
+        It 'Should perform a backup successfully with Refresh parameter' {
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:refreshBackupFile -Refresh -Force -ErrorAction 'Stop'
+
+            Test-Path -Path $script:refreshBackupFile | Should -BeTrue
         }
     }
 }
