@@ -389,6 +389,24 @@ function Restore-SqlDscDatabase
             }
         }
 
+        # Validate that point-in-time and mark parameters are not used with non-log restore types
+        if ($RestoreType -in @('Full', 'Differential', 'Files'))
+        {
+            $assertBoundParameterParameters = @{
+                BoundParameterList = $PSBoundParameters
+                NotAllowedList = @(
+                    'ToPointInTime'
+                    'StopAtMarkName'
+                    'StopBeforeMarkName'
+                )
+                IfParameterPresent = @{
+                    RestoreType = $RestoreType
+                }
+            }
+
+            Assert-BoundParameter @assertBoundParameterParameters
+        }
+
         $descriptionMessage = $script:localizedData.Restore_SqlDscDatabase_ShouldProcessVerboseDescription -f $restoreTypeDescription, $Name, $BackupFile, $ServerObject.InstanceName
         $confirmationMessage = $script:localizedData.Restore_SqlDscDatabase_ShouldProcessVerboseWarning -f $restoreTypeDescription, $Name
         $captionMessage = $script:localizedData.Restore_SqlDscDatabase_ShouldProcessCaption
@@ -503,7 +521,6 @@ function Restore-SqlDscDatabase
                     $restore.FileNumber = $FileNumber
                 }
 
-                # Point-in-time recovery options
                 if ($PSBoundParameters.ContainsKey('ToPointInTime'))
                 {
                     $restore.ToPointInTime = $ToPointInTime.ToString('yyyy-MM-ddTHH:mm:ss')
