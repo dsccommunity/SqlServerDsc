@@ -97,6 +97,33 @@ Describe 'Restore-SqlDscDatabase' -Tag 'Public' {
         }
     }
 
+    Context 'When using point-in-time or mark parameters with non-log restores' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+            $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                return @{} | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                    # Mock implementation
+                } -PassThru -Force
+            } -Force
+        }
+
+        It 'Should throw error when ToPointInTime is used with Full restore' {
+            { Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.bak' -RestoreType 'Full' -ToPointInTime '2024-01-15T14:30:00' -Force } |
+                Should -Throw -ExpectedMessage "*The parameter(s) 'ToPointInTime' are not allowed to be specified*" -ErrorId 'Parameters,New-ArgumentException'
+        }
+
+        It 'Should throw error when StopAtMarkName is used with Differential restore' {
+            { Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.bak' -RestoreType 'Differential' -StopAtMarkName 'MyMark' -Force } |
+                Should -Throw -ExpectedMessage "*The parameter(s) 'StopAtMarkName' are not allowed to be specified*" -ErrorId 'Parameters,New-ArgumentException'
+        }
+
+        It 'Should throw error when StopBeforeMarkName is used with Files restore' {
+            { Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.bak' -RestoreType 'Files' -StopBeforeMarkName 'MyMark' -Force } |
+                Should -Throw -ExpectedMessage "*The parameter(s) 'StopBeforeMarkName' are not allowed to be specified*" -ErrorId 'Parameters,New-ArgumentException'
+        }
+    }
+
     Context 'When performing successful restores' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
