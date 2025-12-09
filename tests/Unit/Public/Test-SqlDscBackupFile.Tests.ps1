@@ -54,19 +54,71 @@ Describe 'Test-SqlDscBackupFile' -Tag 'Public' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+
+            $script:mockRestoreObject = $null
+
+            Mock -CommandName New-Object -MockWith {
+                if ($TypeName -eq 'Microsoft.SqlServer.Management.Smo.Restore')
+                {
+                    $script:mockRestoreObject = [Microsoft.SqlServer.Management.Smo.Restore]::new()
+                    $script:mockRestoreObject.MockSqlVerifyResult = $true
+
+                    return $script:mockRestoreObject
+                }
+
+                # For BackupDeviceItem, use the real constructor
+                if ($TypeName -eq 'Microsoft.SqlServer.Management.Smo.BackupDeviceItem')
+                {
+                    return [Microsoft.SqlServer.Management.Smo.BackupDeviceItem]::new($ArgumentList[0], $ArgumentList[1])
+                }
+            }
         }
 
         It 'Should return true for a valid backup file' {
-            # The stub's SqlVerify returns MockSqlVerifyResult which defaults to false
-            # We need to set it up to return true
             $result = Test-SqlDscBackupFile -ServerObject $mockServerObject -BackupFile 'C:\Backups\ValidBackup.bak'
 
-            # With default mock, it returns false
+            $result | Should -BeTrue
+        }
+
+        It 'Should return true when FileNumber is specified' {
+            $result = Test-SqlDscBackupFile -ServerObject $mockServerObject -BackupFile 'C:\Backups\ValidBackup.bak' -FileNumber 2
+
+            $result | Should -BeTrue
+        }
+    }
+
+    Context 'When verifying an invalid backup file' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+
+            $script:mockRestoreObject = $null
+
+            Mock -CommandName New-Object -MockWith {
+                if ($TypeName -eq 'Microsoft.SqlServer.Management.Smo.Restore')
+                {
+                    $script:mockRestoreObject = [Microsoft.SqlServer.Management.Smo.Restore]::new()
+                    $script:mockRestoreObject.MockSqlVerifyResult = $false
+
+                    return $script:mockRestoreObject
+                }
+
+                # For BackupDeviceItem, use the real constructor
+                if ($TypeName -eq 'Microsoft.SqlServer.Management.Smo.BackupDeviceItem')
+                {
+                    return [Microsoft.SqlServer.Management.Smo.BackupDeviceItem]::new($ArgumentList[0], $ArgumentList[1])
+                }
+            }
+        }
+
+        It 'Should return false for an invalid backup file' {
+            $result = Test-SqlDscBackupFile -ServerObject $mockServerObject -BackupFile 'C:\Backups\InvalidBackup.bak'
+
             $result | Should -BeFalse
         }
 
-        It 'Should return result when FileNumber is specified' {
-            $result = Test-SqlDscBackupFile -ServerObject $mockServerObject -BackupFile 'C:\Backups\ValidBackup.bak' -FileNumber 2
+        It 'Should return false when FileNumber is specified' {
+            $result = Test-SqlDscBackupFile -ServerObject $mockServerObject -BackupFile 'C:\Backups\InvalidBackup.bak' -FileNumber 2
 
             $result | Should -BeFalse
         }

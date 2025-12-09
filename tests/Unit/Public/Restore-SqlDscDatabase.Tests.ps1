@@ -410,5 +410,74 @@ Describe 'Restore-SqlDscDatabase' -Tag 'Public' {
             $result.Attributes.ValidValues | Should -Contain 1024
             $result.Attributes.ValidValues | Should -Contain 65536
         }
+
+        It 'Should have ServerObject as a mandatory parameter in ServerObject parameter set' {
+            $parameterInfo = (Get-Command -Name 'Restore-SqlDscDatabase').Parameters['ServerObject']
+            $parameterSetInfo = $parameterInfo.ParameterSets['ServerObject']
+            $parameterSetInfo.IsMandatory | Should -BeTrue
+        }
+
+        It 'Should have ServerObject as a mandatory parameter in ServerObjectSimpleRelocate parameter set' {
+            $parameterInfo = (Get-Command -Name 'Restore-SqlDscDatabase').Parameters['ServerObject']
+            $parameterSetInfo = $parameterInfo.ParameterSets['ServerObjectSimpleRelocate']
+            $parameterSetInfo.IsMandatory | Should -BeTrue
+        }
+
+        It 'Should have Name as a mandatory parameter in ServerObject parameter set' {
+            $parameterInfo = (Get-Command -Name 'Restore-SqlDscDatabase').Parameters['Name']
+            $parameterSetInfo = $parameterInfo.ParameterSets['ServerObject']
+            $parameterSetInfo.IsMandatory | Should -BeTrue
+        }
+
+        It 'Should have Name as a mandatory parameter in ServerObjectSimpleRelocate parameter set' {
+            $parameterInfo = (Get-Command -Name 'Restore-SqlDscDatabase').Parameters['Name']
+            $parameterSetInfo = $parameterInfo.ParameterSets['ServerObjectSimpleRelocate']
+            $parameterSetInfo.IsMandatory | Should -BeTrue
+        }
+
+        It 'Should have BackupFile as a mandatory parameter in all parameter sets' {
+            $parameterInfo = (Get-Command -Name 'Restore-SqlDscDatabase').Parameters['BackupFile']
+
+            foreach ($parameterSet in $parameterInfo.ParameterSets.Keys)
+            {
+                $parameterInfo.ParameterSets[$parameterSet].IsMandatory | Should -BeTrue -Because "BackupFile should be mandatory in parameter set '$parameterSet'"
+            }
+        }
+
+        It 'Should have DatabaseObject as a mandatory parameter in DatabaseObject parameter set' {
+            $parameterInfo = (Get-Command -Name 'Restore-SqlDscDatabase').Parameters['DatabaseObject']
+            $parameterSetInfo = $parameterInfo.ParameterSets['DatabaseObject']
+            $parameterSetInfo.IsMandatory | Should -BeTrue
+        }
+
+        It 'Should have DatabaseObject as a mandatory parameter in DatabaseObjectSimpleRelocate parameter set' {
+            $parameterInfo = (Get-Command -Name 'Restore-SqlDscDatabase').Parameters['DatabaseObject']
+            $parameterSetInfo = $parameterInfo.ParameterSets['DatabaseObjectSimpleRelocate']
+            $parameterSetInfo.IsMandatory | Should -BeTrue
+        }
+
+        It 'Should have DataFilePath as a mandatory parameter in ServerObjectSimpleRelocate parameter set' {
+            $parameterInfo = (Get-Command -Name 'Restore-SqlDscDatabase').Parameters['DataFilePath']
+            $parameterSetInfo = $parameterInfo.ParameterSets['ServerObjectSimpleRelocate']
+            $parameterSetInfo.IsMandatory | Should -BeTrue
+        }
+
+        It 'Should have DataFilePath as a mandatory parameter in DatabaseObjectSimpleRelocate parameter set' {
+            $parameterInfo = (Get-Command -Name 'Restore-SqlDscDatabase').Parameters['DataFilePath']
+            $parameterSetInfo = $parameterInfo.ParameterSets['DatabaseObjectSimpleRelocate']
+            $parameterSetInfo.IsMandatory | Should -BeTrue
+        }
+
+        It 'Should have LogFilePath as a mandatory parameter in ServerObjectSimpleRelocate parameter set' {
+            $parameterInfo = (Get-Command -Name 'Restore-SqlDscDatabase').Parameters['LogFilePath']
+            $parameterSetInfo = $parameterInfo.ParameterSets['ServerObjectSimpleRelocate']
+            $parameterSetInfo.IsMandatory | Should -BeTrue
+        }
+
+        It 'Should have LogFilePath as a mandatory parameter in DatabaseObjectSimpleRelocate parameter set' {
+            $parameterInfo = (Get-Command -Name 'Restore-SqlDscDatabase').Parameters['LogFilePath']
+            $parameterSetInfo = $parameterInfo.ParameterSets['DatabaseObjectSimpleRelocate']
+            $parameterSetInfo.IsMandatory | Should -BeTrue
+        }
     }
 }
