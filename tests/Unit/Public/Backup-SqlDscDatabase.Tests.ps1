@@ -242,11 +242,57 @@ Describe 'Backup-SqlDscDatabase' -Tag 'Public' {
         }
     }
 
+    Context 'When using PassThru parameter' {
+        BeforeAll {
+            $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+            $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestDatabase' -Force
+            $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'RecoveryModel' -Value ([Microsoft.SqlServer.Management.Smo.RecoveryModel]::Full) -Force
+            $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Status' -Value ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal) -Force
+            $mockDatabaseObject | Add-Member -MemberType 'ScriptProperty' -Name 'Parent' -Value {
+                $mockParent = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                $mockParent | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+                return $mockParent
+            } -Force
+
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+            $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                return @{
+                    'TestDatabase' = $mockDatabaseObject
+                } | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                    # Mock implementation
+                } -PassThru -Force
+            } -Force
+        }
+
+        It 'Should return database object when PassThru is specified with ServerObject' {
+            $result = Backup-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\TestDatabase.bak' -PassThru -Force
+
+            $result | Should -Not -BeNullOrEmpty
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
+            $result.Name | Should -Be 'TestDatabase'
+        }
+
+        It 'Should return database object when PassThru is specified with DatabaseObject' {
+            $result = Backup-SqlDscDatabase -DatabaseObject $mockDatabaseObject -BackupFile 'C:\Backups\TestDatabase.bak' -PassThru -Force
+
+            $result | Should -Not -BeNullOrEmpty
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
+            $result.Name | Should -Be 'TestDatabase'
+        }
+
+        It 'Should not return anything when PassThru is not specified' {
+            $result = Backup-SqlDscDatabase -DatabaseObject $mockDatabaseObject -BackupFile 'C:\Backups\TestDatabase.bak' -Force
+
+            $result | Should -BeNullOrEmpty
+        }
+    }
+
     Context 'Parameter validation' {
         It 'Should have the correct parameters in parameter set ServerObject' -ForEach @(
             @{
                 ExpectedParameterSetName = 'ServerObject'
-                ExpectedParameters       = '-ServerObject <Server> -Name <string> -BackupFile <string> [-BackupType <string>] [-CopyOnly] [-Compress] [-Checksum] [-Description <string>] [-RetainDays <int>] [-Initialize] [-Refresh] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters       = '-ServerObject <Server> -Name <string> -BackupFile <string> [-BackupType <string>] [-CopyOnly] [-Compress] [-Checksum] [-Description <string>] [-RetainDays <int>] [-Initialize] [-Refresh] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Backup-SqlDscDatabase').ParameterSets |
@@ -263,7 +309,7 @@ Describe 'Backup-SqlDscDatabase' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set DatabaseObject' -ForEach @(
             @{
                 ExpectedParameterSetName = 'DatabaseObject'
-                ExpectedParameters       = '-DatabaseObject <Database> -BackupFile <string> [-BackupType <string>] [-CopyOnly] [-Compress] [-Checksum] [-Description <string>] [-RetainDays <int>] [-Initialize] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters       = '-DatabaseObject <Database> -BackupFile <string> [-BackupType <string>] [-CopyOnly] [-Compress] [-Checksum] [-Description <string>] [-RetainDays <int>] [-Initialize] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Backup-SqlDscDatabase').ParameterSets |

@@ -63,6 +63,10 @@
     .PARAMETER Force
         Specifies that the backup should be performed without any confirmation.
 
+    .PARAMETER PassThru
+        Returns the database object that was backed up. By default, this command
+        does not generate any output.
+
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $serverObject | Backup-SqlDscDatabase -Name 'MyDatabase' -BackupFile 'C:\Backups\MyDatabase.bak'
@@ -104,6 +108,14 @@
         Performs a compressed full backup with checksum verification of the
         database named **MyDatabase**.
 
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $databaseObject = $serverObject | Backup-SqlDscDatabase -Name 'MyDatabase' -BackupFile 'C:\Backups\MyDatabase.bak' -PassThru -Force
+        $databaseObject | Set-SqlDscDatabaseProperty -RecoveryModel 'Simple' -Force
+
+        Performs a full backup of the database named **MyDatabase** and returns
+        the database object for further pipeline operations.
+
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Server`
 
@@ -116,11 +128,19 @@
 
     .OUTPUTS
         None.
+
+        No output when the **PassThru** parameter is not specified.
+
+    .OUTPUTS
+        `Microsoft.SqlServer.Management.Smo.Database`
+
+        Returns the database object that was backed up when using the **PassThru** parameter.
 #>
 function Backup-SqlDscDatabase
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
     [OutputType()]
+    [OutputType([Microsoft.SqlServer.Management.Smo.Database])]
     [CmdletBinding(DefaultParameterSetName = 'ServerObject', SupportsShouldProcess = $true, ConfirmImpact = 'Low')]
     param
     (
@@ -179,7 +199,11 @@ function Backup-SqlDscDatabase
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $Force
+        $Force,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $PassThru
     )
 
     begin
@@ -351,6 +375,11 @@ function Backup-SqlDscDatabase
                 $backup.SqlBackup($ServerObject)
 
                 Write-Debug -Message ($script:localizedData.Database_Backup_Success -f $backupTypeDescription, $Name)
+
+                if ($PassThru.IsPresent)
+                {
+                    return $DatabaseObject
+                }
             }
             catch
             {
