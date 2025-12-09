@@ -46,7 +46,7 @@ jobs:
           .\build.ps1 -Tasks 'noop'
 
           Write-Information -MessageData 'Load SMO stubs into session.' -InformationAction 'Continue'
-          Add-Type -Path './tests/Unit/Stubs/SMO.cs' -ReferencedAssemblies 'System.Data.Common'
+          Add-Type -Path './tests/Unit/Stubs/SMO.cs' -ReferencedAssemblies 'System.Data'
 
           Write-Information -MessageData 'Import module ConvertToSARIF into the session.' -InformationAction 'Continue'
           Import-Module -Name 'ConvertToSARIF' -Force
