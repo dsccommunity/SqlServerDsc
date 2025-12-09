@@ -66,13 +66,31 @@ Describe 'Restore-SqlDscDatabase' -Tag 'Public' {
             } -Force
         }
 
-        It 'Should throw error when database already exists' {
+        It 'Should throw error when database already exists and RestoreType is Full' {
             $expectedMessage = InModuleScope -ScriptBlock {
                 $script:localizedData.Restore_SqlDscDatabase_DatabaseExists -f 'TestDatabase'
             }
 
-            { Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.bak' -Force } |
+            { Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.bak' -RestoreType 'Full' -Force } |
                 Should -Throw -ExpectedMessage ('*{0}*' -f $expectedMessage) -ErrorId 'RSDD0001,Restore-SqlDscDatabase'
+        }
+
+        It 'Should not throw error when database already exists and RestoreType is Differential' {
+            $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test_Diff.bak' -RestoreType 'Differential' -Force
+
+            $result | Should -BeNullOrEmpty
+        }
+
+        It 'Should not throw error when database already exists and RestoreType is Log' {
+            $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.trn' -RestoreType 'Log' -Force
+
+            $result | Should -BeNullOrEmpty
+        }
+
+        It 'Should not throw error when database already exists and RestoreType is Files' {
+            $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.bak' -RestoreType 'Files' -Force
+
+            $result | Should -BeNullOrEmpty
         }
     }
 

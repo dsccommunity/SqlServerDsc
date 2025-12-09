@@ -351,10 +351,14 @@ function Restore-SqlDscDatabase
             $ServerObject = $DatabaseObject.Parent
         }
 
-        # Check if database exists when not using ReplaceDatabase
+        <#
+            Check if database exists when not using ReplaceDatabase.
+            For full restores, require explicit ReplaceDatabase to avoid accidental overwrite.
+            Differential, log, and file restores require an existing database in a restoring state.
+        #>
         $existingDatabase = $ServerObject.Databases[$Name]
 
-        if ($existingDatabase -and -not $ReplaceDatabase.IsPresent)
+        if ($existingDatabase -and $RestoreType -eq 'Full' -and -not $ReplaceDatabase.IsPresent)
         {
             $errorMessage = $script:localizedData.Restore_SqlDscDatabase_DatabaseExists -f $Name
 
