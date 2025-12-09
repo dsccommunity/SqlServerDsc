@@ -301,6 +301,11 @@ Describe 'Restore-SqlDscDatabase' -Tag 'Public' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+
+            $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
+            $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'ExistingDatabase' -Force
+            $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Parent' -Value $mockServerObject -Force
+
             $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
                 return @{
                     'ExistingDatabase' = $mockDatabaseObject
@@ -308,10 +313,6 @@ Describe 'Restore-SqlDscDatabase' -Tag 'Public' {
                     # Mock implementation
                 } -PassThru -Force
             } -Force
-
-            $mockDatabaseObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
-            $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'ExistingDatabase' -Force
-            $mockDatabaseObject | Add-Member -MemberType 'NoteProperty' -Name 'Parent' -Value $mockServerObject -Force
         }
 
         It 'Should perform restore using database object with ReplaceDatabase' {
