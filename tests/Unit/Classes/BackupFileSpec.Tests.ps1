@@ -48,16 +48,26 @@ AfterAll {
 
 Describe 'BackupFileSpec' -Tag 'BackupFileSpec' {
     Context 'When instantiating the class' {
-        It 'Should not throw when instantiated with default constructor' {
-            InModuleScope -ScriptBlock {
-                { [BackupFileSpec]::new() } | Should -Not -Throw
+        It 'Should be able to instantiate with default constructor' {
+            $script:mockBackupFileSpecInstance = InModuleScope -ScriptBlock {
+                [BackupFileSpec]::new()
             }
         }
 
-        It 'Should not throw when instantiated with all parameters' {
-            InModuleScope -ScriptBlock {
-                { [BackupFileSpec]::new('MyDatabase', 'C:\Data\MyDatabase.mdf', 'D', 'PRIMARY', 10485760, 1073741824) } | Should -Not -Throw
+        It 'Should be of the correct type' {
+            $mockBackupFileSpecInstance | Should -Not -BeNullOrEmpty
+            $mockBackupFileSpecInstance.GetType().Name | Should -Be 'BackupFileSpec'
+        }
+
+        It 'Should be able to instantiate with all parameters' {
+            $script:mockBackupFileSpecInstanceWithParams = InModuleScope -ScriptBlock {
+                [BackupFileSpec]::new('MyDatabase', 'C:\Data\MyDatabase.mdf', 'D', 'PRIMARY', 10485760, 1073741824)
             }
+        }
+
+        It 'Should be of the correct type when instantiated with parameters' {
+            $mockBackupFileSpecInstanceWithParams | Should -Not -BeNullOrEmpty
+            $mockBackupFileSpecInstanceWithParams.GetType().Name | Should -Be 'BackupFileSpec'
         }
     }
 
