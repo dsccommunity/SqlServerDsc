@@ -93,11 +93,9 @@ function Get-SqlDscBackupFileList
             $fileList = $restore.ReadFileList($ServerObject)
 
             # Convert DataTable rows to BackupFileSpec objects
-            $result = @()
-
-            foreach ($row in $fileList.Rows)
+            $result = foreach ($row in $fileList.Rows)
             {
-                $fileSpec = [BackupFileSpec]::new(
+                [BackupFileSpec]::new(
                     $row['LogicalName'],
                     $row['PhysicalName'],
                     $row['Type'],
@@ -105,8 +103,6 @@ function Get-SqlDscBackupFileList
                     [System.Int64] $row['Size'],
                     [System.Int64] $row['MaxSize']
                 )
-
-                $result += $fileSpec
             }
 
             return $result
