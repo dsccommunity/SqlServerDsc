@@ -16,7 +16,7 @@
 
     .PARAMETER FileNumber
         Specifies the backup set number to verify when the backup file contains
-        multiple backup sets. Default is 1.
+        multiple backup sets. If not specified, the first backup set is verified.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
