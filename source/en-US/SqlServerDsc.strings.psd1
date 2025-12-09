@@ -474,6 +474,18 @@ ConvertFrom-StringData @'
     Database_Remove_ShouldProcessCaption = Remove database from instance
     Remove_SqlDscDatabase_NotFound = Database '{0}' was not found.
 
+    ## Backup-SqlDscDatabase
+    Backup_SqlDscDatabase_NotFound = Database '{0}' was not found. (BSDD0001)
+    Database_Backup_BackingUp = Performing {0} backup of database '{1}' to '{2}'. (BSDD0005)
+    Database_Backup_Success = Successfully completed {0} backup of database '{1}'. (BSDD0006)
+    Database_Backup_Failed = Failed to perform {0} backup of database '{1}' on instance '{2}'. (BSDD0004)
+    Database_Backup_LogBackupSimpleRecoveryModel = Cannot perform transaction log backup on database '{0}' because the database uses the Simple recovery model. Transaction log backups require the Full or Bulk-Logged recovery model. (BSDD0002)
+    Database_Backup_DatabaseNotOnline = Cannot backup database '{0}' because it is not online. Current status: '{1}'. (BSDD0003)
+    Database_Backup_ShouldProcessVerboseDescription = Performing {0} backup of database '{1}' to '{2}'.
+    Database_Backup_ShouldProcessVerboseWarning = Are you sure you want to perform a {0} backup of database '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Database_Backup_ShouldProcessCaption = Backup database
+
     ## Test-SqlDscIsDatabase
     IsDatabase_Test = Testing if database '{0}' exists on instance '{1}'. (TSID0001)
 
