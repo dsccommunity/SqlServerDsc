@@ -89,7 +89,7 @@ Describe 'Get-SqlDscBackupFileList' -Tag @('Integration_SQL2017', 'Integration_S
         It 'Should return BackupFileSpec objects' {
             $result = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:testBackupFile
 
-            $result[0] | Should -BeOfType 'BackupFileSpec'
+            $result[0].GetType().Name | Should -Be 'BackupFileSpec'
         }
 
         It 'Should return data file with type D' {
