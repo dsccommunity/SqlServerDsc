@@ -70,33 +70,22 @@ function Test-SqlDscBackupFile
     {
         Write-Debug -Message ($script:localizedData.Test_SqlDscBackupFile_Verifying -f $BackupFile)
 
+        # Create the restore object for verification
+        $restore = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Restore'
+
+        # Create and add the backup device
+        $backupDevice = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.BackupDeviceItem' -ArgumentList $BackupFile, 'File'
+        $restore.Devices.Add($backupDevice)
+
+        if ($PSBoundParameters.ContainsKey('FileNumber'))
+        {
+            $restore.FileNumber = $FileNumber
+        }
+
         try
         {
-            # Create the restore object for verification
-            $restore = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Restore'
-
-            # Create and add the backup device
-            $backupDevice = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.BackupDeviceItem' -ArgumentList $BackupFile, 'File'
-            $restore.Devices.Add($backupDevice)
-
-            if ($PSBoundParameters.ContainsKey('FileNumber'))
-            {
-                $restore.FileNumber = $FileNumber
-            }
-
             # Verify the backup
             $result = $restore.SqlVerify($ServerObject)
-
-            if ($result)
-            {
-                Write-Debug -Message ($script:localizedData.Test_SqlDscBackupFile_VerifySuccess -f $BackupFile)
-            }
-            else
-            {
-                Write-Debug -Message ($script:localizedData.Test_SqlDscBackupFile_VerifyFailed -f $BackupFile)
-            }
-
-            return $result
         }
         catch
         {
@@ -111,5 +100,16 @@ function Test-SqlDscBackupFile
                 )
             )
         }
+
+        if ($result)
+        {
+            Write-Debug -Message ($script:localizedData.Test_SqlDscBackupFile_VerifySuccess -f $BackupFile)
+        }
+        else
+        {
+            Write-Debug -Message ($script:localizedData.Test_SqlDscBackupFile_VerifyFailed -f $BackupFile)
+        }
+
+        return $result
     }
 }

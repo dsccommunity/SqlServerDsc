@@ -124,6 +124,35 @@ Describe 'Test-SqlDscBackupFile' -Tag 'Public' {
         }
     }
 
+    Context 'When SqlVerify throws an exception' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+
+            $script:mockRestoreObject = $null
+
+            Mock -CommandName New-Object -MockWith {
+                if ($TypeName -eq 'Microsoft.SqlServer.Management.Smo.Restore')
+                {
+                    $script:mockRestoreObject = [Microsoft.SqlServer.Management.Smo.Restore]::new()
+                    $script:mockRestoreObject.MockShouldThrowOnSqlVerify = $true
+
+                    return $script:mockRestoreObject
+                }
+
+                # For BackupDeviceItem, use the real constructor
+                if ($TypeName -eq 'Microsoft.SqlServer.Management.Smo.BackupDeviceItem')
+                {
+                    return [Microsoft.SqlServer.Management.Smo.BackupDeviceItem]::new($ArgumentList[0], $ArgumentList[1])
+                }
+            }
+        }
+
+        It 'Should throw a localized error' {
+            { Test-SqlDscBackupFile -ServerObject $mockServerObject -BackupFile 'C:\Backups\CorruptBackup.bak' } | Should -Throw -ErrorId 'TSBF0004,Test-SqlDscBackupFile'
+        }
+    }
+
     Context 'When pipeline is used' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
