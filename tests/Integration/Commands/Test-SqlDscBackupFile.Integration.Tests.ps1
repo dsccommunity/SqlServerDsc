@@ -121,7 +121,7 @@ Describe 'Test-SqlDscBackupFile' -Tag @('Integration_SQL2017', 'Integration_SQL2
     }
 
     Context 'When SqlVerify throws an exception' {
-        It 'Should throw a localized error for an invalid path' {
+        It 'Should throw an error for an invalid path' {
             # Use an invalid path that will cause SQL Server to throw an exception
             $invalidPath = 'Z:\NonExistentDrive\InvalidPath\Backup.bak'
 
