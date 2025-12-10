@@ -488,7 +488,6 @@ ConvertFrom-StringData @'
 
     ## Restore-SqlDscDatabase
     Restore_SqlDscDatabase_DatabaseExists = Cannot restore to database '{0}' because it already exists. Use the ReplaceDatabase parameter to overwrite the existing database. (RSDD0001)
-    Restore_SqlDscDatabase_BackupFileNotFound = The backup file '{0}' was not found or is not accessible. (RSDD0002)
     Restore_SqlDscDatabase_Failed = Failed to perform {0} restore to database '{1}' on instance '{2}'. (RSDD0003)
     Restore_SqlDscDatabase_Restoring = Performing {0} restore to database '{1}' from '{2}'. (RSDD0004)
     Restore_SqlDscDatabase_Success = Successfully completed {0} restore to database '{1}'. (RSDD0005)
