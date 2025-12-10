@@ -140,6 +140,26 @@ Describe 'Restore-SqlDscDatabase' -Tag 'Public' {
             { Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.bak' -RestoreType 'Files' -StopBeforeMarkName 'MyMark' -Force } |
                 Should -Throw -ExpectedMessage "*The parameter(s) 'StopBeforeMarkName' are not allowed to be specified*" -ErrorId 'Parameters,New-ArgumentException'
         }
+
+        It 'Should throw error when StopAtMarkAfterDate is used with Full restore' {
+            { Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.bak' -RestoreType 'Full' -StopAtMarkAfterDate '2024-01-15T14:30:00' -Force } |
+                Should -Throw -ExpectedMessage "*The parameter(s) 'StopAtMarkAfterDate' are not allowed to be specified*" -ErrorId 'Parameters,New-ArgumentException'
+        }
+
+        It 'Should throw error when StopBeforeMarkAfterDate is used with Differential restore' {
+            { Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.bak' -RestoreType 'Differential' -StopBeforeMarkAfterDate '2024-01-15T14:30:00' -Force } |
+                Should -Throw -ExpectedMessage "*The parameter(s) 'StopBeforeMarkAfterDate' are not allowed to be specified*" -ErrorId 'Parameters,New-ArgumentException'
+        }
+
+        It 'Should throw error when StopAtMarkAfterDate is used without StopAtMarkName' {
+            { Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.trn' -RestoreType 'Log' -StopAtMarkAfterDate '2024-01-15T14:30:00' -Force } |
+                Should -Throw -ExpectedMessage "*'StopAtMarkName'*must*all be specified*" -ErrorId 'ARCP0001,Assert-RequiredCommandParameter'
+        }
+
+        It 'Should throw error when StopBeforeMarkAfterDate is used without StopBeforeMarkName' {
+            { Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.trn' -RestoreType 'Log' -StopBeforeMarkAfterDate '2024-01-15T14:30:00' -Force } |
+                Should -Throw -ExpectedMessage "*'StopBeforeMarkName'*must*all be specified*" -ErrorId 'ARCP0001,Assert-RequiredCommandParameter'
+        }
     }
 
     Context 'When performing successful restores' {

@@ -368,7 +368,9 @@ function Restore-SqlDscDatabase
                 NotAllowedList = @(
                     'ToPointInTime'
                     'StopAtMarkName'
+                    'StopAtMarkAfterDate'
                     'StopBeforeMarkName'
+                    'StopBeforeMarkAfterDate'
                 )
                 IfParameterPresent = @{
                     RestoreType = $RestoreType
@@ -377,6 +379,23 @@ function Restore-SqlDscDatabase
 
             Assert-BoundParameter @assertBoundParameterParameters
         }
+
+        # Validate that AfterDate parameters are only used with their corresponding mark name parameters
+        $assertBoundParameterParameters = @{
+            BoundParameterList = $PSBoundParameters
+            RequiredParameter = @('StopAtMarkName')
+            IfParameterPresent = @('StopAtMarkAfterDate')
+        }
+
+        Assert-BoundParameter @assertBoundParameterParameters
+
+        $assertBoundParameterParameters = @{
+            BoundParameterList = $PSBoundParameters
+            RequiredParameter = @('StopBeforeMarkName')
+            IfParameterPresent = @('StopBeforeMarkAfterDate')
+        }
+
+        Assert-BoundParameter @assertBoundParameterParameters
 
         $descriptionMessage = $script:localizedData.Restore_SqlDscDatabase_ShouldProcessVerboseDescription -f $restoreTypeDescription, $Name, $BackupFile, $ServerObject.InstanceName
         $confirmationMessage = $script:localizedData.Restore_SqlDscDatabase_ShouldProcessVerboseWarning -f $restoreTypeDescription, $Name
