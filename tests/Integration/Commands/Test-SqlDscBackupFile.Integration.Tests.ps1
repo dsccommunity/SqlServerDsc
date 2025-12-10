@@ -107,51 +107,16 @@ Describe 'Test-SqlDscBackupFile' -Tag @('Integration_SQL2017', 'Integration_SQL2
             }
         }
 
-        It 'Should return false or throw an error for an invalid backup file' {
-            # SQL Server may either return false or throw an exception for invalid backup files
-            # depending on the level of corruption/invalidity
-            $result = $null
-            $threwError = $false
-
-            try
-            {
-                $result = Test-SqlDscBackupFile -ServerObject $script:serverObject -BackupFile $script:invalidBackupFile
-            }
-            catch
-            {
-                $threwError = $true
-                $_.FullyQualifiedErrorId | Should -Be 'TSBF0004,Test-SqlDscBackupFile'
-            }
-
-            if (-not $threwError)
-            {
-                $result | Should -BeFalse
-            }
+        It 'Should throw an error for an invalid backup file' {
+            { Test-SqlDscBackupFile -ServerObject $script:serverObject -BackupFile $script:invalidBackupFile } | Should -Throw -ErrorId 'TSBF0004,Test-SqlDscBackupFile'
         }
     }
 
     Context 'When verifying a non-existent backup file' {
-        It 'Should return false or throw an error for a non-existent backup file' {
+        It 'Should throw an error for a non-existent backup file' {
             $nonExistentFile = Join-Path -Path $script:backupDirectory -ChildPath 'NonExistentBackup_12345.bak'
 
-            # SQL Server may either return false or throw an exception for non-existent files
-            $result = $null
-            $threwError = $false
-
-            try
-            {
-                $result = Test-SqlDscBackupFile -ServerObject $script:serverObject -BackupFile $nonExistentFile
-            }
-            catch
-            {
-                $threwError = $true
-                $_.FullyQualifiedErrorId | Should -Be 'TSBF0004,Test-SqlDscBackupFile'
-            }
-
-            if (-not $threwError)
-            {
-                $result | Should -BeFalse
-            }
+            { Test-SqlDscBackupFile -ServerObject $script:serverObject -BackupFile $nonExistentFile } | Should -Throw -ErrorId 'TSBF0004,Test-SqlDscBackupFile'
         }
     }
 
