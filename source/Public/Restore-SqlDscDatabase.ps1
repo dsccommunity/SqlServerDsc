@@ -47,16 +47,6 @@
         database files during restore. Each RelocateFile object contains a
         LogicalFileName and PhysicalFileName property.
 
-    .PARAMETER DataFilePath
-        Specifies the directory path where data files should be relocated during
-        restore. This is a simpler alternative to RelocateFile when you want all
-        data files in one directory. Cannot be used together with RelocateFile.
-
-    .PARAMETER LogFilePath
-        Specifies the directory path where log files should be relocated during
-        restore. This is a simpler alternative to RelocateFile when you want all
-        log files in one directory. Cannot be used together with RelocateFile.
-
     .PARAMETER Checksum
         Specifies that checksums should be verified during the restore operation.
 
@@ -141,13 +131,6 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $serverObject | Restore-SqlDscDatabase -Name 'MyDatabase' -BackupFile 'C:\Backups\MyDatabase.bak' -DataFilePath 'D:\SQLData' -LogFilePath 'L:\SQLLogs'
-
-        Performs a full restore with all data files relocated to D:\SQLData and
-        all log files relocated to L:\SQLLogs.
-
-    .EXAMPLE
-        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $relocateFiles = @(
             [Microsoft.SqlServer.Management.Smo.RelocateFile]::new('MyDatabase', 'D:\SQLData\MyDatabase.mdf')
             [Microsoft.SqlServer.Management.Smo.RelocateFile]::new('MyDatabase_log', 'L:\SQLLogs\MyDatabase_log.ldf')
@@ -189,17 +172,14 @@ function Restore-SqlDscDatabase
     param
     (
         [Parameter(ParameterSetName = 'ServerObject', Mandatory = $true, ValueFromPipeline = $true)]
-        [Parameter(ParameterSetName = 'ServerObjectSimpleRelocate', Mandatory = $true, ValueFromPipeline = $true)]
         [Microsoft.SqlServer.Management.Smo.Server]
         $ServerObject,
 
         [Parameter(ParameterSetName = 'DatabaseObject', Mandatory = $true, ValueFromPipeline = $true)]
-        [Parameter(ParameterSetName = 'DatabaseObjectSimpleRelocate', Mandatory = $true, ValueFromPipeline = $true)]
         [Microsoft.SqlServer.Management.Smo.Database]
         $DatabaseObject,
 
         [Parameter(ParameterSetName = 'ServerObject', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'ServerObjectSimpleRelocate', Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Name,
@@ -231,18 +211,6 @@ function Restore-SqlDscDatabase
         [Parameter(ParameterSetName = 'DatabaseObject')]
         [Microsoft.SqlServer.Management.Smo.RelocateFile[]]
         $RelocateFile,
-
-        [Parameter(ParameterSetName = 'ServerObjectSimpleRelocate', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'DatabaseObjectSimpleRelocate', Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $DataFilePath,
-
-        [Parameter(ParameterSetName = 'ServerObjectSimpleRelocate', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'DatabaseObjectSimpleRelocate', Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $LogFilePath,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -299,7 +267,6 @@ function Restore-SqlDscDatabase
         $MaxTransferSize,
 
         [Parameter(ParameterSetName = 'ServerObject')]
-        [Parameter(ParameterSetName = 'ServerObjectSimpleRelocate')]
         [System.Management.Automation.SwitchParameter]
         $Refresh,
 
@@ -337,7 +304,7 @@ function Restore-SqlDscDatabase
             )
         }
 
-        if ($PSCmdlet.ParameterSetName -in @('ServerObject', 'ServerObjectSimpleRelocate'))
+        if ($PSCmdlet.ParameterSetName -eq 'ServerObject')
         {
             if ($Refresh.IsPresent)
             {
@@ -472,31 +439,7 @@ function Restore-SqlDscDatabase
                 }
 
                 # Handle file relocation
-                if ($PSCmdlet.ParameterSetName -in @('ServerObjectSimpleRelocate', 'DatabaseObjectSimpleRelocate'))
-                {
-                    # Get the file list from the backup to perform simple relocation
-                    $fileList = $restore.ReadFileList($ServerObject)
-
-                    foreach ($row in $fileList.Rows)
-                    {
-                        $logicalName = $row['LogicalName']
-                        $fileType = $row['Type']
-                        $originalFileName = [System.IO.Path]::GetFileName($row['PhysicalName'])
-
-                        if ($fileType -eq 'L')
-                        {
-                            $newPhysicalName = Join-Path -Path $LogFilePath -ChildPath $originalFileName
-                        }
-                        else
-                        {
-                            $newPhysicalName = Join-Path -Path $DataFilePath -ChildPath $originalFileName
-                        }
-
-                        $relocateFileObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.RelocateFile' -ArgumentList $logicalName, $newPhysicalName
-                        $restore.RelocateFiles.Add($relocateFileObject)
-                    }
-                }
-                elseif ($PSBoundParameters.ContainsKey('RelocateFile'))
+                if ($PSBoundParameters.ContainsKey('RelocateFile'))
                 {
                     foreach ($file in $RelocateFile)
                     {

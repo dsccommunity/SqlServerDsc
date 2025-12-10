@@ -117,6 +117,31 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
         BeforeAll {
             $script:restoreDbName = 'SqlDscRestoreNewDb_' + (Get-Random)
             $script:createdDatabases += $script:restoreDbName
+
+            # Get the file list from the backup to build RelocateFile objects with unique names
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile
+
+            $script:restoreRelocateFiles = @()
+
+            foreach ($file in $fileList)
+            {
+                # Generate unique filename based on the target database name to avoid conflicts
+                $fileExtension = [System.IO.Path]::GetExtension($file.PhysicalName)
+
+                if ($file.Type -eq 'L')
+                {
+                    $newFileName = $script:restoreDbName + '_log' + $fileExtension
+                    $newPath = Join-Path -Path $script:logDirectory -ChildPath $newFileName
+                }
+                else
+                {
+                    $newFileName = $script:restoreDbName + $fileExtension
+                    $newPath = Join-Path -Path $script:dataDirectory -ChildPath $newFileName
+                }
+
+                $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
+                $script:restoreRelocateFiles += $relocateFile
+            }
         }
 
         AfterAll {
@@ -128,8 +153,8 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             }
         }
 
-        It 'Should restore database successfully with simple file relocation' {
-            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:restoreDbName -BackupFile $script:fullBackupFile -DataFilePath $script:dataDirectory -LogFilePath $script:logDirectory -Force -ErrorAction 'Stop'
+        It 'Should restore database successfully with explicit file relocation' {
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:restoreDbName -BackupFile $script:fullBackupFile -RelocateFile $script:restoreRelocateFiles -Force -ErrorAction 'Stop'
 
             # Verify the database was restored
             $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:restoreDbName -ErrorAction 'SilentlyContinue'
@@ -143,8 +168,33 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $script:replaceDbName = 'SqlDscRestoreReplaceDb_' + (Get-Random)
             $script:createdDatabases += $script:replaceDbName
 
+            # Get the file list from the backup to build RelocateFile objects with unique names
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile
+
+            $script:replaceRelocateFiles = @()
+
+            foreach ($file in $fileList)
+            {
+                # Generate unique filename based on the target database name to avoid conflicts
+                $fileExtension = [System.IO.Path]::GetExtension($file.PhysicalName)
+
+                if ($file.Type -eq 'L')
+                {
+                    $newFileName = $script:replaceDbName + '_log' + $fileExtension
+                    $newPath = Join-Path -Path $script:logDirectory -ChildPath $newFileName
+                }
+                else
+                {
+                    $newFileName = $script:replaceDbName + $fileExtension
+                    $newPath = Join-Path -Path $script:dataDirectory -ChildPath $newFileName
+                }
+
+                $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
+                $script:replaceRelocateFiles += $relocateFile
+            }
+
             # Create the database first
-            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:replaceDbName -BackupFile $script:fullBackupFile -DataFilePath $script:dataDirectory -LogFilePath $script:logDirectory -Force -ErrorAction 'Stop'
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:replaceDbName -BackupFile $script:fullBackupFile -RelocateFile $script:replaceRelocateFiles -Force -ErrorAction 'Stop'
         }
 
         AfterAll {
@@ -157,9 +207,17 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
         }
 
         It 'Should replace existing database successfully' {
-            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:replaceDbName -BackupFile $script:fullBackupFile -DataFilePath $script:dataDirectory -LogFilePath $script:logDirectory -ReplaceDatabase -Force -ErrorAction 'Stop'
+            # Ensure the database exists and is online before attempting replace
+            $script:serverObject.Databases.Refresh()
+            $existingDb = $script:serverObject.Databases[$script:replaceDbName]
+            $existingDb | Should -Not -BeNullOrEmpty -Because 'Database should exist before replace operation'
+            $existingDb.Status | Should -Be 'Normal' -Because 'Database should be online before replace operation'
+
+            # When replacing a database, do not specify RelocateFile - SQL Server will use existing file locations
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:replaceDbName -BackupFile $script:fullBackupFile -ReplaceDatabase -Force -ErrorAction 'Stop'
 
             # Verify the database still exists
+            $script:serverObject.Databases.Refresh()
             $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:replaceDbName -ErrorAction 'SilentlyContinue'
             $restoredDb | Should -Not -BeNullOrEmpty
         }
@@ -169,6 +227,31 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
         BeforeAll {
             $script:noRecoveryDbName = 'SqlDscRestoreNoRecovery_' + (Get-Random)
             $script:createdDatabases += $script:noRecoveryDbName
+
+            # Get the file list from the backup to build RelocateFile objects with unique names
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile
+
+            $script:noRecoveryRelocateFiles = @()
+
+            foreach ($file in $fileList)
+            {
+                # Generate unique filename based on the target database name to avoid conflicts
+                $fileExtension = [System.IO.Path]::GetExtension($file.PhysicalName)
+
+                if ($file.Type -eq 'L')
+                {
+                    $newFileName = $script:noRecoveryDbName + '_log' + $fileExtension
+                    $newPath = Join-Path -Path $script:logDirectory -ChildPath $newFileName
+                }
+                else
+                {
+                    $newFileName = $script:noRecoveryDbName + $fileExtension
+                    $newPath = Join-Path -Path $script:dataDirectory -ChildPath $newFileName
+                }
+
+                $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
+                $script:noRecoveryRelocateFiles += $relocateFile
+            }
         }
 
         AfterAll {
@@ -181,7 +264,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
         }
 
         It 'Should restore database in restoring state with NoRecovery' {
-            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:noRecoveryDbName -BackupFile $script:fullBackupFile -DataFilePath $script:dataDirectory -LogFilePath $script:logDirectory -NoRecovery -Force -ErrorAction 'Stop'
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:noRecoveryDbName -BackupFile $script:fullBackupFile -RelocateFile $script:noRecoveryRelocateFiles -NoRecovery -Force -ErrorAction 'Stop'
 
             # Refresh to get current state
             $script:serverObject.Databases.Refresh()
@@ -243,6 +326,31 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
         BeforeAll {
             $script:passThruDbName = 'SqlDscRestorePassThru_' + (Get-Random)
             $script:createdDatabases += $script:passThruDbName
+
+            # Get the file list from the backup to build RelocateFile objects with unique names
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile
+
+            $script:passThruRelocateFiles = @()
+
+            foreach ($file in $fileList)
+            {
+                # Generate unique filename based on the target database name to avoid conflicts
+                $fileExtension = [System.IO.Path]::GetExtension($file.PhysicalName)
+
+                if ($file.Type -eq 'L')
+                {
+                    $newFileName = $script:passThruDbName + '_log' + $fileExtension
+                    $newPath = Join-Path -Path $script:logDirectory -ChildPath $newFileName
+                }
+                else
+                {
+                    $newFileName = $script:passThruDbName + $fileExtension
+                    $newPath = Join-Path -Path $script:dataDirectory -ChildPath $newFileName
+                }
+
+                $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
+                $script:passThruRelocateFiles += $relocateFile
+            }
         }
 
         AfterAll {
@@ -255,7 +363,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
         }
 
         It 'Should return database object when PassThru is specified' {
-            $result = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:passThruDbName -BackupFile $script:fullBackupFile -DataFilePath $script:dataDirectory -LogFilePath $script:logDirectory -PassThru -Force -ErrorAction 'Stop'
+            $result = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:passThruDbName -BackupFile $script:fullBackupFile -RelocateFile $script:passThruRelocateFiles -PassThru -Force -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
             $result.Name | Should -Be $script:passThruDbName
@@ -266,6 +374,31 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
         BeforeAll {
             $script:checksumDbName = 'SqlDscRestoreChecksum_' + (Get-Random)
             $script:createdDatabases += $script:checksumDbName
+
+            # Get the file list from the backup to build RelocateFile objects with unique names
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile
+
+            $script:checksumRelocateFiles = @()
+
+            foreach ($file in $fileList)
+            {
+                # Generate unique filename based on the target database name to avoid conflicts
+                $fileExtension = [System.IO.Path]::GetExtension($file.PhysicalName)
+
+                if ($file.Type -eq 'L')
+                {
+                    $newFileName = $script:checksumDbName + '_log' + $fileExtension
+                    $newPath = Join-Path -Path $script:logDirectory -ChildPath $newFileName
+                }
+                else
+                {
+                    $newFileName = $script:checksumDbName + $fileExtension
+                    $newPath = Join-Path -Path $script:dataDirectory -ChildPath $newFileName
+                }
+
+                $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
+                $script:checksumRelocateFiles += $relocateFile
+            }
         }
 
         AfterAll {
@@ -278,7 +411,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
         }
 
         It 'Should restore database with checksum verification' {
-            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:checksumDbName -BackupFile $script:fullBackupFile -DataFilePath $script:dataDirectory -LogFilePath $script:logDirectory -Checksum -Force -ErrorAction 'Stop'
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:checksumDbName -BackupFile $script:fullBackupFile -RelocateFile $script:checksumRelocateFiles -Checksum -Force -ErrorAction 'Stop'
 
             # Verify the database was restored
             $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:checksumDbName -ErrorAction 'SilentlyContinue'
@@ -305,7 +438,32 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
         }
 
         It 'Should throw error when database already exists' {
-            { Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:existingDbName -BackupFile $script:fullBackupFile -DataFilePath $script:dataDirectory -LogFilePath $script:logDirectory -Force } | Should -Throw -ErrorId 'RSDD0001,Restore-SqlDscDatabase'
+            # Get the file list from the backup to build RelocateFile objects with unique names
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile
+
+            $existingRelocateFiles = @()
+
+            foreach ($file in $fileList)
+            {
+                # Generate unique filename based on the target database name to avoid conflicts
+                $fileExtension = [System.IO.Path]::GetExtension($file.PhysicalName)
+
+                if ($file.Type -eq 'L')
+                {
+                    $newFileName = $script:existingDbName + '_log' + $fileExtension
+                    $newPath = Join-Path -Path $script:logDirectory -ChildPath $newFileName
+                }
+                else
+                {
+                    $newFileName = $script:existingDbName + $fileExtension
+                    $newPath = Join-Path -Path $script:dataDirectory -ChildPath $newFileName
+                }
+
+                $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
+                $existingRelocateFiles += $relocateFile
+            }
+
+            { Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:existingDbName -BackupFile $script:fullBackupFile -RelocateFile $existingRelocateFiles -Force } | Should -Throw -ErrorId 'RSDD0001,Restore-SqlDscDatabase'
         }
     }
 
@@ -321,6 +479,31 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
         BeforeAll {
             $script:sequenceDbName = 'SqlDscRestoreSequence_' + (Get-Random)
             $script:createdDatabases += $script:sequenceDbName
+
+            # Get the file list from the backup to build RelocateFile objects with unique names
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile
+
+            $script:sequenceRelocateFiles = @()
+
+            foreach ($file in $fileList)
+            {
+                # Generate unique filename based on the target database name to avoid conflicts
+                $fileExtension = [System.IO.Path]::GetExtension($file.PhysicalName)
+
+                if ($file.Type -eq 'L')
+                {
+                    $newFileName = $script:sequenceDbName + '_log' + $fileExtension
+                    $newPath = Join-Path -Path $script:logDirectory -ChildPath $newFileName
+                }
+                else
+                {
+                    $newFileName = $script:sequenceDbName + $fileExtension
+                    $newPath = Join-Path -Path $script:dataDirectory -ChildPath $newFileName
+                }
+
+                $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
+                $script:sequenceRelocateFiles += $relocateFile
+            }
         }
 
         AfterAll {
@@ -333,7 +516,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
         }
 
         It 'Should restore full backup with NoRecovery' {
-            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:sequenceDbName -BackupFile $script:fullBackupFile -DataFilePath $script:dataDirectory -LogFilePath $script:logDirectory -NoRecovery -Force -ErrorAction 'Stop'
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:sequenceDbName -BackupFile $script:fullBackupFile -RelocateFile $script:sequenceRelocateFiles -NoRecovery -Force -ErrorAction 'Stop'
 
             $script:serverObject.Databases.Refresh()
             $restoredDb = $script:serverObject.Databases[$script:sequenceDbName]
