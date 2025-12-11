@@ -89,9 +89,7 @@ Describe 'SqlProtocol\Get-TargetResource' -Tag 'Get' {
     Context 'When the system is not in the desired state' {
         Context 'When the SQL Server instance does not exist' {
             BeforeAll {
-                Mock -CommandName Get-SqlDscServerProtocol -MockWith {
-                    return $null
-                }
+                Mock -CommandName Get-SqlDscServerProtocol
             }
 
             It 'Should return the correct values' {
@@ -738,9 +736,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                 )
             }
 
-            Mock -CommandName Get-SqlDscServerProtocol -MockWith {
-                return $null
-            }
+            Mock -CommandName Get-SqlDscServerProtocol
         }
 
         It 'Should throw the correct error' {
