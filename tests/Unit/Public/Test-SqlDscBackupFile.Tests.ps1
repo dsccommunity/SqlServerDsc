@@ -170,7 +170,7 @@ Describe 'Test-SqlDscBackupFile' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-ServerObject] <Server> [-BackupFile] <string> [[-FileNumber] <int>] [<CommonParameters>]'
+                ExpectedParameters = '[-ServerObject] <Server> [-BackupFile] <string> [[-FileNumber] <int>] [-LoadHistory] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Test-SqlDscBackupFile').ParameterSets |

@@ -1802,6 +1802,24 @@ namespace Microsoft.SqlServer.Management.Smo
             return MockSqlVerifyResult;
         }
 
+        public System.Boolean SqlVerify(Server serverObject, bool loadHistory, ref string errorMessage)
+        {
+            MockSqlVerifyCalled++;
+
+            if (MockShouldThrowOnSqlVerify)
+            {
+                throw new System.Exception("Simulated SqlVerify() failure for testing purposes.");
+            }
+
+            // Set error message if verification fails
+            if (!MockSqlVerifyResult)
+            {
+                errorMessage = "Simulated verification failure for testing purposes.";
+            }
+
+            return MockSqlVerifyResult;
+        }
+
         public System.Data.DataTable ReadFileList(Server serverObject)
         {
             MockReadFileListCalled++;
