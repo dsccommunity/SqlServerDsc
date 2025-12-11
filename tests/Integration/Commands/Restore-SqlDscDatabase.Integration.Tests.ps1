@@ -279,23 +279,24 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $script:relocateDbName = 'SqlDscRestoreRelocate_' + (Get-Random)
             $script:createdDatabases += $script:relocateDbName
 
-            # Get the file list from the backup
+            # Get the file list from the backup to build RelocateFile objects with unique names
             $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile
 
-            # Create RelocateFile objects
             $script:relocateFiles = @()
 
             foreach ($file in $fileList)
             {
-                $originalFileName = [System.IO.Path]::GetFileName($file.PhysicalName)
-                $newFileName = $script:relocateDbName + '_' + $originalFileName
+                # Generate unique filename based on the target database name to avoid conflicts
+                $fileExtension = [System.IO.Path]::GetExtension($file.PhysicalName)
 
                 if ($file.Type -eq 'L')
                 {
+                    $newFileName = $script:relocateDbName + '_log' + $fileExtension
                     $newPath = Join-Path -Path $script:logDirectory -ChildPath $newFileName
                 }
                 else
                 {
+                    $newFileName = $script:relocateDbName + $fileExtension
                     $newPath = Join-Path -Path $script:dataDirectory -ChildPath $newFileName
                 }
 
@@ -375,8 +376,12 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $script:checksumDbName = 'SqlDscRestoreChecksum_' + (Get-Random)
             $script:createdDatabases += $script:checksumDbName
 
+            # Create a backup with checksums for this test
+            $script:checksumBackupFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:sourceDatabaseName + '_Checksum.bak')
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:sourceDatabaseName -BackupFile $script:checksumBackupFile -Checksum -Force -ErrorAction 'Stop'
+
             # Get the file list from the backup to build RelocateFile objects with unique names
-            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:checksumBackupFile
 
             $script:checksumRelocateFiles = @()
 
@@ -408,10 +413,16 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             {
                 $null = Remove-SqlDscDatabase -DatabaseObject $existingDb -Force -ErrorAction 'SilentlyContinue'
             }
+
+            # Clean up checksum backup file
+            if (Test-Path -Path $script:checksumBackupFile)
+            {
+                Remove-Item -Path $script:checksumBackupFile -Force -ErrorAction 'SilentlyContinue'
+            }
         }
 
         It 'Should restore database with checksum verification' {
-            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:checksumDbName -BackupFile $script:fullBackupFile -RelocateFile $script:checksumRelocateFiles -Checksum -Force -ErrorAction 'Stop'
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:checksumDbName -BackupFile $script:checksumBackupFile -RelocateFile $script:checksumRelocateFiles -Checksum -Force -ErrorAction 'Stop'
 
             # Verify the database was restored
             $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:checksumDbName -ErrorAction 'SilentlyContinue'
