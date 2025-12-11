@@ -558,4 +558,195 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $restoredDb.Status | Should -Be 'Normal'
         }
     }
+
+    Context 'When performing a restore with Standby mode' {
+        BeforeAll {
+            $script:standbyDbName = 'SqlDscRestoreStandby_' + (Get-Random)
+            $script:createdDatabases += $script:standbyDbName
+
+            # Create standby undo file path
+            $script:standbyFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:standbyDbName + '_standby.ldf')
+
+            # Get the file list from the backup to build RelocateFile objects with unique names
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile
+
+            $script:standbyRelocateFiles = @()
+
+            foreach ($file in $fileList)
+            {
+                # Generate unique filename based on the target database name to avoid conflicts
+                $fileExtension = [System.IO.Path]::GetExtension($file.PhysicalName)
+
+                if ($file.Type -eq 'L')
+                {
+                    $newFileName = $script:standbyDbName + '_log' + $fileExtension
+                    $newPath = Join-Path -Path $script:logDirectory -ChildPath $newFileName
+                }
+                else
+                {
+                    $newFileName = $script:standbyDbName + $fileExtension
+                    $newPath = Join-Path -Path $script:dataDirectory -ChildPath $newFileName
+                }
+
+                $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
+                $script:standbyRelocateFiles += $relocateFile
+            }
+        }
+
+        AfterAll {
+            $existingDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:standbyDbName -ErrorAction 'SilentlyContinue'
+
+            if ($existingDb)
+            {
+                $null = Remove-SqlDscDatabase -DatabaseObject $existingDb -Force -ErrorAction 'SilentlyContinue'
+            }
+
+            # Clean up standby file
+            if (Test-Path -Path $script:standbyFile)
+            {
+                Remove-Item -Path $script:standbyFile -Force -ErrorAction 'SilentlyContinue'
+            }
+        }
+
+        It 'Should restore database in standby mode with read-only access' {
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:standbyDbName -BackupFile $script:fullBackupFile -RelocateFile $script:standbyRelocateFiles -Standby $script:standbyFile -Force -ErrorAction 'Stop'
+
+            # Refresh to get current state
+            $script:serverObject.Databases.Refresh()
+            $restoredDb = $script:serverObject.Databases[$script:standbyDbName]
+            $restoredDb | Should -Not -BeNullOrEmpty
+
+            # Refresh the database object
+            $restoredDb.Refresh()
+
+            # Database should be online and in standby/read-only state
+            $restoredDb.Status | Should -Be 'Normal' -Because 'Database should be online in standby mode'
+            $restoredDb.IsReadOnly | Should -BeTrue -Because 'Database should be read-only in standby mode'
+
+            # Verify standby file exists and has content
+            Test-Path -Path $script:standbyFile | Should -BeTrue -Because 'Standby undo file should exist'
+            (Get-Item -Path $script:standbyFile).Length | Should -BeGreaterThan 0 -Because 'Standby file should have content'
+        }
+    }
+
+    Context 'When performing a point-in-time restore' {
+        BeforeAll {
+            $script:pitDbName = 'SqlDscRestorePIT_' + (Get-Random)
+            $script:createdDatabases += $script:pitDbName
+
+            # Create a temporary database for point-in-time testing
+            $script:pitSourceDbName = 'SqlDscPITSource_' + (Get-Random)
+            $script:createdDatabases += $script:pitSourceDbName
+
+            # Create source database with Full recovery model
+            $null = New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:pitSourceDbName -RecoveryModel 'Full' -Force -ErrorAction 'Stop'
+
+            # Insert initial data
+            $query1 = @"
+CREATE TABLE dbo.TestData (Id INT PRIMARY KEY, InsertTime DATETIME, Value NVARCHAR(50));
+INSERT INTO dbo.TestData (Id, InsertTime, Value) VALUES (1, GETDATE(), 'Initial');
+"@
+            Invoke-SqlDscQuery -ServerObject $script:serverObject -Database $script:pitSourceDbName -Query $query1 -ErrorAction 'Stop'
+
+            # Create full backup
+            $script:pitFullBackupFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:pitSourceDbName + '_PIT_Full.bak')
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:pitSourceDbName -BackupFile $script:pitFullBackupFile -Force -ErrorAction 'Stop'
+
+            # Wait a moment to ensure time difference
+            Start-Sleep -Seconds 2
+
+            # Capture the point-in-time before adding more data
+            $script:pointInTime = Get-Date
+
+            # Wait another moment
+            Start-Sleep -Seconds 2
+
+            # Insert additional data after the point-in-time
+            $query2 = "INSERT INTO dbo.TestData (Id, InsertTime, Value) VALUES (2, GETDATE(), 'AfterPIT');"
+            Invoke-SqlDscQuery -ServerObject $script:serverObject -Database $script:pitSourceDbName -Query $query2 -ErrorAction 'Stop'
+
+            # Create log backup to capture the additional data
+            $script:pitLogBackupFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:pitSourceDbName + '_PIT_Log.trn')
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:pitSourceDbName -BackupFile $script:pitLogBackupFile -BackupType 'Log' -Force -ErrorAction 'Stop'
+
+            # Get the file list from the backup to build RelocateFile objects
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:pitFullBackupFile
+
+            $script:pitRelocateFiles = @()
+
+            foreach ($file in $fileList)
+            {
+                $fileExtension = [System.IO.Path]::GetExtension($file.PhysicalName)
+
+                if ($file.Type -eq 'L')
+                {
+                    $newFileName = $script:pitDbName + '_log' + $fileExtension
+                    $newPath = Join-Path -Path $script:logDirectory -ChildPath $newFileName
+                }
+                else
+                {
+                    $newFileName = $script:pitDbName + $fileExtension
+                    $newPath = Join-Path -Path $script:dataDirectory -ChildPath $newFileName
+                }
+
+                $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
+                $script:pitRelocateFiles += $relocateFile
+            }
+        }
+
+        AfterAll {
+            # Clean up restored database
+            $existingDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:pitDbName -ErrorAction 'SilentlyContinue'
+
+            if ($existingDb)
+            {
+                $null = Remove-SqlDscDatabase -DatabaseObject $existingDb -Force -ErrorAction 'SilentlyContinue'
+            }
+
+            # Clean up source database
+            $existingDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:pitSourceDbName -ErrorAction 'SilentlyContinue'
+
+            if ($existingDb)
+            {
+                $null = Remove-SqlDscDatabase -DatabaseObject $existingDb -Force -ErrorAction 'SilentlyContinue'
+            }
+
+            # Clean up backup files
+            if (Test-Path -Path $script:pitFullBackupFile)
+            {
+                Remove-Item -Path $script:pitFullBackupFile -Force -ErrorAction 'SilentlyContinue'
+            }
+
+            if (Test-Path -Path $script:pitLogBackupFile)
+            {
+                Remove-Item -Path $script:pitLogBackupFile -Force -ErrorAction 'SilentlyContinue'
+            }
+        }
+
+        It 'Should restore database to a specific point-in-time' {
+            # Restore full backup with NoRecovery
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:pitDbName -BackupFile $script:pitFullBackupFile -RelocateFile $script:pitRelocateFiles -NoRecovery -Force -ErrorAction 'Stop'
+
+            # Restore log backup to the point-in-time
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:pitDbName -BackupFile $script:pitLogBackupFile -RestoreType 'Log' -StopAt $script:pointInTime -Force -ErrorAction 'Stop'
+
+            # Refresh and verify the database is online
+            $script:serverObject.Databases.Refresh()
+            $restoredDb = $script:serverObject.Databases[$script:pitDbName]
+            $restoredDb | Should -Not -BeNullOrEmpty
+
+            $restoredDb.Refresh()
+            $restoredDb.Status | Should -Be 'Normal' -Because 'Database should be online after point-in-time restore'
+
+            # Verify data reflects the point-in-time (only initial record should exist)
+            $query = "SELECT COUNT(*) AS RecordCount FROM dbo.TestData WHERE Id = 1;"
+            $result = Invoke-SqlDscQuery -ServerObject $script:serverObject -Database $script:pitDbName -Query $query -ErrorAction 'Stop'
+            $result.RecordCount | Should -Be 1 -Because 'Initial record should exist'
+
+            # Verify the second record (inserted after point-in-time) should NOT exist
+            $query = "SELECT COUNT(*) AS RecordCount FROM dbo.TestData WHERE Id = 2;"
+            $result = Invoke-SqlDscQuery -ServerObject $script:serverObject -Database $script:pitDbName -Query $query -ErrorAction 'Stop'
+            $result.RecordCount | Should -Be 0 -Because 'Record inserted after point-in-time should not exist'
+        }
+    }
 }
