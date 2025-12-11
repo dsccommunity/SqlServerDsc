@@ -1121,7 +1121,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                         Addition evaluation is done in the mock to test if the
                         object is set correctly.
                     #>
-                    $script:wasMethodAlterCalled | Should -BeTru
+                    $script:wasMethodAlterCalled | Should -BeTrue
                 }
 
                 Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
