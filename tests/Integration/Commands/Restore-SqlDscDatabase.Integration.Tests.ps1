@@ -119,7 +119,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $script:createdDatabases += $script:restoreDbName
 
             # Get the file list from the backup to build RelocateFile objects with unique names
-            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile -ErrorAction 'Stop'
 
             $script:restoreRelocateFiles = @()
 
@@ -169,7 +169,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $script:createdDatabases += $script:replaceDbName
 
             # Get the file list from the backup to build RelocateFile objects with unique names
-            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile -ErrorAction 'Stop'
 
             $script:replaceRelocateFiles = @()
 
@@ -229,7 +229,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $script:createdDatabases += $script:noRecoveryDbName
 
             # Get the file list from the backup to build RelocateFile objects with unique names
-            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile -ErrorAction 'Stop'
 
             $script:noRecoveryRelocateFiles = @()
 
@@ -280,7 +280,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $script:createdDatabases += $script:relocateDbName
 
             # Get the file list from the backup to build RelocateFile objects with unique names
-            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile -ErrorAction 'Stop'
 
             $script:relocateFiles = @()
 
@@ -329,7 +329,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $script:createdDatabases += $script:passThruDbName
 
             # Get the file list from the backup to build RelocateFile objects with unique names
-            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile -ErrorAction 'Stop'
 
             $script:passThruRelocateFiles = @()
 
@@ -381,7 +381,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:sourceDatabaseName -BackupFile $script:checksumBackupFile -Checksum -Force -ErrorAction 'Stop'
 
             # Get the file list from the backup to build RelocateFile objects with unique names
-            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:checksumBackupFile
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:checksumBackupFile -ErrorAction 'Stop'
 
             $script:checksumRelocateFiles = @()
 
@@ -450,7 +450,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
 
         It 'Should throw error when database already exists' {
             # Get the file list from the backup to build RelocateFile objects with unique names
-            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile -ErrorAction 'Stop'
 
             $existingRelocateFiles = @()
 
@@ -492,7 +492,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $script:createdDatabases += $script:sequenceDbName
 
             # Get the file list from the backup to build RelocateFile objects with unique names
-            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile -ErrorAction 'Stop'
 
             $script:sequenceRelocateFiles = @()
 
@@ -568,7 +568,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $script:standbyFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:standbyDbName + '_standby.ldf')
 
             # Get the file list from the backup to build RelocateFile objects with unique names
-            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile -ErrorAction 'Stop'
 
             $script:standbyRelocateFiles = @()
 
@@ -670,7 +670,7 @@ INSERT INTO dbo.TestData (Id, InsertTime, Value) VALUES (1, GETDATE(), 'Initial'
             $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:pitSourceDbName -BackupFile $script:pitLogBackupFile -BackupType 'Log' -Force -ErrorAction 'Stop'
 
             # Get the file list from the backup to build RelocateFile objects
-            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:pitFullBackupFile
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:pitFullBackupFile -ErrorAction 'Stop'
 
             $script:pitRelocateFiles = @()
 
