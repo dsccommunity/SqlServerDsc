@@ -489,7 +489,7 @@ function Restore-SqlDscDatabase
 
                 if ($PSBoundParameters.ContainsKey('ToPointInTime'))
                 {
-                    $restore.ToPointInTime = $ToPointInTime.ToString('yyyy-MM-ddTHH:mm:ss')
+                    $restore.ToPointInTime = $ToPointInTime.ToString('yyyy-MM-ddTHH:mm:ss', [System.Globalization.CultureInfo]::InvariantCulture)
                 }
 
                 if ($PSBoundParameters.ContainsKey('StopAtMarkName'))
@@ -498,7 +498,7 @@ function Restore-SqlDscDatabase
 
                     if ($PSBoundParameters.ContainsKey('StopAtMarkAfterDate'))
                     {
-                        $restore.StopAtMarkAfterDate = $StopAtMarkAfterDate.ToString('yyyy-MM-ddTHH:mm:ss')
+                        $restore.StopAtMarkAfterDate = $StopAtMarkAfterDate.ToString('yyyy-MM-ddTHH:mm:ss', [System.Globalization.CultureInfo]::InvariantCulture)
                     }
                 }
 
@@ -508,7 +508,7 @@ function Restore-SqlDscDatabase
 
                     if ($PSBoundParameters.ContainsKey('StopBeforeMarkAfterDate'))
                     {
-                        $restore.StopBeforeMarkAfterDate = $StopBeforeMarkAfterDate.ToString('yyyy-MM-ddTHH:mm:ss')
+                        $restore.StopBeforeMarkAfterDate = $StopBeforeMarkAfterDate.ToString('yyyy-MM-ddTHH:mm:ss', [System.Globalization.CultureInfo]::InvariantCulture)
                     }
                 }
 
