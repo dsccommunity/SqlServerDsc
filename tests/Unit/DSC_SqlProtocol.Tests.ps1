@@ -43,6 +43,9 @@ BeforeAll {
 
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
+    # Load the SMO stub types
+    Add-Type -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs\SMO.cs')
+
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
@@ -86,7 +89,7 @@ Describe 'SqlProtocol\Get-TargetResource' -Tag 'Get' {
     Context 'When the system is not in the desired state' {
         Context 'When the SQL Server instance does not exist' {
             BeforeAll {
-                Mock -CommandName Get-ServerProtocolObject -MockWith {
+                Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                     return $null
                 }
             }
@@ -132,7 +135,7 @@ Describe 'SqlProtocol\Get-TargetResource' -Tag 'Get' {
     Context 'When the system is in the desired state' {
         Context 'When the desired protocol is TCP/IP' {
             BeforeAll {
-                Mock -CommandName Get-ServerProtocolObject -MockWith {
+                Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                     return @{
                         IsEnabled           = $true
                         HasMultiIPAddresses = $true
@@ -178,7 +181,7 @@ Describe 'SqlProtocol\Get-TargetResource' -Tag 'Get' {
             BeforeAll {
                 $mockPipeName = '\\.\pipe\$$\TESTCLU01A\MSSQL$SQL2014\sql\query'
 
-                Mock -CommandName Get-ServerProtocolObject -MockWith {
+                Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                     return @{
                         IsEnabled           = $true
                         HasMultiIPAddresses = $false
@@ -223,7 +226,7 @@ Describe 'SqlProtocol\Get-TargetResource' -Tag 'Get' {
 
         Context 'When the desired protocol is Shared Memory' {
             BeforeAll {
-                Mock -CommandName Get-ServerProtocolObject -MockWith {
+                Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                     return @{
                         IsEnabled           = $true
                         HasMultiIPAddresses = $false
@@ -260,7 +263,7 @@ Describe 'SqlProtocol\Get-TargetResource' -Tag 'Get' {
 
         Context 'When the restart service is requested' {
             BeforeAll {
-                Mock -CommandName Get-ServerProtocolObject -MockWith {
+                Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                     return @{
                         IsEnabled           = $true
                         HasMultiIPAddresses = $false
@@ -735,7 +738,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                 )
             }
 
-            Mock -CommandName Get-ServerProtocolObject -MockWith {
+            Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                 return $null
             }
         }
@@ -813,7 +816,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                         )
                     }
 
-                    Mock -CommandName Get-ServerProtocolObject -MockWith {
+                    Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                         return New-Object -TypeName PSObject |
                             Add-Member -MemberType NoteProperty -Name 'IsEnabled' -Value $false -PassThru |
                             Add-Member -MemberType ScriptProperty -Name 'ProtocolProperties' -Value {
@@ -874,7 +877,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                         )
                     }
 
-                    Mock -CommandName Get-ServerProtocolObject -MockWith {
+                    Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                         return New-Object -TypeName PSObject |
                             Add-Member -MemberType NoteProperty -Name 'IsEnabled' -Value $false -PassThru |
                             Add-Member -MemberType ScriptProperty -Name 'ProtocolProperties' -Value {
@@ -933,7 +936,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                         )
                     }
 
-                    Mock -CommandName Get-ServerProtocolObject -MockWith {
+                    Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                         return New-Object -TypeName PSObject |
                             Add-Member -MemberType NoteProperty -Name 'IsEnabled' -Value $true -PassThru |
                             Add-Member -MemberType ScriptProperty -Name 'ProtocolProperties' -Value {
@@ -998,7 +1001,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                         )
                     }
 
-                    Mock -CommandName Get-ServerProtocolObject -MockWith {
+                    Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                         return New-Object -TypeName PSObject |
                             Add-Member -MemberType NoteProperty -Name 'IsEnabled' -Value $false -PassThru |
                             Add-Member -MemberType ScriptProperty -Name 'ProtocolProperties' -Value {
@@ -1059,7 +1062,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                         )
                     }
 
-                    Mock -CommandName Get-ServerProtocolObject -MockWith {
+                    Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                         return New-Object -TypeName PSObject |
                             Add-Member -MemberType NoteProperty -Name 'IsEnabled' -Value $false -PassThru |
                             Add-Member -MemberType ScriptProperty -Name 'ProtocolProperties' -Value {
@@ -1128,7 +1131,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                         )
                     }
 
-                    Mock -CommandName Get-ServerProtocolObject -MockWith {
+                    Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                         return New-Object -TypeName PSObject |
                             Add-Member -MemberType NoteProperty -Name 'IsEnabled' -Value $false -PassThru |
                             Add-Member -MemberType ScriptProperty -Name 'ProtocolProperties' -Value {
@@ -1186,7 +1189,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                         )
                     }
 
-                    Mock -CommandName Get-ServerProtocolObject -MockWith {
+                    Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                         return New-Object -TypeName PSObject |
                             Add-Member -MemberType NoteProperty -Name 'IsEnabled' -Value $false -PassThru |
                             Add-Member -MemberType ScriptProperty -Name 'ProtocolProperties' -Value {
@@ -1243,7 +1246,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                         )
                     }
 
-                    Mock -CommandName Get-ServerProtocolObject -MockWith {
+                    Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                         return New-Object -TypeName PSObject |
                             Add-Member -MemberType NoteProperty -Name 'IsEnabled' -Value $false -PassThru |
                             Add-Member -MemberType ScriptProperty -Name 'ProtocolProperties' -Value {
