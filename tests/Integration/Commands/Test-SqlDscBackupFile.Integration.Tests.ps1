@@ -91,6 +91,12 @@ Describe 'Test-SqlDscBackupFile' -Tag @('Integration_SQL2017', 'Integration_SQL2
 
             $result | Should -BeTrue
         }
+
+        It 'Should return true when using LoadHistory switch' {
+            $result = Test-SqlDscBackupFile -ServerObject $script:serverObject -BackupFile $script:testBackupFile -LoadHistory
+
+            $result | Should -BeTrue
+        }
     }
 
     Context 'When verifying an invalid backup file' {
@@ -107,25 +113,20 @@ Describe 'Test-SqlDscBackupFile' -Tag @('Integration_SQL2017', 'Integration_SQL2
             }
         }
 
-        It 'Should throw an error for an invalid backup file' {
-            { Test-SqlDscBackupFile -ServerObject $script:serverObject -BackupFile $script:invalidBackupFile } | Should -Throw -ErrorId 'TSBF0004,Test-SqlDscBackupFile'
+        It 'Should return false for an invalid backup file' {
+            $result = Test-SqlDscBackupFile -ServerObject $script:serverObject -BackupFile $script:invalidBackupFile
+
+            $result | Should -BeFalse
         }
     }
 
     Context 'When verifying a non-existent backup file' {
-        It 'Should throw an error for a non-existent backup file' {
+        It 'Should return false for a non-existent backup file' {
             $nonExistentFile = Join-Path -Path $script:backupDirectory -ChildPath 'NonExistentBackup_12345.bak'
 
-            { Test-SqlDscBackupFile -ServerObject $script:serverObject -BackupFile $nonExistentFile } | Should -Throw -ErrorId 'TSBF0004,Test-SqlDscBackupFile'
-        }
-    }
+            $result = Test-SqlDscBackupFile -ServerObject $script:serverObject -BackupFile $nonExistentFile
 
-    Context 'When SqlVerify throws an exception' {
-        It 'Should throw an error for an invalid path' {
-            # Use an invalid path that will cause SQL Server to throw an exception
-            $invalidPath = 'Z:\NonExistentDrive\InvalidPath\Backup.bak'
-
-            { Test-SqlDscBackupFile -ServerObject $script:serverObject -BackupFile $invalidPath } | Should -Throw
+            $result | Should -BeFalse
         }
     }
 }

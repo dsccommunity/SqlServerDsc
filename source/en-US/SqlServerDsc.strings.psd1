@@ -500,7 +500,7 @@ ConvertFrom-StringData @'
     ## Test-SqlDscBackupFile
     Test_SqlDscBackupFile_Verifying = Verifying backup file '{0}'. (TSBF0001)
     Test_SqlDscBackupFile_VerifySuccess = Backup file '{0}' verification completed successfully. (TSBF0002)
-    Test_SqlDscBackupFile_VerifyFailed = Backup file '{0}' verification failed. (TSBF0003)
+    Test_SqlDscBackupFile_VerifyFailed = Backup file '{0}' verification failed. {1} (TSBF0003)
     Test_SqlDscBackupFile_Error = Failed to verify backup file '{0}'. (TSBF0004)
 
     ## Get-SqlDscBackupFileList

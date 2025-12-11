@@ -18,6 +18,9 @@
         Specifies the backup set number to verify when the backup file contains
         multiple backup sets. If not specified, the first backup set is verified.
 
+    .PARAMETER LoadHistory
+        Specifies whether to load the backup history during verification.
+
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $serverObject | Test-SqlDscBackupFile -BackupFile 'C:\Backups\MyDatabase.bak'
@@ -27,12 +30,10 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        if ($serverObject | Test-SqlDscBackupFile -BackupFile 'C:\Backups\MyDatabase.bak')
-        {
-            $serverObject | Restore-SqlDscDatabase -Name 'MyDatabase' -BackupFile 'C:\Backups\MyDatabase.bak'
-        }
+        $serverObject | Test-SqlDscBackupFile -BackupFile 'C:\Backups\MyDatabase.bak' -LoadHistory
 
-        Verifies the backup file before performing the restore operation.
+        Verifies the integrity of the specified backup file and loads the backup
+        history during verification.
 
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Server`
@@ -42,7 +43,8 @@
     .OUTPUTS
         `System.Boolean`
 
-        Returns $true if the backup file is valid, $false otherwise.
+        Returns $true if the backup file is valid, $false otherwise. Use
+        -Verbose to see detailed error messages when verification fails.
 #>
 function Test-SqlDscBackupFile
 {
@@ -63,7 +65,11 @@ function Test-SqlDscBackupFile
         [Parameter()]
         [ValidateRange(1, 2147483647)]
         [System.Int32]
-        $FileNumber
+        $FileNumber,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $LoadHistory
     )
 
     process
@@ -84,16 +90,17 @@ function Test-SqlDscBackupFile
 
         try
         {
-            # Verify the backup
-            $result = $restore.SqlVerify($ServerObject)
+            # Verify the backup with error message output
+            $errorMessage = $null
+            $result = $restore.SqlVerify($ServerObject, $LoadHistory.IsPresent, [ref] $errorMessage)
         }
         catch
         {
-            $errorMessage = $script:localizedData.Test_SqlDscBackupFile_Error -f $BackupFile
+            $errorMessageText = $script:localizedData.Test_SqlDscBackupFile_Error -f $BackupFile
 
             $PSCmdlet.ThrowTerminatingError(
                 [System.Management.Automation.ErrorRecord]::new(
-                    [System.InvalidOperationException]::new($errorMessage, $_.Exception),
+                    [System.InvalidOperationException]::new($errorMessageText, $_.Exception),
                     'TSBF0004', # cspell: disable-line
                     [System.Management.Automation.ErrorCategory]::InvalidOperation,
                     $BackupFile
@@ -107,7 +114,10 @@ function Test-SqlDscBackupFile
         }
         else
         {
-            Write-Debug -Message ($script:localizedData.Test_SqlDscBackupFile_VerifyFailed -f $BackupFile)
+            # If verification failed, output the detailed error message as verbose
+            $verboseMessage = $script:localizedData.Test_SqlDscBackupFile_VerifyFailed -f $BackupFile, ($errorMessage | Out-String)
+
+            Write-Verbose -Message $verboseMessage
         }
 
         return $result
