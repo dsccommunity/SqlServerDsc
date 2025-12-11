@@ -318,7 +318,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:relocateDbName -BackupFile $script:fullBackupFile -RelocateFile $script:relocateFiles -Force -ErrorAction 'Stop'
 
             # Verify the database was restored
-            $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:relocateDbName -ErrorAction 'SilentlyContinue'
+            $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:relocateDbName -Refresh -ErrorAction 'SilentlyContinue'
             $restoredDb | Should -Not -BeNullOrEmpty
         }
     }
@@ -425,7 +425,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:checksumDbName -BackupFile $script:checksumBackupFile -RelocateFile $script:checksumRelocateFiles -Checksum -Force -ErrorAction 'Stop'
 
             # Verify the database was restored
-            $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:checksumDbName -ErrorAction 'SilentlyContinue'
+            $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:checksumDbName -Refresh -ErrorAction 'SilentlyContinue'
             $restoredDb | Should -Not -BeNullOrEmpty
         }
     }
@@ -545,11 +545,16 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
         }
 
         It 'Should restore log backup and bring database online' {
+            # Restore the log backup without NoRecovery to bring the database online
             $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:sequenceDbName -BackupFile $script:logBackupFile -RestoreType 'Log' -Force -ErrorAction 'Stop'
 
+            # Refresh and verify the database is online
             $script:serverObject.Databases.Refresh()
             $restoredDb = $script:serverObject.Databases[$script:sequenceDbName]
             $restoredDb | Should -Not -BeNullOrEmpty
+
+            # Refresh the database object itself to get the latest status
+            $restoredDb.Refresh()
             $restoredDb.Status | Should -Be 'Normal'
         }
     }
