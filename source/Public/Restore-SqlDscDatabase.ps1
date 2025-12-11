@@ -446,6 +446,11 @@ function Restore-SqlDscDatabase
                 {
                     $restore.NoRecovery = $true
                 }
+                else
+                {
+                    # Explicitly set NoRecovery to false to ensure the database is brought online
+                    $restore.NoRecovery = $false
+                }
 
                 if ($PSBoundParameters.ContainsKey('Standby'))
                 {
