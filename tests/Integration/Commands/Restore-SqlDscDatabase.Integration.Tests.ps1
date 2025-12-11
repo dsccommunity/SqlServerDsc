@@ -32,7 +32,6 @@ BeforeAll {
 Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         $script:mockInstanceName = 'DSCSQLTEST'
-        $script:mockComputerName = Get-ComputerName
 
         $mockSqlAdministratorUserName = 'SqlAdmin'
         $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
