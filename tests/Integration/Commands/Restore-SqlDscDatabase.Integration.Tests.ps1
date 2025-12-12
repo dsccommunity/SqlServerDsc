@@ -646,7 +646,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
 CREATE TABLE dbo.TestData (Id INT PRIMARY KEY, InsertTime DATETIME, Value NVARCHAR(50));
 INSERT INTO dbo.TestData (Id, InsertTime, Value) VALUES (1, GETDATE(), 'Initial');
 "@
-            Invoke-SqlDscQuery -ServerObject $script:serverObject -Database $script:pitSourceDbName -Query $query1 -ErrorAction 'Stop'
+            Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:pitSourceDbName -Query $query1 -ErrorAction 'Stop'
 
             # Create full backup
             $script:pitFullBackupFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:pitSourceDbName + '_PIT_Full.bak')
@@ -663,7 +663,7 @@ INSERT INTO dbo.TestData (Id, InsertTime, Value) VALUES (1, GETDATE(), 'Initial'
 
             # Insert additional data after the point-in-time
             $query2 = "INSERT INTO dbo.TestData (Id, InsertTime, Value) VALUES (2, GETDATE(), 'AfterPIT');"
-            Invoke-SqlDscQuery -ServerObject $script:serverObject -Database $script:pitSourceDbName -Query $query2 -ErrorAction 'Stop'
+            Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:pitSourceDbName -Query $query2 -ErrorAction 'Stop'
 
             # Create log backup to capture the additional data
             $script:pitLogBackupFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:pitSourceDbName + '_PIT_Log.trn')
@@ -712,12 +712,12 @@ INSERT INTO dbo.TestData (Id, InsertTime, Value) VALUES (1, GETDATE(), 'Initial'
             }
 
             # Clean up backup files
-            if (Test-Path -Path $script:pitFullBackupFile)
+            if ($script:pitFullBackupFile -and (Test-Path -Path $script:pitFullBackupFile))
             {
                 Remove-Item -Path $script:pitFullBackupFile -Force -ErrorAction 'SilentlyContinue'
             }
 
-            if (Test-Path -Path $script:pitLogBackupFile)
+            if ($script:pitLogBackupFile -and (Test-Path -Path $script:pitLogBackupFile))
             {
                 Remove-Item -Path $script:pitLogBackupFile -Force -ErrorAction 'SilentlyContinue'
             }
@@ -740,12 +740,12 @@ INSERT INTO dbo.TestData (Id, InsertTime, Value) VALUES (1, GETDATE(), 'Initial'
 
             # Verify data reflects the point-in-time (only initial record should exist)
             $query = "SELECT COUNT(*) AS RecordCount FROM dbo.TestData WHERE Id = 1;"
-            $result = Invoke-SqlDscQuery -ServerObject $script:serverObject -Database $script:pitDbName -Query $query -ErrorAction 'Stop'
+            $result = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:pitDbName -Query $query -ErrorAction 'Stop'
             $result.RecordCount | Should -Be 1 -Because 'Initial record should exist'
 
             # Verify the second record (inserted after point-in-time) should NOT exist
             $query = "SELECT COUNT(*) AS RecordCount FROM dbo.TestData WHERE Id = 2;"
-            $result = Invoke-SqlDscQuery -ServerObject $script:serverObject -Database $script:pitDbName -Query $query -ErrorAction 'Stop'
+            $result = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:pitDbName -Query $query -ErrorAction 'Stop'
             $result.RecordCount | Should -Be 0 -Because 'Record inserted after point-in-time should not exist'
         }
     }
