@@ -45,8 +45,6 @@
         'Find-ExceptionByNumber'
         'Compare-ResourcePropertyState'
         'Test-DscPropertyState'
-        'Get-ProtocolNameProperties'
-        'Get-ServerProtocolObject'
         'Import-Assembly'
         'ConvertTo-ServerInstanceName'
         'Get-FilePathMajorVersion'

@@ -103,13 +103,13 @@ function Get-TargetResource
         Must connect to the local machine name because $ServerName can point
         to a cluster instance or availability group listener.
     #>
-    $getServerProtocolObjectParameters = @{
+    $getSqlDscServerProtocolParameters = @{
         ServerName   = $computerName
-        Instance     = $InstanceName
+        InstanceName = $InstanceName
         ProtocolName = 'TcpIp'
     }
 
-    $serverProtocolProperties = Get-ServerProtocolObject @getServerProtocolObjectParameters
+    $serverProtocolProperties = Get-SqlDscServerProtocol @getSqlDscServerProtocolParameters
 
     if ($serverProtocolProperties)
     {
@@ -274,9 +274,7 @@ function Set-TargetResource
     $IpAddressGroup = Convert-IpAdressGroupCasing -IpAddressGroup $IpAddressGroup
 
     <#
-        Compare the current state against the desired state. Calling this will
-        also import the necessary module to later call Get-ServerProtocolObject
-        which uses the SMO class ManagedComputer.
+        Compare the current state against the desired state.
     #>
     $propertyState = Compare-TargetResourceState @PSBoundParameters
 
@@ -296,13 +294,13 @@ function Set-TargetResource
             Must connect to the local machine name because $ServerName can point
             to a cluster instance or availability group listener.
         #>
-        $getServerProtocolObjectParameters = @{
+        $getSqlDscServerProtocolParameters = @{
             ServerName   = $computerName
-            Instance     = $InstanceName
+            InstanceName = $InstanceName
             ProtocolName = 'TcpIp'
         }
 
-        $serverProtocolProperties = Get-ServerProtocolObject @getServerProtocolObjectParameters
+        $serverProtocolProperties = Get-SqlDscServerProtocol @getSqlDscServerProtocolParameters
 
         if ($serverProtocolProperties)
         {
