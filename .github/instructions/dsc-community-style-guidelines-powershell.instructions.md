@@ -82,7 +82,6 @@ applyTo: "{**/*.ps1,**/*.psm1,**/*.psd1}"
   - `$PSCmdlet.ShouldProcess` must use required pattern
   - Inside `$PSCmdlet.ShouldProcess`-block, avoid using `Write-Verbose`
 - Never use backtick as line continuation in production code.
-- Set `$ErrorActionPreference = 'Stop'` before commands using `-ErrorAction 'Stop'`; restore previous value directly after invocation (do not use try-catch-finally)
 - Use `[Alias()]` attribute for function aliases, never `Set-Alias` or `New-Alias`
 
 ## Output streams
@@ -92,11 +91,16 @@ applyTo: "{**/*.ps1,**/*.psm1,**/*.psd1}"
 - Use `Write-Verbose` for: High-level execution flow only; User-actionable information
 - Use `Write-Information` for: User-facing status updates; Important operational messages; Non-error state changes
 - Use `Write-Warning` for: Non-fatal issues requiring attention; Deprecated functionality usage; Configuration problems that don't block execution
-- Use `$PSCmdlet.ThrowTerminatingError()` for terminating errors (except for classes), use relevant error category, in try-catch include exception with localized message
-- Use `Write-Error` for non-terminating errors
+- **Use `Write-Error` for all error handling in public commands**
+  - For terminating errors: Add `-ErrorAction 'Stop'` parameter to `Write-Error`
+  - For non-terminating errors: Omit `-ErrorAction` parameter (caller controls via `-ErrorAction`)
   - Always include `-Message` (localized string), `-Category` (relevant error category), `-ErrorId` (unique ID matching localized string ID), `-TargetObject` (object causing error)
   - In catch blocks, pass original exception using `-Exception`
-  - Always use `return` after `Write-Error` to avoid further processing
+  - Use `return` only after non-terminating `Write-Error` to stop further processing. Omit `return` when using `-ErrorAction 'Stop'`.
+- **Never use `$PSCmdlet.ThrowTerminatingError()` in public commands** - it creates command-terminating (not script-terminating) errors; use `Write-Error` with `-ErrorAction 'Stop'` instead
+  - May be used in private functions where behavior is understood by internal callers
+- **Never use `throw` in public commands** except in `[ValidateScript()]` parameter validation attributes (it's the only valid mechanism there)
+- .NET method exceptions (e.g., SMO methods) are always caught in try-catch blocks - no special handling needed
 
 ## ShouldProcess Required Pattern
 

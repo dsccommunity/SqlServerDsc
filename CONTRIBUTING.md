@@ -297,96 +297,220 @@ be compiled to a .mof file. If the tests find any errors the build will fail.
 A terminating error is an error that prevents the resource to continue further.
 If a DSC resource shall throw an terminating error the commands of the module
 **DscResource.Common** shall be used primarily; [`New-ArgumentException`](https://github.com/dsccommunity/DscResource.Common#new-invalidargumentexception),
-[`New-InvalidDataExcpetion`](https://github.com/dsccommunity/DscResource.Common#new-invaliddataexception),
+[`New-InvalidDataException`](https://github.com/dsccommunity/DscResource.Common#new-invaliddataexception),
 [`New-InvalidOperationException`](https://github.com/dsccommunity/DscResource.Common#new-invalidoperationexception),
 [`New-InvalidResultException`](https://github.com/dsccommunity/DscResource.Common#new-invalidresultexception),
 or [`New-NotImplementedException`](https://github.com/dsccommunity/DscResource.Common#new-notimplementedexception).
-If neither of those commands works in the scenarion then `throw` shall be used.
+If neither of those commands works in the scenario then `throw` shall be used.
 
 ### Commands
 
 Commands are publicly exported commands from the module, and the source for
 commands are located in the folder `./source/Public`.
 
-#### Non-Terminating Error
+#### Error Handling Guidelines
 
-A non-terminating error should only be used when a command shall be able to
-handle (ignoring) an error and continue processing and still give the user
-an expected outcome.
+Public commands should primarily use `Write-Error` for error handling, as it
+provides the most flexible and predictable behavior for callers. The statement
+`throw` shall never be used in public commands except within parameter
+validation attributes like `[ValidateScript()]` where it is the only valid
+mechanism for validation failures.
 
-With a non-terminating error the user is able to decide whether the command
-should throw or continue processing on error. The user can pass the
-parameter and value `-ErrorAction 'SilentlyContinue'` to the command  to
-ignore the error and allowing the command to continue, for example the
-command could then return `$null`. But if the user passes the parameter
-and value `-ErrorAction 'Stop'` the same error will throw a terminating
-error telling the user the expected outcome could not be achieved.
+##### When to Use Write-Error
 
-The below example checks to see if a database exist, if it doesn't a
-non-terminating error are called. The user is able to either ignore the
-error or have it throw depending on what value the user specifies
-in parameter `ErrorAction` (or `$ErrorActionPreference`).
+Use `Write-Error` in most scenarios where a public command encounters an error:
+
+- **Validation failures**: When input parameters fail validation
+- **Resource not found**: When a requested resource doesn't exist
+- **Operation failures**: When an operation cannot be completed
+- **Permission issues**: When access is denied
+
+`Write-Error` generates a non-terminating error by default, allowing the caller
+to control behavior via the `-ErrorAction` parameter. This is the expected
+PowerShell pattern.
+
+**Example**: A command that retrieves a database returns an error if not found:
 
 ```powershell
 if (-not $databaseExist)
 {
     $errorMessage = $script:localizedData.MissingDatabase -f $DatabaseName
 
-    Write-Error -Message $errorMessage -Category 'InvalidOperation' -ErrorId 'GS0001' -TargetObject $DatabaseName
+    Write-Error -Message $errorMessage -Category 'ObjectNotFound' -ErrorId 'GSD0001' -TargetObject $DatabaseName
+
+    return
 }
 ```
 
-#### Terminating Error
-
-A terminating error is an error that the user are not able to ignore by
-passing a parameter to the command (like for non-terminating errors).
-
-If a command shall throw an terminating error then the statement `throw` shall
-not be used, neither shall the command `Write-Error` with the parameter
-`-ErrorAction Stop`. Always use the method `$PSCmdlet.ThrowTerminatingError()`
-to throw a terminating error. The exception is when a `[ValidateScript()]`
-has to throw an error, then `throw` must be used.
-
-> [!IMPORTANT]
-> Below output assumes `$ErrorView` is set to `'NormalView'` in the
-> PowerShell session.
-
-When using `throw` it will fail on the line with the throw statement
-making it look like it is that statement inside the function that failed,
-which is not correct since it is either a previous command or evaluation
-that failed resulting in the line with the `throw` being called. This is
-an example when using `throw`:
-
-```plaintext
-Exception:
-Line |
-   2 |  throw 'My error'
-     |  ~~~~~~~~~~~~~~~~
-     | My error
-```
-
-When instead using `$PSCmdlet.ThrowTerminatingError()`:
+The caller controls the behavior:
 
 ```powershell
-$PSCmdlet.ThrowTerminatingError(
-    [System.Management.Automation.ErrorRecord]::new(
-        'MyError',
-        'GS0001',
-        [System.Management.Automation.ErrorCategory]::InvalidOperation,
-        'MyObjectOrValue'
-    )
-)
+# Returns $null, continues execution (non-terminating)
+$db = Get-Database -Name 'NonExistent'
+
+# Throws terminating error, stops execution
+$db = Get-Database -Name 'NonExistent' -ErrorAction 'Stop'
 ```
 
-The result from `$PSCmdlet.ThrowTerminatingError()` shows that the command
-failed (in this example `Get-Something`) and returns a clear category and
-error code.
+> [!IMPORTANT]
+> Use `return` after `Write-Error` only for non-terminating errors (no `-ErrorAction 'Stop'`)
+> to stop further processing in the current function. Omit `return` when using
+> `-ErrorAction 'Stop'`, as execution stops automatically.
 
-```plaintext
-Get-Something : My Error
-At line:1 char:1
-+ Get-Something
-+ ~~~~~~~~~~~~~
-+ CategoryInfo          : InvalidOperation: (MyObjectOrValue:String) [Get-Something], Exception
-+ FullyQualifiedErrorId : GS0001,Get-Something
+##### Error Handling in Public Commands
+
+**Always use `Write-Error` in public commands.** For errors that should terminate execution:
+
+```powershell
+function Get-Database
+{
+    [CmdletBinding()]
+    param ([Parameter(Mandatory = $true)] [System.String] $Name)
+
+    if (-not (Test-DatabaseExists $Name))
+    {
+        Write-Error -Message "Database '$Name' not found" `
+            -Category ObjectNotFound `
+            -ErrorId 'GD0001' `
+            -TargetObject $Name `
+            -ErrorAction 'Stop'
+    }
+
+    # Continue processing...
+}
 ```
+
+With this pattern:
+- The error terminates execution (stops the function and the caller)
+- Callers don't need special error handling
+- Standard PowerShell behavior - simple and predictable
+
+##### Why Not $PSCmdlet.ThrowTerminatingError?
+
+The `$PSCmdlet.ThrowTerminatingError()` method creates **command-terminating** errors,
+not script-terminating errors. The calling function continues executing after the error
+unless the caller uses `$ErrorActionPreference = 'Stop'` or try-catch:
+
+```powershell
+function Get-Something
+{
+    $PSCmdlet.ThrowTerminatingError(...)  # Stops Get-Something
+}
+
+function Start-Operation
+{
+    Get-Something  # Error occurs
+    Write-Output 'Continues'  # BUG: This executes!
+}
+```
+
+**Do not use `$PSCmdlet.ThrowTerminatingError()` in public commands.** It may be used
+in private functions where the behavior is well understood by internal callers only.
+
+##### Exception Handling in Commands
+
+When catching exceptions in try-catch blocks, use `Write-Error` with the original exception.
+
+**For terminating errors** (execution should stop):
+
+```powershell
+try
+{
+    $database.Create()
+}
+catch
+{
+    $errorMessage = $script:localizedData.CreateDatabaseFailed -f $DatabaseName
+    
+    Write-Error -Message $errorMessage `
+        -Category 'InvalidOperation' `
+        -ErrorId 'CD0001' `
+        -TargetObject $DatabaseName `
+        -Exception $_.Exception `
+        -ErrorAction 'Stop'
+}
+```
+
+**For non-terminating errors** (allow caller to control):
+
+```powershell
+try
+{
+    $database.Create()
+}
+catch
+{
+    $errorMessage = $script:localizedData.CreateDatabaseFailed -f $DatabaseName
+    
+    Write-Error -Message $errorMessage `
+        -Category 'InvalidOperation' `
+        -ErrorId 'CD0001' `
+        -TargetObject $DatabaseName `
+        -Exception $_.Exception
+    
+    return
+}
+```
+
+##### Parameter Validation with ValidateScript
+
+When using `[ValidateScript()]` attribute, use `throw` for validation failures
+(this is the only mechanism that works within validation attributes):
+
+```powershell
+[Parameter()]
+[ValidateScript({
+        if (-not (Test-Path -Path $_))
+        {
+            throw ($script:localizedData.PathParameterInvalid -f $_)
+        }
+        
+        return $true
+    })]
+[System.String]
+$Path
+```
+
+##### Pipeline Processing Considerations
+
+For commands that accept pipeline input and process multiple items, use
+`Write-Error` to allow processing to continue for remaining items:
+
+```powershell
+process
+{
+    foreach ($item in $Items)
+    {
+        if (-not (Test-ItemValid $item))
+        {
+            Write-Error -Message "Invalid item: $item" -Category 'InvalidData' -ErrorId 'PI0001' -TargetObject $item
+            continue
+        }
+
+        # Process valid items
+        Process-Item $item
+    }
+}
+```
+
+The caller can control whether to stop on first error or continue:
+
+```powershell
+# Continue processing all items, collect errors
+$results = $items | Process-Items
+
+# Stop on first error
+$results = $items | Process-Items -ErrorAction 'Stop'
+```
+
+##### Summary
+
+| Scenario | Use | Notes |
+| --- | --- | --- |
+| Terminating errors in public commands | `Write-Error` with `-ErrorAction 'Stop'` | Simple and standard PowerShell behavior |
+| Non-terminating errors in public commands | `Write-Error` without `-ErrorAction` | Allows caller to control termination via `-ErrorAction` |
+| Pipeline processing with multiple items | `Write-Error` without `-ErrorAction` | Allows processing to continue for remaining items |
+| Catching .NET method exceptions | try-catch with `Write-Error` | .NET exceptions are always caught automatically |
+| Parameter validation in `[ValidateScript()]` | `throw` | Only valid option within validation attributes |
+| Private functions (internal use only) | `Write-Error` or `$PSCmdlet.ThrowTerminatingError()` | Behavior is understood by internal callers |
+| Public commands | Never use `throw` or `$PSCmdlet.ThrowTerminatingError()` | Use `Write-Error` instead |
