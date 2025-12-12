@@ -619,8 +619,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $restoredDb.Refresh()
 
             # Database should be online and in standby/read-only state
-            $restoredDb.Status | Should -Contain 'Normal' -Because 'Database should be online in standby mode'
-            $restoredDb.Status | Should -Contain 'Standby' -Because 'Database should be in standby mode'
+            $restoredDb.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal -bor [Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Standby) -Because 'Database should be online in standby mode'
             $restoredDb.IsReadOnly | Should -BeTrue -Because 'Database should be read-only in standby mode'
 
             # Verify standby file exists and has content
