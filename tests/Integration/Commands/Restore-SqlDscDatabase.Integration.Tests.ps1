@@ -610,17 +610,13 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
         It 'Should restore database in standby mode with read-only access' {
             $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:standbyDbName -BackupFile $script:fullBackupFile -RelocateFile $script:standbyRelocateFiles -Standby $script:standbyFile -Force -ErrorAction 'Stop'
 
-            # Refresh to get current state
-            $script:serverObject.Databases.Refresh()
-            $restoredDb = $script:serverObject.Databases[$script:standbyDbName]
+            # Get the database object using Get-SqlDscDatabase to ensure all properties are properly loaded
+            $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:standbyDbName -Refresh -ErrorAction 'Stop'
             $restoredDb | Should -Not -BeNullOrEmpty
-
-            # Refresh the database object
-            $restoredDb.Refresh()
 
             # Database should be online and in standby/read-only state
             $restoredDb.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal -bor [Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Standby) -Because 'Database should be online in standby mode'
-            $restoredDb.IsReadOnly | Should -BeTrue -Because 'Database should be read-only in standby mode'
+            $restoredDb.ReadOnly | Should -BeTrue -Because 'Database should be read-only in standby mode'
 
             # Verify standby file exists and has content
             Test-Path -Path $script:standbyFile | Should -BeTrue -Because 'Standby undo file should exist'
@@ -727,7 +723,7 @@ INSERT INTO dbo.TestData (Id, InsertTime, Value) VALUES (1, GETDATE(), 'Initial'
             $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:pitDbName -BackupFile $script:pitFullBackupFile -RelocateFile $script:pitRelocateFiles -NoRecovery -Force -ErrorAction 'Stop'
 
             # Restore log backup to the point-in-time
-            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:pitDbName -BackupFile $script:pitLogBackupFile -RestoreType 'Log' -StopAt $script:pointInTime -Force -ErrorAction 'Stop'
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:pitDbName -BackupFile $script:pitLogBackupFile -RestoreType 'Log' -ToPointInTime $script:pointInTime -Force -ErrorAction 'Stop'
 
             # Refresh and verify the database is online
             $script:serverObject.Databases.Refresh()
