@@ -44,6 +44,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   clarity. The old names `*-SqlDscBIReportServer` and `*-SqlDscPBIReportServer`
   are available as aliases for backward compatibility
   ([issue #2071](https://github.com/dsccommunity/SqlServerDsc/issues/2071)).
+- `SqlProtocol`
+  - Refactored to use the public command `Get-SqlDscServerProtocolName` instead
+    of the deprecated private function `Get-ProtocolNameProperties`
+    ([issue #2104](https://github.com/dsccommunity/SqlServerDsc/issues/2104)).
+  - Refactored to use the public command `Get-SqlDscServerProtocol` instead
+    of the deprecated private function `Get-ServerProtocolObject`
+    ([issue #2104](https://github.com/dsccommunity/SqlServerDsc/issues/2104)).
+- `SqlProtocolTcpIp`
+  - Refactored to use the public command `Get-SqlDscServerProtocol` instead
+    of the deprecated private function `Get-ServerProtocolObject`
+    ([issue #2104](https://github.com/dsccommunity/SqlServerDsc/issues/2104)).
 - `SqlPermission`
   - Refactored to use the new object-based server permission commands
     (`Grant-SqlDscServerPermission`, `Deny-SqlDscServerPermission`,
@@ -102,6 +113,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed parameter types for boolean database properties from `System.Boolean` to
     `System.Management.Automation.SwitchParameter` to follow PowerShell best practices.
     ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
+
+### Removed
+
+- Removed deprecated private function `Get-ProtocolNameProperties` from the
+  SqlServerDsc.Common module. Use the public command `Get-SqlDscServerProtocolName`
+  instead ([issue #2104](https://github.com/dsccommunity/SqlServerDsc/issues/2104)).
+- Removed deprecated private function `Get-ServerProtocolObject` from the
+  SqlServerDsc.Common module. Use the public command `Get-SqlDscServerProtocol`
+  instead ([issue #2104](https://github.com/dsccommunity/SqlServerDsc/issues/2104)).
 
 ## [17.3.0] - 2025-12-01
 
