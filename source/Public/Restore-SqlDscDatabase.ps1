@@ -446,15 +446,16 @@ function Restore-SqlDscDatabase
                 {
                     $restore.NoRecovery = $true
                 }
+                elseif ($PSBoundParameters.ContainsKey('Standby'))
+                {
+                    # When using Standby mode, NoRecovery must be set to true
+                    $restore.NoRecovery = $true
+                    $restore.StandbyFile = $Standby
+                }
                 else
                 {
                     # Explicitly set NoRecovery to false to ensure the database is brought online
                     $restore.NoRecovery = $false
-                }
-
-                if ($PSBoundParameters.ContainsKey('Standby'))
-                {
-                    $restore.StandbyFile = $Standby
                 }
 
                 if ($ReplaceDatabase.IsPresent)
