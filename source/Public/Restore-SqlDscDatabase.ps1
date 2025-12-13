@@ -339,24 +339,24 @@ function Restore-SqlDscDatabase
             )
         }
 
-        # Determine the restore type description for messages
+        # Get the localized restore type description for messages
         $restoreTypeDescription = switch ($RestoreType)
         {
             'Full'
             {
-                'full'
+                $script:localizedData.Restore_SqlDscDatabase_RestoreType_Full
             }
             'Differential'
             {
-                'differential'
+                $script:localizedData.Restore_SqlDscDatabase_RestoreType_Differential
             }
             'Log'
             {
-                'transaction log'
+                $script:localizedData.Restore_SqlDscDatabase_RestoreType_Log
             }
             'Files'
             {
-                'file'
+                $script:localizedData.Restore_SqlDscDatabase_RestoreType_Files
             }
         }
 

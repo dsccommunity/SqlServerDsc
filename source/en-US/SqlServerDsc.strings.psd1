@@ -496,6 +496,10 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Restore_SqlDscDatabase_ShouldProcessCaption = Restore database
     Restore_SqlDscDatabase_StandbyConflict = The Standby parameter cannot be used together with NoRecovery. Use either Standby or NoRecovery, but not both. (RSDD0006)
+    Restore_SqlDscDatabase_RestoreType_Full = full
+    Restore_SqlDscDatabase_RestoreType_Differential = differential
+    Restore_SqlDscDatabase_RestoreType_Log = transaction log
+    Restore_SqlDscDatabase_RestoreType_Files = file
 
     ## Test-SqlDscBackupFile
     Test_SqlDscBackupFile_Verifying = Verifying backup file '{0}'. (TSBF0001)
