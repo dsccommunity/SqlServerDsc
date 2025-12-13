@@ -975,14 +975,14 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
             $restoredDb | Should -Not -BeNullOrEmpty
 
             # Verify the database is in restricted user mode
-            # DatabaseUserAccess enum: Single = 0, Restricted = 1, Multiple = 2
-            $restoredDb.DatabaseUserAccess | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseUserAccess]::Restricted) -Because 'Database should be in restricted user access mode'
+            # UserAccess enum: Single = 0, Restricted = 1, Multiple = 2
+            $restoredDb.UserAccess | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseUserAccess]::Restricted) -Because 'Database should be in restricted user access mode'
         }
 
         It 'Should verify restricted access by attempting connection with non-privileged user' {
             # Verify the database exists and is in restricted mode
             $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:restrictedUserDbName -Refresh -ErrorAction 'Stop'
-            $restoredDb.DatabaseUserAccess | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseUserAccess]::Restricted)
+            $restoredDb.UserAccess | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseUserAccess]::Restricted)
 
             # Verify that only members of db_owner, dbcreator, or sysadmin can access
             # Since we're using SqlAdmin credentials (which has sysadmin), we should be able to query
