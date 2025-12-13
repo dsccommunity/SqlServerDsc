@@ -59,7 +59,7 @@
 
     .PARAMETER FileNumber
         Specifies the backup set number to restore when the backup file contains
-        multiple backup sets. Default is 1.
+        multiple backup sets.
 
     .PARAMETER ToPointInTime
         Specifies a point in time to restore the database to. This parameter
