@@ -1323,12 +1323,19 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Common.ServerConnection
     // Used by:
     //  SqlAGDatabase
+    //  Invoke-SqlDscScalarQuery
     public class ServerConnection
     {
         public string TrueLogin;
+        public int StatementTimeout;
 
         public void Create()
         {}
+
+        public object ExecuteScalar(string query)
+        {
+            return null;
+        }
     }
 
     // TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityDatabase
