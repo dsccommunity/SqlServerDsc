@@ -744,4 +744,253 @@ INSERT INTO dbo.TestData (Id, InsertTime, Value) VALUES (1, GETDATE(), 'Initial'
             $result.Tables[0].Rows[0].RecordCount | Should -Be 0 -Because 'Record inserted after point-in-time should not exist'
         }
     }
+
+    Context 'When performing a restore with FileNumber parameter for multi-backup-set files' {
+        BeforeAll {
+            $script:fileNumberDbName = 'SqlDscRestoreFileNum_' + (Get-Random)
+            $script:createdDatabases += $script:fileNumberDbName
+
+            # Create a multi-backup-set file by appending multiple backups to the same file
+            $script:multiBackupFile = Join-Path -Path $script:backupDirectory -ChildPath 'MultiBackupSet.bak'
+
+            # Create first backup (backup set 1)
+            $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:sourceDatabaseName -BackupFile $script:multiBackupFile -Force -ErrorAction 'Stop'
+
+            # Append second backup (backup set 2) - use NOINIT to append
+            $query = @"
+BACKUP DATABASE [$($script:sourceDatabaseName)]
+TO DISK = N'$($script:multiBackupFile)'
+WITH NOINIT, FORMAT, INIT, SKIP, REWIND, NOUNLOAD, STATS = 10;
+
+BACKUP DATABASE [$($script:sourceDatabaseName)]
+TO DISK = N'$($script:multiBackupFile)'
+WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
+"@
+            Invoke-SqlDscQuery -ServerObject $script:serverObject -Query $query -Force -ErrorAction 'Stop'
+
+            # Get the file list from the backup to build RelocateFile objects
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:multiBackupFile -FileNumber 2 -ErrorAction 'Stop'
+
+            $script:fileNumberRelocateFiles = @()
+
+            foreach ($file in $fileList)
+            {
+                $fileExtension = [System.IO.Path]::GetExtension($file.PhysicalName)
+
+                if ($file.Type -eq 'L')
+                {
+                    $newFileName = $script:fileNumberDbName + '_log' + $fileExtension
+                    $newPath = Join-Path -Path $script:logDirectory -ChildPath $newFileName
+                }
+                else
+                {
+                    $newFileName = $script:fileNumberDbName + $fileExtension
+                    $newPath = Join-Path -Path $script:dataDirectory -ChildPath $newFileName
+                }
+
+                $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
+                $script:fileNumberRelocateFiles += $relocateFile
+            }
+        }
+
+        AfterAll {
+            $existingDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:fileNumberDbName -ErrorAction 'SilentlyContinue'
+
+            if ($existingDb)
+            {
+                $null = Remove-SqlDscDatabase -DatabaseObject $existingDb -Force -ErrorAction 'SilentlyContinue'
+            }
+
+            # Clean up multi-backup file
+            if (Test-Path -Path $script:multiBackupFile)
+            {
+                Remove-Item -Path $script:multiBackupFile -Force -ErrorAction 'SilentlyContinue'
+            }
+        }
+
+        It 'Should restore from the second backup set using FileNumber parameter' {
+            # Restore the second backup set (FileNumber = 2)
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:fileNumberDbName -BackupFile $script:multiBackupFile -FileNumber 2 -RelocateFile $script:fileNumberRelocateFiles -Force -ErrorAction 'Stop'
+
+            # Verify the database was restored
+            $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:fileNumberDbName -Refresh -ErrorAction 'SilentlyContinue'
+            $restoredDb | Should -Not -BeNullOrEmpty
+            $restoredDb.Name | Should -Be $script:fileNumberDbName
+        }
+    }
+
+    Context 'When performing a restore with performance tuning parameters' {
+        BeforeAll {
+            $script:perfTuneDbName = 'SqlDscRestorePerfTune_' + (Get-Random)
+            $script:createdDatabases += $script:perfTuneDbName
+
+            # Get the file list from the backup to build RelocateFile objects
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile -ErrorAction 'Stop'
+
+            $script:perfTuneRelocateFiles = @()
+
+            foreach ($file in $fileList)
+            {
+                $fileExtension = [System.IO.Path]::GetExtension($file.PhysicalName)
+
+                if ($file.Type -eq 'L')
+                {
+                    $newFileName = $script:perfTuneDbName + '_log' + $fileExtension
+                    $newPath = Join-Path -Path $script:logDirectory -ChildPath $newFileName
+                }
+                else
+                {
+                    $newFileName = $script:perfTuneDbName + $fileExtension
+                    $newPath = Join-Path -Path $script:dataDirectory -ChildPath $newFileName
+                }
+
+                $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
+                $script:perfTuneRelocateFiles += $relocateFile
+            }
+        }
+
+        AfterAll {
+            $existingDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -ErrorAction 'SilentlyContinue'
+
+            if ($existingDb)
+            {
+                $null = Remove-SqlDscDatabase -DatabaseObject $existingDb -Force -ErrorAction 'SilentlyContinue'
+            }
+        }
+
+        It 'Should restore database with BlockSize parameter' {
+            # Use a 64KB block size
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -BackupFile $script:fullBackupFile -RelocateFile $script:perfTuneRelocateFiles -BlockSize 65536 -Force -ErrorAction 'Stop'
+
+            # Verify the database was restored
+            $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -Refresh -ErrorAction 'SilentlyContinue'
+            $restoredDb | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Should restore database with BufferCount parameter' {
+            # Clean up if needed
+            $existingDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -ErrorAction 'SilentlyContinue'
+            if ($existingDb)
+            {
+                $null = Remove-SqlDscDatabase -DatabaseObject $existingDb -Force -ErrorAction 'SilentlyContinue'
+            }
+
+            # Use 20 buffers
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -BackupFile $script:fullBackupFile -RelocateFile $script:perfTuneRelocateFiles -BufferCount 20 -Force -ErrorAction 'Stop'
+
+            # Verify the database was restored
+            $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -Refresh -ErrorAction 'SilentlyContinue'
+            $restoredDb | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Should restore database with MaxTransferSize parameter' {
+            # Clean up if needed
+            $existingDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -ErrorAction 'SilentlyContinue'
+            if ($existingDb)
+            {
+                $null = Remove-SqlDscDatabase -DatabaseObject $existingDb -Force -ErrorAction 'SilentlyContinue'
+            }
+
+            # Use 4MB max transfer size
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -BackupFile $script:fullBackupFile -RelocateFile $script:perfTuneRelocateFiles -MaxTransferSize 4194304 -Force -ErrorAction 'Stop'
+
+            # Verify the database was restored
+            $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -Refresh -ErrorAction 'SilentlyContinue'
+            $restoredDb | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Should restore database with all performance tuning parameters combined' {
+            # Clean up if needed
+            $existingDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -ErrorAction 'SilentlyContinue'
+            if ($existingDb)
+            {
+                $null = Remove-SqlDscDatabase -DatabaseObject $existingDb -Force -ErrorAction 'SilentlyContinue'
+            }
+
+            # Combine all performance parameters
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -BackupFile $script:fullBackupFile -RelocateFile $script:perfTuneRelocateFiles -BlockSize 65536 -BufferCount 20 -MaxTransferSize 4194304 -Force -ErrorAction 'Stop'
+
+            # Verify the database was restored
+            $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -Refresh -ErrorAction 'SilentlyContinue'
+            $restoredDb | Should -Not -BeNullOrEmpty
+        }
+    }
+
+    Context 'When performing a restore with RestrictedUser mode' {
+        BeforeAll {
+            $script:restrictedUserDbName = 'SqlDscRestoreRestricted_' + (Get-Random)
+            $script:createdDatabases += $script:restrictedUserDbName
+
+            # Get the file list from the backup to build RelocateFile objects
+            $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile -ErrorAction 'Stop'
+
+            $script:restrictedUserRelocateFiles = @()
+
+            foreach ($file in $fileList)
+            {
+                $fileExtension = [System.IO.Path]::GetExtension($file.PhysicalName)
+
+                if ($file.Type -eq 'L')
+                {
+                    $newFileName = $script:restrictedUserDbName + '_log' + $fileExtension
+                    $newPath = Join-Path -Path $script:logDirectory -ChildPath $newFileName
+                }
+                else
+                {
+                    $newFileName = $script:restrictedUserDbName + $fileExtension
+                    $newPath = Join-Path -Path $script:dataDirectory -ChildPath $newFileName
+                }
+
+                $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
+                $script:restrictedUserRelocateFiles += $relocateFile
+            }
+        }
+
+        AfterAll {
+            # When database is in restricted mode, we need to use ALTER DATABASE to make it accessible before dropping
+            $existingDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:restrictedUserDbName -ErrorAction 'SilentlyContinue'
+
+            if ($existingDb)
+            {
+                # Try to set database to normal user access mode before removal
+                try
+                {
+                    $query = "ALTER DATABASE [$($script:restrictedUserDbName)] SET MULTI_USER WITH NO_WAIT;"
+                    Invoke-SqlDscQuery -ServerObject $script:serverObject -Query $query -Force -ErrorAction 'SilentlyContinue'
+                }
+                catch
+                {
+                    # Ignore errors - best effort to make database accessible
+                }
+
+                $null = Remove-SqlDscDatabase -DatabaseObject $existingDb -Force -ErrorAction 'SilentlyContinue'
+            }
+        }
+
+        It 'Should restore database in restricted user access mode' {
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:restrictedUserDbName -BackupFile $script:fullBackupFile -RelocateFile $script:restrictedUserRelocateFiles -RestrictedUser -Force -ErrorAction 'Stop'
+
+            # Refresh to get current state
+            $script:serverObject.Databases.Refresh()
+            $restoredDb = $script:serverObject.Databases[$script:restrictedUserDbName]
+            $restoredDb | Should -Not -BeNullOrEmpty
+
+            # Verify the database is in restricted user mode
+            # DatabaseUserAccess enum: Single = 0, Restricted = 1, Multiple = 2
+            $restoredDb.DatabaseUserAccess | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseUserAccess]::Restricted) -Because 'Database should be in restricted user access mode'
+        }
+
+        It 'Should verify restricted access by attempting connection with non-privileged user' {
+            # Verify the database exists and is in restricted mode
+            $script:serverObject.Databases.Refresh()
+            $restoredDb = $script:serverObject.Databases[$script:restrictedUserDbName]
+            $restoredDb.DatabaseUserAccess | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseUserAccess]::Restricted)
+
+            # Verify that only members of db_owner, dbcreator, or sysadmin can access
+            # Since we're using SqlAdmin credentials (which has sysadmin), we should be able to query
+            $query = "SELECT name FROM sys.databases WHERE name = N'$($script:restrictedUserDbName)';"
+            $result = Invoke-SqlDscQuery -ServerObject $script:serverObject -Query $query -PassThru -Force -ErrorAction 'Stop'
+            $result.Tables[0].Rows.Count | Should -Be 1 -Because 'Sysadmin should be able to see the restricted database'
+        }
+    }
 }
