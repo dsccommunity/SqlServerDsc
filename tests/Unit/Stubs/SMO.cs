@@ -1332,6 +1332,8 @@ namespace Microsoft.SqlServer.Management.Smo
         public void Create()
         {}
 
+        // Method: ExecuteScalar
+        // Used for testing scalar query execution in Invoke-SqlDscScalarQuery
         public object ExecuteScalar(string query)
         {
             return null;
