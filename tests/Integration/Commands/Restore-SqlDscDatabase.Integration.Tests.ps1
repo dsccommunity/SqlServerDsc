@@ -736,12 +736,12 @@ INSERT INTO dbo.TestData (Id, InsertTime, Value) VALUES (1, GETDATE(), 'Initial'
             # Verify data reflects the point-in-time (only initial record should exist)
             $query = "SELECT COUNT(*) AS RecordCount FROM dbo.TestData WHERE Id = 1;"
             $result = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:pitDbName -Query $query -Force -ErrorAction 'Stop'
-            $result.RecordCount | Should -Be 1 -Because 'Initial record should exist'
+            $result[0].RecordCount | Should -Be 1 -Because 'Initial record should exist'
 
             # Verify the second record (inserted after point-in-time) should NOT exist
             $query = "SELECT COUNT(*) AS RecordCount FROM dbo.TestData WHERE Id = 2;"
             $result = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:pitDbName -Query $query -Force -ErrorAction 'Stop'
-            $result.RecordCount | Should -Be 0 -Because 'Record inserted after point-in-time should not exist'
+            $result[0].RecordCount | Should -Be 0 -Because 'Record inserted after point-in-time should not exist'
         }
     }
 }
