@@ -10,7 +10,7 @@ BeforeDiscovery {
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
-                & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 6>&1 > $null
+                & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
             # If the dependencies have not been resolved, this will throw an error.
@@ -82,7 +82,7 @@ Describe 'Get-SqlDscDateTime' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         }
 
         Context 'When comparing UTC and local time functions' {
-            It 'Should return UTC time that differs from local time if not in UTC timezone' {
+            It 'Should return consistent UTC time when converting local time to UTC' {
                 $localTime = Get-SqlDscDateTime -ServerObject $script:serverObject -DateTimeFunction 'SYSDATETIME' -ErrorAction 'Stop'
                 $utcTime = Get-SqlDscDateTime -ServerObject $script:serverObject -DateTimeFunction 'SYSUTCDATETIME' -ErrorAction 'Stop'
 

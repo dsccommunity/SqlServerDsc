@@ -112,9 +112,9 @@ function Invoke-SqlDscScalarQuery
         catch
         {
             $writeErrorParameters = @{
-                Message      = $_.Exception.Message
+                Message      = $script:localizedData.ScalarQuery_Invoke_FailedToExecute -f $_.Exception.Message
                 Category     = 'InvalidOperation'
-                ErrorId      = 'ISDSQ0001' # cSpell: disable-line
+                ErrorId      = 'ISDSQ0002' # cSpell: disable-line
                 TargetObject = $Query
                 Exception    = $_.Exception
             }
@@ -125,7 +125,7 @@ function Invoke-SqlDscScalarQuery
         }
         finally
         {
-            if ($previousStatementTimeout)
+            if ($null -ne $previousStatementTimeout)
             {
                 $ServerObject.ConnectionContext.StatementTimeout = $previousStatementTimeout
             }

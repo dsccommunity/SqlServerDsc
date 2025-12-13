@@ -26,6 +26,8 @@ BeforeDiscovery {
 BeforeAll {
     $script:moduleName = 'SqlServerDsc'
 
+    $env:SqlServerDscCI = $true
+
     Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
 }
 
@@ -44,6 +46,8 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag @('Integration_SQL2017', 'Integration_S
 
     AfterAll {
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject -Force
+
+        Remove-Item -Path 'env:SqlServerDscCI'
     }
 
     Context 'When executing a scalar query' {

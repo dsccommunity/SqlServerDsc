@@ -204,7 +204,7 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag 'Public' {
             }
         }
 
-        Context 'When ErrorAction is set to Ignore or SilentlyContinue' {
+        Context 'When ErrorAction is set to Ignore' {
             It 'Should not throw an exception and does not return any result' {
                 $result = Invoke-SqlDscScalarQuery -ServerObject $mockServerObject -Query 'SELECT invalid' -ErrorAction 'Ignore'
 
