@@ -634,10 +634,10 @@ ConvertFrom-StringData @'
     Get_SqlDscSetupLog_PathNotFound = Path '{0}' does not exist. (GSDSL0006)
 
     ## Invoke-SqlDscScalarQuery
-    ScalarQuery_Invoke_ExecutingQuery = Executing the scalar query `{0}`. (ISDSQ0001)
-    ScalarQuery_Invoke_FailedToExecute = Failed to execute scalar query: {0} (ISDSQ0002)
+    Invoke_SqlDscScalarQuery_ExecutingQuery = Executing the scalar query `{0}`. (ISDSQ0001)
+    Invoke_SqlDscScalarQuery_FailedToExecute = Failed to execute scalar query: {0} (ISDSQ0002)
 
     ## Get-SqlDscDateTime
-    DateTime_Get_RetrievingDateTime = Retrieving date and time using {0}(). (GSDD0001)
-    DateTime_Get_FailedToRetrieve = Failed to retrieve date and time using {0}(): {1} (GSDD0002)
+    Get_SqlDscDateTime_RetrievingDateTime = Retrieving date and time using {0}(). (GSDD0001)
+    Get_SqlDscDateTime_FailedToRetrieve = Failed to retrieve date and time using {0}(): {1} (GSDD0002)
 '@

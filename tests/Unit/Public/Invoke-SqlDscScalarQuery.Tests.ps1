@@ -76,6 +76,21 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag 'Public' {
         $result.ParameterListAsString | Should -Be $MockExpectedParameters
     }
 
+    It 'Should have ServerObject as a mandatory parameter' {
+        $parameterInfo = (Get-Command -Name 'Invoke-SqlDscScalarQuery').Parameters['ServerObject']
+        $parameterInfo.Attributes.Mandatory | Should -Contain $true
+    }
+
+    It 'Should have Query as a mandatory parameter' {
+        $parameterInfo = (Get-Command -Name 'Invoke-SqlDscScalarQuery').Parameters['Query']
+        $parameterInfo.Attributes.Mandatory | Should -Contain $true
+    }
+
+    It 'Should accept ServerObject from pipeline' {
+        $parameterInfo = (Get-Command -Name 'Invoke-SqlDscScalarQuery').Parameters['ServerObject']
+        $parameterInfo.Attributes.ValueFromPipeline | Should -Contain $true
+    }
+
     Context 'When executing a scalar query' {
         BeforeAll {
             $mockConnectionContext = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerConnection'

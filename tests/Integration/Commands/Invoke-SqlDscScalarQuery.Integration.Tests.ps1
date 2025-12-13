@@ -31,6 +31,10 @@ BeforeAll {
     Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
 }
 
+AfterAll {
+    Remove-Item -Path 'env:SqlServerDscCI' -ErrorAction 'SilentlyContinue'
+}
+
 Describe 'Invoke-SqlDscScalarQuery' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         $script:mockInstanceName = 'DSCSQLTEST'
@@ -46,8 +50,6 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag @('Integration_SQL2017', 'Integration_S
 
     AfterAll {
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject -Force
-
-        Remove-Item -Path 'env:SqlServerDscCI'
     }
 
     Context 'When executing a scalar query' {

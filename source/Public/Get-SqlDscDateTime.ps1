@@ -83,7 +83,7 @@ function Get-SqlDscDateTime
     process
     {
         Write-Verbose -Message (
-            $script:localizedData.DateTime_Get_RetrievingDateTime -f $DateTimeFunction
+            $script:localizedData.Get_SqlDscDateTime_RetrievingDateTime -f $DateTimeFunction
         )
 
         $query = "SELECT $DateTimeFunction()"
@@ -111,7 +111,7 @@ function Get-SqlDscDateTime
         catch
         {
             $writeErrorParameters = @{
-                Message      = $script:localizedData.DateTime_Get_FailedToRetrieve -f $DateTimeFunction, $_.Exception.Message
+                Message      = $script:localizedData.Get_SqlDscDateTime_FailedToRetrieve -f $DateTimeFunction, $_.Exception.Message
                 Category     = 'InvalidOperation'
                 ErrorId      = 'GSDD0001' # cSpell: disable-line
                 TargetObject = $DateTimeFunction

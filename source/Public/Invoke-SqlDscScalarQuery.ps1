@@ -90,7 +90,7 @@ function Invoke-SqlDscScalarQuery
         }
 
         Write-Verbose -Message (
-            $script:localizedData.ScalarQuery_Invoke_ExecutingQuery -f $redactedQuery
+            $script:localizedData.Invoke_SqlDscScalarQuery_ExecutingQuery -f $redactedQuery
         )
 
         $previousStatementTimeout = $null
@@ -112,10 +112,10 @@ function Invoke-SqlDscScalarQuery
         catch
         {
             $writeErrorParameters = @{
-                Message      = $script:localizedData.ScalarQuery_Invoke_FailedToExecute -f $_.Exception.Message
+                Message      = $script:localizedData.Invoke_SqlDscScalarQuery_FailedToExecute -f $_.Exception.Message
                 Category     = 'InvalidOperation'
                 ErrorId      = 'ISDSQ0002' # cSpell: disable-line
-                TargetObject = $Query
+                TargetObject = $redactedQuery
                 Exception    = $_.Exception
             }
 
