@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added public command `Invoke-SqlDscScalarQuery` to execute scalar queries using
+  `Server.ConnectionContext.ExecuteScalar()`. Server-level, lightweight execution
+  that does not require any database to be online
+  ([issue #2423](https://github.com/dsccommunity/SqlServerDsc/issues/2423)).
+- Added public command `Get-SqlDscDateTime` to retrieve current date and time from
+  SQL Server instance. Supports multiple T-SQL date/time functions to eliminate
+  clock-skew and timezone issues between client and server
+  ([issue #2423](https://github.com/dsccommunity/SqlServerDsc/issues/2423)).
 - Added public command `Backup-SqlDscDatabase` to perform database backups using
   SMO's `Microsoft.SqlServer.Management.Smo.Backup` class. Supports full,
   differential, and transaction log backups with options for compression,
