@@ -760,13 +760,13 @@ INSERT INTO dbo.TestData (Id, InsertTime, Value) VALUES (1, GETDATE(), 'Initial'
             $query = @"
 BACKUP DATABASE [$($script:sourceDatabaseName)]
 TO DISK = N'$($script:multiBackupFile)'
-WITH NOINIT, FORMAT, INIT, SKIP, REWIND, NOUNLOAD, STATS = 10;
+WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
 
 BACKUP DATABASE [$($script:sourceDatabaseName)]
 TO DISK = N'$($script:multiBackupFile)'
 WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
 "@
-            Invoke-SqlDscQuery -ServerObject $script:serverObject -Query $query -Force -ErrorAction 'Stop'
+            Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'master' -Query $query -Force -ErrorAction 'Stop'
 
             # Get the file list from the backup to build RelocateFile objects
             $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:multiBackupFile -FileNumber 2 -ErrorAction 'Stop'
@@ -970,9 +970,8 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
         It 'Should restore database in restricted user access mode' {
             $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:restrictedUserDbName -BackupFile $script:fullBackupFile -RelocateFile $script:restrictedUserRelocateFiles -RestrictedUser -Force -ErrorAction 'Stop'
 
-            # Refresh to get current state
-            $script:serverObject.Databases.Refresh()
-            $restoredDb = $script:serverObject.Databases[$script:restrictedUserDbName]
+            # Get the database object using Get-SqlDscDatabase to ensure all properties are properly loaded
+            $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:restrictedUserDbName -Refresh -ErrorAction 'Stop'
             $restoredDb | Should -Not -BeNullOrEmpty
 
             # Verify the database is in restricted user mode
@@ -982,14 +981,13 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
 
         It 'Should verify restricted access by attempting connection with non-privileged user' {
             # Verify the database exists and is in restricted mode
-            $script:serverObject.Databases.Refresh()
-            $restoredDb = $script:serverObject.Databases[$script:restrictedUserDbName]
+            $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:restrictedUserDbName -Refresh -ErrorAction 'Stop'
             $restoredDb.DatabaseUserAccess | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseUserAccess]::Restricted)
 
             # Verify that only members of db_owner, dbcreator, or sysadmin can access
             # Since we're using SqlAdmin credentials (which has sysadmin), we should be able to query
             $query = "SELECT name FROM sys.databases WHERE name = N'$($script:restrictedUserDbName)';"
-            $result = Invoke-SqlDscQuery -ServerObject $script:serverObject -Query $query -PassThru -Force -ErrorAction 'Stop'
+            $result = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'master' -Query $query -PassThru -Force -ErrorAction 'Stop'
             $result.Tables[0].Rows.Count | Should -Be 1 -Because 'Sysadmin should be able to see the restricted database'
         }
     }
