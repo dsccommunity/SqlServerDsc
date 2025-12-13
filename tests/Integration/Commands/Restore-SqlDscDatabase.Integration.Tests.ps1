@@ -473,7 +473,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
                 $existingRelocateFiles += $relocateFile
             }
 
-            { Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:existingDbName -BackupFile $script:fullBackupFile -RelocateFile $existingRelocateFiles -Force } | Should -Throw -ErrorId 'RSDD0001,Restore-SqlDscDatabase'
+            { Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:existingDbName -BackupFile $script:fullBackupFile -RelocateFile $existingRelocateFiles -Force -ErrorAction 'Stop' } | Should -Throw -ErrorId 'RSDD0001,Restore-SqlDscDatabase'
         }
     }
 
@@ -481,7 +481,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
         It 'Should throw error when both NoRecovery and Standby are specified' {
             $standbyFile = Join-Path -Path $script:backupDirectory -ChildPath 'standby.ldf'
 
-            { Restore-SqlDscDatabase -ServerObject $script:serverObject -Name 'TestDb' -BackupFile $script:fullBackupFile -NoRecovery -Standby $standbyFile -Force } | Should -Throw -ErrorId 'RSDD0006,Restore-SqlDscDatabase'
+            { Restore-SqlDscDatabase -ServerObject $script:serverObject -Name 'TestDb' -BackupFile $script:fullBackupFile -NoRecovery -Standby $standbyFile -Force -ErrorAction 'Stop' } | Should -Throw -ErrorId 'RSDD0006,Restore-SqlDscDatabase'
         }
     }
 
