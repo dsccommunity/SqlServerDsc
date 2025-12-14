@@ -954,7 +954,7 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
             {
                 # Try to set database to normal user access mode before removal
                 $query = "ALTER DATABASE [$($script:restrictedUserDbName)] SET MULTI_USER WITH NO_WAIT;"
-                Invoke-SqlDscQuery -ServerObject $script:serverObject -Query $query -Force -ErrorAction 'SilentlyContinue'
+                Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'master' -Query $query -Force -ErrorAction 'SilentlyContinue'
 
                 $null = Remove-SqlDscDatabase -DatabaseObject $existingDb -Force -ErrorAction 'SilentlyContinue'
             }
