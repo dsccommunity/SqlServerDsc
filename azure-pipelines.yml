@@ -302,6 +302,8 @@ stages:
                   'tests/Integration/Commands/Connect-SqlDscDatabaseEngine.Integration.Tests.ps1'
                   'tests/Integration/Commands/Disconnect-SqlDscDatabaseEngine.Integration.Tests.ps1'
                   'tests/Integration/Commands/Invoke-SqlDscQuery.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Invoke-SqlDscScalarQuery.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscDateTime.Integration.Tests.ps1'
                   # Group 4
                   'tests/Integration/Commands/Assert-SqlDscLogin.Integration.Tests.ps1'
                   'tests/Integration/Commands/New-SqlDscLogin.Integration.Tests.ps1'
