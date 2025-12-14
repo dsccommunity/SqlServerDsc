@@ -651,7 +651,7 @@ INSERT INTO dbo.TestData (Id, InsertTime, Value) VALUES (1, GETDATE(), 'Initial'
             Start-Sleep -Seconds 2
 
             # Capture the point-in-time before adding more data
-            $script:pointInTime = Get-SqlDscDateTime -ServerObject $script:serverObject
+            $script:pointInTime = Get-SqlDscDateTime -ServerObject $script:serverObject -ErrorAction 'Stop'
 
             # Wait another moment
             Start-Sleep -Seconds 2
@@ -972,16 +972,62 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
             $restoredDb.UserAccess | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseUserAccess]::Restricted) -Because 'Database should be in restricted user access mode'
         }
 
-        It 'Should verify restricted access by attempting connection with non-privileged user' {
+        It 'Should verify sysadmin can access restricted database' {
             # Verify the database exists and is in restricted mode
             $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:restrictedUserDbName -Refresh -ErrorAction 'Stop'
             $restoredDb.UserAccess | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseUserAccess]::Restricted)
 
-            # Verify that only members of db_owner, dbcreator, or sysadmin can access
-            # Since we're using SqlAdmin credentials (which has sysadmin), we should be able to query
+            # Verify that sysadmin can access the restricted database
             $query = "SELECT name FROM sys.databases WHERE name = N'$($script:restrictedUserDbName)';"
             $result = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'master' -Query $query -PassThru -Force -ErrorAction 'Stop'
             $result.Tables[0].Rows.Count | Should -Be 1 -Because 'Sysadmin should be able to see the restricted database'
+        }
+
+        Context 'When verifying restricted database access with low-privilege user' {
+            BeforeAll {
+                # Create a temporary low-privilege login
+                $script:lowPrivLoginName = 'SqlDscLowPriv_' + (Get-Random)
+                $script:lowPrivPassword = ConvertTo-SecureString -String 'TempP@ss' + (Get-Random) -AsPlainText -Force
+                $script:lowPrivCredential = [System.Management.Automation.PSCredential]::new($script:lowPrivLoginName, $script:lowPrivPassword)
+
+                # Create the login
+                $script:lowPrivLoginObject = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:lowPrivLoginName -LoginType 'SqlLogin' -SecureString $script:lowPrivPassword -PassThru -Force -ErrorAction 'Stop'
+
+                # Grant VIEW ANY DATABASE permission
+                $null = Grant-SqlDscServerPermission -Login $script:lowPrivLoginObject -Permission ViewAnyDatabase -Force -ErrorAction 'Stop'
+            }
+
+            BeforeEach {
+                # Connect with low-privilege credentials
+                $script:lowPrivServerObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:lowPrivCredential -ErrorAction 'Stop'
+            }
+
+            AfterEach {
+                # Disconnect the low-privilege connection
+                if ($script:lowPrivServerObject)
+                {
+                    Disconnect-SqlDscDatabaseEngine -ServerObject $script:lowPrivServerObject
+                }
+            }
+
+            AfterAll {
+                # Clean up the temporary login
+                $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:lowPrivLoginName -ErrorAction 'SilentlyContinue'
+
+                if ($loginObject)
+                {
+                    $null = Remove-SqlDscLogin -LoginObject $loginObject -Force -ErrorAction 'SilentlyContinue'
+                }
+            }
+
+            It 'Should verify low-privilege user cannot access restricted database' {
+                # Attempt to access the restricted database
+                $query = "SELECT name FROM sys.databases WHERE name = N'$($script:restrictedUserDbName)';"
+                $result = Invoke-SqlDscQuery -ServerObject $script:lowPrivServerObject -DatabaseName 'master' -Query $query -PassThru -Force -ErrorAction 'Stop'
+
+                # The database should not be visible to low-privilege user
+                $result.Tables[0].Rows.Count | Should -Be 0 -Because 'Low-privilege user should not see the restricted database'
+            }
         }
     }
 }
