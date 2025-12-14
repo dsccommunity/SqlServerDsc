@@ -632,4 +632,12 @@ ConvertFrom-StringData @'
     Get_SqlDscSetupLog_Header = ==== SQL Server Setup {0} (from {1}) ==== (GSDSL0004)
     Get_SqlDscSetupLog_Footer = ==== End of {0} ==== (GSDSL0005)
     Get_SqlDscSetupLog_PathNotFound = Path '{0}' does not exist. (GSDSL0006)
+
+    ## Invoke-SqlDscScalarQuery
+    Invoke_SqlDscScalarQuery_ExecutingQuery = Executing the scalar query `{0}`. (ISDSQ0001)
+    Invoke_SqlDscScalarQuery_FailedToExecute = Failed to execute scalar query: {0} (ISDSQ0002)
+
+    ## Get-SqlDscDateTime
+    Get_SqlDscDateTime_RetrievingDateTime = Retrieving date and time using {0}(). (GSDD0001)
+    Get_SqlDscDateTime_FailedToRetrieve = Failed to retrieve date and time using {0}(): {1} (GSDD0002)
 '@
