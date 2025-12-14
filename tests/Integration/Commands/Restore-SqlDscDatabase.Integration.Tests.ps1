@@ -651,7 +651,7 @@ INSERT INTO dbo.TestData (Id, InsertTime, Value) VALUES (1, GETDATE(), 'Initial'
             Start-Sleep -Seconds 2
 
             # Capture the point-in-time before adding more data
-            $script:pointInTime = Get-Date
+            $script:pointInTime = Get-SqlDscDateTime -ServerObject $script:serverObject
 
             # Wait another moment
             Start-Sleep -Seconds 2
