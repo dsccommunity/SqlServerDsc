@@ -987,7 +987,7 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
             BeforeAll {
                 # Create a temporary low-privilege login
                 $script:lowPrivLoginName = 'SqlDscLowPriv_' + (Get-Random)
-                $script:lowPrivPassword = ConvertTo-SecureString -String 'TempP@ss' + (Get-Random) -AsPlainText -Force
+                $script:lowPrivPassword = ConvertTo-SecureString -String "TempP@ss$(Get-Random)" -AsPlainText -Force
                 $script:lowPrivCredential = [System.Management.Automation.PSCredential]::new($script:lowPrivLoginName, $script:lowPrivPassword)
 
                 # Create the login
