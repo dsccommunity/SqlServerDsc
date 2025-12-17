@@ -479,9 +479,10 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
 
     Context 'When using NoRecovery and Standby together' {
         It 'Should throw error when both NoRecovery and Standby are specified' {
+            $dbName = 'SqlDscInvalidStandby_' + (Get-Random)
             $standbyFile = Join-Path -Path $script:backupDirectory -ChildPath 'standby.ldf'
 
-            { Restore-SqlDscDatabase -ServerObject $script:serverObject -Name 'TestDb' -BackupFile $script:fullBackupFile -NoRecovery -Standby $standbyFile -Force -ErrorAction 'Stop' } | Should -Throw -ErrorId 'RSDD0006,Restore-SqlDscDatabase'
+            { Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $dbName -BackupFile $script:fullBackupFile -NoRecovery -Standby $standbyFile -Force -ErrorAction 'Stop' } | Should -Throw -ErrorId 'RSDD0006,Restore-SqlDscDatabase'
         }
     }
 
@@ -859,59 +860,86 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
         }
 
         It 'Should restore database with BlockSize parameter' {
+            $blockSizeDbName = $script:perfTuneDbName + '_BlockSize'
+            $script:createdDatabases += $blockSizeDbName
+
+            # Create unique RelocateFile objects for this test
+            $blockSizeRelocateFiles = @()
+            foreach ($file in $script:perfTuneRelocateFiles)
+            {
+                $newPath = $file.PhysicalName -replace [regex]::Escape($script:perfTuneDbName), $blockSizeDbName
+                $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
+                $blockSizeRelocateFiles += $relocateFile
+            }
+
             # Use a 64KB block size
-            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -BackupFile $script:fullBackupFile -RelocateFile $script:perfTuneRelocateFiles -BlockSize 65536 -Force -ErrorAction 'Stop'
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $blockSizeDbName -BackupFile $script:fullBackupFile -RelocateFile $blockSizeRelocateFiles -BlockSize 65536 -Force -ErrorAction 'Stop'
 
             # Verify the database was restored
-            $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -Refresh -ErrorAction 'SilentlyContinue'
+            $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $blockSizeDbName -Refresh -ErrorAction 'SilentlyContinue'
             $restoredDb | Should -Not -BeNullOrEmpty
         }
 
         It 'Should restore database with BufferCount parameter' {
-            # Clean up if needed
-            $existingDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -ErrorAction 'SilentlyContinue'
-            if ($existingDb)
+            $bufferCountDbName = $script:perfTuneDbName + '_BufferCount'
+            $script:createdDatabases += $bufferCountDbName
+
+            # Create unique RelocateFile objects for this test
+            $bufferCountRelocateFiles = @()
+            foreach ($file in $script:perfTuneRelocateFiles)
             {
-                $null = Remove-SqlDscDatabase -DatabaseObject $existingDb -Force -ErrorAction 'SilentlyContinue'
+                $newPath = $file.PhysicalName -replace [regex]::Escape($script:perfTuneDbName), $bufferCountDbName
+                $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
+                $bufferCountRelocateFiles += $relocateFile
             }
 
             # Use 20 buffers
-            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -BackupFile $script:fullBackupFile -RelocateFile $script:perfTuneRelocateFiles -BufferCount 20 -Force -ErrorAction 'Stop'
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $bufferCountDbName -BackupFile $script:fullBackupFile -RelocateFile $bufferCountRelocateFiles -BufferCount 20 -Force -ErrorAction 'Stop'
 
             # Verify the database was restored
-            $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -Refresh -ErrorAction 'SilentlyContinue'
+            $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $bufferCountDbName -Refresh -ErrorAction 'SilentlyContinue'
             $restoredDb | Should -Not -BeNullOrEmpty
         }
 
         It 'Should restore database with MaxTransferSize parameter' {
-            # Clean up if needed
-            $existingDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -ErrorAction 'SilentlyContinue'
-            if ($existingDb)
+            $maxTransferDbName = $script:perfTuneDbName + '_MaxTransfer'
+            $script:createdDatabases += $maxTransferDbName
+
+            # Create unique RelocateFile objects for this test
+            $maxTransferRelocateFiles = @()
+            foreach ($file in $script:perfTuneRelocateFiles)
             {
-                $null = Remove-SqlDscDatabase -DatabaseObject $existingDb -Force -ErrorAction 'SilentlyContinue'
+                $newPath = $file.PhysicalName -replace [regex]::Escape($script:perfTuneDbName), $maxTransferDbName
+                $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
+                $maxTransferRelocateFiles += $relocateFile
             }
 
             # Use 4MB max transfer size
-            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -BackupFile $script:fullBackupFile -RelocateFile $script:perfTuneRelocateFiles -MaxTransferSize 4194304 -Force -ErrorAction 'Stop'
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $maxTransferDbName -BackupFile $script:fullBackupFile -RelocateFile $maxTransferRelocateFiles -MaxTransferSize 4194304 -Force -ErrorAction 'Stop'
 
             # Verify the database was restored
-            $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -Refresh -ErrorAction 'SilentlyContinue'
+            $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $maxTransferDbName -Refresh -ErrorAction 'SilentlyContinue'
             $restoredDb | Should -Not -BeNullOrEmpty
         }
 
         It 'Should restore database with all performance tuning parameters combined' {
-            # Clean up if needed
-            $existingDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -ErrorAction 'SilentlyContinue'
-            if ($existingDb)
+            $combinedDbName = $script:perfTuneDbName + '_Combined'
+            $script:createdDatabases += $combinedDbName
+
+            # Create unique RelocateFile objects for this test
+            $combinedRelocateFiles = @()
+            foreach ($file in $script:perfTuneRelocateFiles)
             {
-                $null = Remove-SqlDscDatabase -DatabaseObject $existingDb -Force -ErrorAction 'SilentlyContinue'
+                $newPath = $file.PhysicalName -replace [regex]::Escape($script:perfTuneDbName), $combinedDbName
+                $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
+                $combinedRelocateFiles += $relocateFile
             }
 
             # Combine all performance parameters
-            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -BackupFile $script:fullBackupFile -RelocateFile $script:perfTuneRelocateFiles -BlockSize 65536 -BufferCount 20 -MaxTransferSize 4194304 -Force -ErrorAction 'Stop'
+            $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $combinedDbName -BackupFile $script:fullBackupFile -RelocateFile $combinedRelocateFiles -BlockSize 65536 -BufferCount 20 -MaxTransferSize 4194304 -Force -ErrorAction 'Stop'
 
             # Verify the database was restored
-            $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:perfTuneDbName -Refresh -ErrorAction 'SilentlyContinue'
+            $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $combinedDbName -Refresh -ErrorAction 'SilentlyContinue'
             $restoredDb | Should -Not -BeNullOrEmpty
         }
     }
