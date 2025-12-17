@@ -201,6 +201,8 @@ function Get-Something
 - Return a single, consistent object type per function
   - return `$null` for no objects/non-terminating errors
 - Use `::new()` static method instead of `New-Object` for .NET types, e.g `[System.Management.Automation.ErrorRecord]::new()`
+- Instead of `[System.Exception]::new(...)`, use `New-Exception` command
+- Instead of `[System.Management.Automation.ErrorRecord]::new(...)`, use `New-ErrorRecord` command
 
 ### Security & Safety
 
