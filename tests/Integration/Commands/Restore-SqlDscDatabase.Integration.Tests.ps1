@@ -991,7 +991,7 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
                 $script:lowPrivCredential = [System.Management.Automation.PSCredential]::new($script:lowPrivLoginName, $script:lowPrivPassword)
 
                 # Create the login
-                $script:lowPrivLoginObject = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:lowPrivLoginName -LoginType 'SqlLogin' -SecureString $script:lowPrivPassword -PassThru -Force -ErrorAction 'Stop'
+                $script:lowPrivLoginObject = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:lowPrivLoginName -SqlLogin -SecurePassword $script:lowPrivPassword -PassThru -Force -ErrorAction 'Stop'
 
                 # Grant VIEW ANY DATABASE permission
                 $null = Grant-SqlDscServerPermission -Login $script:lowPrivLoginObject -Permission ViewAnyDatabase -Force -ErrorAction 'Stop'
