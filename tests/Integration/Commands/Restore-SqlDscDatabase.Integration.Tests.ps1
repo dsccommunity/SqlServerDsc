@@ -825,10 +825,11 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
             $script:perfTuneDbName = 'SqlDscRestorePerfTune_' + (Get-Random)
             $script:createdDatabases += $script:perfTuneDbName
 
-            # Get the file list from the backup to build RelocateFile objects
+            # Get the file list from the backup to store file information
             $fileList = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:fullBackupFile -ErrorAction 'Stop'
 
-            $script:perfTuneRelocateFiles = @()
+            # Store the original file information (not RelocateFile objects which get modified by SMO)
+            $script:perfTuneFileInfo = @()
 
             foreach ($file in $fileList)
             {
@@ -845,8 +846,10 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
                     $newPath = Join-Path -Path $script:dataDirectory -ChildPath $newFileName
                 }
 
-                $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
-                $script:perfTuneRelocateFiles += $relocateFile
+                $script:perfTuneFileInfo += @{
+                    LogicalName = $file.LogicalName
+                    PhysicalName = $newPath
+                }
             }
         }
 
@@ -863,9 +866,9 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
             $blockSizeDbName = $script:perfTuneDbName + '_BlockSize'
             $script:createdDatabases += $blockSizeDbName
 
-            # Create unique RelocateFile objects for this test
+            # Create new RelocateFile objects for this test from the stored file information
             $blockSizeRelocateFiles = @()
-            foreach ($file in $script:perfTuneRelocateFiles)
+            foreach ($file in $script:perfTuneFileInfo)
             {
                 $newPath = $file.PhysicalName -replace [regex]::Escape($script:perfTuneDbName), $blockSizeDbName
                 $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
@@ -884,9 +887,9 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
             $bufferCountDbName = $script:perfTuneDbName + '_BufferCount'
             $script:createdDatabases += $bufferCountDbName
 
-            # Create unique RelocateFile objects for this test
+            # Create new RelocateFile objects for this test from the stored file information
             $bufferCountRelocateFiles = @()
-            foreach ($file in $script:perfTuneRelocateFiles)
+            foreach ($file in $script:perfTuneFileInfo)
             {
                 $newPath = $file.PhysicalName -replace [regex]::Escape($script:perfTuneDbName), $bufferCountDbName
                 $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
@@ -905,9 +908,9 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
             $maxTransferDbName = $script:perfTuneDbName + '_MaxTransfer'
             $script:createdDatabases += $maxTransferDbName
 
-            # Create unique RelocateFile objects for this test
+            # Create new RelocateFile objects for this test from the stored file information
             $maxTransferRelocateFiles = @()
-            foreach ($file in $script:perfTuneRelocateFiles)
+            foreach ($file in $script:perfTuneFileInfo)
             {
                 $newPath = $file.PhysicalName -replace [regex]::Escape($script:perfTuneDbName), $maxTransferDbName
                 $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
@@ -926,9 +929,9 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
             $combinedDbName = $script:perfTuneDbName + '_Combined'
             $script:createdDatabases += $combinedDbName
 
-            # Create unique RelocateFile objects for this test
+            # Create new RelocateFile objects for this test from the stored file information
             $combinedRelocateFiles = @()
-            foreach ($file in $script:perfTuneRelocateFiles)
+            foreach ($file in $script:perfTuneFileInfo)
             {
                 $newPath = $file.PhysicalName -replace [regex]::Escape($script:perfTuneDbName), $combinedDbName
                 $relocateFile = [Microsoft.SqlServer.Management.Smo.RelocateFile]::new($file.LogicalName, $newPath)
