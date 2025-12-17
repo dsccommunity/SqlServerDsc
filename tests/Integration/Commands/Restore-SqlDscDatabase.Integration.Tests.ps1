@@ -998,8 +998,8 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
             }
 
             BeforeEach {
-                # Connect with low-privilege credentials
-                $script:lowPrivServerObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:lowPrivCredential -ErrorAction 'Stop'
+                # Connect with low-privilege credentials using SQL authentication
+                $script:lowPrivServerObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -LoginType 'SqlLogin' -Credential $script:lowPrivCredential -ErrorAction 'Stop'
             }
 
             AfterEach {
