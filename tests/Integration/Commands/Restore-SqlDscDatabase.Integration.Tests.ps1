@@ -1023,9 +1023,6 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
 
                 # Create the login
                 $script:lowPrivLoginObject = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:lowPrivLoginName -SqlLogin -SecurePassword $script:lowPrivPassword -PassThru -Force -ErrorAction 'Stop'
-
-                # Grant VIEW ANY DATABASE permission
-                $null = Grant-SqlDscServerPermission -Login $script:lowPrivLoginObject -Permission ViewAnyDatabase -Force -ErrorAction 'Stop'
             }
 
             BeforeEach {
@@ -1047,6 +1044,21 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
 
                 if ($loginObject)
                 {
+                    # Kill any active sessions for this login before dropping using SMO
+                    $processes = $script:serverObject.EnumProcesses($script:lowPrivLoginName)
+
+                    foreach ($process in $processes)
+                    {
+                        try
+                        {
+                            $script:serverObject.KillProcess($process.Spid)
+                        }
+                        catch
+                        {
+                            # Ignore errors if process already terminated
+                        }
+                    }
+
                     $null = Remove-SqlDscLogin -LoginObject $loginObject -Force -ErrorAction 'SilentlyContinue'
                 }
             }
