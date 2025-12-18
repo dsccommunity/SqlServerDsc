@@ -1064,12 +1064,14 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
             }
 
             It 'Should verify low-privilege user cannot access restricted database' {
-                # Attempt to access the restricted database
+                # The database should be visible in sys.databases (restricted mode doesn't hide metadata)
                 $query = "SELECT name FROM sys.databases WHERE name = N'$($script:restrictedUserDbName)';"
                 $result = Invoke-SqlDscQuery -ServerObject $script:lowPrivServerObject -DatabaseName 'master' -Query $query -PassThru -Force -ErrorAction 'Stop'
+                $result.Tables[0].Rows.Count | Should -Be 1 -Because 'Database metadata should be visible even in restricted mode'
 
-                # The database should not be visible to low-privilege user
-                $result.Tables[0].Rows.Count | Should -Be 0 -Because 'Low-privilege user should not see the restricted database'
+                # But attempting to USE the database should fail
+                $query = "USE [$($script:restrictedUserDbName)];"
+                { Invoke-SqlDscQuery -ServerObject $script:lowPrivServerObject -DatabaseName 'master' -Query $query -Force -ErrorAction 'Stop' } | Should -Throw -Because 'Low-privilege user should not be able to connect to restricted database'
             }
         }
     }
