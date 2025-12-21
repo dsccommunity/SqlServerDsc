@@ -47,7 +47,6 @@
         'Test-DscPropertyState'
         'Import-Assembly'
         'ConvertTo-ServerInstanceName'
-        'Get-FilePathMajorVersion'
         'Test-FeatureFlag'
     )
 

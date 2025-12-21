@@ -117,6 +117,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- Removed helper function `Get-FilePathMajorVersion` from the SqlServerDsc.Common
+  module. Refactored usages to use the command `Get-FileVersion` from the
+  DscResource.Common module instead
+  ([issue #2373](https://github.com/dsccommunity/SqlServerDsc/issues/2373)).
 - Removed deprecated private function `Get-ProtocolNameProperties` from the
   SqlServerDsc.Common module. Use the public command `Get-SqlDscServerProtocolName`
   instead ([issue #2104](https://github.com/dsccommunity/SqlServerDsc/issues/2104)).

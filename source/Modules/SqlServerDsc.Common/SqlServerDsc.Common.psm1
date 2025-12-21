@@ -1983,31 +1983,6 @@ function ConvertTo-ServerInstanceName
 
 <#
     .SYNOPSIS
-        Returns the SQL Server major version from the setup.exe executable provided
-        in the Path parameter.
-
-    .PARAMETER Path
-        String containing the path to the SQL Server setup.exe executable.
-
-    .NOTES
-        This function should be removed when it is not longer used, and instead
-        the private function Get-FileVersionInformation shall be used.
-#>
-function Get-FilePathMajorVersion
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Path
-    )
-
-    (Get-Item -Path $Path).VersionInfo.ProductVersion.Split('.')[0]
-}
-
-<#
-    .SYNOPSIS
         Test if the specific feature flag should be enabled.
 
     .PARAMETER FeatureFlag

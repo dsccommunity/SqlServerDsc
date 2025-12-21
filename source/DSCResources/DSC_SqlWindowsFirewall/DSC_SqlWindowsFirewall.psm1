@@ -79,7 +79,7 @@ function Get-TargetResource
         $script:localizedData.UsingPath -f $pathToSetupExecutable
     )
 
-    $sqlVersion = Get-FilePathMajorVersion -Path $pathToSetupExecutable
+    $sqlVersion = (Get-FileVersion -Path $pathToSetupExecutable).ProductVersion.Split('.')[0]
 
     Write-Verbose -Message (
         $script:localizedData.MajorVersion -f $sqlVersion
@@ -405,7 +405,7 @@ function Set-TargetResource
         $script:localizedData.UsingPath -f $pathToSetupExecutable
     )
 
-    $sqlVersion = Get-FilePathMajorVersion -Path $pathToSetupExecutable
+    $sqlVersion = (Get-FileVersion -Path $pathToSetupExecutable).ProductVersion.Split('.')[0]
 
     Write-Verbose -Message (
         $script:localizedData.MajorVersion -f $sqlVersion
