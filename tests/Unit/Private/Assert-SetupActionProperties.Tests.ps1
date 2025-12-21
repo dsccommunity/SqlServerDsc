@@ -388,7 +388,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             Mock -CommandName Assert-Feature
 
             # Required mock for mocking Assert-Feature above.
-            Mock -CommandName Get-FileVersionInformation -MockWith {
+            Mock -CommandName Get-FileVersion -MockWith {
                 return @{
                     ProductVersion = 16
                 }
@@ -522,7 +522,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             Mock -CommandName Assert-Feature
 
             # Required mock for mocking Assert-Feature above.
-            Mock -CommandName Get-FileVersionInformation -MockWith {
+            Mock -CommandName Get-FileVersion -MockWith {
                 return @{
                     ProductVersion = 16
                 }

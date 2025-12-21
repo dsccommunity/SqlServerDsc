@@ -46,7 +46,7 @@ function Assert-SetupActionProperties
     {
         $setupExecutableFileVersion = $Property.MediaPath |
             Join-Path -ChildPath 'setup.exe' |
-            Get-FileVersionInformation
+            Get-FileVersion
 
         $Property.Features |
             Assert-Feature -ProductVersion $setupExecutableFileVersion.ProductVersion
