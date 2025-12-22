@@ -54,6 +54,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `Assert-SetupActionProperties`
+  - Refactored to use the command `Get-FileVersion` from the DscResource.Common
+    module instead of the private function `Get-FileVersionInformation`
+    ([issue #2373](https://github.com/dsccommunity/SqlServerDsc/issues/2373)).
 - Renamed commands `*-SqlDscBIReportServer` to `*-SqlDscPowerBIReportServer` for
   clarity. The old names `*-SqlDscBIReportServer` and `*-SqlDscPBIReportServer`
   are available as aliases for backward compatibility
@@ -130,6 +134,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- Removed private function `Get-FileVersionInformation`. Use the command
+  `Get-FileVersion` from the DscResource.Common module instead
+  ([issue #2373](https://github.com/dsccommunity/SqlServerDsc/issues/2373)).
 - Removed deprecated private function `Get-ProtocolNameProperties` from the
   SqlServerDsc.Common module. Use the public command `Get-SqlDscServerProtocolName`
   instead ([issue #2104](https://github.com/dsccommunity/SqlServerDsc/issues/2104)).
