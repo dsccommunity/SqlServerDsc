@@ -214,6 +214,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         Write-Verbose -Message "ReportServer not yet accessible (attempt $attempt of $maxRetries). Waiting $retryIntervalSeconds seconds..." -Verbose
                         Start-Sleep -Seconds $retryIntervalSeconds
                     }
+                    elseif ($webRequestStatusCode -eq 0 -and $attempt -eq $maxRetries)
+                    {
+                        # On the last attempt with status code 0, re-throw to get error details
+                        Write-Verbose -Message "ReportServer still not accessible after $maxRetries attempts. Re-throwing exception for diagnostics." -Verbose
+                        throw $_
+                    }
                     elseif ($webRequestStatusCode -ne 0)
                     {
                         # If we got an actual HTTP error code, break and let the assertion handle it
@@ -269,6 +275,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     {
                         Write-Verbose -Message "Reports site not yet accessible (attempt $attempt of $maxRetries). Waiting $retryIntervalSeconds seconds..." -Verbose
                         Start-Sleep -Seconds $retryIntervalSeconds
+                    }
+                    elseif ($webRequestStatusCode -eq 0 -and $attempt -eq $maxRetries)
+                    {
+                        # On the last attempt with status code 0, re-throw to get error details
+                        Write-Verbose -Message "Reports site still not accessible after $maxRetries attempts. Re-throwing exception for diagnostics." -Verbose
+                        throw $_
                     }
                     elseif ($webRequestStatusCode -ne 0)
                     {
@@ -446,6 +458,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         Write-Verbose -Message "ReportServer not yet accessible (attempt $attempt of $maxRetries). Waiting $retryIntervalSeconds seconds..." -Verbose
                         Start-Sleep -Seconds $retryIntervalSeconds
                     }
+                    elseif ($webRequestStatusCode -eq 0 -and $attempt -eq $maxRetries)
+                    {
+                        # On the last attempt with status code 0, re-throw to get error details
+                        Write-Verbose -Message "ReportServer still not accessible after $maxRetries attempts. Re-throwing exception for diagnostics." -Verbose
+                        throw $_
+                    }
                     elseif ($webRequestStatusCode -ne 0)
                     {
                         # If we got an actual HTTP error code, break and let the assertion handle it
@@ -501,6 +519,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     {
                         Write-Verbose -Message "Reports site not yet accessible (attempt $attempt of $maxRetries). Waiting $retryIntervalSeconds seconds..." -Verbose
                         Start-Sleep -Seconds $retryIntervalSeconds
+                    }
+                    elseif ($webRequestStatusCode -eq 0 -and $attempt -eq $maxRetries)
+                    {
+                        # On the last attempt with status code 0, re-throw to get error details
+                        Write-Verbose -Message "Reports site still not accessible after $maxRetries attempts. Re-throwing exception for diagnostics." -Verbose
+                        throw $_
                     }
                     elseif ($webRequestStatusCode -ne 0)
                     {

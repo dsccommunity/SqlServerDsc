@@ -59,7 +59,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed integration tests failing with status code 0 when checking ReportServer
     and Reports site accessibility by adding retry logic (up to 2 minutes) to
     handle timing issues where Reporting Services web services are not immediately
-    ready after DSC configuration completes.
+    ready after DSC configuration completes. On final retry attempt with status
+    code 0, the exception is now re-thrown to provide detailed error diagnostics.
     ([issue #2104](https://github.com/dsccommunity/SqlServerDsc/issues/2104)).
   - Refactored to use the public command `Get-SqlDscServerProtocol` instead
     of the deprecated private function `Get-ServerProtocolObject`
