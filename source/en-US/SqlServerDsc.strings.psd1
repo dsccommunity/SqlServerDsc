@@ -249,9 +249,6 @@ ConvertFrom-StringData @'
     ## Assert-Feature
     Feature_Assert_NotSupportedFeature = The feature '{0}' is not supported for Microsoft SQL Server product version {1}. See the Microsoft SQL Server documentation https://learn.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt#Feature for more information.
 
-    ## Get-FileVersionInformation
-    FileVersionInformation_Get_FilePathIsNotFile = The specified path is not a file.
-
     ## Get-SqlDscConfigurationOption
     ConfigurationOption_Get_Missing = There is no configuration option with the name '{0}'.
 

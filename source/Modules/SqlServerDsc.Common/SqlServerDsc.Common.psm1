@@ -1991,7 +1991,7 @@ function ConvertTo-ServerInstanceName
 
     .NOTES
         This function should be removed when it is not longer used, and instead
-        the private function Get-FileVersionInformation shall be used.
+        the command Get-FileVersion from the DscResource.Common module shall be used.
 #>
 function Get-FilePathMajorVersion
 {
