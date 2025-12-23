@@ -55,15 +55,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fixed all `Invoke-WebRequest` calls throughout the codebase to include the
+  `-UseBasicParsing` parameter. This addresses a Windows PowerShell 5.1 security
+  update (CVE-2025-54100) released December 9, 2025, which changed the default
+  behavior of `Invoke-WebRequest` to require an interactive prompt unless
+  `-UseBasicParsing` is specified. This change prevents failures in non-interactive
+  CI environments. Affected files include integration tests, production code, and
+  build scripts
+  ([issue #2376](https://github.com/dsccommunity/SqlServerDsc/issues/2376)).
 - `SqlRS`
   - Fixed integration tests failing with status code 0 when checking ReportServer
-    and Reports site accessibility. This was caused by a Windows PowerShell 5.1
-    security update (CVE-2025-54100) released December 9, 2025, which changed the
-    default behavior of `Invoke-WebRequest` to require an interactive prompt unless
-    `-UseBasicParsing` is specified. Added `-UseBasicParsing` parameter to all
-    `Invoke-WebRequest` calls and implemented retry logic (up to 2 minutes) to
-    handle timing issues. On final retry attempt with status code 0, the exception
-    is now re-thrown to provide detailed error diagnostics
+    and Reports site accessibility by implementing retry logic (up to 2 minutes) to
+    handle timing issues where Reporting Services web services are not immediately
+    ready after DSC configuration completes. On final retry attempt with status
+    code 0, the exception is now re-thrown to provide detailed error diagnostics
     ([issue #2376](https://github.com/dsccommunity/SqlServerDsc/issues/2376)).
   - Refactored to use the public command `Get-SqlDscServerProtocol` instead
     of the deprecated private function `Get-ServerProtocolObject`
