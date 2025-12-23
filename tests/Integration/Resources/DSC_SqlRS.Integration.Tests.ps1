@@ -191,7 +191,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             {
                 try
                 {
-                    $webRequestReportServer = Invoke-WebRequest -Uri $reportServerUri -UseDefaultCredentials -ErrorAction Stop
+                    $webRequestReportServer = Invoke-WebRequest -Uri $reportServerUri -UseDefaultCredentials -UseBasicParsing -ErrorAction Stop
                     # if the request finishes successfully this should return status code 200.
                     $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
 
@@ -253,7 +253,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             {
                 try
                 {
-                    $webRequestReportServer = Invoke-WebRequest -Uri $reportsUri -UseDefaultCredentials -ErrorAction Stop
+                    $webRequestReportServer = Invoke-WebRequest -Uri $reportsUri -UseDefaultCredentials -UseBasicParsing -ErrorAction Stop
                     # if the request finishes successfully this should return status code 200.
                     $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
 
