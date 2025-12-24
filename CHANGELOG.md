@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added public command `Get-SqlDscRSPackage` to retrieve package information for
+  SQL Server Reporting Services or Power BI Report Server. Supports getting version
+  information from an installed package or from an executable file
+  ([issue #2082](https://github.com/dsccommunity/SqlServerDsc/issues/2082)).
 - Added public command `Get-SqlDscBackupFileList` to read the list of database
   files contained in a SQL Server backup file. Useful for planning file
   relocations during restore operations ([issue #2026](https://github.com/dsccommunity/SqlServerDsc/issues/2026)).

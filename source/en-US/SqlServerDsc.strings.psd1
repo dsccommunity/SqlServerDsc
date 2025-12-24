@@ -662,4 +662,13 @@ ConvertFrom-StringData @'
     ## Get-SqlDscDateTime
     Get_SqlDscDateTime_RetrievingDateTime = Retrieving date and time using {0}(). (GSDD0001)
     Get_SqlDscDateTime_FailedToRetrieve = Failed to retrieve date and time using {0}(): {1} (GSDD0002)
+
+    ## Get-SqlDscRSPackage
+    Get_SqlDscRSPackage_GettingInstalledPackage = Getting installed package information for '{0}'. (GSDRSP0003)
+    Get_SqlDscRSPackage_PackageNotFound = The package '{0}' was not found. Ensure that the package is installed. (GSDRSP0001)
+    Get_SqlDscRSPackage_FoundInstallFolder = Found install folder '{0}'. (GSDRSP0004)
+    Get_SqlDscRSPackage_GettingVersionInfo = Getting version information from '{0}'. (GSDRSP0005)
+    Get_SqlDscRSPackage_GettingVersionFromFile = Getting version information from file '{0}'. (GSDRSP0006)
+    Get_SqlDscRSPackage_InvalidProductName = The product name '{0}' is not a valid Reporting Services package. Expected product names are: '{1}'. Use the Force parameter to skip this validation. (GSDRSP0002)
+    Get_SqlDscRSPackage_ReturningVersionInfo = Returning version information for '{0}' version '{1}'. (GSDRSP0007)
 '@

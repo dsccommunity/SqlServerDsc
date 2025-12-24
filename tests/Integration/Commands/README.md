@@ -162,6 +162,7 @@ Save-SqlDscSqlServerMediaFile | 0 | - | - | Downloads SQL Server media files
 Import-SqlDscPreferredModule | 0 | - | - | -
 Install-SqlDscReportingService | 1 | 0 (Prerequisites) | - | SSRS instance
 Get-SqlDscInstalledInstance | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Get-SqlDscRSPackage | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Get-SqlDscRSSetupConfiguration | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Test-SqlDscRSInstalled | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Repair-SqlDscReportingService | 8 | 1 (Install-SqlDscReportingService) | SSRS | -
@@ -180,6 +181,7 @@ Save-SqlDscSqlServerMediaFile | 0 | - | - | Downloads SQL Server media files
 Import-SqlDscPreferredModule | 0 | - | - | -
 Install-SqlDscPowerBIReportServer | 1 | 0 (Prerequisites) | - | PBIRS instance
 Get-SqlDscInstalledInstance | 2 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Get-SqlDscRSPackage | 2 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Get-SqlDscRSSetupConfiguration | 2 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Test-SqlDscRSInstalled | 2 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Repair-SqlDscPowerBIReportServer | 8 | 1 (Install-SqlDscPowerBIReportServer) | PBIRS | -

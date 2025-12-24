@@ -531,6 +531,7 @@ stages:
                   'tests/Integration/Commands/Install-SqlDscReportingService.Integration.Tests.ps1'
                   # Group 2
                   'tests/Integration/Commands/Get-SqlDscInstalledInstance.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscRSPackage.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSSetupConfiguration.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscRSInstalled.Integration.Tests.ps1'
                   # Group 8
@@ -596,6 +597,7 @@ stages:
                   'tests/Integration/Commands/Install-SqlDscPowerBIReportServer.Integration.Tests.ps1'
                   # Group 2
                   'tests/Integration/Commands/Get-SqlDscInstalledInstance.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscRSPackage.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSSetupConfiguration.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscRSInstalled.Integration.Tests.ps1'
                   # Group 8
