@@ -105,7 +105,7 @@ function Get-SqlDscRSPackage
 
             $PSCmdlet.ThrowTerminatingError(
                 [System.Management.Automation.ErrorRecord]::new(
-                    [System.InvalidOperationException]::new($errorMessage),
+                    $errorMessage,
                     'GSDRSP0001',
                     [System.Management.Automation.ErrorCategory]::ObjectNotFound,
                     $Package
@@ -146,7 +146,7 @@ function Get-SqlDscRSPackage
 
                 $PSCmdlet.ThrowTerminatingError(
                     [System.Management.Automation.ErrorRecord]::new(
-                        [System.InvalidOperationException]::new($errorMessage),
+                        $errorMessage,
                         'GSDRSP0002',
                         [System.Management.Automation.ErrorCategory]::InvalidArgument,
                         $FilePath
