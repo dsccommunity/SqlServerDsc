@@ -200,7 +200,10 @@ function Get-Something
 - Assign function results to variables rather than inline calls
 - Return a single, consistent object type per function
   - return `$null` for no objects/non-terminating errors
-- Use `::new()` static method instead of `New-Object` for .NET types, e.g `[System.Management.Automation.ErrorRecord]::new()`
+- For most .NET types, use the `::new()` static method instead of `New-Object`, e.g., `[System.DateTime]::new()`.
+- For error handling, use dedicated helper commands instead:
+  - Use `New-Exception` instead of `[System.Exception]::new(...)`
+  - Use `New-ErrorRecord` instead of `[System.Management.Automation.ErrorRecord]::new(...)`
 
 ### Security & Safety
 

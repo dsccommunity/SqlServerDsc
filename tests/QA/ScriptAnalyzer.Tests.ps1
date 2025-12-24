@@ -39,7 +39,7 @@ BeforeDiscovery {
         (from Indented.ScriptAnalyzerRules) can properly parse parameters that uses SMO types,
         e.g. [Microsoft.SqlServer.Management.Smo.Server].
     #>
-    Add-Type -Path "$PSScriptRoot/../Unit/Stubs/SMO.cs"
+    Add-Type -Path "$PSScriptRoot/../Unit/Stubs/SMO.cs" -ReferencedAssemblies 'System.Data', 'System.Xml'
 
     $repositoryPath = Resolve-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../..')
     $sourcePath = Join-Path -Path $repositoryPath -ChildPath 'source'

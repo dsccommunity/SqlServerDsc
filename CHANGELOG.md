@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added public command `Get-SqlDscBackupFileList` to read the list of database
+  files contained in a SQL Server backup file. Useful for planning file
+  relocations during restore operations ([issue #2026](https://github.com/dsccommunity/SqlServerDsc/issues/2026)).
+- Added public command `Test-SqlDscBackupFile` to verify the integrity of a
+  SQL Server backup file ([issue #2026](https://github.com/dsccommunity/SqlServerDsc/issues/2026)).
+- Added public command `Restore-SqlDscDatabase` to restore SQL Server databases
+  from backup files. Supports full, differential, transaction log, and file
+  restores with options for file relocation (both simple path-based and
+  explicit RelocateFile objects), point-in-time recovery, NoRecovery/Standby
+  modes, and various performance tuning options ([issue #2026](https://github.com/dsccommunity/SqlServerDsc/issues/2026)).
+- Added public command `Backup-SqlDscDatabase`. Supports full, differential,
+  and transaction log backups with options for compression, copy-only, checksum,
+  and retention ([issue #2365](https://github.com/dsccommunity/SqlServerDsc/issues/2365)).
 - Added public command `Invoke-SqlDscScalarQuery` to execute scalar queries using
   `Server.ConnectionContext.ExecuteScalar()`. Server-level, lightweight execution
   that does not require any database to be online

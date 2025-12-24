@@ -67,7 +67,7 @@ Describe 'Add-SqlDscFileGroup' -Tag 'Public' {
         }
 
         It 'Should add a single FileGroup to the Database without returning output' {
-            { Add-SqlDscFileGroup -Database $mockDatabaseObject -FileGroup $mockFileGroupObject1 } | Should -Not -Throw
+            $null = Add-SqlDscFileGroup -Database $mockDatabaseObject -FileGroup $mockFileGroupObject1
 
             $mockDatabaseObject.FileGroups.Count | Should -Be 1
             $mockDatabaseObject.FileGroups[0].Name | Should -Be 'FG1'
@@ -91,7 +91,7 @@ Describe 'Add-SqlDscFileGroup' -Tag 'Public' {
             $mockFileGroupObject5 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.FileGroup' -ArgumentList @($mockDatabaseObject3, 'FG5')
             $fileGroupArray = @($mockFileGroupObject4, $mockFileGroupObject5)
 
-            { Add-SqlDscFileGroup -Database $mockDatabaseObject3 -FileGroup $fileGroupArray } | Should -Not -Throw
+            $null = Add-SqlDscFileGroup -Database $mockDatabaseObject3 -FileGroup $fileGroupArray
 
             $mockDatabaseObject3.FileGroups.Count | Should -Be 2
             $mockDatabaseObject3.FileGroups[0].Name | Should -Be 'FG4'
@@ -103,7 +103,7 @@ Describe 'Add-SqlDscFileGroup' -Tag 'Public' {
             $mockFileGroupObject6 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.FileGroup' -ArgumentList @($mockDatabaseObject4, 'FG6')
             $mockFileGroupObject7 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.FileGroup' -ArgumentList @($mockDatabaseObject4, 'FG7')
 
-            { @($mockFileGroupObject6, $mockFileGroupObject7) | Add-SqlDscFileGroup -Database $mockDatabaseObject4 } | Should -Not -Throw
+            $null = @($mockFileGroupObject6, $mockFileGroupObject7) | Add-SqlDscFileGroup -Database $mockDatabaseObject4
 
             $mockDatabaseObject4.FileGroups.Count | Should -Be 2
             $mockDatabaseObject4.FileGroups[0].Name | Should -Be 'FG6'

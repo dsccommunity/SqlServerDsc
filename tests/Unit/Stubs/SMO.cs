@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Security;
@@ -1698,6 +1699,146 @@ namespace Microsoft.SqlServer.Management.Smo
             {
                 throw new System.Exception("Simulated SqlBackup() failure for testing purposes.");
             }
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.RestoreActionType
+    // Used by:
+    //  Restore-SqlDscDatabase.Tests.ps1
+    //  Test-SqlDscBackupFile.Tests.ps1
+    //  Get-SqlDscBackupFileList.Tests.ps1
+    public enum RestoreActionType : int
+    {
+        Database = 0,
+        Files = 1,
+        OnlinePage = 2,
+        OnlineFiles = 3,
+        Log = 4
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.RelocateFile
+    // Used by:
+    //  Restore-SqlDscDatabase.Tests.ps1
+    public class RelocateFile
+    {
+        // Constructors
+        public RelocateFile() { }
+        public RelocateFile(System.String logicalFileName, System.String physicalFileName)
+        {
+            this.LogicalFileName = logicalFileName;
+            this.PhysicalFileName = physicalFileName;
+        }
+
+        // Properties
+        public System.String LogicalFileName { get; set; }
+        public System.String PhysicalFileName { get; set; }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.RelocateFileList
+    // Used by:
+    //  Restore-SqlDscDatabase.Tests.ps1
+    public class RelocateFileList : Collection<RelocateFile>
+    {
+        public RelocateFileList() { }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Restore
+    // Used by:
+    //  Restore-SqlDscDatabase.Tests.ps1
+    //  Test-SqlDscBackupFile.Tests.ps1
+    //  Get-SqlDscBackupFileList.Tests.ps1
+    public class Restore
+    {
+        // Constructor
+        public Restore()
+        {
+            Devices = new BackupDeviceList();
+            RelocateFiles = new RelocateFileList();
+        }
+
+        // Properties
+        public RestoreActionType Action { get; set; }
+        public System.String Database { get; set; }
+        public BackupDeviceList Devices { get; set; }
+        public System.Boolean NoRecovery { get; set; }
+        public System.Boolean ReplaceDatabase { get; set; }
+        public RelocateFileList RelocateFiles { get; set; }
+        public System.Boolean Checksum { get; set; }
+        public System.Boolean RestrictedUser { get; set; }
+        public System.Boolean Partial { get; set; }
+        public System.Int32 FileNumber { get; set; }
+        public System.String StandbyFile { get; set; }
+        public System.Boolean KeepReplication { get; set; }
+        public System.String ToPointInTime { get; set; }
+        public System.String StopAtMarkName { get; set; }
+        public System.String StopAtMarkAfterDate { get; set; }
+        public System.String StopBeforeMarkName { get; set; }
+        public System.String StopBeforeMarkAfterDate { get; set; }
+        public System.Int32 BlockSize { get; set; }
+        public System.Int32 BufferCount { get; set; }
+        public System.Int32 MaxTransferSize { get; set; }
+
+        // Mock tracking properties for testing
+        public int MockSqlRestoreCalled { get; set; }
+        public bool MockShouldThrowOnSqlRestore { get; set; }
+        public int MockSqlVerifyCalled { get; set; }
+        public bool MockSqlVerifyResult { get; set; }
+        public bool MockShouldThrowOnSqlVerify { get; set; }
+        public int MockReadFileListCalled { get; set; }
+        public System.Data.DataTable MockReadFileListResult { get; set; }
+        public bool MockShouldThrowOnReadFileList { get; set; }
+
+        // Methods
+        public void SqlRestore(Server serverObject)
+        {
+            MockSqlRestoreCalled++;
+
+            if (MockShouldThrowOnSqlRestore)
+            {
+                throw new System.Exception("Simulated SqlRestore() failure for testing purposes.");
+            }
+        }
+
+        public System.Boolean SqlVerify(Server serverObject)
+        {
+            MockSqlVerifyCalled++;
+
+            if (MockShouldThrowOnSqlVerify)
+            {
+                throw new System.Exception("Simulated SqlVerify() failure for testing purposes.");
+            }
+
+            return MockSqlVerifyResult;
+        }
+
+        public System.Boolean SqlVerify(Server serverObject, bool loadHistory, ref string errorMessage)
+        {
+            MockSqlVerifyCalled++;
+
+            if (MockShouldThrowOnSqlVerify)
+            {
+                throw new System.Exception("Simulated SqlVerify() failure for testing purposes.");
+            }
+
+            // Set error message if verification fails
+            if (!MockSqlVerifyResult)
+            {
+                errorMessage = "Simulated verification failure for testing purposes.";
+            }
+
+            return MockSqlVerifyResult;
+        }
+
+        public System.Data.DataTable ReadFileList(Server serverObject)
+        {
+            MockReadFileListCalled++;
+
+            if (MockShouldThrowOnReadFileList)
+            {
+                throw new System.Exception("Simulated ReadFileList() failure for testing purposes.");
+            }
+
+            return MockReadFileListResult;
         }
     }
 

@@ -483,6 +483,31 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Database_Backup_ShouldProcessCaption = Backup database
 
+    ## Restore-SqlDscDatabase
+    Restore_SqlDscDatabase_DatabaseExists = Cannot restore to database '{0}' because it already exists. Use the ReplaceDatabase parameter to overwrite the existing database. (RSDD0001)
+    Restore_SqlDscDatabase_Failed = Failed to perform {0} restore to database '{1}' on instance '{2}'. (RSDD0003)
+    Restore_SqlDscDatabase_Restoring = Performing {0} restore to database '{1}' from '{2}'. (RSDD0004)
+    Restore_SqlDscDatabase_Success = Successfully completed {0} restore to database '{1}'. (RSDD0005)
+    Restore_SqlDscDatabase_ShouldProcessVerboseDescription = Performing {0} restore to database '{1}' from '{2}' on instance '{3}'.
+    Restore_SqlDscDatabase_ShouldProcessVerboseWarning = Are you sure you want to perform a {0} restore to database '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Restore_SqlDscDatabase_ShouldProcessCaption = Restore database
+    Restore_SqlDscDatabase_StandbyConflict = The Standby parameter cannot be used together with NoRecovery. Use either Standby or NoRecovery, but not both. (RSDD0006)
+    Restore_SqlDscDatabase_RestoreType_Full = full
+    Restore_SqlDscDatabase_RestoreType_Differential = differential
+    Restore_SqlDscDatabase_RestoreType_Log = transaction log
+    Restore_SqlDscDatabase_RestoreType_Files = file
+
+    ## Test-SqlDscBackupFile
+    Test_SqlDscBackupFile_Verifying = Verifying backup file '{0}'. (TSBF0001)
+    Test_SqlDscBackupFile_VerifySuccess = Backup file '{0}' verification completed successfully. (TSBF0002)
+    Test_SqlDscBackupFile_VerifyFailed = Backup file '{0}' verification failed. {1} (TSBF0003)
+    Test_SqlDscBackupFile_Error = Failed to verify backup file '{0}'. (TSBF0004)
+
+    ## Get-SqlDscBackupFileList
+    Get_SqlDscBackupFileList_Reading = Reading file list from backup file '{0}'. (GSBFL0001)
+    Get_SqlDscBackupFileList_Failed = Failed to read file list from backup file '{0}'. (GSBFL0002)
+
     ## Test-SqlDscIsDatabase
     IsDatabase_Test = Testing if database '{0}' exists on instance '{1}'. (TSID0001)
 
