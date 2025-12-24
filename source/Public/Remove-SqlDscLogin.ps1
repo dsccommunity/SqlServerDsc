@@ -14,6 +14,11 @@
     .PARAMETER Name
         Specifies the name of the server login to be removed.
 
+    .PARAMETER KillActiveSessions
+        Specifies that any active sessions for the login should be terminated
+        before attempting to drop the login. This is useful when the login has
+        active connections that would otherwise prevent the drop operation.
+
     .PARAMETER Force
         Specifies that the login should be removed without any confirmation.
 
@@ -23,6 +28,7 @@
         been modified outside of the **ServerObject**, for example through T-SQL.
         But on instances with a large number of logins it might be better to make
         sure the **ServerObject** is recent enough, or pass in **LoginObject**.
+
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $loginObject = $serverObject | Get-SqlDscLogin -Name 'MyLogin'
@@ -35,6 +41,13 @@
         $serverObject | Remove-SqlDscLogin -Name 'MyLogin'
 
         Removes the login named **MyLogin**.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $serverObject | Remove-SqlDscLogin -Name 'MyLogin' -KillActiveSessions -Force
+
+        Removes the login named **MyLogin** after terminating any active sessions
+        for the login.
 
     .INPUTS
         `Microsoft.SqlServer.Management.Smo.Server`
@@ -67,6 +80,10 @@ function Remove-SqlDscLogin
         [Parameter(ParameterSetName = 'ServerObject', Mandatory = $true)]
         [System.String]
         $Name,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $KillActiveSessions,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -106,6 +123,43 @@ function Remove-SqlDscLogin
 
         if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
+            if ($KillActiveSessions.IsPresent)
+            {
+                $serverObjectToUse = $LoginObject.Parent
+
+                Write-Verbose -Message (
+                    $script:localizedData.Login_Remove_KillingActiveSessions -f $LoginObject.Name
+                )
+
+                $processes = $serverObjectToUse.EnumProcesses($LoginObject.Name)
+
+                foreach ($process in $processes.Rows)
+                {
+                    Write-Debug -Message (
+                        $script:localizedData.Login_Remove_KillingProcess -f $process.Spid, $LoginObject.Name
+                    )
+
+                    $originalErrorActionPreference = $ErrorActionPreference
+
+                    $ErrorActionPreference = 'Stop'
+
+                    # Ignore errors if process already terminated.
+                    try
+                    {
+                        $serverObjectToUse.KillProcess($process.Spid)
+                    }
+                    catch
+                    {
+                        # Ignore error if process already terminated.
+                        Write-Debug -Message (
+                            $script:localizedData.Login_Remove_KillProcessFailed -f $process.Spid, $_.Exception.Message
+                        )
+                    }
+
+                    $ErrorActionPreference = $originalErrorActionPreference
+                }
+            }
+
             try
             {
                 $originalErrorActionPreference = $ErrorActionPreference
