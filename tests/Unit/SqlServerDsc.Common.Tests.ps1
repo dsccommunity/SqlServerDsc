@@ -106,9 +106,9 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockRobocopyExecutableName -PassThru |
                         Add-Member -MemberType ScriptProperty -Name FileVersionInfo -Value {
                             return @( ( New-Object -TypeName Object |
-                                    Add-Member -MemberType NoteProperty -Name 'ProductVersion' -Value $mockRobocopyExecutableVersion -PassThru -Force
-                                ) )
-                        } -PassThru -Force
+                                        Add-Member -MemberType NoteProperty -Name 'ProductVersion' -Value $mockRobocopyExecutableVersion -PassThru -Force
+                                    ) )
+                            } -PassThru -Force
                 )
             )
         }
@@ -123,12 +123,12 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
             }
 
             return New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name 'ExitCode' -Value 0 -PassThru -Force
+                Add-Member -MemberType NoteProperty -Name 'ExitCode' -Value 0 -PassThru -Force
         }
 
         $mockStartSqlSetupProcess_Robocopy_WithExitCode = {
             return New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name 'ExitCode' -Value $mockStartSqlSetupProcessExitCode -PassThru -Force
+                Add-Member -MemberType NoteProperty -Name 'ExitCode' -Value $mockStartSqlSetupProcessExitCode -PassThru -Force
         }
     }
 
@@ -145,15 +145,15 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
             $mockRobocopyExecutableVersion = $mockRobocopyExecutableVersionWithUnbufferedIO
 
             $mockStartSqlSetupProcessExpectedArgument =
-                $mockRobocopyArgumentSourcePathQuoted,
-                $mockRobocopyArgumentDestinationPathQuoted,
-                $mockRobocopyArgumentCopySubDirectoriesIncludingEmpty,
-                $mockRobocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource,
-                $mockRobocopyArgumentUseUnbufferedIO,
-                $mockRobocopyArgumentSilent -join ' '
+            $mockRobocopyArgumentSourcePathQuoted,
+            $mockRobocopyArgumentDestinationPathQuoted,
+            $mockRobocopyArgumentCopySubDirectoriesIncludingEmpty,
+            $mockRobocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource,
+            $mockRobocopyArgumentUseUnbufferedIO,
+            $mockRobocopyArgumentSilent -join ' '
 
             $copyItemWithRobocopyParameter = @{
-                Path = $mockRobocopyArgumentSourcePath
+                Path            = $mockRobocopyArgumentSourcePath
                 DestinationPath = $mockRobocopyArgumentDestinationPath
             }
 
@@ -167,15 +167,15 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
             $mockRobocopyExecutableVersion = $mockRobocopyExecutableVersionWithoutUnbufferedIO
 
             $mockStartSqlSetupProcessExpectedArgument =
-                $mockRobocopyArgumentSourcePathQuoted,
-                $mockRobocopyArgumentDestinationPathQuoted,
-                $mockRobocopyArgumentCopySubDirectoriesIncludingEmpty,
-                $mockRobocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource,
-                '',
-                $mockRobocopyArgumentSilent -join ' '
+            $mockRobocopyArgumentSourcePathQuoted,
+            $mockRobocopyArgumentDestinationPathQuoted,
+            $mockRobocopyArgumentCopySubDirectoriesIncludingEmpty,
+            $mockRobocopyArgumentDeletesDestinationFilesAndDirectoriesNotExistAtSource,
+            '',
+            $mockRobocopyArgumentSilent -join ' '
 
             $copyItemWithRobocopyParameter = @{
-                Path = $mockRobocopyArgumentSourcePath
+                Path            = $mockRobocopyArgumentSourcePath
                 DestinationPath = $mockRobocopyArgumentDestinationPath
             }
 
@@ -204,16 +204,16 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
                             Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockRobocopyExecutableName -PassThru |
                             Add-Member -MemberType ScriptProperty -Name FileVersionInfo -Value {
                                 return @( ( New-Object -TypeName Object |
-                                        Add-Member -MemberType NoteProperty -Name 'ProductVersion' -Value $mockRobocopyExecutableVersion -PassThru -Force
-                                    ) )
-                            } -PassThru -Force
+                                            Add-Member -MemberType NoteProperty -Name 'ProductVersion' -Value $mockRobocopyExecutableVersion -PassThru -Force
+                                        ) )
+                                } -PassThru -Force
                     )
                 )
             }
 
             Mock -CommandName Start-Process -MockWith {
                 return New-Object -TypeName Object |
-                            Add-Member -MemberType NoteProperty -Name 'ExitCode' -Value $mockStartSqlSetupProcessExitCode -PassThru -Force
+                    Add-Member -MemberType NoteProperty -Name 'ExitCode' -Value $mockStartSqlSetupProcessExitCode -PassThru -Force
             }
         }
 
@@ -221,7 +221,7 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
             $mockStartSqlSetupProcessExitCode = 8
 
             $copyItemWithRobocopyParameter = @{
-                Path = $mockRobocopyArgumentSourcePath
+                Path            = $mockRobocopyArgumentSourcePath
                 DestinationPath = $mockRobocopyArgumentDestinationPath
             }
 
@@ -245,7 +245,7 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
             $mockStartSqlSetupProcessExitCode = 16
 
             $copyItemWithRobocopyParameter = @{
-                Path = $mockRobocopyArgumentSourcePath
+                Path            = $mockRobocopyArgumentSourcePath
                 DestinationPath = $mockRobocopyArgumentDestinationPath
             }
 
@@ -270,7 +270,7 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
             $mockStartSqlSetupProcessExitCode = 9
 
             $copyItemWithRobocopyParameter = @{
-                Path = $mockRobocopyArgumentSourcePath
+                Path            = $mockRobocopyArgumentSourcePath
                 DestinationPath = $mockRobocopyArgumentDestinationPath
             }
 
@@ -308,7 +308,7 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
             $mockStartSqlSetupProcessExitCode = 1
 
             $copyItemWithRobocopyParameter = @{
-                Path = $mockRobocopyArgumentSourcePath
+                Path            = $mockRobocopyArgumentSourcePath
                 DestinationPath = $mockRobocopyArgumentDestinationPath
             }
 
@@ -322,7 +322,7 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
             $mockStartSqlSetupProcessExitCode = 2
 
             $copyItemWithRobocopyParameter = @{
-                Path = $mockRobocopyArgumentSourcePath
+                Path            = $mockRobocopyArgumentSourcePath
                 DestinationPath = $mockRobocopyArgumentDestinationPath
             }
 
@@ -336,7 +336,7 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
             $mockStartSqlSetupProcessExitCode = 3
 
             $copyItemWithRobocopyParameter = @{
-                Path = $mockRobocopyArgumentSourcePath
+                Path            = $mockRobocopyArgumentSourcePath
                 DestinationPath = $mockRobocopyArgumentDestinationPath
             }
 
@@ -361,7 +361,7 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
             $mockStartSqlSetupProcessExitCode = 1
 
             $copyItemWithRobocopyParameter = @{
-                Path = $mockRobocopyArgumentSourcePathWithSpaces
+                Path            = $mockRobocopyArgumentSourcePathWithSpaces
                 DestinationPath = $mockRobocopyArgumentDestinationPathWithSpaces
             }
 
@@ -372,7 +372,7 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
             $mockStartSqlSetupProcessExitCode = 2
 
             $copyItemWithRobocopyParameter = @{
-                Path = $mockRobocopyArgumentSourcePathWithSpaces
+                Path            = $mockRobocopyArgumentSourcePathWithSpaces
                 DestinationPath = $mockRobocopyArgumentDestinationPathWithSpaces
             }
 
@@ -383,7 +383,7 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
             $mockStartSqlSetupProcessExitCode = 3
 
             $copyItemWithRobocopyParameter = @{
-                Path = $mockRobocopyArgumentSourcePathWithSpaces
+                Path            = $mockRobocopyArgumentSourcePathWithSpaces
                 DestinationPath = $mockRobocopyArgumentDestinationPathWithSpaces
             }
 
@@ -410,7 +410,7 @@ Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstalla
 
         $mockNewGuid = {
             return New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name 'Guid' -Value $mockSourcePathGuid -PassThru -Force
+                Add-Member -MemberType NoteProperty -Name 'Guid' -Value $mockSourcePathGuid -PassThru -Force
         }
 
         Mock -CommandName Connect-UncPath
@@ -431,7 +431,7 @@ Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstalla
 
         It 'Should call the correct mocks' {
             $invokeInstallationMediaCopyParameters = @{
-                SourcePath = $mockSourcePathUNCWithLeaf
+                SourcePath       = $mockSourcePathUNCWithLeaf
                 SourceCredential = $mockShareCredential
             }
 
@@ -446,9 +446,9 @@ Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstalla
 
         It 'Should return the correct destination path' {
             $invokeInstallationMediaCopyParameters = @{
-                SourcePath = $mockSourcePathUNCWithLeaf
+                SourcePath       = $mockSourcePathUNCWithLeaf
                 SourceCredential = $mockShareCredential
-                PassThru = $true
+                PassThru         = $true
             }
 
             $invokeInstallationMediaCopyResult = Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters
@@ -468,7 +468,7 @@ Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstalla
 
         It 'Should call the correct mocks' {
             $invokeInstallationMediaCopyParameters = @{
-                SourcePath = $mockSourcePathUNCWithLeaf
+                SourcePath       = $mockSourcePathUNCWithLeaf
                 SourceCredential = $mockShareCredential
             }
 
@@ -483,9 +483,9 @@ Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstalla
 
         It 'Should return the correct destination path' {
             $invokeInstallationMediaCopyParameters = @{
-                SourcePath = $mockSourcePathUNCWithLeaf
+                SourcePath       = $mockSourcePathUNCWithLeaf
                 SourceCredential = $mockShareCredential
-                PassThru = $true
+                PassThru         = $true
             }
 
             $invokeInstallationMediaCopyResult = Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters
@@ -505,7 +505,7 @@ Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstalla
 
         It 'Should call the correct mocks' {
             $invokeInstallationMediaCopyParameters = @{
-                SourcePath = $mockSourcePathUNC
+                SourcePath       = $mockSourcePathUNC
                 SourceCredential = $mockShareCredential
             }
 
@@ -520,9 +520,9 @@ Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstalla
 
         It 'Should return the correct destination path' {
             $invokeInstallationMediaCopyParameters = @{
-                SourcePath = $mockSourcePathUNC
+                SourcePath       = $mockSourcePathUNC
                 SourceCredential = $mockShareCredential
-                PassThru = $true
+                PassThru         = $true
             }
 
             $invokeInstallationMediaCopyResult = Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters
@@ -608,7 +608,7 @@ Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
                     `$PSBoundParameters.ContainsKey('UserName') -eq $false`.
                 #>
                 $RemotePath -eq $mockSourcePathUNC `
-                -and $null -eq $UserName
+                    -and $null -eq $UserName
             } -Exactly -Times 1 -Scope It
         }
     }
@@ -616,7 +616,7 @@ Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
     Context 'When connecting to a UNC path with specific credentials' {
         It 'Should call the correct mocks' {
             $connectUncPathParameters = @{
-                RemotePath = $mockSourcePathUNC
+                RemotePath       = $mockSourcePathUNC
                 SourceCredential = $mockShareCredential
             }
 
@@ -624,7 +624,7 @@ Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
 
             Should -Invoke -CommandName New-SmbMapping -ParameterFilter {
                 $RemotePath -eq $mockSourcePathUNC `
-                -and $UserName -eq $mockShareCredentialUserName
+                    -and $UserName -eq $mockShareCredentialUserName
             } -Exactly -Times 1 -Scope It
         }
     }
@@ -632,7 +632,7 @@ Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
     Context 'When connecting using Fully Qualified Domain Name (FQDN)' {
         It 'Should call the correct mocks' {
             $connectUncPathParameters = @{
-                RemotePath = $mockSourcePathUNC
+                RemotePath       = $mockSourcePathUNC
                 SourceCredential = $mockFqdnShareCredential
             }
 
@@ -640,7 +640,7 @@ Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
 
             Should -Invoke -CommandName New-SmbMapping -ParameterFilter {
                 $RemotePath -eq $mockSourcePathUNC `
-                -and $UserName -eq $mockFqdnShareCredentialUserName
+                    -and $UserName -eq $mockFqdnShareCredentialUserName
             } -Exactly -Times 1 -Scope It
         }
     }
@@ -648,9 +648,9 @@ Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
     Context 'When connecting to a UNC path and using parameter PassThru' {
         It 'Should return the correct MSFT_SmbMapping object' {
             $connectUncPathParameters = @{
-                RemotePath = $mockSourcePathUNC
+                RemotePath       = $mockSourcePathUNC
                 SourceCredential = $mockShareCredential
-                PassThru = $true
+                PassThru         = $true
             }
 
             $connectUncPathResult = Connect-UncPath @connectUncPathParameters
@@ -707,9 +707,9 @@ Describe 'SqlServerDsc.Common\Start-SqlSetupProcess' -Tag 'StartSqlSetupProcess'
     Context 'When starting a process successfully' {
         It 'Should return exit code 0' {
             $startSqlSetupProcessParameters = @{
-                FilePath = $mockPowerShellExecutable
+                FilePath     = $mockPowerShellExecutable
                 ArgumentList = '-NonInteractive -NoProfile -Command &{Start-Sleep -Seconds 2}'
-                Timeout = 30
+                Timeout      = 30
             }
 
             $processExitCode = Start-SqlSetupProcess @startSqlSetupProcessParameters
@@ -720,9 +720,9 @@ Describe 'SqlServerDsc.Common\Start-SqlSetupProcess' -Tag 'StartSqlSetupProcess'
     Context 'When starting a process and the process does not finish before the timeout period' {
         It 'Should throw an error message' {
             $startSqlSetupProcessParameters = @{
-                FilePath = $mockPowerShellExecutable
+                FilePath     = $mockPowerShellExecutable
                 ArgumentList = '-NonInteractive -NoProfile -Command &{Start-Sleep -Seconds 4}'
-                Timeout = 2
+                Timeout      = 2
             }
 
             { Start-SqlSetupProcess @startSqlSetupProcessParameters } | Should -Throw -ErrorId 'ProcessNotTerminated,Microsoft.PowerShell.Commands.WaitProcessCommand'
@@ -765,22 +765,22 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
             BeforeAll {
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
-                        Name = 'MSSQLSERVER'
+                        Name        = 'MSSQLSERVER'
                         ServiceName = 'MSSQLSERVER'
-                        Status = 'Online'
+                        Status      = 'Online'
                         IsClustered = $false
                     }
                 }
 
                 Mock -CommandName Get-Service -MockWith {
                     return @{
-                        Name = 'MSSQLSERVER'
-                        DisplayName = 'Microsoft SQL Server (MSSQLSERVER)'
+                        Name              = 'MSSQLSERVER'
+                        DisplayName       = 'Microsoft SQL Server (MSSQLSERVER)'
                         DependentServices = @(
                             @{
-                                Name = 'SQLSERVERAGENT'
-                                DisplayName = 'SQL Server Agent (MSSQLSERVER)'
-                                Status = 'Running'
+                                Name              = 'SQLSERVERAGENT'
+                                DisplayName       = 'SQL Server Agent (MSSQLSERVER)'
+                                Status            = 'Running'
                                 DependentServices = @()
                             }
                         )
@@ -868,9 +868,9 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
             BeforeAll {
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
-                        Name = 'MSSQLSERVER'
+                        Name        = 'MSSQLSERVER'
                         ServiceName = 'MSSQLSERVER'
-                        Status = 'Online'
+                        Status      = 'Online'
                         IsClustered = $true
                     }
                 }
@@ -933,17 +933,17 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
             BeforeAll {
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
-                        Name = 'NOAGENT'
+                        Name         = 'NOAGENT'
                         InstanceName = 'NOAGENT'
-                        ServiceName = 'NOAGENT'
-                        Status = 'Online'
+                        ServiceName  = 'NOAGENT'
+                        Status       = 'Online'
                     }
                 }
 
                 Mock -CommandName Get-Service -MockWith {
                     return @{
-                        Name = 'MSSQL$NOAGENT'
-                        DisplayName = 'Microsoft SQL Server (NOAGENT)'
+                        Name              = 'MSSQL$NOAGENT'
+                        DisplayName       = 'Microsoft SQL Server (NOAGENT)'
                         DependentServices = @()
                     }
                 }
@@ -966,22 +966,22 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
             BeforeAll {
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
-                        Name = 'STOPPEDAGENT'
+                        Name         = 'STOPPEDAGENT'
                         InstanceName = 'STOPPEDAGENT'
-                        ServiceName = 'STOPPEDAGENT'
-                        Status = 'Online'
+                        ServiceName  = 'STOPPEDAGENT'
+                        Status       = 'Online'
                     }
                 }
 
                 Mock -CommandName Get-Service -MockWith {
                     return @{
-                        Name = 'MSSQL$STOPPEDAGENT'
-                        DisplayName = 'Microsoft SQL Server (STOPPEDAGENT)'
+                        Name              = 'MSSQL$STOPPEDAGENT'
+                        DisplayName       = 'Microsoft SQL Server (STOPPEDAGENT)'
                         DependentServices = @(
                             @{
-                                Name = 'SQLAGENT$STOPPEDAGENT'
-                                DisplayName = 'SQL Server Agent (STOPPEDAGENT)'
-                                Status = 'Stopped'
+                                Name              = 'SQLAGENT$STOPPEDAGENT'
+                                DisplayName       = 'SQL Server Agent (STOPPEDAGENT)'
+                                Status            = 'Stopped'
                                 DependentServices = @()
                             }
                         )
@@ -1012,13 +1012,13 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
 
                     Mock -CommandName Get-Service -MockWith {
                         return @{
-                            Name = 'MSSQLSERVER'
-                            DisplayName = 'Microsoft SQL Server (MSSQLSERVER)'
+                            Name              = 'MSSQLSERVER'
+                            DisplayName       = 'Microsoft SQL Server (MSSQLSERVER)'
                             DependentServices = @(
                                 @{
-                                    Name = 'SQLSERVERAGENT'
-                                    DisplayName = 'SQL Server Agent (MSSQLSERVER)'
-                                    Status = 'Running'
+                                    Name              = 'SQLSERVERAGENT'
+                                    DisplayName       = 'SQL Server Agent (MSSQLSERVER)'
+                                    Status            = 'Running'
                                     DependentServices = @()
                                 }
                             )
@@ -1064,22 +1064,22 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
                 BeforeAll {
                     Mock -CommandName Connect-SQL -MockWith {
                         return @{
-                            Name = 'MSSQLSERVER'
+                            Name         = 'MSSQLSERVER'
                             InstanceName = ''
-                            ServiceName = 'MSSQLSERVER'
-                            Status = 'Offline'
+                            ServiceName  = 'MSSQLSERVER'
+                            Status       = 'Offline'
                         }
                     }
 
                     Mock -CommandName Get-Service -MockWith {
                         return @{
-                            Name = 'MSSQLSERVER'
-                            DisplayName = 'Microsoft SQL Server (MSSQLSERVER)'
+                            Name              = 'MSSQLSERVER'
+                            DisplayName       = 'Microsoft SQL Server (MSSQLSERVER)'
                             DependentServices = @(
                                 @{
-                                    Name = 'SQLSERVERAGENT'
-                                    DisplayName = 'SQL Server Agent (MSSQLSERVER)'
-                                    Status = 'Running'
+                                    Name              = 'SQLSERVERAGENT'
+                                    DisplayName       = 'SQL Server Agent (MSSQLSERVER)'
+                                    Status            = 'Running'
                                     DependentServices = @()
                                 }
                             )
@@ -1545,26 +1545,26 @@ Describe 'SqlServerDsc.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
 
         $mockNewObject_MicrosoftAnalysisServicesServer = {
             return New-Object -TypeName Object |
-                        Add-Member -MemberType 'NoteProperty' -Name 'Connected' -Value $mockDynamicConnectedStatus -PassThru |
-                        Add-Member -MemberType 'ScriptMethod' -Name 'Connect' -Value {
-                            param
-                            (
-                                [Parameter(Mandatory = $true)]
-                                [ValidateNotNullOrEmpty()]
-                                [System.String]
-                                $DataSource
-                            )
+                Add-Member -MemberType 'NoteProperty' -Name 'Connected' -Value $mockDynamicConnectedStatus -PassThru |
+                Add-Member -MemberType 'ScriptMethod' -Name 'Connect' -Value {
+                    param
+                    (
+                        [Parameter(Mandatory = $true)]
+                        [ValidateNotNullOrEmpty()]
+                        [System.String]
+                        $DataSource
+                    )
 
-                            if ($DataSource -ne $mockExpectedDataSource)
-                            {
-                                throw ("Datasource was expected to be '{0}', but was '{1}'." -f $mockExpectedDataSource, $dataSource)
-                            }
+                    if ($DataSource -ne $mockExpectedDataSource)
+                    {
+                        throw ("Datasource was expected to be '{0}', but was '{1}'." -f $mockExpectedDataSource, $dataSource)
+                    }
 
-                            if ($mockThrowInvalidOperation)
-                            {
-                                throw 'Unable to connect.'
-                            }
-                        } -PassThru -Force
+                    if ($mockThrowInvalidOperation)
+                    {
+                        throw 'Unable to connect.'
+                    }
+                } -PassThru -Force
         }
 
         $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter = {
@@ -1763,10 +1763,10 @@ Describe 'SqlServerDsc.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
         # This test is to test the mock so that it throws correct when data source is not the expected data source
         Context 'When connecting to the named instance using another data source then expected' {
             It 'Should throw the correct error' {
-                $mockExpectedDataSource = "Force wrong data source"
+                $mockExpectedDataSource = 'Force wrong data source'
 
                 $testParameters = @{
-                    ServerName = 'DummyHost'
+                    ServerName   = 'DummyHost'
                     InstanceName = $mockInstanceName
                 }
 
@@ -1850,19 +1850,19 @@ Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEff
         }
 
         $testLoginEffectiveServerPermissionsParams = @{
-            ServerName = 'Server1'
+            ServerName   = 'Server1'
             InstanceName = 'MSSQLSERVER'
-            Login = 'NT SERVICE\ClusSvc'
-            Permissions = @()
+            Login        = 'NT SERVICE\ClusSvc'
+            Permissions  = @()
         }
 
         $testLoginEffectiveLoginPermissionsParams = @{
-            ServerName = 'Server1'
-            InstanceName = 'MSSQLSERVER'
-            Login = 'NT SERVICE\ClusSvc'
-            Permissions = @()
+            ServerName     = 'Server1'
+            InstanceName   = 'MSSQLSERVER'
+            Login          = 'NT SERVICE\ClusSvc'
+            Permissions    = @()
             SecurableClass = 'LOGIN'
-            SecurableName = 'Login1'
+            SecurableName  = 'Login1'
         }
     }
 
@@ -1991,8 +1991,8 @@ Describe 'SqlServerDsc.Common\Get-SqlInstanceMajorVersion' -Tag 'GetSqlInstanceM
             Mock -CommandName Get-ItemProperty `
                 -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_FullInstanceId_Setup `
                 -MockWith {
-                    return New-Object -TypeName Object
-                }
+                return New-Object -TypeName Object
+            }
 
             $mockLocalizedString = InModuleScope -ScriptBlock {
                 $script:localizedData.SqlServerVersionIsInvalid
@@ -2321,7 +2321,7 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
                                 throw 'Unable to connect.'
                             }
                         } -PassThru -Force
-                ) -PassThru -Force
+                    ) -PassThru -Force
         }
 
         $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter = {
@@ -2465,8 +2465,8 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
         Context 'When using the default login type' {
             BeforeEach {
                 $testParameters = @{
-                    ServerName = $mockExpectedDatabaseEngineServer
-                    InstanceName = $mockExpectedDatabaseEngineInstance
+                    ServerName      = $mockExpectedDatabaseEngineServer
+                    InstanceName    = $mockExpectedDatabaseEngineInstance
                     SetupCredential = $mockWinCredential
                 }
             }
@@ -2489,10 +2489,10 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
             Context 'When authenticating using NetBIOS domain' {
                 BeforeEach {
                     $testParameters = @{
-                        ServerName = $mockExpectedDatabaseEngineServer
-                        InstanceName = $mockExpectedDatabaseEngineInstance
+                        ServerName      = $mockExpectedDatabaseEngineServer
+                        InstanceName    = $mockExpectedDatabaseEngineInstance
                         SetupCredential = $mockWinCredential
-                        LoginType = 'WindowsUser'
+                        LoginType       = 'WindowsUser'
                     }
                 }
 
@@ -2513,10 +2513,10 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
             Context 'When authenticating using Fully Qualified Domain Name (FQDN)' {
                 BeforeEach {
                     $testParameters = @{
-                        ServerName = $mockExpectedDatabaseEngineServer
-                        InstanceName = $mockExpectedDatabaseEngineInstance
+                        ServerName      = $mockExpectedDatabaseEngineServer
+                        InstanceName    = $mockExpectedDatabaseEngineInstance
                         SetupCredential = $mockWinFqdnCredential
-                        LoginType = 'WindowsUser'
+                        LoginType       = 'WindowsUser'
                     }
                 }
 
@@ -2584,7 +2584,7 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
                                 Add-Member -MemberType ScriptMethod -Name Connect -Value {
                                     return
                                 } -PassThru -Force
-                        ) -PassThru -Force
+                            ) -PassThru -Force
                 }
             }
 
@@ -2631,7 +2631,7 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
                                 Add-Member -MemberType ScriptMethod -Name Connect -Value {
                                     return
                                 } -PassThru -Force
-                        ) -PassThru -Force
+                            ) -PassThru -Force
                 }
             }
 
@@ -2691,7 +2691,7 @@ Describe 'SqlServerDsc.Common\Test-ClusterPermissions' -Tag 'TestClusterPermissi
         }
 
         $clusterServiceName = 'NT SERVICE\ClusSvc'
-        $systemAccountName= 'NT AUTHORITY\System'
+        $systemAccountName = 'NT AUTHORITY\System'
     }
 
     BeforeEach {
@@ -2701,7 +2701,7 @@ Describe 'SqlServerDsc.Common\Test-ClusterPermissions' -Tag 'TestClusterPermissi
 
         $mockLogins = @{
             $clusterServiceName = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList $mockServerObject, $clusterServiceName
-            $systemAccountName = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList $mockServerObject, $systemAccountName
+            $systemAccountName  = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList $mockServerObject, $systemAccountName
         }
 
         $mockServerObject.Logins = $mockLogins
@@ -2769,12 +2769,12 @@ Describe 'SqlServerDsc.Common\Restart-ReportingServicesService' -Tag 'RestartRep
     BeforeAll {
         $mockGetService = {
             return @{
-                Name = $mockDynamicServiceName
-                DisplayName = $mockDynamicServiceDisplayName
+                Name              = $mockDynamicServiceName
+                DisplayName       = $mockDynamicServiceDisplayName
                 DependentServices = @(
                     @{
-                        Name = $mockDynamicDependedServiceName
-                        Status = 'Running'
+                        Name              = $mockDynamicDependedServiceName
+                        Status            = 'Running'
                         DependentServices = @()
                     }
                 )
@@ -2892,11 +2892,11 @@ Describe 'SqlServerDsc.Common\Test-ActiveNode' -Tag 'TestActiveNode' {
         It 'Should return <Result> when the node name is <ComputerNamePhysicalNetBIOS>' -ForEach @(
             @{
                 ComputerNamePhysicalNetBIOS = Get-ComputerName
-                Result = $true
+                Result                      = $true
             },
             @{
                 ComputerNamePhysicalNetBIOS = 'AnotherNode'
-                Result = $false
+                Result                      = $false
             }
         ) {
             $mockServerObject.ComputerNamePhysicalNetBIOS = $ComputerNamePhysicalNetBIOS
@@ -2910,18 +2910,18 @@ Describe 'SqlServerDsc.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
     BeforeAll {
         $invokeScriptFileParameters = @{
             ServerInstance = Get-ComputerName
-            InputFile = 'set.sql'
+            InputFile      = 'set.sql'
         }
 
         $invokeScriptQueryParameters = @{
             ServerInstance = Get-ComputerName
-            Query = 'Test Query'
+            Query          = 'Test Query'
         }
     }
 
     Context 'Invoke-SqlScript fails to import SQLPS module' {
         BeforeAll {
-            $throwMessage = "Failed to import SQLPS module."
+            $throwMessage = 'Failed to import SQLPS module.'
 
             Mock -CommandName Import-SqlDscPreferredModule -MockWith {
                 throw $throwMessage
@@ -3106,16 +3106,16 @@ Describe 'SqlServerDsc.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
 Describe 'SqlServerDsc.Common\Get-ServiceAccount' -Tag 'GetServiceAccount' {
     BeforeAll {
         $mockLocalSystemAccountUserName = 'NT AUTHORITY\SYSTEM'
-        $mockLocalSystemAccountCredential = New-Object System.Management.Automation.PSCredential $mockLocalSystemAccountUserName, (ConvertTo-SecureString "Password1" -AsPlainText -Force)
+        $mockLocalSystemAccountCredential = New-Object System.Management.Automation.PSCredential $mockLocalSystemAccountUserName, (ConvertTo-SecureString 'Password1' -AsPlainText -Force)
 
         $mockManagedServiceAccountUserName = 'CONTOSO\msa$'
-        $mockManagedServiceAccountCredential = New-Object System.Management.Automation.PSCredential $mockManagedServiceAccountUserName, (ConvertTo-SecureString "Password1" -AsPlainText -Force)
+        $mockManagedServiceAccountCredential = New-Object System.Management.Automation.PSCredential $mockManagedServiceAccountUserName, (ConvertTo-SecureString 'Password1' -AsPlainText -Force)
 
         $mockDomainAccountUserName = 'CONTOSO\User1'
-        $mockDomainAccountCredential = New-Object System.Management.Automation.PSCredential $mockDomainAccountUserName, (ConvertTo-SecureString "Password1" -AsPlainText -Force)
+        $mockDomainAccountCredential = New-Object System.Management.Automation.PSCredential $mockDomainAccountUserName, (ConvertTo-SecureString 'Password1' -AsPlainText -Force)
 
         $mockLocalServiceAccountUserName = 'NT SERVICE\MyService'
-        $mockLocalServiceAccountCredential = New-Object System.Management.Automation.PSCredential $mockLocalServiceAccountUserName, (ConvertTo-SecureString "Password1" -AsPlainText -Force)
+        $mockLocalServiceAccountCredential = New-Object System.Management.Automation.PSCredential $mockLocalServiceAccountUserName, (ConvertTo-SecureString 'Password1' -AsPlainText -Force)
     }
 
     Context 'When getting service account' {
@@ -3140,7 +3140,7 @@ Describe 'SqlServerDsc.Common\Get-ServiceAccount' -Tag 'GetServiceAccount' {
         }
 
         It 'Should return local service account' {
-            $returnValue= Get-ServiceAccount -ServiceAccount $mockLocalServiceAccountCredential
+            $returnValue = Get-ServiceAccount -ServiceAccount $mockLocalServiceAccountCredential
 
             $returnValue.UserName | Should -Be $mockLocalServiceAccountUserName
             $returnValue.Password | Should -BeNullOrEmpty
@@ -3150,10 +3150,10 @@ Describe 'SqlServerDsc.Common\Get-ServiceAccount' -Tag 'GetServiceAccount' {
 
 Describe 'SqlServerDsc.Common\Find-ExceptionByNumber' -Tag 'FindExceptionByNumber' {
     BeforeAll {
-        $mockInnerException = New-Object System.Exception "This is a mock inner exception object"
+        $mockInnerException = New-Object System.Exception 'This is a mock inner exception object'
         $mockInnerException | Add-Member -Name 'Number' -Value 2 -MemberType NoteProperty
 
-        $mockException = New-Object System.Exception "This is a mock exception object", $mockInnerException
+        $mockException = New-Object System.Exception 'This is a mock exception object', $mockInnerException
         $mockException | Add-Member -Name 'Number' -Value 1 -MemberType NoteProperty
     }
 
@@ -3187,26 +3187,6 @@ Describe 'SqlServerDsc.Common\ConvertTo-ServerInstanceName' -Tag 'ConvertToServe
         $result = ConvertTo-ServerInstanceName -InstanceName 'MyInstance' -ServerName $mockComputerName
 
         $result | Should -BeExactly ('{0}\{1}' -f $mockComputerName, 'MyInstance')
-    }
-}
-
-Describe 'SqlServerDsc.Common\Get-FilePathMajorVersion' -Tag 'GetFilePathMajorVersion' {
-    BeforeAll {
-        $mockGetItem_SqlMajorVersion = {
-            return New-Object -TypeName Object |
-                        Add-Member -MemberType ScriptProperty -Name VersionInfo -Value {
-                            return New-Object -TypeName Object |
-                                        Add-Member -MemberType NoteProperty -Name 'ProductVersion' -Value '10.0.0000.00000' -PassThru -Force
-                        } -PassThru -Force
-        }
-
-        Mock -CommandName Get-Item -MockWith $mockGetItem_SqlMajorVersion
-    }
-
-    It 'Should return correct version' {
-        $result = Get-FilePathMajorVersion -Path 'C:\AnyPath\Setup.exe'
-
-        $result | Should -Be '10'
     }
 }
 

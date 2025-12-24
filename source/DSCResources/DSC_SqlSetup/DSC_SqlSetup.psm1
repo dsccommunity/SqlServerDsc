@@ -215,7 +215,7 @@ function Get-TargetResource
 
         Write-Verbose -Message ($script:localizedData.UsingPath -f $pathToSetupExecutable)
 
-        $SqlVersion = Get-FilePathMajorVersion -Path $pathToSetupExecutable
+        $SqlVersion = (Get-FileVersion -Path $pathToSetupExecutable).ProductVersion.Split('.')[0]
     }
     else
     {
@@ -1082,7 +1082,7 @@ function Set-TargetResource
 
         Write-Verbose -Message ($script:localizedData.UsingPath -f $pathToSetupExecutable)
 
-        $SqlVersion = Get-FilePathMajorVersion -Path $pathToSetupExecutable
+        $SqlVersion = (Get-FileVersion -Path $pathToSetupExecutable).ProductVersion.Split('.')[0]
     }
     else
     {
@@ -2363,7 +2363,7 @@ function Test-TargetResource
 
     if ($getTargetResourceParameters.Action -eq 'Upgrade')
     {
-        $installerSqlVersion = Get-FilePathMajorVersion -Path (Join-Path -Path $sourcePath -ChildPath 'setup.exe')
+        $installerSqlVersion = (Get-FileVersion -Path (Join-Path -Path $sourcePath -ChildPath 'setup.exe')).ProductVersion.Split('.')[0]
         $instanceSqlVersion = Get-SQLInstanceMajorVersion -InstanceName $InstanceName
 
         if ($installerSQLVersion -gt $instanceSqlVersion)

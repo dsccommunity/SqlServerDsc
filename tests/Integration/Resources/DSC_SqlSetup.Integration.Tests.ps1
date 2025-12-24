@@ -128,7 +128,7 @@ BeforeAll {
         if ($script:mockSourceDownloadExeUrl)
         {
             # Download the EXE used to download the ISO
-            Invoke-WebRequest -Uri $script:mockSourceDownloadExeUrl -OutFile $ConfigurationData.AllNodes.DownloadExePath | Out-Null
+            Invoke-WebRequest -Uri $script:mockSourceDownloadExeUrl -OutFile $ConfigurationData.AllNodes.DownloadExePath -UseBasicParsing | Out-Null
 
             # Download ISO using the EXE
             $imageDirectoryPath = Split-Path -Path $ConfigurationData.AllNodes.ImagePath -Parent
@@ -144,7 +144,7 @@ BeforeAll {
         else
         {
             # Direct ISO download
-            Invoke-WebRequest -Uri $script:mockSourceMediaUrl -OutFile $ConfigurationData.AllNodes.ImagePath
+            Invoke-WebRequest -Uri $script:mockSourceMediaUrl -OutFile $ConfigurationData.AllNodes.ImagePath -UseBasicParsing
         }
 
         Write-Verbose -Message ('SQL Server media file has SHA1 hash ''{0}''' -f (Get-FileHash -Path $ConfigurationData.AllNodes.ImagePath -Algorithm 'SHA1').Hash) -Verbose

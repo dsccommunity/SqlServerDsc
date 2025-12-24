@@ -65,7 +65,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SqlProtocol`
   - Refactored to use the public command `Get-SqlDscServerProtocolName` instead
     of the deprecated private function `Get-ProtocolNameProperties`
-    ([issue #2104](https://github.com/dsccommunity/SqlServerDsc/issues/2104)).
+
+### Fixed
+
+- Fixed all `Invoke-WebRequest` calls throughout the codebase to include the
+  `-UseBasicParsing` parameter. This addresses a Windows PowerShell 5.1 security
+  update (CVE-2025-54100) released December 9, 2025, which changed the default
+  behavior of `Invoke-WebRequest` to require an interactive prompt unless
+  `-UseBasicParsing` is specified. This change prevents failures in non-interactive
+  CI environments. Affected files include integration tests, production code, and
+  build scripts
+  ([issue #2376](https://github.com/dsccommunity/SqlServerDsc/issues/2376)).
+- `SqlRS`
+  - Fixed integration tests failing with status code 0 when checking ReportServer
+    and Reports site accessibility by implementing retry logic (up to 2 minutes) to
+    handle timing issues where Reporting Services web services are not immediately
+    ready after DSC configuration completes. On final retry attempt with status
+    code 0, the exception is now re-thrown to provide detailed error diagnostics
+    ([issue #2376](https://github.com/dsccommunity/SqlServerDsc/issues/2376)).
   - Refactored to use the public command `Get-SqlDscServerProtocol` instead
     of the deprecated private function `Get-ServerProtocolObject`
     ([issue #2104](https://github.com/dsccommunity/SqlServerDsc/issues/2104)).
@@ -134,6 +151,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- Removed helper function `Get-FilePathMajorVersion` from the SqlServerDsc.Common
+  module. Refactored usages to use the command `Get-FileVersion` from the
+  DscResource.Common module instead
 - Removed private function `Get-FileVersionInformation`. Use the command
   `Get-FileVersion` from the DscResource.Common module instead
   ([issue #2373](https://github.com/dsccommunity/SqlServerDsc/issues/2373)).

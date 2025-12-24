@@ -166,7 +166,7 @@ function Save-SqlDscSqlServerMediaFile
     Write-Verbose -Message ($script:localizedData.SqlServerMediaFile_Save_DownloadingInformation -f $Url)
 
     # Download the URL content.
-    Invoke-WebRequest -Uri $Url -OutFile $downloadedFilePath | Out-Null
+    Invoke-WebRequest -Uri $Url -OutFile $downloadedFilePath -UseBasicParsing | Out-Null
 
     if ($Quiet.IsPresent)
     {
