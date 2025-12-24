@@ -233,12 +233,12 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
         }
 
         $mockGetSqlMajorVersion = {
-            return $MockSqlMajorVersion
+            return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
         }
 
         # General mocks
         Mock -CommandName Get-PSDrive
-        Mock -CommandName Get-FilePathMajorVersion -MockWith $mockGetSqlMajorVersion
+        Mock -CommandName Get-FileVersion -MockWith $mockGetSqlMajorVersion
 
         Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
             $Name -eq 'ImagePath'
@@ -335,11 +335,11 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
             InModuleScope -ScriptBlock {
                 $script:mockGetTargetResourceParameters = @{
-                    InstanceName       = 'MSSQLSERVER'
-                    SourceCredential   = $null
-                    SourcePath         = $TestDrive
-                    Feature            = 'NewFeature' # Test enabling a code-feature.
-                    ServerName         = 'host.company.local'
+                    InstanceName     = 'MSSQLSERVER'
+                    SourceCredential = $null
+                    SourcePath       = $TestDrive
+                    Feature          = 'NewFeature' # Test enabling a code-feature.
+                    ServerName       = 'host.company.local'
                 }
             }
         }
@@ -662,10 +662,10 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $script:mockSourcePathUNC = Join-Path -Path "\\localhost\$testDrive_DriveShare" -ChildPath (Split-Path -Path $TestDrive -NoQualifier)
 
                 $script:mockGetTargetResourceParameters = @{
-                    InstanceName       = 'MSSQLSERVER'
-                    SourceCredential   = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\sqladmin', ('dummyPassw0rd' | ConvertTo-SecureString -asPlainText -Force))
-                    SourcePath         = $mockSourcePathUNC
-                    SqlVersion         = ('{0}.0' -f $MockSqlMajorVersion)
+                    InstanceName     = 'MSSQLSERVER'
+                    SourceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\sqladmin', ('dummyPassw0rd' | ConvertTo-SecureString -asPlainText -Force))
+                    SourcePath       = $mockSourcePathUNC
+                    SqlVersion       = ('{0}.0' -f $MockSqlMajorVersion)
                 }
             }
         }
@@ -1942,8 +1942,8 @@ Describe 'SqlSetup\Test-TargetResource' -Tag 'Test' {
                     }
                 }
 
-                Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                    return '15'
+                Mock -CommandName Get-FileVersion -MockWith {
+                    return @{ ProductVersion = '15.0.0.0' }
                 }
 
                 Mock -CommandName Get-SQLInstanceMajorVersion -MockWith {
@@ -2212,7 +2212,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                 return @(
                     (
                         # $mockClusterDiskMap contains variables that are assigned dynamically (during runtime) before each test.
-                    (& $mockClusterDiskMap).Keys | ForEach-Object -Process {
+                        (& $mockClusterDiskMap).Keys | ForEach-Object -Process {
                             $diskName = $_
                             New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource', 'root/MSCluster' |
                                 Add-Member -MemberType NoteProperty -Name 'Name' -Value $diskName -PassThru -Force |
@@ -2265,13 +2265,13 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
         }
 
         $mockGetSqlMajorVersion = {
-            return $MockSqlMajorVersion
+            return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
         }
 
         # General mocks
         Mock -CommandName Get-PSDrive
         Mock -CommandName Import-SqlDscPreferredModule
-        Mock -CommandName Get-FilePathMajorVersion -MockWith $mockGetSqlMajorVersion
+        Mock -CommandName Get-FileVersion -MockWith $mockGetSqlMajorVersion
 
         # Mocking SharedDirectory and SharedWowDirectory (when not previously installed)
         Mock -CommandName Get-ItemProperty
@@ -2738,8 +2738,8 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
         Context 'When installing the database engine and disabling the Named Pipes protocol' {
             BeforeAll {
-                Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                    return 15
+                Mock -CommandName Get-FileVersion -MockWith {
+                    return @{ ProductVersion = '15.0.0.0' }
                 }
 
                 Mock -CommandName Get-TargetResource -MockWith {
@@ -2782,55 +2782,55 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
         }
 
         Context 'When installing the database engine and ProductcoveredBySA is true' {
-                BeforeAll {
-                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                        return 16
-                    }
-
-                    Mock -CommandName Get-TargetResource -MockWith {
-                        return @{
-                            Features = ''
-                        }
-                    }
+            BeforeAll {
+                Mock -CommandName Get-FileVersion -MockWith {
+                    return @{ ProductVersion = '16.0.0.0' }
                 }
 
-                It 'Should set the system in the desired state when feature is SQLENGINE' {
-                    $mockStartSqlSetupProcessExpectedArgument = @{
-                        Quiet                        = 'True'
-                        IAcceptSQLServerLicenseTerms = 'True'
-                        Action                       = 'Install'
-                        InstanceName                 = 'MSSQLSERVER'
-                        Features                     = 'SQLENGINE'
-                        SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-                        PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-                        ProductCoveredBySA           = 'True'
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Features = ''
                     }
-
-                    InModuleScope -ScriptBlock {
-                        Set-StrictMode -Version 1.0
-
-                        $mockSetTargetResourceParameters = @{
-                            Features            = 'SQLENGINE'
-                            SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-                            InstanceName        = 'MSSQLSERVER'
-                            SourceCredential    = $null
-                            SourcePath          = $TestDrive
-                            ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-                            ProductCoveredBySA  = $true
-                            ServerName          = 'host.company.local'
-                        }
-
-                        $null = Set-TargetResource @mockSetTargetResourceParameters
-                    }
-
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
                 }
             }
 
+            It 'Should set the system in the desired state when feature is SQLENGINE' {
+                $mockStartSqlSetupProcessExpectedArgument = @{
+                    Quiet                        = 'True'
+                    IAcceptSQLServerLicenseTerms = 'True'
+                    Action                       = 'Install'
+                    InstanceName                 = 'MSSQLSERVER'
+                    Features                     = 'SQLENGINE'
+                    SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                    PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                    ProductCoveredBySA           = 'True'
+                }
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters = @{
+                        Features            = 'SQLENGINE'
+                        SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+                        InstanceName        = 'MSSQLSERVER'
+                        SourceCredential    = $null
+                        SourcePath          = $TestDrive
+                        ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                        ProductCoveredBySA  = $true
+                        ServerName          = 'host.company.local'
+                    }
+
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
+                }
+
+                Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+            }
+        }
+
         Context 'When installing the database engine and disabling the TCP protocol' {
             BeforeAll {
-                Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                    return 15
+                Mock -CommandName Get-FileVersion -MockWith {
+                    return @{ ProductVersion = '15.0.0.0' }
                 }
 
                 Mock -CommandName Get-TargetResource -MockWith {
@@ -2874,8 +2874,8 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
         Context 'When installing the database engine forcing to use english language in media' {
             BeforeAll {
-                Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                    return 15
+                Mock -CommandName Get-FileVersion -MockWith {
+                    return @{ ProductVersion = '15.0.0.0' }
                 }
 
                 Mock -CommandName Get-TargetResource -MockWith {
@@ -2919,8 +2919,8 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
         Context 'When installing using a skip rule' {
             BeforeAll {
-                Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                    return 15
+                Mock -CommandName Get-FileVersion -MockWith {
+                    return @{ ProductVersion = '15.0.0.0' }
                 }
 
                 Mock -CommandName Get-TargetResource -MockWith {
@@ -2964,8 +2964,8 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
         Context 'When installing using multiple skip rules' {
             BeforeAll {
-                Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                    return 15
+                Mock -CommandName Get-FileVersion -MockWith {
+                    return @{ ProductVersion = '15.0.0.0' }
                 }
 
                 Mock -CommandName Get-TargetResource -MockWith {
@@ -3014,8 +3014,8 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
     Context 'When setup process fails with an exit code' {
         BeforeAll {
-            Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                return 15
+            Mock -CommandName Get-FileVersion -MockWith {
+                return @{ ProductVersion = '15.0.0.0' }
             }
 
             Mock -CommandName Get-TargetResource -MockWith {
@@ -3217,8 +3217,8 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
     # For testing AddNode action
     Context 'When action is set to ''AddNode''' {
         BeforeAll {
-            Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                return 15
+            Mock -CommandName Get-FileVersion -MockWith {
+                return @{ ProductVersion = '15.0.0.0' }
             }
 
             Mock -CommandName Get-TargetResource -MockWith {
@@ -3283,8 +3283,8 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
     Context 'When action is set to ''InstallFailoverCluster''' {
         BeforeAll {
-            Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                return 15
+            Mock -CommandName Get-FileVersion -MockWith {
+                return @{ ProductVersion = '15.0.0.0' }
             }
 
             # Cluster shared volumes will be tested and mocked later on.
@@ -3921,8 +3921,8 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
     Context 'When action is set to ''PrepareFailoverCluster''' {
         BeforeAll {
-            Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                return 15
+            Mock -CommandName Get-FileVersion -MockWith {
+                return @{ ProductVersion = '15.0.0.0' }
             }
 
             Mock -CommandName Get-TargetResource -MockWith {
@@ -4006,8 +4006,8 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
     Context 'When action is set to ''CompleteFailoverCluster''' {
         BeforeAll {
-            Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                return 15
+            Mock -CommandName Get-FileVersion -MockWith {
+                return @{ ProductVersion = '15.0.0.0' }
             }
 
             # Cluster shared volumes will be tested and mocked later on.
