@@ -101,6 +101,9 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Login_Remove_ShouldProcessCaption = Remove login on instance
     Login_Remove_Failed = Removal of the login '{0}' failed. (RSDL0001)
+    Login_Remove_KillingActiveSessions = Killing active sessions for login '{0}'. (RSDL0002)
+    Login_Remove_KillingProcess = Killing process with SPID '{0}' for login '{1}'. (RSDL0003)
+    Login_Remove_KillProcessFailed = Failed to kill process with SPID '{0}'. It may have already terminated. Error: {1} (RSDL0004)
 
     ## Enable-SqlDscLogin
     Login_Enable_ShouldProcessVerboseDescription = Enabling the login '{0}' on the instance '{1}'.

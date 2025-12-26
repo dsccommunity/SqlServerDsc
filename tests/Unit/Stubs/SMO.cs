@@ -562,6 +562,25 @@ namespace Microsoft.SqlServer.Management.Smo
         {
         }
 
+        public void KillProcess( int processId )
+        {
+        }
+
+        public DataTable EnumProcesses( string loginName )
+        {
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("Spid", typeof(int));
+            dataTable.Columns.Add("Login", typeof(string));
+
+            // Return a row with SPID 51 for any login name
+            var row = dataTable.NewRow();
+            row["Spid"] = 51;
+            row["Login"] = loginName;
+            dataTable.Rows.Add(row);
+
+            return dataTable;
+        }
+
         // Property for SQL Agent support
         public Microsoft.SqlServer.Management.Smo.Agent.JobServer JobServer { get; set; }
 

@@ -55,6 +55,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   SMO `Database.SetOffline()`. Supports Server and Database pipeline input;
   includes `Force` to disconnect active users
   ([issue #2192](https://github.com/dsccommunity/SqlServerDsc/issues/2192)).
+- `Remove-SqlDscLogin`
+  - Added parameter `-KillActiveSessions` to automatically terminate any active
+    sessions for a login before dropping it
+    ([issue #2372](https://github.com/dsccommunity/SqlServerDsc/issues/2372)).
 
 ### Changed
 
