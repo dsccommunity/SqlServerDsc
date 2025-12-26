@@ -161,6 +161,23 @@ Describe 'Get-SqlDscRSPackage' -Tag 'Public' {
     }
 
     Context 'Parameter validation' {
+        It 'Should have the correct parameters in parameter set __AllParameterSets' -ForEach @(
+            @{
+                ExpectedParameterSetName = '__AllParameterSets'
+                ExpectedParameters = '[-FilePath] <String> [-Force] [<CommonParameters>]'
+            }
+        ) {
+            $result = (Get-Command -Name 'Get-SqlDscRSPackage').ParameterSets |
+                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
+                Select-Object -Property @(
+                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
+                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
+                )
+
+            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should -Be $ExpectedParameters
+        }
+
         It 'Should have the correct parameters' {
             $commandInfo = Get-Command -Name 'Get-SqlDscRSPackage'
 
