@@ -157,4 +157,72 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             $loginExists | Should -BeFalse
         }
     }
+
+    Context 'When using the KillActiveSessions parameter' {
+        BeforeAll {
+            $script:testLoginName4 = 'TestRemoveLogin4'
+            $script:testLoginPassword4 = ConvertTo-SecureString -String 'P@ssw0rd4!' -AsPlainText -Force
+            $script:testCredential4 = [System.Management.Automation.PSCredential]::new($script:testLoginName4, $script:testLoginPassword4)
+        }
+
+        AfterEach {
+            # Clean up any remaining sessions
+            if ($script:activeConnection)
+            {
+                Disconnect-SqlDscDatabaseEngine -ServerObject $script:activeConnection -ErrorAction 'SilentlyContinue'
+                $script:activeConnection = $null
+            }
+
+            # Clean up the login if it still exists
+            $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName4
+
+            if ($loginExists)
+            {
+                # Use KillActiveSessions to ensure cleanup
+                $script:serverObject | Remove-SqlDscLogin -Name $script:testLoginName4 -KillActiveSessions -Force -ErrorAction 'SilentlyContinue'
+            }
+        }
+
+        It 'Should remove a login with active sessions when using KillActiveSessions parameter' {
+            # Create the test login
+            $null = $script:serverObject | New-SqlDscLogin -Name $script:testLoginName4 -SqlLogin -SecurePassword $script:testLoginPassword4 -Force
+
+            # Verify the login exists
+            $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName4
+            $loginExists | Should -BeTrue
+
+            # Connect using the test login to create an active session
+            $script:activeConnection = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -LoginType 'SqlLogin' -Credential $script:testCredential4 -ErrorAction 'Stop'
+
+            # Verify there is an active session for this login
+            $processes = $script:serverObject.EnumProcesses($script:testLoginName4)
+            $processes.Rows.Count | Should -BeGreaterThan 0 -Because 'There should be at least one active session for the login'
+
+            # Remove the login with KillActiveSessions - should succeed
+            $script:serverObject | Remove-SqlDscLogin -Name $script:testLoginName4 -KillActiveSessions -Force
+
+            # Verify the login is removed
+            $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName4
+            $loginExists | Should -BeFalse
+        }
+
+        It 'Should fail to remove a login with active sessions when not using KillActiveSessions parameter' {
+            # Create the test login
+            $null = $script:serverObject | New-SqlDscLogin -Name $script:testLoginName4 -SqlLogin -SecurePassword $script:testLoginPassword4 -Force
+
+            # Verify the login exists
+            $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName4
+            $loginExists | Should -BeTrue
+
+            # Connect using the test login to create an active session
+            $script:activeConnection = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -LoginType 'SqlLogin' -Credential $script:testCredential4 -ErrorAction 'Stop'
+
+            # Verify there is an active session for this login
+            $processes = $script:serverObject.EnumProcesses($script:testLoginName4)
+            $processes.Rows.Count | Should -BeGreaterThan 0 -Because 'There should be at least one active session for the login'
+
+            # Try to remove the login without KillActiveSessions - should fail
+            { $script:serverObject | Remove-SqlDscLogin -Name $script:testLoginName4 -Force -ErrorAction 'Stop' } | Should -Throw
+        }
+    }
 }

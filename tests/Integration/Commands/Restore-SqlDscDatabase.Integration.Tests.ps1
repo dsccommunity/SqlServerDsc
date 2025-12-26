@@ -1044,22 +1044,7 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
 
                 if ($loginObject)
                 {
-                    # Kill any active sessions for this login before dropping using SMO
-                    $processes = $script:serverObject.EnumProcesses($script:lowPrivLoginName)
-
-                    foreach ($process in $processes)
-                    {
-                        try
-                        {
-                            $script:serverObject.KillProcess($process.Spid)
-                        }
-                        catch
-                        {
-                            # Ignore errors if process already terminated
-                        }
-                    }
-
-                    $null = Remove-SqlDscLogin -LoginObject $loginObject -Force -ErrorAction 'SilentlyContinue'
+                    $null = Remove-SqlDscLogin -LoginObject $loginObject -KillActiveSessions -Force -ErrorAction 'SilentlyContinue'
                 }
             }
 

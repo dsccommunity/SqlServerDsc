@@ -53,11 +53,11 @@ Describe 'Remove-SqlDscLogin' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
             MockParameterSetName = 'ServerObject'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> [-KillActiveSessions] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'LoginObject'
-            MockExpectedParameters = '-LoginObject <Login> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-LoginObject <Login> [-KillActiveSessions] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
         $result = (Get-Command -Name 'Remove-SqlDscLogin').ParameterSets |
@@ -283,6 +283,127 @@ Describe 'Remove-SqlDscLogin' -Tag 'Public' {
 
         It 'Should throw the correct error when Drop() method fails' {
             { Remove-SqlDscLogin -Force @mockDefaultParameters } | Should -Throw -ExpectedMessage '*Removal of the login ''TestLogin'' failed*'
+        }
+    }
+
+    Context 'When using parameter KillActiveSessions' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject.InstanceName = 'TestInstance'
+        }
+
+        BeforeEach {
+            $script:mockMethodDropCallCount = 0
+        }
+
+        Context 'When there are active sessions for the login' {
+            BeforeAll {
+                # The SMO stub EnumProcesses returns a DataTable with SPID 51 for any login name
+                $script:mockLoginObjectWithProcesses = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
+                    $mockServerObject,
+                    'TestLogin'
+                ) |
+                    Add-Member -MemberType 'ScriptMethod' -Name 'Drop' -Value {
+                        $script:mockMethodDropCallCount += 1
+                    } -PassThru -Force
+
+                $script:mockDefaultParametersWithProcesses = @{
+                    LoginObject        = $script:mockLoginObjectWithProcesses
+                    KillActiveSessions = $true
+                }
+            }
+
+            It 'Should kill active sessions and drop the login' {
+                Remove-SqlDscLogin -Force @mockDefaultParametersWithProcesses
+
+                $script:mockMethodDropCallCount | Should -Be 1
+            }
+        }
+
+        Context 'When using WhatIf with KillActiveSessions' {
+            BeforeAll {
+                $script:mockLoginObjectWhatIf = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
+                    $mockServerObject,
+                    'TestLogin'
+                ) |
+                    Add-Member -MemberType 'ScriptMethod' -Name 'Drop' -Value {
+                        $script:mockMethodDropCallCount += 1
+                    } -PassThru -Force
+
+                $script:mockDefaultParametersWhatIf = @{
+                    LoginObject        = $script:mockLoginObjectWhatIf
+                    KillActiveSessions = $true
+                }
+            }
+
+            It 'Should not kill sessions or drop the login' {
+                Remove-SqlDscLogin -WhatIf @mockDefaultParametersWhatIf
+
+                $script:mockMethodDropCallCount | Should -Be 0
+            }
+        }
+
+        Context 'When using ServerObject parameter set with KillActiveSessions' {
+            BeforeAll {
+                $mockServerObjectWithProcesses = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                $mockServerObjectWithProcesses.InstanceName = 'TestInstance'
+
+                Mock -CommandName Get-SqlDscLogin -MockWith {
+                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
+                        $mockServerObjectWithProcesses,
+                        'TestLogin'
+                    ) |
+                        Add-Member -MemberType 'ScriptMethod' -Name 'Drop' -Value {
+                            $script:mockMethodDropCallCount += 1
+                        } -PassThru -Force
+                }
+            }
+
+            It 'Should kill active sessions and drop the login' {
+                Remove-SqlDscLogin -ServerObject $mockServerObjectWithProcesses -Name 'TestLogin' -KillActiveSessions -Force
+
+                $script:mockMethodDropCallCount | Should -Be 1
+            }
+
+            It 'Should not kill sessions or drop the login when using WhatIf' {
+                Remove-SqlDscLogin -ServerObject $mockServerObjectWithProcesses -Name 'TestLogin' -KillActiveSessions -Force -WhatIf
+
+                $script:mockMethodDropCallCount | Should -Be 0
+            }
+        }
+
+        Context 'When EnumProcesses returns no active sessions' {
+            BeforeAll {
+                # Create a server object that returns an empty DataTable from EnumProcesses
+                $mockServerObjectNoProcesses = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                $mockServerObjectNoProcesses.InstanceName = 'TestInstance'
+
+                # Override EnumProcesses to return an empty DataTable
+                $mockServerObjectNoProcesses | Add-Member -MemberType 'ScriptMethod' -Name 'EnumProcesses' -Value {
+                    param ($loginName)
+
+                    $dataTable = New-Object -TypeName 'System.Data.DataTable'
+                    $null = $dataTable.Columns.Add('Spid', [System.Int32])
+                    $null = $dataTable.Columns.Add('Login', [System.String])
+
+                    # Return empty DataTable (no rows)
+                    return $dataTable
+                } -Force
+
+                $script:mockLoginObjectNoProcesses = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
+                    $mockServerObjectNoProcesses,
+                    'TestLogin'
+                ) |
+                    Add-Member -MemberType 'ScriptMethod' -Name 'Drop' -Value {
+                        $script:mockMethodDropCallCount += 1
+                    } -PassThru -Force
+            }
+
+            It 'Should drop the login without attempting to kill any sessions' {
+                Remove-SqlDscLogin -LoginObject $script:mockLoginObjectNoProcesses -KillActiveSessions -Force
+
+                $script:mockMethodDropCallCount | Should -Be 1
+            }
         }
     }
 }
