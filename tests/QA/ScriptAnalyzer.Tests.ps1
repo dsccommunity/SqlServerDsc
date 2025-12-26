@@ -39,7 +39,27 @@ BeforeDiscovery {
         (from Indented.ScriptAnalyzerRules) can properly parse parameters that uses SMO types,
         e.g. [Microsoft.SqlServer.Management.Smo.Server].
     #>
-    Add-Type -Path "$PSScriptRoot/../Unit/Stubs/SMO.cs" -ReferencedAssemblies 'System.Data', 'System.Xml'
+    if ($IsLinux -or $IsMacOS)
+    {
+        # .NET Core requires different assemblies than .NET Framework
+        $referencedAssemblies = @(
+            'System.Collections'
+            'System.Collections.Specialized'
+            'System.Data.Common'
+            'System.Linq'
+            'System.Net.Primitives'
+            'netstandard'
+        )
+    }
+    else
+    {
+        $referencedAssemblies = @(
+            'System.Data'
+            'System.Xml'
+        )
+    }
+
+    Add-Type -Path "$PSScriptRoot/../Unit/Stubs/SMO.cs" -ReferencedAssemblies $referencedAssemblies
 
     $repositoryPath = Resolve-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../..')
     $sourcePath = Join-Path -Path $repositoryPath -ChildPath 'source'
