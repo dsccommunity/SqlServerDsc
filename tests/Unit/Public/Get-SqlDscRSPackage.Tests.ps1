@@ -47,97 +47,7 @@ AfterAll {
 }
 
 Describe 'Get-SqlDscRSPackage' -Tag 'Public' {
-    Context 'When using the Package parameter set' {
-        Context 'When the installed package is found' {
-            BeforeAll {
-                # Use TestDrive for cross-platform compatibility
-                $script:mockInstallFolder = $TestDrive
-
-                Mock -CommandName Get-SqlDscRSSetupConfiguration -MockWith {
-                    return @{
-                        InstanceName  = 'SSRS'
-                        InstallFolder = $script:mockInstallFolder
-                    }
-                }
-
-                Mock -CommandName Get-FileVersion -MockWith {
-                    return [PSCustomObject]@{
-                        ProductName    = 'Microsoft SQL Server Reporting Services'
-                        ProductVersion = '15.0.8963.8162'
-                        FileVersion    = '2019.150.8963.8162'
-                        FileName       = 'ReportingServicesService.exe'
-                    }
-                }
-            }
-
-            It 'Should return the version information for SSRS' {
-                $result = Get-SqlDscRSPackage -Package 'SSRS'
-
-                $result | Should -Not -BeNullOrEmpty
-                $result.ProductName | Should -Be 'Microsoft SQL Server Reporting Services'
-                $result.ProductVersion | Should -Be '15.0.8963.8162'
-
-                Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -ParameterFilter {
-                    $InstanceName -eq 'SSRS'
-                } -Exactly -Times 1 -Scope It
-
-                Should -Invoke -CommandName Get-FileVersion -Exactly -Times 1 -Scope It
-            }
-        }
-
-        Context 'When the installed package is found for PBIRS' {
-            BeforeAll {
-                # Use TestDrive for cross-platform compatibility
-                $script:mockInstallFolder = $TestDrive
-
-                Mock -CommandName Get-SqlDscRSSetupConfiguration -MockWith {
-                    return @{
-                        InstanceName  = 'PBIRS'
-                        InstallFolder = $script:mockInstallFolder
-                    }
-                }
-
-                Mock -CommandName Get-FileVersion -MockWith {
-                    return [PSCustomObject]@{
-                        ProductName    = 'Microsoft Power BI Report Server'
-                        ProductVersion = '15.0.1111.1234'
-                        FileVersion    = '2019.150.1111.1234'
-                        FileName       = 'ReportingServicesService.exe'
-                    }
-                }
-            }
-
-            It 'Should return the version information for PBIRS' {
-                $result = Get-SqlDscRSPackage -Package 'PBIRS'
-
-                $result | Should -Not -BeNullOrEmpty
-                $result.ProductName | Should -Be 'Microsoft Power BI Report Server'
-                $result.ProductVersion | Should -Be '15.0.1111.1234'
-
-                Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -ParameterFilter {
-                    $InstanceName -eq 'PBIRS'
-                } -Exactly -Times 1 -Scope It
-
-                Should -Invoke -CommandName Get-FileVersion -Exactly -Times 1 -Scope It
-            }
-        }
-
-        Context 'When the installed package is not found' {
-            BeforeAll {
-                Mock -CommandName Get-SqlDscRSSetupConfiguration
-            }
-
-            It 'Should throw an error' {
-                $mockErrorMessage = InModuleScope -ScriptBlock {
-                    $script:localizedData.Get_SqlDscRSPackage_PackageNotFound -f 'SSRS'
-                }
-
-                { Get-SqlDscRSPackage -Package 'SSRS' } | Should -Throw -ExpectedMessage $mockErrorMessage
-            }
-        }
-    }
-
-    Context 'When using the FilePath parameter set' {
+    Context 'When using the FilePath parameter' {
         Context 'When the file is a valid SSRS executable' {
             BeforeAll {
                 # Create a mock file in TestDrive
@@ -251,55 +161,23 @@ Describe 'Get-SqlDscRSPackage' -Tag 'Public' {
     }
 
     Context 'Parameter validation' {
-        It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
-            @{
-                ExpectedParameterSetName = 'Package'
-                ExpectedParameters = '-Package <string> [<CommonParameters>]'
-            }
-            @{
-                ExpectedParameterSetName = 'FilePath'
-                ExpectedParameters = '-FilePath <string> [-Force] [<CommonParameters>]'
-            }
-        ) {
-            $result = (Get-Command -Name 'Get-SqlDscRSPackage').ParameterSets |
-                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
-                Select-Object -Property @(
-                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
-                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
-                )
-
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
-        }
-
-        It 'Should have Package as a mandatory parameter in Package parameter set' {
-            $parameterInfo = (Get-Command -Name 'Get-SqlDscRSPackage').Parameters['Package']
-            $packageParameterSet = $parameterInfo.ParameterSets['Package']
-            $packageParameterSet.IsMandatory | Should -BeTrue
-        }
-
-        It 'Should have FilePath as a mandatory parameter in FilePath parameter set' {
-            $parameterInfo = (Get-Command -Name 'Get-SqlDscRSPackage').Parameters['FilePath']
-            $filePathParameterSet = $parameterInfo.ParameterSets['FilePath']
-            $filePathParameterSet.IsMandatory | Should -BeTrue
-        }
-
-        It 'Should have Force as a non-mandatory parameter in FilePath parameter set' {
-            $parameterInfo = (Get-Command -Name 'Get-SqlDscRSPackage').Parameters['Force']
-            $forceParameterSet = $parameterInfo.ParameterSets['FilePath']
-            $forceParameterSet.IsMandatory | Should -BeFalse
-        }
-
-        It 'Should have Package parameter with validate set SSRS and PBIRS' {
-            $parameterInfo = (Get-Command -Name 'Get-SqlDscRSPackage').Parameters['Package']
-            $validateSetAttribute = $parameterInfo.Attributes | Where-Object -FilterScript { $_ -is [System.Management.Automation.ValidateSetAttribute] }
-            $validateSetAttribute.ValidValues | Should -Contain 'SSRS'
-            $validateSetAttribute.ValidValues | Should -Contain 'PBIRS'
-        }
-
-        It 'Should have Package as the default parameter set' {
+        It 'Should have the correct parameters' {
             $commandInfo = Get-Command -Name 'Get-SqlDscRSPackage'
-            $commandInfo.DefaultParameterSet | Should -Be 'Package'
+
+            $commandInfo.Parameters['FilePath'] | Should -Not -BeNullOrEmpty
+            $commandInfo.Parameters['Force'] | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Should have FilePath as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Get-SqlDscRSPackage').Parameters['FilePath']
+            $allParameterSets = $parameterInfo.ParameterSets['__AllParameterSets']
+            $allParameterSets.IsMandatory | Should -BeTrue
+        }
+
+        It 'Should have Force as a non-mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Get-SqlDscRSPackage').Parameters['Force']
+            $allParameterSets = $parameterInfo.ParameterSets['__AllParameterSets']
+            $allParameterSets.IsMandatory | Should -BeFalse
         }
     }
 }

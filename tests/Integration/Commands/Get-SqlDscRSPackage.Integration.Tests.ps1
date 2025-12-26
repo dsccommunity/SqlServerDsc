@@ -30,23 +30,20 @@ BeforeAll {
 }
 
 Describe 'Get-SqlDscRSPackage' {
+    Context 'When getting package information for a non-existing file' -Tag @('Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS', 'Integration_PowerBI') {
+        It 'Should throw an error when the file does not exist' {
+            { Get-SqlDscRSPackage -FilePath 'C:\NonExistent\SQLServerReportingServices.exe' -ErrorAction 'Stop' } | Should -Throw
+        }
+    }
+
     Context 'When getting package information for SQL Server Reporting Services' -Tag @('Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
+        BeforeAll {
+            $script:temporaryFolder = Get-TemporaryFolder
+            $script:reportingServicesExecutable = Join-Path -Path $script:temporaryFolder -ChildPath 'SQLServerReportingServices.exe'
+        }
+
         It 'Should return the package information for SSRS' {
-            $result = Get-SqlDscRSPackage -Package 'SSRS' -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.ProductName | Should -Be 'Microsoft SQL Server Reporting Services'
-            $result.FileVersion | Should -Not -BeNullOrEmpty
-            $result.ProductVersion | Should -Not -BeNullOrEmpty
-        }
-
-        It 'Should return the same result when using FilePath parameter' {
-            # Get the install folder from the setup configuration
-            $setupConfig = Get-SqlDscRSSetupConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-
-            $executablePath = Join-Path -Path $setupConfig.InstallFolder -ChildPath 'RSHostingService/ReportingServicesService.exe'
-
-            $result = Get-SqlDscRSPackage -FilePath $executablePath -ErrorAction 'Stop'
+            $result = Get-SqlDscRSPackage -FilePath $script:reportingServicesExecutable -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
             $result.ProductName | Should -Be 'Microsoft SQL Server Reporting Services'
@@ -55,24 +52,15 @@ Describe 'Get-SqlDscRSPackage' {
         }
     }
 
+    # cSpell: ignore PBIRS
     Context 'When getting package information for Power BI Report Server' -Tag @('Integration_PowerBI') {
-        # cSpell: ignore PBIRS
-        It 'Should return the package information for PBIRS' {
-            $result = Get-SqlDscRSPackage -Package 'PBIRS' -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.ProductName | Should -Be 'Microsoft Power BI Report Server'
-            $result.FileVersion | Should -Not -BeNullOrEmpty
-            $result.ProductVersion | Should -Not -BeNullOrEmpty
+        BeforeAll {
+            $script:temporaryFolder = Get-TemporaryFolder
+            $script:powerBIReportServerExecutable = Join-Path -Path $script:temporaryFolder -ChildPath 'PowerBIReportServer.exe'
         }
 
-        It 'Should return the same result when using FilePath parameter' {
-            # Get the install folder from the setup configuration
-            $setupConfig = Get-SqlDscRSSetupConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
-
-            $executablePath = Join-Path -Path $setupConfig.InstallFolder -ChildPath 'RSHostingService/ReportingServicesService.exe'
-
-            $result = Get-SqlDscRSPackage -FilePath $executablePath -ErrorAction 'Stop'
+        It 'Should return the package information for PBIRS' {
+            $result = Get-SqlDscRSPackage -FilePath $script:powerBIReportServerExecutable -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
             $result.ProductName | Should -Be 'Microsoft Power BI Report Server'
@@ -81,49 +69,28 @@ Describe 'Get-SqlDscRSPackage' {
         }
     }
 
-    Context 'When getting package information for a non-existing package' -Tag @('Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS', 'Integration_PowerBI') {
-        It 'Should throw an error when the package is not installed' {
-            # PBIRS is not installed in the SSRS CI environment and vice versa
-            # We can test this by checking which one is installed
-            $ssrsInstalled = Test-SqlDscRSInstalled -InstanceName 'SSRS'
+    Context 'When file has an invalid product name' -Tag @('Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS', 'Integration_PowerBI') {
+        It 'Should throw an error without Force parameter' {
+            # Use an executable that exists but has a different product name
+            { Get-SqlDscRSPackage -FilePath 'C:\Windows\System32\notepad.exe' -ErrorAction 'Stop' } | Should -Throw
+        }
 
-            if ($ssrsInstalled)
-            {
-                # SSRS is installed, so PBIRS should not be
-                { Get-SqlDscRSPackage -Package 'PBIRS' -ErrorAction 'Stop' } | Should -Throw
-            }
-            else
-            {
-                # PBIRS is installed, so SSRS should not be
-                { Get-SqlDscRSPackage -Package 'SSRS' -ErrorAction 'Stop' } | Should -Throw
-            }
+        It 'Should return version information with Force parameter' {
+            $result = Get-SqlDscRSPackage -FilePath 'C:\Windows\System32\notepad.exe' -Force -ErrorAction 'Stop'
+
+            $result | Should -Not -BeNullOrEmpty
+            $result.FileVersion | Should -Not -BeNullOrEmpty
         }
     }
 
     Context 'When using Force parameter to bypass validation' -Tag @('Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
-        It 'Should return file version information for any executable with Force parameter' {
-            # Get the install folder from the setup configuration
-            $setupConfig = Get-SqlDscRSSetupConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-
-            $executablePath = Join-Path -Path $setupConfig.InstallFolder -ChildPath 'RSHostingService/ReportingServicesService.exe'
-
-            # Using Force should work and return the file version info
-            $result = Get-SqlDscRSPackage -FilePath $executablePath -Force -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.FileVersion | Should -Not -BeNullOrEmpty
+        BeforeAll {
+            $script:temporaryFolder = Get-TemporaryFolder
+            $script:reportingServicesExecutable = Join-Path -Path $script:temporaryFolder -ChildPath 'SQLServerReportingServices.exe'
         }
-    }
 
-    Context 'When using Force parameter to bypass validation' -Tag @('Integration_PowerBI') {
-        It 'Should return file version information for any executable with Force parameter' {
-            # Get the install folder from the setup configuration
-            $setupConfig = Get-SqlDscRSSetupConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
-
-            $executablePath = Join-Path -Path $setupConfig.InstallFolder -ChildPath 'RSHostingService/ReportingServicesService.exe'
-
-            # Using Force should work and return the file version info
-            $result = Get-SqlDscRSPackage -FilePath $executablePath -Force -ErrorAction 'Stop'
+        It 'Should return file version information with Force parameter' {
+            $result = Get-SqlDscRSPackage -FilePath $script:reportingServicesExecutable -Force -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
             $result.FileVersion | Should -Not -BeNullOrEmpty
