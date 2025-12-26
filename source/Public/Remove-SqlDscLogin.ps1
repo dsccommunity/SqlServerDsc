@@ -127,21 +127,22 @@ function Remove-SqlDscLogin
             {
                 $serverObjectToUse = $LoginObject.Parent
 
-                Write-Verbose -Message (
+                Write-Debug -Message (
                     $script:localizedData.Login_Remove_KillingActiveSessions -f $LoginObject.Name
                 )
 
                 $processes = $serverObjectToUse.EnumProcesses($LoginObject.Name)
 
+                $originalErrorActionPreference = $ErrorActionPreference
+
+                $ErrorActionPreference = 'Stop'
+
+                # cSpell:ignore Spid
                 foreach ($process in $processes.Rows)
                 {
                     Write-Debug -Message (
                         $script:localizedData.Login_Remove_KillingProcess -f $process.Spid, $LoginObject.Name
                     )
-
-                    $originalErrorActionPreference = $ErrorActionPreference
-
-                    $ErrorActionPreference = 'Stop'
 
                     # Ignore errors if process already terminated.
                     try
@@ -155,9 +156,9 @@ function Remove-SqlDscLogin
                             $script:localizedData.Login_Remove_KillProcessFailed -f $process.Spid, $_.Exception.Message
                         )
                     }
-
-                    $ErrorActionPreference = $originalErrorActionPreference
                 }
+
+                $ErrorActionPreference = $originalErrorActionPreference
             }
 
             try
