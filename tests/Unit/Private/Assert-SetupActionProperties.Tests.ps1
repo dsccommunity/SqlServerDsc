@@ -608,12 +608,10 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
 
         It 'Should not throw an exception' {
             InModuleScope -ScriptBlock {
-                {
-                    Assert-SetupActionProperties -Property @{
-                        MediaPath = $TestDrive
-                        AllowDqRemoval = $true
-                    } -SetupAction 'Upgrade'
-                } | Should -Not -Throw
+                Assert-SetupActionProperties -Property @{
+                    MediaPath      = $TestDrive
+                    AllowDqRemoval = $true
+                } -SetupAction 'Upgrade'
             }
         }
     }
