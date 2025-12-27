@@ -238,4 +238,26 @@ function Assert-SetupActionProperties
             )
         }
     }
+
+    # The parameter AllowDqRemoval is only allowed for SQL Server 2025 (17.x) and later versions.
+    if ($Property.ContainsKey('AllowDqRemoval'))
+    {
+        $setupExecutableFileVersion = $Property.MediaPath |
+            Join-Path -ChildPath 'setup.exe' |
+            Get-FileVersion
+
+        $majorVersion = $setupExecutableFileVersion.ProductVersion.Split('.')[0]
+
+        if ([System.Int32] $majorVersion -lt 17)
+        {
+            $PSCmdlet.ThrowTerminatingError(
+                [System.Management.Automation.ErrorRecord]::new(
+                    ($script:localizedData.InstallSqlServerProperties_AllowDqRemovalInvalidVersion -f $majorVersion),
+                    'ASAP0003', # cSpell: disable-line
+                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                    'Command parameters'
+                )
+            )
+        }
+    }
 }

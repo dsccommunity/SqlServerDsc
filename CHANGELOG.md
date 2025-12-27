@@ -59,6 +59,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added parameter `-KillActiveSessions` to automatically terminate any active
     sessions for a login before dropping it
     ([issue #2372](https://github.com/dsccommunity/SqlServerDsc/issues/2372)).
+- `Invoke-SetupAction`
+  - Added parameter `AllowDqRemoval` for the `Upgrade` action to allow removal
+    of Data Quality (DQ) Services during upgrade to SQL Server 2025 (17.x) and
+    later versions.
+  - Now outputs setup progress when `-Verbose` is passed by using `/QUIETSIMPLE`
+    instead of `/QUIET`.
 
 ### Changed
 

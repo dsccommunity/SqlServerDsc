@@ -575,4 +575,46 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             }
         }
     }
+
+    Context 'When specifying AllowDqRemoval with SQL Server version older than 2025 (17.x)' {
+        BeforeAll {
+            Mock -CommandName Get-FileVersion -MockWith {
+                return [PSCustomObject] @{
+                    ProductVersion = '16.0.1000.6'
+                }
+            }
+        }
+
+        It 'Should throw an exception' {
+            InModuleScope -ScriptBlock {
+                {
+                    Assert-SetupActionProperties -Property @{
+                        MediaPath = $TestDrive
+                        AllowDqRemoval = $true
+                    } -SetupAction 'Upgrade'
+                } | Should -Throw -ErrorId 'ASAP0003,Assert-SetupActionProperties' # cSpell: disable-line
+            }
+        }
+    }
+
+    Context 'When specifying AllowDqRemoval with SQL Server 2025 (17.x)' {
+        BeforeAll {
+            Mock -CommandName Get-FileVersion -MockWith {
+                return [PSCustomObject] @{
+                    ProductVersion = '17.0.1000.6'
+                }
+            }
+        }
+
+        It 'Should not throw an exception' {
+            InModuleScope -ScriptBlock {
+                {
+                    Assert-SetupActionProperties -Property @{
+                        MediaPath = $TestDrive
+                        AllowDqRemoval = $true
+                    } -SetupAction 'Upgrade'
+                } | Should -Not -Throw
+            }
+        }
+    }
 }
