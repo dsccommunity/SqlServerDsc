@@ -986,7 +986,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
             @{
                 MockParameterName = 'AllowDqRemoval'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/IACKNOWLEDGEDQUNINSTALL\s*' # cspell: disable-line
+                MockExpectedRegEx = '\/IACCEPTDQUNINSTALL\s*' # cspell: disable-line
             }
             @{
                 MockParameterName = 'FailoverClusterRollOwnership'
