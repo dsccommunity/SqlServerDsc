@@ -105,4 +105,30 @@ Describe 'Test-SqlDscIsSupportedFeature' -Tag 'Public' {
             Test-SqlDscIsSupportedFeature -Feature 'PolyBaseJava' -ProductVersion 14 | Should -BeFalse
         }
     }
+
+    Context 'When DQ, DQC, and MDS features are discontinued in SQL Server 2025 (17.x)' {
+        It 'Should return $true for feature <Feature> on major version 16' -ForEach @(
+            @{ Feature = 'DQ' }
+            @{ Feature = 'DQC' }
+            @{ Feature = 'MDS' }
+        ) {
+            Test-SqlDscIsSupportedFeature -Feature $Feature -ProductVersion 16 | Should -BeTrue
+        }
+
+        It 'Should return $false for feature <Feature> on major version 17' -ForEach @(
+            @{ Feature = 'DQ' }
+            @{ Feature = 'DQC' }
+            @{ Feature = 'MDS' }
+        ) {
+            Test-SqlDscIsSupportedFeature -Feature $Feature -ProductVersion 17 | Should -BeFalse
+        }
+
+        It 'Should return $false for feature <Feature> on major version 999 (future version)' -ForEach @(
+            @{ Feature = 'DQ' }
+            @{ Feature = 'DQC' }
+            @{ Feature = 'MDS' }
+        ) {
+            Test-SqlDscIsSupportedFeature -Feature $Feature -ProductVersion 999 | Should -BeFalse
+        }
+    }
 }

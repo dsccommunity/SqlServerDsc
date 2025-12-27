@@ -294,6 +294,10 @@
     .PARAMETER AllowUpgradeForSSRSSharePointMode
         See the notes section for more information.
 
+    .PARAMETER AllowDqRemoval
+        Specifies whether to allow removal of Data Quality (DQ) Services during
+        upgrade to SQL Server 2025 (17.x) and later versions.
+
     .PARAMETER NpEnabled
         See the notes section for more information.
 
@@ -476,7 +480,7 @@
 #>
 function Invoke-SetupAction
 {
-    # cSpell: ignore PBDMS Admini AZUREEXTENSION BSTR
+    # cSpell: ignore PBDMS Admini AZUREEXTENSION BSTR QUIETSIMPLE
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType()]
     param
@@ -1210,6 +1214,10 @@ function Invoke-SetupAction
         [System.Management.Automation.SwitchParameter]
         $AllowUpgradeForSSRSSharePointMode,
 
+        [Parameter(ParameterSetName = 'Upgrade')]
+        [System.Management.Automation.SwitchParameter]
+        $AllowDqRemoval,
+
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
@@ -1428,7 +1436,27 @@ function Invoke-SetupAction
 
     $ErrorActionPreference = $originalErrorActionPreference
 
-    $setupArgument = '/QUIET /ACTION={0}' -f $setupAction
+    $quietSimpleSetupActions = @(
+        'Install'
+        'PrepareImage'
+        'CompleteImage'
+        'InstallFailoverCluster'
+        'PrepareFailoverCluster'
+        'CompleteFailoverCluster'
+        'AddNode'
+        'RemoveNode'
+    )
+
+    if ($VerbosePreference -eq 'Continue' -and $setupAction -in $quietSimpleSetupActions)
+    {
+        $quietMode = '/QUIETSIMPLE'
+    }
+    else
+    {
+        $quietMode = '/QUIET'
+    }
+
+    $setupArgument = '{0} /ACTION={1}' -f $quietMode, $setupAction
 
     if ($DebugPreference -in @('Continue', 'Inquire'))
     {
@@ -1534,12 +1562,9 @@ function Invoke-SetupAction
             # Must be handled differently because the parameter name could not be $PID.
             'PRODUCTKEY' # cspell: disable-line
             {
-                # Remove the argument that was added above.
-                $setupArgument = $setupArgument -replace ' \/{0}' -f $parameterName
-
                 $sensitiveValue += $PSBoundParameters.$parameterName
 
-                $setupArgument += ' /PID="{0}"' -f $PSBoundParameters.$parameterName
+                $setupArgument = $setupArgument -replace $parameterName, ('PID="{0}"' -f $PSBoundParameters.$parameterName)
 
                 break
             }
@@ -1547,10 +1572,15 @@ function Invoke-SetupAction
             # Must be handled differently because the argument name shall have an underscore in the argument.
             'SQLINSTJAVA' # cspell: disable-line
             {
-                # Remove the argument that was added above.
-                $setupArgument = $setupArgument -replace ' \/{0}' -f $parameterName
+                $setupArgument = $setupArgument -replace $parameterName, 'SQL_INST_JAVA'
 
-                $setupArgument += ' /SQL_INST_JAVA'
+                break
+            }
+
+            # Must be handled differently because parameter name does not match the argument name.
+            'ALLOWDQREMOVAL' # cspell: disable-line
+            {
+                $setupArgument = $setupArgument -replace $parameterName, 'IACCEPTDQUNINSTALL' # cspell: disable-line
 
                 break
             }

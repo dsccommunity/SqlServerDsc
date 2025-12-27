@@ -47,6 +47,14 @@ AfterAll {
 }
 
 Describe 'Assert-SetupActionProperties' -Tag 'Private' {
+    BeforeAll {
+        Mock -CommandName Get-FileVersion -MockWith {
+            return [PSCustomObject] @{
+                ProductVersion = '16.0.1000.6'
+            }
+        }
+    }
+
     Context 'When all properties are valid for setup action ''<MockSetupAction>''' -ForEach @(
         @{
             MockSetupAction = 'Install'
@@ -100,6 +108,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
         It 'Should not throw an exception' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 $null = Assert-SetupActionProperties -Property @{
+                    MediaPath     = $TestDrive
                     ValidProperty = 'Value'
                 } -SetupAction $MockSetupAction -ErrorAction 'Stop'
             }
@@ -118,6 +127,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 {
                     Assert-SetupActionProperties -Property @{
+                        MediaPath          = $TestDrive
                         $MockParameterName = 'Value'
                     } -SetupAction 'NotUsed'
                 } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
@@ -162,6 +172,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
         It 'Should throw the correct error' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 {
+                    $MockParameters.MediaPath = $TestDrive
                     $MockParameters.Role = 'SPI_AS_NewFarm'
 
                     Assert-SetupActionProperties -Property $MockParameters -SetupAction 'NotUsed'
@@ -175,6 +186,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             InModuleScope -ScriptBlock {
                 {
                     Assert-SetupActionProperties -Property @{
+                        MediaPath    = $TestDrive
                         SecurityMode = 'SQL'
                     } -SetupAction 'NotUsed'
                 } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
@@ -188,6 +200,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                 MockFileStreamLevel = $_
             } -ScriptBlock {
                 $null = Assert-SetupActionProperties -Property @{
+                    MediaPath       = $TestDrive
                     FileStreamLevel = $MockFileStreamLevel
                 } -SetupAction 'NotUsed' -ErrorAction 'Stop'
             }
@@ -201,6 +214,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             } -ScriptBlock {
                 {
                     Assert-SetupActionProperties -Property @{
+                        MediaPath       = $TestDrive
                         FileStreamLevel = $MockFileStreamLevel
                     } -SetupAction 'NotUsed'
                 } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
@@ -238,6 +252,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 {
                     Assert-SetupActionProperties -Property @{
+                        MediaPath          = $TestDrive
                         $MockParameterName = 'AccountName'
                     } -SetupAction 'NotUsed'
                 } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
@@ -274,7 +289,8 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
         It 'Should not throw an exception' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 $null = Assert-SetupActionProperties -Property @{
-                    $MockParameterName = 'AccountName'
+                    MediaPath                                          = $TestDrive
+                    $MockParameterName                                 = 'AccountName'
                     ($MockParameterName -replace 'Account', 'Password') = 'Password'
                 } -SetupAction 'NotUsed' -ErrorAction 'Stop'
             }
@@ -316,6 +332,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
         It 'Should not throw an exception' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 $null = Assert-SetupActionProperties -Property @{
+                    MediaPath          = $TestDrive
                     $MockParameterName = 'myMSA$'
                 } -SetupAction 'NotUsed' -ErrorAction 'Stop'
             }
@@ -553,6 +570,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 {
                     Assert-SetupActionProperties -Property @{
+                        MediaPath    = $TestDrive
                         ASServerMode = 'PowerPivot'
                     } -SetupAction $MockSetupAction
                 } | Should -Throw -ErrorId 'ASAP0001,Assert-SetupActionProperties' # cSpell: disable-line
@@ -569,9 +587,50 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 {
                     Assert-SetupActionProperties -Property @{
+                        MediaPath     = $TestDrive
                         RsInstallMode = 'DefaultNativeMode'
                     } -SetupAction $MockSetupAction
                 } | Should -Throw -ErrorId 'ASAP0002,Assert-SetupActionProperties' # cSpell: disable-line
+            }
+        }
+    }
+
+    Context 'When specifying AllowDqRemoval with SQL Server version older than 2025 (17.x)' {
+        BeforeAll {
+            Mock -CommandName Get-FileVersion -MockWith {
+                return [PSCustomObject] @{
+                    ProductVersion = '16.0.1000.6'
+                }
+            }
+        }
+
+        It 'Should throw an exception' {
+            InModuleScope -ScriptBlock {
+                {
+                    Assert-SetupActionProperties -Property @{
+                        MediaPath = $TestDrive
+                        AllowDqRemoval = $true
+                    } -SetupAction 'Upgrade'
+                } | Should -Throw -ErrorId 'ASAP0003,Assert-SetupActionProperties' # cSpell: disable-line
+            }
+        }
+    }
+
+    Context 'When specifying AllowDqRemoval with SQL Server 2025 (17.x)' {
+        BeforeAll {
+            Mock -CommandName Get-FileVersion -MockWith {
+                return [PSCustomObject] @{
+                    ProductVersion = '17.0.1000.6'
+                }
+            }
+        }
+
+        It 'Should not throw an exception' {
+            InModuleScope -ScriptBlock {
+                $null = Assert-SetupActionProperties -Property @{
+                    MediaPath      = $TestDrive
+                    AllowDqRemoval = $true
+                } -SetupAction 'Upgrade' -ErrorAction 'Stop'
             }
         }
     }

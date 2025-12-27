@@ -87,7 +87,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
         @{
             MockParameterSetName = 'Upgrade'
             # cSpell: disable-next
-            MockExpectedParameters = '-Upgrade -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstanceDir <string>] [-InstanceId <string>] [-ProductKey <string>] [-BrowserSvcStartupType <string>] [-FTUpgradeOption <string>] [-ISSvcAccount <string>] [-ISSvcPassword <securestring>] [-ISSvcStartupType <string>] [-AllowUpgradeForSSRSSharePointMode] [-FailoverClusterRollOwnership <ushort>] [-ProductCoveredBySA] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-Upgrade -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstanceDir <string>] [-InstanceId <string>] [-ProductKey <string>] [-BrowserSvcStartupType <string>] [-FTUpgradeOption <string>] [-ISSvcAccount <string>] [-ISSvcPassword <securestring>] [-ISSvcStartupType <string>] [-AllowUpgradeForSSRSSharePointMode] [-AllowDqRemoval] [-FailoverClusterRollOwnership <ushort>] [-ProductCoveredBySA] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'EditionUpgrade'
@@ -982,6 +982,11 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 MockParameterName = 'AllowUpgradeForSSRSSharePointMode'
                 MockParameterValue = $true
                 MockExpectedRegEx = '\/ALLOWUPGRADEFORSSRSSHAREPOINTMODE=True' # cspell: disable-line
+            }
+            @{
+                MockParameterName = 'AllowDqRemoval'
+                MockParameterValue = $true
+                MockExpectedRegEx = '\/IACCEPTDQUNINSTALL\s*' # cspell: disable-line
             }
             @{
                 MockParameterName = 'FailoverClusterRollOwnership'

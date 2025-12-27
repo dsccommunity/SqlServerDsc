@@ -54,6 +54,7 @@ function Test-SqlDscIsSupportedFeature
             13 = @('ADV_SSMS', 'SSMS') # cSpell: disable-line
             14 = @('RS', 'RS_SHP', 'RS_SHPWFE') # cSpell: disable-line
             16 = @('Tools', 'BC', 'CONN', 'BC', 'DREPLAY_CTLR', 'DREPLAY_CLT', 'SNAC_SDK', 'SDK', 'PolyBaseJava', 'SQL_INST_MR', 'SQL_INST_MPY', 'SQL_SHARED_MPY', 'SQL_SHARED_MR') # cSpell: disable-line
+            17 = @('DQ', 'DQC', 'MDS') # Discontinued in SQL Server 2025 (17.x). See https://learn.microsoft.com/en-us/sql/database-engine/discontinued-database-engine-functionality-in-sql-server
         }
 
         <#

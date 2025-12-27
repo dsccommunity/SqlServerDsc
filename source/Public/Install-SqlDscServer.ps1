@@ -276,6 +276,10 @@
     .PARAMETER AllowUpgradeForSSRSSharePointMode
         See the notes section for more information.
 
+    .PARAMETER AllowDqRemoval
+        Specifies whether to allow removal of Data Quality (DQ) Services during
+        upgrade to SQL Server 2025 (17.x) and later versions.
+
     .PARAMETER NpEnabled
         See the notes section for more information.
 
@@ -993,6 +997,10 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Upgrade')]
         [System.Management.Automation.SwitchParameter]
         $AllowUpgradeForSSRSSharePointMode,
+
+        [Parameter(ParameterSetName = 'Upgrade')]
+        [System.Management.Automation.SwitchParameter]
+        $AllowDqRemoval,
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]

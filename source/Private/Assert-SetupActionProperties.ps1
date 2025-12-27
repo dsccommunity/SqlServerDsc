@@ -42,12 +42,19 @@ function Assert-SetupActionProperties
         $SetupAction
     )
 
+    $setupExecutableFileVersion = $null
+
+    <#
+        Assumes that the MediaPath parameter is always specified as this should
+        only be called internally by Invoke-SetupAction that have MediaPath as a
+        mandatory parameter.
+    #>
+    $setupExecutableFileVersion = $Property.MediaPath |
+        Join-Path -ChildPath 'setup.exe' |
+        Get-FileVersion
+
     if ($Property.ContainsKey('Features'))
     {
-        $setupExecutableFileVersion = $Property.MediaPath |
-            Join-Path -ChildPath 'setup.exe' |
-            Get-FileVersion
-
         $Property.Features |
             Assert-Feature -ProductVersion $setupExecutableFileVersion.ProductVersion
     }
@@ -235,6 +242,24 @@ function Assert-SetupActionProperties
         {
             Assert-BoundParameter -BoundParameterList $Property -RequiredParameter @(
                 'ASSysAdminAccounts'
+            )
+        }
+    }
+
+    # The parameter AllowDqRemoval is only allowed for SQL Server 2025 (17.x) and later versions.
+    if ($Property.ContainsKey('AllowDqRemoval'))
+    {
+        $majorVersion = $setupExecutableFileVersion.ProductVersion.Split('.')[0]
+
+        if ([System.Int32] $majorVersion -lt 17)
+        {
+            $PSCmdlet.ThrowTerminatingError(
+                [System.Management.Automation.ErrorRecord]::new(
+                    ($script:localizedData.InstallSqlServerProperties_AllowDqRemovalInvalidVersion -f $majorVersion),
+                    'ASAP0003', # cSpell: disable-line
+                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                    'Command parameters'
+                )
             )
         }
     }

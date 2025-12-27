@@ -162,6 +162,7 @@ ConvertFrom-StringData @'
     ## Assert-SetupActionProperties
     InstallSqlServerProperties_ASServerModeInvalidValue = The value for ASServerMode is not valid for the setup action {0}.
     InstallSqlServerProperties_RsInstallModeInvalidValue = The only valid value for RsInstallMode is 'FilesOnlyMode' when using setup action {0}.
+    InstallSqlServerProperties_AllowDqRemovalInvalidVersion = The parameter AllowDqRemoval is only allowed for SQL Server 2025 (17.x) and later versions. The media version is {0}.x. (ASAP0004)
 
     ## Get-SqlDscManagedComputer
     ManagedComputer_GetState = Returning the managed computer object for server {0}.
