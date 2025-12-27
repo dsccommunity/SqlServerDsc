@@ -785,6 +785,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 MockParameterValue = 2
                 MockExpectedRegEx  = '\/FAILOVERCLUSTERROLLOWNERSHIP=2' # cspell: disable-line
             }
+            @{
+                MockParameterName  = 'AllowDqRemoval'
+                MockParameterValue = $true
+                MockExpectedRegEx  = '\/IACCEPTDQUNINSTALL\s*' # cspell: disable-line
+            }
         ) {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
