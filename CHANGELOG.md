@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `Install-SqlDscServer`
+  - Added parameter `AllowDqRemoval` to the `Upgrade` parameter set
+    ([issue #2155](https://github.com/dsccommunity/SqlServerDsc/issues/2155)).
 - `Test-SqlDscIsSupportedFeature`
   - Added DQ, DQC, and MDS features as discontinued starting with SQL Server 2025
     (17.x) and later versions ([issue #2380](https://github.com/dsccommunity/SqlServerDsc/issues/2380)).
