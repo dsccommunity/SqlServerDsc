@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `Test-SqlDscIsSupportedFeature`
+  - Added DQ, DQC, and MDS features as discontinued starting with SQL Server 2025
+    (17.x) and later versions ([issue #2380](https://github.com/dsccommunity/SqlServerDsc/issues/2380)).
 - Added public command `Get-SqlDscRSPackage` to retrieve package information for
   SQL Server Reporting Services or Power BI Report Server. Supports getting version
   information from an executable file
