@@ -1580,7 +1580,7 @@ function Invoke-SetupAction
             # Must be handled differently because parameter name does not match the argument name.
             'ALLOWDQREMOVAL' # cspell: disable-line
             {
-                $setupArgument = $setupArgument -replace $parameterName, 'IACKNOWLEDGEDQUNINSTALL' # cspell: disable-line
+                $setupArgument = $setupArgument -replace $parameterName, 'IACCEPTDQUNINSTALL' # cspell: disable-line
 
                 break
             }
