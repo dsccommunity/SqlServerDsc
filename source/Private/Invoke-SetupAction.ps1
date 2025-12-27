@@ -1436,7 +1436,18 @@ function Invoke-SetupAction
 
     $ErrorActionPreference = $originalErrorActionPreference
 
-    if ($VerbosePreference -eq 'Continue')
+    $quietSimpleSetupActions = @(
+        'Install'
+        'PrepareImage'
+        'CompleteImage'
+        'InstallFailoverCluster'
+        'PrepareFailoverCluster'
+        'CompleteFailoverCluster'
+        'AddNode'
+        'RemoveNode'
+    )
+
+    if ($VerbosePreference -eq 'Continue' -and $setupAction -in $quietSimpleSetupActions)
     {
         $quietMode = '/QUIETSIMPLE'
     }
