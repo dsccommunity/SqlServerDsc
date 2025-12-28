@@ -201,12 +201,10 @@ function Get-SqlDscServerProtocolTcpIp
 
             $ErrorActionPreference = $previousErrorActionPreference
 
-            if ($allIpAddresses.Count -eq 0)
+            foreach ($ipAddressItem in $allIpAddresses)
             {
-                return $null
+                $ipAddressItem
             }
-
-            return $allIpAddresses
         }
     }
 }
