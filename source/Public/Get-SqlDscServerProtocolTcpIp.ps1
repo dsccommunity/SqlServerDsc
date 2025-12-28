@@ -149,10 +149,10 @@ function Get-SqlDscServerProtocolTcpIp
                     $errorMessage = $script:localizedData.ServerProtocolTcpIp_InvalidProtocol -f $ServerProtocolObject.Name
 
                     $writeErrorParameters = @{
-                        Exception    = [System.ArgumentException]::new($errorMessage)
-                        ErrorId      = 'InvalidServerProtocol'
+                        Exception     = New-ArgumentException -Message $errorMessage -ArgumentName 'ServerProtocolObject' -PassThru
+                        ErrorId       = 'InvalidServerProtocol'
                         ErrorCategory = 'InvalidArgument'
-                        TargetObject = $ServerProtocolObject
+                        TargetObject  = $ServerProtocolObject
                     }
 
                     $PSCmdlet.ThrowTerminatingError((New-ErrorRecord @writeErrorParameters))
@@ -185,10 +185,10 @@ function Get-SqlDscServerProtocolTcpIp
                 $errorMessage = $script:localizedData.ServerProtocolTcpIp_IpAddressGroupNotFound -f $IpAddressGroup
 
                 $writeErrorParameters = @{
-                    Exception    = [System.InvalidOperationException]::new($errorMessage)
-                    ErrorId      = 'IpAddressGroupNotFound'
+                    Exception     = New-InvalidOperationException -Message $errorMessage -PassThru
+                    ErrorId       = 'IpAddressGroupNotFound'
                     ErrorCategory = 'ObjectNotFound'
-                    TargetObject = $IpAddressGroup
+                    TargetObject  = $IpAddressGroup
                 }
 
                 $PSCmdlet.ThrowTerminatingError((New-ErrorRecord @writeErrorParameters))
