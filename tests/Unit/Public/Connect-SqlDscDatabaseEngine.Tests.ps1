@@ -55,12 +55,12 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag 'Public' {
         @{
             MockParameterSetName   = 'SqlServer'
             # cSpell: disable-next
-            MockExpectedParameters = '[-ServerName <string>] [-InstanceName <string>] [-StatementTimeout <int>] [-Encrypt] [<CommonParameters>]'
+            MockExpectedParameters = '[-ServerName <string>] [-InstanceName <string>] [-Protocol <string>] [-Port <ushort>] [-StatementTimeout <int>] [-Encrypt] [<CommonParameters>]'
         }
         @{
             MockParameterSetName   = 'SqlServerWithCredential'
             # cSpell: disable-next
-            MockExpectedParameters = '-Credential <pscredential> [-ServerName <string>] [-InstanceName <string>] [-LoginType <string>] [-StatementTimeout <int>] [-Encrypt] [<CommonParameters>]'
+            MockExpectedParameters = '-Credential <pscredential> [-ServerName <string>] [-InstanceName <string>] [-LoginType <string>] [-Protocol <string>] [-Port <ushort>] [-StatementTimeout <int>] [-Encrypt] [<CommonParameters>]'
         }
     ) {
         $result = (Get-Command -Name 'Connect-SqlDscDatabaseEngine').ParameterSets |
@@ -109,6 +109,56 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag 'Public' {
                 $Credential -eq $mockCredentials -and
                 $LoginType -eq 'WindowsUser' -and
                 $StatementTimeout -eq 800
+            }
+        }
+
+        It 'Should pass Protocol parameter to Connect-Sql' {
+            $mockConnectSqlDscDatabaseEngineParameters = @{
+                ServerName   = 'MyServer'
+                InstanceName = 'MyInstance'
+                Protocol     = 'tcp'
+            }
+
+            Connect-SqlDscDatabaseEngine @mockConnectSqlDscDatabaseEngineParameters
+
+            Should -Invoke -CommandName Connect-Sql -ParameterFilter {
+                $ServerName -eq 'MyServer' -and
+                $InstanceName -eq 'MyInstance' -and
+                $Protocol -eq 'tcp'
+            }
+        }
+
+        It 'Should pass Port parameter to Connect-Sql' {
+            $mockConnectSqlDscDatabaseEngineParameters = @{
+                ServerName   = 'MyServer'
+                InstanceName = 'MSSQLSERVER'
+                Port         = 1433
+            }
+
+            Connect-SqlDscDatabaseEngine @mockConnectSqlDscDatabaseEngineParameters
+
+            Should -Invoke -CommandName Connect-Sql -ParameterFilter {
+                $ServerName -eq 'MyServer' -and
+                $InstanceName -eq 'MSSQLSERVER' -and
+                $Port -eq 1433
+            }
+        }
+
+        It 'Should pass both Protocol and Port parameters to Connect-Sql' {
+            $mockConnectSqlDscDatabaseEngineParameters = @{
+                ServerName   = '192.168.1.1'
+                InstanceName = 'MyInstance'
+                Protocol     = 'tcp'
+                Port         = 50200
+            }
+
+            Connect-SqlDscDatabaseEngine @mockConnectSqlDscDatabaseEngineParameters
+
+            Should -Invoke -CommandName Connect-Sql -ParameterFilter {
+                $ServerName -eq '192.168.1.1' -and
+                $InstanceName -eq 'MyInstance' -and
+                $Protocol -eq 'tcp' -and
+                $Port -eq 50200
             }
         }
     }

@@ -302,6 +302,14 @@ ConvertFrom-StringData @'
     ServerProtocol_GetAllProtocols = Getting all server protocols for instance '{0}' on server '{1}'.
     ServerProtocol_ProtocolNotFound = Could not find server protocol '{0}' for instance '{1}' on server '{2}'.
 
+    ## Get-SqlDscServerProtocolTcpIp
+    ServerProtocolTcpIp_GetIpAddressGroup = Getting TCP/IP address group '{0}' for instance '{1}' on server '{2}'.
+    ServerProtocolTcpIp_GetAllIpAddressGroups = Getting all TCP/IP address groups for instance '{0}' on server '{1}'.
+    ServerProtocolTcpIp_GetIpAddressGroupFromProtocol = Getting TCP/IP address group '{0}' from protocol object.
+    ServerProtocolTcpIp_GetAllIpAddressGroupsFromProtocol = Getting all TCP/IP address groups from protocol object.
+    ServerProtocolTcpIp_InvalidProtocol = The server protocol object is not the TCP/IP protocol. The protocol name is '{0}'.
+    ServerProtocolTcpIp_IpAddressGroupNotFound = Could not find TCP/IP address group '{0}'.
+
     ## Get-SqlDscServerProtocolName
     ServerProtocolName_GetProtocolMappings = Getting SQL Server protocol name mappings.
 

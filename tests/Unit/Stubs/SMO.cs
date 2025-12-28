@@ -2125,13 +2125,46 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
         }
     }
 
-    public class IPAddressPropertyCollection
+    public class IPAddressPropertyCollection : System.Collections.IEnumerable
     {
-        // Property
-        public System.Int32 Count { get; set; }
+        // Properties
+        public System.Int32 Count { get { return properties.Count; } }
         public System.Boolean IsSynchronized { get; set; }
         public System.Object SyncRoot { get; set; }
-        public Microsoft.SqlServer.Management.Smo.Wmi.ProtocolProperty Item { get; set; }
+
+        // Collection of properties
+        private readonly System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ProtocolProperty> properties =
+            new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ProtocolProperty>(System.StringComparer.OrdinalIgnoreCase);
+
+        // Indexer
+        public Microsoft.SqlServer.Management.Smo.Wmi.ProtocolProperty this[string name]
+        {
+            get
+            {
+                if (properties.ContainsKey(name))
+                {
+                    return properties[name];
+                }
+                return null;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    properties.Remove(name);
+                }
+                else
+                {
+                    properties[name] = value;
+                }
+            }
+        }
+
+        // IEnumerable implementation
+        public System.Collections.IEnumerator GetEnumerator()
+        {
+            return properties.Values.GetEnumerator();
+        }
 
         // Fabricated constructor
         private IPAddressPropertyCollection() { }
@@ -2161,13 +2194,46 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
         }
     }
 
-    public class ServerIPAddressCollection
+    public class ServerIPAddressCollection : System.Collections.IEnumerable
     {
-        // Property
-        public Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress Item { get; set; }
-        public System.Int32 Count { get; set; }
+        // Properties
+        public System.Int32 Count { get { return addresses.Count; } }
         public System.Boolean IsSynchronized { get; set; }
         public System.Object SyncRoot { get; set; }
+
+        // Collection of addresses
+        private readonly System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress> addresses =
+            new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress>(System.StringComparer.OrdinalIgnoreCase);
+
+        // Indexer
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress this[string name]
+        {
+            get
+            {
+                if (addresses.ContainsKey(name))
+                {
+                    return addresses[name];
+                }
+                return null;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    addresses.Remove(name);
+                }
+                else
+                {
+                    addresses[name] = value;
+                }
+            }
+        }
+
+        // IEnumerable implementation
+        public System.Collections.IEnumerator GetEnumerator()
+        {
+            return addresses.Values.GetEnumerator();
+        }
 
         // Fabricated constructor
         private ServerIPAddressCollection() { }
