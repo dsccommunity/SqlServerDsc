@@ -38,7 +38,8 @@
 
     .PARAMETER Port
         Specifies the TCP port number to use when connecting to the SQL Server
-        instance. This parameter is only applicable when connecting via TCP/IP.
+        instance. This parameter is only applicable when connecting via TCP/IP
+        (Protocol = 'tcp'). Valid values are 1-65535.
 
         If not specified for a named instance, the SQL Server Browser service
         will be used to determine the port. For default instances, port 1433
@@ -135,6 +136,7 @@ function Connect-SqlDscDatabaseEngine
         $Protocol,
 
         [Parameter()]
+        [ValidateRange(1, 65535)]
         [System.UInt16]
         $Port,
 
