@@ -106,13 +106,15 @@ function Get-SqlDscServerProtocolTcpIp
 
     process
     {
-        $previousErrorActionPreference = $ErrorActionPreference
-        $ErrorActionPreference = 'Stop'
-
         # Set default value for ServerName if not provided
         if (-not $PSBoundParameters.ContainsKey('ServerName'))
         {
-            $ServerName = Get-ComputerName -ErrorAction 'Stop'
+            $previousErrorActionPreference = $ErrorActionPreference
+            $ErrorActionPreference = 'Stop'
+
+            $ServerName = Get-ComputerName
+
+            $ErrorActionPreference = $previousErrorActionPreference
         }
 
         switch ($PSCmdlet.ParameterSetName)
@@ -132,23 +134,28 @@ function Get-SqlDscServerProtocolTcpIp
                     )
                 }
 
-                $serverProtocol = Get-SqlDscServerProtocol -ServerName $ServerName -InstanceName $InstanceName -ProtocolName 'TcpIp' -ErrorAction 'Stop'
+                $previousErrorActionPreference = $ErrorActionPreference
+                $ErrorActionPreference = 'Stop'
+
+                $serverProtocol = Get-SqlDscServerProtocol -ServerName $ServerName -InstanceName $InstanceName -ProtocolName 'TcpIp'
+
+                $ErrorActionPreference = $previousErrorActionPreference
             }
 
             'ByServerProtocolObject'
             {
                 if ($ServerProtocolObject.Name -ne 'Tcp')
                 {
-                    $ErrorActionPreference = $previousErrorActionPreference
-
                     $errorMessage = $script:localizedData.ServerProtocolTcpIp_InvalidProtocol -f $ServerProtocolObject.Name
-                    $errorRecord = [System.Management.Automation.ErrorRecord]::new(
-                        [System.ArgumentException]::new($errorMessage),
-                        'InvalidServerProtocol',
-                        [System.Management.Automation.ErrorCategory]::InvalidArgument,
-                        $ServerProtocolObject
-                    )
-                    $PSCmdlet.ThrowTerminatingError($errorRecord)
+
+                    $writeErrorParameters = @{
+                        Exception    = [System.ArgumentException]::new($errorMessage)
+                        ErrorId      = 'InvalidServerProtocol'
+                        ErrorCategory = 'InvalidArgument'
+                        TargetObject = $ServerProtocolObject
+                    }
+
+                    $PSCmdlet.ThrowTerminatingError((New-ErrorRecord @writeErrorParameters))
                 }
 
                 $serverProtocol = $ServerProtocolObject
@@ -173,18 +180,18 @@ function Get-SqlDscServerProtocolTcpIp
             # Get specific IP address group
             $ipAddressObject = $serverProtocol.IPAddresses[$IpAddressGroup]
 
-            $ErrorActionPreference = $previousErrorActionPreference
-
             if (-not $ipAddressObject)
             {
                 $errorMessage = $script:localizedData.ServerProtocolTcpIp_IpAddressGroupNotFound -f $IpAddressGroup
-                $errorRecord = [System.Management.Automation.ErrorRecord]::new(
-                    [System.InvalidOperationException]::new($errorMessage),
-                    'IpAddressGroupNotFound',
-                    [System.Management.Automation.ErrorCategory]::ObjectNotFound,
-                    $IpAddressGroup
-                )
-                $PSCmdlet.ThrowTerminatingError($errorRecord)
+
+                $writeErrorParameters = @{
+                    Exception    = [System.InvalidOperationException]::new($errorMessage)
+                    ErrorId      = 'IpAddressGroupNotFound'
+                    ErrorCategory = 'ObjectNotFound'
+                    TargetObject = $IpAddressGroup
+                }
+
+                $PSCmdlet.ThrowTerminatingError((New-ErrorRecord @writeErrorParameters))
             }
 
             return $ipAddressObject
@@ -192,18 +199,9 @@ function Get-SqlDscServerProtocolTcpIp
         else
         {
             # Get all IP address groups
-            $allIpAddresses = @()
-
             foreach ($ipAddress in $serverProtocol.IPAddresses)
             {
-                $allIpAddresses += $ipAddress
-            }
-
-            $ErrorActionPreference = $previousErrorActionPreference
-
-            foreach ($ipAddressItem in $allIpAddresses)
-            {
-                $ipAddressItem
+                $ipAddress
             }
         }
     }
