@@ -164,12 +164,9 @@ class SqlPermission : SqlResourceBase
 
     SqlPermission() : base ()
     {
-        # These properties will not be enforced.
-        $this.ExcludeDscProperties = @(
-            'ServerName'
-            'InstanceName'
+        # Append to the properties set in SqlResourceBase that will not be enforced.
+        $this.ExcludeDscProperties += @(
             'Name'
-            'Credential'
         )
     }
 

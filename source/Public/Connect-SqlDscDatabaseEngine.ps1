@@ -28,6 +28,23 @@
         If set to 'SqlLogin' then it will impersonate using the native SQL
         login specified in the parameter Credential.
 
+    .PARAMETER Protocol
+        Specifies the network protocol to use when connecting to the SQL Server
+        instance. Valid values are 'tcp' for TCP/IP, 'np' for Named Pipes,
+        and 'lpc' for Shared Memory.
+
+        If not specified, the connection will use the default protocol order
+        configured on the client.
+
+    .PARAMETER Port
+        Specifies the TCP port number to use when connecting to the SQL Server
+        instance. This parameter is only applicable when connecting via TCP/IP
+        (Protocol = 'tcp'). Valid values are 1-65535.
+
+        If not specified for a named instance, the SQL Server Browser service
+        will be used to determine the port. For default instances, port 1433
+        is used by default.
+
     .PARAMETER StatementTimeout
         Set the query StatementTimeout in seconds. Default 600 seconds (10 minutes).
 
@@ -59,6 +76,18 @@
 
         Connects to the default instance on the local server using the SQL login 'sa'.
 
+    .EXAMPLE
+        Connect-SqlDscDatabaseEngine -ServerName '192.168.1.1' -InstanceName 'MyInstance' -Protocol 'tcp' -Port 50200
+
+        Connects to the named instance 'MyInstance' on server '192.168.1.1' using
+        TCP/IP on port 50200. The connection string format is 'tcp:192.168.1.1\MyInstance,50200'.
+
+    .EXAMPLE
+        Connect-SqlDscDatabaseEngine -ServerName '192.168.1.1' -Protocol 'tcp' -Port 1433
+
+        Connects to the default instance on server '192.168.1.1' using TCP/IP on
+        port 1433. The connection string format is 'tcp:192.168.1.1,1433'.
+
     .INPUTS
         None.
 
@@ -66,6 +95,10 @@
         `Microsoft.SqlServer.Management.Smo.Server`
 
         Returns the SQL Server server object.
+
+    .NOTES
+        The protocol values ('tcp', 'np', 'lpc') are lowercase to match the SQL
+        Server connection string prefix format, e.g., 'tcp:ServerName\Instance,Port'.
 #>
 function Connect-SqlDscDatabaseEngine
 {
@@ -96,6 +129,16 @@ function Connect-SqlDscDatabaseEngine
         [ValidateSet('WindowsUser', 'SqlLogin')]
         [System.String]
         $LoginType = 'WindowsUser',
+
+        [Parameter()]
+        [ValidateSet('tcp', 'np', 'lpc')]
+        [System.String]
+        $Protocol,
+
+        [Parameter()]
+        [ValidateRange(1, 65535)]
+        [System.UInt16]
+        $Port,
 
         [Parameter()]
         [ValidateNotNull()]
