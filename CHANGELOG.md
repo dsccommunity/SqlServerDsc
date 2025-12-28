@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `Invoke-ReportServerSetupAction`
+  - Now uses `Format-Path` with `-ExpandEnvironmentVariable` to expand environment
+    variables in all path parameters (`MediaPath`, `LogPath`, `InstallFolder`)
+    ([issue #2085](https://github.com/dsccommunity/SqlServerDsc/issues/2085)).
 - `Install-SqlDscServer`
   - Added parameter `AllowDqRemoval` to the `Upgrade` parameter set
     ([issue #2155](https://github.com/dsccommunity/SqlServerDsc/issues/2155)).

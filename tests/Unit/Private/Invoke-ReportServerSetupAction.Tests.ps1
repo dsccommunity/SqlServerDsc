@@ -429,6 +429,134 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
                 }
             }
         }
+
+        Context 'When path parameters contain environment variables' {
+            BeforeAll {
+                # Mock Test-Path to return $true for all paths in this context
+                Mock -CommandName Test-Path -MockWith {
+                    return $true
+                }
+
+                Mock -CommandName Start-SqlSetupProcess -MockWith {
+                    return 0
+                } -RemoveParameterValidation 'FilePath'
+
+                Mock -CommandName Format-Path -MockWith {
+                    # Return expanded path for testing
+                    return 'C:\Logs\Test\setup.log'
+                } -ParameterFilter {
+                    $Path -eq '%TEMP%\setup.log'
+                }
+
+                Mock -CommandName Format-Path -MockWith {
+                    return 'C:\Program Files\ReportServer'
+                } -ParameterFilter {
+                    $Path -eq '%ProgramFiles%\ReportServer'
+                }
+
+                Mock -CommandName Format-Path -MockWith {
+                    return 'C:\SqlMedia\setup.exe'
+                } -ParameterFilter {
+                    $Path -eq '%SystemDrive%\SqlMedia\setup.exe'
+                }
+
+                InModuleScope -ScriptBlock {
+                    $script:mockDefaultParameters = @{
+                        Install              = $true
+                        AcceptLicensingTerms = $true
+                        MediaPath            = '%SystemDrive%\SqlMedia\setup.exe'
+                        Force                = $true
+                    }
+                }
+            }
+
+            It 'Should call Format-Path for MediaPath parameter' {
+                InModuleScope -ScriptBlock {
+                    Invoke-ReportServerSetupAction @mockDefaultParameters
+
+                    Should -Invoke -CommandName Format-Path -ParameterFilter {
+                        $Path -eq '%SystemDrive%\SqlMedia\setup.exe' -and
+                        $EnsureDriveLetterRoot -eq $true -and
+                        $NoTrailingDirectorySeparator -eq $true -and
+                        $ExpandEnvironmentVariable -eq $true
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            It 'Should call Format-Path for LogPath parameter when specified' {
+                InModuleScope -ScriptBlock {
+                    $installParameters = $mockDefaultParameters.Clone()
+                    $installParameters.LogPath = '%TEMP%\setup.log'
+
+                    Invoke-ReportServerSetupAction @installParameters
+
+                    Should -Invoke -CommandName Format-Path -ParameterFilter {
+                        $Path -eq '%TEMP%\setup.log' -and
+                        $EnsureDriveLetterRoot -eq $true -and
+                        $NoTrailingDirectorySeparator -eq $true -and
+                        $ExpandEnvironmentVariable -eq $true
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            It 'Should call Format-Path for InstallFolder parameter when specified' {
+                InModuleScope -ScriptBlock {
+                    $installParameters = $mockDefaultParameters.Clone()
+                    $installParameters.InstallFolder = '%ProgramFiles%\ReportServer'
+
+                    Invoke-ReportServerSetupAction @installParameters
+
+                    Should -Invoke -CommandName Format-Path -ParameterFilter {
+                        $Path -eq '%ProgramFiles%\ReportServer' -and
+                        $EnsureDriveLetterRoot -eq $true -and
+                        $NoTrailingDirectorySeparator -eq $true -and
+                        $ExpandEnvironmentVariable -eq $true
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            It 'Should pass the expanded path to Start-SqlSetupProcess for MediaPath' {
+                InModuleScope -ScriptBlock {
+                    Invoke-ReportServerSetupAction @mockDefaultParameters
+
+                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        $FilePath -eq 'C:\SqlMedia\setup.exe'
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            It 'Should pass the expanded path in ArgumentList for LogPath' {
+                InModuleScope -ScriptBlock {
+                    $installParameters = $mockDefaultParameters.Clone()
+                    $installParameters.LogPath = '%TEMP%\setup.log'
+
+                    Invoke-ReportServerSetupAction @installParameters
+
+                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        $ArgumentList | Should -MatchExactly '\/log "C:\\Logs\\Test\\setup\.log"'
+
+                        # Return $true if none of the above throw.
+                        $true
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            It 'Should pass the expanded path in ArgumentList for InstallFolder' {
+                InModuleScope -ScriptBlock {
+                    $installParameters = $mockDefaultParameters.Clone()
+                    $installParameters.InstallFolder = '%ProgramFiles%\ReportServer'
+
+                    Invoke-ReportServerSetupAction @installParameters
+
+                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        $ArgumentList | Should -MatchExactly '\/InstallFolder="C:\\Program Files\\ReportServer"'
+
+                        # Return $true if none of the above throw.
+                        $true
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+        }
     }
 
     Context 'When setup action is ''Uninstall''' {

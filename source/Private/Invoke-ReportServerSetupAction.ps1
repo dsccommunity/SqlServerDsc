@@ -242,6 +242,26 @@ function Invoke-ReportServerSetupAction
 
     $ErrorActionPreference = $previousErrorActionPreference
 
+    # Normalize paths: expand environment variables, ensure drive letter root, and remove trailing separators.
+    $formatPathParameters = @{
+        EnsureDriveLetterRoot        = $true
+        NoTrailingDirectorySeparator = $true
+        ExpandEnvironmentVariable    = $true
+        ErrorAction                  = 'Stop'
+    }
+
+    $MediaPath = Format-Path @formatPathParameters -Path $MediaPath
+
+    if ($PSBoundParameters.ContainsKey('LogPath'))
+    {
+        $LogPath = Format-Path @formatPathParameters -Path $LogPath
+    }
+
+    if ($PSBoundParameters.ContainsKey('InstallFolder'))
+    {
+        $InstallFolder = Format-Path @formatPathParameters -Path $InstallFolder
+    }
+
     # Sensitive values.
     $sensitiveValue = @()
 
@@ -318,10 +338,8 @@ function Invoke-ReportServerSetupAction
 
     if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
     {
-        $expandedMediaPath = [System.Environment]::ExpandEnvironmentVariables($MediaPath)
-
         $startProcessParameters = @{
-            FilePath     = $expandedMediaPath
+            FilePath     = $MediaPath
             ArgumentList = $setupArgument
             Timeout      = $Timeout
         }
