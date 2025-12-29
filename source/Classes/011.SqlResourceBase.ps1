@@ -43,6 +43,9 @@
 #>
 class SqlResourceBase : ResourceBase
 {
+    # Cache for resolved enum types to avoid repeated assembly scanning.
+    hidden static [System.Collections.Generic.Dictionary[System.String, System.Type]] $EnumTypeCache = [System.Collections.Generic.Dictionary[System.String, System.Type]]::new()
+
     <#
         Property for holding the server connection object.
         This should be an object of type [Microsoft.SqlServer.Management.Smo.Server]
@@ -180,14 +183,27 @@ class SqlResourceBase : ResourceBase
             $TypeName
         }
 
-        $enumType = [System.Type]::GetType($fullTypeName, $false, $true)
-
-        if (-not $enumType)
+        # Check cache first to avoid repeated assembly scanning.
+        if ([SqlResourceBase]::EnumTypeCache.ContainsKey($fullTypeName))
         {
-            # Try loading from loaded assemblies if direct resolution fails
-            $enumType = [System.AppDomain]::CurrentDomain.GetAssemblies().GetTypes() |
-                Where-Object -FilterScript { $_.FullName -eq $fullTypeName } |
-                Select-Object -First 1
+            $enumType = [SqlResourceBase]::EnumTypeCache[$fullTypeName]
+        }
+        else
+        {
+            $enumType = [System.Type]::GetType($fullTypeName, $false, $true)
+
+            if (-not $enumType)
+            {
+                # Try loading from loaded assemblies if direct resolution fails.
+                $enumType = [System.AppDomain]::CurrentDomain.GetAssemblies().GetTypes() |
+                    Where-Object -FilterScript { $_.FullName -eq $fullTypeName } |
+                    Select-Object -First 1
+            }
+
+            if ($enumType)
+            {
+                [SqlResourceBase]::EnumTypeCache[$fullTypeName] = $enumType
+            }
         }
 
         if (-not $enumType)
