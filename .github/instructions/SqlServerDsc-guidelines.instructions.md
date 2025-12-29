@@ -20,8 +20,8 @@ applyTo: "**"
 
 ## Resources
 - Database Engine resources: inherit `SqlResourceBase`
-  - Add `InstanceName`, `ServerName`, and `Credential` to `$this.ExcludeDscProperties`
-  - `SqlResourceBase` provides: `InstanceName`, `ServerName`, `Credential`, `Reasons`, `GetServerObject()`
+  - Add any DSC properties whose values cannot be enforced as desired state to `$this.ExcludeDscProperties`
+  - `SqlResourceBase` provides: `InstanceName`, `ServerName`, `Port`, `Protocol`, `Credential`, `Reasons`, `GetServerObject()`
   - Constructor: `MyResourceName() : base () { }` (no $PSScriptRoot parameter)
 
 ## SQL Server Interaction
