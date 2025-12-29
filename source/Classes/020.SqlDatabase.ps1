@@ -981,10 +981,7 @@ class SqlDatabase : SqlResourceBase
         {
             $supportedLevels = $serverObject | Get-SqlDscCompatibilityLevel
 
-            # Convert the DatabaseCompatibilityLevel enum to the SMO CompatibilityLevel enum
-            $compatibilityLevelValue = $this.ConvertToSmoEnumType('CompatibilityLevel', $properties.CompatibilityLevel.ToString())
-
-            if ($compatibilityLevelValue -notin $supportedLevels)
+            if ($properties.CompatibilityLevel.ToString() -notin $supportedLevels.ToString())
             {
                 $errorMessage = $this.localizedData.InvalidCompatibilityLevel -f $properties.CompatibilityLevel.ToString(), $this.InstanceName
 
@@ -1022,23 +1019,21 @@ class SqlDatabase : SqlResourceBase
             $newDatabaseParameters.CompatibilityLevel = $newDatabaseParameters.CompatibilityLevel.ToString()
         }
 
-        # Convert CatalogCollation to SMO enum type.
+        # Convert CatalogCollation to SMO enum value name.
         if ($newDatabaseParameters.ContainsKey('CatalogCollation'))
         {
-            $catalogCollationValue = switch ($newDatabaseParameters.CatalogCollation)
+            $newDatabaseParameters.CatalogCollation = switch ($newDatabaseParameters.CatalogCollation)
             {
                 'DatabaseDefault'
                 {
-                    $this.ConvertToSmoEnumType('CatalogCollationType', 'DatabaseDefault')
+                    'DatabaseDefault'
                 }
 
                 'SqlLatin1GeneralCp1CiAs'
                 {
-                    $this.ConvertToSmoEnumType('CatalogCollationType', 'SQL_Latin1_General_CP1_CI_AS')
+                    'SQL_Latin1_General_CP1_CI_AS'
                 }
             }
-
-            $newDatabaseParameters.CatalogCollation = $catalogCollationValue
         }
 
         try
@@ -1165,48 +1160,9 @@ class SqlDatabase : SqlResourceBase
         # Handle remaining properties using Set-SqlDscDatabaseProperty
         if ($properties.Count -gt 0)
         {
-            # Mapping of property names to their SMO enum type names
-            $smoEnumTypeMapping = @{
-                CompatibilityLevel                      = 'CompatibilityLevel'
-                RecoveryModel                           = 'RecoveryModel'
-                ChangeTrackingRetentionPeriodUnits      = 'RetentionPeriodUnits'
-                ContainmentType                         = 'ContainmentType'
-                DelayedDurability                       = 'DelayedDurability'
-                FilestreamNonTransactedAccess           = 'FilestreamNonTransactedAccessType'
-                LegacyCardinalityEstimation             = 'DatabaseScopedConfigurationOnOff'
-                LegacyCardinalityEstimationForSecondary = 'DatabaseScopedConfigurationOnOff'
-                MirroringSafetyLevel                    = 'MirroringSafetyLevel'
-                PageVerify                              = 'PageVerify'
-                ParameterSniffing                       = 'DatabaseScopedConfigurationOnOff'
-                ParameterSniffingForSecondary           = 'DatabaseScopedConfigurationOnOff'
-                QueryOptimizerHotfixes                  = 'DatabaseScopedConfigurationOnOff'
-                QueryOptimizerHotfixesForSecondary      = 'DatabaseScopedConfigurationOnOff'
-                UserAccess                              = 'DatabaseUserAccess'
-            }
-
-            $setDatabasePropertyParameters = @{}
-
-            foreach ($propertyName in $properties.Keys)
-            {
-                $propertyValue = $properties.$propertyName
-
-                if ($smoEnumTypeMapping.ContainsKey($propertyName))
-                {
-                    # Convert string value to SMO enum type
-                    $setDatabasePropertyParameters.$propertyName = $this.ConvertToSmoEnumType(
-                        $smoEnumTypeMapping[$propertyName],
-                        $propertyValue.ToString()
-                    )
-                }
-                else
-                {
-                    $setDatabasePropertyParameters.$propertyName = $propertyValue
-                }
-            }
-
             try
             {
-                $databaseObject | Set-SqlDscDatabaseProperty @setDatabasePropertyParameters -Force -ErrorAction 'Stop'
+                $databaseObject | Set-SqlDscDatabaseProperty @properties -Force -ErrorAction 'Stop'
             }
             catch
             {
