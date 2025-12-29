@@ -261,6 +261,14 @@ Describe 'SqlAudit\Set()' -Tag 'Set' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 $script:mockSqlAuditInstance |
+                    # Mock method GetCurrentState() which is called by the base method Get()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
+                        return [System.Collections.Hashtable] @{
+                            Name         = 'MockAuditName'
+                            InstanceName = 'NamedInstance'
+                            Path         = 'C:\Temp'
+                        }
+                    } -PassThru |
                     # Mock method Compare() which is called by the base method Set()
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
                         return $null
@@ -284,6 +292,14 @@ Describe 'SqlAudit\Set()' -Tag 'Set' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 $script:mockSqlAuditInstance |
+                    # Mock method GetCurrentState() which is called by the base method Get()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
+                        return [System.Collections.Hashtable] @{
+                            Name         = 'MockAuditName'
+                            InstanceName = 'NamedInstance'
+                            Path         = 'C:\Path'
+                        }
+                    } -PassThru |
                     # Mock method Compare() which is called by the base method Set()
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
                         return @{
@@ -323,7 +339,15 @@ Describe 'SqlAudit\Test()' -Tag 'Test' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 $script:mockSqlAuditInstance |
-                    # Mock method Compare() which is called by the base method Set()
+                    # Mock method GetCurrentState() which is called by the base method Get()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
+                        return [System.Collections.Hashtable] @{
+                            Name         = 'MockAuditName'
+                            InstanceName = 'NamedInstance'
+                            Path         = 'C:\Temp'
+                        }
+                    } -PassThru |
+                    # Mock method Compare() which is called by the base method Test()
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
                         return $null
                     } -PassThru |
@@ -344,7 +368,15 @@ Describe 'SqlAudit\Test()' -Tag 'Test' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 $script:mockSqlAuditInstance |
-                    # Mock method Compare() which is called by the base method Set()
+                    # Mock method GetCurrentState() which is called by the base method Get()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
+                        return [System.Collections.Hashtable] @{
+                            Name         = 'MockAuditName'
+                            InstanceName = 'NamedInstance'
+                            Path         = 'C:\WrongFolder'
+                        }
+                    } -PassThru |
+                    # Mock method Compare() which is called by the base method Test()
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
                         <#
                             Compare() method shall only return the properties NOT in
