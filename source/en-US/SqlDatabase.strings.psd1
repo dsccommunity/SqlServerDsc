@@ -26,5 +26,4 @@ ConvertFrom-StringData @'
     IsLedgerCannotBeChanged = The property IsLedger cannot be changed after the database is created. (SD0015)
     FailedToEnableSnapshotIsolation = Failed to enable snapshot isolation for the database '{0}'. (SD0016)
     FailedToDisableSnapshotIsolation = Failed to disable snapshot isolation for the database '{0}'. (SD0017)
-    SmoCompatibilityLevelTypeNotFound = Unable to find type 'Microsoft.SqlServer.Management.Smo.CompatibilityLevel'. Ensure SQL Server Management Objects (SMO) are installed. (SD0018)
 '@

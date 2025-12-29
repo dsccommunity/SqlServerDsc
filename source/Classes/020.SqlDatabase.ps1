@@ -983,26 +983,8 @@ class SqlDatabase : SqlResourceBase
             $serverObject = $this.GetServerObject()
             $supportedLevels = $serverObject | Get-SqlDscCompatibilityLevel
 
-            # Use runtime type resolution to avoid parse-time errors when SMO isn't loaded
-            $smoCompatibilityLevelType = [System.Type]::GetType('Microsoft.SqlServer.Management.Smo.CompatibilityLevel', $false, $true)
-
-            if ($null -eq $smoCompatibilityLevelType)
-            {
-                # Fallback: try to get the type from the loaded assemblies
-                $smoCompatibilityLevelType = [System.AppDomain]::CurrentDomain.GetAssemblies().GetTypes() |
-                    Where-Object -FilterScript { $_.FullName -eq 'Microsoft.SqlServer.Management.Smo.CompatibilityLevel' } |
-                    Select-Object -First 1
-            }
-
-            if ($null -eq $smoCompatibilityLevelType)
-            {
-                $errorMessage = $this.localizedData.SmoCompatibilityLevelTypeNotFound
-
-                New-InvalidOperationException -Message $errorMessage
-            }
-
             # Convert the DatabaseCompatibilityLevel enum to the SMO CompatibilityLevel enum
-            $compatibilityLevelValue = [System.Enum]::Parse($smoCompatibilityLevelType, $properties.CompatibilityLevel.ToString(), $true)
+            $compatibilityLevelValue = $this.ConvertToSmoEnumType('CompatibilityLevel', $properties.CompatibilityLevel.ToString())
 
             if ($compatibilityLevelValue -notin $supportedLevels)
             {
