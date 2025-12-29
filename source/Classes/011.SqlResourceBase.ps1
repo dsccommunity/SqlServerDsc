@@ -80,4 +80,71 @@ class SqlResourceBase : ResourceBase
 
         return $this.SqlServerObject
     }
+
+    <#
+        .SYNOPSIS
+            Converts a string value to the corresponding SMO enum type at runtime.
+
+        .DESCRIPTION
+            This helper method is required because PowerShell parses class definitions
+            at module load time. Direct SMO type literals (e.g., [SMOType]::Value)
+            would fail because SMO assemblies may not be loaded yet.
+
+            This method uses runtime type resolution to avoid parse-time errors.
+
+        .PARAMETER TypeName
+            The name of the SMO enum type (e.g., 'RecoveryModel'). If the type name
+            does not contain a dot, the Namespace parameter is prepended.
+
+        .PARAMETER Value
+            The string value to convert to the enum type.
+
+        .PARAMETER Namespace
+            The namespace of the SMO enum type. Defaults to 'Microsoft.SqlServer.Management.Smo'.
+
+        .OUTPUTS
+            The SMO enum value.
+
+        .NOTES
+            This is required due to PowerShell's class parsing behavior. We cannot
+            use SMO types directly in the class definition, because they may not be
+            installed when the module is imported. The user also decides which SMO
+            to use (SQLPS, SqlServer, dbatools).
+    #>
+    hidden [System.Object] ConvertToSmoEnumType([System.String] $TypeName, [System.String] $Value)
+    {
+        return $this.ConvertToSmoEnumType($TypeName, $Value, 'Microsoft.SqlServer.Management.Smo')
+    }
+
+    hidden [System.Object] ConvertToSmoEnumType([System.String] $TypeName, [System.String] $Value, [System.String] $Namespace)
+    {
+        # If the type name doesn't contain a dot, prepend the namespace
+        $fullTypeName = if ($TypeName -notmatch '\.')
+        {
+            '{0}.{1}' -f $Namespace, $TypeName
+        }
+        else
+        {
+            $TypeName
+        }
+
+        $enumType = [System.Type]::GetType($fullTypeName, $false, $true)
+
+        if (-not $enumType)
+        {
+            # Try loading from loaded assemblies if direct resolution fails
+            $enumType = [System.AppDomain]::CurrentDomain.GetAssemblies().GetTypes() |
+                Where-Object -FilterScript { $_.FullName -eq $fullTypeName } |
+                Select-Object -First 1
+        }
+
+        if (-not $enumType)
+        {
+            New-InvalidOperationException -Message (
+                $this.localizedData.ConvertToSmoEnumType_FailedToFindType -f $fullTypeName
+            )
+        }
+
+        return [System.Enum]::Parse($enumType, $Value, $true)
+    }
 }
