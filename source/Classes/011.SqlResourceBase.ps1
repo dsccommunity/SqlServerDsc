@@ -194,10 +194,41 @@ class SqlResourceBase : ResourceBase
 
             if (-not $enumType)
             {
-                # Try loading from loaded assemblies if direct resolution fails.
-                $enumType = [System.AppDomain]::CurrentDomain.GetAssemblies().GetTypes() |
-                    Where-Object -FilterScript { $_.FullName -eq $fullTypeName } |
-                    Select-Object -First 1
+                <#
+                    Try loading from loaded assemblies if direct resolution fails.
+                    Must iterate through assemblies individually and handle
+                    ReflectionTypeLoadException because some assemblies contain
+                    types that cannot be loaded (e.g., SqlGuidCaster from
+                    Microsoft.Data.SqlClient), causing GetTypes() to fail. When
+                    the exception occurs, use the Types collection from the
+                    exception which contains the types that were successfully
+                    loaded (with $null entries for failed types).
+                #>
+                foreach ($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies())
+                {
+                    try
+                    {
+                        $enumType = $assembly.GetTypes() |
+                            Where-Object -FilterScript { $_.FullName -eq $fullTypeName } |
+                            Select-Object -First 1
+
+                        if ($enumType)
+                        {
+                            break
+                        }
+                    }
+                    catch [System.Reflection.ReflectionTypeLoadException]
+                    {
+                        $enumType = $_.Exception.Types |
+                            Where-Object -FilterScript { $null -ne $_ -and $_.FullName -eq $fullTypeName } |
+                            Select-Object -First 1
+
+                        if ($enumType)
+                        {
+                            break
+                        }
+                    }
+                }
             }
 
             if ($enumType)
