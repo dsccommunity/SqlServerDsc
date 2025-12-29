@@ -97,6 +97,36 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
                 return $mockSourceDatabase
             }
 
+            # Mock New-SqlDscDataFile and New-SqlDscFileGroup to avoid type conflicts
+            # between test scope and module scope for PowerShell class types.
+            Mock -CommandName 'New-SqlDscDataFile' -MockWith {
+                InModuleScope -ScriptBlock {
+                    param ($Name, $FileName)
+
+                    [DatabaseFileSpec]@{
+                        Name = $Name
+                        FileName = $FileName
+                    }
+                } -Parameters @{
+                    Name = $Name
+                    FileName = $FileName
+                }
+            }
+
+            Mock -CommandName 'New-SqlDscFileGroup' -MockWith {
+                InModuleScope -ScriptBlock {
+                    param ($Name, $Files)
+
+                    [DatabaseFileGroupSpec]@{
+                        Name = $Name
+                        Files = $Files
+                    }
+                } -Parameters @{
+                    Name = $Name
+                    Files = $Files
+                }
+            }
+
             Mock -CommandName 'New-SqlDscDatabase' -MockWith {
                 $mockSnapshotDatabase = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
                 $mockSnapshotDatabase | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value $Name -Force
@@ -241,6 +271,36 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
                 return $mockDatabaseObject
             }
 
+            # Mock New-SqlDscDataFile and New-SqlDscFileGroup to avoid type conflicts
+            # between test scope and module scope for PowerShell class types.
+            Mock -CommandName 'New-SqlDscDataFile' -MockWith {
+                InModuleScope -ScriptBlock {
+                    param ($Name, $FileName)
+
+                    [DatabaseFileSpec]@{
+                        Name = $Name
+                        FileName = $FileName
+                    }
+                } -Parameters @{
+                    Name = $Name
+                    FileName = $FileName
+                }
+            }
+
+            Mock -CommandName 'New-SqlDscFileGroup' -MockWith {
+                InModuleScope -ScriptBlock {
+                    param ($Name, $Files)
+
+                    [DatabaseFileGroupSpec]@{
+                        Name = $Name
+                        Files = $Files
+                    }
+                } -Parameters @{
+                    Name = $Name
+                    Files = $Files
+                }
+            }
+
             Mock -CommandName 'New-SqlDscDatabase' -MockWith {
                 $mockSnapshotDatabase = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
                 $mockSnapshotDatabase | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value $Name -Force
@@ -341,6 +401,36 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
                 return $mockDevSourceDatabase
             }
 
+            # Mock New-SqlDscDataFile and New-SqlDscFileGroup to avoid type conflicts
+            # between test scope and module scope for PowerShell class types.
+            Mock -CommandName 'New-SqlDscDataFile' -MockWith {
+                InModuleScope -ScriptBlock {
+                    param ($Name, $FileName)
+
+                    [DatabaseFileSpec]@{
+                        Name = $Name
+                        FileName = $FileName
+                    }
+                } -Parameters @{
+                    Name = $Name
+                    FileName = $FileName
+                }
+            }
+
+            Mock -CommandName 'New-SqlDscFileGroup' -MockWith {
+                InModuleScope -ScriptBlock {
+                    param ($Name, $Files)
+
+                    [DatabaseFileGroupSpec]@{
+                        Name = $Name
+                        Files = $Files
+                    }
+                } -Parameters @{
+                    Name = $Name
+                    Files = $Files
+                }
+            }
+
             Mock -CommandName 'New-SqlDscDatabase' -MockWith {
                 $mockSnapshotDatabase = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Database'
                 $mockSnapshotDatabase | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value $Name -Force
@@ -390,6 +480,36 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
 
             Mock -CommandName 'Get-SqlDscDatabase' -MockWith {
                 return $mockEvalSourceDatabase
+            }
+
+            # Mock New-SqlDscDataFile and New-SqlDscFileGroup to avoid type conflicts
+            # between test scope and module scope for PowerShell class types.
+            Mock -CommandName 'New-SqlDscDataFile' -MockWith {
+                InModuleScope -ScriptBlock {
+                    param ($Name, $FileName)
+
+                    [DatabaseFileSpec]@{
+                        Name = $Name
+                        FileName = $FileName
+                    }
+                } -Parameters @{
+                    Name = $Name
+                    FileName = $FileName
+                }
+            }
+
+            Mock -CommandName 'New-SqlDscFileGroup' -MockWith {
+                InModuleScope -ScriptBlock {
+                    param ($Name, $Files)
+
+                    [DatabaseFileGroupSpec]@{
+                        Name = $Name
+                        Files = $Files
+                    }
+                } -Parameters @{
+                    Name = $Name
+                    Files = $Files
+                }
             }
 
             Mock -CommandName 'New-SqlDscDatabase' -MockWith {
