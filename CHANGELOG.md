@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SqlDatabase`
   - Added new class-based resource to create, modify, or remove databases on a
     SQL Server instance. Supports a comprehensive set of database properties
-    that can be tested with `Set-SqlDscDatabaseProperty`
+    that can be configured with `Set-SqlDscDatabaseProperty`
     ([issue #2174](https://github.com/dsccommunity/SqlServerDsc/issues/2174)).
 - `Install-SqlDscServer`
   - Added parameter `AllowDqRemoval` to the `Upgrade` parameter set
@@ -206,6 +206,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- `DSC_SqlDatabase`
+  - Removed the legacy MOF-based resource. Use the new class-based `SqlDatabase`
+    resource instead.
 - Removed helper function `Get-FilePathMajorVersion` from the SqlServerDsc.Common
   module. Refactored usages to use the command `Get-FileVersion` from the
   DscResource.Common module instead
