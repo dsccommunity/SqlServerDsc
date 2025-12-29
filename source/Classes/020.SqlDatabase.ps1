@@ -926,10 +926,11 @@ class SqlDatabase : SqlResourceBase
     #>
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
+        $serverObject = $this.GetServerObject()
+
         # Assert that read-only after creation properties are not being modified on existing database
         if ($properties.Keys -contains 'CatalogCollation' -or $properties.Keys -contains 'IsLedger')
         {
-            $serverObject = $this.GetServerObject()
             $databaseObject = $serverObject | Get-SqlDscDatabase -Name $this.Name -ErrorAction 'SilentlyContinue'
 
             if ($databaseObject)
@@ -967,8 +968,6 @@ class SqlDatabase : SqlResourceBase
         # Validate collation if specified
         if ($properties.Keys -contains 'Collation')
         {
-            $serverObject = $this.GetServerObject()
-
             if ($properties.Collation -notin $serverObject.EnumCollations().Name)
             {
                 $errorMessage = $this.localizedData.InvalidCollation -f $properties.Collation, $this.InstanceName
@@ -980,7 +979,6 @@ class SqlDatabase : SqlResourceBase
         # Validate compatibility level if specified
         if ($properties.Keys -contains 'CompatibilityLevel')
         {
-            $serverObject = $this.GetServerObject()
             $supportedLevels = $serverObject | Get-SqlDscCompatibilityLevel
 
             # Convert the DatabaseCompatibilityLevel enum to the SMO CompatibilityLevel enum
