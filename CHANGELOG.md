@@ -96,7 +96,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added the method `ConvertToSmoEnumType()` to convert string values to SMO
     enum types at runtime. This method can be used by all resources inheriting
     from `SqlResourceBase` and supports a default namespace parameter to avoid
-    repeating the full type name.
+    repeating the full type name
+    ([issue #2174](https://github.com/dsccommunity/SqlServerDsc/issues/2174)).
 
 ### Changed
 
@@ -208,7 +209,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `DSC_SqlDatabase`
   - Removed the legacy MOF-based resource. Use the new class-based `SqlDatabase`
-    resource instead.
+    resource instead
+    ([issue #2174](https://github.com/dsccommunity/SqlServerDsc/issues/2174)).
 - Removed helper function `Get-FilePathMajorVersion` from the SqlServerDsc.Common
   module. Refactored usages to use the command `Get-FileVersion` from the
   DscResource.Common module instead
