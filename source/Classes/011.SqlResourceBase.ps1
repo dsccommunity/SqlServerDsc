@@ -196,37 +196,28 @@ class SqlResourceBase : ResourceBase
             {
                 <#
                     Try loading from loaded assemblies if direct resolution fails.
-                    Must iterate through assemblies individually and handle
-                    ReflectionTypeLoadException because some assemblies contain
-                    types that cannot be loaded (e.g., SqlGuidCaster from
-                    Microsoft.Data.SqlClient), causing GetTypes() to fail. When
-                    the exception occurs, use the Types collection from the
-                    exception which contains the types that were successfully
-                    loaded (with $null entries for failed types).
+                    Filter to only SQL Server assemblies to avoid loading types
+                    from unrelated assemblies like Microsoft.Data.SqlClient which
+                    can throw ReflectionTypeLoadException due to types that cannot
+                    be loaded (e.g., SqlGuidCaster). Also include assemblies that
+                    contain types in the Microsoft.SqlServer namespace (for stub
+                    types loaded via Add-Type in unit tests).
                 #>
-                foreach ($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies())
-                {
-                    try
-                    {
-                        $enumType = $assembly.GetTypes() |
-                            Where-Object -FilterScript { $_.FullName -eq $fullTypeName } |
-                            Select-Object -First 1
-
-                        if ($enumType)
-                        {
-                            break
-                        }
+                $sqlServerAssemblies = [System.AppDomain]::CurrentDomain.GetAssemblies() |
+                    Where-Object -FilterScript {
+                        $_.FullName -like 'Microsoft.SqlServer.*' -or
+                        $_.ExportedTypes.FullName -like 'Microsoft.SqlServer.*'
                     }
-                    catch [System.Reflection.ReflectionTypeLoadException]
-                    {
-                        $enumType = $_.Exception.Types |
-                            Where-Object -FilterScript { $null -ne $_ -and $_.FullName -eq $fullTypeName } |
-                            Select-Object -First 1
 
-                        if ($enumType)
-                        {
-                            break
-                        }
+                foreach ($assembly in $sqlServerAssemblies)
+                {
+                    $enumType = $assembly.GetTypes() |
+                        Where-Object -FilterScript { $_.FullName -eq $fullTypeName } |
+                        Select-Object -First 1
+
+                    if ($enumType)
+                    {
+                        break
                     }
                 }
             }
