@@ -1150,7 +1150,16 @@ class SqlDatabase : SqlResourceBase
                     $this.localizedData.EnablingSnapshotIsolation
                 )
 
-                Enable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $databaseObject -Force -ErrorAction 'Stop'
+                try
+                {
+                    Enable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $databaseObject -Force -ErrorAction 'Stop'
+                }
+                catch
+                {
+                    $errorMessage = $this.localizedData.FailedToEnableSnapshotIsolation -f $this.Name
+
+                    New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                }
             }
             else
             {
@@ -1158,7 +1167,16 @@ class SqlDatabase : SqlResourceBase
                     $this.localizedData.DisablingSnapshotIsolation
                 )
 
-                Disable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $databaseObject -Force -ErrorAction 'Stop'
+                try
+                {
+                    Disable-SqlDscDatabaseSnapshotIsolation -DatabaseObject $databaseObject -Force -ErrorAction 'Stop'
+                }
+                catch
+                {
+                    $errorMessage = $this.localizedData.FailedToDisableSnapshotIsolation -f $this.Name
+
+                    New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                }
             }
 
             $properties.Remove('SnapshotIsolation')
