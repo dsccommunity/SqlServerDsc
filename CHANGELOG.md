@@ -23,6 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added `Protocol` parameter to specify the network protocol when connecting.
   - Added `Port` parameter to specify the TCP port number when connecting.
     Connection strings now support the format `[protocol:]hostname[\instance][,port]`.
+- `SqlDatabase`
+  - Added new class-based resource to create, modify, or remove databases on a
+    SQL Server instance. Supports a comprehensive set of database properties
+    that can be tested with `Set-SqlDscDatabaseProperty`
+    ([issue #2174](https://github.com/dsccommunity/SqlServerDsc/issues/2174)).
 - `Install-SqlDscServer`
   - Added parameter `AllowDqRemoval` to the `Upgrade` parameter set
     ([issue #2155](https://github.com/dsccommunity/SqlServerDsc/issues/2155)).
@@ -87,6 +92,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     later versions.
   - Now outputs setup progress when `-Verbose` is passed by using `/QUIETSIMPLE`
     instead of `/QUIET`.
+- `SqlResourceBase`
+  - Added the method `ConvertToSmoEnumType()` to convert string values to SMO
+    enum types at runtime. This method can be used by all resources inheriting
+    from `SqlResourceBase` and supports a default namespace parameter to avoid
+    repeating the full type name.
 
 ### Changed
 

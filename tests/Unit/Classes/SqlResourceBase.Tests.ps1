@@ -180,3 +180,85 @@ Describe 'SqlResourceBase\GetServerObject()' -Tag 'GetServerObject' {
         }
     }
 }
+
+Describe 'SqlResourceBase\ConvertToSmoEnumType()' -Tag 'ConvertToSmoEnumType' {
+    Context 'When converting an enum type using the default namespace' {
+        BeforeAll {
+            $mockSqlResourceBaseInstance = InModuleScope -ScriptBlock {
+                [SqlResourceBase]::new()
+            }
+        }
+
+        It 'Should return the correct enum value for RecoveryModel' {
+            $result = $mockSqlResourceBaseInstance.ConvertToSmoEnumType('RecoveryModel', 'Full')
+
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.RecoveryModel'
+            $result.ToString() | Should -Be 'Full'
+        }
+
+        It 'Should return the correct enum value for CompatibilityLevel' {
+            $result = $mockSqlResourceBaseInstance.ConvertToSmoEnumType('CompatibilityLevel', 'Version160')
+
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.CompatibilityLevel'
+            $result.ToString() | Should -Be 'Version160'
+        }
+
+        It 'Should handle case-insensitive value matching' {
+            $result = $mockSqlResourceBaseInstance.ConvertToSmoEnumType('RecoveryModel', 'full')
+
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.RecoveryModel'
+            $result.ToString() | Should -Be 'Full'
+        }
+    }
+
+    Context 'When converting an enum type using a custom namespace' {
+        BeforeAll {
+            $mockSqlResourceBaseInstance = InModuleScope -ScriptBlock {
+                [SqlResourceBase]::new()
+            }
+        }
+
+        It 'Should return the correct enum value' {
+            $result = $mockSqlResourceBaseInstance.ConvertToSmoEnumType(
+                'RecoveryModel',
+                'Simple',
+                'Microsoft.SqlServer.Management.Smo'
+            )
+
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.RecoveryModel'
+            $result.ToString() | Should -Be 'Simple'
+        }
+    }
+
+    Context 'When converting an enum type using the full type name' {
+        BeforeAll {
+            $mockSqlResourceBaseInstance = InModuleScope -ScriptBlock {
+                [SqlResourceBase]::new()
+            }
+        }
+
+        It 'Should return the correct enum value when full type name is provided' {
+            $result = $mockSqlResourceBaseInstance.ConvertToSmoEnumType(
+                'Microsoft.SqlServer.Management.Smo.RecoveryModel',
+                'BulkLogged'
+            )
+
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.RecoveryModel'
+            $result.ToString() | Should -Be 'BulkLogged'
+        }
+    }
+
+    Context 'When the enum type cannot be found' {
+        BeforeAll {
+            $mockSqlResourceBaseInstance = InModuleScope -ScriptBlock {
+                [SqlResourceBase]::new()
+            }
+        }
+
+        It 'Should throw the correct exception' {
+            {
+                $mockSqlResourceBaseInstance.ConvertToSmoEnumType('NonExistentEnumType', 'SomeValue')
+            } | Should -Throw -ExpectedMessage '*Unable to find type*NonExistentEnumType*'
+        }
+    }
+}
