@@ -297,15 +297,17 @@ Describe 'SqlAudit\Set()' -Tag 'Set' {
                         return [System.Collections.Hashtable] @{
                             Name         = 'MockAuditName'
                             InstanceName = 'NamedInstance'
-                            Path         = 'C:\Path'
+                            Path         = 'C:\CurrentPath'
                         }
                     } -PassThru |
                     # Mock method Compare() which is called by the base method Set()
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
                         return @{
                             Property      = 'Path'
-                            ExpectedValue = 'C:\NewFolder'
-                            ActualValue   = 'C:\Path'
+                            # ExpectedValue matches the instance's Path property (desired state).
+                            ExpectedValue = 'C:\Temp'
+                            # ActualValue matches GetCurrentState's Path (current state).
+                            ActualValue   = 'C:\CurrentPath'
                         }
                     } -PassThru |
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
