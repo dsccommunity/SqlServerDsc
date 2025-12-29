@@ -214,12 +214,83 @@ Describe 'SqlResourceBase\ConvertToSmoEnumType()' -Tag 'ConvertToSmoEnumType' {
             $mockSqlResourceBaseInstance = InModuleScope -ScriptBlock {
                 [SqlResourceBase]::new()
             }
+
+            $script:mockExpectedErrorMessage = InModuleScope -ScriptBlock {
+                $script:localizedData.ConvertToSmoEnumType_FailedToFindType -f 'Microsoft.SqlServer.Management.Smo.NonExistentEnumType'
+            }
         }
 
         It 'Should throw the correct exception' {
             {
                 $mockSqlResourceBaseInstance.ConvertToSmoEnumType('NonExistentEnumType', 'SomeValue')
-            } | Should -Throw -ExpectedMessage '*Unable to find type*NonExistentEnumType*'
+            } | Should -Throw -ExpectedMessage $script:mockExpectedErrorMessage
+        }
+    }
+
+    Context 'When enum type caching is used' {
+        BeforeAll {
+            # Clear the cache before testing
+            InModuleScope -ScriptBlock {
+                [SqlResourceBase]::EnumTypeCache.Clear()
+            }
+
+            $mockSqlResourceBaseInstance = InModuleScope -ScriptBlock {
+                [SqlResourceBase]::new()
+            }
+        }
+
+        AfterAll {
+            # Clear the cache after testing
+            InModuleScope -ScriptBlock {
+                [SqlResourceBase]::EnumTypeCache.Clear()
+            }
+        }
+
+        It 'Should cache the enum type after first resolution' {
+            # First call should resolve and cache the type
+            $result = $mockSqlResourceBaseInstance.ConvertToSmoEnumType('RecoveryModel', 'Full')
+
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.RecoveryModel'
+
+            # Verify the type was cached
+            $cacheContainsType = InModuleScope -ScriptBlock {
+                [SqlResourceBase]::EnumTypeCache.ContainsKey('Microsoft.SqlServer.Management.Smo.RecoveryModel')
+            }
+
+            $cacheContainsType | Should -BeTrue
+        }
+
+        It 'Should use cached type on subsequent calls' {
+            # First call to populate cache
+            $null = $mockSqlResourceBaseInstance.ConvertToSmoEnumType('CompatibilityLevel', 'Version160')
+
+            # Second call should use cached type
+            $result = $mockSqlResourceBaseInstance.ConvertToSmoEnumType('CompatibilityLevel', 'Version150')
+
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.CompatibilityLevel'
+            $result.ToString() | Should -Be 'Version150'
+        }
+
+        It 'Should have static cache shared across instances' {
+            # Get cache count before
+            $cacheCountBefore = InModuleScope -ScriptBlock {
+                [SqlResourceBase]::EnumTypeCache.Count
+            }
+
+            # Create a new instance and resolve a type
+            $newInstance = InModuleScope -ScriptBlock {
+                [SqlResourceBase]::new()
+            }
+
+            # Use a type that should already be in cache from previous tests
+            $null = $newInstance.ConvertToSmoEnumType('RecoveryModel', 'Simple')
+
+            # Cache count should remain the same (type already cached)
+            $cacheCountAfter = InModuleScope -ScriptBlock {
+                [SqlResourceBase]::EnumTypeCache.Count
+            }
+
+            $cacheCountAfter | Should -Be $cacheCountBefore
         }
     }
 }
