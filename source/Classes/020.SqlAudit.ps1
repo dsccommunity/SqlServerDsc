@@ -191,12 +191,9 @@ class SqlAudit : SqlResourceBase
 
     SqlAudit () : base ()
     {
-        # These properties will not be enforced.
-        $this.ExcludeDscProperties = @(
-            'ServerName'
-            'InstanceName'
+        # Append to the properties set in SqlResourceBase that will not be enforced.
+        $this.ExcludeDscProperties += @(
             'Name'
-            'Credential'
             'Force'
         )
     }

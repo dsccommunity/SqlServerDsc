@@ -369,6 +369,15 @@ function Connect-SQL
         $LoginType = 'WindowsUser',
 
         [Parameter()]
+        [ValidateSet('tcp', 'np', 'lpc')]
+        [System.String]
+        $Protocol,
+
+        [Parameter()]
+        [System.UInt16]
+        $Port,
+
+        [Parameter()]
         [ValidateNotNull()]
         [System.Int32]
         $StatementTimeout = 600,
@@ -380,6 +389,18 @@ function Connect-SQL
 
     Import-SqlDscPreferredModule
 
+    <#
+        Build the connection string in the format: [protocol:]hostname[\instance][,port]
+        Examples:
+        - ServerName (default instance, no protocol/port)
+        - ServerName\Instance (named instance)
+        - tcp:ServerName (default instance with protocol)
+        - tcp:ServerName\Instance (named instance with protocol)
+        - ServerName,1433 (default instance with port)
+        - ServerName\Instance,50200 (named instance with port)
+        - tcp:ServerName,1433 (default instance with protocol and port)
+        - tcp:ServerName\Instance,50200 (named instance with protocol and port)
+    #>
     if ($InstanceName -eq 'MSSQLSERVER')
     {
         $databaseEngineInstance = $ServerName
@@ -387,6 +408,18 @@ function Connect-SQL
     else
     {
         $databaseEngineInstance = '{0}\{1}' -f $ServerName, $InstanceName
+    }
+
+    # Append port if specified
+    if ($PSBoundParameters.ContainsKey('Port'))
+    {
+        $databaseEngineInstance = '{0},{1}' -f $databaseEngineInstance, $Port
+    }
+
+    # Prepend protocol if specified
+    if ($PSBoundParameters.ContainsKey('Protocol'))
+    {
+        $databaseEngineInstance = '{0}:{1}' -f $Protocol, $databaseEngineInstance
     }
 
     $sqlServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'

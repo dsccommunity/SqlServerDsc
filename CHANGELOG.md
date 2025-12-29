@@ -12,6 +12,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     SQL Server instance. Supports a comprehensive set of database properties
     that can be configured with `Set-SqlDscDatabaseProperty`
     ([issue #2174](https://github.com/dsccommunity/SqlServerDsc/issues/2174)).
+- Added public command `Get-SqlDscServerProtocolTcpIp` to retrieve TCP/IP address
+  group information for SQL Server instances. Returns `ServerIPAddress` objects
+  containing port configuration including `TcpPort`, `TcpDynamicPorts`, `Enabled`,
+  and `Active` properties. Supports filtering by specific IP address group name
+  and accepts pipeline input from `Get-SqlDscServerProtocol`.
+- `SqlResourceBase`
+  - Added `Protocol` property to specify the network protocol (`tcp`, `np`, `lpc`)
+    when connecting to SQL Server instances
+    ([issue #2041](https://github.com/dsccommunity/SqlServerDsc/issues/2041)).
+  - Added `Port` property to specify the TCP port number when connecting to SQL
+    Server instances
+    ([issue #2041](https://github.com/dsccommunity/SqlServerDsc/issues/2041)).
+- `Connect-SqlDscDatabaseEngine`
+  - Added `Protocol` parameter to specify the network protocol when connecting.
+  - Added `Port` parameter to specify the TCP port number when connecting.
+    Connection strings now support the format `[protocol:]hostname[\instance][,port]`.
 - `Install-SqlDscServer`
   - Added parameter `AllowDqRemoval` to the `Upgrade` parameter set
     ([issue #2155](https://github.com/dsccommunity/SqlServerDsc/issues/2155)).

@@ -2556,6 +2556,117 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
         }
     }
 
+    Context 'When connecting using Protocol parameter' {
+        BeforeEach {
+            $mockExpectedDatabaseEngineServer = 'TestServer'
+            $mockExpectedDatabaseEngineInstance = 'MSSQLSERVER'
+
+            # Mock that expects protocol prefix in the ServerInstance
+            Mock -CommandName New-Object -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter -MockWith {
+                return New-Object -TypeName Object |
+                    Add-Member -MemberType ScriptProperty -Name Status -Value {
+                        return 'Online'
+                    } -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ConnectionContext -Value (
+                        New-Object -TypeName Object |
+                            Add-Member -MemberType NoteProperty -Name ServerInstance -Value '' -PassThru |
+                            Add-Member -MemberType NoteProperty -Name LoginSecure -Value $true -PassThru |
+                            Add-Member -MemberType NoteProperty -Name StatementTimeout -Value 600 -PassThru |
+                            Add-Member -MemberType NoteProperty -Name ConnectTimeout -Value 600 -PassThru |
+                            Add-Member -MemberType NoteProperty -Name ApplicationName -Value 'SqlServerDsc' -PassThru |
+                            Add-Member -MemberType ScriptMethod -Name Disconnect -Value { return $true } -PassThru |
+                            Add-Member -MemberType ScriptMethod -Name Connect -Value { } -PassThru -Force
+                        ) -PassThru -Force
+            }
+        }
+
+        # Skipping on Linux and macOS because they do not support Windows Authentication.
+        It 'Should format the connection string with tcp protocol prefix for default instance' -Skip:($IsLinux -or $IsMacOS) {
+            $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -Protocol 'tcp' -ErrorAction 'Stop'
+            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "tcp:$mockExpectedDatabaseEngineServer"
+        }
+
+        # Skipping on Linux and macOS because they do not support Windows Authentication.
+        It 'Should format the connection string with tcp protocol prefix for named instance' -Skip:($IsLinux -or $IsMacOS) {
+            $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -InstanceName 'MyInstance' -Protocol 'tcp' -ErrorAction 'Stop'
+            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "tcp:$mockExpectedDatabaseEngineServer\MyInstance"
+        }
+    }
+
+    Context 'When connecting using Port parameter' {
+        BeforeEach {
+            $mockExpectedDatabaseEngineServer = 'TestServer'
+            $mockExpectedDatabaseEngineInstance = 'MSSQLSERVER'
+
+            # Mock that expects port suffix in the ServerInstance
+            Mock -CommandName New-Object -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter -MockWith {
+                return New-Object -TypeName Object |
+                    Add-Member -MemberType ScriptProperty -Name Status -Value {
+                        return 'Online'
+                    } -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ConnectionContext -Value (
+                        New-Object -TypeName Object |
+                            Add-Member -MemberType NoteProperty -Name ServerInstance -Value '' -PassThru |
+                            Add-Member -MemberType NoteProperty -Name LoginSecure -Value $true -PassThru |
+                            Add-Member -MemberType NoteProperty -Name StatementTimeout -Value 600 -PassThru |
+                            Add-Member -MemberType NoteProperty -Name ConnectTimeout -Value 600 -PassThru |
+                            Add-Member -MemberType NoteProperty -Name ApplicationName -Value 'SqlServerDsc' -PassThru |
+                            Add-Member -MemberType ScriptMethod -Name Disconnect -Value { return $true } -PassThru |
+                            Add-Member -MemberType ScriptMethod -Name Connect -Value { } -PassThru -Force
+                        ) -PassThru -Force
+            }
+        }
+
+        # Skipping on Linux and macOS because they do not support Windows Authentication.
+        It 'Should format the connection string with port for default instance' -Skip:($IsLinux -or $IsMacOS) {
+            $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -Port 1433 -ErrorAction 'Stop'
+            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer,1433"
+        }
+
+        # Skipping on Linux and macOS because they do not support Windows Authentication.
+        It 'Should format the connection string with port for named instance' -Skip:($IsLinux -or $IsMacOS) {
+            $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -InstanceName 'MyInstance' -Port 50200 -ErrorAction 'Stop'
+            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\MyInstance,50200"
+        }
+    }
+
+    Context 'When connecting using both Protocol and Port parameters' {
+        BeforeEach {
+            $mockExpectedDatabaseEngineServer = '192.168.1.1'
+            $mockExpectedDatabaseEngineInstance = 'MSSQLSERVER'
+
+            # Mock that expects protocol prefix and port suffix in the ServerInstance
+            Mock -CommandName New-Object -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter -MockWith {
+                return New-Object -TypeName Object |
+                    Add-Member -MemberType ScriptProperty -Name Status -Value {
+                        return 'Online'
+                    } -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ConnectionContext -Value (
+                        New-Object -TypeName Object |
+                            Add-Member -MemberType NoteProperty -Name ServerInstance -Value '' -PassThru |
+                            Add-Member -MemberType NoteProperty -Name LoginSecure -Value $true -PassThru |
+                            Add-Member -MemberType NoteProperty -Name StatementTimeout -Value 600 -PassThru |
+                            Add-Member -MemberType NoteProperty -Name ConnectTimeout -Value 600 -PassThru |
+                            Add-Member -MemberType NoteProperty -Name ApplicationName -Value 'SqlServerDsc' -PassThru |
+                            Add-Member -MemberType ScriptMethod -Name Disconnect -Value { return $true } -PassThru |
+                            Add-Member -MemberType ScriptMethod -Name Connect -Value { } -PassThru -Force
+                        ) -PassThru -Force
+            }
+        }
+
+        # Skipping on Linux and macOS because they do not support Windows Authentication.
+        It 'Should format the connection string with protocol and port for default instance' -Skip:($IsLinux -or $IsMacOS) {
+            $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -Protocol 'tcp' -Port 1433 -ErrorAction 'Stop'
+            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "tcp:$mockExpectedDatabaseEngineServer,1433"
+        }
+
+        # Skipping on Linux and macOS because they do not support Windows Authentication.
+        It 'Should format the connection string with protocol and port for named instance' -Skip:($IsLinux -or $IsMacOS) {
+            $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -InstanceName 'MyInstance' -Protocol 'tcp' -Port 50200 -ErrorAction 'Stop'
+            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "tcp:$mockExpectedDatabaseEngineServer\MyInstance,50200"
+        }
+    }
+
     Context 'When connecting to the default instance using the correct service instance but does not return a correct Database Engine object' {
         Context 'When using ErrorAction set to Stop' -Skip:($IsLinux -or $IsMacOS) {
             BeforeAll {
