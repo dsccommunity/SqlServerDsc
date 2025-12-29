@@ -1236,5 +1236,4 @@ class SqlDatabase : SqlResourceBase
             }
         }
     }
-
 }
