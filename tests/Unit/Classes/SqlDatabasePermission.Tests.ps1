@@ -1027,7 +1027,7 @@ Describe 'SqlDatabasePermission\Set()' -Tag 'Set' {
             }
         }
 
-        It 'Should not call method Modify()' {
+        It 'Should call method Modify()' {
             InModuleScope -ScriptBlock {
                 $script:mockSqlDatabasePermissionInstance.Set()
 
