@@ -996,7 +996,9 @@ class SqlDatabase : SqlResourceBase
 
             if ($null -eq $smoCompatibilityLevelType)
             {
-                throw "Unable to find type 'Microsoft.SqlServer.Management.Smo.CompatibilityLevel'. Ensure SQL Server Management Objects (SMO) are installed."
+                $errorMessage = $this.localizedData.SmoCompatibilityLevelTypeNotFound
+
+                New-InvalidOperationException -Message $errorMessage
             }
 
             # Convert the DatabaseCompatibilityLevel enum to the SMO CompatibilityLevel enum
