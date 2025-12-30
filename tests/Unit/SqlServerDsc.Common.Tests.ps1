@@ -48,10 +48,10 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
     $script:subModuleName = 'SqlServerDsc.Common'
 
-    $script:parentModule = Get-Module -Name $script:dscModuleName -ListAvailable | Select-Object -First 1
+    $script:parentModule = Get-Module -Name $script:moduleName -ListAvailable | Select-Object -First 1
     $script:subModulesFolder = Join-Path -Path $script:parentModule.ModuleBase -ChildPath 'Modules'
 
     $script:subModulePath = Join-Path -Path $script:subModulesFolder -ChildPath $script:subModuleName

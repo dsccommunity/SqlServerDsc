@@ -8,7 +8,7 @@ return
 
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-$script:dscModuleName = 'SqlServerDsc'
+$script:moduleName = 'SqlServerDsc'
 $script:dscResourceName = 'DSC_SqlAGDatabase'
 
 function Invoke-TestSetup
@@ -23,7 +23,7 @@ function Invoke-TestSetup
     }
 
     $script:testEnvironment = Initialize-TestEnvironment `
-        -DSCModuleName $script:dscModuleName `
+        -DSCModuleName $script:moduleName `
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
         -TestType 'Unit'

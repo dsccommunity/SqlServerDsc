@@ -28,7 +28,9 @@ BeforeAll {
 
     $env:SqlServerDscCI = $true
 
-    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
     # Load SMO stub types
     Add-Type -Path "$PSScriptRoot/../Stubs/SMO.cs"
@@ -44,9 +46,6 @@ AfterAll {
     $PSDefaultParameterValues.Remove('Should:ModuleName')
 
     Remove-Item -Path 'Env:\SqlServerDscCI' -ErrorAction 'SilentlyContinue'
-
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:moduleName -All | Remove-Module -Force
 }
 
 Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {

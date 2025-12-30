@@ -24,23 +24,22 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
-    Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
     # Load SMO stub types
     Add-Type -Path "$PSScriptRoot/../Stubs/SMO.cs"
 
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
-
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 }
 
 Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
@@ -246,13 +245,13 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
             $script:mockAlert.Severity = 14
             $script:mockAlert.MessageId = 0
 
-            Mock -CommandName 'Assert-BoundParameter' -ModuleName $script:dscModuleName
+            Mock -CommandName 'Assert-BoundParameter' -ModuleName $script:moduleName
         }
 
         It 'Should update alert using AlertObject parameter' {
             $null = Set-SqlDscAgentAlert -AlertObject $script:mockAlert -Severity 16 -Force
 
-            Should -Invoke -CommandName 'Assert-BoundParameter' -ModuleName $script:dscModuleName -Times 1 -Exactly
+            Should -Invoke -CommandName 'Assert-BoundParameter' -ModuleName $script:moduleName -Times 1 -Exactly
             $script:mockAlert.Severity | Should -Be 16
             $script:mockAlert.MessageId | Should -Be 0
         }
@@ -299,8 +298,8 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
             $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
             $script:mockServerObject.JobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
 
-            Mock -CommandName 'Assert-BoundParameter' -ModuleName $script:dscModuleName
-            Mock -CommandName 'Get-AgentAlertObject' -ModuleName $script:dscModuleName
+            Mock -CommandName 'Assert-BoundParameter' -ModuleName $script:moduleName
+            Mock -CommandName 'Get-AgentAlertObject' -ModuleName $script:moduleName
         }
 
         It 'Should throw error when alert does not exist' {
@@ -321,8 +320,8 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
             $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
             $script:mockServerObject.JobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
 
-            Mock -CommandName 'Assert-BoundParameter' -ModuleName $script:dscModuleName
-            Mock -CommandName 'Get-AgentAlertObject' -ModuleName $script:dscModuleName -MockWith { return $script:mockAlert }
+            Mock -CommandName 'Assert-BoundParameter' -ModuleName $script:moduleName
+            Mock -CommandName 'Get-AgentAlertObject' -ModuleName $script:moduleName -MockWith { return $script:mockAlert }
         }
 
         It 'Should not call Alter when Severity is already correct' {
@@ -379,8 +378,8 @@ Describe 'Set-SqlDscAgentAlert' -Tag 'Public' {
             $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
             $script:mockServerObject.JobServer = [Microsoft.SqlServer.Management.Smo.Agent.JobServer]::CreateTypeInstance()
 
-            Mock -CommandName 'Assert-BoundParameter' -ModuleName $script:dscModuleName
-            Mock -CommandName 'Get-AgentAlertObject' -ModuleName $script:dscModuleName -MockWith { return $script:mockFailingAlert }
+            Mock -CommandName 'Assert-BoundParameter' -ModuleName $script:moduleName
+            Mock -CommandName 'Get-AgentAlertObject' -ModuleName $script:moduleName -MockWith { return $script:mockFailingAlert }
         }
 
         It 'Should throw error when update fails' {

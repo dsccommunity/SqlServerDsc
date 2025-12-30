@@ -30,11 +30,13 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
     $env:SqlServerDscCI = $true
 
-    Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '../../TestHelpers/CommonTestHelper.psm1')
 
@@ -44,18 +46,15 @@ BeforeAll {
     # Load the correct SQL Module stub
     $script:stubModuleName = Import-SQLModuleStub -PassThru
 
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
-
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 
     # Unload the stub module.
     Remove-SqlModuleStub -Name $script:stubModuleName
@@ -244,6 +243,14 @@ Describe 'SqlAudit\Set()' -Tag 'Set' {
                 InstanceName = 'NamedInstance'
                 Path         = 'C:\Temp'
             } |
+                # Mock method GetCurrentState() which is called by the base method Get()
+                Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
+                    return [System.Collections.Hashtable] @{
+                        Name         = 'MockAuditName'
+                        InstanceName = 'NamedInstance'
+                        ServerName   = Get-ComputerName
+                    }
+                } -PassThru |
                 # Mock method Modify which is called by the base method Set().
                 Add-Member -Force -MemberType 'ScriptMethod' -Name 'Modify' -Value {
                     $script:mockMethodModifyCallCount += 1
@@ -333,7 +340,15 @@ Describe 'SqlAudit\Test()' -Tag 'Test' {
                 Name         = 'MockAuditName'
                 InstanceName = 'NamedInstance'
                 Path         = 'C:\Temp'
-            }
+            } |
+                # Mock method GetCurrentState() which is called by the base method Get()
+                Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
+                    return [System.Collections.Hashtable] @{
+                        Name         = 'MockAuditName'
+                        InstanceName = 'NamedInstance'
+                        ServerName   = Get-ComputerName
+                    }
+                } -PassThru
         }
     }
 

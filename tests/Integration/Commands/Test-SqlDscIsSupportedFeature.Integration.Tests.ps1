@@ -26,14 +26,16 @@ BeforeDiscovery {
 BeforeAll {
     $script:moduleName = 'SqlServerDsc'
 
-    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 }
 
 Describe 'Test-SqlDscIsSupportedFeature' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     Context 'When testing supported features for different SQL Server versions' {
         It 'Should return $true for SQLENGINE feature across all major versions' {
             $testVersions = @('10', '11', '12', '13', '14', '15', '16')
-            
+
             foreach ($version in $testVersions) {
                 $result = Test-SqlDscIsSupportedFeature -Feature 'SQLENGINE' -ProductVersion $version -ErrorAction 'Stop'
                 $result | Should -BeTrue -Because "SQLENGINE should be supported in SQL Server $version"
@@ -42,7 +44,7 @@ Describe 'Test-SqlDscIsSupportedFeature' -Tag @('Integration_SQL2016', 'Integrat
 
         It 'Should return $false for features removed in SQL Server 2014 (version 14)' {
             $removedFeatures = @('RS', 'RS_SHP', 'RS_SHPWFE')
-            
+
             foreach ($feature in $removedFeatures) {
                 $result = Test-SqlDscIsSupportedFeature -Feature $feature -ProductVersion '14' -ErrorAction 'Stop'
                 $result | Should -BeFalse -Because "$feature was removed in SQL Server 2014"
@@ -56,7 +58,7 @@ Describe 'Test-SqlDscIsSupportedFeature' -Tag @('Integration_SQL2016', 'Integrat
 
         It 'Should return $false for features removed in SQL Server 2016 (version 16)' {
             $removedFeatures = @('Tools', 'BC', 'CONN', 'DREPLAY_CTLR', 'DREPLAY_CLT', 'SNAC_SDK', 'SDK', 'PolyBaseJava', 'SQL_INST_MR', 'SQL_INST_MPY', 'SQL_SHARED_MPY', 'SQL_SHARED_MR')
-            
+
             foreach ($feature in $removedFeatures) {
                 $result = Test-SqlDscIsSupportedFeature -Feature $feature -ProductVersion '16' -ErrorAction 'Stop'
                 $result | Should -BeFalse -Because "$feature was removed in SQL Server 2016"
@@ -65,7 +67,7 @@ Describe 'Test-SqlDscIsSupportedFeature' -Tag @('Integration_SQL2016', 'Integrat
 
         It 'Should return $true for features added in SQL Server 2015 (version 15) when testing that version' {
             $addedFeatures = @('PolyBaseCore', 'PolyBaseJava', 'SQL_INST_JAVA')
-            
+
             foreach ($feature in $addedFeatures) {
                 $result = Test-SqlDscIsSupportedFeature -Feature $feature -ProductVersion '15' -ErrorAction 'Stop'
                 $result | Should -BeTrue -Because "$feature was added in SQL Server 2015"
@@ -83,9 +85,9 @@ Describe 'Test-SqlDscIsSupportedFeature' -Tag @('Integration_SQL2016', 'Integrat
             # The current implementation has a limitation where pipeline input only returns one result
             # This test validates the current behavior
             $features = @('SQLENGINE', 'AS', 'IS')
-            
+
             $result = $features | Test-SqlDscIsSupportedFeature -ProductVersion '15' -ErrorAction 'Stop'
-            
+
             $result | Should -BeOfType 'System.Boolean'
             $result | Should -BeTrue -Because "The last feature processed should be supported in SQL Server 2015"
         }
@@ -93,9 +95,9 @@ Describe 'Test-SqlDscIsSupportedFeature' -Tag @('Integration_SQL2016', 'Integrat
         It 'Should return false when last feature in pipeline is unsupported' {
             # Test with a mix where the last feature is unsupported
             $features = @('SQLENGINE', 'RS')  # RS is not supported in version 14
-            
+
             $result = $features | Test-SqlDscIsSupportedFeature -ProductVersion '14' -ErrorAction 'Stop'
-            
+
             $result | Should -BeFalse -Because "RS (the last feature) is not supported in SQL Server 2014"
         }
     }
@@ -115,7 +117,7 @@ Describe 'Test-SqlDscIsSupportedFeature' -Tag @('Integration_SQL2016', 'Integrat
             $resultLower = Test-SqlDscIsSupportedFeature -Feature 'sqlengine' -ProductVersion '15' -ErrorAction 'Stop'
             $resultUpper = Test-SqlDscIsSupportedFeature -Feature 'SQLENGINE' -ProductVersion '15' -ErrorAction 'Stop'
             $resultMixed = Test-SqlDscIsSupportedFeature -Feature 'SqlEngine' -ProductVersion '15' -ErrorAction 'Stop'
-            
+
             $resultLower | Should -Be $resultUpper
             $resultUpper | Should -Be $resultMixed
             $resultLower | Should -BeTrue
@@ -133,7 +135,7 @@ Describe 'Test-SqlDscIsSupportedFeature' -Tag @('Integration_SQL2016', 'Integrat
             $resultV14 = Test-SqlDscIsSupportedFeature -Feature 'PolyBaseJava' -ProductVersion '14' -ErrorAction 'Stop'
             $resultV15 = Test-SqlDscIsSupportedFeature -Feature 'PolyBaseJava' -ProductVersion '15' -ErrorAction 'Stop'
             $resultV16 = Test-SqlDscIsSupportedFeature -Feature 'PolyBaseJava' -ProductVersion '16' -ErrorAction 'Stop'
-            
+
             $resultV14 | Should -BeFalse -Because "PolyBaseJava was not available before SQL Server 2015"
             $resultV15 | Should -BeTrue -Because "PolyBaseJava was available in SQL Server 2015"
             $resultV16 | Should -BeFalse -Because "PolyBaseJava was removed in SQL Server 2016"

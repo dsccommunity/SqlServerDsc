@@ -47,6 +47,6 @@ BeforeDiscovery {
 BeforeAll {
     $script:moduleName = '{MyModuleName}'
 
-    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 }
 ```

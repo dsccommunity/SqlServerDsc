@@ -26,14 +26,16 @@ BeforeDiscovery {
 BeforeAll {
     $script:moduleName = 'SqlServerDsc'
 
-    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 }
 
 Describe 'Import-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         # Store original environment variable value to restore later
         $script:originalSMODefaultModuleName = $env:SMODefaultModuleName
-        
+
         # Get list of initially loaded modules to restore session state
         $script:initialModules = Get-Module | Where-Object { $_.Name -in @('SqlServer', 'SQLPS') }
     }
@@ -72,7 +74,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integrati
 
         It 'Should import SqlServer module when available' {
             Import-SqlDscPreferredModule -ErrorAction 'Stop'
-            
+
             $importedModule = Get-Module -Name @('SqlServer', 'SQLPS') | Select-Object -First 1
             $importedModule | Should -Not -BeNullOrEmpty
             $importedModule.Name | Should -BeIn @('SqlServer', 'SQLPS')
@@ -93,11 +95,11 @@ Describe 'Import-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integrati
             # First import
             Import-SqlDscPreferredModule -ErrorAction 'Stop'
             $firstImport = Get-Module -Name @('SqlServer', 'SQLPS') | Select-Object -First 1
-            
+
             # Force reimport
             Import-SqlDscPreferredModule -Force -ErrorAction 'Stop'
             $secondImport = Get-Module -Name @('SqlServer', 'SQLPS') | Select-Object -First 1
-            
+
             $secondImport | Should -Not -BeNullOrEmpty
             $secondImport.Name | Should -Be $firstImport.Name
         }
@@ -119,7 +121,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integrati
             }
 
             $null = Import-SqlDscPreferredModule -Name 'SQLPS' -ErrorAction 'Stop'
-            
+
             $importedModule = Get-Module -Name 'SQLPS'
             $importedModule | Should -Not -BeNullOrEmpty
             $importedModule.Name | Should -Be 'SQLPS'
@@ -135,7 +137,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integrati
             }
 
             $null = Import-SqlDscPreferredModule -Name 'SqlServer' -ErrorAction 'Stop'
-            
+
             $importedModule = Get-Module -Name 'SqlServer'
             $importedModule | Should -Not -BeNullOrEmpty
             $importedModule.Name | Should -Be 'SqlServer'
@@ -163,9 +165,9 @@ Describe 'Import-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integrati
             }
 
             $env:SMODefaultModuleName = 'SqlServer'
-            
+
             $null = Import-SqlDscPreferredModule -ErrorAction 'Stop'
-            
+
             $importedModule = Get-Module -Name @('SqlServer', 'SQLPS') | Select-Object -First 1
             $importedModule | Should -Not -BeNullOrEmpty
             $importedModule.Name | Should -Be 'SqlServer'
@@ -185,4 +187,3 @@ Describe 'Import-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integrati
         }
     }
 }
-
