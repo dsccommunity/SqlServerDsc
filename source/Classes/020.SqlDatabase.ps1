@@ -827,8 +827,6 @@ class SqlDatabase : SqlResourceBase
             # Integer properties (require type cast)
             $integerProperties = @(
                 'ChangeTrackingRetentionPeriod'
-                'DefaultFullTextLanguage'
-                'DefaultLanguage'
                 'MaxDop'
                 'MaxDopForSecondary'
                 'MirroringRedoQueueMaxSize'
@@ -840,6 +838,17 @@ class SqlDatabase : SqlResourceBase
             foreach ($propertyName in $integerProperties)
             {
                 $currentState.$propertyName = [System.Int32] $databaseObject.$propertyName
+            }
+
+            # DefaultLanguage properties (SMO returns DefaultLanguage object with Lcid property)
+            if ($null -ne $databaseObject.DefaultFullTextLanguage)
+            {
+                $currentState.DefaultFullTextLanguage = [System.Int32] $databaseObject.DefaultFullTextLanguage.Lcid
+            }
+
+            if ($null -ne $databaseObject.DefaultLanguage)
+            {
+                $currentState.DefaultLanguage = [System.Int32] $databaseObject.DefaultLanguage.Lcid
             }
 
             # Double properties
