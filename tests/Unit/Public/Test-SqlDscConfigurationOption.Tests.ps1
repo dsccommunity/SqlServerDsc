@@ -26,23 +26,22 @@ BeforeDiscovery {
 BeforeAll {
     $env:SqlServerDscCI = $true
 
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
-    Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
     # Load SMO stub types
     Add-Type -Path "$PSScriptRoot/../Stubs/SMO.cs"
 
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
-
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 
     Remove-Item -Path 'Env:\SqlServerDscCI' -ErrorAction 'SilentlyContinue'
 }
@@ -277,7 +276,7 @@ Describe 'Test-SqlDscConfigurationOption' -Tag 'Public' {
     Context 'When validating localized error and verbose messages' {
         BeforeAll {
             # Mock localized strings retrieval
-            $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
+            $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
         }
 
         AfterAll {
@@ -296,7 +295,9 @@ Describe 'Test-SqlDscConfigurationOption' -Tag 'Public' {
     Context 'When testing argument completers through PowerShell tab completion system' {
         BeforeAll {
             # Import module to ensure tab completion is registered
-            Import-Module -Name $script:dscModuleName -Force
+            # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+            # PowerShell class types to get new identities, breaking type comparisons.
+            Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
             # Create mock server object for testing
             $script:mockServerForTabCompletion = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
