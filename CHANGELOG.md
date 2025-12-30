@@ -88,6 +88,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Unit Tests
+  - Fixed PowerShell class type identity issues that caused "Cannot convert
+    'Type' to 'Type'" errors when running multiple test files in the same
+    Pester job. The issue occurred because using `Import-Module -Force` and
+    `Remove-Module` between test files caused PowerShell to create new type
+    identities for module-defined classes. Changed all unit test files to not
+    use `-Force` when importing the module being tested and removed the module
+    unload from `AfterAll` blocks. This prevents class type identity mismatches
+    while maintaining test isolation through mock cleanup.
 - Fixed all `Invoke-WebRequest` calls throughout the codebase to include the
   `-UseBasicParsing` parameter. This addresses a Windows PowerShell 5.1 security
   update (CVE-2025-54100) released December 9, 2025, which changed the default

@@ -33,12 +33,12 @@ BeforeDiscovery {
 
 BeforeAll {
     # Need to define the variables here which will be used in Pester Run.
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
     $script:dscResourceFriendlyName = 'SqlDatabasePermission'
     $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 
     $script:testEnvironment = Initialize-TestEnvironment `
-        -DSCModuleName $script:dscModuleName `
+        -DSCModuleName $script:moduleName `
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
         -TestType 'Integration'
@@ -576,7 +576,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             Clear-DscLcmConfiguration
 
             $mockDefaultInvokeDscResourceParameters = @{
-                ModuleName = $script:dscModuleName
+                ModuleName = $script:moduleName
                 Name       = $script:dscResourceFriendlyName
                 Verbose    = $true
             }

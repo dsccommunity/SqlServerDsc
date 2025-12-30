@@ -108,7 +108,9 @@ Describe 'Changelog Management' -Tag 'Changelog' {
 
 Describe 'General module control' -Tags 'FunctionalQuality' {
     It 'Should import without errors' {
-        $null = Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
+        # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+        # PowerShell class types to get new identities, breaking type comparisons.
+        $null = Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
         Get-Module -Name $script:moduleName | Should -Not -BeNullOrEmpty
     }
