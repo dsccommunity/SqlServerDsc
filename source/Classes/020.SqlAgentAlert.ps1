@@ -140,11 +140,8 @@ class SqlAgentAlert : SqlResourceBase
 
     SqlAgentAlert () : base ()
     {
-        # Property names that cannot be enforced
-        $this.ExcludeDscProperties = @(
-            'InstanceName',
-            'ServerName',
-            'Credential',
+        # Append to the properties set in SqlResourceBase that will not be enforced.
+        $this.ExcludeDscProperties += @(
             'Name'
         )
     }

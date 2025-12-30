@@ -120,6 +120,46 @@ Describe 'SqlResourceBase\GetServerObject()' -Tag 'GetServerObject' {
                 } -Exactly -Times 1 -Scope It
             }
         }
+
+        Context 'When property Protocol is used' {
+            BeforeAll {
+                $mockSqlResourceBaseInstance = InModuleScope -ScriptBlock {
+                    [SqlResourceBase]::new()
+                }
+
+                $mockSqlResourceBaseInstance.Protocol = 'tcp'
+            }
+
+            It 'Should call the correct mock' {
+                $result = $mockSqlResourceBaseInstance.GetServerObject()
+
+                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Server'
+
+                Should -Invoke -CommandName Connect-SqlDscDatabaseEngine -ParameterFilter {
+                    $PesterBoundParameters.Keys -contains 'Protocol'
+                } -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When property Port is used' {
+            BeforeAll {
+                $mockSqlResourceBaseInstance = InModuleScope -ScriptBlock {
+                    [SqlResourceBase]::new()
+                }
+
+                $mockSqlResourceBaseInstance.Port = 1433
+            }
+
+            It 'Should call the correct mock' {
+                $result = $mockSqlResourceBaseInstance.GetServerObject()
+
+                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Server'
+
+                Should -Invoke -CommandName Connect-SqlDscDatabaseEngine -ParameterFilter {
+                    $PesterBoundParameters.Keys -contains 'Port'
+                } -Exactly -Times 1 -Scope It
+            }
+        }
     }
 
     Context 'When a server object already exist' {

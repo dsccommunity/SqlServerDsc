@@ -173,5 +173,81 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
                 Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject
             }
         }
+
+        Context 'When using Protocol parameter' {
+            It 'Should connect using TCP/IP protocol' {
+                $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+                $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+                $connectSqlDscDatabaseEngineParameters = @{
+                    InstanceName = 'DSCSQLTEST'
+                    Credential   = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
+                    Protocol     = 'tcp'
+                    Verbose      = $true
+                    ErrorAction  = 'Stop'
+                }
+
+                $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+
+                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+
+                Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject
+            }
+        }
+
+        Context 'When using Port parameter' {
+            BeforeAll {
+                # Get the actual TCP port for the DSCSQLTEST instance
+                $ipAllAddress = Get-SqlDscServerProtocolTcpIp -InstanceName 'DSCSQLTEST' -IpAddressGroup 'IPAll'
+                $script:tcpPort = $ipAllAddress.IPAddressProperties['TcpPort'].Value
+
+                if ([System.String]::IsNullOrEmpty($script:tcpPort))
+                {
+                    # If static port is not configured, get the dynamic port
+                    $script:tcpPort = $ipAllAddress.IPAddressProperties['TcpDynamicPorts'].Value
+                }
+
+                Write-Verbose -Message ('Using TCP port: {0}' -f $script:tcpPort) -Verbose
+            }
+
+            It 'Should connect using specific port' {
+                $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+                $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+                $connectSqlDscDatabaseEngineParameters = @{
+                    InstanceName = 'DSCSQLTEST'
+                    Credential   = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
+                    Port         = [System.UInt16] $script:tcpPort
+                    Verbose      = $true
+                    ErrorAction  = 'Stop'
+                }
+
+                $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+
+                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+
+                Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject
+            }
+
+            It 'Should connect using both Protocol and Port' {
+                $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+                $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+                $connectSqlDscDatabaseEngineParameters = @{
+                    InstanceName = 'DSCSQLTEST'
+                    Credential   = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
+                    Protocol     = 'tcp'
+                    Port         = [System.UInt16] $script:tcpPort
+                    Verbose      = $true
+                    ErrorAction  = 'Stop'
+                }
+
+                $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+
+                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+
+                Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject
+            }
+        }
     }
 }
