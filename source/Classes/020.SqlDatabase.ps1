@@ -601,8 +601,7 @@ class SqlDatabase : SqlResourceBase
 
     # Enum properties (using string to avoid SMO type dependencies)
     [DscProperty()]
-    [ValidateSet('Minutes', 'Hours', 'Days')]
-    [System.String]
+    [RetentionPeriodUnits]
     $ChangeTrackingRetentionPeriodUnits
 
     [DscProperty()]
@@ -854,9 +853,11 @@ class SqlDatabase : SqlResourceBase
             # Double properties
             $currentState.MaxSizeInBytes = [System.Double] $databaseObject.MaxSizeInBytes
 
+            # RetentionPeriodUnits enum (convert SMO enum to module enum)
+            $currentState.ChangeTrackingRetentionPeriodUnits = [RetentionPeriodUnits] $databaseObject.ChangeTrackingRetentionPeriodUnits.ToString()
+
             # Enum properties (convert to string with null check)
             $enumProperties = @(
-                'ChangeTrackingRetentionPeriodUnits'
                 'ContainmentType'
                 'DelayedDurability'
                 'FilestreamNonTransactedAccess'
