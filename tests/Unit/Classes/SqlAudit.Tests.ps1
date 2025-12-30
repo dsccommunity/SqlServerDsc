@@ -243,6 +243,14 @@ Describe 'SqlAudit\Set()' -Tag 'Set' {
                 InstanceName = 'NamedInstance'
                 Path         = 'C:\Temp'
             } |
+                # Mock method GetCurrentState() which is called by the base method Get()
+                Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
+                    return [System.Collections.Hashtable] @{
+                        Name         = 'MockAuditName'
+                        InstanceName = 'NamedInstance'
+                        ServerName   = Get-ComputerName
+                    }
+                } -PassThru |
                 # Mock method Modify which is called by the base method Set().
                 Add-Member -Force -MemberType 'ScriptMethod' -Name 'Modify' -Value {
                     $script:mockMethodModifyCallCount += 1
@@ -314,7 +322,15 @@ Describe 'SqlAudit\Test()' -Tag 'Test' {
                 Name         = 'MockAuditName'
                 InstanceName = 'NamedInstance'
                 Path         = 'C:\Temp'
-            }
+            } |
+                # Mock method GetCurrentState() which is called by the base method Get()
+                Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
+                    return [System.Collections.Hashtable] @{
+                        Name         = 'MockAuditName'
+                        InstanceName = 'NamedInstance'
+                        ServerName   = Get-ComputerName
+                    }
+                } -PassThru
         }
     }
 

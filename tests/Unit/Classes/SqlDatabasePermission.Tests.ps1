@@ -924,6 +924,15 @@ Describe 'SqlDatabasePermission\Set()' -Tag 'Set' {
                     }
                 )
             } |
+                # Mock method GetCurrentState() which is called by the base method Get()
+                Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
+                    return [System.Collections.Hashtable] @{
+                        Name         = 'MockUserName'
+                        DatabaseName = 'MockDatabaseName'
+                        InstanceName = 'NamedInstance'
+                        ServerName   = Get-ComputerName
+                    }
+                } -PassThru |
                 # Mock method Modify which is called by the base method Set().
                 Add-Member -Force -MemberType 'ScriptMethod' -Name 'Modify' -Value {
                     $script:mockMethodModifyCallCount += 1
@@ -1013,7 +1022,16 @@ Describe 'SqlDatabasePermission\Test()' -Tag 'Test' {
                         Permission = @()
                     }
                 )
-            }
+            } |
+                # Mock method GetCurrentState() which is called by the base method Get()
+                Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
+                    return [System.Collections.Hashtable] @{
+                        Name         = 'MockUserName'
+                        DatabaseName = 'MockDatabaseName'
+                        InstanceName = 'NamedInstance'
+                        ServerName   = Get-ComputerName
+                    }
+                } -PassThru
         }
     }
 
