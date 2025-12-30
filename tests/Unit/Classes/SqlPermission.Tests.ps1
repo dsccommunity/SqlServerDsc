@@ -927,27 +927,6 @@ Describe 'SqlPermission\Set()' -Tag 'Set' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 $script:mockSqlPermissionInstance |
-                    # Mock method GetCurrentState() which is called by the base method Get()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                        return [System.Collections.Hashtable] @{
-                            Name         = 'MockUserName'
-                            InstanceName = 'NamedInstance'
-                            Permission   = [ServerPermission[]] @(
-                                [ServerPermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('ConnectSql')
-                                }
-                                [ServerPermission] @{
-                                    State      = 'GrantWithGrant'
-                                    Permission = @()
-                                }
-                                [ServerPermission] @{
-                                    State      = 'Deny'
-                                    Permission = @()
-                                }
-                            )
-                        }
-                    } -PassThru |
                     # Mock method Compare() which is called by the base method Set()
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
                         return $null
@@ -968,27 +947,6 @@ Describe 'SqlPermission\Set()' -Tag 'Set' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 $script:mockSqlPermissionInstance |
-                    # Mock method GetCurrentState() which is called by the base method Get()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                        return [System.Collections.Hashtable] @{
-                            Name         = 'MockUserName'
-                            InstanceName = 'NamedInstance'
-                            Permission   = [ServerPermission[]] @(
-                                [ServerPermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('ConnectSql')
-                                }
-                                [ServerPermission] @{
-                                    State      = 'GrantWithGrant'
-                                    Permission = @()
-                                }
-                                [ServerPermission] @{
-                                    State      = 'Deny'
-                                    Permission = @()
-                                }
-                            )
-                        }
-                    } -PassThru |
                     # Mock method Compare() which is called by the base method Set()
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
                         return @{
@@ -1010,7 +968,7 @@ Describe 'SqlPermission\Set()' -Tag 'Set' {
             }
         }
 
-        It 'Should call method Modify()' {
+        It 'Should not call method Modify()' {
             InModuleScope -ScriptBlock {
                 $script:mockSqlPermissionInstance.Set()
 
@@ -1056,28 +1014,7 @@ Describe 'SqlPermission\Test()' -Tag 'Test' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 $script:mockSqlPermissionInstance |
-                    # Mock method GetCurrentState() which is called by the base method Get()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                        return [System.Collections.Hashtable] @{
-                            Name         = 'MockUserName'
-                            InstanceName = 'NamedInstance'
-                            Permission   = [ServerPermission[]] @(
-                                [ServerPermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('ConnectSql')
-                                }
-                                [ServerPermission] @{
-                                    State      = 'GrantWithGrant'
-                                    Permission = @()
-                                }
-                                [ServerPermission] @{
-                                    State      = 'Deny'
-                                    Permission = @()
-                                }
-                            )
-                        }
-                    } -PassThru |
-                    # Mock method Compare() which is called by the base method Test()
+                    # Mock method Compare() which is called by the base method Set()
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
                         return $null
                     }
@@ -1095,28 +1032,7 @@ Describe 'SqlPermission\Test()' -Tag 'Test' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 $script:mockSqlPermissionInstance |
-                    # Mock method GetCurrentState() which is called by the base method Get()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                        return [System.Collections.Hashtable] @{
-                            Name         = 'MockUserName'
-                            InstanceName = 'NamedInstance'
-                            Permission   = [ServerPermission[]] @(
-                                [ServerPermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('ConnectSql')
-                                }
-                                [ServerPermission] @{
-                                    State      = 'GrantWithGrant'
-                                    Permission = @()
-                                }
-                                [ServerPermission] @{
-                                    State      = 'Deny'
-                                    Permission = @()
-                                }
-                            )
-                        }
-                    } -PassThru |
-                    # Mock method Compare() which is called by the base method Test()
+                    # Mock method Compare() which is called by the base method Set()
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
                         return @{
                             Property      = 'Permission'

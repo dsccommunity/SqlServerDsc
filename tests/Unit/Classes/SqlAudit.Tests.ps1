@@ -268,14 +268,6 @@ Describe 'SqlAudit\Set()' -Tag 'Set' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 $script:mockSqlAuditInstance |
-                    # Mock method GetCurrentState() which is called by the base method Get()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                        return [System.Collections.Hashtable] @{
-                            Name         = 'MockAuditName'
-                            InstanceName = 'NamedInstance'
-                            Path         = 'C:\Temp'
-                        }
-                    } -PassThru |
                     # Mock method Compare() which is called by the base method Set()
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
                         return $null
@@ -299,22 +291,12 @@ Describe 'SqlAudit\Set()' -Tag 'Set' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 $script:mockSqlAuditInstance |
-                    # Mock method GetCurrentState() which is called by the base method Get()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                        return [System.Collections.Hashtable] @{
-                            Name         = 'MockAuditName'
-                            InstanceName = 'NamedInstance'
-                            Path         = 'C:\CurrentPath'
-                        }
-                    } -PassThru |
                     # Mock method Compare() which is called by the base method Set()
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
                         return @{
                             Property      = 'Path'
-                            # ExpectedValue matches the instance's Path property (desired state).
-                            ExpectedValue = 'C:\Temp'
-                            # ActualValue matches GetCurrentState's Path (current state).
-                            ActualValue   = 'C:\CurrentPath'
+                            ExpectedValue = 'C:\NewFolder'
+                            ActualValue   = 'C:\Path'
                         }
                     } -PassThru |
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
@@ -356,15 +338,7 @@ Describe 'SqlAudit\Test()' -Tag 'Test' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 $script:mockSqlAuditInstance |
-                    # Mock method GetCurrentState() which is called by the base method Get()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                        return [System.Collections.Hashtable] @{
-                            Name         = 'MockAuditName'
-                            InstanceName = 'NamedInstance'
-                            Path         = 'C:\Temp'
-                        }
-                    } -PassThru |
-                    # Mock method Compare() which is called by the base method Test()
+                    # Mock method Compare() which is called by the base method Set()
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
                         return $null
                     } -PassThru |
@@ -385,15 +359,7 @@ Describe 'SqlAudit\Test()' -Tag 'Test' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 $script:mockSqlAuditInstance |
-                    # Mock method GetCurrentState() which is called by the base method Get()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                        return [System.Collections.Hashtable] @{
-                            Name         = 'MockAuditName'
-                            InstanceName = 'NamedInstance'
-                            Path         = 'C:\WrongFolder'
-                        }
-                    } -PassThru |
-                    # Mock method Compare() which is called by the base method Test()
+                    # Mock method Compare() which is called by the base method Set()
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
                         <#
                             Compare() method shall only return the properties NOT in
