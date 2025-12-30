@@ -991,7 +991,7 @@ class SqlDatabase : SqlResourceBase
         {
             $supportedLevels = $serverObject | Get-SqlDscCompatibilityLevel
 
-            if ($properties.CompatibilityLevel.ToString() -notin $supportedLevels.ToString())
+            if ($properties.CompatibilityLevel.ToString() -notin $supportedLevels)
             {
                 $errorMessage = $this.localizedData.InvalidCompatibilityLevel -f $properties.CompatibilityLevel.ToString(), $this.InstanceName
 
