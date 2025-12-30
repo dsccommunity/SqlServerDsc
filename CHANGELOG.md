@@ -101,6 +101,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SqlProtocol`
   - Refactored to use the public command `Get-SqlDscServerProtocolName` instead
     of the deprecated private function `Get-ProtocolNameProperties`
+- `SqlAudit`
+  - Updated tests for ResourceBase 2.0.
 
 ### Fixed
 
