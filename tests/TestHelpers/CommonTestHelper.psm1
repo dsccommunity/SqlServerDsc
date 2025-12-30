@@ -423,7 +423,7 @@ function Test-SetupArgument
     $actualValues.Count | Should -Be $ExpectedArgument.Count `
         -Because ('the expected arguments was: {0}' -f ($ExpectedArgument.Keys -join ','))
 
-    Write-Verbose -Message 'Verified actual setup argument values against expected setup argument values' -Verbose
+    Write-Verbose -Message 'Verified actual setup argument values against expected setup argument values'
 
     foreach ($argumentKey in $ExpectedArgument.Keys)
     {
