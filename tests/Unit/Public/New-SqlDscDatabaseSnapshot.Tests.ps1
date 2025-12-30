@@ -99,11 +99,10 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
 
             # Mock New-SqlDscDataFile and New-SqlDscFileGroup to avoid type conflicts
             # between test scope and module scope for PowerShell class types.
+            # Use InModuleScope to access the module's class types directly.
             Mock -CommandName 'New-SqlDscDataFile' -MockWith {
                 InModuleScope -ScriptBlock {
-                    param ($Name, $FileName)
-
-                    [DatabaseFileSpec]@{
+                    New-Object -TypeName 'DatabaseFileSpec' -Property @{
                         Name = $Name
                         FileName = $FileName
                     }
@@ -115,9 +114,7 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
 
             Mock -CommandName 'New-SqlDscFileGroup' -MockWith {
                 InModuleScope -ScriptBlock {
-                    param ($Name, $Files)
-
-                    [DatabaseFileGroupSpec]@{
+                    New-Object -TypeName 'DatabaseFileGroupSpec' -Property @{
                         Name = $Name
                         Files = $Files
                     }
@@ -189,14 +186,16 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
         }
 
         It 'Should pass FileGroup parameter when specified' {
-            # Create a mock DatabaseFileGroupSpec using InModuleScope to access internal classes
+            # Create a mock DatabaseFileGroupSpec using InModuleScope to access internal classes.
+            # Use New-Object to create the objects so they have the correct type
+            # from the module's scope.
             $mockFileGroupSpec = InModuleScope -ScriptBlock {
-                $mockDataFileSpec = [DatabaseFileSpec]@{
+                $mockDataFileSpec = New-Object -TypeName 'DatabaseFileSpec' -Property @{
                     Name = 'TestData'
                     FileName = 'C:\Snapshots\TestData.ss'
                 }
 
-                [DatabaseFileGroupSpec]@{
+                New-Object -TypeName 'DatabaseFileGroupSpec' -Property @{
                     Name = 'PRIMARY'
                     Files = @($mockDataFileSpec)
                 }
@@ -273,11 +272,10 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
 
             # Mock New-SqlDscDataFile and New-SqlDscFileGroup to avoid type conflicts
             # between test scope and module scope for PowerShell class types.
+            # Use InModuleScope to access the module's class types directly.
             Mock -CommandName 'New-SqlDscDataFile' -MockWith {
                 InModuleScope -ScriptBlock {
-                    param ($Name, $FileName)
-
-                    [DatabaseFileSpec]@{
+                    New-Object -TypeName 'DatabaseFileSpec' -Property @{
                         Name = $Name
                         FileName = $FileName
                     }
@@ -289,9 +287,7 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
 
             Mock -CommandName 'New-SqlDscFileGroup' -MockWith {
                 InModuleScope -ScriptBlock {
-                    param ($Name, $Files)
-
-                    [DatabaseFileGroupSpec]@{
+                    New-Object -TypeName 'DatabaseFileGroupSpec' -Property @{
                         Name = $Name
                         Files = $Files
                     }
@@ -403,11 +399,10 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
 
             # Mock New-SqlDscDataFile and New-SqlDscFileGroup to avoid type conflicts
             # between test scope and module scope for PowerShell class types.
+            # Use InModuleScope to access the module's class types directly.
             Mock -CommandName 'New-SqlDscDataFile' -MockWith {
                 InModuleScope -ScriptBlock {
-                    param ($Name, $FileName)
-
-                    [DatabaseFileSpec]@{
+                    New-Object -TypeName 'DatabaseFileSpec' -Property @{
                         Name = $Name
                         FileName = $FileName
                     }
@@ -419,9 +414,7 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
 
             Mock -CommandName 'New-SqlDscFileGroup' -MockWith {
                 InModuleScope -ScriptBlock {
-                    param ($Name, $Files)
-
-                    [DatabaseFileGroupSpec]@{
+                    New-Object -TypeName 'DatabaseFileGroupSpec' -Property @{
                         Name = $Name
                         Files = $Files
                     }
@@ -484,11 +477,10 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
 
             # Mock New-SqlDscDataFile and New-SqlDscFileGroup to avoid type conflicts
             # between test scope and module scope for PowerShell class types.
+            # Use InModuleScope to access the module's class types directly.
             Mock -CommandName 'New-SqlDscDataFile' -MockWith {
                 InModuleScope -ScriptBlock {
-                    param ($Name, $FileName)
-
-                    [DatabaseFileSpec]@{
+                    New-Object -TypeName 'DatabaseFileSpec' -Property @{
                         Name = $Name
                         FileName = $FileName
                     }
@@ -500,9 +492,7 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
 
             Mock -CommandName 'New-SqlDscFileGroup' -MockWith {
                 InModuleScope -ScriptBlock {
-                    param ($Name, $Files)
-
-                    [DatabaseFileGroupSpec]@{
+                    New-Object -TypeName 'DatabaseFileGroupSpec' -Property @{
                         Name = $Name
                         Files = $Files
                     }
