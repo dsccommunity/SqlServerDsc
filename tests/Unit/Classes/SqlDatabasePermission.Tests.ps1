@@ -935,6 +935,7 @@ Describe 'SqlDatabasePermission\Set()' -Tag 'Set' {
     BeforeEach {
         InModuleScope -ScriptBlock {
             $script:mockMethodModifyCallCount = 0
+            $script:mockMethodTestCallCount = 0
         }
     }
 
@@ -942,9 +943,10 @@ Describe 'SqlDatabasePermission\Set()' -Tag 'Set' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 $script:mockSqlDatabasePermissionInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return $null
+                    # Mock method Test() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Test' -Value {
+                        $script:mockMethodTestCallCount += 1
+                        return $true
                     }
             }
         }
@@ -954,6 +956,7 @@ Describe 'SqlDatabasePermission\Set()' -Tag 'Set' {
                 $script:mockSqlDatabasePermissionInstance.Set()
 
                 $script:mockMethodModifyCallCount | Should -Be 0
+                $script:mockMethodTestCallCount | Should -Be 1
             }
         }
     }
@@ -962,32 +965,38 @@ Describe 'SqlDatabasePermission\Set()' -Tag 'Set' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 $script:mockSqlDatabasePermissionInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return @{
-                            Property      = 'Permission'
-                            ExpectedValue = [DatabasePermission[]] @(
-                                [DatabasePermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('Connect', 'Update')
-                                }
-                            )
-                            ActualValue   = [DatabasePermission[]] @(
-                                [DatabasePermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('Connect')
-                                }
-                            )
-                        }
+                    # Mock method Test() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Test' -Value {
+                        $script:mockMethodTestCallCount += 1
+                        return $false
                     }
+
+                $script:mockSqlDatabasePermissionInstance.PropertiesNotInDesiredState = @(
+                    @{
+                        Property      = 'Permission'
+                        ExpectedValue = [DatabasePermission[]] @(
+                            [DatabasePermission] @{
+                                State      = 'Grant'
+                                Permission = @('Connect', 'Update')
+                            }
+                        )
+                        ActualValue   = [DatabasePermission[]] @(
+                            [DatabasePermission] @{
+                                State      = 'Grant'
+                                Permission = @('Connect')
+                            }
+                        )
+                    }
+                )
             }
         }
 
-        It 'Should not call method Modify()' {
+        It 'Should call method Modify()' {
             InModuleScope -ScriptBlock {
                 $script:mockSqlDatabasePermissionInstance.Set()
 
                 $script:mockMethodModifyCallCount | Should -Be 1
+                $script:mockMethodTestCallCount | Should -Be 1
             }
         }
     }
@@ -1018,13 +1027,19 @@ Describe 'SqlDatabasePermission\Test()' -Tag 'Test' {
         }
     }
 
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockMethodGetCallCount = 0
+        }
+    }
+
     Context 'When the system is in the desired state' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 $script:mockSqlDatabasePermissionInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return $null
+                    # Mock method Get() which is called by the base method Test()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
+                        $script:mockMethodGetCallCount += 1
                     }
             }
         }
@@ -1032,6 +1047,8 @@ Describe 'SqlDatabasePermission\Test()' -Tag 'Test' {
         It 'Should return $true' {
             InModuleScope -ScriptBlock {
                 $script:mockSqlDatabasePermissionInstance.Test() | Should -BeTrue
+
+                $script:mockMethodGetCallCount | Should -Be 1
             }
         }
     }
@@ -1040,30 +1057,36 @@ Describe 'SqlDatabasePermission\Test()' -Tag 'Test' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 $script:mockSqlDatabasePermissionInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return @{
-                            Property      = 'Permission'
-                            ExpectedValue = [DatabasePermission[]] @(
-                                [DatabasePermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('Connect', 'Update')
-                                }
-                            )
-                            ActualValue   = [DatabasePermission[]] @(
-                                [DatabasePermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('Connect')
-                                }
-                            )
-                        }
+                    # Mock method Get() which is called by the base method Test()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
+                        $script:mockMethodGetCallCount += 1
                     }
+
+                $script:mockSqlDatabasePermissionInstance.PropertiesNotInDesiredState = @(
+                    @{
+                        Property      = 'Permission'
+                        ExpectedValue = [DatabasePermission[]] @(
+                            [DatabasePermission] @{
+                                State      = 'Grant'
+                                Permission = @('Connect', 'Update')
+                            }
+                        )
+                        ActualValue   = [DatabasePermission[]] @(
+                            [DatabasePermission] @{
+                                State      = 'Grant'
+                                Permission = @('Connect')
+                            }
+                        )
+                    }
+                )
             }
         }
 
         It 'Should return $false' {
             InModuleScope -ScriptBlock {
                 $script:mockSqlDatabasePermissionInstance.Test() | Should -BeFalse
+
+                $script:mockMethodGetCallCount | Should -Be 1
             }
         }
     }
