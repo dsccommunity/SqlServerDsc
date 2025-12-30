@@ -1,21 +1,6 @@
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
-<#
-    TODO: This fails with:
-
-    Running tests from 'D:\a\1\s\tests\Unit\Public\New-SqlDscDatabaseSnapshot.Tests.ps1'
-    Describing New-SqlDscDatabaseSnapshot
-    Context When creating a database snapshot using ServerObject parameter set
-    ##[error]    [-] Should create a database snapshot successfully with minimal parameters 28ms (25ms|3ms)
-    ##[error]     PSInvalidCastException: Cannot convert the "DatabaseFileSpec" value of type "DatabaseFileSpec" to type "DatabaseFileSpec".
-    ##[error]     ArgumentTransformationMetadataException: Cannot convert the "DatabaseFileSpec" value of type "DatabaseFileSpec" to type "DatabaseFileSpec".
-    ##[error]     ParameterBindingArgumentTransformationException: Cannot process argument transformation on parameter 'Files'. Cannot convert the "DatabaseFileSpec" value of type "DatabaseFileSpec" to type "DatabaseFileSpec".
-    ##[error]     at New-SqlDscDatabaseSnapshot<Process>, D:\a\1\s\output\builtModule\SqlServerDsc\17.4.0\SqlServerDsc.psm1:20649
-    ##[error]     at <ScriptBlock>, D:\a\1\s\tests\Unit\Public\New-SqlDscDatabaseSnapshot.Tests.ps1:137
-#>
-return
-
 BeforeDiscovery {
     try
     {
