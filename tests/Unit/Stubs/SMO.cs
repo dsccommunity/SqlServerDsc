@@ -1344,29 +1344,12 @@ namespace Microsoft.SqlServer.Management.Smo
     // Used by:
     //  SqlAGDatabase
     //  Invoke-SqlDscScalarQuery
-    //  Connect-SQL
     public class ServerConnection
     {
         public string TrueLogin;
         public int StatementTimeout;
-        public string ServerInstance;
-        public int ConnectTimeout;
-        public string ApplicationName;
-        public bool EncryptConnection;
-        public bool LoginSecure;
-        public string Login;
-        public System.Security.SecureString SecurePassword;
-        public bool ConnectAsUser;
-        public string ConnectAsUserName;
-        public string ConnectAsUserPassword;
 
         public void Create()
-        {}
-
-        public void Connect()
-        {}
-
-        public void Disconnect()
         {}
 
         // Method: ExecuteScalar
