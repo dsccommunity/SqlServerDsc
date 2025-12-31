@@ -489,7 +489,7 @@ Describe 'SqlDatabase\GetCurrentState()' -Tag 'GetCurrentState' {
                 $currentState.Credential | Should -BeNullOrEmpty
                 $currentState.Name | Should -Be 'TestDatabase'
                 $currentState.Collation | Should -Be 'SQL_Latin1_General_CP1_CI_AS'
-                $currentState.CompatibilityLevel | Should -Be ([DatabaseCompatibilityLevel]::Version150)
+                $currentState.CompatibilityLevel | Should -Be 'Version150'
                 $currentState.RecoveryModel | Should -Be 'Full'
                 $currentState.OwnerName | Should -Be 'sa'
                 $currentState.SnapshotIsolation | Should -BeFalse
@@ -1037,7 +1037,7 @@ Describe 'SqlDatabase\AssertProperties()' -Tag 'AssertProperties' {
                 $script:mockSqlDatabaseInstance = [SqlDatabase] @{
                     Name               = 'TestDatabase'
                     InstanceName       = 'NamedInstance'
-                    CompatibilityLevel = [DatabaseCompatibilityLevel]::Version80
+                    CompatibilityLevel = 'Version80'
                 } |
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
                         return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
@@ -1061,7 +1061,7 @@ Describe 'SqlDatabase\AssertProperties()' -Tag 'AssertProperties' {
                 {
                     $script:mockSqlDatabaseInstance.AssertProperties(
                         @{
-                            CompatibilityLevel = [DatabaseCompatibilityLevel]::Version80
+                            CompatibilityLevel = 'Version80'
                         }
                     )
                 } | Should -Throw -ExpectedMessage $mockErrorMessage

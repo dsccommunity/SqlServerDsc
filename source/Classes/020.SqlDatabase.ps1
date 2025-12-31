@@ -337,7 +337,8 @@ class SqlDatabase : SqlResourceBase
     $Collation
 
     [DscProperty()]
-    [DatabaseCompatibilityLevel]
+    [ValidateSet('Version80', 'Version90', 'Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150', 'Version160')]
+    [System.String]
     $CompatibilityLevel
 
     [DscProperty()]
@@ -601,7 +602,8 @@ class SqlDatabase : SqlResourceBase
 
     # Enum properties (using string to avoid SMO type dependencies)
     [DscProperty()]
-    [RetentionPeriodUnits]
+    [ValidateSet('None', 'Days', 'Hours', 'Minutes')]
+    [System.String]
     $ChangeTrackingRetentionPeriodUnits
 
     [DscProperty()]
@@ -630,7 +632,8 @@ class SqlDatabase : SqlResourceBase
     $LegacyCardinalityEstimationForSecondary
 
     [DscProperty()]
-    [MirroringSafetyLevel]
+    [ValidateSet('None', 'Unknown', 'Off', 'Full')]
+    [System.String]
     $MirroringSafetyLevel
 
     [DscProperty()]
@@ -742,7 +745,7 @@ class SqlDatabase : SqlResourceBase
             # Only set CompatibilityLevel if it's a valid non-zero value
             if ($databaseObject.CompatibilityLevel -gt 0)
             {
-                $currentState.CompatibilityLevel = [DatabaseCompatibilityLevel] $databaseObject.CompatibilityLevel.ToString()
+                $currentState.CompatibilityLevel = $databaseObject.CompatibilityLevel.ToString()
             }
 
             $currentState.RecoveryModel = $databaseObject.RecoveryModel.ToString()
@@ -858,11 +861,11 @@ class SqlDatabase : SqlResourceBase
             # Double properties
             $currentState.MaxSizeInBytes = [System.Double] $databaseObject.MaxSizeInBytes
 
-            # RetentionPeriodUnits enum (convert SMO enum to module enum)
-            $currentState.ChangeTrackingRetentionPeriodUnits = [RetentionPeriodUnits] $databaseObject.ChangeTrackingRetentionPeriodUnits.ToString()
+            # RetentionPeriodUnits (convert SMO enum to string)
+            $currentState.ChangeTrackingRetentionPeriodUnits = $databaseObject.ChangeTrackingRetentionPeriodUnits.ToString()
 
-            # MirroringSafetyLevel enum (convert SMO enum to module enum)
-            $currentState.MirroringSafetyLevel = [MirroringSafetyLevel] $databaseObject.MirroringSafetyLevel.ToString()
+            # MirroringSafetyLevel (convert SMO enum to string)
+            $currentState.MirroringSafetyLevel = $databaseObject.MirroringSafetyLevel.ToString()
 
             # Enum properties (convert to string with null check)
             $enumProperties = @(
