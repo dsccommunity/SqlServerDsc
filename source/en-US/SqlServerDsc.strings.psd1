@@ -452,6 +452,22 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     DatabaseOwner_Set_ShouldProcessCaption = Set database owner on instance
 
+    ## Set-SqlDscDatabaseDefaultFileGroup
+    DatabaseDefaultFileGroup_Updating_DefaultFileGroup = Setting default filegroup of database '{0}' to '{1}'. (SSDDFG0001)
+    DatabaseDefaultFileGroup_Updated_DefaultFileGroup = Default filegroup of database '{0}' was set to '{1}'. (SSDDFG0002)
+    DatabaseDefaultFileGroup_AlreadyCorrect_DefaultFileGroup = Default filegroup of database '{0}' is already set to '{1}'. (SSDDFG0003)
+    DatabaseDefaultFileGroup_SetFailed_DefaultFileGroup = Failed to set default filegroup of database '{0}' to '{1}'. (SSDDFG0004)
+    DatabaseDefaultFileGroup_Set_ShouldProcessVerboseDescription_DefaultFileGroup = Setting the default filegroup of the database '{0}' to '{1}' on the instance '{2}'.
+    DatabaseDefaultFileGroup_Set_ShouldProcessVerboseWarning_DefaultFileGroup = Are you sure you want to change the default filegroup of the database '{0}' to '{1}'?
+    DatabaseDefaultFileGroup_Updating_DefaultFileStreamFileGroup = Setting default FILESTREAM filegroup of database '{0}' to '{1}'. (SSDDFG0005)
+    DatabaseDefaultFileGroup_Updated_DefaultFileStreamFileGroup = Default FILESTREAM filegroup of database '{0}' was set to '{1}'. (SSDDFG0006)
+    DatabaseDefaultFileGroup_AlreadyCorrect_DefaultFileStreamFileGroup = Default FILESTREAM filegroup of database '{0}' is already set to '{1}'. (SSDDFG0007)
+    DatabaseDefaultFileGroup_SetFailed_DefaultFileStreamFileGroup = Failed to set default FILESTREAM filegroup of database '{0}' to '{1}'. (SSDDFG0008)
+    DatabaseDefaultFileGroup_Set_ShouldProcessVerboseDescription_DefaultFileStreamFileGroup = Setting the default FILESTREAM filegroup of the database '{0}' to '{1}' on the instance '{2}'.
+    DatabaseDefaultFileGroup_Set_ShouldProcessVerboseWarning_DefaultFileStreamFileGroup = Are you sure you want to change the default FILESTREAM filegroup of the database '{0}' to '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    DatabaseDefaultFileGroup_Set_ShouldProcessCaption = Set database default filegroup on instance
+
     ## Enable-SqlDscDatabaseSnapshotIsolation
     DatabaseSnapshotIsolation_Enabling = Enabling snapshot isolation for database '{0}'. (ESDSI0002)
     DatabaseSnapshotIsolation_Enabled = Snapshot isolation for database '{0}' was enabled. (ESDSI0003)
