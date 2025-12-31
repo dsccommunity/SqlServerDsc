@@ -34,12 +34,12 @@ BeforeAll {
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\..\TestHelpers\CommonTestHelper.psm1')
 
     # Need to define the variables here which will be used in Pester Run.
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
     $script:dscResourceFriendlyName = 'SqlAlwaysOnService'
     $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 
     $script:testEnvironment = Initialize-TestEnvironment `
-        -DSCModuleName $script:dscModuleName `
+        -DSCModuleName $script:moduleName `
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
         -TestType 'Integration'

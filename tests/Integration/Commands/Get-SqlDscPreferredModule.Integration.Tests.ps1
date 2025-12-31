@@ -26,7 +26,9 @@ BeforeDiscovery {
 BeforeAll {
     $script:moduleName = 'SqlServerDsc'
 
-    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 }
 
 Describe 'Get-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
@@ -140,7 +142,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_
             BeforeAll {
                 # Backup original environment variable
                 $originalSMODefaultModuleName = $env:SMODefaultModuleName
-                
+
                 # Set environment variable to SqlServer if available
                 $sqlServerModule = Get-Module -Name 'SqlServer' -ListAvailable | Select-Object -First 1
                 if ($sqlServerModule) {
@@ -177,7 +179,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_
             BeforeAll {
                 # Backup original environment variable
                 $originalSMODefaultModuleVersion = $env:SMODefaultModuleVersion
-                
+
                 # Get available SqlServer module version if available
                 $sqlServerModule = Get-Module -Name 'SqlServer' -ListAvailable | Select-Object -First 1
                 if ($sqlServerModule) {
@@ -238,7 +240,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_
 
     Context 'When validating error handling' {
         It 'Should throw a terminating error when no modules are found and ErrorAction is Stop' {
-            { Get-SqlDscPreferredModule -Name @('NonExistentModule1', 'NonExistentModule2') -ErrorAction 'Stop' } | 
+            { Get-SqlDscPreferredModule -Name @('NonExistentModule1', 'NonExistentModule2') -ErrorAction 'Stop' } |
                 Should -Throw -ErrorId 'GSDPM0001,Get-SqlDscPreferredModule'
         }
 

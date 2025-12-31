@@ -24,23 +24,22 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
-    Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
     # Load SMO stub types
     Add-Type -Path "$PSScriptRoot/../Stubs/SMO.cs"
 
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
-
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 }
 
 Describe 'Get-SqlDscAgentAlert' -Tag 'Public' {

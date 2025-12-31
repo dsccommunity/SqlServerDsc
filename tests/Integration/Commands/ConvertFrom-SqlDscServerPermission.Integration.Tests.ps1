@@ -26,7 +26,9 @@ BeforeDiscovery {
 BeforeAll {
     $script:moduleName = 'SqlServerDsc'
 
-    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 }
 
 # NOTE: This integration test focuses on validating the ConvertFrom-SqlDscServerPermission command
@@ -161,13 +163,13 @@ Describe 'ConvertFrom-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Int
             # Verify this creates a valid ServerPermissionSet that could be used with SQL Server SMO
             $result | Should -Not -BeNullOrEmpty
             $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]
-            
+
             # Verify all specified permissions are set to true
             $result.ConnectSql | Should -BeTrue
             $result.ViewServerState | Should -BeTrue
             $result.CreateAnyDatabase | Should -BeTrue
             $result.AlterAnyLogin | Should -BeTrue
-            
+
             # Verify unspecified permissions remain false
             $result.ControlServer | Should -BeFalse
             $result.Shutdown | Should -BeFalse

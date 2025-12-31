@@ -24,25 +24,24 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
     $env:SqlServerDscCI = $true
 
-    Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
     # Load SMO stub types
     Add-Type -Path "$PSScriptRoot/../Stubs/SMO.cs"
 
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
-
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 
     Remove-Item -Path 'Env:SqlServerDscCI' -ErrorAction 'SilentlyContinue'
 }
@@ -92,14 +91,14 @@ Describe 'Test-SqlDscIsAgentAlert' -Tag 'Public' {
             # Mock server object using SMO stub types
             $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
 
-            Mock -CommandName 'Get-AgentAlertObject' -ModuleName $script:dscModuleName -MockWith { return $script:mockAlert }
+            Mock -CommandName 'Get-AgentAlertObject' -ModuleName $script:moduleName -MockWith { return $script:mockAlert }
         }
 
         It 'Should return true when alert exists' {
             $result = Test-SqlDscIsAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert'
 
             $result | Should -BeTrue
-            Should -Invoke -CommandName 'Get-AgentAlertObject' -ModuleName $script:dscModuleName -Times 1 -Exactly
+            Should -Invoke -CommandName 'Get-AgentAlertObject' -ModuleName $script:moduleName -Times 1 -Exactly
         }
     }
 
@@ -108,14 +107,14 @@ Describe 'Test-SqlDscIsAgentAlert' -Tag 'Public' {
             # Mock server object using SMO stub types
             $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
 
-            Mock -CommandName 'Get-AgentAlertObject' -ModuleName $script:dscModuleName
+            Mock -CommandName 'Get-AgentAlertObject' -ModuleName $script:moduleName
         }
 
         It 'Should return false when alert does not exist' {
             $result = Test-SqlDscIsAgentAlert -ServerObject $script:mockServerObject -Name 'NonExistentAlert'
 
             $result | Should -BeFalse
-            Should -Invoke -CommandName 'Get-AgentAlertObject' -ModuleName $script:dscModuleName -Times 1 -Exactly
+            Should -Invoke -CommandName 'Get-AgentAlertObject' -ModuleName $script:moduleName -Times 1 -Exactly
         }
     }
 
@@ -128,14 +127,14 @@ Describe 'Test-SqlDscIsAgentAlert' -Tag 'Public' {
             # Mock the server object using SMO stub types
             $script:mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
 
-            Mock -CommandName 'Get-AgentAlertObject' -ModuleName $script:dscModuleName -MockWith { return $script:mockAlert }
+            Mock -CommandName 'Get-AgentAlertObject' -ModuleName $script:moduleName -MockWith { return $script:mockAlert }
         }
 
         It 'Should work with alias Test-SqlDscAgentAlert' {
             $result = Test-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert'
 
             $result | Should -BeTrue
-            Should -Invoke -CommandName 'Get-AgentAlertObject' -ModuleName $script:dscModuleName -Times 1 -Exactly
+            Should -Invoke -CommandName 'Get-AgentAlertObject' -ModuleName $script:moduleName -Times 1 -Exactly
         }
     }
 }

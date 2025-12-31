@@ -57,13 +57,13 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
     $script:dscResourceName = 'DSC_SqlSetup'
 
     $env:SqlServerDscCI = $true
 
     $script:testEnvironment = Initialize-TestEnvironment `
-        -DSCModuleName $script:dscModuleName `
+        -DSCModuleName $script:moduleName `
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
         -TestType 'Unit'

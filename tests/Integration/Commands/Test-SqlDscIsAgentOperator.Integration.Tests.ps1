@@ -26,7 +26,9 @@ BeforeDiscovery {
 BeforeAll {
     $script:moduleName = 'SqlServerDsc'
 
-    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
     $env:SqlServerDscCI = $true
 
@@ -36,9 +38,6 @@ BeforeAll {
 
 AfterAll {
     $env:SqlServerDscCI = $null
-
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:moduleName -All | Remove-Module -Force
 }
 
 Describe 'Test-SqlDscIsAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022' {
