@@ -69,21 +69,27 @@ Describe 'SqlPermission' {
     Context 'When class is instantiated' {
         It 'Should not throw an exception' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $null = [SqlPermission]::new()
             }
         }
 
         It 'Should have a default or empty constructor' {
             InModuleScope -ScriptBlock {
-                $instance = [SqlPermission]::new()
-                $instance | Should -Not -BeNullOrEmpty
+                Set-StrictMode -Version 1.0
+
+                $mockInstance = [SqlPermission]::new()
+                $mockInstance | Should -Not -BeNullOrEmpty
             }
         }
 
         It 'Should be the correct type' {
             InModuleScope -ScriptBlock {
-                $instance = [SqlPermission]::new()
-                $instance.GetType().Name | Should -Be 'SqlPermission'
+                Set-StrictMode -Version 1.0
+
+                $mockInstance = [SqlPermission]::new()
+                $mockInstance.GetType().Name | Should -Be 'SqlPermission'
             }
         }
     }
@@ -94,6 +100,8 @@ Describe 'SqlPermission\Get()' -Tag 'Get' {
         Context 'When the desired permission exist' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlPermissionInstance = [SqlPermission] @{
                         Name         = 'MockUserName'
                         InstanceName = 'NamedInstance'
@@ -138,12 +146,20 @@ Describe 'SqlPermission\Get()' -Tag 'Get' {
                                     }
                                 )
                             }
-                        }
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
+                            return
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
+                            return
+                        } -PassThru
                 }
             }
 
             It 'Should return the correct values' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $currentState = $script:mockSqlPermissionInstance.Get()
 
                     $currentState.InstanceName | Should -Be 'NamedInstance'
@@ -163,6 +179,8 @@ Describe 'SqlPermission\Get()' -Tag 'Get' {
         Context 'When the desired permission exist and using parameter Credential' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlPermissionInstance = [SqlPermission] @{
                         Name         = 'MockUserName'
                         InstanceName = 'NamedInstance'
@@ -212,12 +230,20 @@ Describe 'SqlPermission\Get()' -Tag 'Get' {
                                     }
                                 )
                             }
-                        }
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
+                            return
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
+                            return
+                        } -PassThru
                 }
             }
 
             It 'Should return the correct values' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $currentState = $script:mockSqlPermissionInstance.Get()
 
                     $currentState.InstanceName | Should -Be 'NamedInstance'
@@ -243,6 +269,8 @@ Describe 'SqlPermission\Get()' -Tag 'Get' {
         Context 'When the desired permission exist' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlPermissionInstance = [SqlPermission] @{
                         Name         = 'MockUserName'
                         InstanceName = 'NamedInstance'
@@ -287,12 +315,20 @@ Describe 'SqlPermission\Get()' -Tag 'Get' {
                                     }
                                 )
                             }
-                        }
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
+                            return
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
+                            return
+                        } -PassThru
                 }
             }
 
             It 'Should return the correct values' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $currentState = $script:mockSqlPermissionInstance.Get()
 
                     $currentState.InstanceName | Should -Be 'NamedInstance'
@@ -319,6 +355,8 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
     Context 'When there are no permission in the current state' {
         BeforeAll {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlPermissionInstance = [SqlPermission] @{
                     Name         = 'MockUserName'
                     InstanceName = 'NamedInstance'
@@ -326,7 +364,7 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
             }
 
             Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
-                return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                return [Microsoft.SqlServer.Management.Smo.Server]::new()
             }
 
             Mock -CommandName Get-SqlDscServerPermission
@@ -334,10 +372,14 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
 
         It 'Should return empty collections for each state' {
             InModuleScope -ScriptBlock {
-                $currentState = $script:mockSqlPermissionInstance.GetCurrentState(@{
+                Set-StrictMode -Version 1.0
+
+                $currentState = $script:mockSqlPermissionInstance.GetCurrentState(
+                    @{
                         Name         = 'MockUserName'
                         InstanceName = 'NamedInstance'
-                    })
+                    }
+                )
 
                 $currentState.Credential | Should -BeNullOrEmpty
 
@@ -367,15 +409,19 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
         Context 'When using property Credential' {
             It 'Should return empty collections for each state' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlPermissionInstance.Credential = [System.Management.Automation.PSCredential]::new(
                         'MyCredentialUserName',
                         [SecureString]::new()
                     )
 
-                    $currentState = $script:mockSqlPermissionInstance.GetCurrentState(@{
+                    $currentState = $script:mockSqlPermissionInstance.GetCurrentState(
+                        @{
                             Name         = 'MockUserName'
                             InstanceName = 'NamedInstance'
-                        })
+                        }
+                    )
 
                     $currentState.Credential | Should -BeOfType [System.Management.Automation.PSCredential]
 
@@ -409,6 +455,8 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
     Context 'When there are permissions for only state Grant' {
         BeforeAll {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlPermissionInstance = [SqlPermission] @{
                     Name         = 'MockUserName'
                     InstanceName = 'NamedInstance'
@@ -416,25 +464,25 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
             }
 
             Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
-                return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                return [Microsoft.SqlServer.Management.Smo.Server]::new()
             }
 
             Mock -CommandName Get-SqlDscServerPermission -MockWith {
                 [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[]] $mockServerPermissionInfoCollection = @()
 
-                $mockServerPermissionSet1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
+                $mockServerPermissionSet1 = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]::new()
                 $mockServerPermissionSet1.ConnectSql = $true
 
-                $mockServerPermissionInfo1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionInfo'
+                $mockServerPermissionInfo1 = [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]::new()
                 $mockServerPermissionInfo1.PermissionState = 'Grant'
                 $mockServerPermissionInfo1.PermissionType = $mockServerPermissionSet1
 
                 $mockServerPermissionInfoCollection += $mockServerPermissionInfo1
 
-                $mockServerPermissionSet2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
+                $mockServerPermissionSet2 = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]::new()
                 $mockServerPermissionSet2.AlterAnyEndpoint = $true
 
-                $mockServerPermissionInfo2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionInfo'
+                $mockServerPermissionInfo2 = [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]::new()
                 $mockServerPermissionInfo2.PermissionState = 'Grant'
                 $mockServerPermissionInfo2.PermissionType = $mockServerPermissionSet2
 
@@ -446,10 +494,14 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
 
         It 'Should return correct values for state Grant and empty collections for the two other states' {
             InModuleScope -ScriptBlock {
-                $currentState = $script:mockSqlPermissionInstance.GetCurrentState(@{
+                Set-StrictMode -Version 1.0
+
+                $currentState = $script:mockSqlPermissionInstance.GetCurrentState(
+                    @{
                         Name         = 'MockUserName'
                         InstanceName = 'NamedInstance'
-                    })
+                    }
+                )
 
                 $currentState.Credential | Should -BeNullOrEmpty
 
@@ -482,6 +534,8 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
     Context 'When there are permissions for both state Grant and Deny' {
         BeforeAll {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlPermissionInstance = [SqlPermission] @{
                     Name         = 'MockUserName'
                     InstanceName = 'NamedInstance'
@@ -489,26 +543,26 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
             }
 
             Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
-                return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                return [Microsoft.SqlServer.Management.Smo.Server]::new()
             }
 
             Mock -CommandName Get-SqlDscServerPermission -MockWith {
                 [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[]] $mockServerPermissionInfoCollection = @()
 
-                $mockServerPermissionSet1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
+                $mockServerPermissionSet1 = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]::new()
                 $mockServerPermissionSet1.ConnectSql = $true
                 $mockServerPermissionSet1.AlterAnyEndpoint = $true
 
-                $mockServerPermissionInfo1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionInfo'
+                $mockServerPermissionInfo1 = [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]::new()
                 $mockServerPermissionInfo1.PermissionState = 'Grant'
                 $mockServerPermissionInfo1.PermissionType = $mockServerPermissionSet1
 
                 $mockServerPermissionInfoCollection += $mockServerPermissionInfo1
 
-                $mockServerPermissionSet2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
+                $mockServerPermissionSet2 = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]::new()
                 $mockServerPermissionSet2.ViewServerState = $true
 
-                $mockServerPermissionInfo2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionInfo'
+                $mockServerPermissionInfo2 = [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]::new()
                 $mockServerPermissionInfo2.PermissionState = 'Deny'
                 $mockServerPermissionInfo2.PermissionType = $mockServerPermissionSet2
 
@@ -520,10 +574,14 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
 
         It 'Should return correct values for the states Grant and Deny and empty collections for the state GrantWithGrant' {
             InModuleScope -ScriptBlock {
-                $currentState = $script:mockSqlPermissionInstance.GetCurrentState(@{
+                Set-StrictMode -Version 1.0
+
+                $currentState = $script:mockSqlPermissionInstance.GetCurrentState(
+                    @{
                         Name         = 'MockUserName'
                         InstanceName = 'NamedInstance'
-                    })
+                    }
+                )
 
                 $currentState.Credential | Should -BeNullOrEmpty
 
@@ -556,6 +614,8 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
         Context 'When the system is in the desired state' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlPermissionInstance = [SqlPermission] @{
                         Name                = 'MockUserName'
                         InstanceName        = 'NamedInstance'
@@ -567,26 +627,26 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
                 }
 
                 Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    return [Microsoft.SqlServer.Management.Smo.Server]::new()
                 }
 
                 Mock -CommandName Get-SqlDscServerPermission -MockWith {
                     [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[]] $mockServerPermissionInfoCollection = @()
 
-                    $mockServerPermissionSet1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
+                    $mockServerPermissionSet1 = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]::new()
                     $mockServerPermissionSet1.ConnectSql = $true
                     $mockServerPermissionSet1.AlterAnyEndpoint = $true
 
-                    $mockServerPermissionInfo1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionInfo'
+                    $mockServerPermissionInfo1 = [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]::new()
                     $mockServerPermissionInfo1.PermissionState = 'Grant'
                     $mockServerPermissionInfo1.PermissionType = $mockServerPermissionSet1
 
                     $mockServerPermissionInfoCollection += $mockServerPermissionInfo1
 
-                    $mockServerPermissionSet2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
+                    $mockServerPermissionSet2 = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]::new()
                     $mockServerPermissionSet2.ViewServerState = $true
 
-                    $mockServerPermissionInfo2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionInfo'
+                    $mockServerPermissionInfo2 = [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]::new()
                     $mockServerPermissionInfo2.PermissionState = 'Deny'
                     $mockServerPermissionInfo2.PermissionType = $mockServerPermissionSet2
 
@@ -598,10 +658,14 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
 
             It 'Should return correct values for the states Grant and Deny and empty collections for the state GrantWithGrant' {
                 InModuleScope -ScriptBlock {
-                    $currentState = $script:mockSqlPermissionInstance.GetCurrentState(@{
+                    Set-StrictMode -Version 1.0
+
+                    $currentState = $script:mockSqlPermissionInstance.GetCurrentState(
+                        @{
                             Name         = 'MockUserName'
                             InstanceName = 'NamedInstance'
-                        })
+                        }
+                    )
 
                     $currentState.Credential | Should -BeNullOrEmpty
 
@@ -637,6 +701,8 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
         Context 'When the system is not in the desired state' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlPermissionInstance = [SqlPermission] @{
                         Name                = 'MockUserName'
                         InstanceName        = 'NamedInstance'
@@ -648,26 +714,26 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
                 }
 
                 Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    return [Microsoft.SqlServer.Management.Smo.Server]::new()
                 }
 
                 Mock -CommandName Get-SqlDscServerPermission -MockWith {
                     [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[]] $mockServerPermissionInfoCollection = @()
 
-                    $mockServerPermissionSet1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
+                    $mockServerPermissionSet1 = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]::new()
                     $mockServerPermissionSet1.ConnectSql = $true
                     $mockServerPermissionSet1.AlterAnyEndpoint = $true
 
-                    $mockServerPermissionInfo1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionInfo'
+                    $mockServerPermissionInfo1 = [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]::new()
                     $mockServerPermissionInfo1.PermissionState = 'Grant'
                     $mockServerPermissionInfo1.PermissionType = $mockServerPermissionSet1
 
                     $mockServerPermissionInfoCollection += $mockServerPermissionInfo1
 
-                    $mockServerPermissionSet2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
+                    $mockServerPermissionSet2 = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]::new()
                     $mockServerPermissionSet2.ViewServerState = $true
 
-                    $mockServerPermissionInfo2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionInfo'
+                    $mockServerPermissionInfo2 = [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]::new()
                     $mockServerPermissionInfo2.PermissionState = 'Deny'
                     $mockServerPermissionInfo2.PermissionType = $mockServerPermissionSet2
 
@@ -679,10 +745,14 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
 
             It 'Should return correct values for the states Grant and Deny and empty collections for the state GrantWithGrant' {
                 InModuleScope -ScriptBlock {
-                    $currentState = $script:mockSqlPermissionInstance.GetCurrentState(@{
+                    Set-StrictMode -Version 1.0
+
+                    $currentState = $script:mockSqlPermissionInstance.GetCurrentState(
+                        @{
                             Name         = 'MockUserName'
                             InstanceName = 'NamedInstance'
-                        })
+                        }
+                    )
 
                     $currentState.Credential | Should -BeNullOrEmpty
 
@@ -720,6 +790,8 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
         Context 'When the system is in the desired state' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlPermissionInstance = [SqlPermission] @{
                         Name                = 'MockUserName'
                         InstanceName        = 'NamedInstance'
@@ -731,26 +803,26 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
                 }
 
                 Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    return [Microsoft.SqlServer.Management.Smo.Server]::new()
                 }
 
                 Mock -CommandName Get-SqlDscServerPermission -MockWith {
                     [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[]] $mockServerPermissionInfoCollection = @()
 
-                    $mockServerPermissionSet1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
+                    $mockServerPermissionSet1 = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]::new()
                     $mockServerPermissionSet1.ConnectSql = $true
                     $mockServerPermissionSet1.AlterAnyEndpoint = $true
 
-                    $mockServerPermissionInfo1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionInfo'
+                    $mockServerPermissionInfo1 = [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]::new()
                     $mockServerPermissionInfo1.PermissionState = 'Grant'
                     $mockServerPermissionInfo1.PermissionType = $mockServerPermissionSet1
 
                     $mockServerPermissionInfoCollection += $mockServerPermissionInfo1
 
-                    $mockServerPermissionSet2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
+                    $mockServerPermissionSet2 = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]::new()
                     $mockServerPermissionSet2.ViewServerState = $true
 
-                    $mockServerPermissionInfo2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionInfo'
+                    $mockServerPermissionInfo2 = [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]::new()
                     $mockServerPermissionInfo2.PermissionState = 'Deny'
                     $mockServerPermissionInfo2.PermissionType = $mockServerPermissionSet2
 
@@ -762,10 +834,14 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
 
             It 'Should return correct values for the states Grant and Deny and empty collections for the state GrantWithGrant' {
                 InModuleScope -ScriptBlock {
-                    $currentState = $script:mockSqlPermissionInstance.GetCurrentState(@{
+                    Set-StrictMode -Version 1.0
+
+                    $currentState = $script:mockSqlPermissionInstance.GetCurrentState(
+                        @{
                             Name         = 'MockUserName'
                             InstanceName = 'NamedInstance'
-                        })
+                        }
+                    )
 
                     $currentState.Credential | Should -BeNullOrEmpty
 
@@ -801,6 +877,8 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
         Context 'When the system is not in the desired state' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlPermissionInstance = [SqlPermission] @{
                         Name                = 'MockUserName'
                         InstanceName        = 'NamedInstance'
@@ -812,26 +890,26 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
                 }
 
                 Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    return [Microsoft.SqlServer.Management.Smo.Server]::new()
                 }
 
                 Mock -CommandName Get-SqlDscServerPermission -MockWith {
                     [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[]] $mockServerPermissionInfoCollection = @()
 
-                    $mockServerPermissionSet1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
+                    $mockServerPermissionSet1 = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]::new()
                     $mockServerPermissionSet1.ConnectSql = $true
                     $mockServerPermissionSet1.AlterAnyEndpoint = $true
 
-                    $mockServerPermissionInfo1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionInfo'
+                    $mockServerPermissionInfo1 = [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]::new()
                     $mockServerPermissionInfo1.PermissionState = 'Grant'
                     $mockServerPermissionInfo1.PermissionType = $mockServerPermissionSet1
 
                     $mockServerPermissionInfoCollection += $mockServerPermissionInfo1
 
-                    $mockServerPermissionSet2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionSet'
+                    $mockServerPermissionSet2 = [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]::new()
                     $mockServerPermissionSet2.ViewServerState = $true
 
-                    $mockServerPermissionInfo2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerPermissionInfo'
+                    $mockServerPermissionInfo2 = [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]::new()
                     $mockServerPermissionInfo2.PermissionState = 'Deny'
                     $mockServerPermissionInfo2.PermissionType = $mockServerPermissionSet2
 
@@ -843,10 +921,14 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
 
             It 'Should return correct values for the states Grant and Deny and empty collections for the state GrantWithGrant' {
                 InModuleScope -ScriptBlock {
-                    $currentState = $script:mockSqlPermissionInstance.GetCurrentState(@{
+                    Set-StrictMode -Version 1.0
+
+                    $currentState = $script:mockSqlPermissionInstance.GetCurrentState(
+                        @{
                             Name         = 'MockUserName'
                             InstanceName = 'NamedInstance'
-                        })
+                        }
+                    )
 
                     $currentState.Credential | Should -BeNullOrEmpty
 
@@ -884,6 +966,8 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
 Describe 'SqlPermission\Set()' -Tag 'Set' {
     BeforeAll {
         InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
             $script:mockSqlPermissionInstance = [SqlPermission] @{
                 Name         = 'MockUserName'
                 InstanceName = 'NamedInstance'
@@ -902,14 +986,6 @@ Describe 'SqlPermission\Set()' -Tag 'Set' {
                     }
                 )
             } |
-                # Mock method GetCurrentState() which is called by the base method Get()
-                Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                    return [System.Collections.Hashtable] @{
-                        Name         = 'MockUserName'
-                        InstanceName = 'NamedInstance'
-                        ServerName   = Get-ComputerName
-                    }
-                } -PassThru |
                 # Mock method Modify which is called by the base method Set().
                 Add-Member -Force -MemberType 'ScriptMethod' -Name 'Modify' -Value {
                     $script:mockMethodModifyCallCount += 1
@@ -919,26 +995,35 @@ Describe 'SqlPermission\Set()' -Tag 'Set' {
 
     BeforeEach {
         InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
             $script:mockMethodModifyCallCount = 0
+            $script:mockMethodTestCallCount = 0
         }
     }
 
     Context 'When the system is in the desired state' {
         BeforeAll {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlPermissionInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return $null
+                    # Mock method Test() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Test' -Value {
+                        $script:mockMethodTestCallCount += 1
+                        return $true
                     }
             }
         }
 
         It 'Should not call method Modify()' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlPermissionInstance.Set()
 
                 $script:mockMethodModifyCallCount | Should -Be 0
+                $script:mockMethodTestCallCount | Should -Be 1
             }
         }
     }
@@ -946,33 +1031,25 @@ Describe 'SqlPermission\Set()' -Tag 'Set' {
     Context 'When the system is not in the desired state' {
         BeforeAll {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlPermissionInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return @{
-                            Property      = 'Permission'
-                            ExpectedValue = [ServerPermission[]] @(
-                                [ServerPermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('ConnectSql', 'AlterAnyEndpoint')
-                                }
-                            )
-                            ActualValue   = [ServerPermission[]] @(
-                                [ServerPermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('ConnectSql')
-                                }
-                            )
-                        }
+                    # Mock method Test() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Test' -Value {
+                        $script:mockMethodTestCallCount += 1
+                        return $false
                     }
             }
         }
 
         It 'Should not call method Modify()' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlPermissionInstance.Set()
 
                 $script:mockMethodModifyCallCount | Should -Be 1
+                $script:mockMethodTestCallCount | Should -Be 1
             }
         }
     }
@@ -981,6 +1058,8 @@ Describe 'SqlPermission\Set()' -Tag 'Set' {
 Describe 'SqlPermission\Test()' -Tag 'Test' {
     BeforeAll {
         InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
             $script:mockSqlPermissionInstance = [SqlPermission] @{
                 Name         = 'MockUserName'
                 InstanceName = 'NamedInstance'
@@ -998,32 +1077,37 @@ Describe 'SqlPermission\Test()' -Tag 'Test' {
                         Permission = @()
                     }
                 )
-            } |
-                # Mock method GetCurrentState() which is called by the base method Get()
-                Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                    return [System.Collections.Hashtable] @{
-                        Name         = 'MockUserName'
-                        InstanceName = 'NamedInstance'
-                        ServerName   = Get-ComputerName
-                    }
-                } -PassThru
+            }
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
+            $script:mockMethodGetCallCount = 0
         }
     }
 
     Context 'When the system is in the desired state' {
         BeforeAll {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlPermissionInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return $null
+                    # Mock method Get() which is called by the base method Test()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
+                        $script:mockMethodGetCallCount += 1
                     }
             }
         }
 
         It 'Should return $true' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlPermissionInstance.Test() | Should -BeTrue
+                $script:mockMethodGetCallCount | Should -Be 1
             }
         }
     }
@@ -1031,31 +1115,40 @@ Describe 'SqlPermission\Test()' -Tag 'Test' {
     Context 'When the system is not in the desired state' {
         BeforeAll {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlPermissionInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return @{
-                            Property      = 'Permission'
-                            ExpectedValue = [ServerPermission[]] @(
-                                [ServerPermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('ConnectSql', 'AlterAnyEndpoint')
-                                }
-                            )
-                            ActualValue   = [ServerPermission[]] @(
-                                [ServerPermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('ConnectSql')
-                                }
-                            )
-                        }
+                    # Mock method Get() which is called by the base method Test()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
+                        $script:mockMethodGetCallCount += 1
                     }
+
+                $script:mockSqlPermissionInstance.PropertiesNotInDesiredState = @(
+                    @{
+                        Property      = 'Permission'
+                        ExpectedValue = [ServerPermission[]] @(
+                            [ServerPermission] @{
+                                State      = 'Grant'
+                                Permission = @('ConnectSql', 'AlterAnyEndpoint')
+                            }
+                        )
+                        ActualValue   = [ServerPermission[]] @(
+                            [ServerPermission] @{
+                                State      = 'Grant'
+                                Permission = @('ConnectSql')
+                            }
+                        )
+                    }
+                )
             }
         }
 
         It 'Should return $false' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlPermissionInstance.Test() | Should -BeFalse
+                $script:mockMethodGetCallCount | Should -Be 1
             }
         }
     }
@@ -1065,6 +1158,8 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
     Context 'When the principal does not exist' {
         BeforeAll {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 # This test does not set a desired state as it is not necessary for this test.
                 $script:mockSqlPermissionInstance = [SqlPermission] @{
                     Name         = 'MockUserName'
@@ -1078,7 +1173,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
             }
 
             Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
-                return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                return [Microsoft.SqlServer.Management.Smo.Server]::new()
             }
 
             Mock -CommandName Test-SqlDscIsLogin -MockWith {
@@ -1091,24 +1186,22 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
         }
 
         It 'Should throw the correct error' {
-            $mockErrorMessage = InModuleScope -ScriptBlock {
-                $mockSqlPermissionInstance.localizedData.NameIsMissing
-            }
-
-            $mockErrorRecord = Get-InvalidOperationRecord -Message (
-                $mockErrorMessage -f @(
-                    'MockUserName'
-                    'NamedInstance'
-                )
-            )
-
             InModuleScope -ScriptBlock {
-                {
-                    # This test does not pass any properties to set as it is not necessary for this test.
-                    $mockSqlPermissionInstance.Modify(@{
-                            Permission = [ServerPermission[]] @()
-                        })
-                } | Should -Throw -ExpectedMessage $mockErrorRecord
+                Set-StrictMode -Version 1.0
+
+                $mockErrorRecord = Get-InvalidOperationRecord -Message (
+                    $mockSqlPermissionInstance.localizedData.NameIsMissing -f @(
+                        'MockUserName'
+                        'NamedInstance'
+                    )
+                )
+
+                $mockParameters = @{
+                    Permission = [ServerPermission[]] @()
+                }
+
+                # This test does not pass any properties to set as it is not necessary for this test.
+                { $mockSqlPermissionInstance.Modify($mockParameters) } | Should -Throw -ExpectedMessage $mockErrorRecord
             }
         }
     }
@@ -1116,6 +1209,8 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
     Context 'When the principal is a server role' {
         BeforeAll {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlPermissionInstance = [SqlPermission] @{
                     Name         = 'MockServerRole'
                     InstanceName = 'NamedInstance'
@@ -1158,7 +1253,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
             }
 
             Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
-                return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                return [Microsoft.SqlServer.Management.Smo.Server]::new()
             }
 
             # Principal is not a login
@@ -1172,10 +1267,10 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
             }
 
             Mock -CommandName Get-SqlDscRole -MockWith {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                $mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::new()
                 $mockServerObject.InstanceName = 'NamedInstance'
 
-                return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList @(
+                return [Microsoft.SqlServer.Management.Smo.ServerRole]::new(
                     $mockServerObject,
                     'MockServerRole'
                 )
@@ -1188,6 +1283,8 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
 
         It 'Should call the correct mock with the correct parameter values' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $null = $mockSqlPermissionInstance.Modify(@{
                         Permission = [ServerPermission[]] @(
                             [ServerPermission] @{
@@ -1219,6 +1316,8 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
         Context 'When a desired permissions is missing from the current state' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlPermissionInstance = [SqlPermission] @{
                         Name         = 'MockUserName'
                         InstanceName = 'NamedInstance'
@@ -1261,7 +1360,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 }
 
                 Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    return [Microsoft.SqlServer.Management.Smo.Server]::new()
                 }
 
                 Mock -CommandName Test-SqlDscIsLogin -MockWith {
@@ -1273,10 +1372,10 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 }
 
                 Mock -CommandName Get-SqlDscLogin -MockWith {
-                    $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    $mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::new()
                     $mockServerObject.InstanceName = 'NamedInstance'
 
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
+                    return [Microsoft.SqlServer.Management.Smo.Login]::new(
                         $mockServerObject,
                         'MockUserName'
                     )
@@ -1289,6 +1388,8 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $null = $mockSqlPermissionInstance.Modify(@{
                             Permission = [ServerPermission[]] @(
                                 [ServerPermission] @{
@@ -1322,6 +1423,8 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
         Context 'When a desired Deny permission is missing from the current state' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlPermissionInstance = [SqlPermission] @{
                         Name         = 'MockUserName'
                         InstanceName = 'NamedInstance'
@@ -1364,7 +1467,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 }
 
                 Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    return [Microsoft.SqlServer.Management.Smo.Server]::new()
                 }
 
                 Mock -CommandName Test-SqlDscIsLogin -MockWith {
@@ -1372,10 +1475,10 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 }
 
                 Mock -CommandName Get-SqlDscLogin -MockWith {
-                    $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    $mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::new()
                     $mockServerObject.InstanceName = 'NamedInstance'
 
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
+                    return [Microsoft.SqlServer.Management.Smo.Login]::new(
                         $mockServerObject,
                         'MockUserName'
                     )
@@ -1388,6 +1491,8 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $null = $mockSqlPermissionInstance.Modify(@{
                             Permission = [ServerPermission[]] @(
                                 [ServerPermission] @{
@@ -1416,6 +1521,8 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
         Context 'When a desired permission is missing from the current state and there are four permissions that should not exist in the current state' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlPermissionInstance = [SqlPermission] @{
                         Name         = 'MockUserName'
                         InstanceName = 'NamedInstance'
@@ -1458,7 +1565,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 }
 
                 Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    return [Microsoft.SqlServer.Management.Smo.Server]::new()
                 }
 
                 Mock -CommandName Test-SqlDscIsLogin -MockWith {
@@ -1466,10 +1573,10 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 }
 
                 Mock -CommandName Get-SqlDscLogin -MockWith {
-                    $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    $mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::new()
                     $mockServerObject.InstanceName = 'NamedInstance'
 
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
+                    return [Microsoft.SqlServer.Management.Smo.Login]::new(
                         $mockServerObject,
                         'MockUserName'
                     )
@@ -1482,6 +1589,8 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $null = $mockSqlPermissionInstance.Modify(@{
                             Permission = [ServerPermission[]] @(
                                 [ServerPermission] @{
@@ -1527,6 +1636,8 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
         Context 'When a desired permissions is missing from the current state' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlPermissionInstance = [SqlPermission] @{
                         Name                = 'MockUserName'
                         InstanceName        = 'NamedInstance'
@@ -1569,7 +1680,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 }
 
                 Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    return [Microsoft.SqlServer.Management.Smo.Server]::new()
                 }
 
                 Mock -CommandName Test-SqlDscIsLogin -MockWith {
@@ -1577,10 +1688,10 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 }
 
                 Mock -CommandName Get-SqlDscLogin -MockWith {
-                    $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    $mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::new()
                     $mockServerObject.InstanceName = 'NamedInstance'
 
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
+                    return [Microsoft.SqlServer.Management.Smo.Login]::new(
                         $mockServerObject,
                         'MockUserName'
                     )
@@ -1593,6 +1704,8 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $null = $mockSqlPermissionInstance.Modify(@{
                             PermissionToInclude = [ServerPermission[]] @(
                                 [ServerPermission] @{
@@ -1628,6 +1741,8 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
         Context 'When a desired permissions is missing from the current state' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlPermissionInstance = [SqlPermission] @{
                         Name                = 'MockUserName'
                         InstanceName        = 'NamedInstance'
@@ -1670,7 +1785,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 }
 
                 Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    return [Microsoft.SqlServer.Management.Smo.Server]::new()
                 }
 
                 Mock -CommandName Test-SqlDscIsLogin -MockWith {
@@ -1678,10 +1793,10 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 }
 
                 Mock -CommandName Get-SqlDscLogin -MockWith {
-                    $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    $mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::new()
                     $mockServerObject.InstanceName = 'NamedInstance'
 
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
+                    return [Microsoft.SqlServer.Management.Smo.Login]::new(
                         $mockServerObject,
                         'MockUserName'
                     )
@@ -1694,6 +1809,8 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $null = $mockSqlPermissionInstance.Modify(@{
                             PermissionToExclude = [ServerPermission[]] @(
                                 [ServerPermission] @{
@@ -1729,6 +1846,8 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
         Context 'When granting permissions' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlPermissionInstance = [SqlPermission] @{
                         Name         = 'MockUserName'
                         InstanceName = 'NamedInstance'
@@ -1771,7 +1890,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 }
 
                 Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    return [Microsoft.SqlServer.Management.Smo.Server]::new()
                 }
 
                 Mock -CommandName Test-SqlDscIsLogin -MockWith {
@@ -1779,10 +1898,10 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 }
 
                 Mock -CommandName Get-SqlDscLogin -MockWith {
-                    $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    $mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::new()
                     $mockServerObject.InstanceName = 'NamedInstance'
 
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
+                    return [Microsoft.SqlServer.Management.Smo.Login]::new(
                         $mockServerObject,
                         'MockUserName'
                     )
@@ -1800,35 +1919,33 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
             }
 
             It 'Should throw the correct error' {
-                $mockErrorMessage = InModuleScope -ScriptBlock {
-                    $mockSqlPermissionInstance.localizedData.FailedToSetPermission
-                }
-
-                $mockErrorRecord = Get-InvalidOperationRecord -Message (
-                    $mockErrorMessage -f @(
-                        'MockUserName'
-                    )
-                )
-
                 InModuleScope -ScriptBlock {
-                    {
-                        $mockSqlPermissionInstance.Modify(@{
-                                Permission = [ServerPermission[]] @(
-                                    [ServerPermission] @{
-                                        State      = 'Grant'
-                                        Permission = @('ConnectSql')
-                                    }
-                                    [ServerPermission] @{
-                                        State      = 'GrantWithGrant'
-                                        Permission = @()
-                                    }
-                                    [ServerPermission] @{
-                                        State      = 'Deny'
-                                        Permission = @()
-                                    }
-                                )
-                            })
-                    } | Should -Throw -ExpectedMessage $mockErrorRecord
+                    Set-StrictMode -Version 1.0
+
+                    $mockErrorRecord = Get-InvalidOperationRecord -Message (
+                        $script:mockSqlPermissionInstance.localizedData.FailedToSetPermission -f @(
+                            'MockUserName'
+                        )
+                    )
+
+                    $mockParameters = @{
+                        Permission = [ServerPermission[]] @(
+                            [ServerPermission] @{
+                                State      = 'Grant'
+                                Permission = @('ConnectSql')
+                            }
+                            [ServerPermission] @{
+                                State      = 'GrantWithGrant'
+                                Permission = @()
+                            }
+                            [ServerPermission] @{
+                                State      = 'Deny'
+                                Permission = @()
+                            }
+                        )
+                    }
+
+                    { $script:mockSqlPermissionInstance.Modify($mockParameters) } | Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
                 }
             }
         }
@@ -1836,6 +1953,8 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
         Context 'When revoking permissions' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlPermissionInstance = [SqlPermission] @{
                         Name         = 'MockUserName'
                         InstanceName = 'NamedInstance'
@@ -1878,7 +1997,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 }
 
                 Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    return [Microsoft.SqlServer.Management.Smo.Server]::new()
                 }
 
                 Mock -CommandName Test-SqlDscIsLogin -MockWith {
@@ -1886,10 +2005,10 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 }
 
                 Mock -CommandName Get-SqlDscLogin -MockWith {
-                    $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    $mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::new()
                     $mockServerObject.InstanceName = 'NamedInstance'
 
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
+                    return [Microsoft.SqlServer.Management.Smo.Login]::new(
                         $mockServerObject,
                         'MockUserName'
                     )
@@ -1907,35 +2026,33 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
             }
 
             It 'Should throw the correct error' {
-                $mockErrorMessage = InModuleScope -ScriptBlock {
-                    $mockSqlPermissionInstance.localizedData.FailedToRevokePermissionFromCurrentState
-                }
-
-                $mockErrorRecord = Get-InvalidOperationRecord -Message (
-                    $mockErrorMessage -f @(
-                        'MockUserName'
-                    )
-                )
-
                 InModuleScope -ScriptBlock {
-                    {
-                        $mockSqlPermissionInstance.Modify(@{
-                                Permission = [ServerPermission[]] @(
-                                    [ServerPermission] @{
-                                        State      = 'Grant'
-                                        Permission = @('ConnectSql')
-                                    }
-                                    [ServerPermission] @{
-                                        State      = 'GrantWithGrant'
-                                        Permission = @()
-                                    }
-                                    [ServerPermission] @{
-                                        State      = 'Deny'
-                                        Permission = @()
-                                    }
-                                )
-                            })
-                    } | Should -Throw -ExpectedMessage $mockErrorRecord
+                    Set-StrictMode -Version 1.0
+
+                    $mockErrorRecord = Get-InvalidOperationRecord -Message (
+                        $mockSqlPermissionInstance.localizedData.FailedToRevokePermissionFromCurrentState -f @(
+                            'MockUserName'
+                        )
+                    )
+
+                    $mockParameters = @{
+                        Permission = [ServerPermission[]] @(
+                            [ServerPermission] @{
+                                State      = 'Grant'
+                                Permission = @('ConnectSql')
+                            }
+                            [ServerPermission] @{
+                                State      = 'GrantWithGrant'
+                                Permission = @()
+                            }
+                            [ServerPermission] @{
+                                State      = 'Deny'
+                                Permission = @()
+                            }
+                        )
+                    }
+
+                    { $mockSqlPermissionInstance.Modify($mockParameters) } | Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
                 }
             }
         }
@@ -1945,6 +2062,8 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
 Describe 'SqlPermission\AssertProperties()' -Tag 'AssertProperties' {
     BeforeAll {
         InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
             $script:mockSqlPermissionInstance = [SqlPermission] @{}
         }
     }
@@ -1958,12 +2077,14 @@ Describe 'SqlPermission\AssertProperties()' -Tag 'AssertProperties' {
         Context 'When passing Permission and PermissionToInclude' {
             It 'Should throw the correct error' {
                 InModuleScope -ScriptBlock {
-                    {
-                        $mockSqlPermissionInstance.AssertProperties(@{
-                                Permission          = [ServerPermission[]] @([ServerPermission] @{})
-                                PermissionToInclude = [ServerPermission[]] @([ServerPermission] @{})
-                            })
-                    } | Should -Throw -ExpectedMessage '*DRC0010*'
+                    Set-StrictMode -Version 1.0
+
+                    $mockParameters = @{
+                        Permission          = [ServerPermission[]] @([ServerPermission] @{})
+                        PermissionToInclude = [ServerPermission[]] @([ServerPermission] @{})
+                    }
+
+                    { $mockSqlPermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage '*DRC0010*'
                 }
             }
         }
@@ -1971,12 +2092,15 @@ Describe 'SqlPermission\AssertProperties()' -Tag 'AssertProperties' {
         Context 'When passing Permission and PermissionToExclude' {
             It 'Should throw the correct error' {
                 InModuleScope -ScriptBlock {
-                    {
-                        $mockSqlPermissionInstance.AssertProperties(@{
-                                Permission          = [ServerPermission[]] @([ServerPermission] @{})
-                                PermissionToExclude = [ServerPermission[]] @([ServerPermission] @{})
-                            })
-                    } | Should -Throw -ExpectedMessage '*DRC0010*'
+                    Set-StrictMode -Version 1.0
+
+                    $mockParameters = @{
+                        Permission          = [ServerPermission[]] @([ServerPermission] @{})
+                        PermissionToExclude = [ServerPermission[]] @([ServerPermission] @{})
+                    }
+
+                    { $mockSqlPermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage '*DRC0010*'
+
                 }
             }
         }
@@ -1984,143 +2108,154 @@ Describe 'SqlPermission\AssertProperties()' -Tag 'AssertProperties' {
 
     Context 'When not passing any permission property' {
         It 'Should throw the correct error' {
-            $mockErrorMessage = InModuleScope -ScriptBlock {
-                $mockSqlPermissionInstance.localizedData.MustAssignOnePermissionProperty
-            }
-
             InModuleScope -ScriptBlock {
-                {
-                    $mockSqlPermissionInstance.AssertProperties(@{})
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                Set-StrictMode -Version 1.0
+
+                $mockErrorMessage = $mockSqlPermissionInstance.localizedData.MustAssignOnePermissionProperty
+
+                { $mockSqlPermissionInstance.AssertProperties(@{}) } | Should -Throw -ExpectedMessage $mockErrorMessage.Exception.Message
             }
         }
     }
 
     Context 'When a permission Property contain the same State twice' {
-        It 'Should throw the correct error for property <MockPropertyName>' -ForEach @(
-            @{
-                MockPropertyName = 'Permission'
-            }
-            @{
-                MockPropertyName = 'PermissionToInclude'
-            }
-            @{
-                MockPropertyName = 'PermissionToExclude'
-            }
-        ) {
-            $mockErrorMessage = InModuleScope -ScriptBlock {
-                $mockSqlPermissionInstance.localizedData.DuplicatePermissionState
-            }
+        BeforeDiscovery {
+            $testCases = @(
+                @{
+                    MockPropertyName = 'Permission'
+                }
+                @{
+                    MockPropertyName = 'PermissionToInclude'
+                }
+                @{
+                    MockPropertyName = 'PermissionToExclude'
+                }
+            )
+        }
 
+        It 'Should throw the correct error for property <MockPropertyName>' -ForEach $testCases {
             InModuleScope -Parameters $_ -ScriptBlock {
-                {
-                    $mockSqlPermissionInstance.AssertProperties(@{
-                            $MockPropertyName = [ServerPermission[]] @(
-                                [ServerPermission] @{
-                                    State = 'Grant'
-                                }
-                                [ServerPermission] @{
-                                    State = 'Grant'
-                                }
-                            )
-                        })
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                Set-StrictMode -Version 1.0
+
+                $mockErrorMessage = $script:mockSqlPermissionInstance.localizedData.DuplicatePermissionState
+
+                $mockParameters = @{
+                    $MockPropertyName = [ServerPermission[]] @(
+                        [ServerPermission] @{
+                            State = 'Grant'
+                        }
+                        [ServerPermission] @{
+                            State = 'Grant'
+                        }
+                    )
+                }
+
+                { $script:mockSqlPermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage $mockErrorMessage.Exception.Message
             }
         }
     }
 
     Context 'When the property Permission is missing a state' {
         It 'Should throw the correct error' {
-            $mockErrorMessage = InModuleScope -ScriptBlock {
-                $mockSqlPermissionInstance.localizedData.MissingPermissionState
-            }
-
             InModuleScope -Parameters $_ -ScriptBlock {
-                {
-                    $mockSqlPermissionInstance.AssertProperties(@{
-                            Permission = [ServerPermission[]] @(
-                                # Missing state Deny.
-                                [ServerPermission] @{
-                                    State = 'Grant'
-                                }
-                                [ServerPermission] @{
-                                    State = 'GrantWithGrant'
-                                }
-                            )
-                        })
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                Set-StrictMode -Version 1.0
+
+                $mockErrorMessage = $script:mockSqlPermissionInstance.localizedData.MissingPermissionState
+
+                $mockParameters = @{
+                    Permission = [ServerPermission[]] @(
+                        # Missing state Deny.
+                        [ServerPermission] @{
+                            State = 'Grant'
+                        }
+                        [ServerPermission] @{
+                            State = 'GrantWithGrant'
+                        }
+                    )
+                }
+
+                { $script:mockSqlPermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage $mockErrorMessage.Exception.Message
             }
         }
     }
 
     Context 'When a permission Property contain the same permission name twice' {
-        It 'Should throw the correct error for property <MockPropertyName>' -ForEach @(
-            @{
-                MockPropertyName = 'Permission'
-            }
-            @{
-                MockPropertyName = 'PermissionToInclude'
-            }
-            @{
-                MockPropertyName = 'PermissionToExclude'
-            }
-        ) {
-            $mockErrorMessage = InModuleScope -ScriptBlock {
-                $mockSqlPermissionInstance.localizedData.DuplicatePermissionBetweenState
-            }
+        BeforeDiscovery {
+            $testCases = @(
+                @{
+                    MockPropertyName = 'Permission'
+                }
+                @{
+                    MockPropertyName = 'PermissionToInclude'
+                }
+                @{
+                    MockPropertyName = 'PermissionToExclude'
+                }
+            )
+        }
 
+        It 'Should throw the correct error for property <MockPropertyName>' -ForEach $testCases {
             InModuleScope -Parameters $_ -ScriptBlock {
-                {
-                    $mockSqlPermissionInstance.AssertProperties(@{
-                            $MockPropertyName = [ServerPermission[]] @(
-                                [ServerPermission] @{
-                                    State      = 'Grant'
-                                    Permission = 'ViewServerState'
-                                }
-                                [ServerPermission] @{
-                                    State      = 'Deny'
-                                    Permission = 'ViewServerState'
-                                }
-                            )
-                        })
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                Set-StrictMode -Version 1.0
+
+                $mockErrorMessage = $script:mockSqlPermissionInstance.localizedData.DuplicatePermissionBetweenState
+
+                $mockParameters = @{
+                    $MockPropertyName = [ServerPermission[]] @(
+                        [ServerPermission] @{
+                            State      = 'Grant'
+                            Permission = 'ViewServerState'
+                        }
+                        [ServerPermission] @{
+                            State      = 'Deny'
+                            Permission = 'ViewServerState'
+                        }
+                    )
+                }
+
+                { $mockSqlPermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage $mockErrorMessage.Exception.Message
             }
         }
     }
 
     Context 'When a permission Property does not specify any permission name' {
-        It 'Should throw the correct error for property <MockPropertyName>' -ForEach @(
-            @{
-                MockPropertyName = 'PermissionToInclude'
-            }
-            @{
-                MockPropertyName = 'PermissionToExclude'
-            }
-        ) {
-            $mockErrorMessage = InModuleScope -ScriptBlock {
-                $mockSqlPermissionInstance.localizedData.MustHaveMinimumOnePermissionInState
-            }
+        BeforeDiscovery {
+            $testCases = @(
+                @{
+                    MockPropertyName = 'PermissionToInclude'
+                }
+                @{
+                    MockPropertyName = 'PermissionToExclude'
+                }
+            )
+        }
+
+        It 'Should throw the correct error for property <MockPropertyName>' -ForEach $testCases {
 
             InModuleScope -Parameters $_ -ScriptBlock {
-                {
-                    $mockSqlPermissionInstance.AssertProperties(@{
-                            $MockPropertyName = [ServerPermission[]] @(
-                                [ServerPermission] @{
-                                    State      = 'Grant'
-                                    <#
+                Set-StrictMode -Version 1.0
+
+                $mockErrorMessage = $script:mockSqlPermissionInstance.localizedData.MustHaveMinimumOnePermissionInState
+
+                $mockParameters = @{
+                    $MockPropertyName = [ServerPermission[]] @(
+                        [ServerPermission] @{
+                            State      = 'Grant'
+                            <#
                                     This should not be able to be $null since the property
                                     is mandatory but do allow empty collection. So no need
                                     to test using $null value.
                                 #>
-                                    Permission = @()
-                                }
-                                [ServerPermission] @{
-                                    State      = 'Deny'
-                                    Permission = 'ViewServerState'
-                                }
-                            )
-                        })
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                            Permission = @()
+                        }
+                        [ServerPermission] @{
+                            State      = 'Deny'
+                            Permission = 'ViewServerState'
+                        }
+                    )
+                }
+
+                { $script:mockSqlPermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage $mockErrorMessage.Exception.Message
             }
         }
     }
