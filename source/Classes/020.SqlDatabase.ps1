@@ -337,7 +337,7 @@ class SqlDatabase : SqlResourceBase
     $Collation
 
     [DscProperty()]
-    [DatabaseCompatibilityLevel]
+    [Nullable[DatabaseCompatibilityLevel]]
     $CompatibilityLevel
 
     [DscProperty()]
