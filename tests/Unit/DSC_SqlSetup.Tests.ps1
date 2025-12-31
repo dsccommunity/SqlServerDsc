@@ -2595,7 +2595,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             InstanceName        = 'MSSQLSERVER'
                             Features            = 'SQLENGINE'
                             SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-                            SourceCredential    = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\sqladmin', ('dummyPassw0rd' | ConvertTo-SecureString -asPlainText -Force))
+                            SourceCredential    = [System.Management.Automation.PSCredential]::new('COMPANY\sqladmin', ('dummyPassw0rd' | ConvertTo-SecureString -asPlainText -Force))
                             SourcePath          = '\\server\share'
                             ForceReboot         = $true
                             SuppressReboot      = $true
@@ -3268,9 +3268,9 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     Features                   = 'SQLENGINE,AS'
                     InstanceName               = 'MSSQLSERVER'
                     SourcePath                 = $TestDrive
-                    AgtSvcAccount              = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\AgentAccount', ('Ag3ntP@ssw0rd' | ConvertTo-SecureString -AsPlainText -Force))
-                    SqlSvcAccount              = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\SqlAccount', ('SqlS3v!c3P@ssw0rd' | ConvertTo-SecureString -AsPlainText -Force))
-                    ASSvcAccount               = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\AnalysisAccount', ('AnalysisS3v!c3P@ssw0rd' | ConvertTo-SecureString -AsPlainText -Force))
+                    AgtSvcAccount              = [System.Management.Automation.PSCredential]::new('COMPANY\AgentAccount', ('Ag3ntP@ssw0rd' | ConvertTo-SecureString -AsPlainText -Force))
+                    SqlSvcAccount              = [System.Management.Automation.PSCredential]::new('COMPANY\SqlAccount', ('SqlS3v!c3P@ssw0rd' | ConvertTo-SecureString -AsPlainText -Force))
+                    ASSvcAccount               = [System.Management.Automation.PSCredential]::new('COMPANY\AnalysisAccount', ('AnalysisS3v!c3P@ssw0rd' | ConvertTo-SecureString -AsPlainText -Force))
                     FailoverClusterNetworkName = 'TestDefaultCluster'
                     FailoverClusterIPAddress   = '10.0.0.10'
                     SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
@@ -4390,10 +4390,8 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                 } -ParameterFilter {
                     $IPAddress -eq '10.0.10.100' -and $NetworkID -eq '10.0.10.100'
                 }
-            }
 
-            It 'Should build a valid IP address string for a multi-subnet cluster' {
-                # Setting up the mock to return multiple sites.
+                                # Setting up the mock to return multiple sites.
                 $mockDynamicClusterSites = @(
                     @{
                         Name    = 'SiteA'
@@ -4406,7 +4404,20 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         Mask    = '255.255.255.0'
                     }
                 )
+            }
 
+            AfterAll {
+                # Reverting the mock to return a single site.
+                $mockDynamicClusterSites = @(
+                    @{
+                        Name    = 'SiteA'
+                        Address = '10.0.0.10' # First site IP address
+                        Mask    = '255.255.255.0'
+                    }
+                )
+            }
+
+            It 'Should build a valid IP address string for a multi-subnet cluster' {
                 $mockStartSqlSetupProcessExpectedArgument += @{
                     FailoverClusterIPAddresses   = 'IPv4;10.0.0.10;SiteA_Prod;255.255.255.0; IPv4;10.0.10.100;SiteB_Prod;255.255.255.0'
                     FailoverClusterNetworkName   = 'TestDefaultCluster'
@@ -4453,15 +4464,6 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
                     $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
-
-                # Reverting the mock to return a single site.
-                $mockDynamicClusterSites = @(
-                    @{
-                        Name    = 'SiteA'
-                        Address = '10.0.0.10' # First site IP address
-                        Mask    = '255.255.255.0'
-                    }
-                )
             }
         }
     }
