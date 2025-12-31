@@ -630,8 +630,7 @@ class SqlDatabase : SqlResourceBase
     $LegacyCardinalityEstimationForSecondary
 
     [DscProperty()]
-    [ValidateSet('Off', 'Full', 'Unknown')]
-    [System.String]
+    [MirroringSafetyLevel]
     $MirroringSafetyLevel
 
     [DscProperty()]
@@ -856,6 +855,9 @@ class SqlDatabase : SqlResourceBase
             # RetentionPeriodUnits enum (convert SMO enum to module enum)
             $currentState.ChangeTrackingRetentionPeriodUnits = [RetentionPeriodUnits] $databaseObject.ChangeTrackingRetentionPeriodUnits.ToString()
 
+            # MirroringSafetyLevel enum (convert SMO enum to module enum)
+            $currentState.MirroringSafetyLevel = [MirroringSafetyLevel] $databaseObject.MirroringSafetyLevel.ToString()
+
             # Enum properties (convert to string with null check)
             $enumProperties = @(
                 'ContainmentType'
@@ -863,7 +865,6 @@ class SqlDatabase : SqlResourceBase
                 'FilestreamNonTransactedAccess'
                 'LegacyCardinalityEstimation'
                 'LegacyCardinalityEstimationForSecondary'
-                'MirroringSafetyLevel'
                 'PageVerify'
                 'ParameterSniffing'
                 'ParameterSniffingForSecondary'
