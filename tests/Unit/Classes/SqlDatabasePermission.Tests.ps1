@@ -1730,12 +1730,13 @@ Describe 'SqlDatabasePermission\AssertProperties()' -Tag 'AssertProperties' {
         Context 'When passing Permission and PermissionToInclude' {
             It 'Should throw the correct error' {
                 InModuleScope -ScriptBlock {
-                    {
-                        $mockSqlDatabasePermissionInstance.AssertProperties(@{
-                                Permission          = [DatabasePermission[]] @([DatabasePermission] @{})
-                                PermissionToInclude = [DatabasePermission[]] @([DatabasePermission] @{})
-                            })
-                    } | Should -Throw -ExpectedMessage '*DRC0010*'
+
+                    $mockParameters = @{
+                        Permission          = [DatabasePermission[]] @([DatabasePermission] @{})
+                        PermissionToInclude = [DatabasePermission[]] @([DatabasePermission] @{})
+                    }
+
+                    { $script:mockSqlDatabasePermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage '*DRC0010*'
                 }
             }
         }
@@ -1743,12 +1744,13 @@ Describe 'SqlDatabasePermission\AssertProperties()' -Tag 'AssertProperties' {
         Context 'When passing Permission and PermissionToExclude' {
             It 'Should throw the correct error' {
                 InModuleScope -ScriptBlock {
-                    {
-                        $mockSqlDatabasePermissionInstance.AssertProperties(@{
-                                Permission          = [DatabasePermission[]] @([DatabasePermission] @{})
-                                PermissionToExclude = [DatabasePermission[]] @([DatabasePermission] @{})
-                            })
-                    } | Should -Throw -ExpectedMessage '*DRC0010*'
+
+                    $mockParameters = @{
+                        Permission          = [DatabasePermission[]] @([DatabasePermission] @{})
+                        PermissionToExclude = [DatabasePermission[]] @([DatabasePermission] @{})
+                    }
+
+                    { $script:mockSqlDatabasePermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage '*DRC0010*'
                 }
             }
         }
@@ -1756,106 +1758,111 @@ Describe 'SqlDatabasePermission\AssertProperties()' -Tag 'AssertProperties' {
 
     Context 'When not passing any permission property' {
         It 'Should throw the correct error' {
-            $mockErrorMessage = InModuleScope -ScriptBlock {
-                $mockSqlDatabasePermissionInstance.localizedData.MustAssignOnePermissionProperty
-            }
-
             InModuleScope -ScriptBlock {
-                {
-                    $mockSqlDatabasePermissionInstance.AssertProperties(@{})
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                Set-StrictMode -Version 1.0
+
+                $mockErrorMessage = $script:mockSqlDatabasePermissionInstance.localizedData.MustAssignOnePermissionProperty
+
+                { $script:mockSqlDatabasePermissionInstance.AssertProperties(@{}) } | Should -Throw -ExpectedMessage ($mockErrorMessage + '*')
             }
         }
     }
 
     Context 'When a permission Property contain the same State twice' {
-        It 'Should throw the correct error for property <MockPropertyName>' -ForEach @(
-            @{
-                MockPropertyName = 'Permission'
-            }
-            @{
-                MockPropertyName = 'PermissionToInclude'
-            }
-            @{
-                MockPropertyName = 'PermissionToExclude'
-            }
-        ) {
-            $mockErrorMessage = InModuleScope -ScriptBlock {
-                $mockSqlDatabasePermissionInstance.localizedData.DuplicatePermissionState
-            }
+        BeforeDiscovery {
+            $testCases = @(
+                @{
+                    MockPropertyName = 'Permission'
+                }
+                @{
+                    MockPropertyName = 'PermissionToInclude'
+                }
+                @{
+                    MockPropertyName = 'PermissionToExclude'
+                }
+            )
+        }
 
+        It 'Should throw the correct error for property <MockPropertyName>' -ForEach $testCases {
             InModuleScope -Parameters $_ -ScriptBlock {
-                {
-                    $mockSqlDatabasePermissionInstance.AssertProperties(@{
-                            $MockPropertyName = [DatabasePermission[]] @(
-                                [DatabasePermission] @{
-                                    State = 'Grant'
-                                }
-                                [DatabasePermission] @{
-                                    State = 'Grant'
-                                }
-                            )
-                        })
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                Set-StrictMode -Version 1.0
+
+                $mockErrorMessage = $script:mockSqlDatabasePermissionInstance.localizedData.DuplicatePermissionState
+
+                $mockParameters = @{
+                    $MockPropertyName = [DatabasePermission[]] @(
+                        [DatabasePermission] @{
+                            State = 'Grant'
+                        }
+                        [DatabasePermission] @{
+                            State = 'Grant'
+                        }
+                    )
+                }
+
+                { $script:mockSqlDatabasePermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage ($mockErrorMessage + '*')
             }
         }
     }
 
     Context 'When the property Permission is missing a state' {
         It 'Should throw the correct error' {
-            $mockErrorMessage = InModuleScope -ScriptBlock {
-                $mockSqlDatabasePermissionInstance.localizedData.MissingPermissionState
-            }
-
             InModuleScope -Parameters $_ -ScriptBlock {
-                {
-                    $mockSqlDatabasePermissionInstance.AssertProperties(@{
-                            Permission = [DatabasePermission[]] @(
-                                # Missing state Deny.
-                                [DatabasePermission] @{
-                                    State = 'Grant'
-                                }
-                                [DatabasePermission] @{
-                                    State = 'GrantWithGrant'
-                                }
-                            )
-                        })
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                Set-StrictMode -Version 1.0
+
+                $mockErrorMessage = $script:mockSqlDatabasePermissionInstance.localizedData.MissingPermissionState
+
+                $mockParameters = @{
+                    Permission = [DatabasePermission[]] @(
+                        # Missing state Deny.
+                        [DatabasePermission] @{
+                            State = 'Grant'
+                        }
+                        [DatabasePermission] @{
+                            State = 'GrantWithGrant'
+                        }
+                    )
+                }
+
+                { $script:mockSqlDatabasePermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage ($mockErrorMessage + '*')
             }
         }
     }
 
     Context 'When a permission Property contain the same permission name twice' {
-        It 'Should throw the correct error for property <MockPropertyName>' -ForEach @(
-            @{
-                MockPropertyName = 'Permission'
-            }
-            @{
-                MockPropertyName = 'PermissionToInclude'
-            }
-            @{
-                MockPropertyName = 'PermissionToExclude'
-            }
-        ) {
-            $mockErrorMessage = InModuleScope -ScriptBlock {
-                $mockSqlDatabasePermissionInstance.localizedData.DuplicatePermissionBetweenState
-            }
-
+        BeforeDiscovery {
+            $testCases = @(
+                @{
+                    MockPropertyName = 'Permission'
+                }
+                @{
+                    MockPropertyName = 'PermissionToInclude'
+                }
+                @{
+                    MockPropertyName = 'PermissionToExclude'
+                }
+            )
+        }
+        It 'Should throw the correct error for property <MockPropertyName>' -ForEach $testCases {
             InModuleScope -Parameters $_ -ScriptBlock {
-                {
-                    $mockSqlDatabasePermissionInstance.AssertProperties(@{
-                            $MockPropertyName = [DatabasePermission[]] @(
-                                [DatabasePermission] @{
-                                    State      = 'Grant'
-                                    Permission = 'Select'
-                                }
-                                [DatabasePermission] @{
-                                    State      = 'Deny'
-                                    Permission = 'Select'
-                                }
-                            )
-                        })
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                Set-StrictMode -Version 1.0
+
+                $mockErrorMessage = $script:mockSqlDatabasePermissionInstance.localizedData.DuplicatePermissionBetweenState
+
+                $mockParameters = @{
+                    $MockPropertyName = [DatabasePermission[]] @(
+                        [DatabasePermission] @{
+                            State      = 'Grant'
+                            Permission = 'Select'
+                        }
+                        [DatabasePermission] @{
+                            State      = 'Deny'
+                            Permission = 'Select'
+                        }
+                    )
+                }
+
+                { $script:mockSqlDatabasePermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage ($mockErrorMessage + '*')
             }
         }
     }
@@ -1876,7 +1883,7 @@ Describe 'SqlDatabasePermission\AssertProperties()' -Tag 'AssertProperties' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockErrorMessage = $mockSqlDatabasePermissionInstance.localizedData.MustHaveMinimumOnePermissionInState
+                $mockErrorMessage = $script:mockSqlDatabasePermissionInstance.localizedData.MustHaveMinimumOnePermissionInState -f $MockPropertyName
 
                 $mockParameters = @{
                     $MockPropertyName = [DatabasePermission[]] @(
@@ -1896,7 +1903,7 @@ Describe 'SqlDatabasePermission\AssertProperties()' -Tag 'AssertProperties' {
                     )
                 }
 
-                { $mockSqlDatabasePermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { $script:mockSqlDatabasePermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage ($mockErrorMessage + '*')
             }
         }
     }
