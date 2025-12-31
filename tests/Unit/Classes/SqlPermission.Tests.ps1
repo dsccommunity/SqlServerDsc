@@ -1201,7 +1201,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 }
 
                 # This test does not pass any properties to set as it is not necessary for this test.
-                { $mockSqlPermissionInstance.Modify($mockParameters) } | Should -Throw -ExpectedMessage $mockErrorRecord
+                { $mockSqlPermissionInstance.Modify($mockParameters) } | Should -Throw -ExpectedMessage $mockErrorRecord.Exception.Message
             }
         }
     }
@@ -1285,22 +1285,24 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $null = $mockSqlPermissionInstance.Modify(@{
-                        Permission = [ServerPermission[]] @(
-                            [ServerPermission] @{
-                                State      = 'Grant'
-                                Permission = @('ConnectSql')
-                            }
-                            [ServerPermission] @{
-                                State      = 'GrantWithGrant'
-                                Permission = @()
-                            }
-                            [ServerPermission] @{
-                                State      = 'Deny'
-                                Permission = @()
-                            }
-                        )
-                    })
+                $mockParameters = @{
+                    Permission = [ServerPermission[]] @(
+                        [ServerPermission] @{
+                            State      = 'Grant'
+                            Permission = @('ConnectSql')
+                        }
+                        [ServerPermission] @{
+                            State      = 'GrantWithGrant'
+                            Permission = @()
+                        }
+                        [ServerPermission] @{
+                            State      = 'Deny'
+                            Permission = @()
+                        }
+                    )
+                }
+
+                $null = $mockSqlPermissionInstance.Modify($mockParameters)
             }
 
             Should -Invoke -CommandName Get-SqlDscRole -Exactly -Times 1 -Scope It
@@ -1390,22 +1392,24 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $null = $mockSqlPermissionInstance.Modify(@{
-                            Permission = [ServerPermission[]] @(
-                                [ServerPermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('ConnectSql')
-                                }
-                                [ServerPermission] @{
-                                    State      = 'GrantWithGrant'
-                                    Permission = @('AlterAnyEndpoint')
-                                }
-                                [ServerPermission] @{
-                                    State      = 'Deny'
-                                    Permission = @()
-                                }
-                            )
-                        })
+                    $mockParameters = @{
+                        Permission = [ServerPermission[]] @(
+                            [ServerPermission] @{
+                                State      = 'Grant'
+                                Permission = @('ConnectSql')
+                            }
+                            [ServerPermission] @{
+                                State      = 'GrantWithGrant'
+                                Permission = @('AlterAnyEndpoint')
+                            }
+                            [ServerPermission] @{
+                                State      = 'Deny'
+                                Permission = @()
+                            }
+                        )
+                    }
+
+                    $null = $mockSqlPermissionInstance.Modify($mockParameters)
                 }
 
                 # Grants
@@ -1493,22 +1497,24 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $null = $mockSqlPermissionInstance.Modify(@{
-                            Permission = [ServerPermission[]] @(
-                                [ServerPermission] @{
-                                    State      = 'Grant'
-                                    Permission = @()
-                                }
-                                [ServerPermission] @{
-                                    State      = 'GrantWithGrant'
-                                    Permission = @()
-                                }
-                                [ServerPermission] @{
-                                    State      = 'Deny'
-                                    Permission = @('ViewServerState')
-                                }
-                            )
-                        })
+                    $mockParameters = @{
+                        Permission = [ServerPermission[]] @(
+                            [ServerPermission] @{
+                                State      = 'Grant'
+                                Permission = @()
+                            }
+                            [ServerPermission] @{
+                                State      = 'GrantWithGrant'
+                                Permission = @()
+                            }
+                            [ServerPermission] @{
+                                State      = 'Deny'
+                                Permission = @('ViewServerState')
+                            }
+                        )
+                    }
+
+                    $null = $mockSqlPermissionInstance.Modify($mockParameters)
                 }
 
                 # Denies
@@ -1591,22 +1597,24 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $null = $mockSqlPermissionInstance.Modify(@{
-                            Permission = [ServerPermission[]] @(
-                                [ServerPermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('ConnectSql')
-                                }
-                                [ServerPermission] @{
-                                    State      = 'GrantWithGrant'
-                                    Permission = @()
-                                }
-                                [ServerPermission] @{
-                                    State      = 'Deny'
-                                    Permission = @()
-                                }
-                            )
-                        })
+                    $mockParameters = @{
+                        Permission = [ServerPermission[]] @(
+                            [ServerPermission] @{
+                                State      = 'Grant'
+                                Permission = @('ConnectSql')
+                            }
+                            [ServerPermission] @{
+                                State      = 'GrantWithGrant'
+                                Permission = @()
+                            }
+                            [ServerPermission] @{
+                                State      = 'Deny'
+                                Permission = @()
+                            }
+                        )
+                    }
+
+                    $null = $mockSqlPermissionInstance.Modify($mockParameters)
                 }
 
                 # Revoking Grants
@@ -1706,22 +1714,24 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $null = $mockSqlPermissionInstance.Modify(@{
-                            PermissionToInclude = [ServerPermission[]] @(
-                                [ServerPermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('ConnectSql')
-                                }
-                                [ServerPermission] @{
-                                    State      = 'GrantWithGrant'
-                                    Permission = @('AlterAnyEndpoint')
-                                }
-                                [ServerPermission] @{
-                                    State      = 'Deny'
-                                    Permission = @()
-                                }
-                            )
-                        })
+                    $mockParameters = @{
+                        PermissionToInclude = [ServerPermission[]] @(
+                            [ServerPermission] @{
+                                State      = 'Grant'
+                                Permission = @('ConnectSql')
+                            }
+                            [ServerPermission] @{
+                                State      = 'GrantWithGrant'
+                                Permission = @('AlterAnyEndpoint')
+                            }
+                            [ServerPermission] @{
+                                State      = 'Deny'
+                                Permission = @()
+                            }
+                        )
+                    }
+
+                    $null = $mockSqlPermissionInstance.Modify($mockParameters)
                 }
 
                 # Grants
@@ -1811,22 +1821,24 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $null = $mockSqlPermissionInstance.Modify(@{
-                            PermissionToExclude = [ServerPermission[]] @(
-                                [ServerPermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('ConnectSql')
-                                }
-                                [ServerPermission] @{
-                                    State      = 'GrantWithGrant'
-                                    Permission = @('AlterAnyEndpoint')
-                                }
-                                [ServerPermission] @{
-                                    State      = 'Deny'
-                                    Permission = @()
-                                }
-                            )
-                        })
+                    $mockParameters = @{
+                        PermissionToExclude = [ServerPermission[]] @(
+                            [ServerPermission] @{
+                                State      = 'Grant'
+                                Permission = @('ConnectSql')
+                            }
+                            [ServerPermission] @{
+                                State      = 'GrantWithGrant'
+                                Permission = @('AlterAnyEndpoint')
+                            }
+                            [ServerPermission] @{
+                                State      = 'Deny'
+                                Permission = @()
+                            }
+                        )
+                    }
+
+                    $null = $mockSqlPermissionInstance.Modify($mockParameters)
                 }
 
                 # Revoking Grants
@@ -2030,7 +2042,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                     Set-StrictMode -Version 1.0
 
                     $mockErrorRecord = Get-InvalidOperationRecord -Message (
-                        $mockSqlPermissionInstance.localizedData.FailedToRevokePermissionFromCurrentState -f @(
+                        $script:mockSqlPermissionInstance.localizedData.FailedToRevokePermissionFromCurrentState -f @(
                             'MockUserName'
                         )
                     )
@@ -2052,7 +2064,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                         )
                     }
 
-                    { $mockSqlPermissionInstance.Modify($mockParameters) } | Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
+                    { $script:mockSqlPermissionInstance.Modify($mockParameters) } | Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
                 }
             }
         }
@@ -2113,7 +2125,7 @@ Describe 'SqlPermission\AssertProperties()' -Tag 'AssertProperties' {
 
                 $mockErrorMessage = $mockSqlPermissionInstance.localizedData.MustAssignOnePermissionProperty
 
-                { $mockSqlPermissionInstance.AssertProperties(@{}) } | Should -Throw -ExpectedMessage $mockErrorMessage.Exception.Message
+                { $mockSqlPermissionInstance.AssertProperties(@{}) } | Should -Throw -ExpectedMessage ($mockErrorMessage + '*')
             }
         }
     }
@@ -2150,7 +2162,7 @@ Describe 'SqlPermission\AssertProperties()' -Tag 'AssertProperties' {
                     )
                 }
 
-                { $script:mockSqlPermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage $mockErrorMessage.Exception.Message
+                { $script:mockSqlPermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage ($mockErrorMessage + '*')
             }
         }
     }
@@ -2174,7 +2186,7 @@ Describe 'SqlPermission\AssertProperties()' -Tag 'AssertProperties' {
                     )
                 }
 
-                { $script:mockSqlPermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage $mockErrorMessage.Exception.Message
+                { $script:mockSqlPermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage ($mockErrorMessage + '*')
             }
         }
     }
@@ -2213,7 +2225,7 @@ Describe 'SqlPermission\AssertProperties()' -Tag 'AssertProperties' {
                     )
                 }
 
-                { $mockSqlPermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage $mockErrorMessage.Exception.Message
+                { $script:mockSqlPermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage ($mockErrorMessage + '*')
             }
         }
     }
@@ -2231,11 +2243,12 @@ Describe 'SqlPermission\AssertProperties()' -Tag 'AssertProperties' {
         }
 
         It 'Should throw the correct error for property <MockPropertyName>' -ForEach $testCases {
-
             InModuleScope -Parameters $_ -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockErrorMessage = $script:mockSqlPermissionInstance.localizedData.MustHaveMinimumOnePermissionInState
+                $mockErrorMessage = $script:mockSqlPermissionInstance.localizedData.MustHaveMinimumOnePermissionInState -f @(
+                    $MockPropertyName
+                )
 
                 $mockParameters = @{
                     $MockPropertyName = [ServerPermission[]] @(
@@ -2255,7 +2268,7 @@ Describe 'SqlPermission\AssertProperties()' -Tag 'AssertProperties' {
                     )
                 }
 
-                { $script:mockSqlPermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage $mockErrorMessage.Exception.Message
+                { $script:mockSqlPermissionInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage ($mockErrorMessage + '*')
             }
         }
     }
