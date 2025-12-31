@@ -337,7 +337,7 @@ class SqlDatabase : SqlResourceBase
     $Collation
 
     [DscProperty()]
-    [Nullable[DatabaseCompatibilityLevel]]
+    [DatabaseCompatibilityLevel]
     $CompatibilityLevel
 
     [DscProperty()]
@@ -738,7 +738,13 @@ class SqlDatabase : SqlResourceBase
 
             # Basic properties
             $currentState.Collation = $databaseObject.Collation
-            $currentState.CompatibilityLevel = [DatabaseCompatibilityLevel] $databaseObject.CompatibilityLevel.ToString()
+
+            # Only set CompatibilityLevel if it's a valid non-zero value
+            if ($databaseObject.CompatibilityLevel -gt 0)
+            {
+                $currentState.CompatibilityLevel = [DatabaseCompatibilityLevel] $databaseObject.CompatibilityLevel.ToString()
+            }
+
             $currentState.RecoveryModel = $databaseObject.RecoveryModel.ToString()
             $currentState.OwnerName = $databaseObject.Owner
             $currentState.SnapshotIsolation = $databaseObject.SnapshotIsolationState -eq 'Enabled'
