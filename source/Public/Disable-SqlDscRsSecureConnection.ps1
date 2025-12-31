@@ -1,15 +1,15 @@
 <#
     .SYNOPSIS
-        Enables TLS for SQL Server Reporting Services.
+        Disables secure connection for SQL Server Reporting Services.
 
     .DESCRIPTION
-        Enables TLS (Transport Layer Security) for SQL Server Reporting Services
-        or Power BI Report Server by setting the secure connection level to 1.
+        Disables secure connection (TLS/SSL) for SQL Server Reporting Services
+        or Power BI Report Server by setting the secure connection level to 0.
 
         This command calls the `SetSecureConnectionLevel` method on the
         `MSReportServer_ConfigurationSetting` CIM instance with a level value
-        of 1, which requires TLS for all connections to the Reporting Services
-        web service and portal.
+        of 0, which disables the secure connection requirement for connections
+        to the Reporting Services web service and portal.
 
         The configuration CIM instance can be obtained using the
         `Get-SqlDscRSConfiguration` command and passed via the pipeline.
@@ -21,29 +21,30 @@
         input.
 
     .PARAMETER PassThru
-        If specified, returns the configuration CIM instance after enabling TLS.
+        If specified, returns the configuration CIM instance after disabling
+        secure connection.
 
     .PARAMETER Force
         If specified, suppresses the confirmation prompt.
 
     .EXAMPLE
-        Get-SqlDscRSConfiguration -InstanceName 'SSRS' | Enable-SqlDscRSTls
+        Get-SqlDscRSConfiguration -InstanceName 'SSRS' | Disable-SqlDscRsSecureConnection
 
-        Enables TLS for the SSRS instance by piping the configuration from
-        `Get-SqlDscRSConfiguration`.
+        Disables secure connection for the SSRS instance by piping the configuration
+        from `Get-SqlDscRSConfiguration`.
 
     .EXAMPLE
         $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-        Enable-SqlDscRSTls -Configuration $config
+        Disable-SqlDscRsSecureConnection -Configuration $config
 
-        Enables TLS for the SSRS instance by passing the configuration as a
-        parameter.
+        Disables secure connection for the SSRS instance by passing the
+        configuration as a parameter.
 
     .EXAMPLE
-        Get-SqlDscRSConfiguration -InstanceName 'SSRS' | Enable-SqlDscRSTls -PassThru
+        Get-SqlDscRSConfiguration -InstanceName 'SSRS' | Disable-SqlDscRsSecureConnection -PassThru
 
-        Enables TLS for the SSRS instance and returns the configuration CIM
-        instance.
+        Disables secure connection for the SSRS instance and returns the
+        configuration CIM instance.
 
     .INPUTS
         `Microsoft.Management.Infrastructure.CimInstance`
@@ -63,16 +64,15 @@
         The Reporting Services service may need to be restarted for the change
         to take effect.
 
-        Since SQL Server 2008 R2, the secure connection level is treated as an
-        on/off toggle where any value greater than or equal to 1 enables TLS.
-
     .LINK
         https://docs.microsoft.com/en-us/sql/reporting-services/wmi-provider-library-reference/configurationsetting-method-setsecureconnectionlevel
 #>
-function Enable-SqlDscRSTls
+function Disable-SqlDscRsSecureConnection
 {
     # cSpell: ignore PBIRS
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the examples use pipeline input the rule cannot validate.')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    [Alias('Disable-SqlDscRSTls')]
     [OutputType()]
     [OutputType([System.Object])]
     param
@@ -99,11 +99,11 @@ function Enable-SqlDscRSTls
 
         $instanceName = $Configuration.InstanceName
 
-        Write-Verbose -Message ($script:localizedData.Enable_SqlDscRSTls_EnablingTls -f $instanceName)
+        Write-Verbose -Message ($script:localizedData.Disable_SqlDscRsSecureConnection_Disabling -f $instanceName)
 
-        $descriptionMessage = $script:localizedData.Enable_SqlDscRSTls_ShouldProcessDescription -f $instanceName
-        $confirmationMessage = $script:localizedData.Enable_SqlDscRSTls_ShouldProcessConfirmation -f $instanceName
-        $captionMessage = $script:localizedData.Enable_SqlDscRSTls_ShouldProcessCaption
+        $descriptionMessage = $script:localizedData.Disable_SqlDscRsSecureConnection_ShouldProcessDescription -f $instanceName
+        $confirmationMessage = $script:localizedData.Disable_SqlDscRsSecureConnection_ShouldProcessConfirmation -f $instanceName
+        $captionMessage = $script:localizedData.Disable_SqlDscRsSecureConnection_ShouldProcessCaption
 
         if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
         {
@@ -111,7 +111,7 @@ function Enable-SqlDscRSTls
                 CimInstance = $Configuration
                 MethodName  = 'SetSecureConnectionLevel'
                 Arguments   = @{
-                    Level = 1
+                    Level = 0
                 }
             }
 
@@ -121,12 +121,12 @@ function Enable-SqlDscRSTls
             }
             catch
             {
-                $errorMessage = $script:localizedData.Enable_SqlDscRSTls_FailedToEnableTls -f $instanceName, $_.Exception.Message
+                $errorMessage = $script:localizedData.Disable_SqlDscRsSecureConnection_FailedToDisable -f $instanceName, $_.Exception.Message
 
                 $PSCmdlet.ThrowTerminatingError(
                     [System.Management.Automation.ErrorRecord]::new(
                         [System.InvalidOperationException]::new($errorMessage),
-                        'ESRSTLS0001',
+                        'DSRSSC0001',
                         [System.Management.Automation.ErrorCategory]::InvalidOperation,
                         $Configuration
                     )

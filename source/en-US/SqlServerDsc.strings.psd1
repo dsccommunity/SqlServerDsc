@@ -296,21 +296,21 @@ ConvertFrom-StringData @'
     Get_SqlDscRSConfiguration_FailedToGetConfiguration = Failed to get the configuration CIM instance for Reporting Services instance '{0}': {1} (GSRSCD0003)
     Get_SqlDscRSConfiguration_ConfigurationNotFound = Could not find the configuration CIM instance for Reporting Services instance '{0}'. (GSRSCD0004)
 
-    ## Enable-SqlDscRSTls
-    Enable_SqlDscRSTls_EnablingTls = Enabling TLS for Reporting Services instance '{0}'.
-    Enable_SqlDscRSTls_ShouldProcessDescription = Enabling TLS (secure connection level 1) for the Reporting Services instance '{0}'.
-    Enable_SqlDscRSTls_ShouldProcessConfirmation = Are you sure you want to enable TLS for the Reporting Services instance '{0}'?
+    ## Enable-SqlDscRsSecureConnection
+    Enable_SqlDscRsSecureConnection_Enabling = Enabling secure connection for Reporting Services instance '{0}'.
+    Enable_SqlDscRsSecureConnection_ShouldProcessDescription = Enabling secure connection (secure connection level 1) for the Reporting Services instance '{0}'.
+    Enable_SqlDscRsSecureConnection_ShouldProcessConfirmation = Are you sure you want to enable secure connection for the Reporting Services instance '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
-    Enable_SqlDscRSTls_ShouldProcessCaption = Enable TLS for Reporting Services instance
-    Enable_SqlDscRSTls_FailedToEnableTls = Failed to enable TLS for Reporting Services instance '{0}'. {1} (ESRSTLS0001)
+    Enable_SqlDscRsSecureConnection_ShouldProcessCaption = Enable secure connection for Reporting Services instance
+    Enable_SqlDscRsSecureConnection_FailedToEnable = Failed to enable secure connection for Reporting Services instance '{0}'. {1} (ESRSSC0001)
 
-    ## Disable-SqlDscRSTls
-    Disable_SqlDscRSTls_DisablingTls = Disabling TLS for Reporting Services instance '{0}'.
-    Disable_SqlDscRSTls_ShouldProcessDescription = Disabling TLS (secure connection level 0) for the Reporting Services instance '{0}'.
-    Disable_SqlDscRSTls_ShouldProcessConfirmation = Are you sure you want to disable TLS for the Reporting Services instance '{0}'?
+    ## Disable-SqlDscRsSecureConnection
+    Disable_SqlDscRsSecureConnection_Disabling = Disabling secure connection for Reporting Services instance '{0}'.
+    Disable_SqlDscRsSecureConnection_ShouldProcessDescription = Disabling secure connection (secure connection level 0) for the Reporting Services instance '{0}'.
+    Disable_SqlDscRsSecureConnection_ShouldProcessConfirmation = Are you sure you want to disable secure connection for the Reporting Services instance '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
-    Disable_SqlDscRSTls_ShouldProcessCaption = Disable TLS for Reporting Services instance
-    Disable_SqlDscRSTls_FailedToDisableTls = Failed to disable TLS for Reporting Services instance '{0}'. {1} (DSRSTLS0001)
+    Disable_SqlDscRsSecureConnection_ShouldProcessCaption = Disable secure connection for Reporting Services instance
+    Disable_SqlDscRsSecureConnection_FailedToDisable = Failed to disable secure connection for Reporting Services instance '{0}'. {1} (DSRSSC0001)
 
     ## Invoke-RsCimMethod
     Invoke_RsCimMethod_FailedToInvokeMethod = Method {0}() failed with an error. Error: {1} (HRESULT:{2}) (IRCM0001)

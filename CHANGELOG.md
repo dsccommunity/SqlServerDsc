@@ -11,21 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `MSReportServer_ConfigurationSetting` CIM instance for SQL Server Reporting
   Services or Power BI Report Server. Supports auto-detection of the Reporting
   Services version or explicit version specification. The returned CIM instance
-  can be piped to `Enable-SqlDscRSTls` or `Disable-SqlDscRSTls`
+  can be piped to `Enable-SqlDscRsSecureConnection` or `Disable-SqlDscRsSecureConnection`
   ([issue #2022](https://github.com/dsccommunity/SqlServerDsc/issues/2022)).
-- Added public command `Enable-SqlDscRSTls` to enable TLS for SQL Server
-  Reporting Services or Power BI Report Server by setting the secure connection
-  level to 1. Accepts the configuration CIM instance from pipeline, supports
-  `-WhatIf`/`-Confirm`, and `-PassThru` to return the configuration object
+- Added public command `Enable-SqlDscRsSecureConnection` to enable secure
+  connection for SQL Server Reporting Services or Power BI Report Server by
+  setting the secure connection level to 1. Accepts the configuration CIM
+  instance from pipeline, supports `-WhatIf`/`-Confirm`, and `-PassThru` to
+  return the configuration object
   ([issue #2022](https://github.com/dsccommunity/SqlServerDsc/issues/2022)).
-- Added public command `Disable-SqlDscRSTls` to disable TLS for SQL Server
-  Reporting Services or Power BI Report Server by setting the secure connection
-  level to 0. Accepts the configuration CIM instance from pipeline, supports
-  `-WhatIf`/`-Confirm`, and `-PassThru` to return the configuration object
+- Added public command `Disable-SqlDscRsSecureConnection` to disable secure
+  connection for SQL Server Reporting Services or Power BI Report Server by
+  setting the secure connection level to 0. Accepts the configuration CIM
+  instance from pipeline, supports `-WhatIf`/`-Confirm`, and `-PassThru` to
+  return the configuration object
   ([issue #2023](https://github.com/dsccommunity/SqlServerDsc/issues/2023)).
 - Added private function `Invoke-RsCimMethod` to invoke CIM methods on Reporting
   Services configuration instances with consistent error handling. This function
-  is used by `Enable-SqlDscRSTls`, `Disable-SqlDscRSTls`, and the `SqlRS` resource.
+  is used by `Enable-SqlDscRsSecureConnection`, `Disable-SqlDscRsSecureConnection`,
+  and the `SqlRS` resource.
 - Added public command `Get-SqlDscServerProtocolTcpIp` to retrieve TCP/IP address
   group information for SQL Server instances. Returns `ServerIPAddress` objects
   containing port configuration including `TcpPort`, `TcpDynamicPorts`, `Enabled`,
@@ -110,9 +113,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `SqlRS`
-  - Refactored to use the public commands `Enable-SqlDscRSTls` and
-    `Disable-SqlDscRSTls` for setting the secure connection level instead
-    of calling the CIM method directly.
+  - Refactored to use the public commands `Enable-SqlDscRsSecureConnection` and
+    `Disable-SqlDscRsSecureConnection` for setting the secure connection level
+    instead of calling the CIM method directly.
 - `Assert-SetupActionProperties`
   - Refactored to use the command `Get-FileVersion` from the DscResource.Common
     module instead of the private function `Get-FileVersionInformation`

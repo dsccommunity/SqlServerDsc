@@ -6,8 +6,8 @@
         Gets the SQL Server Reporting Services or Power BI Report Server
         configuration CIM instance (`MSReportServer_ConfigurationSetting`).
         This CIM instance can be used with other commands that manage
-        Reporting Services configuration, such as `Enable-SqlDscRSTls` and
-        `Disable-SqlDscRSTls`.
+        Reporting Services configuration, such as `Enable-SqlDscRsSecureConnection`
+        and `Disable-SqlDscRsSecureConnection`.
 
         The configuration CIM instance provides access to properties like
         `SecureConnectionLevel`, `DatabaseServerName`, `VirtualDirectoryReportServer`,
@@ -35,10 +35,10 @@
         explicit version 15 (SQL Server 2019).
 
     .EXAMPLE
-        Get-SqlDscRSConfiguration -InstanceName 'SSRS' | Enable-SqlDscRSTls
+        Get-SqlDscRSConfiguration -InstanceName 'SSRS' | Enable-SqlDscRsSecureConnection
 
         Gets the configuration CIM instance for the SSRS instance and enables
-        TLS using the pipeline.
+        secure connection using the pipeline.
 
     .INPUTS
         None.

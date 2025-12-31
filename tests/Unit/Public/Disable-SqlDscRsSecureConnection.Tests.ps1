@@ -43,7 +43,7 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'Enable-SqlDscRSTls' {
+Describe 'Disable-SqlDscRsSecureConnection' {
     BeforeAll {
         InModuleScope -ScriptBlock {
             function script:Invoke-CimMethod
@@ -79,11 +79,11 @@ Describe 'Enable-SqlDscRSTls' {
         }
     }
 
-    Context 'When enabling TLS successfully' {
+    Context 'When disabling secure connection successfully' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName          = 'SSRS'
-                SecureConnectionLevel = 0
+                SecureConnectionLevel = 2
             }
 
             Mock -CommandName Invoke-CimMethod -MockWith {
@@ -93,27 +93,27 @@ Describe 'Enable-SqlDscRSTls' {
             }
         }
 
-        It 'Should enable TLS without errors' {
-            { $mockCimInstance | Enable-SqlDscRSTls -Confirm:$false } | Should -Not -Throw
+        It 'Should disable secure connection without errors' {
+            { $mockCimInstance | Disable-SqlDscRsSecureConnection -Confirm:$false } | Should -Not -Throw
 
             Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
                 $MethodName -eq 'SetSecureConnectionLevel' -and
-                $Arguments.Level -eq 1
+                $Arguments.Level -eq 0
             } -Exactly -Times 1
         }
 
         It 'Should not return anything by default' {
-            $result = $mockCimInstance | Enable-SqlDscRSTls -Confirm:$false
+            $result = $mockCimInstance | Disable-SqlDscRsSecureConnection -Confirm:$false
 
             $result | Should -BeNullOrEmpty
         }
     }
 
-    Context 'When enabling TLS with PassThru' {
+    Context 'When disabling secure connection with PassThru' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName          = 'SSRS'
-                SecureConnectionLevel = 0
+                SecureConnectionLevel = 2
             }
 
             Mock -CommandName Invoke-CimMethod -MockWith {
@@ -124,18 +124,18 @@ Describe 'Enable-SqlDscRSTls' {
         }
 
         It 'Should return the configuration CIM instance' {
-            $result = $mockCimInstance | Enable-SqlDscRSTls -PassThru -Confirm:$false
+            $result = $mockCimInstance | Disable-SqlDscRsSecureConnection -PassThru -Confirm:$false
 
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'SSRS'
         }
     }
 
-    Context 'When enabling TLS with Force' {
+    Context 'When disabling secure connection with Force' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName          = 'SSRS'
-                SecureConnectionLevel = 0
+                SecureConnectionLevel = 2
             }
 
             Mock -CommandName Invoke-CimMethod -MockWith {
@@ -145,8 +145,8 @@ Describe 'Enable-SqlDscRSTls' {
             }
         }
 
-        It 'Should enable TLS without confirmation' {
-            { $mockCimInstance | Enable-SqlDscRSTls -Force } | Should -Not -Throw
+        It 'Should disable secure connection without confirmation' {
+            { $mockCimInstance | Disable-SqlDscRsSecureConnection -Force } | Should -Not -Throw
 
             Should -Invoke -CommandName Invoke-CimMethod -Exactly -Times 1
         }
@@ -156,7 +156,7 @@ Describe 'Enable-SqlDscRSTls' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName          = 'SSRS'
-                SecureConnectionLevel = 0
+                SecureConnectionLevel = 2
             }
 
             Mock -CommandName Invoke-CimMethod -MockWith {
@@ -170,7 +170,7 @@ Describe 'Enable-SqlDscRSTls' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Enable-SqlDscRSTls -Confirm:$false } | Should -Throw -ErrorId 'ESRSTLS0001,Enable-SqlDscRSTls'
+            { $mockCimInstance | Disable-SqlDscRsSecureConnection -Confirm:$false } | Should -Throw -ErrorId 'DSRSSC0001,Disable-SqlDscRsSecureConnection'
         }
     }
 
@@ -178,7 +178,7 @@ Describe 'Enable-SqlDscRSTls' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName          = 'SSRS'
-                SecureConnectionLevel = 0
+                SecureConnectionLevel = 2
             }
 
             Mock -CommandName Invoke-CimMethod -MockWith {
@@ -190,7 +190,7 @@ Describe 'Enable-SqlDscRSTls' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Enable-SqlDscRSTls -Confirm:$false } | Should -Throw -ErrorId 'ESRSTLS0001,Enable-SqlDscRSTls'
+            { $mockCimInstance | Disable-SqlDscRsSecureConnection -Confirm:$false } | Should -Throw -ErrorId 'DSRSSC0001,Disable-SqlDscRsSecureConnection'
         }
     }
 
@@ -198,14 +198,14 @@ Describe 'Enable-SqlDscRSTls' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName          = 'SSRS'
-                SecureConnectionLevel = 0
+                SecureConnectionLevel = 2
             }
 
             Mock -CommandName Invoke-CimMethod
         }
 
         It 'Should not call Invoke-CimMethod' {
-            $mockCimInstance | Enable-SqlDscRSTls -WhatIf
+            $mockCimInstance | Disable-SqlDscRsSecureConnection -WhatIf
 
             Should -Invoke -CommandName Invoke-CimMethod -Exactly -Times 0
         }
@@ -215,7 +215,7 @@ Describe 'Enable-SqlDscRSTls' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName          = 'SSRS'
-                SecureConnectionLevel = 0
+                SecureConnectionLevel = 2
             }
 
             Mock -CommandName Invoke-CimMethod -MockWith {
@@ -225,8 +225,8 @@ Describe 'Enable-SqlDscRSTls' {
             }
         }
 
-        It 'Should enable TLS' {
-            { Enable-SqlDscRSTls -Configuration $mockCimInstance -Confirm:$false } | Should -Not -Throw
+        It 'Should disable secure connection' {
+            { Disable-SqlDscRsSecureConnection -Configuration $mockCimInstance -Confirm:$false } | Should -Not -Throw
 
             Should -Invoke -CommandName Invoke-CimMethod -Exactly -Times 1
         }

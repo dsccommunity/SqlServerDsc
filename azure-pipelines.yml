@@ -537,8 +537,8 @@ stages:
                   'tests/Integration/Commands/Test-SqlDscRSInstalled.Integration.Tests.ps1'
                   # Group 3
                   'tests/Integration/Commands/Get-SqlDscRSConfiguration.Integration.Tests.ps1'
-                  'tests/Integration/Commands/Enable-SqlDscRSTls.Integration.Tests.ps1'
-                  'tests/Integration/Commands/Disable-SqlDscRSTls.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Enable-SqlDscRsSecureConnection.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Disable-SqlDscRsSecureConnection.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscReportingService.Integration.Tests.ps1'
                   # Group 9
@@ -607,8 +607,8 @@ stages:
                   'tests/Integration/Commands/Test-SqlDscRSInstalled.Integration.Tests.ps1'
                   # Group 3
                   'tests/Integration/Commands/Get-SqlDscRSConfiguration.Integration.Tests.ps1'
-                  'tests/Integration/Commands/Enable-SqlDscRSTls.Integration.Tests.ps1'
-                  'tests/Integration/Commands/Disable-SqlDscRSTls.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Enable-SqlDscRsSecureConnection.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Disable-SqlDscRsSecureConnection.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscPowerBIReportServer.Integration.Tests.ps1'
                   # Group 9

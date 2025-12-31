@@ -606,11 +606,11 @@ function Set-TargetResource
 
                 if ($UseSsl)
                 {
-                    $reportingServicesData.Configuration | Enable-SqlDscRSTls -Force
+                    $reportingServicesData.Configuration | Enable-SqlDscRsSecureConnection -Force
                 }
                 else
                 {
-                    $reportingServicesData.Configuration | Disable-SqlDscRSTls -Force
+                    $reportingServicesData.Configuration | Disable-SqlDscRsSecureConnection -Force
                 }
             }
         }
