@@ -104,6 +104,14 @@ Describe 'Enable-SqlDscRsSecureConnection' {
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
             $verifyConfig.SecureConnectionLevel | Should -BeGreaterOrEqual 1
         }
+
+        It 'Should return configuration when using PassThru' {
+            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+            $result = $config | Enable-SqlDscRsSecureConnection -Force -PassThru
+
+            $result | Should -Not -BeNullOrEmpty
+            $result.InstanceName | Should -Be 'SSRS'
+        }
     }
 
     Context 'When enabling secure connection for SQL Server Reporting Services' -Tag @('Integration_SQL2022_RS') {
@@ -136,6 +144,14 @@ Describe 'Enable-SqlDscRsSecureConnection' {
             # Verify secure connection is enabled (level 1 or higher means enabled)
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
             $verifyConfig.SecureConnectionLevel | Should -BeGreaterOrEqual 1
+        }
+
+        It 'Should return configuration when using PassThru' {
+            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+            $result = $config | Enable-SqlDscRsSecureConnection -Force -PassThru
+
+            $result | Should -Not -BeNullOrEmpty
+            $result.InstanceName | Should -Be 'SSRS'
         }
     }
 

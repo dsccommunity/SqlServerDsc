@@ -116,10 +116,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- `Get-SqlDscRSConfiguration`
-  - Refactored error handling to use `New-ErrorRecord` instead of directly
-    instantiating `[System.Management.Automation.ErrorRecord]` for consistency
-    with the rest of the codebase.
 - `SqlRS`
   - Refactored to use the public commands `Enable-SqlDscRsSecureConnection` and
     `Disable-SqlDscRsSecureConnection` for setting the secure connection level
