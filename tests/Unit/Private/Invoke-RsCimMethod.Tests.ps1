@@ -74,7 +74,7 @@ BeforeAll {
 AfterAll {
     $env:SqlServerDscCI = $null
 
-    InModuleScope -ModuleName $script:moduleName -ScriptBlock {
+    InModuleScope -ScriptBlock {
         Remove-Item -Path 'function:script:Invoke-CimMethod' -Force -ErrorAction SilentlyContinue
     }
 
