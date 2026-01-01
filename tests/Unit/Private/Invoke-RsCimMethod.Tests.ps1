@@ -86,10 +86,6 @@ AfterAll {
 Describe 'Invoke-RsCimMethod' -Tag 'Private' {
     Context 'When invoking a CIM method successfully' {
         BeforeAll {
-            $mockCimInstance = [PSCustomObject] @{
-                InstanceName = 'SSRS'
-            }
-
             Mock -CommandName Invoke-CimMethod -MockWith {
                 return [PSCustomObject] @{
                     HRESULT = 0
