@@ -108,14 +108,9 @@ function Get-SqlDscRSConfiguration
     {
         $errorMessage = $script:localizedData.Get_SqlDscRSConfiguration_FailedToGetConfiguration -f $InstanceName, $_.Exception.Message
 
-        $PSCmdlet.ThrowTerminatingError(
-            [System.Management.Automation.ErrorRecord]::new(
-                [System.InvalidOperationException]::new($errorMessage, $_.Exception),
-                'GSRSCD0003',
-                [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                $InstanceName
-            )
-        )
+        $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -ErrorRecord $_ -PassThru) -ErrorId 'GSRSCD0003' -ErrorCategory 'InvalidOperation' -TargetObject $InstanceName
+
+        $PSCmdlet.ThrowTerminatingError($errorRecord)
     }
 
     # Filter to ensure we get the correct instance if multiple are returned.
@@ -128,14 +123,9 @@ function Get-SqlDscRSConfiguration
     {
         $errorMessage = $script:localizedData.Get_SqlDscRSConfiguration_ConfigurationNotFound -f $InstanceName
 
-        $PSCmdlet.ThrowTerminatingError(
-            [System.Management.Automation.ErrorRecord]::new(
-                [System.InvalidOperationException]::new($errorMessage),
-                'GSRSCD0004',
-                [System.Management.Automation.ErrorCategory]::ObjectNotFound,
-                $InstanceName
-            )
-        )
+        $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GSRSCD0004' -ErrorCategory 'ObjectNotFound' -TargetObject $InstanceName
+
+        $PSCmdlet.ThrowTerminatingError($errorRecord)
     }
 
     return $reportingServicesConfiguration
