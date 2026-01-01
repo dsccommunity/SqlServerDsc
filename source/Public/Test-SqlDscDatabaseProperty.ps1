@@ -1166,6 +1166,16 @@ function Test-SqlDscDatabaseProperty
                 $expectedValue = $expectedValue.IsPresent
             }
 
+            <#
+                Handle DefaultLanguage and DefaultFullTextLanguage properties.
+                These SMO properties return a DefaultLanguage object, but we accept
+                Int32 (LCID) as input. Compare against the Lcid property.
+            #>
+            if ($parameterName -in @('DefaultLanguage', 'DefaultFullTextLanguage') -and $null -ne $actualValue)
+            {
+                $actualValue = $actualValue.Lcid
+            }
+
             # Use a robust comparison that handles empty strings, nulls, and different types
             $valuesMatch = $false
 

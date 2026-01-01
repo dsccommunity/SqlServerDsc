@@ -26,7 +26,7 @@ BeforeDiscovery {
 BeforeAll {
     $script:moduleName = 'SqlServerDsc'
 
-    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 }
 
 # cSpell: ignore DSCSQLTEST

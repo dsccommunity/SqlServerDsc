@@ -56,7 +56,7 @@ BeforeAll {
 
     $script:subModulePath = Join-Path -Path $script:subModulesFolder -ChildPath $script:subModuleName
 
-    Import-Module -Name $script:subModulePath -Force -ErrorAction 'Stop'
+    Import-Module -Name $script:subModulePath -ErrorAction 'Stop'
 
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
