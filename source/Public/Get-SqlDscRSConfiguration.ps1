@@ -75,28 +75,18 @@ function Get-SqlDscRSConfiguration
         {
             $errorMessage = $script:localizedData.Get_SqlDscRSConfiguration_InstanceNotFound -f $InstanceName
 
-            $PSCmdlet.ThrowTerminatingError(
-                [System.Management.Automation.ErrorRecord]::new(
-                    [System.InvalidOperationException]::new($errorMessage),
-                    'GSRSCD0001',
-                    [System.Management.Automation.ErrorCategory]::ObjectNotFound,
-                    $InstanceName
-                )
-            )
+            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage) -ErrorId 'GSRSCD0001' -ErrorCategory 'ObjectNotFound' -TargetObject $InstanceName
+
+            $PSCmdlet.ThrowTerminatingError($errorRecord)
         }
 
         if ([System.String]::IsNullOrEmpty($rsSetupConfiguration.CurrentVersion))
         {
             $errorMessage = $script:localizedData.Get_SqlDscRSConfiguration_VersionNotFound -f $InstanceName
 
-            $PSCmdlet.ThrowTerminatingError(
-                [System.Management.Automation.ErrorRecord]::new(
-                    [System.InvalidOperationException]::new($errorMessage),
-                    'GSRSCD0002',
-                    [System.Management.Automation.ErrorCategory]::ObjectNotFound,
-                    $InstanceName
-                )
-            )
+            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage) -ErrorId 'GSRSCD0002' -ErrorCategory 'ObjectNotFound' -TargetObject $InstanceName
+
+            $PSCmdlet.ThrowTerminatingError($errorRecord)
         }
 
         $Version = ([System.Version] $rsSetupConfiguration.CurrentVersion).Major
