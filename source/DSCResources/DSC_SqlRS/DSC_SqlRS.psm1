@@ -604,15 +604,14 @@ function Set-TargetResource
 
                 $restartReportingService = $true
 
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $reportingServicesData.Configuration
-                    MethodName  = 'SetSecureConnectionLevel'
-                    Arguments   = @{
-                        Level = @(0, 1)[$UseSsl]
-                    }
+                if ($UseSsl)
+                {
+                    $reportingServicesData.Configuration | Enable-SqlDscRsSecureConnection -Force
                 }
-
-                Invoke-RsCimMethod @invokeRsCimMethodParameters
+                else
+                {
+                    $reportingServicesData.Configuration | Disable-SqlDscRsSecureConnection -Force
+                }
             }
         }
         else
@@ -825,15 +824,14 @@ function Set-TargetResource
 
                 $restartReportingService = $true
 
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $reportingServicesData.Configuration
-                    MethodName  = 'SetSecureConnectionLevel'
-                    Arguments   = @{
-                        Level = @(0, 1)[$UseSsl]
-                    }
+                if ($UseSsl)
+                {
+                    $reportingServicesData.Configuration | Enable-SqlDscRsSecureConnection -Force
                 }
-
-                Invoke-RsCimMethod @invokeRsCimMethodParameters
+                else
+                {
+                    $reportingServicesData.Configuration | Disable-SqlDscRsSecureConnection -Force
+                }
             }
         }
 

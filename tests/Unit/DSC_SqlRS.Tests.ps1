@@ -518,6 +518,8 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
         Mock -CommandName Import-SqlDscPreferredModule
         Mock -CommandName Invoke-SqlDscQuery
+        Mock -CommandName Enable-SqlDscRsSecureConnection
+        Mock -CommandName Disable-SqlDscRsSecureConnection
         Mock -CommandName Restart-ReportingServicesService
         Mock -CommandName Start-Sleep
         Mock -CommandName Invoke-RsCimMethod
@@ -598,9 +600,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $null = Set-TargetResource @mockDefaultParameters
                 }
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetSecureConnectionLevel'
-                } -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'RemoveURL'
@@ -813,9 +813,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             It 'Should configure Reporting Service without throwing an error' {
                 $null = Set-TargetResource @testParameters
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetSecureConnectionLevel'
-                } -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'RemoveURL' -and $Arguments.Application -eq $mockReportServerApplicationName
@@ -908,9 +906,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             It 'Should configure Reporting Service without throwing an error' {
                 $null = Set-TargetResource @testParameters
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetSecureConnectionLevel'
-                } -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'RemoveURL' -and $Arguments.Application -eq $mockReportServerApplicationName
@@ -1093,9 +1089,8 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         It 'Should configure Reporting Service without throwing an error' {
             $null = Set-TargetResource @defaultParameters
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'SetSecureConnectionLevel'
-            } -Exactly -Times 0 -Scope It
+            Should -Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Times 0 -Scope It
+            Should -Invoke -CommandName Disable-SqlDscRsSecureConnection -Exactly -Times 0 -Scope It
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'RemoveURL'
