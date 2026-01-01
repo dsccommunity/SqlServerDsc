@@ -793,6 +793,26 @@ namespace Microsoft.SqlServer.Management.Smo
     }
 
 
+    // TypeName: Microsoft.SqlServer.Management.Smo.DefaultLanguage
+    // Used by:
+    //  Database.DefaultLanguage
+    //  Database.DefaultFullTextLanguage
+    public class DefaultLanguage
+    {
+        public DefaultLanguage()
+        {
+        }
+
+        public DefaultLanguage(int lcid, string name)
+        {
+            this.Lcid = lcid;
+            this.Name = name;
+        }
+
+        public int Lcid { get; set; }
+        public string Name { get; set; }
+    }
+
     // TypeName: Microsoft.SqlServer.Management.Smo.Database
     // BaseType: Microsoft.SqlServer.Management.Smo.ScriptNameObjectBase
     // Used by:
@@ -903,8 +923,6 @@ namespace Microsoft.SqlServer.Management.Smo
         // Integer Properties
         public int ActiveConnections = 5;
         public int ChangeTrackingRetentionPeriod = 2;
-        public int DefaultFullTextLanguage = 1033;
-        public int DefaultLanguage = 0;
         public int ID = 5;
         public int MaxDop = 0;
         public int MaxDopForSecondary = 0;
@@ -913,6 +931,10 @@ namespace Microsoft.SqlServer.Management.Smo
         public int MirroringSafetySequence = 1;
         public int MirroringTimeout = 10;
         public int TargetRecoveryTime = 60;
+
+        // Language Properties
+        public DefaultLanguage DefaultFullTextLanguage = new DefaultLanguage(1033, "English");
+        public DefaultLanguage DefaultLanguage = new DefaultLanguage(0, "");
         public int TwoDigitYearCutoff = 2049;
         public int Version = 904;
 

@@ -575,6 +575,8 @@ class SqlAudit : SqlResourceBase
             # Remove properties that is not an audit property.
             'InstanceName'
             'ServerName'
+            'Port'
+            'Protocol'
             'Ensure'
             'Force'
             'Credential'

@@ -49,6 +49,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added `Protocol` parameter to specify the network protocol when connecting.
   - Added `Port` parameter to specify the TCP port number when connecting.
     Connection strings now support the format `[protocol:]hostname[\instance][,port]`.
+- `SqlDatabase`
+  - Added new class-based resource to create, modify, or remove databases on a
+    SQL Server instance. Supports a comprehensive set of database properties
+    that can be configured with `Set-SqlDscDatabaseProperty`
+    ([issue #2174](https://github.com/dsccommunity/SqlServerDsc/issues/2174)).
 - `Install-SqlDscServer`
   - Added parameter `AllowDqRemoval` to the `Upgrade` parameter set
     ([issue #2155](https://github.com/dsccommunity/SqlServerDsc/issues/2155)).
@@ -113,6 +118,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     later versions.
   - Now outputs setup progress when `-Verbose` is passed by using `/QUIETSIMPLE`
     instead of `/QUIET`.
+- `SqlResourceBase`
+  - Added the method `ConvertToSmoEnumType()` to convert string values to SMO
+    enum types at runtime. This method can be used by all resources inheriting
+    from `SqlResourceBase` and supports a default namespace parameter to avoid
+    repeating the full type name
+    ([issue #2174](https://github.com/dsccommunity/SqlServerDsc/issues/2174)).
 
 ### Changed
 
@@ -153,8 +164,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ([issue #2376](https://github.com/dsccommunity/SqlServerDsc/issues/2376)).
 - `SqlRS`
   - Fixed integration tests failing with status code 0 when checking ReportServer
-    and Reports site accessibility by implementing retry logic (up to 2 minutes) to
-    handle timing issues where Reporting Services web services are not immediately
+    and Reports site accessibility by implementing retry logic (up to 2 minutes)
+    to handle timing issues where Reporting Services web services are not immediately
     ready after DSC configuration completes. On final retry attempt with status
     code 0, the exception is now re-thrown to provide detailed error diagnostics
     ([issue #2376](https://github.com/dsccommunity/SqlServerDsc/issues/2376)).
@@ -208,9 +219,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `System.Boolean` to `Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff`
     to match SMO property types and support all valid values (Off, On, Primary)
     ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
-  - Fixed parameter types for boolean database properties from `System.Boolean` to
-    `System.Management.Automation.SwitchParameter` to follow PowerShell best practices.
-    ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
+  - Fixed parameter types for boolean database properties from `System.Boolean`
+    to `System.Management.Automation.SwitchParameter` to follow PowerShell best
+    practices ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
 - `New-SqlDscRole`
   - Fixed duplicate verbose output by removing manual `Write-Verbose` call, as
     `$PSCmdlet.ShouldProcess()` already generates appropriate verbose output
@@ -220,12 +231,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `System.Boolean` to `Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff`
     to match SMO property types and support all valid values (Off, On, Primary)
     ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
-  - Fixed parameter types for boolean database properties from `System.Boolean` to
-    `System.Management.Automation.SwitchParameter` to follow PowerShell best practices.
-    ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
+  - Fixed parameter types for boolean database properties from `System.Boolean`
+    to `System.Management.Automation.SwitchParameter` to follow PowerShell best
+    practices ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
 
 ### Removed
 
+- `DSC_SqlDatabase`
+  - Removed the legacy MOF-based resource. Use the new class-based `SqlDatabase`
+    resource instead
+    ([issue #2174](https://github.com/dsccommunity/SqlServerDsc/issues/2174)).
 - Removed helper function `Get-FilePathMajorVersion` from the SqlServerDsc.Common
   module. Refactored usages to use the command `Get-FileVersion` from the
   DscResource.Common module instead
@@ -251,8 +266,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Use the new command `Set-SqlDscDatabaseOwner` to change database ownership instead.
 - BREAKING CHANGE: `Set-SqlDscDatabaseProperty`
   - Removed parameters `AzureEdition` and `AzureServiceObjective`. Azure SQL Database
-    service tier and SLO changes should be managed using `Set-AzSqlDatabase` from the
-    Azure PowerShell module instead. See [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
+    service tier and SLO changes should be managed using `Set-AzSqlDatabase`
+    from the Azure PowerShell module instead. See [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
   - Removed parameter `DatabaseSnapshotBaseName`. Database snapshots should be
     created using the `New-SqlDscDatabaseSnapshot`, or the `New-SqlDscDatabase`
     command with the `-DatabaseSnapshotBaseName` parameter.
@@ -279,10 +294,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and `DataFile` parameters to allow control over snapshot file placement and
   structure ([issue #2341](https://github.com/dsccommunity/SqlServerDsc/issues/2341)).
 - Added public command `New-SqlDscFileGroup` to create FileGroup objects for SQL
-  Server databases. This command simplifies creating FileGroup objects that can be
-  used with `New-SqlDscDatabase` and other database-related commands. The `Database`
-  parameter is optional, allowing FileGroup objects to be created standalone and
-  added to a Database later using `Add-SqlDscFileGroup`.
+  Server databases. This command simplifies creating FileGroup objects that
+  can be used with `New-SqlDscDatabase` and other database-related commands.
+  The `Database` parameter is optional, allowing FileGroup objects to be
+  created standalone and added to a Database later using `Add-SqlDscFileGroup`.
 - Added public command `New-SqlDscDataFile` to create DataFile objects for SQL
   Server FileGroups. This command simplifies creating DataFile objects with
   specified physical file paths, supporting both regular database files (.mdf, .ndf)
@@ -305,9 +320,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     database snapshots, enabling control over file placement for snapshots (sparse
     files) and custom filegroup/datafile configuration for regular databases
     ([issue #2341](https://github.com/dsccommunity/SqlServerDsc/issues/2341)).
-  - Added `IsLedger` parameter to support creating ledger databases at creation time.
-    Ledger status is read-only after database creation and can only be set when
-    creating a new database ([issue #2351](https://github.com/dsccommunity/SqlServerDsc/issues/2351)).
+  - Added `IsLedger` parameter to support creating ledger databases at creation
+    time. Ledger status is read-only after database creation and can only be set
+    when creating a new database ([issue #2351](https://github.com/dsccommunity/SqlServerDsc/issues/2351)).
 - Added public command `Set-SqlDscDatabaseOwner` to change the owner of a SQL Server
   database [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
   This command uses the SMO `SetOwner()` method and supports both `ServerObject`
@@ -326,8 +341,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to resolve Sysprep compatibility errors [issue #2212](https://github.com/dsccommunity/SqlServerDsc/issues/2212).
 - Added integration tests for `Complete-SqlDscImage` command to ensure command
   reliability in prepared image installation workflows. The test runs in a separate
-  pipeline job `Integration_Test_Commands_SqlServer_PreparedImage` with its own CI
-  worker, and verifies the completion of SQL Server instances prepared using
+  pipeline job `Integration_Test_Commands_SqlServer_PreparedImage` with its own
+  CI worker, and verifies the completion of SQL Server instances prepared using
   `Install-SqlDscServer` with the `-PrepareImage` parameter. The test includes
   scenarios with minimal parameters and various service account/directory
   configurations [issue #2212](https://github.com/dsccommunity/SqlServerDsc/issues/2212).
@@ -1437,7 +1452,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed `Test-IsNumericType` from private functions ([issue #1795](https://github.com/dsccommunity/SqlServerDsc/issues/1795)).
     - `Test-IsNumericType` added to _DscResource.Common_ public functions
     ([issue #87](https://github.com/dsccommunity/DscResource.Common/issues/87)).
-  - Removed `Test-ServiceAccountRequirePassword` from private functions ([issue #1794](https://github.com/dsccommunity/SqlServerDsc/issues/1794)
+  - Removed `Test-ServiceAccountRequirePassword` from private functions
+    ([issue #1794](https://github.com/dsccommunity/SqlServerDsc/issues/1794)
     - Replaced by `Test-AccountRequirePassword` that was added to _DscResource.Common_
       public functions ([issue #93](https://github.com/dsccommunity/DscResource.Common/issues/93)).
   - Removed `Assert-RequiredCommandParameter` from private functions ([issue #1796](https://github.com/dsccommunity/SqlServerDsc/issues/1796)).
@@ -1677,8 +1693,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The deprecated DSC resource SqlServerEndpointState have been removed _(and_
   _replaced by a property in [**SqlEndpoint**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqlendpoint))_
   ([issue #1725](https://github.com/dsccommunity/SqlServerDsc/issues/1725)).
-- The deprecated DSC resource SqlServerNetwork have been removed _(and replaced by_
-  _[**SqlProtocol**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqlprotocol)_
+- The deprecated DSC resource SqlServerNetwork have been removed _(and replaced_
+  _by [**SqlProtocol**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqlprotocol)_
   _and [**SqlProtocolTcpIp**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqlprotocoltcpip))_
   ([issue #1725](https://github.com/dsccommunity/SqlServerDsc/issues/1725)).
 - CommonTestHelper
@@ -2653,8 +2669,8 @@ in a future release.
     or `features`.
   - Now code coverage is reported to Codecov, and a codecov.yml was added.
   - Updated to support DscResource.Common v0.7.1.
-  - Changed to point to CONTRIBUTING.md on master branch to avoid "404 Page not found"
-    ([issue #1508](https://github.com/dsccommunity/SqlServerDsc/issues/1508)).
+  - Changed to point to CONTRIBUTING.md on master branch to avoid
+    "404 Page not found" ([issue #1508](https://github.com/dsccommunity/SqlServerDsc/issues/1508)).
 - SqlAGDatabase
   - Fixed unit tests that failed intermittently when running unit tests
     in PowerShell 7 ([issue #1532](https://github.com/dsccommunity/SqlServerDsc/issues/1532)).
@@ -3800,8 +3816,8 @@ in a future release.
     - Changed the tests so that the local SqlInstall account is added as a member
       of the local administrators group.
     - Changed the tests so that the local SqlInstall account is added as a member
-      of the system administrators in SQL Server (Database Engine) - needed for the
-      xSQLServerAlwaysOnService integration tests.
+      of the system administrators in SQL Server (Database Engine) - needed for
+      the xSQLServerAlwaysOnService integration tests.
     - Changed so that only one of the Modules-folder for the SQLPS PowerShell module
       for SQL Server 2016 is renamed back so it can be used with the integration
       tests. There was an issue when more than one SQLPS module was present (see
@@ -4264,7 +4280,8 @@ in a future release.
 - Changes to xSQLServerSetup
   - Added a note to the README.md saying that it is not possible to add or remove
     features from a SQL Server failover cluster (issue #433).
-  - Changed so that it reports false if the desired state is not correct (issue #432).
+  - Changed so that it reports false if the desired state is not correct
+    (issue #432).
     - Added a test to make sure we always return false if a SQL Server failover
       cluster is missing features.
   - Helper function Connect-SQLAnalysis
