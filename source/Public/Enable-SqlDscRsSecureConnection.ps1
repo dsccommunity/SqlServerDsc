@@ -127,7 +127,7 @@ function Enable-SqlDscRsSecureConnection
             {
                 $errorMessage = $script:localizedData.Enable_SqlDscRsSecureConnection_FailedToEnable -f $instanceName, $_.Exception.Message
 
-                $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage) -ErrorId 'ESRSSC0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+                $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'ESRSSC0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
 
                 $PSCmdlet.ThrowTerminatingError($errorRecord)
             }

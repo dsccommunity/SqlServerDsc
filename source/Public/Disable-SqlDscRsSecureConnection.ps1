@@ -123,7 +123,7 @@ function Disable-SqlDscRsSecureConnection
             {
                 $errorMessage = $script:localizedData.Disable_SqlDscRsSecureConnection_FailedToDisable -f $instanceName, $_.Exception.Message
 
-                $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage) -ErrorId 'DSRSSC0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+                $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'DSRSSC0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
 
                 $PSCmdlet.ThrowTerminatingError($errorRecord)
             }

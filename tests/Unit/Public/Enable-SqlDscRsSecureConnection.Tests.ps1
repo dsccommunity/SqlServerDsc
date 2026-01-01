@@ -79,6 +79,25 @@ Describe 'Enable-SqlDscRsSecureConnection' {
         }
     }
 
+    Context 'When validating parameter sets' {
+        It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
+            @{
+                ExpectedParameterSetName = '__AllParameterSets'
+                ExpectedParameters = '[-Configuration] <Object> [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            }
+        ) {
+            $result = (Get-Command -Name 'Enable-SqlDscRsSecureConnection').ParameterSets |
+                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
+                Select-Object -Property @(
+                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
+                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
+                )
+
+            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should -Be $ExpectedParameters
+        }
+    }
+
     Context 'When enabling secure connection successfully' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
