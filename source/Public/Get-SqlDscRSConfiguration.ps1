@@ -75,7 +75,7 @@ function Get-SqlDscRSConfiguration
         {
             $errorMessage = $script:localizedData.Get_SqlDscRSConfiguration_InstanceNotFound -f $InstanceName
 
-            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage) -ErrorId 'GSRSCD0001' -ErrorCategory 'ObjectNotFound' -TargetObject $InstanceName
+            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GSRSCD0001' -ErrorCategory 'ObjectNotFound' -TargetObject $InstanceName
 
             $PSCmdlet.ThrowTerminatingError($errorRecord)
         }
@@ -84,7 +84,7 @@ function Get-SqlDscRSConfiguration
         {
             $errorMessage = $script:localizedData.Get_SqlDscRSConfiguration_VersionNotFound -f $InstanceName
 
-            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage) -ErrorId 'GSRSCD0002' -ErrorCategory 'ObjectNotFound' -TargetObject $InstanceName
+            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GSRSCD0002' -ErrorCategory 'ObjectNotFound' -TargetObject $InstanceName
 
             $PSCmdlet.ThrowTerminatingError($errorRecord)
         }
