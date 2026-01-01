@@ -43,9 +43,6 @@
 #>
 class SqlResourceBase : ResourceBase
 {
-    # Cache for resolved enum types to avoid repeated assembly scanning.
-    hidden static [System.Collections.Generic.Dictionary[System.String, System.Type]] $EnumTypeCache = [System.Collections.Generic.Dictionary[System.String, System.Type]]::new()
-
     <#
         Property for holding the server connection object.
         This should be an object of type [Microsoft.SqlServer.Management.Smo.Server]
