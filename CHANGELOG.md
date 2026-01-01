@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Services configuration instances with consistent error handling. This function
   is used by `Enable-SqlDscRsSecureConnection`, `Disable-SqlDscRsSecureConnection`,
   and the `SqlRS` resource.
+- `Invoke-ReportServerSetupAction`
+  - Now uses `Format-Path` with `-ExpandEnvironmentVariable` to expand environment
+    variables in all path parameters (`MediaPath`, `LogPath`, `InstallFolder`)
+    ([issue #2085](https://github.com/dsccommunity/SqlServerDsc/issues/2085)).
 - Added public command `Get-SqlDscServerProtocolTcpIp` to retrieve TCP/IP address
   group information for SQL Server instances. Returns `ServerIPAddress` objects
   containing port configuration including `TcpPort`, `TcpDynamicPorts`, `Enabled`,
