@@ -34,14 +34,14 @@ function Get-OperatingSystem
 
     Write-Verbose -Message $script:localizedData.Get_OperatingSystem_Getting
 
-    $wmiOperatingSystem = Get-CimInstance -ClassName 'Win32_OperatingSystem' -Namespace 'root/cimv2' -ErrorAction 'SilentlyContinue'
+    $operatingSystem = Get-CimInstance -ClassName 'Win32_OperatingSystem' -Namespace 'root/cimv2' -ErrorAction 'SilentlyContinue'
 
-    if ($null -eq $wmiOperatingSystem)
+    if ($null -eq $operatingSystem)
     {
         Write-Error -Message $script:localizedData.Get_OperatingSystem_FailedToGet -Category 'ObjectNotFound' -ErrorId 'GOS0001' -TargetObject $null
 
         return
     }
 
-    return $wmiOperatingSystem
+    return $operatingSystem
 }
