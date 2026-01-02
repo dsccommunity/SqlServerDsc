@@ -99,8 +99,8 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
             } -PassThru |
                 Add-Member -MemberType ScriptProperty -Name 'UrlString' -Value {
                 return @(
-                    $mockDynamicReportsApplicationUrlString,
-                    $mockDynamicReportServerApplicationUrlString
+                    $mockDynamicReportServerApplicationUrlString,
+                    $mockDynamicReportsApplicationUrlString
                 )
             } -PassThru -Force
         }
@@ -449,8 +449,8 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             } -PassThru |
                 Add-Member -MemberType ScriptProperty -Name 'UrlString' -Value {
                 return @(
-                    $mockDynamicReportsApplicationUrlString,
-                    $mockDynamicReportServerApplicationUrlString
+                    $mockDynamicReportServerApplicationUrlString,
+                    $mockDynamicReportsApplicationUrlString
                 )
             } -PassThru -Force
         }
@@ -534,6 +534,9 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         Mock -CommandName Disable-SqlDscRsSecureConnection
         Mock -CommandName Restart-ReportingServicesService
         Mock -CommandName Start-Sleep
+        Mock -CommandName Set-SqlDscRSVirtualDirectory
+        Mock -CommandName Add-SqlDscRSUrlReservation
+        Mock -CommandName Set-SqlDscRSUrlReservation
         Mock -CommandName Invoke-RsCimMethod
         Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_GenerateDatabaseCreationScript -ParameterFilter {
             $MethodName -eq 'GenerateDatabaseCreationScript'
@@ -645,20 +648,20 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $MethodName -eq 'GenerateDatabaseCreationScript'
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportServerApplicationName
+                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                    $Application -eq $mockReportServerApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportsApplicationName
+                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                    $Application -eq $mockReportsApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
+                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportServerApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
+                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportsApplicationName
                 } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
@@ -897,20 +900,20 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $MethodName -eq 'GenerateDatabaseCreationScript'
                 } -Exactly -Times 0 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportServerApplicationName
+                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                    $Application -eq $mockReportServerApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportsApplicationName
+                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                    $Application -eq $mockReportsApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
+                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportServerApplicationName
                 } -Exactly -Times 2 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
+                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportsApplicationName
                 } -Exactly -Times 2 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
@@ -1001,20 +1004,20 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $MethodName -eq 'GenerateDatabaseCreationScript'
                 } -Exactly -Times 0 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportServerApplicationName
+                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                    $Application -eq $mockReportServerApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportsApplicationName
+                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                    $Application -eq $mockReportsApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
+                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportServerApplicationName
                 } -Exactly -Times 2 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
+                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportsApplicationName
                 } -Exactly -Times 2 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
@@ -1089,20 +1092,20 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $MethodName -eq 'GenerateDatabaseCreationScript'
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportServerApplicationName
+                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                    $Application -eq $mockReportServerApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportsApplicationNameLegacy
+                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                    $Application -eq $mockReportsApplicationNameLegacy
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
+                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportServerApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationNameLegacy
+                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportsApplicationNameLegacy
                 } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
@@ -1205,20 +1208,20 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 $MethodName -eq 'GenerateDatabaseCreationScript'
             } -Exactly -Times 1 -Scope It
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportServerApplicationName
+            Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                $Application -eq $mockReportServerApplicationName
             } -Exactly -Times 1 -Scope It
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportsApplicationName
+            Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                $Application -eq $mockReportsApplicationName
             } -Exactly -Times 1 -Scope It
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
+            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                $Application -eq $mockReportServerApplicationName
             } -Exactly -Times 1 -Scope It
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
+            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                $Application -eq $mockReportsApplicationName
             } -Exactly -Times 1 -Scope It
 
             Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
