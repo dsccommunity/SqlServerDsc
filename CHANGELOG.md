@@ -153,6 +153,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `Add-SqlDscRSUrlReservation`, `Remove-SqlDscRSUrlReservation`, and
     `Set-SqlDscRSUrlReservation` for managing URL reservations instead of calling
     the CIM methods directly.
+  - Refactored to use the public command `Set-SqlDscRSVirtualDirectory` for
+    setting virtual directories instead of calling the CIM method directly
+    ([issue #2015](https://github.com/dsccommunity/SqlServerDsc/issues/2015)).
 - `Assert-SetupActionProperties`
   - Refactored to use the command `Get-FileVersion` from the DscResource.Common
     module instead of the private function `Get-FileVersionInformation`

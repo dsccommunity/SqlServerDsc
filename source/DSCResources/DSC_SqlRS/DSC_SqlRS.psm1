@@ -372,17 +372,7 @@ function Set-TargetResource
                 Write-Verbose -Message "Setting report server virtual directory on $DatabaseServerName\$DatabaseInstanceName to '$ReportServerVirtualDirectory'."
 
                 # cSpell: ignore Lcid
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $rsConfiguration
-                    MethodName  = 'SetVirtualDirectory'
-                    Arguments   = @{
-                        Application      = 'ReportServerWebService'
-                        VirtualDirectory = $ReportServerVirtualDirectory
-                        Lcid             = $language
-                    }
-                }
-
-                Invoke-RsCimMethod @invokeRsCimMethodParameters
+                $rsConfiguration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory $ReportServerVirtualDirectory -Lcid $language -Force -ErrorAction 'Stop'
 
                 $ReportServerReservedUrl | ForEach-Object -Process {
                     Write-Verbose -Message "Adding report server URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
@@ -395,17 +385,7 @@ function Set-TargetResource
             {
                 Write-Verbose -Message "Setting reports virtual directory on $DatabaseServerName\$DatabaseInstanceName to '$ReportServerVirtualDirectory'."
 
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $rsConfiguration
-                    MethodName  = 'SetVirtualDirectory'
-                    Arguments   = @{
-                        Application      = $reportsApplicationName
-                        VirtualDirectory = $ReportsVirtualDirectory
-                        Lcid             = $language
-                    }
-                }
-
-                Invoke-RsCimMethod @invokeRsCimMethodParameters
+                $rsConfiguration | Set-SqlDscRSVirtualDirectory -Application $reportsApplicationName -VirtualDirectory $ReportsVirtualDirectory -Lcid $language -Force -ErrorAction 'Stop'
 
                 $ReportsReservedUrl | ForEach-Object -Process {
                     Write-Verbose -Message "Adding reports URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
@@ -637,17 +617,7 @@ function Set-TargetResource
                     $rsConfiguration | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $_ -Lcid $language -Force -ErrorAction 'Stop'
                 }
 
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $rsConfiguration
-                    MethodName  = 'SetVirtualDirectory'
-                    Arguments   = @{
-                        Application      = 'ReportServerWebService'
-                        VirtualDirectory = $ReportServerVirtualDirectory
-                        Lcid             = $language
-                    }
-                }
-
-                Invoke-RsCimMethod @invokeRsCimMethodParameters -ErrorAction 'Stop'
+                $rsConfiguration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory $ReportServerVirtualDirectory -Lcid $language -Force -ErrorAction 'Stop'
 
                 $currentConfig.ReportServerReservedUrl | ForEach-Object -Process {
                     $rsConfiguration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $_ -Lcid $language -Force -ErrorAction 'Stop'
@@ -664,17 +634,7 @@ function Set-TargetResource
                     $rsConfiguration | Remove-SqlDscRSUrlReservation -Application $reportsApplicationName -UrlString $_ -Lcid $language -Force -ErrorAction 'Stop'
                 }
 
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $rsConfiguration
-                    MethodName  = 'SetVirtualDirectory'
-                    Arguments   = @{
-                        Application      = $reportsApplicationName
-                        VirtualDirectory = $ReportsVirtualDirectory
-                        Lcid             = $language
-                    }
-                }
-
-                Invoke-RsCimMethod @invokeRsCimMethodParameters -ErrorAction 'Stop'
+                $rsConfiguration | Set-SqlDscRSVirtualDirectory -Application $reportsApplicationName -VirtualDirectory $ReportsVirtualDirectory -Lcid $language -Force -ErrorAction 'Stop'
 
                 $currentConfig.ReportsReservedUrl | ForEach-Object -Process {
                     $rsConfiguration | Add-SqlDscRSUrlReservation -Application $reportsApplicationName -UrlString $_ -Lcid $language -Force -ErrorAction 'Stop'
