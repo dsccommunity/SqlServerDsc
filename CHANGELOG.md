@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added public command `Set-SqlDscRSVirtualDirectory` to set the virtual directory
+  for Reporting Services applications. Wraps the `SetVirtualDirectory` CIM method
+  and supports ReportServerWebService, ReportServerWebApp, and ReportManager
+  applications ([issue #2015](https://github.com/dsccommunity/SqlServerDsc/issues/2015)).
 - Added public commands `Get-SqlDscRSUrlReservation`, `Add-SqlDscRSUrlReservation`,
   `Remove-SqlDscRSUrlReservation`, and `Set-SqlDscRSUrlReservation` to manage
   URL reservations for SQL Server Reporting Services or Power BI Report Server.
@@ -22,6 +26,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Services version or explicit version specification. The returned CIM instance
   can be piped to `Enable-SqlDscRsSecureConnection` or `Disable-SqlDscRsSecureConnection`
   ([issue #2022](https://github.com/dsccommunity/SqlServerDsc/issues/2022)).
+- Added public command `Get-SqlDscRSWebPortalApplicationName` to get the
+  Reporting Services web portal application name based on the SQL Server
+  version. Returns 'ReportServerWebApp' for SQL Server 2016 (version 13) and
+  later, or 'ReportManager' for earlier versions. Accepts the setup configuration
+  object from `Get-SqlDscRSSetupConfiguration` via pipeline.
 - Added public command `Enable-SqlDscRsSecureConnection` to enable secure
   connection for SQL Server Reporting Services or Power BI Report Server by
   setting the secure connection level to 1. Accepts the configuration CIM
@@ -140,6 +149,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Refactored to use the public commands `Enable-SqlDscRsSecureConnection` and
     `Disable-SqlDscRsSecureConnection` for setting the secure connection level
     instead of calling the CIM method directly.
+  - Refactored to use the public commands `Get-SqlDscRSUrlReservation`,
+    `Add-SqlDscRSUrlReservation`, `Remove-SqlDscRSUrlReservation`, and
+    `Set-SqlDscRSUrlReservation` for managing URL reservations instead of calling
+    the CIM methods directly.
 - `Assert-SetupActionProperties`
   - Refactored to use the command `Get-FileVersion` from the DscResource.Common
     module instead of the private function `Get-FileVersionInformation`

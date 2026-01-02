@@ -296,6 +296,14 @@ ConvertFrom-StringData @'
     Get_SqlDscRSConfiguration_FailedToGetConfiguration = Failed to get the configuration CIM instance for Reporting Services instance '{0}': {1} (GSRSCD0003)
     Get_SqlDscRSConfiguration_ConfigurationNotFound = Could not find the configuration CIM instance for Reporting Services instance '{0}'. (GSRSCD0004)
 
+    ## Get-SqlDscRSWebPortalApplicationName
+    Get_SqlDscRSWebPortalApplicationName_GettingApplicationName = Getting web portal application name.
+
+    Get_SqlDscRSWebPortalApplicationName_ApplicationName = Web portal application name is '{0}'.
+
+    ## Get-SqlDscRSVersion
+    Get_SqlDscRSVersion_VersionNotFound = Could not determine the version. (GSRSV0001)
+
     ## Enable-SqlDscRsSecureConnection
     Enable_SqlDscRsSecureConnection_Enabling = Enabling secure connection for Reporting Services instance '{0}'.
     Enable_SqlDscRsSecureConnection_ShouldProcessDescription = Enabling secure connection (secure connection level 1) for the Reporting Services instance '{0}'.
@@ -740,4 +748,12 @@ ConvertFrom-StringData @'
     Set_SqlDscRSUrlReservation_DesiredUrls = Desired URL reservations for application '{0}': {1}
     Set_SqlDscRSUrlReservation_RemovingUrl = Removing URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'.
     Set_SqlDscRSUrlReservation_AddingUrl = Adding URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'.
+
+    ## Set-SqlDscRSVirtualDirectory
+    Set_SqlDscRSVirtualDirectory_Setting = Setting virtual directory '{0}' for application '{1}' on Reporting Services instance '{2}'.
+    Set_SqlDscRSVirtualDirectory_ShouldProcessDescription = Setting virtual directory '{0}' for application '{1}' on Reporting Services instance '{2}'.
+    Set_SqlDscRSVirtualDirectory_ShouldProcessConfirmation = Are you sure you want to set virtual directory '{0}' for application '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Set_SqlDscRSVirtualDirectory_ShouldProcessCaption = Set virtual directory for Reporting Services instance
+    Set_SqlDscRSVirtualDirectory_FailedToSet = Failed to set virtual directory for Reporting Services instance '{0}'. {1} (SSRSVD0001)
 '@

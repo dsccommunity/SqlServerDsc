@@ -80,9 +80,9 @@ function Get-SqlDscRSUrlReservation
         {
             $errorMessage = $script:localizedData.Get_SqlDscRSUrlReservation_FailedToGet -f $instanceName, $_.Exception.Message
 
-            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GSRUR0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+            Write-Error -Message $errorMessage -Category 'InvalidOperation' -ErrorId 'GSRUR0001' -TargetObject $Configuration -Exception $_.Exception
 
-            $PSCmdlet.ThrowTerminatingError($errorRecord)
+            return
         }
 
         return $result

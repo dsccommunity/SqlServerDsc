@@ -55,8 +55,14 @@ Describe 'Get-SqlDscRSUrlReservation' {
             # The result should be a CIM method result with URL reservation properties
             $result | Should -Not -BeNullOrEmpty
             $result.HRESULT | Should -Be 0
-            $result.Application | Should -Not -BeNullOrEmpty
-            $result.UrlString | Should -Not -BeNullOrEmpty
+
+            <#
+                Application and UrlString properties may be empty arrays if no URL
+                reservations exist (e.g., freshly installed but not initialized SSRS).
+                Just verify the properties exist.
+            #>
+            $result.PSObject.Properties.Name | Should -Contain 'Application'
+            $result.PSObject.Properties.Name | Should -Contain 'UrlString'
         }
     }
 
@@ -83,8 +89,14 @@ Describe 'Get-SqlDscRSUrlReservation' {
             # The result should be a CIM method result with URL reservation properties
             $result | Should -Not -BeNullOrEmpty
             $result.HRESULT | Should -Be 0
-            $result.Application | Should -Not -BeNullOrEmpty
-            $result.UrlString | Should -Not -BeNullOrEmpty
+
+            <#
+                Application and UrlString properties may be empty arrays if no URL
+                reservations exist (e.g., freshly installed but not initialized SSRS).
+                Just verify the properties exist.
+            #>
+            $result.PSObject.Properties.Name | Should -Contain 'Application'
+            $result.PSObject.Properties.Name | Should -Contain 'UrlString'
         }
     }
 
@@ -111,8 +123,14 @@ Describe 'Get-SqlDscRSUrlReservation' {
             # The result should be a CIM method result with URL reservation properties
             $result | Should -Not -BeNullOrEmpty
             $result.HRESULT | Should -Be 0
-            $result.Application | Should -Not -BeNullOrEmpty
-            $result.UrlString | Should -Not -BeNullOrEmpty
+
+            <#
+                Application and UrlString properties may be empty arrays if no URL
+                reservations exist (e.g., freshly installed but not initialized SSRS).
+                Just verify the properties exist.
+            #>
+            $result.PSObject.Properties.Name | Should -Contain 'Application'
+            $result.PSObject.Properties.Name | Should -Contain 'UrlString'
         }
     }
 
@@ -140,8 +158,14 @@ Describe 'Get-SqlDscRSUrlReservation' {
             # The result should be a CIM method result with URL reservation properties
             $result | Should -Not -BeNullOrEmpty
             $result.HRESULT | Should -Be 0
-            $result.Application | Should -Not -BeNullOrEmpty
-            $result.UrlString | Should -Not -BeNullOrEmpty
+
+            <#
+                Application and UrlString properties may be empty arrays if no URL
+                reservations exist (e.g., freshly installed but not initialized PBIRS).
+                Just verify the properties exist.
+            #>
+            $result.PSObject.Properties.Name | Should -Contain 'Application'
+            $result.PSObject.Properties.Name | Should -Contain 'UrlString'
         }
     }
 }

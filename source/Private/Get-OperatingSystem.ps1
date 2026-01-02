@@ -38,11 +38,9 @@ function Get-OperatingSystem
 
     if ($null -eq $wmiOperatingSystem)
     {
-        $errorMessage = $script:localizedData.Get_OperatingSystem_FailedToGet
+        Write-Error -Message $script:localizedData.Get_OperatingSystem_FailedToGet -Category 'ObjectNotFound' -ErrorId 'GOS0001' -TargetObject $null
 
-        $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GOS0001' -ErrorCategory 'ObjectNotFound' -TargetObject $null
-
-        $PSCmdlet.ThrowTerminatingError($errorRecord)
+        return
     }
 
     return $wmiOperatingSystem
