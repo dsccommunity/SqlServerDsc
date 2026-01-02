@@ -706,4 +706,28 @@ ConvertFrom-StringData @'
     Get_SqlDscRSPackage_GettingVersionFromFile = Getting version information from file '{0}'. (GSDRSP0001)
     Get_SqlDscRSPackage_InvalidProductName = The product name '{0}' is not a valid Reporting Services package. Expected product names are: '{1}'. Use the Force parameter to skip this validation. (GSDRSP0002)
     Get_SqlDscRSPackage_ReturningVersionInfo = Returning version information for '{0}' version '{1}'. (GSDRSP0003)
+
+    ## Get-OperatingSystem
+    Get_OperatingSystem_Getting = Getting operating system information.
+    Get_OperatingSystem_FailedToGet = Failed to get operating system information. Unable to find WMI object Win32_OperatingSystem. (GOS0001)
+
+    ## Get-SqlDscRSUrlReservation
+    Get_SqlDscRSUrlReservation_Getting = Getting URL reservations for Reporting Services instance '{0}'.
+    Get_SqlDscRSUrlReservation_FailedToGet = Failed to get URL reservations for Reporting Services instance '{0}'. {1} (GSRUR0001)
+
+    ## Add-SqlDscRSUrlReservation
+    Add_SqlDscRSUrlReservation_Adding = Adding URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'.
+    Add_SqlDscRSUrlReservation_ShouldProcessDescription = Adding URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'.
+    Add_SqlDscRSUrlReservation_ShouldProcessConfirmation = Are you sure you want to add URL reservation '{0}' for application '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Add_SqlDscRSUrlReservation_ShouldProcessCaption = Add URL reservation for Reporting Services instance
+    Add_SqlDscRSUrlReservation_FailedToAdd = Failed to add URL reservation for Reporting Services instance '{0}'. {1} (ASRUR0001)
+
+    ## Remove-SqlDscRSUrlReservation
+    Remove_SqlDscRSUrlReservation_Removing = Removing URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'.
+    Remove_SqlDscRSUrlReservation_ShouldProcessDescription = Removing URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'.
+    Remove_SqlDscRSUrlReservation_ShouldProcessConfirmation = Are you sure you want to remove URL reservation '{0}' for application '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Remove_SqlDscRSUrlReservation_ShouldProcessCaption = Remove URL reservation for Reporting Services instance
+    Remove_SqlDscRSUrlReservation_FailedToRemove = Failed to remove URL reservation for Reporting Services instance '{0}'. {1} (RSRUR0001)
 '@
