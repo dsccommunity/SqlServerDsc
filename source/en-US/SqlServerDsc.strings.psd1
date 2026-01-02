@@ -730,4 +730,14 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Remove_SqlDscRSUrlReservation_ShouldProcessCaption = Remove URL reservation for Reporting Services instance
     Remove_SqlDscRSUrlReservation_FailedToRemove = Failed to remove URL reservation for Reporting Services instance '{0}'. {1} (RSRUR0001)
+
+    ## Set-SqlDscRSUrlReservation
+    Set_SqlDscRSUrlReservation_ShouldProcessVerboseDescription = Setting URL reservations for application '{0}' on Reporting Services instance '{1}'.
+    Set_SqlDscRSUrlReservation_ShouldProcessVerboseWarning = Are you sure you want to set URL reservations for application '{0}' on Reporting Services instance '{1}'? Existing reservations not in the specified list will be removed.
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Set_SqlDscRSUrlReservation_ShouldProcessCaption = Set URL reservations for Reporting Services instance
+    Set_SqlDscRSUrlReservation_CurrentUrls = Current URL reservations for application '{0}': {1}
+    Set_SqlDscRSUrlReservation_DesiredUrls = Desired URL reservations for application '{0}': {1}
+    Set_SqlDscRSUrlReservation_RemovingUrl = Removing URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'.
+    Set_SqlDscRSUrlReservation_AddingUrl = Adding URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'.
 '@

@@ -171,6 +171,7 @@ Disable-SqlDscRsSecureConnection | 3 | 1 (Install-SqlDscReportingService), 0 (Pr
 Get-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Add-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Remove-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Set-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Repair-SqlDscReportingService | 8 | 1 (Install-SqlDscReportingService) | SSRS | -
 Uninstall-SqlDscReportingService | 9 | 8 (Repair-SqlDscReportingService) | - | -
 <!-- markdownlint-enable MD013 -->
@@ -196,6 +197,7 @@ Disable-SqlDscRsSecureConnection | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 
 Get-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Add-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Remove-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Set-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Repair-SqlDscPowerBIReportServer | 8 | 1 (Install-SqlDscPowerBIReportServer) | PBIRS | -
 Uninstall-SqlDscPowerBIReportServer | 9 | 8 (Repair-SqlDscPowerBIReportServer) | - | -
 <!-- markdownlint-enable MD013 -->

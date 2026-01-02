@@ -8,9 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added public commands `Get-SqlDscRSUrlReservation`, `Add-SqlDscRSUrlReservation`,
-  and `Remove-SqlDscRSUrlReservation` to manage URL reservations for SQL Server
-  Reporting Services or Power BI Report Server. These commands wrap the
-  `ListReservedUrls`, `ReserveUrl`, and `RemoveURL` CIM methods respectively
+  `Remove-SqlDscRSUrlReservation`, and `Set-SqlDscRSUrlReservation` to manage
+  URL reservations for SQL Server Reporting Services or Power BI Report Server.
+  These commands wrap the `ListReservedUrls`, `ReserveUrl`, and `RemoveURL` CIM
+  methods respectively. The `Set-SqlDscRSUrlReservation` command provides a
+  declarative approach to set URL reservations to an exact list, removing any
+  existing reservations not in the specified list
   ([issue #2016](https://github.com/dsccommunity/SqlServerDsc/issues/2016))
   ([issue #2024](https://github.com/dsccommunity/SqlServerDsc/issues/2024)).
 - Added public command `Get-SqlDscRSConfiguration` to retrieve the
