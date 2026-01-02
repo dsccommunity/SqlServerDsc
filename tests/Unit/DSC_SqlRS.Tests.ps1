@@ -1153,12 +1153,12 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             Mock -CommandName Get-SqlDscRSSetupConfiguration -MockWith {
                 return @{
                     InstanceName   = $mockNamedInstanceName
-                    CurrentVersion = "$($sqlVersion.Version).0.0.0"
+                    CurrentVersion = '15.0.0.0'
                 }
             }
 
             Mock -CommandName Get-SqlDscRSVersion -MockWith {
-                return [System.Version] "$($sqlVersion.Version).0.0.0"
+                return [System.Version] '15.0.0.0'
             }
 
             Mock -CommandName Test-TargetResource -MockWith {
