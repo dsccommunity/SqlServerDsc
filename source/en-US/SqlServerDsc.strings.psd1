@@ -288,6 +288,33 @@ ConvertFrom-StringData @'
     Get_SqlDscRSSetupConfiguration_InstanceNotFound = Could not find a Microsoft SQL Server Reporting Services instance with the name '{0}'.
     Get_SqlDscRSSetupConfiguration_NoInstancesFound = No SQL Server Reporting Services instances were found.
 
+    ## Get-SqlDscRSConfiguration
+    Get_SqlDscRSConfiguration_DetectingVersion = Detecting version for Reporting Services instance '{0}'.
+    Get_SqlDscRSConfiguration_GettingConfiguration = Getting configuration CIM instance for Reporting Services instance '{0}' version '{1}'.
+    Get_SqlDscRSConfiguration_InstanceNotFound = Could not find a Reporting Services instance with the name '{0}'. (GSRSCD0001)
+    Get_SqlDscRSConfiguration_VersionNotFound = Could not determine the version for Reporting Services instance '{0}'. (GSRSCD0002)
+    Get_SqlDscRSConfiguration_FailedToGetConfiguration = Failed to get the configuration CIM instance for Reporting Services instance '{0}': {1} (GSRSCD0003)
+    Get_SqlDscRSConfiguration_ConfigurationNotFound = Could not find the configuration CIM instance for Reporting Services instance '{0}'. (GSRSCD0004)
+
+    ## Enable-SqlDscRsSecureConnection
+    Enable_SqlDscRsSecureConnection_Enabling = Enabling secure connection for Reporting Services instance '{0}'.
+    Enable_SqlDscRsSecureConnection_ShouldProcessDescription = Enabling secure connection (secure connection level 1) for the Reporting Services instance '{0}'.
+    Enable_SqlDscRsSecureConnection_ShouldProcessConfirmation = Are you sure you want to enable secure connection for the Reporting Services instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Enable_SqlDscRsSecureConnection_ShouldProcessCaption = Enable secure connection for Reporting Services instance
+    Enable_SqlDscRsSecureConnection_FailedToEnable = Failed to enable secure connection for Reporting Services instance '{0}'. {1} (ESRSSC0001)
+
+    ## Disable-SqlDscRsSecureConnection
+    Disable_SqlDscRsSecureConnection_Disabling = Disabling secure connection for Reporting Services instance '{0}'.
+    Disable_SqlDscRsSecureConnection_ShouldProcessDescription = Disabling secure connection (secure connection level 0) for the Reporting Services instance '{0}'.
+    Disable_SqlDscRsSecureConnection_ShouldProcessConfirmation = Are you sure you want to disable secure connection for the Reporting Services instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Disable_SqlDscRsSecureConnection_ShouldProcessCaption = Disable secure connection for Reporting Services instance
+    Disable_SqlDscRsSecureConnection_FailedToDisable = Failed to disable secure connection for Reporting Services instance '{0}'. {1} (DSRSSC0001)
+
+    ## Invoke-RsCimMethod
+    Invoke_RsCimMethod_FailedToInvokeMethod = Method {0}() failed with an error. Error: {1} (HRESULT:{2}) (IRCM0001)
+
     ## Test-SqlDscRSInstalled
     Test_SqlDscRSInstalled_Checking = Checking if Reporting Services instance '{0}' is installed.
     Test_SqlDscRSInstalled_Found = Reporting Services instance '{0}' was found.
