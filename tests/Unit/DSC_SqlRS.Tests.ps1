@@ -142,9 +142,7 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
                 Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $mockReportingServicesServiceName -PassThru -Force
         }
 
-        Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_ListReservedUrls -ParameterFilter {
-            $MethodName -eq 'ListReservedUrls'
-        }
+        Mock -CommandName Get-SqlDscRSUrlReservation -MockWith $mockInvokeRsCimMethod_ListReservedUrls
 
         InModuleScope -ScriptBlock {
             $script:mockNamedInstanceName = 'INSTANCE'
@@ -223,9 +221,7 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
                 $resultGetTargetResource.UseSsl | Should -BeFalse
             }
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'ListReservedUrls'
-            } -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 1 -Scope It
         }
 
         Context 'When SSL is not used' {
@@ -317,9 +313,7 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
                 $resultGetTargetResource.ReportsReservedUrl | Should -BeNullOrEmpty
             }
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'ListReservedUrls'
-            } -Exactly -Times 0 -Scope It
+            Should -Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 0 -Scope It
         }
 
         # Regression test for issue #822.
@@ -518,9 +512,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             $ClassName -eq 'Win32_OperatingSystem'
         }
 
-        Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_ListReservedUrls -ParameterFilter {
-            $MethodName -eq 'ListReservedUrls'
-        }
+        Mock -CommandName Get-SqlDscRSUrlReservation -MockWith $mockInvokeRsCimMethod_ListReservedUrls
 
         <#
             This is mocked here so that no calls are made to it directly,
@@ -536,6 +528,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         Mock -CommandName Start-Sleep
         Mock -CommandName Set-SqlDscRSVirtualDirectory
         Mock -CommandName Add-SqlDscRSUrlReservation
+        Mock -CommandName Remove-SqlDscRSUrlReservation
         Mock -CommandName Set-SqlDscRSUrlReservation
         Mock -CommandName Invoke-RsCimMethod
         Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_GenerateDatabaseCreationScript -ParameterFilter {
