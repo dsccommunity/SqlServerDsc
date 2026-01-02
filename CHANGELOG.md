@@ -7,26 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added public command `Get-SqlDscRSUrlReservation` to retrieve URL reservations
-  for SQL Server Reporting Services or Power BI Report Server by calling the
-  `ListReservedUrls` CIM method. Returns the raw CIM method result containing
-  Application and UrlString arrays
-  ([issue #2016](https://github.com/dsccommunity/SqlServerDsc/issues/2016)).
-- Added public command `Add-SqlDscRSUrlReservation` to add URL reservations for
-  SQL Server Reporting Services or Power BI Report Server by calling the
-  `ReserveUrl` CIM method. Supports ReportServerWebService, ReportServerWebApp,
-  and ReportManager application types. Accepts pipeline input, supports
-  `-WhatIf`/`-Confirm`, `-PassThru`, and `-Force`
-  ([issue #2016](https://github.com/dsccommunity/SqlServerDsc/issues/2016)).
-- Added public command `Remove-SqlDscRSUrlReservation` to remove URL reservations
-  for SQL Server Reporting Services or Power BI Report Server by calling the
-  `RemoveURL` CIM method. Supports ReportServerWebService, ReportServerWebApp,
-  and ReportManager application types. Accepts pipeline input, supports
-  `-WhatIf`/`-Confirm`, `-PassThru`, and `-Force`
+- Added public commands `Get-SqlDscRSUrlReservation`, `Add-SqlDscRSUrlReservation`,
+  and `Remove-SqlDscRSUrlReservation` to manage URL reservations for SQL Server
+  Reporting Services or Power BI Report Server. These commands wrap the
+  `ListReservedUrls`, `ReserveUrl`, and `RemoveURL` CIM methods respectively
+  ([issue #2016](https://github.com/dsccommunity/SqlServerDsc/issues/2016))
   ([issue #2024](https://github.com/dsccommunity/SqlServerDsc/issues/2024)).
-- Added private function `Get-OperatingSystem` to retrieve operating system
-  information via the Win32_OperatingSystem CIM class. Used to get the OS
-  language code (OSLanguage) for URL reservation operations.
 - Added public command `Get-SqlDscRSConfiguration` to retrieve the
   `MSReportServer_ConfigurationSetting` CIM instance for SQL Server Reporting
   Services or Power BI Report Server. Supports auto-detection of the Reporting
