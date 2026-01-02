@@ -34,7 +34,7 @@ BeforeAll {
 Describe 'Get-SqlDscRSUrlReservation' {
     Context 'When getting URL reservations for SQL Server Reporting Services' -Tag @('Integration_SQL2017_RS') {
         BeforeAll {
-            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
         }
 
         It 'Should return URL reservations using pipeline' {
@@ -55,12 +55,14 @@ Describe 'Get-SqlDscRSUrlReservation' {
             # The result should be a CIM method result with URL reservation properties
             $result | Should -Not -BeNullOrEmpty
             $result.HRESULT | Should -Be 0
+            $result.Application | Should -Not -BeNullOrEmpty
+            $result.UrlString | Should -Not -BeNullOrEmpty
         }
     }
 
     Context 'When getting URL reservations for SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {
         BeforeAll {
-            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
         }
 
         It 'Should return URL reservations using pipeline' {
@@ -81,12 +83,14 @@ Describe 'Get-SqlDscRSUrlReservation' {
             # The result should be a CIM method result with URL reservation properties
             $result | Should -Not -BeNullOrEmpty
             $result.HRESULT | Should -Be 0
+            $result.Application | Should -Not -BeNullOrEmpty
+            $result.UrlString | Should -Not -BeNullOrEmpty
         }
     }
 
     Context 'When getting URL reservations for SQL Server Reporting Services' -Tag @('Integration_SQL2022_RS') {
         BeforeAll {
-            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
         }
 
         It 'Should return URL reservations using pipeline' {
@@ -107,13 +111,15 @@ Describe 'Get-SqlDscRSUrlReservation' {
             # The result should be a CIM method result with URL reservation properties
             $result | Should -Not -BeNullOrEmpty
             $result.HRESULT | Should -Be 0
+            $result.Application | Should -Not -BeNullOrEmpty
+            $result.UrlString | Should -Not -BeNullOrEmpty
         }
     }
 
     Context 'When getting URL reservations for Power BI Report Server' -Tag @('Integration_PowerBI') {
         # cSpell: ignore PBIRS
         BeforeAll {
-            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
+            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
         }
 
         It 'Should return URL reservations using pipeline' {
@@ -134,6 +140,8 @@ Describe 'Get-SqlDscRSUrlReservation' {
             # The result should be a CIM method result with URL reservation properties
             $result | Should -Not -BeNullOrEmpty
             $result.HRESULT | Should -Be 0
+            $result.Application | Should -Not -BeNullOrEmpty
+            $result.UrlString | Should -Not -BeNullOrEmpty
         }
     }
 }

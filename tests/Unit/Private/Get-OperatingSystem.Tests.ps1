@@ -66,7 +66,7 @@ BeforeAll {
 }
 
 AfterAll {
-    $env:SqlServerDscCI = $null
+    Remove-Item -Path 'env:SqlServerDscCI' -Force -ErrorAction 'SilentlyContinue'
 
     InModuleScope -ScriptBlock {
         Remove-Item -Path 'function:script:Get-CimInstance' -Force -ErrorAction SilentlyContinue

@@ -89,7 +89,6 @@ function Remove-SqlDscRSUrlReservation
     # cSpell: ignore PBIRS
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the examples use pipeline input the rule cannot validate.')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
-    [OutputType()]
     [OutputType([System.Object])]
     param
     (

@@ -34,7 +34,7 @@ BeforeAll {
 Describe 'Add-SqlDscRSUrlReservation' {
     Context 'When adding URL reservation for SQL Server Reporting Services' -Tag @('Integration_SQL2017_RS') {
         BeforeAll {
-            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
             # Store original URL reservations to restore later
             $script:originalReservations = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
@@ -58,20 +58,20 @@ Describe 'Add-SqlDscRSUrlReservation' {
         }
 
         It 'Should add URL reservation using pipeline' {
-            { $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
 
             # Verify the URL was added
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            $reservations.UrlReservations | Should -Contain $script:testUrl
+            $reservations.UrlString | Should -Contain $script:testUrl
         }
 
         It 'Should return configuration when using PassThru' {
             # First remove the test URL if it exists
             try
             {
-                $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+                $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
                 $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'SilentlyContinue'
             }
             catch
@@ -79,7 +79,7 @@ Describe 'Add-SqlDscRSUrlReservation' {
                 # Ignore
             }
 
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $result = $config | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -PassThru -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
@@ -89,7 +89,7 @@ Describe 'Add-SqlDscRSUrlReservation' {
 
     Context 'When adding URL reservation for SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {
         BeforeAll {
-            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
             # Use a unique port for testing to avoid conflicts
             $script:testPort = 18080
@@ -110,20 +110,20 @@ Describe 'Add-SqlDscRSUrlReservation' {
         }
 
         It 'Should add URL reservation using pipeline' {
-            { $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
 
             # Verify the URL was added
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            $reservations.UrlReservations | Should -Contain $script:testUrl
+            $reservations.UrlString | Should -Contain $script:testUrl
         }
 
         It 'Should return configuration when using PassThru' {
             # First remove the test URL if it exists
             try
             {
-                $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+                $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
                 $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'SilentlyContinue'
             }
             catch
@@ -131,7 +131,7 @@ Describe 'Add-SqlDscRSUrlReservation' {
                 # Ignore
             }
 
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $result = $config | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -PassThru -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
@@ -141,7 +141,7 @@ Describe 'Add-SqlDscRSUrlReservation' {
 
     Context 'When adding URL reservation for SQL Server Reporting Services' -Tag @('Integration_SQL2022_RS') {
         BeforeAll {
-            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
             # Use a unique port for testing to avoid conflicts
             $script:testPort = 18080
@@ -162,20 +162,20 @@ Describe 'Add-SqlDscRSUrlReservation' {
         }
 
         It 'Should add URL reservation using pipeline' {
-            { $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
 
             # Verify the URL was added
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            $reservations.UrlReservations | Should -Contain $script:testUrl
+            $reservations.UrlString | Should -Contain $script:testUrl
         }
 
         It 'Should return configuration when using PassThru' {
             # First remove the test URL if it exists
             try
             {
-                $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+                $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
                 $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'SilentlyContinue'
             }
             catch
@@ -183,7 +183,7 @@ Describe 'Add-SqlDscRSUrlReservation' {
                 # Ignore
             }
 
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $result = $config | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -PassThru -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
@@ -194,7 +194,7 @@ Describe 'Add-SqlDscRSUrlReservation' {
     Context 'When adding URL reservation for Power BI Report Server' -Tag @('Integration_PowerBI') {
         # cSpell: ignore PBIRS
         BeforeAll {
-            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
+            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
 
             # Use a unique port for testing to avoid conflicts
             $script:testPort = 18080
@@ -215,20 +215,20 @@ Describe 'Add-SqlDscRSUrlReservation' {
         }
 
         It 'Should add URL reservation for PBIRS using pipeline' {
-            { $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
 
             # Verify the URL was added
-            $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
+            $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
             $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            $reservations.UrlReservations | Should -Contain $script:testUrl
+            $reservations.UrlString | Should -Contain $script:testUrl
         }
 
         It 'Should return configuration when using PassThru' {
             # First remove the test URL if it exists
             try
             {
-                $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
+                $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
                 $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'SilentlyContinue'
             }
             catch
@@ -236,7 +236,7 @@ Describe 'Add-SqlDscRSUrlReservation' {
                 # Ignore
             }
 
-            $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
+            $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
             $result = $config | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -PassThru -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
