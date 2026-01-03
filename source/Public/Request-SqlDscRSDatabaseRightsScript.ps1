@@ -43,11 +43,8 @@
         database for the Reporting Services service account.
 
     .EXAMPLE
-        # Get the Reporting Services service account name
         $rsService = Get-SqlDscManagedComputerService -ServiceType 'ReportingServices'
         $serviceAccount = $rsService.ServiceAccount
-
-        # Generate and execute the rights script
         $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
         $script = $config | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName $serviceAccount
         Invoke-SqlDscQuery -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'master' -Query $script -Force

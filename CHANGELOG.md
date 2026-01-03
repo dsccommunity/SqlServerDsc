@@ -184,6 +184,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `New-SqlDscFileGroup`
+  - Fixed comment-based help example formatting by moving inline comment
+    to the description text.
+- QA Tests
+  - Added new test to detect comments within multi-line example code blocks
+    in comment-based help. Comments in the code portion of `.EXAMPLE` blocks
+    cause PlatyPS documentation generation to fail with "Expect Heading" errors.
 - Unit Tests
   - Fixed PowerShell class type identity issues that caused "Cannot convert
     'Type' to 'Type'" errors when running multiple test files in the same

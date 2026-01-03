@@ -36,7 +36,7 @@
 
     .EXAMPLE
         $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-        $script = Request-SqlDscRSDatabaseScript -Configuration $config -DatabaseName 'ReportServer'
+        $script = $config | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer'
         Invoke-SqlDscQuery -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'master' -Query $script -Force
 
         Generates the database creation script and executes it on the RSDB

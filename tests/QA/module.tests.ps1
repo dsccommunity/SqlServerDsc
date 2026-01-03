@@ -238,6 +238,55 @@ Describe 'Comment-based help structure' -Tags 'helpQuality' {
                 $invalidDirectives | Should -BeNullOrEmpty -Because ('invalid help directives found that will break help parsing: {0}' -f ($invalidDirectives -join ', '))
             }
         }
+
+        It 'Should not have comments within multi-line example code blocks for <Name>' {
+            <#
+                PlatyPS expects .EXAMPLE blocks to have: code (no comments) → blank line → description.
+                Comments (lines starting with #) within the code portion cause "Expect Heading" errors
+                during documentation generation because PlatyPS interprets them incorrectly.
+            #>
+            if ($scriptFileRawContent -match '(?s)<#(.*?)#>')
+            {
+                $helpBlock = $Matches[1]
+
+                # Find all .EXAMPLE blocks
+                $exampleMatches = [regex]::Matches($helpBlock, '(?s)\.EXAMPLE\s*\r?\n(.*?)(?=\r?\n\s*\.(?:EXAMPLE|PARAMETER|SYNOPSIS|DESCRIPTION|INPUTS|OUTPUTS|NOTES|LINK|COMPONENT|ROLE|FUNCTIONALITY)|$)')
+
+                $examplesWithComments = @()
+
+                foreach ($exampleMatch in $exampleMatches)
+                {
+                    $exampleContent = $exampleMatch.Groups[1].Value
+                    $exampleLines = $exampleContent -split '\r?\n'
+
+                    # Find where the description starts (first line after a blank line that follows code)
+                    $inCodeBlock = $true
+                    $foundBlankLine = $false
+
+                    foreach ($line in $exampleLines)
+                    {
+                        $trimmedLine = $line.Trim()
+
+                        if ($inCodeBlock)
+                        {
+                            if ([string]::IsNullOrEmpty($trimmedLine))
+                            {
+                                # Blank line - marks end of code block
+                                $foundBlankLine = $true
+                                $inCodeBlock = $false
+                            }
+                            elseif ($trimmedLine -match '^#(?!region|endregion)')
+                            {
+                                # Found a comment in the code block (excluding #region/#endregion)
+                                $examplesWithComments += $trimmedLine
+                            }
+                        }
+                    }
+                }
+
+                $examplesWithComments | Should -BeNullOrEmpty -Because ('comments within example code blocks break PlatyPS documentation generation: {0}' -f ($examplesWithComments -join ', '))
+            }
+        }
     }
 }
 
