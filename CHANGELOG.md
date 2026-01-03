@@ -194,6 +194,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added new test to detect blank lines within multi-line example code blocks
     in comment-based help. Blank lines within the code portion of `.EXAMPLE`
     blocks cause similar issues with documentation generation.
+- `Deny-SqlDscServerPermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks that would cause documentation generation issues.
+- `Get-SqlDscServerPermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks that would cause documentation generation issues.
 - `Grant-SqlDscServerPermission`
   - Fixed comment-based help example formatting by removing blank lines
     within code blocks that would cause documentation generation issues.
