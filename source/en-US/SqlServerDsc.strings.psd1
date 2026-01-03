@@ -322,6 +322,7 @@ ConvertFrom-StringData @'
 
     ## Invoke-RsCimMethod
     Invoke_RsCimMethod_FailedToInvokeMethod = Method {0}() failed with an error. Error: {1} (HRESULT:{2}) (IRCM0001)
+    Invoke_RsCimMethod_NoErrorDetails = No error details were returned by the method. See HRESULT code for more information. (IRCM0002)
 
     ## Test-SqlDscRSInstalled
     Test_SqlDscRSInstalled_Checking = Checking if Reporting Services instance '{0}' is installed.

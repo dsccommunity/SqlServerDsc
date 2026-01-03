@@ -75,20 +75,31 @@ function Invoke-RsCimMethod
     #>
     if ($invokeCimMethodResult -and $invokeCimMethodResult.HRESULT -ne 0)
     {
-        if ($invokeCimMethodResult | Get-Member -Name 'ExtendedErrors')
+        $errorDetails = $null
+
+        <#
+            The returned object property ExtendedErrors is an array
+            so that needs to be concatenated. Check if it has actual
+            content before using it.
+        #>
+        if (($invokeCimMethodResult | Get-Member -Name 'ExtendedErrors') -and $invokeCimMethodResult.ExtendedErrors)
         {
-            <#
-                The returned object property ExtendedErrors is an array
-                so that needs to be concatenated.
-            #>
-            $errorMessage = $invokeCimMethodResult.ExtendedErrors -join ';'
-        }
-        else
-        {
-            $errorMessage = $invokeCimMethodResult.Error
+            $errorDetails = $invokeCimMethodResult.ExtendedErrors -join ';'
         }
 
-        $errorMessage = $script:localizedData.Invoke_RsCimMethod_FailedToInvokeMethod -f $MethodName, $errorMessage, $invokeCimMethodResult.HRESULT
+        # Fall back to Error property if ExtendedErrors was empty or not present.
+        if (-not $errorDetails -and ($invokeCimMethodResult | Get-Member -Name 'Error') -and $invokeCimMethodResult.Error)
+        {
+            $errorDetails = $invokeCimMethodResult.Error
+        }
+
+        # Use a fallback message if neither property had content.
+        if (-not $errorDetails)
+        {
+            $errorDetails = $script:localizedData.Invoke_RsCimMethod_NoErrorDetails
+        }
+
+        $errorMessage = $script:localizedData.Invoke_RsCimMethod_FailedToInvokeMethod -f $MethodName, $errorDetails, $invokeCimMethodResult.HRESULT
 
         throw $errorMessage
     }

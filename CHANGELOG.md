@@ -184,6 +184,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `Invoke-RsCimMethod`
+  - Fixed error handling to properly surface error details. Previously, when
+    the `ExtendedErrors` property existed but was empty, the error message
+    would show an empty error description. Now it correctly falls back to
+    the `Error` property and provides a descriptive fallback message if
+    neither property contains error details.
 - Prerequisites Integration Tests
   - Fixed missing RS (Reporting Services) integration test tags on Context blocks
     that create local Windows users, service accounts, and groups. Added tags
