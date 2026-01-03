@@ -42,7 +42,6 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
         $login = $serverInstance | Get-SqlDscLogin -Name 'MyLogin'
-
         Grant-SqlDscServerPermission -Login $login -Permission ConnectSql, ViewServerState
 
         Grants the specified permissions to the login 'MyLogin'.
@@ -50,14 +49,12 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
         $role = $serverInstance | Get-SqlDscRole -Name 'MyRole'
-
         $role | Grant-SqlDscServerPermission -Permission AlterAnyDatabase -WithGrant -Force
 
         Grants the specified permissions with grant option to the role 'MyRole' without prompting for confirmation.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
-
         $serverInstance | Get-SqlDscLogin | Grant-SqlDscServerPermission -Permission ConnectSql
 
         Grants ConnectSql permission to all logins from the pipeline.

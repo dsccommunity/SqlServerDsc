@@ -67,10 +67,8 @@
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $sourceDb = $serverObject.Databases['MyDatabase']
-
         $dataFile = New-SqlDscDataFile -Name 'MyDatabase_Data' -FileName 'C:\Snapshots\MyDatabase_Data.ss' -AsSpec
         $fileGroup = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($dataFile) -AsSpec
-
         $serverObject | New-SqlDscDatabaseSnapshot -Name 'MyDB_Snap' -DatabaseName 'MyDatabase' -FileGroup @($fileGroup) -Force
 
         Creates a new database snapshot named **MyDB_Snap** from the source database

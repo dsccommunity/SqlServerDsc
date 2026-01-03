@@ -56,10 +56,10 @@
 
     .EXAMPLE
         $fileGroup = New-SqlDscFileGroup -Name 'MyFileGroup'
-        # Later add to database
         Add-SqlDscFileGroup -Database $database -FileGroup $fileGroup
 
-        Creates a standalone FileGroup that can be added to a Database later.
+        Creates a standalone FileGroup that can be added to a Database later
+        using Add-SqlDscFileGroup.
 
     .EXAMPLE
         $fileGroupSpec = New-SqlDscFileGroup -Name 'PRIMARY' -AsSpec

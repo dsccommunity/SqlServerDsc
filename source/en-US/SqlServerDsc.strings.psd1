@@ -322,6 +322,7 @@ ConvertFrom-StringData @'
 
     ## Invoke-RsCimMethod
     Invoke_RsCimMethod_FailedToInvokeMethod = Method {0}() failed with an error. Error: {1} (HRESULT:{2}) (IRCM0001)
+    Invoke_RsCimMethod_NoErrorDetails = No error details were returned by the method. See HRESULT code for more information. (IRCM0002)
 
     ## Test-SqlDscRSInstalled
     Test_SqlDscRSInstalled_Checking = Checking if Reporting Services instance '{0}' is installed.
@@ -756,4 +757,21 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Set_SqlDscRSVirtualDirectory_ShouldProcessCaption = Set virtual directory for Reporting Services instance
     Set_SqlDscRSVirtualDirectory_FailedToSet = Failed to set virtual directory for Reporting Services instance '{0}'. {1} (SSRSVD0001)
+
+    ## Request-SqlDscRSDatabaseScript
+    Request_SqlDscRSDatabaseScript_Generating = Generating database creation script for database '{0}' for Reporting Services instance '{1}'.
+    Request_SqlDscRSDatabaseScript_FailedToGenerate = Failed to generate database creation script for Reporting Services instance '{0}'. {1} (RSRDBS0001)
+
+    ## Request-SqlDscRSDatabaseRightsScript
+    Request_SqlDscRSDatabaseRightsScript_Generating = Generating database rights script for database '{0}' and user '{1}' for Reporting Services instance '{2}'.
+    Request_SqlDscRSDatabaseRightsScript_FailedToGenerate = Failed to generate database rights script for Reporting Services instance '{0}'. {1} (RSRDBRS0001)
+
+    ## Set-SqlDscRSDatabaseConnection
+    Set_SqlDscRSDatabaseConnection_Setting = Setting report server database connection to database '{0}' on server '{1}' for Reporting Services instance '{2}'.
+    Set_SqlDscRSDatabaseConnection_ShouldProcessDescription = Setting report server database connection to database '{0}' on server '{1}' for Reporting Services instance '{2}'.
+    Set_SqlDscRSDatabaseConnection_ShouldProcessConfirmation = Are you sure you want to set the report server database connection to database '{0}' on server '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Set_SqlDscRSDatabaseConnection_ShouldProcessCaption = Set report server database connection for Reporting Services instance
+    Set_SqlDscRSDatabaseConnection_FailedToSet = Failed to set report server database connection for Reporting Services instance '{0}'. {1} (SSRSDC0001)
+    Set_SqlDscRSDatabaseConnection_CredentialRequired = The Credential parameter is required when Type is '{0}'. (SSRSDC0002)
 '@

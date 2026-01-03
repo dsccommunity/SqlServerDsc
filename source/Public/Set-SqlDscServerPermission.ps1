@@ -60,7 +60,6 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
         $login = $serverInstance | Get-SqlDscLogin -Name 'MyLogin'
-
         Set-SqlDscServerPermission -Login $login -Grant ConnectSql, ViewServerState
 
         Sets the exact granted permissions for the login 'MyLogin'. Any other
@@ -69,7 +68,6 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
         $login = $serverInstance | Get-SqlDscLogin -Name 'MyLogin'
-
         Set-SqlDscServerPermission -Login $login -Grant ConnectSql -GrantWithGrant AlterAnyDatabase -Deny ViewAnyDatabase
 
         Sets exact permissions for the login 'MyLogin': grants ConnectSql,
@@ -79,7 +77,6 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
         $role = $serverInstance | Get-SqlDscRole -Name 'MyRole'
-
         $role | Set-SqlDscServerPermission -Grant @() -Force
 
         Revokes all granted permissions from the role 'MyRole' without prompting

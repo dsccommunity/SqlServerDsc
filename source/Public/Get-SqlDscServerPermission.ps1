@@ -82,7 +82,6 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
         $login = $serverInstance | Get-SqlDscLogin -Name 'MyLogin'
-
         Get-SqlDscServerPermission -Login $login
 
         Get the permissions for the login 'MyLogin' using a Login object.
@@ -90,14 +89,12 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
         $role = $serverInstance | Get-SqlDscRole -Name 'MyRole'
-
         $role | Get-SqlDscServerPermission
 
         Get the permissions for the server role 'MyRole' using a ServerRole object from the pipeline.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
-
         $serverInstance | Get-SqlDscLogin | Get-SqlDscServerPermission
 
         Get the permissions for all logins from the pipeline.

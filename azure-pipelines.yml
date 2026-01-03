@@ -526,6 +526,7 @@ stages:
                   # Run the integration tests in a specific group order.
                   # Group 0
                   'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Prerequisites.RSDB.Integration.Tests.ps1'
                   'tests/Integration/Commands/Save-SqlDscSqlServerMediaFile.Integration.Tests.ps1'
                   'tests/Integration/Commands/Import-SqlDscPreferredModule.Integration.Tests.ps1'
                   # Group 1
@@ -535,6 +536,8 @@ stages:
                   'tests/Integration/Commands/Get-SqlDscRSPackage.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSSetupConfiguration.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscRSInstalled.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Request-SqlDscRSDatabaseScript.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Request-SqlDscRSDatabaseRightsScript.Integration.Tests.ps1'
                   # Group 3
                   'tests/Integration/Commands/Get-SqlDscRSConfiguration.Integration.Tests.ps1'
                   'tests/Integration/Commands/Enable-SqlDscRsSecureConnection.Integration.Tests.ps1'
@@ -544,6 +547,7 @@ stages:
                   'tests/Integration/Commands/Add-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscRSUrlReservation.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscRSDatabaseConnection.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscReportingService.Integration.Tests.ps1'
                   # Group 9
@@ -601,6 +605,7 @@ stages:
                   # Run the integration tests in a specific group order.
                   # Group 0
                   'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Prerequisites.RSDB.Integration.Tests.ps1'
                   'tests/Integration/Commands/Save-SqlDscSqlServerMediaFile.Integration.Tests.ps1'
                   'tests/Integration/Commands/Import-SqlDscPreferredModule.Integration.Tests.ps1'
                   # Group 1
@@ -610,6 +615,8 @@ stages:
                   'tests/Integration/Commands/Get-SqlDscRSPackage.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSSetupConfiguration.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscRSInstalled.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Request-SqlDscRSDatabaseScript.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Request-SqlDscRSDatabaseRightsScript.Integration.Tests.ps1'
                   # Group 3
                   'tests/Integration/Commands/Get-SqlDscRSConfiguration.Integration.Tests.ps1'
                   'tests/Integration/Commands/Enable-SqlDscRsSecureConnection.Integration.Tests.ps1'
@@ -619,6 +626,7 @@ stages:
                   'tests/Integration/Commands/Add-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscRSUrlReservation.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscRSDatabaseConnection.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscPowerBIReportServer.Integration.Tests.ps1'
                   # Group 9

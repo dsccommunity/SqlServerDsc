@@ -45,6 +45,7 @@ BeforeDiscovery {
         $referencedAssemblies = @(
             'System.Collections'
             'System.Collections.Specialized'
+            'System.ComponentModel.TypeConverter'
             'System.Data.Common'
             'System.Linq'
             'System.Net.Primitives'
