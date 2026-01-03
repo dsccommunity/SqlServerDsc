@@ -2160,68 +2160,78 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
         $mockGetCimAssociatedInstance_MSCluster_ResourceToPossibleOwner = {
             return @(
-                (
-                    @($env:COMPUTERNAME, 'SQL01', 'SQL02') | ForEach-Object -Process {
-                        $node = $_
-                        New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Node', 'root/MSCluster' |
-                            Add-Member -MemberType NoteProperty -Name 'Name' -Value $node -PassThru -Force
-                        }
+                @($env:COMPUTERNAME, 'SQL01', 'SQL02') | ForEach-Object -Process {
+                    $cim = [Microsoft.Management.Infrastructure.CimInstance]::new('MSCluster_Node', 'root/MSCluster')
+                    $cim.CimInstanceProperties.Add(
+                        [Microsoft.Management.Infrastructure.CimProperty]::Create('Name', $_, [CimType]::String, 'Property, ReadOnly')
                     )
-                )
-            }
+                    $cim
+                }
+            )
+        }
 
-            $mockGetCimInstance_MSClusterResourceGroup_AvailableStorage = {
-                return @(
-                    (
-                        New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ResourceGroup', 'root/MSCluster' |
-                            Add-Member -MemberType NoteProperty -Name 'Name' -Value 'Available Storage' -PassThru -Force
+        $mockGetCimInstance_MSClusterResourceGroup_AvailableStorage = {
+            return @(
+                $cim = [Microsoft.Management.Infrastructure.CimInstance]::new('MSCluster_ResourceGroup', 'root/MSCluster')
+                $cim.CimInstanceProperties.Add(
+                    [Microsoft.Management.Infrastructure.CimProperty]::Create('Name', 'Available Storage', [CimType]::String, 'Property, ReadOnly')
                 )
+                $cim
             )
         }
 
         $mockGetCimInstance_MSClusterNetwork = {
             return @(
-                (
-                    $mockDynamicClusterSites | ForEach-Object -Process {
-                        $network = $_
+                $mockDynamicClusterSites | ForEach-Object -Process {
+                    $cim = [Microsoft.Management.Infrastructure.CimInstance]::new('MSCluster_Network', 'root/MSCluster')
+                    $cName = [Microsoft.Management.Infrastructure.CimProperty]::Create('Name', "$($_.Name)_Prod", [CimType]::String, 'Property, ReadOnly')
+                    $cim.CimInstanceProperties.Add($cName)
 
-                        New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Network', 'root/MSCluster' |
-                            Add-Member -MemberType NoteProperty -Name 'Name' -Value "$($network.Name)_Prod" -PassThru -Force |
-                            Add-Member -MemberType NoteProperty -Name 'Role' -Value 2 -PassThru -Force |
-                            Add-Member -MemberType NoteProperty -Name 'Address' -Value $network.Address -PassThru -Force |
-                            Add-Member -MemberType NoteProperty -Name 'AddressMask' -Value $network.Mask -PassThru -Force
-                        }
-                    )
-                )
-            }
+                    $cRole = [Microsoft.Management.Infrastructure.CimProperty]::Create('Role', 1, [CimType]::UInt32, 'Property, ReadOnly')
+                    $cim.CimInstanceProperties.Add($cRole)
 
-            # Mock to return physical disks that are part of the "Available Storage" cluster role
-            $mockGetCimAssociatedInstance_MSCluster_ResourceGroupToResource = {
-                return @(
-                    (
-                        # $mockClusterDiskMap contains variables that are assigned dynamically (during runtime) before each test.
-                        (& $mockClusterDiskMap).Keys | ForEach-Object -Process {
-                            $diskName = $_
-                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource', 'root/MSCluster' |
-                                Add-Member -MemberType NoteProperty -Name 'Name' -Value $diskName -PassThru -Force |
-                                Add-Member -MemberType NoteProperty -Name 'State' -Value 2 -PassThru -Force |
-                                Add-Member -MemberType NoteProperty -Name 'Type' -Value 'Physical Disk' -PassThru -Force
-                            }
-                        )
-                    )
+                    $cAddr = [Microsoft.Management.Infrastructure.CimProperty]::Create('Address', $_.Address, [CimType]::String, 'Property, ReadOnly')
+                    $cim.CimInstanceProperties.Add($cAddr)
+
+                    $cMask = [Microsoft.Management.Infrastructure.CimProperty]::Create('AddressMask', $_.Mask, [CimType]::String, 'Property, ReadOnly')
+                    $cim.CimInstanceProperties.Add($cMask)
+                    $cim
                 }
+            )
+        }
 
-                $mockGetCimAssociatedInstance_MSCluster_DiskPartition = {
-                    $clusterDiskName = $InputObject.Name
-
+        # Mock to return physical disks that are part of the "Available Storage" cluster role
+        $mockGetCimAssociatedInstance_MSCluster_ResourceGroupToResource = {
+            return @(
+                (
                     # $mockClusterDiskMap contains variables that are assigned dynamically (during runtime) before each test.
-                    $clusterDiskPath = (& $mockClusterDiskMap).$clusterDiskName
+                    (& $mockClusterDiskMap).Keys | ForEach-Object -Process {
+                        $diskName = $_
 
-                    return @(
-                        (
-                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_DiskPartition', 'root/MSCluster' |
-                                Add-Member -MemberType NoteProperty -Name 'Path' -Value $clusterDiskPath -PassThru -Force
+                        $cim = [Microsoft.Management.Infrastructure.CimInstance]::new('MSCluster_Resource', 'root/MSCluster')
+                        $cName = [Microsoft.Management.Infrastructure.CimProperty]::Create('Name', $_, [CimType]::String, 'Property, ReadOnly')
+                        $cim.CimInstanceProperties.Add($cName)
+
+                        $cState = [Microsoft.Management.Infrastructure.CimProperty]::Create('State', 2, [CimType]::UInt32, 'Property, ReadOnly')
+                        $cim.CimInstanceProperties.Add($cState)
+
+                        $cType = [Microsoft.Management.Infrastructure.CimProperty]::Create('Type', 'Physical Disk', [CimType]::String, 'Property, ReadOnly')
+                        $cim.CimInstanceProperties.Add($cType)
+
+                        $cim
+                    }
                 )
+            )
+        }
+
+        $mockGetCimAssociatedInstance_MSCluster_DiskPartition = {
+            $clusterDiskName = $InputObject.Name
+
+            # $mockClusterDiskMap contains variables that are assigned dynamically (during runtime) before each test.
+            $clusterDiskPath = (& $mockClusterDiskMap).$clusterDiskName
+
+            return @(
+                [PSCustomObject] @{ Path = $clusterDiskPath }
             )
         }
 
@@ -3751,66 +3761,47 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
             BeforeAll {
                 $mockGetCIMInstance_MSCluster_ClusterSharedVolume = {
                     return @(
-                        (
-                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                                Add-Member -MemberType NoteProperty -Name 'Name' -Value 'C:\ClusterStorage\SysData' -PassThru -Force
-                        ),
-                        (
-                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                                Add-Member -MemberType NoteProperty -Name 'Name' -Value 'C:\ClusterStorage\SQLData' -PassThru -Force
-                        ),
-                        (
-                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                                Add-Member -MemberType NoteProperty -Name 'Name' -Value 'C:\ClusterStorage\SQLLogs' -PassThru -Force
-                        ),
-                        (
-                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                                Add-Member -MemberType NoteProperty -Name 'Name' -Value 'C:\ClusterStorage\TempDBData' -PassThru -Force
-                        ),
-                        (
-                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                                Add-Member -MemberType NoteProperty -Name 'Name' -Value 'C:\ClusterStorage\TempDBLogs' -PassThru -Force
-                        ),
-                        (
-                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                                Add-Member -MemberType NoteProperty -Name 'Name' -Value 'C:\ClusterStorage\SQLBackup' -PassThru -Force
-                        )
-                    )
+                        'C:\ClusterStorage\SysData'
+                        'C:\ClusterStorage\SQLData'
+                        'C:\ClusterStorage\SQLLogs'
+                        'C:\ClusterStorage\TempDBData'
+                        'C:\ClusterStorage\TempDBLogs'
+                        'C:\ClusterStorage\SQLBackup'
+                    ) | ForEach-Object { [PSCustomObject]@{ Name = $_ } }
                 }
 
                 $mockGetCIMInstance_MSCluster_ClusterSharedVolumeToResource = {
                     return @(
-                        (
-                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                                Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'C:\ClusterStorage\SysData' }) -PassThru -Force |
-                                Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'Cluster Virtual Disk (SQL System Data Disk)' }) -PassThru -Force
-                        ),
-                        (
-                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                                Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'C:\ClusterStorage\SQLData' }) -PassThru -Force |
-                                Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'Cluster Virtual Disk (SQL Data Disk)' }) -PassThru -Force
-                        ),
-                        (
-                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                                Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'C:\ClusterStorage\SQLLogs' }) -PassThru -Force |
-                                Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'Cluster Virtual Disk (SQL Log Disk)' }) -PassThru -Force
-                        ),
-                        (
-                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                                Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'C:\ClusterStorage\TempDBData' }) -PassThru -Force |
-                                Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'Cluster Virtual Disk (SQL TempDBData Disk)' }) -PassThru -Force
-                        ),
-                        (
-                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                                Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'C:\ClusterStorage\TempDBLogs' }) -PassThru -Force |
-                                Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'Cluster Virtual Disk (SQL TempDBLog Disk)' }) -PassThru -Force
-                        ),
-                        (
-                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-                                Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'C:\ClusterStorage\SQLBackup' }) -PassThru -Force |
-                                Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'Cluster Virtual Disk (SQL Backup Disk)' }) -PassThru -Force
-                        )
-                    )
+                        @{
+                            Group = 'C:\ClusterStorage\SysData'
+                            Part  = 'Cluster Virtual Disk (SQL System Data Disk)'
+                        }
+                        @{
+                            Group = 'C:\ClusterStorage\SQLData'
+                            Part  = 'Cluster Virtual Disk (SQL Data Disk)'
+                        }
+                        @{
+                            Group = 'C:\ClusterStorage\SQLLogs'
+                            Part  = 'Cluster Virtual Disk (SQL Log Disk)'
+                        }
+                        @{
+                            Group = 'C:\ClusterStorage\TempDBData'
+                            Part  = 'Cluster Virtual Disk (SQL TempDBData Disk)'
+                        }
+                        @{
+                            Group = 'C:\ClusterStorage\TempDBLogs'
+                            Part  = 'Cluster Virtual Disk (SQL TempDBLog Disk)'
+                        }
+                        @{
+                            Group = 'C:\ClusterStorage\SQLBackup'
+                            Part  = 'Cluster Virtual Disk (SQL Backup Disk)'
+                        }
+                    ) | ForEach-Object {
+                        $cim = [Microsoft.Management.Infrastructure.CimInstance]::new('MSCluster_ClusterSharedVolume', 'root/MSCluster')
+                        $cim.PSObject.Properties.Add([PSNoteProperty]::new('GroupComponent', [PSCustomObject] @{ Name = $_.Group }))
+                        $cim.PSObject.Properties.Add([PSNoteProperty]::new('PartComponent', [PSCustomObject] @{ Name = $_.Part }))
+                        $cim
+                    }
                 }
 
                 Mock -CommandName Get-CimInstance -MockWith $mockGetCIMInstance_MSCluster_ClusterSharedVolume -ParameterFilter {
