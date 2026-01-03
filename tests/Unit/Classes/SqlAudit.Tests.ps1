@@ -272,14 +272,6 @@ Describe 'SqlAudit\Set()' -Tag 'Set' {
                 InstanceName = 'NamedInstance'
                 Path         = 'C:\Temp'
             } |
-                # Mock method GetCurrentState() which is called by the base method Get()
-                Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                    return [System.Collections.Hashtable] @{
-                        Name         = 'MockAuditName'
-                        InstanceName = 'NamedInstance'
-                        ServerName   = Get-ComputerName
-                    }
-                } -PassThru |
                 # Mock method Modify which is called by the base method Set().
                 Add-Member -Force -MemberType 'ScriptMethod' -Name 'Modify' -Value {
                     $script:mockMethodModifyCallCount += 1
@@ -366,15 +358,7 @@ Describe 'SqlAudit\Test()' -Tag 'Test' {
                 Name         = 'MockAuditName'
                 InstanceName = 'NamedInstance'
                 Path         = 'C:\Temp'
-            } |
-                # Mock method GetCurrentState() which is called by the base method Get()
-                Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                    return [System.Collections.Hashtable] @{
-                        Name         = 'MockAuditName'
-                        InstanceName = 'NamedInstance'
-                        ServerName   = Get-ComputerName
-                    }
-                } -PassThru
+            }
         }
     }
 
@@ -382,7 +366,7 @@ Describe 'SqlAudit\Test()' -Tag 'Test' {
         InModuleScope -ScriptBlock {
             Set-StrictMode -Version 1.0
 
-            $script:getMethodCallCount = 0
+            $script:mockMethodGetCallCount = 0
         }
     }
 
@@ -394,7 +378,7 @@ Describe 'SqlAudit\Test()' -Tag 'Test' {
                 $script:mockSqlAuditInstance |
                     # Mock method Get() which is called by the base method Test()
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
-                        $script:getMethodCallCount += 1
+                        $script:mockMethodGetCallCount += 1
                     }
             }
         }
@@ -405,7 +389,7 @@ Describe 'SqlAudit\Test()' -Tag 'Test' {
 
                 $script:mockSqlAuditInstance.Test() | Should -BeTrue
 
-                $script:getMethodCallCount | Should -Be 1
+                $script:mockMethodGetCallCount | Should -Be 1
             }
         }
     }
@@ -418,7 +402,7 @@ Describe 'SqlAudit\Test()' -Tag 'Test' {
                 $script:mockSqlAuditInstance |
                     # Mock method Get() which is called by the base method Test()
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
-                        $script:getMethodCallCount += 1
+                        $script:mockMethodGetCallCount += 1
                     }
 
                 $script:mockSqlAuditInstance.PropertiesNotInDesiredState = @(
@@ -437,7 +421,7 @@ Describe 'SqlAudit\Test()' -Tag 'Test' {
 
                 $script:mockSqlAuditInstance.Test() | Should -BeFalse
 
-                $script:getMethodCallCount | Should -Be 1
+                $script:mockMethodGetCallCount | Should -Be 1
             }
         }
     }
@@ -833,7 +817,7 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                                     Enabled = $false
                                 }
                             )
-                        } | Should -Throw -ExpectedMessage $mockErrorMessage
+                        } | Should -Throw -ExpectedMessage $mockErrorMessage.Exception.Message
                     }
                 }
             }
@@ -1175,7 +1159,7 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                                 MaximumFiles = 20
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    } | Should -Throw -ExpectedMessage $mockErrorMessage.Exception.Message
                 }
             }
         }
@@ -1351,12 +1335,12 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                                 Path = 'C:\Temp'
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockErrorMessage
-
-                    Should -Invoke -CommandName Remove-SqlDscAudit -Exactly -Times 0 -Scope It
+                    } | Should -Throw -ExpectedMessage $mockErrorMessage.Exception.Message
 
                     $script:mockMethodCreateAuditCallCount | Should -Be 0
                 }
+
+                Should -Invoke -CommandName Remove-SqlDscAudit -Exactly -Times 0 -Scope It
             }
         }
     }
@@ -1464,26 +1448,30 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
                 }
             }
 
-            It 'Should throw the correct error for property ''<MockPropertyName>''' -ForEach @(
-                @{
-                    MockPropertyName = 'Path'
-                }
-                @{
-                    MockPropertyName = 'MaximumFiles'
-                }
-                @{
-                    MockPropertyName = 'MaximumFileSize'
-                }
-                @{
-                    MockPropertyName = 'MaximumFileSizeUnit'
-                }
-                @{
-                    MockPropertyName = 'MaximumRolloverFiles'
-                }
-                @{
-                    MockPropertyName = 'ReserveDiskSpace'
-                }
-            ) {
+            BeforeDiscovery {
+                $testCases = @(
+                    @{
+                        MockPropertyName = 'Path'
+                    }
+                    @{
+                        MockPropertyName = 'MaximumFiles'
+                    }
+                    @{
+                        MockPropertyName = 'MaximumFileSize'
+                    }
+                    @{
+                        MockPropertyName = 'MaximumFileSizeUnit'
+                    }
+                    @{
+                        MockPropertyName = 'MaximumRolloverFiles'
+                    }
+                    @{
+                        MockPropertyName = 'ReserveDiskSpace'
+                    }
+                )
+            }
+
+            It 'Should throw the correct error for property ''<MockPropertyName>''' -ForEach $testCases {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
@@ -1584,20 +1572,24 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
                 }
             }
 
-            It 'Should throw the correct error with value <MockQueueDelayValue>' -ForEach @(
-                @{
-                    MockQueueDelayValue = 1
-                }
-                @{
-                    MockQueueDelayValue = 457
-                }
-                @{
-                    MockQueueDelayValue = 800
-                }
-                @{
-                    MockQueueDelayValue = 999
-                }
-            ) {
+            BeforeDiscovery {
+                $testCases = @(
+                    @{
+                        MockQueueDelayValue = 1
+                    }
+                    @{
+                        MockQueueDelayValue = 457
+                    }
+                    @{
+                        MockQueueDelayValue = 800
+                    }
+                    @{
+                        MockQueueDelayValue = 999
+                    }
+                )
+            }
+
+            It 'Should throw the correct error with value <MockQueueDelayValue>' -ForEach $testCases {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
@@ -1632,20 +1624,18 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
             It 'Should throw the correct error' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
-                    
+
                     $mockErrorMessage = $script:mockSqlAuditInstance.localizedData.ReservDiskSpaceWithoutMaximumFiles
 
                     $mockErrorMessage += ' (Parameter ''ReserveDiskSpace'')'
 
-                    {
-                        $mockSqlAuditInstance.AssertProperties(
-                            @{
-                                MaximumFileSize     = 10
-                                MaximumFileSizeUnit = 'Megabyte'
-                                ReserveDiskSpace    = $true
-                            }
-                        )
-                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    $mockParameters = @{
+                        MaximumFileSize     = 10
+                        MaximumFileSizeUnit = 'Megabyte'
+                        ReserveDiskSpace    = $true
+                    }
+
+                    { $script:mockSqlAuditInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage $mockErrorMessage
                 }
             }
         }
