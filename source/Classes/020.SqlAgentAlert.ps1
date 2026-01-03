@@ -149,17 +149,13 @@ class SqlAgentAlert : SqlResourceBase
     [SqlAgentAlert] Get()
     {
         # Call base implementation to get current state
-        $currentState = ([ResourceBase] $this).Get()
-
-        return $currentState
+        return ([ResourceBase] $this).Get()
     }
 
     [System.Boolean] Test()
     {
         # Call base implementation to test current state
-        $inDesiredState = ([ResourceBase] $this).Test()
-
-        return $inDesiredState
+        return ([ResourceBase] $this).Test()
     }
 
     [void] Set()

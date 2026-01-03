@@ -69,12 +69,16 @@ Describe 'SqlAudit' {
     Context 'When class is instantiated' {
         It 'Should not throw an exception' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $null = [SqlAudit]::new()
             }
         }
 
         It 'Should have a default or empty constructor' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $instance = [SqlAudit]::new()
                 $instance | Should -Not -BeNullOrEmpty
             }
@@ -82,6 +86,8 @@ Describe 'SqlAudit' {
 
         It 'Should be the correct type' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $instance = [SqlAudit]::new()
                 $instance.GetType().Name | Should -Be 'SqlAudit'
             }
@@ -94,6 +100,8 @@ Describe 'SqlAudit\Get()' -Tag 'Get' {
         Context 'When having a File audit with default values' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name         = 'MockAuditName'
                         InstanceName = 'NamedInstance'
@@ -115,7 +123,10 @@ Describe 'SqlAudit\Get()' -Tag 'Get' {
                                 Path         = 'C:\Temp'
                             }
                         } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
+                            return
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
                             return
                         }
                 }
@@ -123,6 +134,8 @@ Describe 'SqlAudit\Get()' -Tag 'Get' {
 
             It 'Should return the correct values' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $currentState = $script:mockSqlAuditInstance.Get()
 
                     $currentState.InstanceName | Should -Be 'NamedInstance'
@@ -138,6 +151,8 @@ Describe 'SqlAudit\Get()' -Tag 'Get' {
             Context 'When using parameter Credential' {
                 BeforeAll {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $script:mockSqlAuditInstance.Credential = [System.Management.Automation.PSCredential]::new(
                             'MyCredentialUserName',
                             [SecureString]::new()
@@ -159,7 +174,10 @@ Describe 'SqlAudit\Get()' -Tag 'Get' {
                                     Credential   = $this.Credential
                                 }
                             } -PassThru |
-                            Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                            Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
+                                return
+                            } -PassThru |
+                            Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
                                 return
                             }
                     }
@@ -167,6 +185,8 @@ Describe 'SqlAudit\Get()' -Tag 'Get' {
 
                 It 'Should return the correct values' {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $currentState = $script:mockSqlAuditInstance.Get()
 
                         $currentState.InstanceName | Should -Be 'NamedInstance'
@@ -188,6 +208,8 @@ Describe 'SqlAudit\Get()' -Tag 'Get' {
         Context 'When property Path have the wrong value for a File audit' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name         = 'MockAuditName'
                         InstanceName = 'NamedInstance'
@@ -209,7 +231,10 @@ Describe 'SqlAudit\Get()' -Tag 'Get' {
                                 Path         = 'C:\Temp'
                             }
                         } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
+                            return
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
                             return
                         }
                 }
@@ -217,6 +242,8 @@ Describe 'SqlAudit\Get()' -Tag 'Get' {
 
             It 'Should return the correct values' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $currentState = $script:mockSqlAuditInstance.Get()
 
                     $currentState.InstanceName | Should -Be 'NamedInstance'
@@ -238,19 +265,13 @@ Describe 'SqlAudit\Get()' -Tag 'Get' {
 Describe 'SqlAudit\Set()' -Tag 'Set' {
     BeforeAll {
         InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
             $script:mockSqlAuditInstance = [SqlAudit] @{
                 Name         = 'MockAuditName'
                 InstanceName = 'NamedInstance'
                 Path         = 'C:\Temp'
             } |
-                # Mock method GetCurrentState() which is called by the base method Get()
-                Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                    return [System.Collections.Hashtable] @{
-                        Name         = 'MockAuditName'
-                        InstanceName = 'NamedInstance'
-                        ServerName   = Get-ComputerName
-                    }
-                } -PassThru |
                 # Mock method Modify which is called by the base method Set().
                 Add-Member -Force -MemberType 'ScriptMethod' -Name 'Modify' -Value {
                     $script:mockMethodModifyCallCount += 1
@@ -260,29 +281,35 @@ Describe 'SqlAudit\Set()' -Tag 'Set' {
 
     BeforeEach {
         InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
             $script:mockMethodModifyCallCount = 0
+            $script:mockMethodTestCallCount = 0
         }
     }
 
     Context 'When the system is in the desired state' {
         BeforeAll {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlAuditInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return $null
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                        return
+                    # Mock method Test() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Test' -Value {
+                        $script:mockMethodTestCallCount += 1
+                        return $true
                     }
             }
         }
 
         It 'Should not call method Modify()' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlAuditInstance.Set()
 
                 $script:mockMethodModifyCallCount | Should -Be 0
+                $script:mockMethodTestCallCount | Should -Be 1
             }
         }
     }
@@ -290,26 +317,33 @@ Describe 'SqlAudit\Set()' -Tag 'Set' {
     Context 'When the system is not in the desired state' {
         BeforeAll {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlAuditInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return @{
-                            Property      = 'Path'
-                            ExpectedValue = 'C:\NewFolder'
-                            ActualValue   = 'C:\Path'
-                        }
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                        return
+                    # Mock method Test() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Test' -Value {
+                        $script:mockMethodTestCallCount += 1
+                        return $false
                     }
+
+                $script:mockSqlAuditInstance.PropertiesNotInDesiredState = @(
+                    @{
+                        Property      = 'Path'
+                        ExpectedValue = 'C:\NewFolder'
+                        ActualValue   = 'C:\Path'
+                    }
+                )
             }
         }
 
         It 'Should call method Modify()' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlAuditInstance.Set()
 
                 $script:mockMethodModifyCallCount | Should -Be 1
+                $script:mockMethodTestCallCount | Should -Be 1
             }
         }
     }
@@ -318,39 +352,44 @@ Describe 'SqlAudit\Set()' -Tag 'Set' {
 Describe 'SqlAudit\Test()' -Tag 'Test' {
     BeforeAll {
         InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
             $script:mockSqlAuditInstance = [SqlAudit] @{
                 Name         = 'MockAuditName'
                 InstanceName = 'NamedInstance'
                 Path         = 'C:\Temp'
-            } |
-                # Mock method GetCurrentState() which is called by the base method Get()
-                Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                    return [System.Collections.Hashtable] @{
-                        Name         = 'MockAuditName'
-                        InstanceName = 'NamedInstance'
-                        ServerName   = Get-ComputerName
-                    }
-                } -PassThru
+            }
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
+            $script:mockMethodGetCallCount = 0
         }
     }
 
     Context 'When the system is in the desired state' {
         BeforeAll {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlAuditInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return $null
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                        return
+                    # Mock method Get() which is called by the base method Test()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
+                        $script:mockMethodGetCallCount += 1
                     }
             }
         }
 
         It 'Should return $true' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlAuditInstance.Test() | Should -BeTrue
+
+                $script:mockMethodGetCallCount | Should -Be 1
             }
         }
     }
@@ -358,30 +397,31 @@ Describe 'SqlAudit\Test()' -Tag 'Test' {
     Context 'When the system is not in the desired state' {
         BeforeAll {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlAuditInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        <#
-                            Compare() method shall only return the properties NOT in
-                            desired state, in the format of the command Compare-DscParameterState.
-                        #>
-                        return @(
-                            @{
-                                Property      = 'Path'
-                                ExpectedValue = 'C:\Temp'
-                                ActualValue   = 'C:\WrongFolder'
-                            }
-                        )
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                        return
+                    # Mock method Get() which is called by the base method Test()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
+                        $script:mockMethodGetCallCount += 1
                     }
+
+                $script:mockSqlAuditInstance.PropertiesNotInDesiredState = @(
+                    @{
+                        Property      = 'Path'
+                        ExpectedValue = 'C:\Temp'
+                        ActualValue   = 'C:\WrongFolder'
+                    }
+                )
             }
         }
 
         It 'Should return $false' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlAuditInstance.Test() | Should -BeFalse
+
+                $script:mockMethodGetCallCount | Should -Be 1
             }
         }
     }
@@ -391,12 +431,14 @@ Describe 'SqlAudit\GetCurrentState()' -Tag 'GetCurrentState' {
     Context 'When audit is missing in the current state' {
         BeforeAll {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlAuditInstance = [SqlAudit] @{
                     Name         = 'MockAuditName'
                     InstanceName = 'NamedInstance'
                 } |
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                        return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                        return [Microsoft.SqlServer.Management.Smo.Server]::new()
                     } -PassThru
             }
 
@@ -405,6 +447,8 @@ Describe 'SqlAudit\GetCurrentState()' -Tag 'GetCurrentState' {
 
         It 'Should return the correct values' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $currentState = $script:mockSqlAuditInstance.GetCurrentState(
                     @{
                         Name         = 'MockAuditName'
@@ -422,6 +466,8 @@ Describe 'SqlAudit\GetCurrentState()' -Tag 'GetCurrentState' {
         Context 'When using property Credential' {
             It 'Should return the correct values' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance.Credential = [System.Management.Automation.PSCredential]::new(
                         'MyCredentialUserName',
                         [SecureString]::new()
@@ -449,18 +495,20 @@ Describe 'SqlAudit\GetCurrentState()' -Tag 'GetCurrentState' {
         Context 'When the audit is of type file' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name         = 'MockAuditName'
                         InstanceName = 'NamedInstance'
                     } |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                            return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                            return [Microsoft.SqlServer.Management.Smo.Server]::new()
                         } -PassThru
                 }
 
                 Mock -CommandName Get-SqlDscAudit -MockWith {
-                    $mockAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
-                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                    $mockAuditObject = [Microsoft.SqlServer.Management.Smo.Audit]::new(
+                        ([Microsoft.SqlServer.Management.Smo.Server]::new()),
                         'MockAuditName'
                     )
 
@@ -489,6 +537,8 @@ Describe 'SqlAudit\GetCurrentState()' -Tag 'GetCurrentState' {
 
             It 'Should return the correct values' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $currentState = $script:mockSqlAuditInstance.GetCurrentState(
                         @{
                             Name         = 'MockAuditName'
@@ -520,18 +570,20 @@ Describe 'SqlAudit\GetCurrentState()' -Tag 'GetCurrentState' {
         Context 'When the audit is of type log' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name         = 'MockAuditName'
                         InstanceName = 'NamedInstance'
                     } |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                            return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                            return [Microsoft.SqlServer.Management.Smo.Server]::new()
                         } -PassThru
                 }
 
                 Mock -CommandName Get-SqlDscAudit -MockWith {
-                    $mockAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
-                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                    $mockAuditObject = [Microsoft.SqlServer.Management.Smo.Audit]::new(
+                        ([Microsoft.SqlServer.Management.Smo.Server]::new()),
                         'MockAuditName'
                     )
 
@@ -554,6 +606,8 @@ Describe 'SqlAudit\GetCurrentState()' -Tag 'GetCurrentState' {
 
             It 'Should return the correct values' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $currentState = $script:mockSqlAuditInstance.GetCurrentState(
                         @{
                             Name         = 'MockAuditName'
@@ -589,17 +643,16 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
         Context 'When audit is present but should be absent' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name         = 'MockAuditName'
                         InstanceName = 'NamedInstance'
                         Ensure       = 'Absent'
                     } |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                            return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                        }  -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
-                        } -PassThru
+                            return [Microsoft.SqlServer.Management.Smo.Server]::new()
+                        }  -PassThru
                 }
 
                 Mock -CommandName Remove-SqlDscAudit
@@ -623,22 +676,21 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
         Context 'When audit is absent but should be present' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name         = 'MockAuditName'
                         InstanceName = 'NamedInstance'
                         Path         = 'C:\Temp'
                     } |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                            return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                        }  -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
+                            return [Microsoft.SqlServer.Management.Smo.Server]::new()
                         } -PassThru
                 }
 
                 Mock -CommandName New-SqlDscAudit -MockWith {
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
-                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                    return [Microsoft.SqlServer.Management.Smo.Audit]::new(
+                        ([Microsoft.SqlServer.Management.Smo.Server]::new()),
                         'MockAuditName'
                     )
                 } -RemoveParameterValidation 'Path'
@@ -646,6 +698,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance.Modify(
                         # This is the properties not in desired state.
                         @{
@@ -661,17 +715,16 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
             Context 'When the audit should also be enabled' {
                 BeforeAll {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $script:mockSqlAuditInstance = [SqlAudit] @{
                             Name         = 'MockAuditName'
                             InstanceName = 'NamedInstance'
                             Path         = 'C:\Temp'
                         } |
                             Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                                return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                            }  -PassThru |
-                            Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                                return
-                            } -PassThru
+                                return [Microsoft.SqlServer.Management.Smo.Server]::new()
+                            }  -PassThru
                     }
 
                     Mock -CommandName Enable-SqlDscAudit
@@ -679,6 +732,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
 
                 It 'Should call the correct mocks' {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $script:mockSqlAuditInstance.Modify(
                             # This is the properties not in desired state.
                             @{
@@ -697,17 +752,16 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
             Context 'When the audit should also be disabled' {
                 BeforeAll {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $script:mockSqlAuditInstance = [SqlAudit] @{
                             Name         = 'MockAuditName'
                             InstanceName = 'NamedInstance'
                             Path         = 'C:\Temp'
                         } |
                             Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                                return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                            }  -PassThru |
-                            Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                                return
-                            } -PassThru
+                                return [Microsoft.SqlServer.Management.Smo.Server]::new()
+                            }  -PassThru
                     }
 
                     Mock -CommandName Disable-SqlDscAudit
@@ -715,6 +769,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
 
                 It 'Should call the correct mocks' {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $script:mockSqlAuditInstance.Modify(
                             # This is the properties not in desired state.
                             @{
@@ -733,16 +789,15 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
             Context 'When the neither of the parameters LogType or Path was passed' {
                 BeforeAll {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $script:mockSqlAuditInstance = [SqlAudit] @{
                             Name         = 'MockAuditName'
                             InstanceName = 'NamedInstance'
                         } |
                             Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                                return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                            }  -PassThru |
-                            Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                                return
-                            } -PassThru
+                                return [Microsoft.SqlServer.Management.Smo.Server]::new()
+                            }  -PassThru
                     }
 
                     Mock -CommandName Disable-SqlDscAudit
@@ -750,6 +805,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
 
                 It 'Should call the correct mocks' {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $mockErrorMessage = Get-InvalidOperationRecord -Message $mockSqlAuditInstance.localizedData.CannotCreateNewAudit
 
                         {
@@ -760,7 +817,7 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                                     Enabled = $false
                                 }
                             )
-                        } | Should -Throw -ExpectedMessage $mockErrorMessage
+                        } | Should -Throw -ExpectedMessage $mockErrorMessage.Exception.Message
                     }
                 }
             }
@@ -769,22 +826,21 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
         Context 'When audit should be enabled but is disabled' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name         = 'MockAuditName'
                         InstanceName = 'NamedInstance'
                         Enabled      = $false
                     } |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                            return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                        }  -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
-                        } -PassThru
+                            return [Microsoft.SqlServer.Management.Smo.Server]::new()
+                        }  -PassThru
                 }
 
                 Mock -CommandName Get-SqlDscAudit -MockWith {
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
-                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                    return [Microsoft.SqlServer.Management.Smo.Audit]::new(
+                        ([Microsoft.SqlServer.Management.Smo.Server]::new()),
                         'MockAuditName'
                     )
                 }
@@ -794,6 +850,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mocks' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance.Modify(
                         # This is the properties not in desired state.
                         @{
@@ -810,22 +868,21 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
         Context 'When the audit should be disabled but is enabled' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name         = 'MockAuditName'
                         InstanceName = 'NamedInstance'
                         Enabled      = $true
                     } |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                            return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                        }  -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
-                        } -PassThru
+                            return [Microsoft.SqlServer.Management.Smo.Server]::new()
+                        }  -PassThru
                 }
 
                 Mock -CommandName Get-SqlDscAudit -MockWith {
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
-                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                    return [Microsoft.SqlServer.Management.Smo.Audit]::new(
+                        ([Microsoft.SqlServer.Management.Smo.Server]::new()),
                         'MockAuditName'
                     )
                 }
@@ -835,6 +892,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mocks' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance.Modify(
                         # This is the properties not in desired state.
                         @{
@@ -880,22 +939,21 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
         ) {
             BeforeAll {
                 InModuleScope -Parameters $_ -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name              = 'MockAuditName'
                         InstanceName      = 'NamedInstance'
                         $MockPropertyName = $MockExpectedValue
                     } |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                            return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                        }  -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
-                        } -PassThru
+                            return [Microsoft.SqlServer.Management.Smo.Server]::new()
+                        }  -PassThru
                 }
 
                 Mock -CommandName Get-SqlDscAudit -MockWith {
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
-                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                    return [Microsoft.SqlServer.Management.Smo.Audit]::new(
+                        ([Microsoft.SqlServer.Management.Smo.Server]::new()),
                         'MockAuditName'
                     )
                 }
@@ -905,6 +963,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mocks' {
                 InModuleScope -Parameters $_ -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance.Modify(
                         # This is the properties not in desired state.
                         @{
@@ -923,6 +983,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
         Context 'When the property MaximumFileSize is not in desired state' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name                = 'MockAuditName'
                         InstanceName        = 'NamedInstance'
@@ -930,16 +992,13 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                         MaximumFileSizeUnit = 'Megabyte'
                     } |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                            return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                        }  -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
-                        } -PassThru
+                            return [Microsoft.SqlServer.Management.Smo.Server]::new()
+                        }  -PassThru
                 }
 
                 Mock -CommandName Get-SqlDscAudit -MockWith {
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
-                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                    return [Microsoft.SqlServer.Management.Smo.Audit]::new(
+                        ([Microsoft.SqlServer.Management.Smo.Server]::new()),
                         'MockAuditName'
                     )
                 }
@@ -949,6 +1008,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mocks' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance.Modify(
                         # This is the properties not in desired state.
                         @{
@@ -967,6 +1028,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
         Context 'When the property MaximumFileSizeUnit is not in desired state' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name                = 'MockAuditName'
                         InstanceName        = 'NamedInstance'
@@ -974,16 +1037,13 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                         MaximumFileSizeUnit = 'Megabyte'
                     } |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                            return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                        }  -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
-                        } -PassThru
+                            return [Microsoft.SqlServer.Management.Smo.Server]::new()
+                        }  -PassThru
                 }
 
                 Mock -CommandName Get-SqlDscAudit -MockWith {
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
-                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                    return [Microsoft.SqlServer.Management.Smo.Audit]::new(
+                        ([Microsoft.SqlServer.Management.Smo.Server]::new()),
                         'MockAuditName'
                     )
                 }
@@ -993,6 +1053,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mocks' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance.Modify(
                         # This is the properties not in desired state.
                         @{
@@ -1011,6 +1073,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
         Context 'When the property ReservDiskSpace is not in desired state' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name             = 'MockAuditName'
                         InstanceName     = 'NamedInstance'
@@ -1018,16 +1082,13 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                         ReserveDiskSpace = $true
                     } |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                            return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                        }  -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
-                        } -PassThru
+                            return [Microsoft.SqlServer.Management.Smo.Server]::new()
+                        }  -PassThru
                 }
 
                 Mock -CommandName Get-SqlDscAudit -MockWith {
-                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
-                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                    return [Microsoft.SqlServer.Management.Smo.Audit]::new(
+                        ([Microsoft.SqlServer.Management.Smo.Server]::new()),
                         'MockAuditName'
                     )
                 }
@@ -1037,6 +1098,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mocks' {
                 InModuleScope -Parameters $_ -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance.Modify(
                         # This is the properties not in desired state.
                         @{
@@ -1055,22 +1118,21 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
         Context 'When trying to change a File audit property when audit type is of a Log-type' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name         = 'MockAuditName'
                         InstanceName = 'NamedInstance'
                         MaximumFiles = 20
                     } |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                            return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                        }  -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
-                        } -PassThru
+                            return [Microsoft.SqlServer.Management.Smo.Server]::new()
+                        }  -PassThru
                 }
 
                 Mock -CommandName Get-SqlDscAudit -MockWith {
-                    $mockAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
-                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                    $mockAuditObject = [Microsoft.SqlServer.Management.Smo.Audit]::new(
+                        ([Microsoft.SqlServer.Management.Smo.Server]::new()),
                         'MockAuditName'
                     )
 
@@ -1084,6 +1146,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mocks' {
                 InModuleScope -Parameters $_ -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $mockErrorMessage = Get-InvalidOperationRecord -Message (
                         $mockSqlAuditInstance.localizedData.AuditOfWrongTypeForUseWithProperty -f 'SecurityLog'
                     )
@@ -1095,7 +1159,7 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                                 MaximumFiles = 20
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    } | Should -Throw -ExpectedMessage $mockErrorMessage.Exception.Message
                 }
             }
         }
@@ -1103,6 +1167,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
         Context 'When trying to change Path but audit type is of a Log-type' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name         = 'MockAuditName'
                         InstanceName = 'NamedInstance'
@@ -1110,19 +1176,16 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                         Force        = $true
                     } |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                            return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                            return [Microsoft.SqlServer.Management.Smo.Server]::new()
                         }  -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
-                        } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'CreateAudit' -Value {
                             $script:mockMethodCreateAuditCallCount += 1
                         } -PassThru
                 }
 
                 Mock -CommandName Get-SqlDscAudit -MockWith {
-                    $mockAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
-                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                    $mockAuditObject = [Microsoft.SqlServer.Management.Smo.Audit]::new(
+                        ([Microsoft.SqlServer.Management.Smo.Server]::new()),
                         'MockAuditName'
                     )
 
@@ -1136,12 +1199,16 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
 
             BeforeEach {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockMethodCreateAuditCallCount = 0
                 }
             }
 
             It 'Should call the correct mocks' {
                 InModuleScope -Parameters $_ -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance.Modify(
                         # This is the properties not in desired state.
                         @{
@@ -1159,6 +1226,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
         Context 'When trying to change LogType but audit type is a File-type' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name         = 'MockAuditName'
                         InstanceName = 'NamedInstance'
@@ -1166,19 +1235,16 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                         Force        = $true
                     } |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                            return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                            return [Microsoft.SqlServer.Management.Smo.Server]::new()
                         }  -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
-                        } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'CreateAudit' -Value {
                             $script:mockMethodCreateAuditCallCount += 1
                         } -PassThru
                 }
 
                 Mock -CommandName Get-SqlDscAudit -MockWith {
-                    $mockAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
-                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                    $mockAuditObject = [Microsoft.SqlServer.Management.Smo.Audit]::new(
+                        ([Microsoft.SqlServer.Management.Smo.Server]::new()),
                         'MockAuditName'
                     )
 
@@ -1198,6 +1264,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mocks' {
                 InModuleScope -Parameters $_ -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance.Modify(
                         # This is the properties not in desired state.
                         @{
@@ -1215,25 +1283,24 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
         Context 'When trying to change Path but audit type is of a Log-type and Force is not set to $true' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name         = 'MockAuditName'
                         InstanceName = 'NamedInstance'
                         Path         = 'C:\Temp'
                     } |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                            return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                            return [Microsoft.SqlServer.Management.Smo.Server]::new()
                         }  -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
-                        } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'CreateAudit' -Value {
                             $script:mockMethodCreateAuditCallCount += 1
                         } -PassThru
                 }
 
                 Mock -CommandName Get-SqlDscAudit -MockWith {
-                    $mockAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
-                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                    $mockAuditObject = [Microsoft.SqlServer.Management.Smo.Audit]::new(
+                        ([Microsoft.SqlServer.Management.Smo.Server]::new()),
                         'MockAuditName'
                     )
 
@@ -1247,14 +1314,18 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
 
             BeforeEach {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockMethodCreateAuditCallCount = 0
                 }
             }
 
             It 'Should throw the correct error' {
                 InModuleScope -Parameters $_ -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $mockErrorMessage = Get-InvalidOperationRecord -Message (
-                        $mockSqlAuditInstance.localizedData.AuditIsWrongType
+                        $script:mockSqlAuditInstance.localizedData.AuditIsWrongType
                     )
 
                     {
@@ -1264,12 +1335,12 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                                 Path = 'C:\Temp'
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockErrorMessage
-
-                    Should -Invoke -CommandName Remove-SqlDscAudit -Exactly -Times 0 -Scope It
+                    } | Should -Throw -ExpectedMessage $mockErrorMessage.Exception.Message
 
                     $script:mockMethodCreateAuditCallCount | Should -Be 0
                 }
+
+                Should -Invoke -CommandName Remove-SqlDscAudit -Exactly -Times 0 -Scope It
             }
         }
     }
@@ -1279,6 +1350,8 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
     Context 'When the path does not exist' {
         BeforeAll {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlAuditInstance = [SqlAudit] @{
                     Name         = 'MockAuditName'
                     InstanceName = 'NamedInstance'
@@ -1293,6 +1366,8 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
 
         It 'Should throw the correct error for Get()' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $mockErrorMessage = $script:mockSqlAuditInstance.localizedData.PathInvalid -f 'C:\Temp'
 
                 $mockErrorMessage += ' (Parameter ''Path'')'
@@ -1303,6 +1378,8 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
 
         It 'Should throw the correct error for Set()' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $mockErrorMessage = $script:mockSqlAuditInstance.localizedData.PathInvalid -f 'C:\Temp'
 
                 $mockErrorMessage += ' (Parameter ''Path'')'
@@ -1313,6 +1390,8 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
 
         It 'Should throw the correct error for Test()' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $mockErrorMessage = $script:mockSqlAuditInstance.localizedData.PathInvalid -f 'C:\Temp'
 
                 $mockErrorMessage += ' (Parameter ''Path'')'
@@ -1331,6 +1410,8 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
         Context 'When passing MaximumFiles and MaximumRolloverFiles' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name         = 'MockAuditName'
                         InstanceName = 'NamedInstance'
@@ -1341,6 +1422,8 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
 
             It 'Should throw the correct error' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     {
                         $mockSqlAuditInstance.AssertProperties(
                             @{
@@ -1356,6 +1439,8 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
         Context 'When passing LogType and a File audit property' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name         = 'MockAuditName'
                         InstanceName = 'NamedInstance'
@@ -1363,27 +1448,33 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
                 }
             }
 
-            It 'Should throw the correct error for property ''<MockPropertyName>''' -ForEach @(
-                @{
-                    MockPropertyName = 'Path'
-                }
-                @{
-                    MockPropertyName = 'MaximumFiles'
-                }
-                @{
-                    MockPropertyName = 'MaximumFileSize'
-                }
-                @{
-                    MockPropertyName = 'MaximumFileSizeUnit'
-                }
-                @{
-                    MockPropertyName = 'MaximumRolloverFiles'
-                }
-                @{
-                    MockPropertyName = 'ReserveDiskSpace'
-                }
-            ) {
+            BeforeDiscovery {
+                $testCases = @(
+                    @{
+                        MockPropertyName = 'Path'
+                    }
+                    @{
+                        MockPropertyName = 'MaximumFiles'
+                    }
+                    @{
+                        MockPropertyName = 'MaximumFileSize'
+                    }
+                    @{
+                        MockPropertyName = 'MaximumFileSizeUnit'
+                    }
+                    @{
+                        MockPropertyName = 'MaximumRolloverFiles'
+                    }
+                    @{
+                        MockPropertyName = 'ReserveDiskSpace'
+                    }
+                )
+            }
+
+            It 'Should throw the correct error for property ''<MockPropertyName>''' -ForEach $testCases {
                 InModuleScope -Parameters $_ -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     {
                         $mockSqlAuditInstance.AssertProperties(
                             @{
@@ -1399,6 +1490,8 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
         Context 'When passing just one of either MaximumFileSize and MaximumFileSizeUnit' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name         = 'MockAuditName'
                         InstanceName = 'NamedInstance'
@@ -1416,6 +1509,8 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
                 }
             ) {
                 InModuleScope -Parameters $_ -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $mockErrorMessage = $script:mockSqlAuditInstance.localizedData.BothFileSizePropertiesMustBeSet
 
                     $mockErrorMessage += ' (Parameter ''MaximumFileSize, MaximumFileSizeUnit'')'
@@ -1434,6 +1529,8 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
         Context 'When passing MaximumFileSize with a value of 1' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name         = 'MockAuditName'
                         InstanceName = 'NamedInstance'
@@ -1444,6 +1541,8 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
 
             It 'Should throw the correct error' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $mockErrorMessage = $script:mockSqlAuditInstance.localizedData.MaximumFileSizeValueInvalid
 
                     $mockErrorMessage += ' (Parameter ''MaximumFileSize'')'
@@ -1463,6 +1562,8 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
         Context 'When passing QueueDelay with an invalid value' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
                         Name         = 'MockAuditName'
                         InstanceName = 'NamedInstance'
@@ -1471,21 +1572,27 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
                 }
             }
 
-            It 'Should throw the correct error with value <MockQueueDelayValue>' -ForEach @(
-                @{
-                    MockQueueDelayValue = 1
-                }
-                @{
-                    MockQueueDelayValue = 457
-                }
-                @{
-                    MockQueueDelayValue = 800
-                }
-                @{
-                    MockQueueDelayValue = 999
-                }
-            ) {
+            BeforeDiscovery {
+                $testCases = @(
+                    @{
+                        MockQueueDelayValue = 1
+                    }
+                    @{
+                        MockQueueDelayValue = 457
+                    }
+                    @{
+                        MockQueueDelayValue = 800
+                    }
+                    @{
+                        MockQueueDelayValue = 999
+                    }
+                )
+            }
+
+            It 'Should throw the correct error with value <MockQueueDelayValue>' -ForEach $testCases {
                 InModuleScope -Parameters $_ -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $mockErrorMessage = $script:mockSqlAuditInstance.localizedData.QueueDelayValueInvalid
 
                     $mockErrorMessage += ' (Parameter ''QueueDelay'')'
@@ -1504,29 +1611,31 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
         Context 'When passing ReserveDiskSpace without passing MaximumFiles' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlAuditInstance = [SqlAudit] @{
-                        Name                = 'MockAuditName'
-                        InstanceName        = 'NamedInstance'
-                        Path                = 'C:\Temp'
+                        Name         = 'MockAuditName'
+                        InstanceName = 'NamedInstance'
+                        Path         = 'C:\Temp'
                     }
                 }
             }
 
             It 'Should throw the correct error' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $mockErrorMessage = $script:mockSqlAuditInstance.localizedData.ReservDiskSpaceWithoutMaximumFiles
 
                     $mockErrorMessage += ' (Parameter ''ReserveDiskSpace'')'
 
-                    {
-                        $mockSqlAuditInstance.AssertProperties(
-                            @{
-                                MaximumFileSize     = 10
-                                MaximumFileSizeUnit = 'Megabyte'
-                                ReserveDiskSpace    = $true
-                            }
-                        )
-                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    $mockParameters = @{
+                        MaximumFileSize     = 10
+                        MaximumFileSizeUnit = 'Megabyte'
+                        ReserveDiskSpace    = $true
+                    }
+
+                    { $script:mockSqlAuditInstance.AssertProperties($mockParameters) } | Should -Throw -ExpectedMessage $mockErrorMessage
                 }
             }
         }
