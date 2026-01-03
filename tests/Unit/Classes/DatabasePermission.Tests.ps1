@@ -82,7 +82,7 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
 
         It 'Should be able read the values from instance' {
             $mockDatabasePermissionInstance.State | Should -Be 'Grant'
-            $mockDatabasePermissionInstance.Permission = 'select'
+            $mockDatabasePermissionInstance.Permission | Should -Be 'select'
         }
     }
 
