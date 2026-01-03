@@ -869,13 +869,13 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'RemoveURL' -and $Arguments.Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 2 -Scope It
+                Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportServerApplicationName
+                } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'RemoveURL' -and $Arguments.Application -eq $mockReportsApplicationName
-                } -Exactly -Times 2 -Scope It
+                Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportsApplicationName
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'InitializeReportServer'
@@ -903,11 +903,11 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
                     $Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 2 -Scope It
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
                     $Application -eq $mockReportsApplicationName
-                } -Exactly -Times 2 -Scope It
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It
@@ -973,13 +973,13 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'RemoveURL' -and $Arguments.Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 2 -Scope It
+                Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportServerApplicationName
+                } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'RemoveURL' -and $Arguments.Application -eq $mockReportsApplicationName
-                } -Exactly -Times 2 -Scope It
+                Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportsApplicationName
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'InitializeReportServer'
@@ -1007,11 +1007,11 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
                     $Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 2 -Scope It
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
                     $Application -eq $mockReportsApplicationName
-                } -Exactly -Times 2 -Scope It
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It
