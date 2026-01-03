@@ -252,11 +252,12 @@ function Get-NetIPAddressNetwork
 
     $networkAddress = ([IPAddress]($IPAddress.Address -band $subnetMask.Address)).IPAddressToString
 
-    $networkObject = New-Object -TypeName PSCustomObject
-    Add-Member -InputObject $networkObject -MemberType NoteProperty -Name 'IPAddress' -Value $IPAddress
-    Add-Member -InputObject $networkObject -MemberType NoteProperty -Name 'PrefixLength' -Value $PrefixLength
-    Add-Member -InputObject $networkObject -MemberType NoteProperty -Name 'SubnetMask' -Value $subnetMask
-    Add-Member -InputObject $networkObject -MemberType NoteProperty -Name 'NetworkAddress' -Value $networkAddress
+    $networkObject = [PSCustomObject] @{
+        IPAddress      = $IPAddress
+        PrefixLength   = $PrefixLength
+        SubnetMask     = $subnetMask
+        NetworkAddress = $networkAddress
+    }
 
     return $networkObject
 }
