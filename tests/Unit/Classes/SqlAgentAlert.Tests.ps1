@@ -546,7 +546,7 @@ Describe 'SqlAgentAlert\Modify()' -Tag 'Modify' {
                     Severity     = 16
                 } |
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                        return $script:mockServerObject
+                        return [Microsoft.SqlServer.Management.Smo.Server]::new()
                     } -PassThru
 
                 $properties = @{
@@ -582,7 +582,7 @@ Describe 'SqlAgentAlert\Modify()' -Tag 'Modify' {
                     MessageId    = 50002
                 } |
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                        return $script:mockServerObject
+                        return [Microsoft.SqlServer.Management.Smo.Server]::new()
                     } -PassThru
 
                 $properties = @{
@@ -618,7 +618,7 @@ Describe 'SqlAgentAlert\Modify()' -Tag 'Modify' {
                     Severity     = 16
                 } |
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                        return $script:mockServerObject
+                        return [Microsoft.SqlServer.Management.Smo.Server]::new()
                     } -PassThru
 
                 $properties = @{
