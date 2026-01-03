@@ -274,7 +274,7 @@ These instances is available for integration tests.
 
 Instance | Feature | State
 --- | --- | ---
-DSCSQLTEST | SQLENGINE |  Running
+DSCSQLTEST | SQLENGINE | Running
 MSSQLSERVER | SQLENGINE | Stopped
 
 All running Database Engine instances also have a SQL Server Agent that is started.
@@ -291,12 +291,13 @@ both Named Pipes and TCP/IP protocol enabled.
 These additional instances are available for Reporting Services integration tests.
 
 <!-- cSpell:ignore RSDB -->
-
+<!-- markdownlint-disable MD013 -->
 Instance | Feature | State | Description
 --- | --- | --- | ---
 RSDB | SQLENGINE | Running | Hosts report server databases for SSRS/PBIRS configuration tests
 SSRS | ReportingServices | Running | SQL Server Reporting Services instance
 PBIRS | ReportingServices | Running | Power BI Report Server instance
+<!-- markdownlint-enable MD013 -->
 
 > [!NOTE]
 > The RSDB instance is installed by the `Prerequisites.RSDB.Integration.Tests.ps1`

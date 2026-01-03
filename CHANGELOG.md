@@ -184,6 +184,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Prerequisites Integration Tests
+  - Fixed missing RS (Reporting Services) integration test tags on Context blocks
+    that create local Windows users, service accounts, and groups. Added tags
+    `Integration_SQL2017_RS`, `Integration_SQL2019_RS`, and `Integration_SQL2022_RS`
+    to ensure these prerequisites run before Reporting Services integration tests.
 - `New-SqlDscFileGroup`
   - Fixed comment-based help example formatting by moving inline comment
     to the description text.
