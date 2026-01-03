@@ -66,7 +66,7 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
         }
     }
 
-    Context 'When setting an reading values' {
+    Context 'When setting and reading values' {
         It 'Should be able to set value in instance' {
             $script:mockDatabasePermissionInstance = InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
