@@ -158,6 +158,7 @@ Tests for SQL Server Reporting Services commands.
 Command | Run order # | Depends on # | Use instance | Creates persistent objects
 --- | --- | --- | --- | ---
 Prerequisites | 0 | - | - | Sets up dependencies
+Prerequisites.RSDB | 0 | - | - | Installs RSDB SQL Server instance for RS database tests
 Save-SqlDscSqlServerMediaFile | 0 | - | - | Downloads SQL Server media files
 Import-SqlDscPreferredModule | 0 | - | - | -
 Install-SqlDscReportingService | 1 | 0 (Prerequisites) | - | SSRS instance
@@ -165,6 +166,8 @@ Get-SqlDscInstalledInstance | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequ
 Get-SqlDscRSPackage | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Get-SqlDscRSSetupConfiguration | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Test-SqlDscRSInstalled | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Request-SqlDscRSDatabaseScript | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Request-SqlDscRSDatabaseRightsScript | 2 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Get-SqlDscRSConfiguration | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Enable-SqlDscRsSecureConnection | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Disable-SqlDscRsSecureConnection | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
@@ -172,6 +175,7 @@ Get-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequi
 Add-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Remove-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Set-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Set-SqlDscRSDatabaseConnection | 3 | 2 (Request-SqlDscRSDatabaseScript, Request-SqlDscRSDatabaseRightsScript), 1 (Install-SqlDscReportingService), 0 (Prerequisites, Prerequisites.RSDB) | SSRS, RSDB | ReportServer, ReportServerTempDB databases
 Repair-SqlDscReportingService | 8 | 1 (Install-SqlDscReportingService) | SSRS | -
 Uninstall-SqlDscReportingService | 9 | 8 (Repair-SqlDscReportingService) | - | -
 <!-- markdownlint-enable MD013 -->
@@ -184,6 +188,7 @@ Tests for Power BI Report Server commands.
 Command | Run order # | Depends on # | Use instance | Creates persistent objects
 --- | --- | --- | --- | ---
 Prerequisites | 0 | - | - | Sets up dependencies
+Prerequisites.RSDB | 0 | - | - | Installs RSDB SQL Server instance for RS database tests
 Save-SqlDscSqlServerMediaFile | 0 | - | - | Downloads SQL Server media files
 Import-SqlDscPreferredModule | 0 | - | - | -
 Install-SqlDscPowerBIReportServer | 1 | 0 (Prerequisites) | - | PBIRS instance
@@ -191,6 +196,8 @@ Get-SqlDscInstalledInstance | 2 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prer
 Get-SqlDscRSPackage | 2 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Get-SqlDscRSSetupConfiguration | 2 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Test-SqlDscRSInstalled | 2 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Request-SqlDscRSDatabaseScript | 2 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Request-SqlDscRSDatabaseRightsScript | 2 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Get-SqlDscRSConfiguration | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Enable-SqlDscRsSecureConnection | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Disable-SqlDscRsSecureConnection | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
@@ -198,6 +205,7 @@ Get-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prere
 Add-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Remove-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Set-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Set-SqlDscRSDatabaseConnection | 3 | 2 (Request-SqlDscRSDatabaseScript, Request-SqlDscRSDatabaseRightsScript), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites, Prerequisites.RSDB) | PBIRS, RSDB | ReportServer, ReportServerTempDB databases
 Repair-SqlDscPowerBIReportServer | 8 | 1 (Install-SqlDscPowerBIReportServer) | PBIRS | -
 Uninstall-SqlDscPowerBIReportServer | 9 | 8 (Repair-SqlDscPowerBIReportServer) | - | -
 <!-- markdownlint-enable MD013 -->
@@ -277,6 +285,22 @@ both Named Pipes and TCP/IP protocol enabled.
 > [!NOTE]
 > Some services are stopped to save memory on the build worker. See the
 > column _State_.
+
+#### Reporting Services Instances
+
+These additional instances are available for Reporting Services integration tests.
+
+<!-- cSpell:ignore RSDB -->
+
+Instance | Feature | State | Description
+--- | --- | --- | ---
+RSDB | SQLENGINE | Running | Hosts report server databases for SSRS/PBIRS configuration tests
+SSRS | ReportingServices | Running | SQL Server Reporting Services instance
+PBIRS | ReportingServices | Running | Power BI Report Server instance
+
+> [!NOTE]
+> The RSDB instance is installed by the `Prerequisites.RSDB.Integration.Tests.ps1`
+> and is only available in the ReportingServices and BIReportServer test stages.
 
 #### Instance properties
 

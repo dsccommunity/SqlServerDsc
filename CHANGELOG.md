@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added public command `Request-SqlDscRSDatabaseScript` to generate T-SQL scripts
+  for creating report server databases. Wraps the `GenerateDatabaseCreationScript`
+  CIM method and supports configuring database name, language (LCID), and
+  SharePoint mode ([issue #2017](https://github.com/dsccommunity/SqlServerDsc/issues/2017)).
+- Added public command `Request-SqlDscRSDatabaseRightsScript` to generate T-SQL
+  scripts for granting permissions on report server databases. Wraps the
+  `GenerateDatabaseRightsScript` CIM method and supports configuring database
+  name, user name, remote connections, and Windows/SQL authentication types
+  ([issue #2019](https://github.com/dsccommunity/SqlServerDsc/issues/2019)).
+- Added public command `Set-SqlDscRSDatabaseConnection` to set
+  the report server database connection for SQL Server Reporting Services or
+  Power BI Report Server. Wraps the `SetDatabaseConnection` CIM method and
+  supports Windows, SQL Server, and Service Account authentication types
+  ([issue #2021](https://github.com/dsccommunity/SqlServerDsc/issues/2021)).
 - Added public command `Set-SqlDscRSVirtualDirectory` to set the virtual directory
   for Reporting Services applications. Wraps the `SetVirtualDirectory` CIM method
   and supports ReportServerWebService, ReportServerWebApp, and ReportManager
