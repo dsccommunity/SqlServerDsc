@@ -296,6 +296,14 @@ ConvertFrom-StringData @'
     Get_SqlDscRSConfiguration_FailedToGetConfiguration = Failed to get the configuration CIM instance for Reporting Services instance '{0}': {1} (GSRSCD0003)
     Get_SqlDscRSConfiguration_ConfigurationNotFound = Could not find the configuration CIM instance for Reporting Services instance '{0}'. (GSRSCD0004)
 
+    ## Get-SqlDscRSWebPortalApplicationName
+    Get_SqlDscRSWebPortalApplicationName_GettingApplicationName = Getting web portal application name.
+
+    Get_SqlDscRSWebPortalApplicationName_ApplicationName = Web portal application name is '{0}'.
+
+    ## Get-SqlDscRSVersion
+    Get_SqlDscRSVersion_VersionNotFound = Could not determine the version. (GSRSV0001)
+
     ## Enable-SqlDscRsSecureConnection
     Enable_SqlDscRsSecureConnection_Enabling = Enabling secure connection for Reporting Services instance '{0}'.
     Enable_SqlDscRsSecureConnection_ShouldProcessDescription = Enabling secure connection (secure connection level 1) for the Reporting Services instance '{0}'.
@@ -706,4 +714,46 @@ ConvertFrom-StringData @'
     Get_SqlDscRSPackage_GettingVersionFromFile = Getting version information from file '{0}'. (GSDRSP0001)
     Get_SqlDscRSPackage_InvalidProductName = The product name '{0}' is not a valid Reporting Services package. Expected product names are: '{1}'. Use the Force parameter to skip this validation. (GSDRSP0002)
     Get_SqlDscRSPackage_ReturningVersionInfo = Returning version information for '{0}' version '{1}'. (GSDRSP0003)
+
+    ## Get-OperatingSystem
+    Get_OperatingSystem_Getting = Getting operating system information.
+    Get_OperatingSystem_FailedToGet = Failed to get operating system information. Unable to find WMI object Win32_OperatingSystem. (GOS0001)
+
+    ## Get-SqlDscRSUrlReservation
+    Get_SqlDscRSUrlReservation_Getting = Getting URL reservations for Reporting Services instance '{0}'.
+    Get_SqlDscRSUrlReservation_FailedToGet = Failed to get URL reservations for Reporting Services instance '{0}'. {1} (GSRUR0001)
+
+    ## Add-SqlDscRSUrlReservation
+    Add_SqlDscRSUrlReservation_Adding = Adding URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'.
+    Add_SqlDscRSUrlReservation_ShouldProcessDescription = Adding URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'.
+    Add_SqlDscRSUrlReservation_ShouldProcessConfirmation = Are you sure you want to add URL reservation '{0}' for application '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Add_SqlDscRSUrlReservation_ShouldProcessCaption = Add URL reservation for Reporting Services instance
+    Add_SqlDscRSUrlReservation_FailedToAdd = Failed to add URL reservation for Reporting Services instance '{0}'. {1} (ASRUR0001)
+
+    ## Remove-SqlDscRSUrlReservation
+    Remove_SqlDscRSUrlReservation_Removing = Removing URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'.
+    Remove_SqlDscRSUrlReservation_ShouldProcessDescription = Removing URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'.
+    Remove_SqlDscRSUrlReservation_ShouldProcessConfirmation = Are you sure you want to remove URL reservation '{0}' for application '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Remove_SqlDscRSUrlReservation_ShouldProcessCaption = Remove URL reservation for Reporting Services instance
+    Remove_SqlDscRSUrlReservation_FailedToRemove = Failed to remove URL reservation for Reporting Services instance '{0}'. {1} (RSRUR0001)
+
+    ## Set-SqlDscRSUrlReservation
+    Set_SqlDscRSUrlReservation_ShouldProcessVerboseDescription = Setting URL reservations for application '{0}' on Reporting Services instance '{1}'.
+    Set_SqlDscRSUrlReservation_ShouldProcessVerboseWarning = Are you sure you want to set URL reservations for application '{0}' on Reporting Services instance '{1}'? Existing reservations not in the specified list will be removed.
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Set_SqlDscRSUrlReservation_ShouldProcessCaption = Set URL reservations for Reporting Services instance
+    Set_SqlDscRSUrlReservation_CurrentUrls = Current URL reservations for application '{0}': {1}
+    Set_SqlDscRSUrlReservation_DesiredUrls = Desired URL reservations for application '{0}': {1}
+    Set_SqlDscRSUrlReservation_RemovingUrl = Removing URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'.
+    Set_SqlDscRSUrlReservation_AddingUrl = Adding URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'.
+
+    ## Set-SqlDscRSVirtualDirectory
+    Set_SqlDscRSVirtualDirectory_Setting = Setting virtual directory '{0}' for application '{1}' on Reporting Services instance '{2}'.
+    Set_SqlDscRSVirtualDirectory_ShouldProcessDescription = Setting virtual directory '{0}' for application '{1}' on Reporting Services instance '{2}'.
+    Set_SqlDscRSVirtualDirectory_ShouldProcessConfirmation = Are you sure you want to set virtual directory '{0}' for application '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Set_SqlDscRSVirtualDirectory_ShouldProcessCaption = Set virtual directory for Reporting Services instance
+    Set_SqlDscRSVirtualDirectory_FailedToSet = Failed to set virtual directory for Reporting Services instance '{0}'. {1} (SSRSVD0001)
 '@
