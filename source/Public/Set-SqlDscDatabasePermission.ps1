@@ -41,12 +41,10 @@
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
-
         $setPermission = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
             Connect = $true
             Update = $true
         }
-
         Set-SqlDscDatabasePermission -ServerObject $serverInstance -DatabaseName 'MyDatabase' -Name 'MyPrincipal' -State 'Grant' -Permission $setPermission
 
         Sets the permissions for the principal 'MyPrincipal'.

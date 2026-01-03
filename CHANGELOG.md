@@ -191,6 +191,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added new test to detect comments within multi-line example code blocks
     in comment-based help. Comments in the code portion of `.EXAMPLE` blocks
     cause PlatyPS documentation generation to fail with "Expect Heading" errors.
+  - Added new test to detect blank lines within multi-line example code blocks
+    in comment-based help. Blank lines within the code portion of `.EXAMPLE`
+    blocks cause similar issues with documentation generation.
+- `Grant-SqlDscServerPermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks that would cause documentation generation issues.
+- `New-SqlDscDatabase`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks.
+- `New-SqlDscDatabaseSnapshot`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks.
+- `Revoke-SqlDscServerPermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks.
+- `Set-SqlDscDatabasePermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks.
+- `Set-SqlDscServerPermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks.
+- `Test-SqlDscServerPermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks.
 - Unit Tests
   - Fixed PowerShell class type identity issues that caused "Cannot convert
     'Type' to 'Type'" errors when running multiple test files in the same
@@ -250,9 +274,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Set-SqlDscDatabaseProperty`
   - Updated comment-based help to reference correct enum values.
   - Added SQL Server version requirements to version-specific parameter help.
-
-### Fixed
-
 - `Set-SqlDscServerPermission`
   - Fixed an issue where unspecified permission parameters would incorrectly
     revoke existing permissions. The command now only processes permission

@@ -43,7 +43,6 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
         $login = $serverInstance | Get-SqlDscLogin -Name 'MyLogin'
-
         Revoke-SqlDscServerPermission -Login $login -Permission ConnectSql, ViewServerState
 
         Revokes the specified permissions from the login 'MyLogin'.
@@ -51,7 +50,6 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
         $role = $serverInstance | Get-SqlDscRole -Name 'MyRole'
-
         $role | Revoke-SqlDscServerPermission -Permission AlterAnyDatabase -WithGrant -Force
 
         Revokes the specified permissions and the right to grant them from the role 'MyRole' with cascading effect, without prompting for confirmation.
