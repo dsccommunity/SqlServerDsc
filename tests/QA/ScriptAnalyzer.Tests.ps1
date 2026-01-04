@@ -67,9 +67,7 @@ BeforeDiscovery {
 
     $moduleFiles = Get-ChildItem -Path $sourcePath -Recurse -Include @('*.psm1', '*.ps1')
 
-    $testCases = @()
-
-    foreach ($moduleFile in $moduleFiles)
+    $testCases = foreach ($moduleFile in $moduleFiles)
     {
         # Skipping Examples on Linux and macOS as they cannot be parsed.
         if (($IsLinux -or $IsMacOs) -and $moduleFile.FullName -match 'Examples')
@@ -91,8 +89,8 @@ BeforeDiscovery {
         $escapedRepositoryPath = [System.Text.RegularExpressions.RegEx]::Escape($repositoryPathNormalized)
         $relativePath = $moduleFilePathNormalized -replace ($escapedRepositoryPath + '/')
 
-        $testCases += @{
-            ScriptPath = $moduleFile.FullName
+        @{
+            ScriptPath   = $moduleFile.FullName
             RelativePath = $relativePath
         }
     }
@@ -103,24 +101,21 @@ Describe 'Script Analyzer Rules' {
         BeforeAll {
             $repositoryPath = Resolve-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../..')
             $scriptAnalyzerSettingsPath = Join-Path -Path $repositoryPath -ChildPath '.vscode/analyzersettings.psd1'
-        }
-
-        It 'Should pass all PS Script Analyzer rules for file ''<RelativePath>''' -ForEach $testCases {
-            $pssaError = Invoke-ScriptAnalyzer -Path $ScriptPath -Settings $scriptAnalyzerSettingsPath
 
             $parseErrorTypes = @(
                 'TypeNotFound'
                 'RequiresModuleInvalid'
             )
+        }
 
+        It 'Should pass all PS Script Analyzer rules for file ''<RelativePath>''' -ForEach $testCases {
             # Filter out reported parse errors that is unable to be resolved in source files
-            $pssaError = $pssaError |
+            $pssaError = Invoke-ScriptAnalyzer -Path $ScriptPath -Settings $scriptAnalyzerSettingsPath |
                 Where-Object -FilterScript {
                     $_.RuleName -notin $parseErrorTypes
                 }
 
-            $report = $pssaError |
-                Format-Table -AutoSize | Out-String -Width 200
+            $report = $pssaError | Format-Table -AutoSize | Out-String -Width 200
 
             $pssaError | Should -HaveCount 0 -Because "all script analyzer rules should pass.`r`n`r`n $report`r`n"
         }

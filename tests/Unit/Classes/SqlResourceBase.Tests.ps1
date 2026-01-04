@@ -57,12 +57,16 @@ Describe 'SqlResourceBase' {
     Context 'When class is instantiated' {
         It 'Should not throw an exception' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $null = [SqlResourceBase]::new()
             }
         }
 
         It 'Should have a default constructor' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $instance = [SqlResourceBase]::new()
                 $instance | Should -Not -BeNullOrEmpty
                 $instance.SqlServerObject | Should -BeNullOrEmpty
@@ -71,6 +75,8 @@ Describe 'SqlResourceBase' {
 
         It 'Should be the correct type' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $instance = [SqlResourceBase]::new()
                 $instance.GetType().Name | Should -Be 'SqlResourceBase'
             }
@@ -82,11 +88,13 @@ Describe 'SqlResourceBase\GetServerObject()' -Tag 'GetServerObject' {
     Context 'When a server object does not exist' {
         BeforeAll {
             $mockSqlResourceBaseInstance = InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 [SqlResourceBase]::new()
             }
 
             Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
-                return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                return [Microsoft.SqlServer.Management.Smo.Server]::new()
             }
         }
 
@@ -101,6 +109,8 @@ Describe 'SqlResourceBase\GetServerObject()' -Tag 'GetServerObject' {
         Context 'When property Credential is used' {
             BeforeAll {
                 $mockSqlResourceBaseInstance = InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     [SqlResourceBase]::new()
                 }
 
@@ -124,6 +134,8 @@ Describe 'SqlResourceBase\GetServerObject()' -Tag 'GetServerObject' {
         Context 'When property Protocol is used' {
             BeforeAll {
                 $mockSqlResourceBaseInstance = InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     [SqlResourceBase]::new()
                 }
 
@@ -144,6 +156,8 @@ Describe 'SqlResourceBase\GetServerObject()' -Tag 'GetServerObject' {
         Context 'When property Port is used' {
             BeforeAll {
                 $mockSqlResourceBaseInstance = InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     [SqlResourceBase]::new()
                 }
 
@@ -165,10 +179,12 @@ Describe 'SqlResourceBase\GetServerObject()' -Tag 'GetServerObject' {
     Context 'When a server object already exist' {
         BeforeAll {
             $mockSqlResourceBaseInstance = InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 [SqlResourceBase]::new()
             }
 
-            $mockSqlResourceBaseInstance.SqlServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockSqlResourceBaseInstance.SqlServerObject = [Microsoft.SqlServer.Management.Smo.Server]::new()
             Mock -CommandName Connect-SqlDscDatabaseEngine
         }
 
