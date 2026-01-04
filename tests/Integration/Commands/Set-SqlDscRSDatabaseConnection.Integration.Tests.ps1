@@ -62,8 +62,8 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
             Invoke-SqlDscQuery -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'master' -Query $rightsScript -Force -ErrorAction 'Stop'
         }
 
-        It 'Should set the database connection without throwing' {
-            { $script:configuration | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'ReportServer' -Force -ErrorAction 'Stop' } | Should -Not -Throw
+        It 'Should set the database connection' {
+            $script:configuration | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'ReportServer' -Force -ErrorAction 'Stop'
         }
 
         It 'Should return the configuration when using PassThru' {
@@ -92,8 +92,8 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
             Invoke-SqlDscQuery -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'master' -Query $rightsScript -Force -ErrorAction 'Stop'
         }
 
-        It 'Should set the database connection without throwing' {
-            { $script:configuration | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'ReportServer' -Force -ErrorAction 'Stop' } | Should -Not -Throw
+        It 'Should set the database connection' {
+            $script:configuration | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'ReportServer' -Force -ErrorAction 'Stop'
         }
 
         It 'Should return the configuration when using PassThru' {
@@ -122,8 +122,8 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
             Invoke-SqlDscQuery -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'master' -Query $rightsScript -Force -ErrorAction 'Stop'
         }
 
-        It 'Should set the database connection without throwing' {
-            { $script:configuration | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'ReportServer' -Force -ErrorAction 'Stop' } | Should -Not -Throw
+        It 'Should set the database connection' {
+            $script:configuration | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'ReportServer' -Force -ErrorAction 'Stop'
         }
 
         It 'Should return the configuration when using PassThru' {
@@ -152,8 +152,8 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
             Invoke-SqlDscQuery -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'master' -Query $rightsScript -Force -ErrorAction 'Stop'
         }
 
-        It 'Should set the database connection without throwing' {
-            { $script:configuration | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'ReportServer' -Force -ErrorAction 'Stop' } | Should -Not -Throw
+        It 'Should set the database connection' {
+            $script:configuration | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'ReportServer' -Force -ErrorAction 'Stop'
         }
 
         It 'Should return the configuration when using PassThru' {
