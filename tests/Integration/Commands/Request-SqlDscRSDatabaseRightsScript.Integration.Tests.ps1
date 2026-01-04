@@ -36,6 +36,9 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
+            # Import the preferred module to ensure SMO types are loaded.
+            Import-SqlDscPreferredModule -ErrorAction 'Stop'
+
             # Get the Reporting Services service account
             $script:rsService = Get-SqlDscManagedComputerService -ServiceType 'ReportingServices'
             $script:serviceAccount = $script:rsService.ServiceAccount
@@ -56,6 +59,9 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
+            # Import the preferred module to ensure SMO types are loaded.
+            Import-SqlDscPreferredModule -ErrorAction 'Stop'
+
             # Get the Reporting Services service account
             $script:rsService = Get-SqlDscManagedComputerService -ServiceType 'ReportingServices'
             $script:serviceAccount = $script:rsService.ServiceAccount
@@ -75,6 +81,9 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
+            # Import the preferred module to ensure SMO types are loaded.
+            Import-SqlDscPreferredModule -ErrorAction 'Stop'
+
             # Get the Reporting Services service account
             $script:rsService = Get-SqlDscManagedComputerService -ServiceType 'ReportingServices'
             $script:serviceAccount = $script:rsService.ServiceAccount
@@ -93,6 +102,9 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
     Context 'When generating database rights script for Power BI Report Server' -Tag @('Integration_PowerBI') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
+
+            # Import the preferred module to ensure SMO types are loaded.
+            Import-SqlDscPreferredModule -ErrorAction 'Stop'
 
             # Get the Power BI Report Server service account
             $script:rsService = Get-SqlDscManagedComputerService -ServiceType 'ReportingServices'
