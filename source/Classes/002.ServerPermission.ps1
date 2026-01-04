@@ -132,6 +132,25 @@ class ServerPermission : IComparable, System.IEquatable[Object]
               generic functions for DatabasePermission and ServerPermission we
               could make this a private function.
     #>
+    [System.Int32] GetHashCode()
+    {
+        [System.Int32] $hashCode = 0
+
+        $hashCode = $this.State.GetHashCode()
+
+        foreach ($permission in ($this.Permission | Sort-Object))
+        {
+            $hashCode = $hashCode -bxor $permission.GetHashCode()
+        }
+
+        return $hashCode
+    }
+
+    <#
+        TODO: It was not possible to move this to a parent class. But since these are
+              generic functions for DatabasePermission and ServerPermission we
+              could make this a private function.
+    #>
     [System.Int32] CompareTo([Object] $object)
     {
         [System.Int32] $returnValue = 0

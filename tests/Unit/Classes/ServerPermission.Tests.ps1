@@ -71,12 +71,12 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
             $script:mockServerPermissionInstance = InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $databasePermissionInstance = [ServerPermission]::new()
+                $serverPermissionInstance = [ServerPermission]::new()
 
-                $databasePermissionInstance.State = 'Grant'
-                $databasePermissionInstance.Permission = 'ViewServerState'
+                $serverPermissionInstance.State = 'Grant'
+                $serverPermissionInstance.Permission = 'ViewServerState'
 
-                return $databasePermissionInstance
+                return $serverPermissionInstance
             }
         }
 
@@ -93,17 +93,17 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        $databasePermissionInstance1 = [ServerPermission]::new()
+                        $serverPermissionInstance1 = [ServerPermission]::new()
 
-                        $databasePermissionInstance1.State = 'Grant'
-                        $databasePermissionInstance1.Permission = 'ViewServerState'
+                        $serverPermissionInstance1.State = 'Grant'
+                        $serverPermissionInstance1.Permission = 'ViewServerState'
 
-                        $databasePermissionInstance2 = [ServerPermission]::new()
+                        $serverPermissionInstance2 = [ServerPermission]::new()
 
-                        $databasePermissionInstance2.State = 'Grant'
-                        $databasePermissionInstance2.Permission = 'ViewServerState'
+                        $serverPermissionInstance2.State = 'Grant'
+                        $serverPermissionInstance2.Permission = 'ViewServerState'
 
-                        $databasePermissionInstance1 -eq $databasePermissionInstance2 | Should -BeTrue
+                        $serverPermissionInstance1 -eq $serverPermissionInstance2 | Should -BeTrue
                     }
                 }
             }
@@ -113,17 +113,17 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        $databasePermissionInstance1 = [ServerPermission]::new()
+                        $serverPermissionInstance1 = [ServerPermission]::new()
 
-                        $databasePermissionInstance1.State = 'Grant'
-                        $databasePermissionInstance1.Permission = @('ViewServerState', 'AlterAnyAvailabilityGroup')
+                        $serverPermissionInstance1.State = 'Grant'
+                        $serverPermissionInstance1.Permission = @('ViewServerState', 'AlterAnyAvailabilityGroup')
 
-                        $databasePermissionInstance2 = [ServerPermission]::new()
+                        $serverPermissionInstance2 = [ServerPermission]::new()
 
-                        $databasePermissionInstance2.State = 'Grant'
-                        $databasePermissionInstance2.Permission = @('ViewServerState', 'AlterAnyAvailabilityGroup')
+                        $serverPermissionInstance2.State = 'Grant'
+                        $serverPermissionInstance2.Permission = @('ViewServerState', 'AlterAnyAvailabilityGroup')
 
-                        $databasePermissionInstance1 -eq $databasePermissionInstance2 | Should -BeTrue
+                        $serverPermissionInstance1 -eq $serverPermissionInstance2 | Should -BeTrue
                     }
                 }
             }
@@ -135,23 +135,23 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                     $script:mockServerPermissionInstance1 = InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        $databasePermissionInstance = [ServerPermission]::new()
+                        $serverPermissionInstance = [ServerPermission]::new()
 
-                        $databasePermissionInstance.State = 'Deny'
-                        $databasePermissionInstance.Permission = 'ViewServerState'
+                        $serverPermissionInstance.State = 'Deny'
+                        $serverPermissionInstance.Permission = 'ViewServerState'
 
-                        return $databasePermissionInstance
+                        return $serverPermissionInstance
                     }
 
                     $script:mockServerPermissionInstance2 = InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        $databasePermissionInstance = [ServerPermission]::new()
+                        $serverPermissionInstance = [ServerPermission]::new()
 
-                        $databasePermissionInstance.State = 'Grant'
-                        $databasePermissionInstance.Permission = 'ViewServerState'
+                        $serverPermissionInstance.State = 'Grant'
+                        $serverPermissionInstance.Permission = 'ViewServerState'
 
-                        return $databasePermissionInstance
+                        return $serverPermissionInstance
                     }
                 }
 
@@ -165,23 +165,23 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                     $script:mockServerPermissionInstance1 = InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        $databasePermissionInstance = [ServerPermission]::new()
+                        $serverPermissionInstance = [ServerPermission]::new()
 
-                        $databasePermissionInstance.State = 'Grant'
-                        $databasePermissionInstance.Permission = 'ViewServerState'
+                        $serverPermissionInstance.State = 'Grant'
+                        $serverPermissionInstance.Permission = 'ViewServerState'
 
-                        return $databasePermissionInstance
+                        return $serverPermissionInstance
                     }
 
                     $script:mockServerPermissionInstance2 = InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        $databasePermissionInstance = [ServerPermission]::new()
+                        $serverPermissionInstance = [ServerPermission]::new()
 
-                        $databasePermissionInstance.State = 'GrantWithGrant'
-                        $databasePermissionInstance.Permission = 'ViewServerState'
+                        $serverPermissionInstance.State = 'GrantWithGrant'
+                        $serverPermissionInstance.Permission = 'ViewServerState'
 
-                        return $databasePermissionInstance
+                        return $serverPermissionInstance
                     }
                 }
 
@@ -196,28 +196,84 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                 $script:mockServerPermissionInstance1 = InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $databasePermissionInstance = [ServerPermission]::new()
+                    $serverPermissionInstance = [ServerPermission]::new()
 
-                    $databasePermissionInstance.State = 'Grant'
-                    $databasePermissionInstance.Permission = 'ViewServerState'
+                    $serverPermissionInstance.State = 'Grant'
+                    $serverPermissionInstance.Permission = 'ViewServerState'
 
-                    return $databasePermissionInstance
+                    return $serverPermissionInstance
                 }
 
                 $script:mockServerPermissionInstance2 = InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $databasePermissionInstance = [ServerPermission]::new()
+                    $serverPermissionInstance = [ServerPermission]::new()
 
-                    $databasePermissionInstance.State = 'Grant'
-                    $databasePermissionInstance.Permission = 'AlterAnyAvailabilityGroup'
+                    $serverPermissionInstance.State = 'Grant'
+                    $serverPermissionInstance.Permission = 'AlterAnyAvailabilityGroup'
 
-                    return $databasePermissionInstance
+                    return $serverPermissionInstance
                 }
             }
 
             It 'Should return $false' {
                 $script:mockServerPermissionInstance1 -eq $script:mockServerPermissionInstance2 | Should -BeFalse
+            }
+        }
+    }
+
+    Context 'When calling method GetHashCode()' {
+        Context 'When two objects are equal' {
+            It 'Should return the same hash code' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $serverPermissionInstance1 = [ServerPermission]::new()
+                    $serverPermissionInstance1.State = 'Grant'
+                    $serverPermissionInstance1.Permission = @('ViewServerState', 'AlterAnyAvailabilityGroup')
+
+                    $serverPermissionInstance2 = [ServerPermission]::new()
+                    $serverPermissionInstance2.State = 'Grant'
+                    $serverPermissionInstance2.Permission = @('AlterAnyAvailabilityGroup', 'ViewServerState')
+
+                    $serverPermissionInstance1.GetHashCode() | Should -Be $serverPermissionInstance2.GetHashCode()
+                }
+            }
+        }
+
+        Context 'When two objects have different State' {
+            It 'Should return different hash codes' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $serverPermissionInstance1 = [ServerPermission]::new()
+                    $serverPermissionInstance1.State = 'Grant'
+                    $serverPermissionInstance1.Permission = 'ViewServerState'
+
+                    $serverPermissionInstance2 = [ServerPermission]::new()
+                    $serverPermissionInstance2.State = 'Deny'
+                    $serverPermissionInstance2.Permission = 'ViewServerState'
+
+                    $serverPermissionInstance1.GetHashCode() | Should -Not -Be $serverPermissionInstance2.GetHashCode()
+                }
+            }
+        }
+
+        Context 'When two objects have different Permission' {
+            It 'Should return different hash codes' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $serverPermissionInstance1 = [ServerPermission]::new()
+                    $serverPermissionInstance1.State = 'Grant'
+                    $serverPermissionInstance1.Permission = 'ViewServerState'
+
+                    $serverPermissionInstance2 = [ServerPermission]::new()
+                    $serverPermissionInstance2.State = 'Grant'
+                    $serverPermissionInstance2.Permission = 'AlterAnyAvailabilityGroup'
+
+                    $serverPermissionInstance1.GetHashCode() | Should -Not -Be $serverPermissionInstance2.GetHashCode()
+                }
             }
         }
     }

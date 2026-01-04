@@ -222,6 +222,62 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
         }
     }
 
+    Context 'When calling method GetHashCode()' {
+        Context 'When two objects are equal' {
+            It 'Should return the same hash code' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $databasePermissionInstance1 = [DatabasePermission]::new()
+                    $databasePermissionInstance1.State = 'Grant'
+                    $databasePermissionInstance1.Permission = @('Select', 'Update')
+
+                    $databasePermissionInstance2 = [DatabasePermission]::new()
+                    $databasePermissionInstance2.State = 'Grant'
+                    $databasePermissionInstance2.Permission = @('Update', 'Select')
+
+                    $databasePermissionInstance1.GetHashCode() | Should -Be $databasePermissionInstance2.GetHashCode()
+                }
+            }
+        }
+
+        Context 'When two objects have different State' {
+            It 'Should return different hash codes' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $databasePermissionInstance1 = [DatabasePermission]::new()
+                    $databasePermissionInstance1.State = 'Grant'
+                    $databasePermissionInstance1.Permission = 'Select'
+
+                    $databasePermissionInstance2 = [DatabasePermission]::new()
+                    $databasePermissionInstance2.State = 'Deny'
+                    $databasePermissionInstance2.Permission = 'Select'
+
+                    $databasePermissionInstance1.GetHashCode() | Should -Not -Be $databasePermissionInstance2.GetHashCode()
+                }
+            }
+        }
+
+        Context 'When two objects have different Permission' {
+            It 'Should return different hash codes' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $databasePermissionInstance1 = [DatabasePermission]::new()
+                    $databasePermissionInstance1.State = 'Grant'
+                    $databasePermissionInstance1.Permission = 'Select'
+
+                    $databasePermissionInstance2 = [DatabasePermission]::new()
+                    $databasePermissionInstance2.State = 'Grant'
+                    $databasePermissionInstance2.Permission = 'Update'
+
+                    $databasePermissionInstance1.GetHashCode() | Should -Not -Be $databasePermissionInstance2.GetHashCode()
+                }
+            }
+        }
+    }
+
     Context 'When comparing two objects using method CompareTo()' {
         Context 'When the instance is compared against an invalid object' {
             It 'Should return a value less than zero' {
