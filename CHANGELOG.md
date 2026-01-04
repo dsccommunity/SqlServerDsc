@@ -163,6 +163,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `Install-SqlDscServer`
+  - Removed misleading Uninstall parameter documentation from comment-based help
+    ([issue #2448](https://github.com/dsccommunity/SqlServerDsc/issues/2448)).
 - `SqlRS`
   - Refactored to use the public commands `Enable-SqlDscRsSecureConnection` and
     `Disable-SqlDscRsSecureConnection` for setting the secure connection level
@@ -302,6 +305,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Set-SqlDscDatabaseProperty`
   - Updated comment-based help to reference correct enum values.
   - Added SQL Server version requirements to version-specific parameter help.
+- `DatabasePermission`
+  - Fixed `Equals()` method to compare both `State` and `Permission` properties.
+    Previously, the method incorrectly referenced a non-existent `Grant` property,
+    causing incorrect equality comparisons when instances had different `State`
+    values ([issue #2386](https://github.com/dsccommunity/SqlServerDsc/issues/2386)).
+  - Added `GetHashCode()` override to align with `Equals()` semantics, ensuring
+    consistent behavior when instances are used in hash-based collections
+    ([issue #2386](https://github.com/dsccommunity/SqlServerDsc/issues/2386)).
+- `ServerPermission`
+  - Fixed `Equals()` method to compare both `State` and `Permission` properties.
+    Previously, the method incorrectly referenced a non-existent `Grant` property,
+    causing incorrect equality comparisons when instances had different `State`
+    values ([issue #2386](https://github.com/dsccommunity/SqlServerDsc/issues/2386)).
+  - Added `GetHashCode()` override to align with `Equals()` semantics, ensuring
+    consistent behavior when instances are used in hash-based collections
+    ([issue #2386](https://github.com/dsccommunity/SqlServerDsc/issues/2386)).
+- Unit Tests
+  - Fixed misleading variable naming in ServerPermission.Tests.ps1 where
+    `$databasePermissionInstance` was used for `[ServerPermission]` objects.
+    All instances have been renamed to `$serverPermissionInstance`.
 - `Set-SqlDscServerPermission`
   - Fixed an issue where unspecified permission parameters would incorrectly
     revoke existing permissions. The command now only processes permission
