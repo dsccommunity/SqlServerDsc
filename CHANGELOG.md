@@ -234,6 +234,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `DatabasePermission`
+  - Fixed `Equals()` method to compare both `State` and `Permission` properties.
+    Previously, the method incorrectly referenced a non-existent `Grant` property,
+    causing incorrect equality comparisons when instances had different `State`
+    values ([issue #2386](https://github.com/dsccommunity/SqlServerDsc/issues/2386)).
+- `ServerPermission`
+  - Fixed `Equals()` method to compare both `State` and `Permission` properties.
+    Previously, the method incorrectly referenced a non-existent `Grant` property,
+    causing incorrect equality comparisons when instances had different `State`
+    values ([issue #2386](https://github.com/dsccommunity/SqlServerDsc/issues/2386)).
 - `Set-SqlDscServerPermission`
   - Fixed an issue where unspecified permission parameters would incorrectly
     revoke existing permissions. The command now only processes permission

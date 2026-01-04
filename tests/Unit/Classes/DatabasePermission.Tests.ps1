@@ -155,9 +155,7 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
             }
 
             It 'Should return $false' {
-                # BUG: Equals only compares the Permission property not State.
-                # $mockDatabasePermissionInstance1 -eq $mockDatabasePermissionInstance2 | Should -BeFalse
-                $mockDatabasePermissionInstance1 -eq $mockDatabasePermissionInstance2 | Should -BeTrue
+                $mockDatabasePermissionInstance1 -eq $mockDatabasePermissionInstance2 | Should -BeFalse
             }
         }
 

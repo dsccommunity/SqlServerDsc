@@ -155,9 +155,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
             }
 
             It 'Should return $false' {
-                #BUG: Another instance where the compare function is not comparing the State parameter
-                $script:mockServerPermissionInstance1 -eq $script:mockServerPermissionInstance2 | Should -BeTrue
-                # $script:mockServerPermissionInstance1 -eq $script:mockServerPermissionInstance2 | Should -BeFalse
+                $script:mockServerPermissionInstance1 -eq $script:mockServerPermissionInstance2 | Should -BeFalse
             }
         }
 
