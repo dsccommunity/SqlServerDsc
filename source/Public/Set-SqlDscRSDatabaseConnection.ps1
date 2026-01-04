@@ -227,7 +227,7 @@ function Set-SqlDscRSDatabaseConnection
 
             try
             {
-                $null = Invoke-RsCimMethod @invokeRsCimMethodParameters
+                $null = Invoke-RsCimMethod @invokeRsCimMethodParameters -ErrorAction 'Stop'
             }
             catch
             {
