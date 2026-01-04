@@ -37,9 +37,8 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            # Get the Reporting Services service account
-            $script:rsService = Get-SqlDscManagedComputerService -ServiceType 'ReportingServices'
-            $script:serviceAccount = $script:rsService.ServiceAccount
+            # Get the Reporting Services service account from the configuration object.
+            $script:serviceAccount = $script:configuration.WindowsServiceIdentityActual
 
             <#
                 Create the report server database on the RSDB SQL Server instance.
@@ -79,8 +78,8 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            $script:rsService = Get-SqlDscManagedComputerService -ServiceType 'ReportingServices'
-            $script:serviceAccount = $script:rsService.ServiceAccount
+            # Get the Reporting Services service account from the configuration object.
+            $script:serviceAccount = $script:configuration.WindowsServiceIdentityActual
 
             $databaseScript = $script:configuration | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' -ErrorAction 'Stop'
 
@@ -109,8 +108,8 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            $script:rsService = Get-SqlDscManagedComputerService -ServiceType 'ReportingServices'
-            $script:serviceAccount = $script:rsService.ServiceAccount
+            # Get the Reporting Services service account from the configuration object.
+            $script:serviceAccount = $script:configuration.WindowsServiceIdentityActual
 
             $databaseScript = $script:configuration | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' -ErrorAction 'Stop'
 
@@ -139,8 +138,8 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
 
-            $script:rsService = Get-SqlDscManagedComputerService -ServiceType 'ReportingServices'
-            $script:serviceAccount = $script:rsService.ServiceAccount
+            # Get the Power BI Report Server service account from the configuration object.
+            $script:serviceAccount = $script:configuration.WindowsServiceIdentityActual
 
             $databaseScript = $script:configuration | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' -ErrorAction 'Stop'
 

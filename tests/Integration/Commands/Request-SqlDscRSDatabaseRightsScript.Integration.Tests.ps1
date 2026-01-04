@@ -39,9 +39,8 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
             # Import the preferred module to ensure SMO types are loaded.
             Import-SqlDscPreferredModule -ErrorAction 'Stop'
 
-            # Get the Reporting Services service account
-            $script:rsService = Get-SqlDscManagedComputerService -ServiceType 'ReportingServices'
-            $script:serviceAccount = $script:rsService.ServiceAccount
+            # Get the Reporting Services service account from the configuration object.
+            $script:serviceAccount = $script:configuration.WindowsServiceIdentityActual
         }
 
         It 'Should generate the database rights script without throwing' {
@@ -62,9 +61,8 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
             # Import the preferred module to ensure SMO types are loaded.
             Import-SqlDscPreferredModule -ErrorAction 'Stop'
 
-            # Get the Reporting Services service account
-            $script:rsService = Get-SqlDscManagedComputerService -ServiceType 'ReportingServices'
-            $script:serviceAccount = $script:rsService.ServiceAccount
+            # Get the Reporting Services service account from the configuration object.
+            $script:serviceAccount = $script:configuration.WindowsServiceIdentityActual
         }
 
         It 'Should generate the database rights script without throwing' {
@@ -84,9 +82,8 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
             # Import the preferred module to ensure SMO types are loaded.
             Import-SqlDscPreferredModule -ErrorAction 'Stop'
 
-            # Get the Reporting Services service account
-            $script:rsService = Get-SqlDscManagedComputerService -ServiceType 'ReportingServices'
-            $script:serviceAccount = $script:rsService.ServiceAccount
+            # Get the Reporting Services service account from the configuration object.
+            $script:serviceAccount = $script:configuration.WindowsServiceIdentityActual
         }
 
         It 'Should generate the database rights script without throwing' {
@@ -106,9 +103,8 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
             # Import the preferred module to ensure SMO types are loaded.
             Import-SqlDscPreferredModule -ErrorAction 'Stop'
 
-            # Get the Power BI Report Server service account
-            $script:rsService = Get-SqlDscManagedComputerService -ServiceType 'ReportingServices'
-            $script:serviceAccount = $script:rsService.ServiceAccount
+            # Get the Power BI Report Server service account from the configuration object.
+            $script:serviceAccount = $script:configuration.WindowsServiceIdentityActual
         }
 
         It 'Should generate the database rights script without throwing' {

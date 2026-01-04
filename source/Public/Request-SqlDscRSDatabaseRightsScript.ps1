@@ -43,14 +43,14 @@
         database for the Reporting Services service account.
 
     .EXAMPLE
-        $rsService = Get-SqlDscManagedComputerService -ServiceType 'ReportingServices'
-        $serviceAccount = $rsService.ServiceAccount
         $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+        $serviceAccount = $config.WindowsServiceIdentityActual
         $script = $config | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName $serviceAccount
         Invoke-SqlDscQuery -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'master' -Query $script -Force
 
-        Gets the Reporting Services service account, generates the database
-        rights script, and executes it on the RSDB SQL Server instance.
+        Gets the Reporting Services service account from the configuration object,
+        generates the database rights script, and executes it on the RSDB SQL
+        Server instance.
 
     .EXAMPLE
         $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
@@ -74,8 +74,9 @@
         permissions, use `Set-SqlDscRSDatabaseConnection` to configure the
         Reporting Services instance to use the database.
 
-        To get the Reporting Services service account name, use:
-        `(Get-SqlDscManagedComputerService -ServiceType 'ReportingServices').ServiceAccount`
+        To get the Reporting Services service account name, use the
+        `WindowsServiceIdentityActual` property from the configuration object:
+        `(Get-SqlDscRSConfiguration -InstanceName 'SSRS').WindowsServiceIdentityActual`
 
     .LINK
         https://docs.microsoft.com/en-us/sql/reporting-services/wmi-provider-library-reference/configurationsetting-method-generatedatabaserightsscript
