@@ -37,65 +37,59 @@ AfterAll {
     $PSDefaultParameterValues.Remove('Should:ModuleName')
 }
 
-Describe 'Install-SqlDscFailoverCluster Integration Tests' -Skip -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
-    # Integration tests require a Windows Failover Cluster environment
-    # which is not available in the CI pipeline. Remove -Skip and uncomment
-    # the test structure below when running locally with a cluster environment.
+Describe 'Install-SqlDscFailoverCluster Integration Tests' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+    <#
+        Integration tests require a Windows Failover Cluster environment
+        which is not available in the CI pipeline. Remove -Skip from the
+        Context/It blocks and modify the configuration below when running
+        locally with a cluster environment.
+    #>
 
-    It 'Should run a simple integration test' {
-        $true | Should -BeTrue
+    BeforeAll {
+        $script:clusterNetworkName = 'YOURCLUSTER01'
+        $script:clusterIPAddresses = @(
+            'IPv4;192.168.0.100;ClusterNetwork1;255.255.255.0'
+        )
+
+        $script:installParameters = @{
+            AcceptLicensingTerms       = $true
+            MediaPath                  = 'D:\'
+            InstanceName               = 'YOURINSTANCE'
+            Features                   = 'SQLENGINE'
+            InstallSqlDataDir          = 'C:\Program Files\Microsoft SQL Server'
+            SqlSysAdminAccounts        = "$env:USERDOMAIN\$env:USERNAME"
+            FailoverClusterNetworkName = $script:clusterNetworkName
+            FailoverClusterIPAddresses = $script:clusterIPAddresses
+            Force                      = $true
+            ErrorAction                = 'Stop'
+        }
     }
 
-    <#
-        Template for local testing with a failover cluster environment.
-        Uncomment and modify as needed.
-
-        BeforeAll {
-            $script:clusterNetworkName = 'YOURCLUSTER01'
-            $script:clusterIPAddresses = @(
-                'IPv4;192.168.0.100;ClusterNetwork1;255.255.255.0'
-            )
-
-            $script:installParameters = @{
-                AcceptLicensingTerms       = $true
-                MediaPath                  = 'D:\'
-                InstanceName               = 'YOURINSTANCE'
-                Features                   = 'SQLENGINE'
-                InstallSqlDataDir          = 'C:\Program Files\Microsoft SQL Server'
-                SqlSysAdminAccounts        = "$env:USERDOMAIN\$env:USERNAME"
-                FailoverClusterNetworkName = $script:clusterNetworkName
-                FailoverClusterIPAddresses = $script:clusterIPAddresses
-                Force                      = $true
-                ErrorAction                = 'Stop'
-            }
+    Context 'When installing SQL Server in a failover cluster' {
+        It 'Should install SQL Server in the failover cluster' -Skip {
+            Install-SqlDscFailoverCluster @script:installParameters
         }
 
-        Context 'When installing SQL Server in a failover cluster' {
-            It 'Should install SQL Server without throwing an exception' {
-                { Install-SqlDscFailoverCluster @script:installParameters } | Should -Not -Throw
-            }
+        It 'Should have created the SQL Server cluster resource' -Skip {
+            $clusterResource = Get-ClusterResource -Name "SQL Server ($($script:installParameters.InstanceName))" -ErrorAction 'SilentlyContinue'
 
-            It 'Should have created the SQL Server cluster resource' {
-                $clusterResource = Get-ClusterResource -Name "SQL Server ($($script:installParameters.InstanceName))" -ErrorAction 'SilentlyContinue'
-
-                $clusterResource | Should -Not -BeNullOrEmpty
-            }
-
-            It 'Should have the cluster resource in online state' {
-                $clusterResource = Get-ClusterResource -Name "SQL Server ($($script:installParameters.InstanceName))" -ErrorAction 'SilentlyContinue'
-
-                $clusterResource.State | Should -Be 'Online'
-            }
+            $clusterResource | Should -Not -BeNullOrEmpty
         }
 
-        Context 'When connecting to the clustered SQL Server instance' {
-            It 'Should be able to connect to the instance' {
-                $serverObject = Connect-SqlDscDatabaseEngine -ServerName $script:clusterNetworkName -InstanceName $script:installParameters.InstanceName
+        It 'Should have the cluster resource in online state' -Skip {
+            $clusterResource = Get-ClusterResource -Name "SQL Server ($($script:installParameters.InstanceName))" -ErrorAction 'SilentlyContinue'
 
-                $serverObject | Should -Not -BeNullOrEmpty
-
-                Disconnect-SqlDscDatabaseEngine -ServerObject $serverObject
-            }
+            $clusterResource.State | Should -Be 'Online'
         }
-    #>
+    }
+
+    Context 'When connecting to the clustered SQL Server instance' {
+        It 'Should be able to connect to the instance' -Skip {
+            $serverObject = Connect-SqlDscDatabaseEngine -ServerName $script:clusterNetworkName -InstanceName $script:installParameters.InstanceName
+
+            $serverObject | Should -Not -BeNullOrEmpty
+
+            Disconnect-SqlDscDatabaseEngine -ServerObject $serverObject
+        }
+    }
 }
