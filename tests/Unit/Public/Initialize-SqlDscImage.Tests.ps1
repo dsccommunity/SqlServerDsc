@@ -51,7 +51,7 @@ Describe 'Initialize-SqlDscImage' -Tag 'Public' {
         @{
             MockParameterSetName   = '__AllParameterSets'
             # cSpell: disable-next
-            MockExpectedParameters = '-AcceptLicensingTerms -MediaPath <string> -Features <string[]> [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstallSharedWowDir <string>] [-InstanceDir <string>] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '[-MediaPath] <string> [-Features] <string[]> [[-UpdateSource] <string>] [[-InstallSharedDir] <string>] [[-InstallSharedWowDir] <string>] [[-InstanceDir] <string>] [[-InstanceId] <string>] [[-PBEngSvcAccount] <string>] [[-PBEngSvcPassword] <securestring>] [[-PBEngSvcStartupType] <string>] [[-PBStartPortRange] <ushort>] [[-PBEndPortRange] <ushort>] [[-Timeout] <uint>] -AcceptLicensingTerms [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-PBScaleOut] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
         $result = (Get-Command -Name 'Initialize-SqlDscImage').ParameterSets |
