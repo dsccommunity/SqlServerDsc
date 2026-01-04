@@ -177,6 +177,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Refactored to use the public command `Set-SqlDscRSVirtualDirectory` for
     setting virtual directories instead of calling the CIM method directly
     ([issue #2015](https://github.com/dsccommunity/SqlServerDsc/issues/2015)).
+  - Refactored to use the public commands `Request-SqlDscRSDatabaseScript`,
+    `Request-SqlDscRSDatabaseRightsScript`, and `Set-SqlDscRSDatabaseConnection`
+    for creating and configuring the report server database instead of calling
+    the CIM methods directly
+    ([issue #2017](https://github.com/dsccommunity/SqlServerDsc/issues/2017))
+    ([issue #2019](https://github.com/dsccommunity/SqlServerDsc/issues/2019))
+    ([issue #2021](https://github.com/dsccommunity/SqlServerDsc/issues/2021)).
 - `Assert-SetupActionProperties`
   - Refactored to use the command `Get-FileVersion` from the DscResource.Common
     module instead of the private function `Get-FileVersionInformation`
