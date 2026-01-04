@@ -197,9 +197,7 @@ class DatabasePermission : IComparable, System.IEquatable[Object]
 
     [System.Int32] GetHashCode()
     {
-        [System.Int32] $hashCode = 0
-
-        $hashCode = $this.State.GetHashCode()
+        [System.Int32] $hashCode = $this.State.GetHashCode()
 
         foreach ($permission in ($this.Permission | Sort-Object))
         {

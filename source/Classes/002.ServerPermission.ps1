@@ -127,16 +127,9 @@ class ServerPermission : IComparable, System.IEquatable[Object]
         return $isEqual
     }
 
-    <#
-        TODO: It was not possible to move this to a parent class. But since these are
-              generic functions for DatabasePermission and ServerPermission we
-              could make this a private function.
-    #>
     [System.Int32] GetHashCode()
     {
-        [System.Int32] $hashCode = 0
-
-        $hashCode = $this.State.GetHashCode()
+        [System.Int32] $hashCode = $this.State.GetHashCode()
 
         foreach ($permission in ($this.Permission | Sort-Object))
         {
