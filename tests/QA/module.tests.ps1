@@ -261,7 +261,6 @@ Describe 'Comment-based help structure' -Tags 'helpQuality' {
 
                     # Find where the description starts (first line after a blank line that follows code)
                     $inCodeBlock = $true
-                    $foundBlankLine = $false
 
                     foreach ($line in $exampleLines)
                     {
@@ -272,7 +271,6 @@ Describe 'Comment-based help structure' -Tags 'helpQuality' {
                             if ([string]::IsNullOrEmpty($trimmedLine))
                             {
                                 # Blank line - marks end of code block
-                                $foundBlankLine = $true
                                 $inCodeBlock = $false
                             }
                             elseif ($trimmedLine -match '^#(?!region|endregion)')
