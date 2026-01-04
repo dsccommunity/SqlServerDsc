@@ -51,7 +51,7 @@ Describe 'Update-SqlDscServer' -Tag 'Public' {
         @{
             MockParameterSetName   = '__AllParameterSets'
             # cSpell: disable-next
-            MockExpectedParameters = '-AcceptLicensingTerms -MediaPath <string> -InstanceName <string> [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstanceDir <string>] [-InstanceId <string>] [-ProductKey <string>] [-BrowserSvcStartupType <string>] [-FTUpgradeOption <string>] [-ISSvcAccount <string>] [-ISSvcPassword <securestring>] [-ISSvcStartupType <string>] [-AllowUpgradeForSSRSSharePointMode] [-AllowDqRemoval] [-FailoverClusterRollOwnership <ushort>] [-ProductCoveredBySA] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '[-MediaPath] <string> [-InstanceName] <string> [[-UpdateSource] <string>] [[-InstanceDir] <string>] [[-InstanceId] <string>] [[-ProductKey] <string>] [[-BrowserSvcStartupType] <string>] [[-FTUpgradeOption] <string>] [[-ISSvcAccount] <string>] [[-ISSvcPassword] <securestring>] [[-ISSvcStartupType] <string>] [[-FailoverClusterRollOwnership] <ushort>] [[-Timeout] <uint>] -AcceptLicensingTerms [-Enu] [-UpdateEnabled] [-AllowUpgradeForSSRSSharePointMode] [-AllowDqRemoval] [-ProductCoveredBySA] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
         $result = (Get-Command -Name 'Update-SqlDscServer').ParameterSets |
@@ -194,12 +194,12 @@ Describe 'Update-SqlDscServer' -Tag 'Public' {
             @{
                 MockParameterName  = 'AllowUpgradeForSSRSSharePointMode'
                 MockParameterValue = $true
-                MockExpectedRegEx  = '\/ALLOWUPGRADEFORSSRSSHAREPOINTMODE=True' # cspell: disable-line
+                MockExpectedRegEx  = '\/ALLOWUPGRADEFORSSRSSHAREPOINTMODE\b' # cspell: disable-line
             }
             @{
                 MockParameterName  = 'AllowDqRemoval'
                 MockParameterValue = $true
-                MockExpectedRegEx  = '\/ALLOWDQREMOVAL=True' # cspell: disable-line
+                MockExpectedRegEx  = '\/IACCEPTDQUNINSTALL\b' # cspell: disable-line
             }
             @{
                 MockParameterName  = 'FailoverClusterRollOwnership'
@@ -209,7 +209,7 @@ Describe 'Update-SqlDscServer' -Tag 'Public' {
             @{
                 MockParameterName  = 'ProductCoveredBySA'
                 MockParameterValue = $true
-                MockExpectedRegEx  = '\/PRODUCTCOVEREDBYSA=True' # cspell: disable-line
+                MockExpectedRegEx  = '\/PRODUCTCOVEREDBYSA\b' # cspell: disable-line
             }
         ) {
             BeforeAll {
