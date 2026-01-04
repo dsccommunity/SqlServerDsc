@@ -183,7 +183,7 @@ class DatabasePermission : IComparable, System.IEquatable[Object]
 
         if ($object -is $this.GetType())
         {
-            if ($this.Grant -eq $object.Grant)
+            if ($this.State -eq $object.State)
             {
                 if (-not (Compare-Object -ReferenceObject $this.Permission -DifferenceObject $object.Permission))
                 {
@@ -193,6 +193,18 @@ class DatabasePermission : IComparable, System.IEquatable[Object]
         }
 
         return $isEqual
+    }
+
+    [System.Int32] GetHashCode()
+    {
+        [System.Int32] $hashCode = $this.State.GetHashCode()
+
+        foreach ($permission in ($this.Permission | Sort-Object))
+        {
+            $hashCode = $hashCode -bxor $permission.GetHashCode()
+        }
+
+        return $hashCode
     }
 
     [System.Int32] CompareTo([Object] $object)
