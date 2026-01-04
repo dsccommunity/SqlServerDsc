@@ -276,7 +276,7 @@ Describe 'Initialize-SqlDscFailoverCluster' -Tag 'Public' {
             @{
                 MockParameterName  = 'ProductCoveredBySA'
                 MockParameterValue = $true
-                MockExpectedRegEx  = '\/PRODUCTCOVEREDBYSA=True' # cspell: disable-line
+                MockExpectedRegEx  = '\/PRODUCTCOVEREDBYSA\b' # cspell: disable-line
             }
         ) {
             BeforeAll {
