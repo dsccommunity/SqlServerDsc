@@ -145,6 +145,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `Install-SqlDscServer`
+  - Removed misleading Uninstall parameter documentation from comment-based help
+    ([issue #2448](https://github.com/dsccommunity/SqlServerDsc/issues/2448)).
 - `SqlRS`
   - Refactored to use the public commands `Enable-SqlDscRsSecureConnection` and
     `Disable-SqlDscRsSecureConnection` for setting the secure connection level
