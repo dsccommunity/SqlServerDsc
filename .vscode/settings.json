@@ -107,7 +107,8 @@
         "varchar",
         "maxdop",
         "hotfixes",
-        "checkpointing"
+        "checkpointing",
+        "HRESULT"
     ],
     "cSpell.ignorePaths": [
         ".git"
