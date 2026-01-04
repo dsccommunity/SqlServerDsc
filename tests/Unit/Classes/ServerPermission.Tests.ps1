@@ -130,32 +130,64 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
         }
 
         Context 'When object has different value for property State' {
-            It 'Should instantiate two objects' {
-                $script:mockServerPermissionInstance1 = InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
+            Context 'When comparing Deny with Grant' {
+                It 'Should instantiate two objects' {
+                    $script:mockServerPermissionInstance1 = InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
 
-                    $databasePermissionInstance = [ServerPermission]::new()
+                        $databasePermissionInstance = [ServerPermission]::new()
 
-                    $databasePermissionInstance.State = 'Deny'
-                    $databasePermissionInstance.Permission = 'ViewServerState'
+                        $databasePermissionInstance.State = 'Deny'
+                        $databasePermissionInstance.Permission = 'ViewServerState'
 
-                    return $databasePermissionInstance
+                        return $databasePermissionInstance
+                    }
+
+                    $script:mockServerPermissionInstance2 = InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $databasePermissionInstance = [ServerPermission]::new()
+
+                        $databasePermissionInstance.State = 'Grant'
+                        $databasePermissionInstance.Permission = 'ViewServerState'
+
+                        return $databasePermissionInstance
+                    }
                 }
 
-                $script:mockServerPermissionInstance2 = InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $databasePermissionInstance = [ServerPermission]::new()
-
-                    $databasePermissionInstance.State = 'Grant'
-                    $databasePermissionInstance.Permission = 'ViewServerState'
-
-                    return $databasePermissionInstance
+                It 'Should return $false' {
+                    $script:mockServerPermissionInstance1 -eq $script:mockServerPermissionInstance2 | Should -BeFalse
                 }
             }
 
-            It 'Should return $false' {
-                $script:mockServerPermissionInstance1 -eq $script:mockServerPermissionInstance2 | Should -BeFalse
+            Context 'When comparing Grant with GrantWithGrant' {
+                It 'Should instantiate two objects' {
+                    $script:mockServerPermissionInstance1 = InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $databasePermissionInstance = [ServerPermission]::new()
+
+                        $databasePermissionInstance.State = 'Grant'
+                        $databasePermissionInstance.Permission = 'ViewServerState'
+
+                        return $databasePermissionInstance
+                    }
+
+                    $script:mockServerPermissionInstance2 = InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $databasePermissionInstance = [ServerPermission]::new()
+
+                        $databasePermissionInstance.State = 'GrantWithGrant'
+                        $databasePermissionInstance.Permission = 'ViewServerState'
+
+                        return $databasePermissionInstance
+                    }
+                }
+
+                It 'Should return $false' {
+                    $script:mockServerPermissionInstance1 -eq $script:mockServerPermissionInstance2 | Should -BeFalse
+                }
             }
         }
 
