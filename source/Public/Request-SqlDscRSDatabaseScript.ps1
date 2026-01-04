@@ -14,6 +14,11 @@
         The configuration CIM instance can be obtained using the
         `Get-SqlDscRSConfiguration` command and passed via the pipeline.
 
+        The Reporting Services service must be running before calling this command.
+        For SQL Server Reporting Services the service name is `SQLServerReportingServices`,
+        and for Power BI Report Server the service name is `PowerBIReportServer`.
+        If the service is not running, a terminating error is thrown.
+
     .PARAMETER Configuration
         Specifies the `MSReportServer_ConfigurationSetting` CIM instance for
         the Reporting Services instance. This can be obtained using the
@@ -85,6 +90,18 @@ function Request-SqlDscRSDatabaseScript
     process
     {
         $rsInstanceName = $Configuration.InstanceName
+        $serviceName = $Configuration.ServiceName
+
+        $service = Get-Service -Name $serviceName -ErrorAction 'SilentlyContinue'
+
+        if (-not $service -or $service.Status -ne 'Running')
+        {
+            $errorMessage = $script:localizedData.Request_SqlDscRSDatabaseScript_ServiceNotRunning -f $serviceName, $rsInstanceName
+
+            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'RSRDBS0002' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+
+            $PSCmdlet.ThrowTerminatingError($errorRecord)
+        }
 
         if (-not $PSBoundParameters.ContainsKey('Lcid'))
         {

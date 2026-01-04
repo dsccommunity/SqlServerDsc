@@ -773,6 +773,7 @@ ConvertFrom-StringData @'
     ## Request-SqlDscRSDatabaseScript
     Request_SqlDscRSDatabaseScript_Generating = Generating database creation script for database '{0}' for Reporting Services instance '{1}'.
     Request_SqlDscRSDatabaseScript_FailedToGenerate = Failed to generate database creation script for Reporting Services instance '{0}'. {1} (RSRDBS0001)
+    Request_SqlDscRSDatabaseScript_ServiceNotRunning = The Reporting Services service '{0}' for instance '{1}' is not running. Start the service before generating the database creation script. (RSRDBS0002)
 
     ## Request-SqlDscRSDatabaseRightsScript
     Request_SqlDscRSDatabaseRightsScript_Generating = Generating database rights script for database '{0}' and user '{1}' for Reporting Services instance '{2}'.

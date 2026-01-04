@@ -30,6 +30,29 @@ BeforeAll {
 
     Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
+    <#
+        Stub function for Get-Service when running on non-Windows platforms.
+        This allows the mock to work correctly on macOS and Linux.
+    #>
+    if (-not ($IsWindows -or $PSVersionTable.PSVersion.Major -le 5))
+    {
+        InModuleScope -ModuleName $script:moduleName -ScriptBlock {
+            function script:Get-Service
+            {
+                param
+                (
+                    [Parameter()]
+                    [System.String]
+                    $Name,
+
+                    [Parameter()]
+                    [System.String]
+                    $ErrorAction
+                )
+            }
+        }
+    }
+
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
@@ -67,6 +90,7 @@ Describe 'Request-SqlDscRSDatabaseScript' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName = 'SSRS'
+                ServiceName  = 'SQLServerReportingServices'
             }
 
             Mock -CommandName Invoke-RsCimMethod -MockWith {
@@ -78,6 +102,13 @@ Describe 'Request-SqlDscRSDatabaseScript' {
             Mock -CommandName Get-OperatingSystem -MockWith {
                 return [PSCustomObject] @{
                     OSLanguage = 1033
+                }
+            }
+
+            Mock -CommandName Get-Service -MockWith {
+                return [PSCustomObject] @{
+                    Name   = 'SQLServerReportingServices'
+                    Status = 'Running'
                 }
             }
         }
@@ -104,11 +135,19 @@ Describe 'Request-SqlDscRSDatabaseScript' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName = 'SSRS'
+                ServiceName  = 'SQLServerReportingServices'
             }
 
             Mock -CommandName Invoke-RsCimMethod -MockWith {
                 return [PSCustomObject] @{
                     Script = 'CREATE DATABASE [ReportServer]'
+                }
+            }
+
+            Mock -CommandName Get-Service -MockWith {
+                return [PSCustomObject] @{
+                    Name   = 'SQLServerReportingServices'
+                    Status = 'Running'
                 }
             }
         }
@@ -126,6 +165,7 @@ Describe 'Request-SqlDscRSDatabaseScript' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName = 'SSRS'
+                ServiceName  = 'SQLServerReportingServices'
             }
 
             Mock -CommandName Invoke-RsCimMethod -MockWith {
@@ -137,6 +177,13 @@ Describe 'Request-SqlDscRSDatabaseScript' {
             Mock -CommandName Get-OperatingSystem -MockWith {
                 return [PSCustomObject] @{
                     OSLanguage = 1033
+                }
+            }
+
+            Mock -CommandName Get-Service -MockWith {
+                return [PSCustomObject] @{
+                    Name   = 'SQLServerReportingServices'
+                    Status = 'Running'
                 }
             }
         }
@@ -152,6 +199,7 @@ Describe 'Request-SqlDscRSDatabaseScript' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName = 'SSRS'
+                ServiceName  = 'SQLServerReportingServices'
             }
 
             Mock -CommandName Invoke-RsCimMethod -MockWith {
@@ -163,10 +211,54 @@ Describe 'Request-SqlDscRSDatabaseScript' {
                     OSLanguage = 1033
                 }
             }
+
+            Mock -CommandName Get-Service -MockWith {
+                return [PSCustomObject] @{
+                    Name   = 'SQLServerReportingServices'
+                    Status = 'Running'
+                }
+            }
         }
 
         It 'Should throw a terminating error' {
             { $mockCimInstance | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' } | Should -Throw -ErrorId 'RSRDBS0001,Request-SqlDscRSDatabaseScript'
+        }
+    }
+
+    Context 'When the Reporting Services service is not running' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'SSRS'
+                ServiceName  = 'SQLServerReportingServices'
+            }
+
+            Mock -CommandName Get-Service -MockWith {
+                return [PSCustomObject] @{
+                    Name   = 'SQLServerReportingServices'
+                    Status = 'Stopped'
+                }
+            }
+        }
+
+        It 'Should throw a terminating error with the correct error ID' {
+            { $mockCimInstance | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' } | Should -Throw -ErrorId 'RSRDBS0002,Request-SqlDscRSDatabaseScript'
+        }
+    }
+
+    Context 'When the Reporting Services service does not exist' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'SSRS'
+                ServiceName  = 'SQLServerReportingServices'
+            }
+
+            Mock -CommandName Get-Service -MockWith {
+                return $null
+            }
+        }
+
+        It 'Should throw a terminating error with the correct error ID' {
+            { $mockCimInstance | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' } | Should -Throw -ErrorId 'RSRDBS0002,Request-SqlDscRSDatabaseScript'
         }
     }
 }
