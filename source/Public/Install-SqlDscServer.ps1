@@ -11,9 +11,6 @@
     .PARAMETER Install
         Specifies the setup action Install.
 
-    .PARAMETER Uninstall
-        Specifies the setup action Uninstall.
-
     .PARAMETER PrepareImage
         Specifies the setup action PrepareImage.
 
