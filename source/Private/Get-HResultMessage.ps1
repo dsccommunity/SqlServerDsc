@@ -30,6 +30,13 @@
 
         Returns: Access is denied. Verify that the current user has administrator
         rights on the Reporting Services instance.
+
+    .NOTES
+        This function is used internally by other commands to provide actionable
+        error messages when Reporting Services CIM methods fail without detailed
+        error information. These codes have not been verified against any official
+        Microsoft documentation, and based on the common HRESULT values in
+        https://learn.microsoft.com/en-us/windows/win32/seccrypto/common-hresult-values.
 #>
 function Get-HResultMessage
 {
