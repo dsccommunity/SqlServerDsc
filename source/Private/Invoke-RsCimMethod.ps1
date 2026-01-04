@@ -99,7 +99,10 @@ function Invoke-RsCimMethod
             $errorDetails = $script:localizedData.Invoke_RsCimMethod_NoErrorDetails
         }
 
-        $errorMessage = $script:localizedData.Invoke_RsCimMethod_FailedToInvokeMethod -f $MethodName, $errorDetails, $invokeCimMethodResult.HRESULT
+        # Try to translate the HRESULT code into a human-readable message.
+        $hResultMessage = Get-HResultMessage -HResult $invokeCimMethodResult.HRESULT
+
+        $errorMessage = $script:localizedData.Invoke_RsCimMethod_FailedToInvokeMethod -f $MethodName, $errorDetails, $hResultMessage, $invokeCimMethodResult.HRESULT
 
         throw $errorMessage
     }

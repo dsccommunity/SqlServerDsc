@@ -321,8 +321,20 @@ ConvertFrom-StringData @'
     Disable_SqlDscRsSecureConnection_FailedToDisable = Failed to disable secure connection for Reporting Services instance '{0}'. {1} (DSRSSC0001)
 
     ## Invoke-RsCimMethod
-    Invoke_RsCimMethod_FailedToInvokeMethod = Method {0}() failed with an error. Error: {1} (HRESULT:{2}) (IRCM0001)
+    Invoke_RsCimMethod_FailedToInvokeMethod = Method {0}() failed with an error. Error: {1} {2} (HRESULT:{3}) (IRCM0001)
     Invoke_RsCimMethod_NoErrorDetails = No error details were returned by the method. See HRESULT code for more information. (IRCM0002)
+
+    ## Get-HResultMessage
+    # cSpell: ignore GHRM
+    HResult_AccessDenied = Access is denied. Verify that the current user has administrator rights on the Reporting Services instance. (GHRM0001)
+    HResult_LogonTypeNotGranted = The account has not been granted the requested logon type at this computer. Verify that the Reporting Services service is running and that the service account has the required permissions to interact with the Reporting Services WMI provider. (GHRM0002)
+    HResult_UnspecifiedFailure = An unspecified failure occurred. (GHRM0003)
+    HResult_InvalidArgument = One or more arguments are not valid. (GHRM0004)
+    HResult_OutOfMemory = The system is out of memory. (GHRM0005)
+    HResult_RpcDisconnected = The object invoked has disconnected from its clients or the RPC connection was lost. Verify that the Reporting Services service is running. (GHRM0006)
+    HResult_RpcServerUnavailable = The RPC server is unavailable. Verify that the Reporting Services service is running and accessible. (GHRM0007)
+    HResult_ServiceNotActive = The service has not been started. Verify that the Reporting Services service is running. (GHRM0008)
+    HResult_Unknown = Unknown HRESULT code {0}. Refer to Microsoft documentation for more information. (GHRM0009)
 
     ## Test-SqlDscRSInstalled
     Test_SqlDscRSInstalled_Checking = Checking if Reporting Services instance '{0}' is installed.

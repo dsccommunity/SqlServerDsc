@@ -61,6 +61,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Services configuration instances with consistent error handling. This function
   is used by `Enable-SqlDscRsSecureConnection`, `Disable-SqlDscRsSecureConnection`,
   and the `SqlRS` resource.
+- Added private function `Get-HResultMessage` to translate common Windows HRESULT
+  error codes into human-readable messages. Used by `Invoke-RsCimMethod` to
+  provide actionable error messages when Reporting Services CIM methods fail
+  without detailed error information.
 - `Invoke-ReportServerSetupAction`
   - Now uses `Format-Path` with `-ExpandEnvironmentVariable` to expand environment
     variables in all path parameters (`MediaPath`, `LogPath`, `InstallFolder`)
@@ -187,6 +191,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `Invoke-RsCimMethod`
+  - Enhanced error messages to include human-readable translations of common
+    HRESULT error codes. When Reporting Services CIM methods fail without
+    detailed error information, the error message now includes actionable
+    guidance based on the HRESULT code (e.g., service not running, access
+    denied, logon type not granted).
   - Fixed error handling to properly surface error details. Previously, when
     the `ExtendedErrors` property existed but was empty, the error message
     would show an empty error description. Now it correctly falls back to

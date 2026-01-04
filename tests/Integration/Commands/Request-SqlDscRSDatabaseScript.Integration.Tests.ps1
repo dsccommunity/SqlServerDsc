@@ -34,6 +34,20 @@ BeforeAll {
 Describe 'Request-SqlDscRSDatabaseScript' {
     Context 'When generating database creation script for SQL Server Reporting Services' -Tag @('Integration_SQL2017_RS') {
         BeforeAll {
+            <#
+                Ensure the Reporting Services service is running before running
+                tests. The service may have been stopped by a previous test to
+                save memory on the build worker.
+            #>
+            $service = Get-Service -Name 'SQLServerReportingServices' -ErrorAction 'SilentlyContinue'
+
+            if ($service -and $service.Status -ne 'Running')
+            {
+                Write-Verbose -Message 'Starting SQLServerReportingServices service...' -Verbose
+
+                Start-Service -Name 'SQLServerReportingServices' -ErrorAction 'Stop'
+            }
+
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
         }
 
@@ -49,6 +63,20 @@ Describe 'Request-SqlDscRSDatabaseScript' {
 
     Context 'When generating database creation script for SQL Server 2019 Reporting Services' -Tag @('Integration_SQL2019_RS') {
         BeforeAll {
+            <#
+                Ensure the Reporting Services service is running before running
+                tests. The service may have been stopped by a previous test to
+                save memory on the build worker.
+            #>
+            $service = Get-Service -Name 'SQLServerReportingServices' -ErrorAction 'SilentlyContinue'
+
+            if ($service -and $service.Status -ne 'Running')
+            {
+                Write-Verbose -Message 'Starting SQLServerReportingServices service...' -Verbose
+
+                Start-Service -Name 'SQLServerReportingServices' -ErrorAction 'Stop'
+            }
+
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
         }
 
@@ -64,6 +92,20 @@ Describe 'Request-SqlDscRSDatabaseScript' {
 
     Context 'When generating database creation script for SQL Server 2022 Reporting Services' -Tag @('Integration_SQL2022_RS') {
         BeforeAll {
+            <#
+                Ensure the Reporting Services service is running before running
+                tests. The service may have been stopped by a previous test to
+                save memory on the build worker.
+            #>
+            $service = Get-Service -Name 'SQLServerReportingServices' -ErrorAction 'SilentlyContinue'
+
+            if ($service -and $service.Status -ne 'Running')
+            {
+                Write-Verbose -Message 'Starting SQLServerReportingServices service...' -Verbose
+
+                Start-Service -Name 'SQLServerReportingServices' -ErrorAction 'Stop'
+            }
+
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
         }
 
@@ -79,6 +121,20 @@ Describe 'Request-SqlDscRSDatabaseScript' {
 
     Context 'When generating database creation script for Power BI Report Server' -Tag @('Integration_PowerBI') {
         BeforeAll {
+            <#
+                Ensure the Power BI Report Server service is running before
+                running tests. The service may have been stopped by a previous
+                test to save memory on the build worker.
+            #>
+            $service = Get-Service -Name 'PowerBIReportServer' -ErrorAction 'SilentlyContinue'
+
+            if ($service -and $service.Status -ne 'Running')
+            {
+                Write-Verbose -Message 'Starting PowerBIReportServer service...' -Verbose
+
+                Start-Service -Name 'PowerBIReportServer' -ErrorAction 'Stop'
+            }
+
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
         }
 
