@@ -54,19 +54,23 @@ Describe 'SqlReason' -Tag 'SqlReason' {
     Context 'When instantiating the class' {
         It 'Should not throw an error' {
             $script:mockSqlReasonInstance = InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 [SqlReason]::new()
             }
         }
 
         It 'Should be of the correct type' {
-            $mockSqlReasonInstance | Should -Not -BeNullOrEmpty
-            $mockSqlReasonInstance.GetType().Name | Should -Be 'SqlReason'
+            $script:mockSqlReasonInstance | Should -Not -BeNullOrEmpty
+            $script:mockSqlReasonInstance.GetType().Name | Should -Be 'SqlReason'
         }
     }
 
     Context 'When setting an reading values' {
         It 'Should be able to set value in instance' {
             $script:mockSqlReasonInstance = InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $sqlReasonInstance = [SqlReason]::new()
 
                 $sqlReasonInstance.Code = 'SqlAudit:SqlAudit:Ensure'
@@ -77,8 +81,8 @@ Describe 'SqlReason' -Tag 'SqlReason' {
         }
 
         It 'Should be able read the values from instance' {
-            $mockSqlReasonInstance.Code | Should -Be 'SqlAudit:SqlAudit:Ensure'
-            $mockSqlReasonInstance.Phrase = 'The property Ensure should be "Present", but was "Absent"'
+            $script:mockSqlReasonInstance.Code | Should -Be 'SqlAudit:SqlAudit:Ensure'
+            $script:mockSqlReasonInstance.Phrase | Should -Be 'The property Ensure should be "Present", but was "Absent"'
         }
     }
 }

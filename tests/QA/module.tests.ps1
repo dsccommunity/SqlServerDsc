@@ -127,22 +127,18 @@ BeforeDiscovery {
     $allModuleFunctions = & $mut { Get-Command -Module $args[0] -CommandType Function } $script:moduleName
 
     # Build test cases.
-    $testCasesAllModuleFunction = @()
-
-    foreach ($function in $allModuleFunctions)
+    $testCasesAllModuleFunction = foreach ($function in $allModuleFunctions)
     {
-        $testCasesAllModuleFunction += @{
+        @{
             Name = $function.Name
         }
     }
 
     $allPublicCommand = (Get-Command -Module $script:moduleName).Name
 
-    $testCasesPublicCommand = @()
-
-    foreach ($command in $allPublicCommand)
+    $testCasesPublicCommand = foreach ($command in $allPublicCommand)
     {
-        $testCasesPublicCommand += @{
+        @{
             Name = $command
         }
     }
@@ -218,9 +214,7 @@ Describe 'Comment-based help structure' -Tags 'helpQuality' {
                 # Split into lines to check each one
                 $helpLines = $helpBlock -split "`n"
 
-                $invalidDirectives = @()
-
-                foreach ($line in $helpLines)
+                $invalidDirectives = foreach ($line in $helpLines)
                 {
                     # Check if line starts with whitespace followed by a period and text
                     if ($line -match '^\s+\.([a-zA-Z]+)')
@@ -230,7 +224,7 @@ Describe 'Comment-based help structure' -Tags 'helpQuality' {
                         # Check if it's a valid directive
                         if ($directive -notin $validDirectives)
                         {
-                            $invalidDirectives += $directive
+                            $directive
                         }
                     }
                 }
