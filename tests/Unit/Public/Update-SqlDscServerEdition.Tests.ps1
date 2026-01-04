@@ -51,7 +51,7 @@ Describe 'Update-SqlDscServerEdition' -Tag 'Public' {
         @{
             MockParameterSetName   = '__AllParameterSets'
             # cSpell: disable-next
-            MockExpectedParameters = '-AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -ProductKey <string> [-SkipRules <string[]>] [-ProductCoveredBySA] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '[-MediaPath] <string> [-InstanceName] <string> [-ProductKey] <string> [[-SkipRules] <string[]>] [[-Timeout] <uint>] -AcceptLicensingTerms [-ProductCoveredBySA] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
         $result = (Get-Command -Name 'Update-SqlDscServerEdition').ParameterSets |
@@ -146,7 +146,7 @@ Describe 'Update-SqlDscServerEdition' -Tag 'Public' {
             @{
                 MockParameterName  = 'ProductCoveredBySA'
                 MockParameterValue = $true
-                MockExpectedRegEx  = '\/PRODUCTCOVEREDBYSA=True' # cspell: disable-line
+                MockExpectedRegEx  = '\/PRODUCTCOVEREDBYSA\b' # cspell: disable-line
             }
         ) {
             BeforeAll {
