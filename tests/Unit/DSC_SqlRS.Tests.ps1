@@ -400,19 +400,6 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 return
             }
-
-            # Inject a stub in the module scope to support testing cross-plattform
-            function script:Invoke-CimMethod
-            {
-                [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules\Measure-ParameterBlockParameterAttribute', '', Justification='The stub cannot use [Parameter()].')]
-                param
-                (
-                    $MethodName,
-                    $Arguments
-                )
-
-                return
-            }
         }
 
         $mockNamedInstanceName = 'INSTANCE'
@@ -429,10 +416,6 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         $mockVirtualDirectoryReportManagerName = 'Reports_SQL2016'
         $mockVirtualDirectoryReportServerName = 'ReportServer_SQL2016'
         $mockReportingServicesServiceName = 'SQLServerReportingServices'
-
-        $mockInvokeCimMethod = {
-            throw 'Should not call Invoke-CimMethod directly, should call the wrapper Invoke-RsCimMethod.'
-        }
 
         $mockInvokeRsCimMethod_ListReservedUrls = {
             return New-Object -TypeName Object |
@@ -505,11 +488,6 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
         Mock -CommandName Get-SqlDscRSUrlReservation -MockWith $mockInvokeRsCimMethod_ListReservedUrls
 
-        <#
-            This is mocked here so that no calls are made to it directly.
-        #>
-        Mock -CommandName Invoke-CimMethod -MockWith $mockInvokeCimMethod
-
         Mock -CommandName Import-SqlDscPreferredModule
         Mock -CommandName Invoke-SqlDscQuery
         Mock -CommandName Enable-SqlDscRsSecureConnection
@@ -538,19 +516,6 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             $script:mockNamedInstanceName = 'INSTANCE'
             $script:mockReportingServicesDatabaseServerName = 'SERVER'
             $script:mockReportingServicesDatabaseNamedInstanceName = $mockNamedInstanceName
-
-            # Inject a stub in the module scope to support testing cross-plattform
-            function script:Invoke-CimMethod
-            {
-                [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules\Measure-ParameterBlockParameterAttribute', '', Justification='The stub cannot use [Parameter()].')]
-                param
-                (
-                    $MethodName,
-                    $Arguments
-                )
-
-                return
-            }
         }
     }
 
@@ -605,13 +570,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'RemoveURL'
-                } -Exactly -Times 0 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'InitializeReportServer'
-                } -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Initialize-SqlDscRS -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 1 -Scope It
 
@@ -855,9 +814,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $Application -eq $mockReportsApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'InitializeReportServer'
-                } -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Initialize-SqlDscRS -Exactly -Times 0 -Scope It
 
                 Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 0 -Scope It
 
@@ -953,9 +910,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $Application -eq $mockReportsApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'InitializeReportServer'
-                } -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Initialize-SqlDscRS -Exactly -Times 0 -Scope It
 
                 Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 0 -Scope It
 
@@ -1031,13 +986,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             It 'Should configure Reporting Service without throwing an error' {
                 $null = Set-TargetResource @defaultParameters
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'RemoveURL'
-                } -Exactly -Times 0 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'InitializeReportServer'
-                } -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Initialize-SqlDscRS -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 1 -Scope It
 
@@ -1142,13 +1091,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             Should -Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Times 0 -Scope It
             Should -Invoke -CommandName Disable-SqlDscRsSecureConnection -Exactly -Times 0 -Scope It
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'RemoveURL'
-            } -Exactly -Times 0 -Scope It
-
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'InitializeReportServer'
-            } -Exactly -Times 0 -Scope It
+            Should -Invoke -CommandName Initialize-SqlDscRS -Exactly -Times 0 -Scope It
 
             Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 1 -Scope It
 
