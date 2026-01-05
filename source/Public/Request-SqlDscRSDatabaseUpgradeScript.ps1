@@ -80,14 +80,11 @@ function Request-SqlDscRSDatabaseUpgradeScript
         }
         catch
         {
-            $PSCmdlet.ThrowTerminatingError(
-                [System.Management.Automation.ErrorRecord]::new(
-                    ($script:localizedData.Request_SqlDscRSDatabaseUpgradeScript_FailedToGenerate -f $instanceName, $_.Exception.Message),
-                    'RSRSDBUS0001',
-                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                    $Configuration
-                )
-            )
+            $errorMessage = $script:localizedData.Request_SqlDscRSDatabaseUpgradeScript_FailedToGenerate -f $instanceName, $_.Exception.Message
+
+            $errorRecord = New-ErrorRecord -Message $errorMessage -ErrorId 'RSRSDBUS0001' -ErrorCategory ([System.Management.Automation.ErrorCategory]::InvalidOperation) -TargetObject $Configuration
+
+            $PSCmdlet.ThrowTerminatingError($errorRecord)
         }
     }
 }
