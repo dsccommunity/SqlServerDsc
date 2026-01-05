@@ -810,4 +810,8 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Initialize_SqlDscRS_ShouldProcessCaption = Initialize Reporting Services instance
     Initialize_SqlDscRS_FailedToInitialize = Failed to initialize Reporting Services instance '{0}'. {1} (ISRS0001)
+
+    ## Request-SqlDscRSDatabaseUpgradeScript
+    Request_SqlDscRSDatabaseUpgradeScript_Generating = Generating database upgrade script for Reporting Services instance '{0}'.
+    Request_SqlDscRSDatabaseUpgradeScript_FailedToGenerate = Failed to generate database upgrade script for Reporting Services instance '{0}'. {1} (RSRSDBUS0001)
 '@
