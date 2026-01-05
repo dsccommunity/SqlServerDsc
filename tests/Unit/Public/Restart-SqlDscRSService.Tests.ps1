@@ -33,6 +33,48 @@ BeforeAll {
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+
+    # Create stub for Get-Service in module scope for cross-platform testing
+    InModuleScope -ScriptBlock {
+        # Inject a stub in the module scope to support testing cross-platform
+        function script:Get-Service
+        {
+            [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules\Measure-ParameterBlockParameterAttribute', '', Justification='The stub cannot use [Parameter()].')]
+            param
+            (
+                $Name,
+                $ErrorAction
+            )
+
+            throw 'Stub function Get-Service was called'
+        }
+
+        function script:Stop-Service
+        {
+            [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules\Measure-ParameterBlockParameterAttribute', '', Justification='The stub cannot use [Parameter()].')]
+            param
+            (
+                [Parameter(ValueFromPipeline = $true)]
+                $InputObject,
+                [Switch]
+                $Force
+            )
+
+            throw 'Stub function Stop-Service was called'
+        }
+
+        function script:Start-Service
+        {
+            [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules\Measure-ParameterBlockParameterAttribute', '', Justification='The stub cannot use [Parameter()].')]
+            param
+            (
+                [Parameter(ValueFromPipeline = $true)]
+                $InputObject
+            )
+
+            throw 'Stub function Start-Service was called'
+        }
+    }
 }
 
 AfterAll {
@@ -48,11 +90,11 @@ Describe 'Restart-SqlDscRSService' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = 'ByServiceName'
-                ExpectedParameters = '[-ServiceName] <string> [[-WaitTime] <uint16>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-ServiceName <string> [-WaitTime <ushort>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
             @{
                 ExpectedParameterSetName = 'ByConfiguration'
-                ExpectedParameters = '[-Configuration] <Object> [[-WaitTime] <uint16>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-Configuration <Object> [-WaitTime <ushort>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Restart-SqlDscRSService').ParameterSets |
@@ -185,31 +227,6 @@ Describe 'Restart-SqlDscRSService' {
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'SSRS'
             $result.ServiceName | Should -Be $mockServiceName
-        }
-    }
-
-    Context 'When using PassThru with ServiceName parameter' {
-        BeforeAll {
-            $mockServiceName = 'SQLServerReportingServices'
-
-            Mock -CommandName Get-Service -MockWith {
-                return [PSCustomObject] @{
-                    Name              = $mockServiceName
-                    DisplayName       = 'SQL Server Reporting Services'
-                    Status            = 'Running'
-                    DependentServices = @()
-                }
-            }
-
-            Mock -CommandName Stop-Service
-            Mock -CommandName Start-Service
-        }
-
-        It 'Should not return anything when using ServiceName parameter' {
-            $result = Restart-SqlDscRSService -ServiceName $mockServiceName -PassThru -Confirm:$false
-
-            # PassThru only works with Configuration parameter
-            $result | Should -BeNullOrEmpty
         }
     }
 

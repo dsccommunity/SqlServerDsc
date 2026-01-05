@@ -101,7 +101,7 @@ function Restart-SqlDscRSService
         [System.UInt16]
         $WaitTime = 0,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'ByConfiguration')]
         [System.Management.Automation.SwitchParameter]
         $PassThru,
 

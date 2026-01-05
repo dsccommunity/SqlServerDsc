@@ -29,7 +29,7 @@
     .EXAMPLE
         $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
         if (Test-SqlDscRSInitialized -Configuration $config) {
-            Write-Host 'Reporting Services is initialized'
+            Write-Information -MessageData 'Reporting Services is initialized' -InformationAction Continue
         }
 
         Tests if Reporting Services is initialized and performs an action.
