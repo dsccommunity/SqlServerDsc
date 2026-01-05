@@ -35,29 +35,32 @@ Describe 'Request-SqlDscRSDatabaseUpgradeScript' {
     Context 'When requesting database upgrade script for SQL Server 2017 Reporting Services' -Tag @('Integration_SQL2017_RS') {
         It 'Should return database upgrade script or empty result' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-            # This should not throw - may return empty if no upgrade is needed
-            { $configuration | Request-SqlDscRSDatabaseUpgradeScript -ErrorAction 'Stop' } | Should -Not -Throw
+
+            $configuration | Request-SqlDscRSDatabaseUpgradeScript -ErrorAction 'Stop'
         }
     }
 
     Context 'When requesting database upgrade script for SQL Server 2019 Reporting Services' -Tag @('Integration_SQL2019_RS') {
         It 'Should return database upgrade script or empty result' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-            { $configuration | Request-SqlDscRSDatabaseUpgradeScript -ErrorAction 'Stop' } | Should -Not -Throw
+
+            $configuration | Request-SqlDscRSDatabaseUpgradeScript -ErrorAction 'Stop'
         }
     }
 
     Context 'When requesting database upgrade script for SQL Server 2022 Reporting Services' -Tag @('Integration_SQL2022_RS') {
         It 'Should return database upgrade script or empty result' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-            { $configuration | Request-SqlDscRSDatabaseUpgradeScript -ErrorAction 'Stop' } | Should -Not -Throw
+
+            $configuration | Request-SqlDscRSDatabaseUpgradeScript -ErrorAction 'Stop'
         }
     }
 
     Context 'When requesting database upgrade script for Power BI Report Server' -Tag @('Integration_PowerBI') {
         It 'Should return database upgrade script or empty result' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
-            { $configuration | Request-SqlDscRSDatabaseUpgradeScript -ErrorAction 'Stop' } | Should -Not -Throw
+
+            $configuration | Request-SqlDscRSDatabaseUpgradeScript -ErrorAction 'Stop'
         }
     }
 }

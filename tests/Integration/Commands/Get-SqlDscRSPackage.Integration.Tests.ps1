@@ -53,6 +53,7 @@ Describe 'Get-SqlDscRSPackage' {
             $result.ProductVersion | Should -Not -BeNullOrEmpty
         }
     }
+
     Context 'When getting package information for Power BI Report Server' -Tag @('Integration_PowerBI') {
         BeforeAll {
             $script:temporaryFolder = Get-TemporaryFolder
