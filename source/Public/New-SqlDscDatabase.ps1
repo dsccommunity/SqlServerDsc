@@ -313,13 +313,10 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-
         $primaryFile = New-SqlDscDataFile -Name 'MyDatabase_Primary' -FileName 'D:\SQLData\MyDatabase.mdf' -Size 102400 -Growth 10240 -GrowthType 'KB' -IsPrimaryFile -AsSpec
         $primaryFileGroup = New-SqlDscFileGroup -Name 'PRIMARY' -Files @($primaryFile) -IsDefault $true -AsSpec
-
         $secondaryFile = New-SqlDscDataFile -Name 'MyDatabase_Secondary' -FileName 'E:\SQLData\MyDatabase.ndf' -Size 204800 -AsSpec
         $secondaryFileGroup = New-SqlDscFileGroup -Name 'SECONDARY' -Files @($secondaryFile) -AsSpec
-
         $serverObject | New-SqlDscDatabase -Name 'MyDatabase' -FileGroup @($primaryFileGroup, $secondaryFileGroup) -Force
 
         Creates a new database named **MyDatabase** with custom PRIMARY and SECONDARY file groups

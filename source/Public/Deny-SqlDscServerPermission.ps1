@@ -38,7 +38,6 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
         $login = $serverInstance | Get-SqlDscLogin -Name 'MyLogin'
-
         Deny-SqlDscServerPermission -Login $login -Permission ConnectSql, ViewServerState
 
         Denies the specified permissions to the login 'MyLogin'.
@@ -46,7 +45,6 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
         $role = $serverInstance | Get-SqlDscRole -Name 'MyRole'
-
         $role | Deny-SqlDscServerPermission -Permission AlterAnyDatabase -Force
 
         Denies the specified permissions to the role 'MyRole' without prompting for confirmation.

@@ -199,4 +199,77 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
             }
         }
     }
+
+    Context 'When CIM method fails with empty ExtendedErrors but has Error property' {
+        BeforeAll {
+            Mock -CommandName Invoke-CimMethod -MockWith {
+                $result = [PSCustomObject] @{
+                    HRESULT = 3
+                    Error   = 'Fallback error message'
+                }
+                $result | Add-Member -MemberType NoteProperty -Name 'ExtendedErrors' -Value @()
+                return $result
+            }
+        }
+
+        It 'Should fall back to Error property message' {
+            InModuleScope -ScriptBlock {
+                $mockCimInstance = [PSCustomObject] @{
+                    InstanceName = 'SSRS'
+                }
+
+                { Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'TestMethod' } |
+                    Should -Throw -ExpectedMessage '*TestMethod*Fallback error message*HRESULT:3*'
+            }
+        }
+    }
+
+    Context 'When CIM method fails with no error details available' {
+        BeforeAll {
+            Mock -CommandName Invoke-CimMethod -MockWith {
+                $result = [PSCustomObject] @{
+                    HRESULT = 4
+                    Error   = ''
+                }
+                $result | Add-Member -MemberType NoteProperty -Name 'ExtendedErrors' -Value @()
+                return $result
+            }
+        }
+
+        It 'Should use fallback message when neither ExtendedErrors nor Error have content' {
+            InModuleScope -ScriptBlock {
+                $mockCimInstance = [PSCustomObject] @{
+                    InstanceName = 'SSRS'
+                }
+
+                { Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'TestMethod' } |
+                    Should -Throw -ExpectedMessage '*TestMethod*No error details were returned*Unknown HRESULT*HRESULT:4*'
+            }
+        }
+    }
+
+    Context 'When CIM method fails with a known HRESULT code' {
+        BeforeAll {
+            Mock -CommandName Invoke-CimMethod -MockWith {
+                $result = [PSCustomObject] @{
+                    # ERROR_LOGON_TYPE_NOT_GRANTED (0x80070533)
+                    HRESULT = -2147023181
+                    Error   = ''
+                }
+                $result | Add-Member -MemberType NoteProperty -Name 'ExtendedErrors' -Value @()
+                return $result
+            }
+        }
+
+        It 'Should include the translated HRESULT message in the error' {
+            InModuleScope -ScriptBlock {
+                $mockCimInstance = [PSCustomObject] @{
+                    InstanceName = 'SSRS'
+                }
+
+                { Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'TestMethod' } |
+                    Should -Throw -ExpectedMessage '*logon type*HRESULT:-2147023181*'
+            }
+        }
+    }
 }

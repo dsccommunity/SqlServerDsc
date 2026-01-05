@@ -57,7 +57,6 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
         $login = $serverInstance | Get-SqlDscLogin -Name 'MyLogin'
-
         $isInDesiredState = Test-SqlDscServerPermission -Login $login -Grant -Permission ConnectSql, ViewServerState
 
         Tests if the specified permissions are granted to the login 'MyLogin'.
@@ -65,7 +64,6 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
         $role = $serverInstance | Get-SqlDscRole -Name 'MyRole'
-
         $isInDesiredState = $role | Test-SqlDscServerPermission -Grant -Permission AlterAnyDatabase -WithGrant
 
         Tests if the specified permissions are granted with grant option to the role 'MyRole'.
@@ -73,7 +71,6 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
         $login = $serverInstance | Get-SqlDscLogin -Name 'MyLogin'
-
         $isInDesiredState = Test-SqlDscServerPermission -Login $login -Grant -Permission @()
 
         Tests if the login 'MyLogin' has no permissions granted (empty permission set).

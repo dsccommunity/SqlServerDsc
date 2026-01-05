@@ -232,6 +232,103 @@ Describe 'Comment-based help structure' -Tags 'helpQuality' {
                 $invalidDirectives | Should -BeNullOrEmpty -Because ('invalid help directives found that will break help parsing: {0}' -f ($invalidDirectives -join ', '))
             }
         }
+
+        It 'Should not have comments within multi-line example code blocks for <Name>' {
+            <#
+                PlatyPS expects .EXAMPLE blocks to have: code (no comments) → blank line → description.
+                Comments (lines starting with #) within the code portion cause "Expect Heading" errors
+                during documentation generation because PlatyPS interprets them incorrectly.
+            #>
+            if ($scriptFileRawContent -match '(?s)<#(.*?)#>')
+            {
+                $helpBlock = $Matches[1]
+
+                # Find all .EXAMPLE blocks
+                $exampleMatches = [regex]::Matches($helpBlock, '(?s)\.EXAMPLE\s*\r?\n(.*?)(?=\r?\n\s*\.(?:EXAMPLE|PARAMETER|SYNOPSIS|DESCRIPTION|INPUTS|OUTPUTS|NOTES|LINK|COMPONENT|ROLE|FUNCTIONALITY)|$)')
+
+                $examplesWithComments = @()
+
+                foreach ($exampleMatch in $exampleMatches)
+                {
+                    $exampleContent = $exampleMatch.Groups[1].Value
+                    $exampleLines = $exampleContent -split '\r?\n'
+
+                    # Find where the description starts (first line after a blank line that follows code)
+                    $inCodeBlock = $true
+
+                    foreach ($line in $exampleLines)
+                    {
+                        $trimmedLine = $line.Trim()
+
+                        if ($inCodeBlock)
+                        {
+                            if ([string]::IsNullOrEmpty($trimmedLine))
+                            {
+                                # Blank line - marks end of code block
+                                $inCodeBlock = $false
+                            }
+                            elseif ($trimmedLine -match '^#(?!region|endregion)')
+                            {
+                                # Found a comment in the code block (excluding #region/#endregion)
+                                $examplesWithComments += $trimmedLine
+                            }
+                        }
+                    }
+                }
+
+                $examplesWithComments | Should -BeNullOrEmpty -Because ('comments within example code blocks break PlatyPS documentation generation: {0}' -f ($examplesWithComments -join ', '))
+            }
+        }
+
+        It 'Should not have blank lines within multi-line example code blocks for <Name>' {
+            <#
+                PlatyPS expects .EXAMPLE blocks to have: code → blank line → description.
+                Blank lines within the code portion (before the description separator) cause
+                the documentation generator to incorrectly interpret the code block structure.
+            #>
+            if ($scriptFileRawContent -match '(?s)<#(.*?)#>')
+            {
+                $helpBlock = $Matches[1]
+
+                # Find all .EXAMPLE blocks
+                $exampleMatches = [regex]::Matches($helpBlock, '(?s)\.EXAMPLE\s*\r?\n(.*?)(?=\r?\n\s*\.(?:EXAMPLE|PARAMETER|SYNOPSIS|DESCRIPTION|INPUTS|OUTPUTS|NOTES|LINK|COMPONENT|ROLE|FUNCTIONALITY)|$)')
+
+                $examplesWithBlankLines = @()
+
+                foreach ($exampleMatch in $exampleMatches)
+                {
+                    $exampleContent = $exampleMatch.Groups[1].Value
+                    $exampleLines = $exampleContent -split '\r?\n'
+                    $inCodeBlock = $true
+                    $lineNum = 0
+
+                    foreach ($line in $exampleLines)
+                    {
+                        $lineNum++
+                        $trimmedLine = $line.Trim()
+
+                        if ($inCodeBlock)
+                        {
+                            if ([string]::IsNullOrEmpty($trimmedLine))
+                            {
+                                # Check if next non-empty line looks like code (starts with $, command, [, or @{)
+                                $remainingLines = $exampleLines[$lineNum..($exampleLines.Length - 1)]
+                                $nextNonEmpty = $remainingLines | Where-Object -FilterScript { $_.Trim() } | Select-Object -First 1
+
+                                if ($nextNonEmpty -and ($nextNonEmpty.Trim() -match '^\$|^[A-Z][a-z]+-|^\[|^@\{'))
+                                {
+                                    $examplesWithBlankLines += "blank line at position $lineNum followed by: $($nextNonEmpty.Trim().Substring(0, [Math]::Min(30, $nextNonEmpty.Trim().Length)))..."
+                                }
+
+                                $inCodeBlock = $false
+                            }
+                        }
+                    }
+                }
+
+                $examplesWithBlankLines | Should -BeNullOrEmpty -Because ('blank lines within example code blocks break PlatyPS documentation generation: {0}' -f ($examplesWithBlankLines -join '; '))
+            }
+        }
     }
 }
 

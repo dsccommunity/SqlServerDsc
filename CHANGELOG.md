@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added public command `Request-SqlDscRSDatabaseScript` to generate T-SQL scripts
+  for creating report server databases. Wraps the `GenerateDatabaseCreationScript`
+  CIM method and supports configuring database name, language (LCID), and
+  SharePoint mode ([issue #2017](https://github.com/dsccommunity/SqlServerDsc/issues/2017)).
+- Added public command `Request-SqlDscRSDatabaseRightsScript` to generate T-SQL
+  scripts for granting permissions on report server databases. Wraps the
+  `GenerateDatabaseRightsScript` CIM method and supports configuring database
+  name, user name, remote connections, and Windows/SQL authentication types
+  ([issue #2019](https://github.com/dsccommunity/SqlServerDsc/issues/2019)).
+- Added public command `Set-SqlDscRSDatabaseConnection` to set
+  the report server database connection for SQL Server Reporting Services or
+  Power BI Report Server. Wraps the `SetDatabaseConnection` CIM method and
+  supports Windows, SQL Server, and Service Account authentication types
+  ([issue #2021](https://github.com/dsccommunity/SqlServerDsc/issues/2021)).
 - Added public command `Set-SqlDscRSVirtualDirectory` to set the virtual directory
   for Reporting Services applications. Wraps the `SetVirtualDirectory` CIM method
   and supports ReportServerWebService, ReportServerWebApp, and ReportManager
@@ -47,6 +61,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Services configuration instances with consistent error handling. This function
   is used by `Enable-SqlDscRsSecureConnection`, `Disable-SqlDscRsSecureConnection`,
   and the `SqlRS` resource.
+- Added private function `Get-HResultMessage` to translate common Windows HRESULT
+  error codes into human-readable messages. Used by `Invoke-RsCimMethod` to
+  provide actionable error messages when Reporting Services CIM methods fail
+  without detailed error information.
 - `Invoke-ReportServerSetupAction`
   - Now uses `Format-Path` with `-ExpandEnvironmentVariable` to expand environment
     variables in all path parameters (`MediaPath`, `LogPath`, `InstallFolder`)
@@ -185,6 +203,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Refactored to use the public command `Set-SqlDscRSVirtualDirectory` for
     setting virtual directories instead of calling the CIM method directly
     ([issue #2015](https://github.com/dsccommunity/SqlServerDsc/issues/2015)).
+  - Refactored to use the public commands `Request-SqlDscRSDatabaseScript`,
+    `Request-SqlDscRSDatabaseRightsScript`, and `Set-SqlDscRSDatabaseConnection`
+    for creating and configuring the report server database instead of calling
+    the CIM methods directly
+    ([issue #2017](https://github.com/dsccommunity/SqlServerDsc/issues/2017))
+    ([issue #2019](https://github.com/dsccommunity/SqlServerDsc/issues/2019))
+    ([issue #2021](https://github.com/dsccommunity/SqlServerDsc/issues/2021)).
 - `Assert-SetupActionProperties`
   - Refactored to use the command `Get-FileVersion` from the DscResource.Common
     module instead of the private function `Get-FileVersionInformation`
@@ -201,6 +226,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `Invoke-RsCimMethod`
+  - Enhanced error messages to include human-readable translations of common
+    HRESULT error codes. When Reporting Services CIM methods fail without
+    detailed error information, the error message now includes actionable
+    guidance based on the HRESULT code (e.g., service not running, access
+    denied, logon type not granted).
+  - Fixed error handling to properly surface error details. Previously, when
+    the `ExtendedErrors` property existed but was empty, the error message
+    would show an empty error description. Now it correctly falls back to
+    the `Error` property and provides a descriptive fallback message if
+    neither property contains error details.
+- Prerequisites Integration Tests
+  - Fixed missing RS (Reporting Services) integration test tags on Context blocks
+    that create local Windows users, service accounts, and groups. Added tags
+    `Integration_SQL2017_RS`, `Integration_SQL2019_RS`, and `Integration_SQL2022_RS`
+    to ensure these prerequisites run before Reporting Services integration tests.
+- `New-SqlDscFileGroup`
+  - Fixed comment-based help example formatting by moving inline comment
+    to the description text.
+- QA Tests
+  - Added new test to detect comments within multi-line example code blocks
+    in comment-based help. Comments in the code portion of `.EXAMPLE` blocks
+    cause PlatyPS documentation generation to fail with "Expect Heading" errors.
+  - Added new test to detect blank lines within multi-line example code blocks
+    in comment-based help. Blank lines within the code portion of `.EXAMPLE`
+    blocks cause similar issues with documentation generation.
+- `Deny-SqlDscServerPermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks that would cause documentation generation issues.
+- `Get-SqlDscServerPermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks that would cause documentation generation issues.
+- `Grant-SqlDscServerPermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks that would cause documentation generation issues.
+- `New-SqlDscDatabase`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks.
+- `New-SqlDscDatabaseSnapshot`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks.
+- `Revoke-SqlDscServerPermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks.
+- `Set-SqlDscDatabasePermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks.
+- `Set-SqlDscServerPermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks.
+- `Test-SqlDscServerPermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks.
 - Unit Tests
   - Fixed PowerShell class type identity issues that caused "Cannot convert
     'Type' to 'Type'" errors when running multiple test files in the same
@@ -260,9 +338,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Set-SqlDscDatabaseProperty`
   - Updated comment-based help to reference correct enum values.
   - Added SQL Server version requirements to version-specific parameter help.
-
-### Fixed
-
 - `DatabasePermission`
   - Fixed `Equals()` method to compare both `State` and `Permission` properties.
     Previously, the method incorrectly referenced a non-existent `Grant` property,

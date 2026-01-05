@@ -396,37 +396,14 @@ function Set-TargetResource
 
             Write-Verbose -Message "Generate database creation script on $DatabaseServerName\$DatabaseInstanceName for database '$reportingServicesDatabaseName'."
 
-            $invokeRsCimMethodParameters = @{
-                CimInstance = $rsConfiguration
-                MethodName  = 'GenerateDatabaseCreationScript'
-                Arguments   = @{
-                    DatabaseName     = $reportingServicesDatabaseName
-                    IsSharePointMode = $false
-                    Lcid             = $language
-                }
-            }
+            $reportingServicesDatabaseScript = $rsConfiguration | Request-SqlDscRSDatabaseScript -DatabaseName $reportingServicesDatabaseName -Lcid $language -ErrorAction 'Stop'
 
-            $reportingServicesDatabaseScript = Invoke-RsCimMethod @invokeRsCimMethodParameters -ErrorAction 'Stop'
-
-            # Determine RS service account
-            $reportingServicesServiceAccountUserName = (Get-CimInstance -ClassName Win32_Service | Where-Object -FilterScript {
-                    $_.Name -eq $reportingServicesServiceName
-                }).StartName
+            # The WindowsServiceIdentityActual property contains the actual account name actively used by the service.
+            $reportingServicesServiceAccountUserName = $rsConfiguration.WindowsServiceIdentityActual
 
             Write-Verbose -Message "Generate database rights script on $DatabaseServerName\$DatabaseInstanceName for database '$reportingServicesDatabaseName' and user '$reportingServicesServiceAccountUserName'."
 
-            $invokeRsCimMethodParameters = @{
-                CimInstance = $rsConfiguration
-                MethodName  = 'GenerateDatabaseRightsScript'
-                Arguments   = @{
-                    DatabaseName  = $reportingServicesDatabaseName
-                    UserName      = $reportingServicesServiceAccountUserName
-                    IsRemote      = $false
-                    IsWindowsUser = $true
-                }
-            }
-
-            $reportingServicesDatabaseRightsScript = Invoke-RsCimMethod @invokeRsCimMethodParameters -ErrorAction 'Stop'
+            $reportingServicesDatabaseRightsScript = $rsConfiguration | Request-SqlDscRSDatabaseRightsScript -DatabaseName $reportingServicesDatabaseName -UserName $reportingServicesServiceAccountUserName -ErrorAction 'Stop'
 
             Import-SqlDscPreferredModule
 
@@ -444,49 +421,25 @@ function Set-TargetResource
                 $invokeSqlDscQueryParameters.Encrypt = $true
             }
 
-            Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $reportingServicesDatabaseScript.Script
-            Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $reportingServicesDatabaseRightsScript.Script
+            Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $reportingServicesDatabaseScript
+            Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $reportingServicesDatabaseRightsScript
 
             Write-Verbose -Message "Set database connection on $DatabaseServerName\$DatabaseInstanceName to database '$reportingServicesDatabaseName'."
 
-            if ( $DatabaseInstanceName -eq 'MSSQLSERVER' )
+            $setSqlDscRSDatabaseConnectionParameters = @{
+                ServerName   = $DatabaseServerName
+                DatabaseName = $reportingServicesDatabaseName
+                Type         = 'ServiceAccount'
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
+
+            if ($DatabaseInstanceName -ne 'MSSQLSERVER')
             {
-                $reportingServicesConnection = $DatabaseServerName
-            }
-            else
-            {
-                $reportingServicesConnection = "$DatabaseServerName\$DatabaseInstanceName"
+                $setSqlDscRSDatabaseConnectionParameters.InstanceName = $DatabaseInstanceName
             }
 
-            $invokeRsCimMethodParameters = @{
-                CimInstance = $rsConfiguration
-                MethodName  = 'SetDatabaseConnection'
-                Arguments   = @{
-                    Server          = $reportingServicesConnection
-                    DatabaseName    = $reportingServicesDatabaseName
-                    Username        = ''
-                    Password        = ''
-
-                    <#
-                        Can be set to either:
-                        0 = Windows
-                        1 = Sql Server
-                        2 = Windows Service (Integrated Security)
-
-                        When set to 2 the Reporting Server Web service will use
-                        either the ASP.NET account or an application pool’s account
-                        and the Windows service account to access the report server
-                        database.
-
-                        See more in the article
-                        https://docs.microsoft.com/en-us/sql/reporting-services/wmi-provider-library-reference/configurationsetting-method-setdatabaseconnection#remarks
-
-                    #>
-                    CredentialsType = 2
-                }
-            }
-
-            Invoke-RsCimMethod @invokeRsCimMethodParameters -ErrorAction 'Stop'
+            $rsConfiguration | Set-SqlDscRSDatabaseConnection @setSqlDscRSDatabaseConnectionParameters
 
             <#
                 When initializing SSRS 2019, the call to InitializeReportServer

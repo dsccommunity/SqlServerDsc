@@ -117,7 +117,8 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value $mockVirtualDirectoryReportServerName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value $mockVirtualDirectoryReportManagerName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force |
-                        Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $mockReportingServicesServiceName -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $mockReportingServicesServiceName -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'WindowsServiceIdentityActual' -Value 'NT SERVICE\SQLServerReportingServices' -PassThru -Force
                 ),
                 (
                     # Array is a regression test for issue #819.
@@ -449,18 +450,6 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             } -PassThru -Force
         }
 
-        $mockInvokeRsCimMethod_GenerateDatabaseCreationScript = {
-            return @{
-                Script = 'select * from something'
-            }
-        }
-
-        $mockInvokeRsCimMethod_GenerateDatabaseRightsScript = {
-            return @{
-                Script = 'select * from something'
-            }
-        }
-
         $mockGetCimInstance_ConfigurationSetting_NamedInstance = {
             return @(
                 (
@@ -473,7 +462,8 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value $mockVirtualDirectoryReportServerName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value $mockVirtualDirectoryReportManagerName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force |
-                        Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $mockReportingServicesServiceName -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $mockReportingServicesServiceName -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'WindowsServiceIdentityActual' -Value 'NT SERVICE\SQLServerReportingServices' -PassThru -Force
                 ),
                 (
                     # Array is a regression test for issue #819.
@@ -495,7 +485,8 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value '' -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru -Force |
                 Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force |
-                Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $mockReportingServicesServiceName -PassThru -Force
+                Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $mockReportingServicesServiceName -PassThru -Force |
+                Add-Member -MemberType NoteProperty -Name 'WindowsServiceIdentityActual' -Value 'NT SERVICE\SQLServerReportingServices' -PassThru -Force
         }
 
         $mockGetCimInstance_ConfigurationSetting_ParameterFilter = {
@@ -531,13 +522,13 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         Mock -CommandName Remove-SqlDscRSUrlReservation
         Mock -CommandName Set-SqlDscRSUrlReservation
         Mock -CommandName Invoke-RsCimMethod
-        Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_GenerateDatabaseCreationScript -ParameterFilter {
-            $MethodName -eq 'GenerateDatabaseCreationScript'
+        Mock -CommandName Request-SqlDscRSDatabaseScript -MockWith {
+            return 'select * from something'
         }
-
-        Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_GenerateDatabaseRightsScript -ParameterFilter {
-            $MethodName -eq 'GenerateDatabaseRightsScript'
+        Mock -CommandName Request-SqlDscRSDatabaseRightsScript -MockWith {
+            return 'select * from something'
         }
+        Mock -CommandName Set-SqlDscRSDatabaseConnection
 
         <#
             This is mocked here so that no calls are made to it directly,
@@ -629,17 +620,11 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $MethodName -eq 'InitializeReportServer'
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetDatabaseConnection'
-                } -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'GenerateDatabaseRightsScript'
-                } -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Request-SqlDscRSDatabaseRightsScript -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'GenerateDatabaseCreationScript'
-                } -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
                     $Application -eq $mockReportServerApplicationName
@@ -881,17 +866,11 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $MethodName -eq 'InitializeReportServer'
                 } -Exactly -Times 0 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetDatabaseConnection'
-                } -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 0 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'GenerateDatabaseRightsScript'
-                } -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Request-SqlDscRSDatabaseRightsScript -Exactly -Times 0 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'GenerateDatabaseCreationScript'
-                } -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Times 0 -Scope It
 
                 Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
                     $Application -eq $mockReportServerApplicationName
@@ -985,17 +964,11 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $MethodName -eq 'InitializeReportServer'
                 } -Exactly -Times 0 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetDatabaseConnection'
-                } -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 0 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'GenerateDatabaseRightsScript'
-                } -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Request-SqlDscRSDatabaseRightsScript -Exactly -Times 0 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'GenerateDatabaseCreationScript'
-                } -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Times 0 -Scope It
 
                 Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
                     $Application -eq $mockReportServerApplicationName
@@ -1073,17 +1046,11 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $MethodName -eq 'InitializeReportServer'
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetDatabaseConnection'
-                } -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'GenerateDatabaseRightsScript'
-                } -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Request-SqlDscRSDatabaseRightsScript -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'GenerateDatabaseCreationScript'
-                } -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
                     $Application -eq $mockReportServerApplicationName
@@ -1138,7 +1105,8 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value $mockVirtualDirectoryReportServerName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value $mockVirtualDirectoryReportManagerName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $script:mockDynamicSecureConnectionLevel -PassThru -Force |
-                        Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $mockReportingServicesServiceName -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $mockReportingServicesServiceName -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'WindowsServiceIdentityActual' -Value 'NT SERVICE\SQLServerReportingServices' -PassThru
                 )
             }
 
@@ -1189,17 +1157,11 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 $MethodName -eq 'InitializeReportServer'
             } -Exactly -Times 0 -Scope It
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'SetDatabaseConnection'
-            } -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 1 -Scope It
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'GenerateDatabaseRightsScript'
-            } -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Request-SqlDscRSDatabaseRightsScript -Exactly -Times 1 -Scope It
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'GenerateDatabaseCreationScript'
-            } -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Times 1 -Scope It
 
             Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
                 $Application -eq $mockReportServerApplicationName
