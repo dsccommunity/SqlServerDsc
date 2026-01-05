@@ -82,7 +82,7 @@ function Request-SqlDscRSDatabaseUpgradeScript
         {
             $errorMessage = $script:localizedData.Request_SqlDscRSDatabaseUpgradeScript_FailedToGenerate -f $instanceName, $_.Exception.Message
 
-            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -InnerException $_.Exception -PassThru) -ErrorId 'RSRSDBUS0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -ErrorRecord $_ -PassThru) -ErrorId 'RSRSDBUS0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
 
             $PSCmdlet.ThrowTerminatingError($errorRecord)
         }
