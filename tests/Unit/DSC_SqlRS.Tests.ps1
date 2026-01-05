@@ -1106,7 +1106,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value $mockVirtualDirectoryReportManagerName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $script:mockDynamicSecureConnectionLevel -PassThru -Force |
                         Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $mockReportingServicesServiceName -PassThru -Force |
-                        Add-Member -MemberType NoteProperty -Name 'WindowsServiceIdentityActual' -Value $mockServiceAccountUserName -PassThru
+                        Add-Member -MemberType NoteProperty -Name 'WindowsServiceIdentityActual' -Value 'NT SERVICE\SQLServerReportingServices' -PassThru
                 )
             }
 
