@@ -49,7 +49,6 @@
 #>
 function Get-SqlDscRSSetupConfiguration
 {
-    # cSpell: ignore PBIRS
     [CmdletBinding()]
     [OutputType([PSCustomObject[]])]
     param

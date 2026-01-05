@@ -66,7 +66,6 @@ Describe 'Get-SqlDscRSConfiguration' {
     }
 
     Context 'When getting the configuration CIM instance for Power BI Report Server' -Tag @('Integration_PowerBI') {
-        # cSpell: ignore PBIRS
         It 'Should return the configuration CIM instance for PBIRS instance' {
             $result = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
 

@@ -54,7 +54,6 @@ Describe 'Restart-SqlDscRSService' {
     }
 
     Context 'When restarting Power BI Report Server' -Tag @('Integration_PowerBI') {
-        # cSpell: ignore PBIRS
         It 'Should restart the service without error' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
             $configuration | Restart-SqlDscRSService -Force -ErrorAction 'Stop'

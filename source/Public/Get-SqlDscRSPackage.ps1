@@ -46,7 +46,6 @@
 #>
 function Get-SqlDscRSPackage
 {
-    # cSpell: ignore PBIRS
     [CmdletBinding()]
     [OutputType([System.Diagnostics.FileVersionInfo])]
     param

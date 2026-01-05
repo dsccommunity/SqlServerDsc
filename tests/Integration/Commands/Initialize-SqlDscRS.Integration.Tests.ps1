@@ -110,7 +110,6 @@ Describe 'Initialize-SqlDscRS' {
     }
 
     Context 'When initializing Power BI Report Server' -Tag @('Integration_PowerBI') {
-        # cSpell: ignore PBIRS
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
             $script:isInitialized = $script:configuration | Test-SqlDscRSInitialized -ErrorAction 'Stop'

@@ -49,7 +49,6 @@ Describe 'Get-SqlDscInstalledInstance' {
     }
 
     Context 'When getting a specific SQL Server instance by name' -Tag @('Integration_PowerBI') {
-        # cSpell: ignore PBIRS
         It 'Should return the specified instance when it exists' {
             $result = Get-SqlDscInstalledInstance -InstanceName 'PBIRS'
 

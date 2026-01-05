@@ -156,7 +156,6 @@ Describe 'Enable-SqlDscRsSecureConnection' {
     }
 
     Context 'When enabling secure connection for Power BI Report Server' -Tag @('Integration_PowerBI') {
-        # cSpell: ignore PBIRS
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
             $script:originalLevel = $script:configuration.SecureConnectionLevel
