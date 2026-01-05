@@ -515,7 +515,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         Mock -CommandName Invoke-SqlDscQuery
         Mock -CommandName Enable-SqlDscRsSecureConnection
         Mock -CommandName Disable-SqlDscRsSecureConnection
-        Mock -CommandName Restart-ReportingServicesService
+        Mock -CommandName Restart-SqlDscRSService
         Mock -CommandName Start-Sleep
         Mock -CommandName Set-SqlDscRSVirtualDirectory
         Mock -CommandName Add-SqlDscRSUrlReservation
@@ -644,7 +644,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It
-                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
+                Should -Invoke -CommandName Restart-SqlDscRSService -Exactly -Times 2 -Scope It
             }
 
             Context 'When there is no Reporting Services instance after Set-TargetResource has been called' {
@@ -890,7 +890,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Restart-SqlDscRSService -Exactly -Times 1 -Scope It
             }
         }
 
@@ -988,7 +988,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Restart-SqlDscRSService -Exactly -Times 0 -Scope It
             }
         }
 
@@ -1070,7 +1070,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It
-                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
+                Should -Invoke -CommandName Restart-SqlDscRSService -Exactly -Times 2 -Scope It
 
                 Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
                     $PesterBoundParameters.Keys -notcontains 'Encrypt'
@@ -1181,7 +1181,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
             Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It
-            Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Restart-SqlDscRSService -Exactly -Times 1 -Scope It
         }
     }
 }

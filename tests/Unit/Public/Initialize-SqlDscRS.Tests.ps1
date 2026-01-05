@@ -74,7 +74,7 @@ Describe 'Initialize-SqlDscRS' {
         }
 
         It 'Should initialize Reporting Services without errors' {
-            { $mockCimInstance | Initialize-SqlDscRS -Confirm:$false } | Should -Not -Throw
+            $mockCimInstance | Initialize-SqlDscRS -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'InitializeReportServer' -and
@@ -118,7 +118,7 @@ Describe 'Initialize-SqlDscRS' {
         }
 
         It 'Should initialize Reporting Services without confirmation' {
-            { $mockCimInstance | Initialize-SqlDscRS -Force } | Should -Not -Throw
+            $mockCimInstance | Initialize-SqlDscRS -Force
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
@@ -169,7 +169,7 @@ Describe 'Initialize-SqlDscRS' {
         }
 
         It 'Should initialize Reporting Services' {
-            { Initialize-SqlDscRS -Configuration $mockCimInstance -Confirm:$false } | Should -Not -Throw
+            Initialize-SqlDscRS -Configuration $mockCimInstance -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }

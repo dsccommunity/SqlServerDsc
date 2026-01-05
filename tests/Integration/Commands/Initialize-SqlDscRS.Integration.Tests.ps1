@@ -39,7 +39,7 @@ BeforeAll {
         called without throwing, even if initialization is already complete.
 #>
 Describe 'Initialize-SqlDscRS' {
-    Context 'When initializing SQL Server Reporting Services' -Tag @('Integration_SQL2017_RS') {
+    Context 'When initializing SQL Server 2017 Reporting Services' -Tag @('Integration_SQL2017_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
@@ -65,7 +65,7 @@ Describe 'Initialize-SqlDscRS' {
         }
     }
 
-    Context 'When initializing SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {
+    Context 'When initializing SQL Server 2019 Reporting Services' -Tag @('Integration_SQL2019_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $script:isInitialized = $script:configuration | Test-SqlDscRSInitialized -ErrorAction 'Stop'
@@ -87,7 +87,7 @@ Describe 'Initialize-SqlDscRS' {
         }
     }
 
-    Context 'When initializing SQL Server Reporting Services' -Tag @('Integration_SQL2022_RS') {
+    Context 'When initializing SQL Server 2022 Reporting Services' -Tag @('Integration_SQL2022_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $script:isInitialized = $script:configuration | Test-SqlDscRSInitialized -ErrorAction 'Stop'

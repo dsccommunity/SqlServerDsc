@@ -183,10 +183,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   from `Get-SqlDscRSConfiguration`.
 - Added public command `Test-SqlDscRSInitialized` to test whether a Reporting
   Services instance is initialized by checking the `IsInitialized` property of
-  the configuration CIM instance.
+  the configuration CIM instance
+  ([issue #2014](https://github.com/dsccommunity/SqlServerDsc/issues/2014)).
 - Added public command `Initialize-SqlDscRS` to initialize Reporting Services
   by calling the `InitializeReportServer` CIM method. Used to complete initial
-  configuration after database and URL setup.
+  configuration after database and URL setup
+  ([issue #2014](https://github.com/dsccommunity/SqlServerDsc/issues/2014)).
 
 ### Changed
 
@@ -226,7 +228,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Refactored to use the public commands `Test-SqlDscRSInitialized` and
     `Initialize-SqlDscRS` for checking and performing Reporting Services
     initialization instead of accessing the `IsInitialized` property and
-    calling the CIM method directly.
+    calling the CIM method directly
+    ([issue #2014](https://github.com/dsccommunity/SqlServerDsc/issues/2014)).
 - `Assert-SetupActionProperties`
   - Refactored to use the command `Get-FileVersion` from the DscResource.Common
     module instead of the private function `Get-FileVersionInformation`

@@ -55,6 +55,7 @@
 function Test-SqlDscRSInitialized
 {
     # cSpell: ignore PBIRS
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSyntacticallyCorrectExamples', '', Justification = 'Because the examples use pipeline input the rule cannot validate.')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param

@@ -32,7 +32,7 @@ BeforeAll {
 }
 
 Describe 'Test-SqlDscRSInitialized' {
-    Context 'When testing if SQL Server Reporting Services is initialized' -Tag @('Integration_SQL2017_RS') {
+    Context 'When testing if SQL Server 2017 Reporting Services is initialized' -Tag @('Integration_SQL2017_RS') {
         It 'Should return initialization status' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $result = $configuration | Test-SqlDscRSInitialized -ErrorAction 'Stop'
@@ -40,7 +40,7 @@ Describe 'Test-SqlDscRSInitialized' {
         }
     }
 
-    Context 'When testing if SQL Server Reporting Services is initialized' -Tag @('Integration_SQL2019_RS') {
+    Context 'When testing if SQL Server 2019 Reporting Services is initialized' -Tag @('Integration_SQL2019_RS') {
         It 'Should return initialization status' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $result = $configuration | Test-SqlDscRSInitialized -ErrorAction 'Stop'
@@ -48,7 +48,7 @@ Describe 'Test-SqlDscRSInitialized' {
         }
     }
 
-    Context 'When testing if SQL Server Reporting Services is initialized' -Tag @('Integration_SQL2022_RS') {
+    Context 'When testing if SQL Server 2022 Reporting Services is initialized' -Tag @('Integration_SQL2022_RS') {
         It 'Should return initialization status' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $result = $configuration | Test-SqlDscRSInitialized -ErrorAction 'Stop'

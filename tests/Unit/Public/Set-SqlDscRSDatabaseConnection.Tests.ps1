@@ -73,7 +73,7 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
         }
 
         It 'Should set database connection without errors' {
-            { $mockCimInstance | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -DatabaseName 'ReportServer' -Confirm:$false } | Should -Not -Throw
+            $mockCimInstance | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -DatabaseName 'ReportServer' -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'SetDatabaseConnection' -and

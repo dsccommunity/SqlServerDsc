@@ -85,6 +85,7 @@
 function Restart-SqlDscRSService
 {
     # cSpell: ignore PBIRS
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSyntacticallyCorrectExamples', '', Justification = 'Because the examples use pipeline input the rule cannot validate.')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'ByServiceName')]
     [OutputType([System.Object])]
     param
@@ -147,7 +148,7 @@ function Restart-SqlDscRSService
 
             if ($WaitTime -ne 0)
             {
-                Write-Verbose -Message ($script:localizedData.Restart_SqlDscRSService_WaitingBeforeStart -f $WaitTime, $reportingServicesService.DisplayName)
+                Write-Debug -Message ($script:localizedData.Restart_SqlDscRSService_WaitingBeforeStart -f $WaitTime, $reportingServicesService.DisplayName)
 
                 Start-Sleep -Seconds $WaitTime
             }
@@ -156,7 +157,7 @@ function Restart-SqlDscRSService
 
             # Start dependent services
             $dependentService | ForEach-Object -Process {
-                Write-Verbose -Message ($script:localizedData.Restart_SqlDscRSService_StartingDependentService -f $_.DisplayName)
+                Write-Debug -Message ($script:localizedData.Restart_SqlDscRSService_StartingDependentService -f $_.DisplayName)
 
                 $_ | Start-Service
             }

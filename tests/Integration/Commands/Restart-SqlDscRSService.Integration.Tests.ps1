@@ -32,21 +32,21 @@ BeforeAll {
 }
 
 Describe 'Restart-SqlDscRSService' {
-    Context 'When restarting SQL Server Reporting Services' -Tag @('Integration_SQL2017_RS') {
+    Context 'When restarting SQL Server 2017 Reporting Services' -Tag @('Integration_SQL2017_RS') {
         It 'Should restart the service without error' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             { $configuration | Restart-SqlDscRSService -Force -ErrorAction 'Stop' } | Should -Not -Throw
         }
     }
 
-    Context 'When restarting SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {
+    Context 'When restarting SQL Server 2019 Reporting Services' -Tag @('Integration_SQL2019_RS') {
         It 'Should restart the service without error' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             { $configuration | Restart-SqlDscRSService -Force -ErrorAction 'Stop' } | Should -Not -Throw
         }
     }
 
-    Context 'When restarting SQL Server Reporting Services' -Tag @('Integration_SQL2022_RS') {
+    Context 'When restarting SQL Server 2022 Reporting Services' -Tag @('Integration_SQL2022_RS') {
         It 'Should restart the service without error' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             { $configuration | Restart-SqlDscRSService -Force -ErrorAction 'Stop' } | Should -Not -Throw
