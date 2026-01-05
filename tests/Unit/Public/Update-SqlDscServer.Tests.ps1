@@ -216,7 +216,9 @@ Describe 'Update-SqlDscServer' -Tag 'Public' {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
                 } -RemoveParameterValidation 'FilePath'
+            }
 
+            BeforeEach {
                 $updateSqlDscServerParameters = @{
                     AcceptLicensingTerms = $true
                     MediaPath            = '\SqlMedia'
