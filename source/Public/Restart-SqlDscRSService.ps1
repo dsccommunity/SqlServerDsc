@@ -84,7 +84,6 @@
 #>
 function Restart-SqlDscRSService
 {
-    # cSpell: ignore PBIRS
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the examples use pipeline input the rule cannot validate.')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'ByServiceName')]
     [OutputType([System.Object])]
@@ -127,7 +126,18 @@ function Restart-SqlDscRSService
 
         Write-Verbose -Message ($script:localizedData.Restart_SqlDscRSService_GettingService -f $targetServiceName)
 
-        $reportingServicesService = Get-Service -Name $targetServiceName
+        try
+        {
+            $reportingServicesService = Get-Service -Name $targetServiceName -ErrorAction Stop
+        }
+        catch
+        {
+            $errorMessage = $script:localizedData.Restart_SqlDscRSService_ServiceNotFound -f $targetServiceName, $_.Exception.Message
+
+            Write-Error -Message $errorMessage -Category ObjectNotFound -ErrorId 'RSRSRS0001' -TargetObject $targetServiceName
+
+            return
+        }
 
         <#
             Get all dependent services that are running.

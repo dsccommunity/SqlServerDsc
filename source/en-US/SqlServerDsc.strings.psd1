@@ -790,6 +790,7 @@ ConvertFrom-StringData @'
 
     ## Restart-SqlDscRSService
     Restart_SqlDscRSService_GettingService = Getting service information for '{0}'.
+    Restart_SqlDscRSService_ServiceNotFound = Failed to get service '{0}'. {1} (RSRSRS0001)
     Restart_SqlDscRSService_ShouldProcessDescription = Restarting Reporting Services service '{0}'.
     Restart_SqlDscRSService_ShouldProcessConfirmation = Are you sure you want to restart the Reporting Services service '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
