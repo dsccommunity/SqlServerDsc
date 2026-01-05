@@ -299,6 +299,10 @@ stages:
                   'tests/Integration/Commands/ConvertTo-SqlDscFileGroup.Integration.Tests.ps1'
                   'tests/Integration/Commands/ConvertTo-SqlDscDataFile.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscSetupLog.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Update-SqlDscServer.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Update-SqlDscServerEdition.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Initialize-SqlDscFailoverCluster.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Install-SqlDscFailoverCluster.Integration.Tests.ps1'
                   'tests/Integration/Commands/Connect-SqlDscDatabaseEngine.Integration.Tests.ps1'
                   'tests/Integration/Commands/Disconnect-SqlDscDatabaseEngine.Integration.Tests.ps1'
                   'tests/Integration/Commands/Invoke-SqlDscQuery.Integration.Tests.ps1'
@@ -459,7 +463,7 @@ stages:
                   'tests/Integration/Commands/Save-SqlDscSqlServerMediaFile.Integration.Tests.ps1'
                   'tests/Integration/Commands/Import-SqlDscPreferredModule.Integration.Tests.ps1'
                   # Group 1
-                  'tests/Integration/Commands/Install-SqlDscServer.Integration.PrepareImage.Tests.ps1'
+                  'tests/Integration/Commands/Initialize-SqlDscImage.Integration.Tests.ps1'
                   # Group 2
                   'tests/Integration/Commands/Complete-SqlDscImage.Integration.Tests.ps1'
                   # Group 9

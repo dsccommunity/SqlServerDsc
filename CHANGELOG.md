@@ -142,10 +142,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     from `SqlResourceBase` and supports a default namespace parameter to avoid
     repeating the full type name
     ([issue #2174](https://github.com/dsccommunity/SqlServerDsc/issues/2174)).
+- Added public command `Initialize-SqlDscImage` to prepare a SQL Server image
+  for later configuration with `Complete-SqlDscImage`. Extracted from
+  `Install-SqlDscServer` PrepareImage parameter set
+  ([issue #2396](https://github.com/dsccommunity/SqlServerDsc/issues/2396)).
+- Added public command `Update-SqlDscServerEdition` to upgrade the edition of an
+  existing SQL Server instance using the EditionUpgrade setup action
+  ([issue #2393](https://github.com/dsccommunity/SqlServerDsc/issues/2393)).
+- Added public command `Update-SqlDscServer` to upgrade an existing SQL Server
+  instance to a newer version using the Upgrade setup action
+  ([issue #2394](https://github.com/dsccommunity/SqlServerDsc/issues/2394)).
+- Added public command `Initialize-SqlDscFailoverCluster` to prepare a failover
+  cluster node for later completion with `Complete-SqlDscFailoverCluster`.
+  Extracted from `Install-SqlDscServer` PrepareFailoverCluster parameter set
+  ([issue #2395](https://github.com/dsccommunity/SqlServerDsc/issues/2395)).
+- Added public command `Install-SqlDscFailoverCluster` to install SQL Server in
+  a failover cluster configuration. Extracted from `Install-SqlDscServer`
+  InstallFailoverCluster parameter set.
 
 ### Changed
 
 - `Install-SqlDscServer`
+  - **BREAKING CHANGE:** Removed `PrepareImage`, `Upgrade`, `EditionUpgrade`,
+    `PrepareFailoverCluster`, and `InstallFailoverCluster` parameter sets. Use
+    the new dedicated commands `Initialize-SqlDscImage`, `Update-SqlDscServer`,
+    `Update-SqlDscServerEdition`, `Initialize-SqlDscFailoverCluster`, and
+    `Install-SqlDscFailoverCluster` instead
+    ([issue #2393](https://github.com/dsccommunity/SqlServerDsc/issues/2393))
+    ([issue #2394](https://github.com/dsccommunity/SqlServerDsc/issues/2394))
+    ([issue #2395](https://github.com/dsccommunity/SqlServerDsc/issues/2395))
+    ([issue #2396](https://github.com/dsccommunity/SqlServerDsc/issues/2396)).
   - Removed misleading Uninstall parameter documentation from comment-based help
     ([issue #2448](https://github.com/dsccommunity/SqlServerDsc/issues/2448)).
 - `SqlRS`

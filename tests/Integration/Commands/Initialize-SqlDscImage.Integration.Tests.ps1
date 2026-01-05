@@ -31,42 +31,38 @@ BeforeAll {
     Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 }
 
-# cSpell: ignore SQLSERVERAGENT, DSCSQLTEST, PrepareImage
-Describe 'Install-SqlDscServer - PrepareImage' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+# cSpell: ignore SQLSERVERAGENT, DSCSQLTEST
+Describe 'Initialize-SqlDscImage' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         $computerName = Get-ComputerName
         Write-Verbose -Message ("Running integration test as user '{0}' on computer '{1}'." -f $env:UserName, $computerName) -Verbose
     }
 
-    Context 'When using PrepareImage parameter set' {
-        Context 'When preparing database engine instance for image' {
-            It 'Should run the command without throwing' {
-                # Set splatting parameters for Install-SqlDscServer with PrepareImage
-                $installSqlDscServerParameters = @{
-                    PrepareImage          = $true
-                    AcceptLicensingTerms  = $true
-                    InstanceId            = 'DSCSQLTEST'
-                    Features              = 'SQLENGINE'
-                    InstallSharedDir      = 'C:\Program Files\Microsoft SQL Server'
-                    InstallSharedWOWDir   = 'C:\Program Files (x86)\Microsoft SQL Server'
-                    MediaPath             = $env:IsoDrivePath
-                    Verbose               = $true
-                    ErrorAction           = 'Stop'
-                    Force                 = $true
-                }
+    Context 'When preparing database engine instance for image' {
+        It 'Should run the command without throwing' {
+            $initializeSqlDscImageParameters = @{
+                AcceptLicensingTerms = $true
+                InstanceId           = 'DSCSQLTEST'
+                Features             = 'SQLENGINE'
+                InstallSharedDir     = 'C:\Program Files\Microsoft SQL Server'
+                InstallSharedWowDir  = 'C:\Program Files (x86)\Microsoft SQL Server'
+                MediaPath            = $env:IsoDrivePath
+                Verbose              = $true
+                ErrorAction          = 'Stop'
+                Force                = $true
+            }
 
-                try
-                {
-                    $null = Install-SqlDscServer @installSqlDscServerParameters
-                }
-                catch
-                {
-                    # Output Summary.txt if it exists to help diagnose the failure
-                    Get-SqlDscSetupLog -Verbose | Write-Verbose -Verbose
+            try
+            {
+                $null = Initialize-SqlDscImage @initializeSqlDscImageParameters
+            }
+            catch
+            {
+                # Output Summary.txt if it exists to help diagnose the failure
+                Get-SqlDscSetupLog -Verbose | Write-Verbose -Verbose
 
-                    # Re-throw the original error
-                    throw $_
-                }
+                # Re-throw the original error
+                throw $_
             }
         }
     }
