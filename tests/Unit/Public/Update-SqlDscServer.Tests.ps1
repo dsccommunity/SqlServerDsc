@@ -94,14 +94,13 @@ Describe 'Update-SqlDscServer' -Tag 'Public' {
                     AcceptLicensingTerms = $true
                     MediaPath            = '\SqlMedia'
                     InstanceName         = 'MSSQLSERVER'
-                    Force                = $true
                     ErrorAction          = 'Stop'
                 }
             }
 
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mock with the correct argument string' {
-                    Update-SqlDscServer -Confirm:$false @mockDefaultParameters
+                    Update-SqlDscServer -Confirm:$false -Force @mockDefaultParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                         $ArgumentList | Should -MatchExactly '\/ACTION=Upgrade'
