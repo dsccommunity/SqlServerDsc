@@ -63,6 +63,25 @@ Describe 'Request-SqlDscRSDatabaseUpgradeScript' {
         }
     }
 
+    Context 'When validating the Configuration parameter attributes' {
+        BeforeAll {
+            $commandMetadata = Get-Command -Name 'Request-SqlDscRSDatabaseUpgradeScript'
+            $configurationParameter = $commandMetadata.Parameters['Configuration']
+        }
+
+        It 'Should have ValueFromPipeline set to True' {
+            $configurationParameter.Attributes.ValueFromPipeline | Should -Contain $true
+        }
+
+        It 'Should have Mandatory set to True' {
+            $configurationParameter.Attributes.Mandatory | Should -Contain $true
+        }
+
+        It 'Should have the expected parameter type' {
+            $configurationParameter.ParameterType.Name | Should -Be 'Object'
+        }
+    }
+
     Context 'When generating database upgrade script successfully' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
