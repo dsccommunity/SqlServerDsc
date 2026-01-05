@@ -56,7 +56,7 @@ Describe 'Update-SqlDscServerEdition' -Tag 'Public' {
     ) {
         $result = (Get-Command -Name 'Update-SqlDscServerEdition').ParameterSets |
             Where-Object -FilterScript {
-                $_.Name -eq $mockParameterSetName
+                $_.Name -eq $MockParameterSetName
             } |
             Select-Object -Property @(
                 @{
@@ -173,6 +173,31 @@ Describe 'Update-SqlDscServerEdition' -Tag 'Public' {
 
                     # Return $true if none of the above throw.
                     $true
+                } -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When specifying optional parameter Timeout' {
+            BeforeAll {
+                Mock -CommandName Start-SqlSetupProcess -MockWith {
+                    return 0
+                } -RemoveParameterValidation 'FilePath'
+            }
+
+            It 'Should call the mock with the correct Timeout value' {
+                $updateSqlDscServerEditionParameters = @{
+                    AcceptLicensingTerms = $true
+                    MediaPath            = '\SqlMedia'
+                    InstanceName         = 'MSSQLSERVER'
+                    ProductKey           = '12345-12345-12345-12345-12345'
+                    Timeout              = 3600
+                    Force                = $true
+                }
+
+                Update-SqlDscServerEdition @updateSqlDscServerEditionParameters
+
+                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    $Timeout -eq 3600
                 } -Exactly -Times 1 -Scope It
             }
         }
