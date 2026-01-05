@@ -56,7 +56,7 @@ Describe 'Update-SqlDscServer' -Tag 'Public' {
     ) {
         $result = (Get-Command -Name 'Update-SqlDscServer').ParameterSets |
             Where-Object -FilterScript {
-                $_.Name -eq $mockParameterSetName
+                $_.Name -eq $MockParameterSetName
             } |
             Select-Object -Property @(
                 @{
