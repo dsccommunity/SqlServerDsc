@@ -54,7 +54,6 @@
 #>
 function Test-SqlDscRSInitialized
 {
-
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the examples use pipeline input the rule cannot validate.')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
