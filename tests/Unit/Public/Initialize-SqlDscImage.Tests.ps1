@@ -56,7 +56,7 @@ Describe 'Initialize-SqlDscImage' -Tag 'Public' {
     ) {
         $result = (Get-Command -Name 'Initialize-SqlDscImage').ParameterSets |
             Where-Object -FilterScript {
-                $_.Name -eq $mockParameterSetName
+                $_.Name -eq $MockParameterSetName
             } |
             Select-Object -Property @(
                 @{
@@ -71,6 +71,26 @@ Describe 'Initialize-SqlDscImage' -Tag 'Public' {
 
         $result.ParameterSetName | Should -Be $MockParameterSetName
         $result.ParameterListAsString | Should -Be $MockExpectedParameters
+    }
+
+    Context 'When validating parameter properties' {
+        It 'Should have AcceptLicensingTerms as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Initialize-SqlDscImage').Parameters['AcceptLicensingTerms']
+
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        }
+
+        It 'Should have MediaPath as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Initialize-SqlDscImage').Parameters['MediaPath']
+
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        }
+
+        It 'Should have Features as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Initialize-SqlDscImage').Parameters['Features']
+
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        }
     }
 
     Context 'When setup action is ''PrepareImage''' {
@@ -143,7 +163,7 @@ Describe 'Initialize-SqlDscImage' -Tag 'Public' {
                     return 0
                 } -RemoveParameterValidation 'FilePath'
 
-                $initializeSqlDscImageParameters = @{
+                $mockInitializeSqlDscImageParameters = @{
                     AcceptLicensingTerms = $true
                     MediaPath            = '\SqlMedia'
                     Features             = 'SQLENGINE'
@@ -155,7 +175,7 @@ Describe 'Initialize-SqlDscImage' -Tag 'Public' {
             }
 
             It 'Should call the mock with the correct argument string' {
-                Initialize-SqlDscImage @initializeSqlDscImageParameters
+                Initialize-SqlDscImage @mockInitializeSqlDscImageParameters
 
                 Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                     $ArgumentList | Should -MatchExactly 'PBPORTRANGE=16450-16460' # cspell: disable-line
@@ -227,8 +247,10 @@ Describe 'Initialize-SqlDscImage' -Tag 'Public' {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
                 } -RemoveParameterValidation 'FilePath'
+            }
 
-                $initializeSqlDscImageParameters = @{
+            BeforeEach {
+                $mockInitializeSqlDscImageParameters = @{
                     AcceptLicensingTerms = $true
                     MediaPath            = '\SqlMedia'
                     Features             = 'SQLENGINE'
@@ -238,9 +260,9 @@ Describe 'Initialize-SqlDscImage' -Tag 'Public' {
             }
 
             It 'Should call the mock with the correct argument string' {
-                $initializeSqlDscImageParameters.$MockParameterName = $MockParameterValue
+                $mockInitializeSqlDscImageParameters.$MockParameterName = $MockParameterValue
 
-                Initialize-SqlDscImage @initializeSqlDscImageParameters
+                Initialize-SqlDscImage @mockInitializeSqlDscImageParameters
 
                 Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                     $ArgumentList | Should -MatchExactly $MockExpectedRegEx
