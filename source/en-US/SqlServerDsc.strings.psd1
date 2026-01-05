@@ -787,4 +787,26 @@ ConvertFrom-StringData @'
     Set_SqlDscRSDatabaseConnection_ShouldProcessCaption = Set report server database connection for Reporting Services instance
     Set_SqlDscRSDatabaseConnection_FailedToSet = Failed to set report server database connection for Reporting Services instance '{0}'. {1} (SSRSDC0001)
     Set_SqlDscRSDatabaseConnection_CredentialRequired = The Credential parameter is required when Type is '{0}'. (SSRSDC0002)
+
+    ## Restart-SqlDscRSService
+    Restart_SqlDscRSService_GettingService = Getting service information for '{0}'.
+    Restart_SqlDscRSService_ShouldProcessDescription = Restarting Reporting Services service '{0}'.
+    Restart_SqlDscRSService_ShouldProcessConfirmation = Are you sure you want to restart the Reporting Services service '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Restart_SqlDscRSService_ShouldProcessCaption = Restart Reporting Services service
+    Restart_SqlDscRSService_WaitingBeforeStart = Waiting {0} seconds before starting service '{1}'.
+    Restart_SqlDscRSService_StartingDependentService = Starting dependent service '{0}'.
+
+    ## Test-SqlDscRSInitialized
+    Test_SqlDscRSInitialized_Testing = Testing if Reporting Services instance '{0}' is initialized.
+    Test_SqlDscRSInitialized_IsInitialized = Reporting Services instance '{0}' is initialized.
+    Test_SqlDscRSInitialized_NotInitialized = Reporting Services instance '{0}' is not initialized.
+
+    ## Initialize-SqlDscRS
+    Initialize_SqlDscRS_Initializing = Initializing Reporting Services instance '{0}'.
+    Initialize_SqlDscRS_ShouldProcessDescription = Initializing Reporting Services instance '{0}'.
+    Initialize_SqlDscRS_ShouldProcessConfirmation = Are you sure you want to initialize Reporting Services instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Initialize_SqlDscRS_ShouldProcessCaption = Initialize Reporting Services instance
+    Initialize_SqlDscRS_FailedToInitialize = Failed to initialize Reporting Services instance '{0}'. {1} (ISRS0001)
 '@

@@ -177,6 +177,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added public command `Install-SqlDscFailoverCluster` to install SQL Server in
   a failover cluster configuration. Extracted from `Install-SqlDscServer`
   InstallFailoverCluster parameter set.
+- Added public command `Restart-SqlDscRSService` to restart the Windows service
+  for SQL Server Reporting Services or Power BI Report Server. Supports waiting
+  for dependent services, configurable wait time, and accepts pipeline input
+  from `Get-SqlDscRSConfiguration`.
+- Added public command `Test-SqlDscRSInitialized` to test whether a Reporting
+  Services instance is initialized by checking the `IsInitialized` property of
+  the configuration CIM instance.
+- Added public command `Initialize-SqlDscRS` to initialize Reporting Services
+  by calling the `InitializeReportServer` CIM method. Used to complete initial
+  configuration after database and URL setup.
 
 ### Changed
 
@@ -210,6 +220,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     ([issue #2017](https://github.com/dsccommunity/SqlServerDsc/issues/2017))
     ([issue #2019](https://github.com/dsccommunity/SqlServerDsc/issues/2019))
     ([issue #2021](https://github.com/dsccommunity/SqlServerDsc/issues/2021)).
+  - Refactored to use the public command `Restart-SqlDscRSService` for restarting
+    the Reporting Services Windows service instead of calling the private
+    function `Restart-ReportingServicesService` directly.
+  - Refactored to use the public commands `Test-SqlDscRSInitialized` and
+    `Initialize-SqlDscRS` for checking and performing Reporting Services
+    initialization instead of accessing the `IsInitialized` property and
+    calling the CIM method directly.
 - `Assert-SetupActionProperties`
   - Refactored to use the command `Get-FileVersion` from the DscResource.Common
     module instead of the private function `Get-FileVersionInformation`

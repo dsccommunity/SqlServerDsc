@@ -552,6 +552,10 @@ stages:
                   'tests/Integration/Commands/Remove-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscRSDatabaseConnection.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Restart-SqlDscRSService.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Test-SqlDscRSInitialized.Integration.Tests.ps1'
+                  # Group 4
+                  'tests/Integration/Commands/Initialize-SqlDscRS.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscReportingService.Integration.Tests.ps1'
                   # Group 9
@@ -631,6 +635,29 @@ stages:
                   'tests/Integration/Commands/Remove-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscRSDatabaseConnection.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscRSSslCertificateBinding.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Add-SqlDscRSSslCertificateBinding.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Remove-SqlDscRSSslCertificateBinding.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscRSSslCertificateBinding.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscRSServiceAccount.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscRSServiceAccount.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Restart-SqlDscRSService.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscRSSslCertificate.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscRSIPAddress.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscRSDatabaseInstallation.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Request-SqlDscRSDatabaseUpgradeScript.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscRSEmailConfiguration.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscRSUnattendedExecutionAccount.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Remove-SqlDscRSUnattendedExecutionAccount.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Test-SqlDscRSInitialized.Integration.Tests.ps1'
+                  # Group 4
+                  'tests/Integration/Commands/Initialize-SqlDscRS.Integration.Tests.ps1'
+                  # Group 5
+                  'tests/Integration/Commands/Backup-SqlDscRSEncryptionKey.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Restore-SqlDscRSEncryptionKey.Integration.Tests.ps1'
+                  # Group 7
+                  'tests/Integration/Commands/New-SqlDscRSEncryptionKey.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Remove-SqlDscRSEncryptionKey.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscPowerBIReportServer.Integration.Tests.ps1'
                   # Group 9

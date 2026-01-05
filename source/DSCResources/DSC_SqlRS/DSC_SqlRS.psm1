@@ -80,7 +80,7 @@ function Get-TargetResource
             $getTargetResourceResult.DatabaseInstanceName = 'MSSQLSERVER'
         }
 
-        $isInitialized = $rsConfiguration.IsInitialized
+        $isInitialized = $rsConfiguration | Test-SqlDscRSInitialized
 
         [System.Boolean] $getTargetResourceResult.IsInitialized = $isInitialized
 
@@ -348,7 +348,7 @@ function Set-TargetResource
         $language = $wmiOperatingSystem.OSLanguage
         $restartReportingService = $false
 
-        if (-not $rsConfiguration.IsInitialized)
+        if (-not ($rsConfiguration | Test-SqlDscRSInitialized))
         {
             Write-Verbose -Message "Initializing Reporting Services on $DatabaseServerName\$DatabaseInstanceName."
 
@@ -456,7 +456,7 @@ function Set-TargetResource
             #>
             Write-Verbose -Message $script:localizedData.RestartToFinishInitialization
 
-            Restart-ReportingServicesService -ServiceName $reportingServicesServiceName -WaitTime 30
+            Restart-SqlDscRSService -ServiceName $reportingServicesServiceName -WaitTime 30 -Force
 
             <#
                 Wait for the service to be fully ready after restart before attempting
@@ -481,7 +481,7 @@ function Set-TargetResource
                 InitializeReportServer will fail on SQL Server Standard and
                 lower editions.
             #>
-            if (-not $rsConfiguration.IsInitialized)
+            if (-not ($rsConfiguration | Test-SqlDscRSInitialized))
             {
                 Write-Verbose -Message "Did not help restarting the Reporting Services service, running the CIM method to initialize report server on $DatabaseServerName\$DatabaseInstanceName for instance ID '$($rsConfiguration.InstallationID)'."
 
@@ -498,15 +498,7 @@ function Set-TargetResource
 
                 $restartReportingService = $true
 
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $rsConfiguration
-                    MethodName  = 'InitializeReportServer'
-                    Arguments   = @{
-                        InstallationId = $rsConfiguration.InstallationID
-                    }
-                }
-
-                Invoke-RsCimMethod @invokeRsCimMethodParameters -ErrorAction 'Stop'
+                $rsConfiguration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
             }
             else
             {
@@ -646,7 +638,7 @@ function Set-TargetResource
         elseif ( $restartReportingService -and (-not $SuppressRestart) )
         {
             Write-Verbose -Message $script:localizedData.Restart
-            Restart-ReportingServicesService -ServiceName $reportingServicesServiceName -WaitTime 30
+            Restart-SqlDscRSService -ServiceName $reportingServicesServiceName -WaitTime 30 -Force
 
             <#
                 Wait for the service to be fully ready after restart before attempting
