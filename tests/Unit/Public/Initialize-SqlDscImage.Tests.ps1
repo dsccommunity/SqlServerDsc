@@ -242,6 +242,11 @@ Describe 'Initialize-SqlDscImage' -Tag 'Public' {
                 MockParameterValue = $true
                 MockExpectedRegEx  = '\/PBSCALEOUT=True' # cspell: disable-line
             }
+            @{
+                MockParameterName  = 'IAcknowledgeEntCalLimits'
+                MockParameterValue = $true
+                MockExpectedRegEx  = '\/IACKNOWLEDGEENTCALLIMITS=True' # cspell: disable-line
+            }
         ) {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
@@ -269,6 +274,31 @@ Describe 'Initialize-SqlDscImage' -Tag 'Public' {
 
                     # Return $true if none of the above throw.
                     $true
+                } -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When specifying optional parameter Timeout' {
+            BeforeAll {
+                Mock -CommandName Start-SqlSetupProcess -MockWith {
+                    return 0
+                } -RemoveParameterValidation 'FilePath'
+            }
+
+            It 'Should call the mock with the correct Timeout value' {
+                $mockInitializeSqlDscImageParameters = @{
+                    AcceptLicensingTerms = $true
+                    MediaPath            = '\SqlMedia'
+                    Features             = 'SQLENGINE'
+                    InstanceId           = 'MSSQLSERVER'
+                    Timeout              = 3600
+                    Force                = $true
+                }
+
+                Initialize-SqlDscImage @mockInitializeSqlDscImageParameters
+
+                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    $Timeout -eq 3600
                 } -Exactly -Times 1 -Scope It
             }
         }
