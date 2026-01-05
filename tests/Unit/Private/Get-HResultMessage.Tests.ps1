@@ -38,7 +38,7 @@ BeforeAll {
 }
 
 AfterAll {
-    Remove-Item -Path 'env:SqlServerDscCI'
+    Remove-Item -Path 'env:SqlServerDscCI' -ErrorAction 'SilentlyContinue'
 
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')

@@ -81,7 +81,7 @@ Describe 'Request-SqlDscRSDatabaseScript' {
         }
 
         It 'Should generate the database creation script without throwing' {
-            { $script:databaseScript = $script:configuration | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:databaseScript = $script:configuration | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' -ErrorAction 'Stop'
         }
 
         It 'Should return a string containing T-SQL' {
@@ -110,7 +110,7 @@ Describe 'Request-SqlDscRSDatabaseScript' {
         }
 
         It 'Should generate the database creation script without throwing' {
-            { $script:databaseScript = $script:configuration | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:databaseScript = $script:configuration | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' -ErrorAction 'Stop'
         }
 
         It 'Should return a string containing T-SQL' {
@@ -139,7 +139,7 @@ Describe 'Request-SqlDscRSDatabaseScript' {
         }
 
         It 'Should generate the database creation script without throwing' {
-            { $script:databaseScript = $script:configuration | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:databaseScript = $script:configuration | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' -ErrorAction 'Stop'
         }
 
         It 'Should return a string containing T-SQL' {

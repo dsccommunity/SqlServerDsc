@@ -53,7 +53,7 @@ Describe 'Initialize-SqlDscRS' {
 
         It 'Should initialize or return already initialized' -Skip:$script:isInitialized {
             # Only run initialization if not already initialized
-            { $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
         }
 
         It 'Should return configuration when using PassThru on initialized instance' -Skip:(-not $script:isInitialized) {
@@ -76,7 +76,7 @@ Describe 'Initialize-SqlDscRS' {
         }
 
         It 'Should initialize or return already initialized' -Skip:$script:isInitialized {
-            { $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
         }
 
         It 'Should return configuration when using PassThru on initialized instance' -Skip:(-not $script:isInitialized) {
@@ -98,7 +98,7 @@ Describe 'Initialize-SqlDscRS' {
         }
 
         It 'Should initialize or return already initialized' -Skip:$script:isInitialized {
-            { $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
         }
 
         It 'Should return configuration when using PassThru on initialized instance' -Skip:(-not $script:isInitialized) {
@@ -121,7 +121,7 @@ Describe 'Initialize-SqlDscRS' {
         }
 
         It 'Should initialize or return already initialized' -Skip:$script:isInitialized {
-            { $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
         }
 
         It 'Should return configuration when using PassThru on initialized instance' -Skip:(-not $script:isInitialized) {
