@@ -239,5 +239,29 @@ Describe 'Update-SqlDscServer' -Tag 'Public' {
                 } -Exactly -Times 1 -Scope It
             }
         }
+
+        Context 'When specifying optional parameter Timeout' {
+            BeforeAll {
+                Mock -CommandName Start-SqlSetupProcess -MockWith {
+                    return 0
+                } -RemoveParameterValidation 'FilePath'
+            }
+
+            It 'Should call the mock with the correct Timeout value' {
+                $updateSqlDscServerParameters = @{
+                    AcceptLicensingTerms = $true
+                    MediaPath            = '\SqlMedia'
+                    InstanceName         = 'MSSQLSERVER'
+                    Timeout              = 3600
+                    Force                = $true
+                }
+
+                Update-SqlDscServer @updateSqlDscServerParameters
+
+                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    $Timeout -eq 3600
+                } -Exactly -Times 1 -Scope It
+            }
+        }
     }
 }
