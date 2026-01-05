@@ -36,7 +36,9 @@ Describe 'Request-SqlDscRSDatabaseUpgradeScript' {
         It 'Should return database upgrade script or empty result' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            $configuration | Request-SqlDscRSDatabaseUpgradeScript -ErrorAction 'Stop'
+            $result = $configuration | Request-SqlDscRSDatabaseUpgradeScript -ErrorAction 'Stop'
+
+            $result | Should -BeOfType ([System.String])
         }
     }
 
@@ -44,7 +46,9 @@ Describe 'Request-SqlDscRSDatabaseUpgradeScript' {
         It 'Should return database upgrade script or empty result' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            $configuration | Request-SqlDscRSDatabaseUpgradeScript -ErrorAction 'Stop'
+            $result = $configuration | Request-SqlDscRSDatabaseUpgradeScript -ErrorAction 'Stop'
+
+            $result | Should -BeOfType ([System.String])
         }
     }
 
@@ -52,7 +56,9 @@ Describe 'Request-SqlDscRSDatabaseUpgradeScript' {
         It 'Should return database upgrade script or empty result' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            $configuration | Request-SqlDscRSDatabaseUpgradeScript -ErrorAction 'Stop'
+            $result = $configuration | Request-SqlDscRSDatabaseUpgradeScript -ErrorAction 'Stop'
+
+            $result | Should -BeOfType ([System.String])
         }
     }
 
@@ -60,7 +66,9 @@ Describe 'Request-SqlDscRSDatabaseUpgradeScript' {
         It 'Should return database upgrade script or empty result' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
 
-            $configuration | Request-SqlDscRSDatabaseUpgradeScript -ErrorAction 'Stop'
+            $result = $configuration | Request-SqlDscRSDatabaseUpgradeScript -ErrorAction 'Stop'
+
+            $result | Should -BeOfType ([System.String])
         }
     }
 }
