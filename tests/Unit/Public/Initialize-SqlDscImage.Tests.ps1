@@ -178,7 +178,7 @@ Describe 'Initialize-SqlDscImage' -Tag 'Public' {
                 Initialize-SqlDscImage @mockInitializeSqlDscImageParameters
 
                 Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly 'PBPORTRANGE=16450-16460' # cspell: disable-line
+                    $ArgumentList | Should -MatchExactly '\/PBPORTRANGE=16450-16460' # cspell: disable-line
 
                     # Return $true if none of the above throw.
                     $true
