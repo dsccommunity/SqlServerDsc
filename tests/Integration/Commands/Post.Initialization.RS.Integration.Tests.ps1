@@ -52,10 +52,12 @@ Describe 'Post.Initialization.RS' {
         It 'Should have accessible Reporting Services sites' {
             $result = $script:configuration | Test-SqlDscRSAccessible -Detailed -ErrorAction 'Stop'
 
-            $result.ReportServerAccessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
-            $result.ReportsAccessible | Should -BeTrue -Because 'the Reports web portal should be accessible'
-            $result.ReportServerStatusCode | Should -Be 200
-            $result.ReportsStatusCode | Should -Be 200
+            $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
+
+            $result | ForEach-Object -Process {
+                $_.Accessible | Should -BeTrue -Because ('the site ''{0}'' should be accessible' -f $_.Site)
+                $_.StatusCode | Should -Be 200 -Because ('the site ''{0}'' should return HTTP 200' -f $_.Site)
+            }
         }
     }
 
@@ -73,10 +75,12 @@ Describe 'Post.Initialization.RS' {
         It 'Should have accessible Reporting Services sites' {
             $result = $script:configuration | Test-SqlDscRSAccessible -Detailed -ErrorAction 'Stop'
 
-            $result.ReportServerAccessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
-            $result.ReportsAccessible | Should -BeTrue -Because 'the Reports web portal should be accessible'
-            $result.ReportServerStatusCode | Should -Be 200
-            $result.ReportsStatusCode | Should -Be 200
+            $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
+
+            $result | ForEach-Object -Process {
+                $_.Accessible | Should -BeTrue -Because ('the site ''{0}'' should be accessible' -f $_.Site)
+                $_.StatusCode | Should -Be 200 -Because ('the site ''{0}'' should return HTTP 200' -f $_.Site)
+            }
         }
     }
 
@@ -94,10 +98,12 @@ Describe 'Post.Initialization.RS' {
         It 'Should have accessible Reporting Services sites' {
             $result = $script:configuration | Test-SqlDscRSAccessible -Detailed -ErrorAction 'Stop'
 
-            $result.ReportServerAccessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
-            $result.ReportsAccessible | Should -BeTrue -Because 'the Reports web portal should be accessible'
-            $result.ReportServerStatusCode | Should -Be 200
-            $result.ReportsStatusCode | Should -Be 200
+            $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
+
+            $result | ForEach-Object -Process {
+                $_.Accessible | Should -BeTrue -Because ('the site ''{0}'' should be accessible' -f $_.Site)
+                $_.StatusCode | Should -Be 200 -Because ('the site ''{0}'' should return HTTP 200' -f $_.Site)
+            }
         }
     }
 
@@ -115,10 +121,12 @@ Describe 'Post.Initialization.RS' {
         It 'Should have accessible Reporting Services sites' {
             $result = $script:configuration | Test-SqlDscRSAccessible -Detailed -ErrorAction 'Stop'
 
-            $result.ReportServerAccessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
-            $result.ReportsAccessible | Should -BeTrue -Because 'the Reports web portal should be accessible'
-            $result.ReportServerStatusCode | Should -Be 200
-            $result.ReportsStatusCode | Should -Be 200
+            $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
+
+            $result | ForEach-Object -Process {
+                $_.Accessible | Should -BeTrue -Because ('the site ''{0}'' should be accessible' -f $_.Site)
+                $_.StatusCode | Should -Be 200 -Because ('the site ''{0}'' should return HTTP 200' -f $_.Site)
+            }
         }
     }
 }

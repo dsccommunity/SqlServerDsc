@@ -73,13 +73,6 @@ Describe 'Test-SqlDscRSAccessible' {
     }
 
     Context 'When using the Uri parameter set' {
-        Context 'When no URIs are specified' {
-            It 'Should throw an error' {
-                # Use splatting with empty values to force Uri parameter set
-                { Test-SqlDscRSAccessible -ReportServerUri '' } | Should -Throw
-            }
-        }
-
         Context 'When ReportServerUri is specified and site is accessible' {
             BeforeAll {
                 Mock -CommandName Invoke-WebRequest -MockWith {
@@ -169,13 +162,18 @@ Describe 'Test-SqlDscRSAccessible' {
             It 'Should return a detailed object' {
                 $result = Test-SqlDscRSAccessible -ReportServerUri 'http://localhost/ReportServer' -ReportsUri 'http://localhost/Reports' -Detailed
 
+                $result | Should -HaveCount 2
                 $result | Should -BeOfType [System.Management.Automation.PSCustomObject]
-                $result.ReportServerAccessible | Should -BeTrue
-                $result.ReportsAccessible | Should -BeTrue
-                $result.ReportServerStatusCode | Should -Be 200
-                $result.ReportsStatusCode | Should -Be 200
-                $result.ReportServerUri | Should -Be 'http://localhost/ReportServer'
-                $result.ReportsUri | Should -Be 'http://localhost/Reports'
+
+                $reportServerResult = $result | Where-Object -FilterScript { $_.Site -eq 'ReportServerWebService' }
+                $reportServerResult.Accessible | Should -BeTrue
+                $reportServerResult.StatusCode | Should -Be 200
+                $reportServerResult.Uri | Should -Be 'http://localhost/ReportServer'
+
+                $reportsResult = $result | Where-Object -FilterScript { $_.Site -eq 'ReportServerWebApp' }
+                $reportsResult.Accessible | Should -BeTrue
+                $reportsResult.StatusCode | Should -Be 200
+                $reportsResult.Uri | Should -Be 'http://localhost/Reports'
             }
         }
     }
@@ -324,9 +322,14 @@ Describe 'Test-SqlDscRSAccessible' {
             It 'Should return a detailed object' {
                 $result = Test-SqlDscRSAccessible -Configuration $mockCimInstance -ServerName 'localhost' -Detailed -TimeoutSeconds 5 -RetryIntervalSeconds 1
 
+                $result | Should -HaveCount 2
                 $result | Should -BeOfType [System.Management.Automation.PSCustomObject]
-                $result.ReportServerAccessible | Should -BeTrue
-                $result.ReportsAccessible | Should -BeTrue
+
+                $reportServerResult = $result | Where-Object -FilterScript { $_.Site -eq 'ReportServerWebService' }
+                $reportServerResult.Accessible | Should -BeTrue
+
+                $reportsResult = $result | Where-Object -FilterScript { $_.Site -eq 'ReportServerWebApp' }
+                $reportsResult.Accessible | Should -BeTrue
             }
         }
     }

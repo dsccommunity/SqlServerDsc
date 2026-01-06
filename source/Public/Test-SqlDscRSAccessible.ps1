@@ -87,15 +87,14 @@
         Returns `$true` if all specified sites return HTTP 200, `$false` otherwise.
 
     .OUTPUTS
-        `System.Management.Automation.PSCustomObject`
+        `System.Management.Automation.PSCustomObject[]`
 
-        When `-Detailed` is specified, returns an object containing:
-        - `ReportServerAccessible`: Boolean indicating if ReportServer is accessible.
-        - `ReportsAccessible`: Boolean indicating if Reports is accessible.
-        - `ReportServerStatusCode`: HTTP status code from ReportServer.
-        - `ReportsStatusCode`: HTTP status code from Reports.
-        - `ReportServerUri`: The URI tested for ReportServer.
-        - `ReportsUri`: The URI tested for Reports.
+        When `-Detailed` is specified, returns an array of objects, one for
+        each site tested, containing:
+        - `Site`: The site name (e.g., 'ReportServerWebService', 'ReportServerWebApp').
+        - `Accessible`: Boolean indicating if the site is accessible.
+        - `StatusCode`: HTTP status code returned from the site.
+        - `Uri`: The URI that was tested.
 
     .NOTES
         This command uses `Invoke-WebRequest` with `-UseDefaultCredentials`
@@ -106,7 +105,7 @@ function Test-SqlDscRSAccessible
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the examples use pipeline input the rule cannot validate.')]
     [CmdletBinding(DefaultParameterSetName = 'Configuration')]
     [OutputType([System.Boolean])]
-    [OutputType([System.Management.Automation.PSCustomObject])]
+    [OutputType([System.Management.Automation.PSCustomObject[]])]
     param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Configuration')]
@@ -390,16 +389,18 @@ function Test-SqlDscRSAccessible
 
         if ($Detailed.IsPresent)
         {
-            $detailedResult = [PSCustomObject] @{
-                ReportServerAccessible = $results['ReportServerWebService'].Accessible
-                ReportsAccessible      = $results['ReportServerWebApp'].Accessible -or $results['ReportManager'].Accessible
-                ReportServerStatusCode = $results['ReportServerWebService'].StatusCode
-                ReportsStatusCode      = ($results['ReportServerWebApp'].StatusCode, $results['ReportManager'].StatusCode | Where-Object -FilterScript { $_ }) | Select-Object -First 1
-                ReportServerUri        = $results['ReportServerWebService'].Uri
-                ReportsUri             = ($results['ReportServerWebApp'].Uri, $results['ReportManager'].Uri | Where-Object -FilterScript { $_ }) | Select-Object -First 1
+            # Return an array of detailed results for each site tested
+            $detailedResults = foreach ($siteEntry in $results.GetEnumerator())
+            {
+                [PSCustomObject] @{
+                    Site       = $siteEntry.Key
+                    Accessible = $siteEntry.Value.Accessible
+                    StatusCode = $siteEntry.Value.StatusCode
+                    Uri        = $siteEntry.Value.Uri
+                }
             }
 
-            return $detailedResult
+            return $detailedResults
         }
 
         return $allAccessible

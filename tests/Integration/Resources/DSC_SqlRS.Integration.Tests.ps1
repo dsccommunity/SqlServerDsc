@@ -184,8 +184,8 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
             $result = Test-SqlDscRSAccessible -ReportServerUri $reportServerUri -Detailed -ErrorAction 'Stop'
 
-            $result.ReportServerAccessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
-            $result.ReportServerStatusCode | Should -Be 200
+            $result.Accessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
+            $result.StatusCode | Should -Be 200
         }
 
         It 'Should be able to access the Reports site without any error' {
@@ -201,8 +201,8 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
             $result = Test-SqlDscRSAccessible -ReportsUri $reportsUri -Detailed -ErrorAction 'Stop'
 
-            $result.ReportsAccessible | Should -BeTrue -Because 'the Reports web portal should be accessible'
-            $result.ReportsStatusCode | Should -Be 200
+            $result.Accessible | Should -BeTrue -Because 'the Reports web portal should be accessible'
+            $result.StatusCode | Should -Be 200
         }
     }
 
