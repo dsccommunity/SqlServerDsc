@@ -814,4 +814,16 @@ ConvertFrom-StringData @'
     ## Request-SqlDscRSDatabaseUpgradeScript
     Request_SqlDscRSDatabaseUpgradeScript_Generating = Generating database upgrade script for Reporting Services instance '{0}'.
     Request_SqlDscRSDatabaseUpgradeScript_FailedToGenerate = Failed to generate database upgrade script for Reporting Services instance '{0}'. {1} (RSRSDBUS0001)
+
+    ## Test-SqlDscRSAccessible
+    Test_SqlDscRSAccessible_Testing = Testing if Reporting Services instance '{0}' sites are accessible.
+    Test_SqlDscRSAccessible_TestingExplicitUris = Testing accessibility of explicitly specified URIs.
+    Test_SqlDscRSAccessible_TestingSite = Testing accessibility of site '{0}' at URI '{1}'.
+    Test_SqlDscRSAccessible_SiteAccessible = Site '{0}' is accessible (attempt {1}).
+    Test_SqlDscRSAccessible_RetryingAccess = Site '{0}' not yet accessible (attempt {1} of {2}). Waiting {3} seconds...
+    Test_SqlDscRSAccessible_SiteReturnedError = Site '{0}' returned HTTP status code {1}.
+    Test_SqlDscRSAccessible_SiteNotAccessible = Site '{0}' is not accessible after {1} attempts.
+    Test_SqlDscRSAccessible_NoUrlReservations = No URL reservations found for Reporting Services instance '{0}'. (TSRSA0001)
+    Test_SqlDscRSAccessible_SiteNotConfigured = The site '{0}' is not configured for Reporting Services instance '{1}'. (TSRSA0002)
+    Test_SqlDscRSAccessible_NoUrisSpecified = No URIs specified. At least one of ReportServerUri or ReportsUri must be provided. (TSRSA0003)
 '@

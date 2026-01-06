@@ -557,6 +557,8 @@ stages:
                   'tests/Integration/Commands/Test-SqlDscRSInitialized.Integration.Tests.ps1'
                   # Group 4
                   'tests/Integration/Commands/Initialize-SqlDscRS.Integration.Tests.ps1'
+                  # Group 5 - Post-initialization validation
+                  'tests/Integration/Commands/Post.Initialization.RS.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscReportingService.Integration.Tests.ps1'
                   # Group 9
@@ -640,6 +642,8 @@ stages:
                   'tests/Integration/Commands/Test-SqlDscRSInitialized.Integration.Tests.ps1'
                   # Group 4
                   'tests/Integration/Commands/Initialize-SqlDscRS.Integration.Tests.ps1'
+                  # Group 5 - Post-initialization validation
+                  'tests/Integration/Commands/Post.Initialization.RS.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscPowerBIReportServer.Integration.Tests.ps1'
                   # Group 9
