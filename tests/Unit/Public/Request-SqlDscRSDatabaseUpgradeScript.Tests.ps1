@@ -86,6 +86,8 @@ Describe 'Request-SqlDscRSDatabaseUpgradeScript' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName = 'SSRS'
+                DatabaseName = 'ReportServer'
+                Version      = '15.0.2000.5'
             }
 
             $mockScript = @"
@@ -109,7 +111,9 @@ GO
             $result | Should -BeLike '*ALTER TABLE*'
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'GenerateDatabaseUpgradeScript'
+                $MethodName -eq 'GenerateDatabaseUpgradeScript' -and
+                $Arguments.DatabaseName -eq 'ReportServer' -and
+                $Arguments.ServerVersion -eq '15.0.2000.5'
             } -Exactly -Times 1
         }
     }
@@ -118,6 +122,8 @@ GO
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName = 'SSRS'
+                DatabaseName = 'ReportServer'
+                Version      = '15.0.2000.5'
             }
 
             Mock -CommandName Invoke-RsCimMethod -MockWith {
@@ -140,6 +146,8 @@ GO
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName = 'SSRS'
+                DatabaseName = 'ReportServer'
+                Version      = '15.0.2000.5'
             }
 
             Mock -CommandName Invoke-RsCimMethod -MockWith {
@@ -156,6 +164,8 @@ GO
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName = 'SSRS'
+                DatabaseName = 'ReportServer'
+                Version      = '15.0.2000.5'
             }
 
             Mock -CommandName Invoke-RsCimMethod -MockWith {

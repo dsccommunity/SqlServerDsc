@@ -64,12 +64,18 @@ function Request-SqlDscRSDatabaseUpgradeScript
     process
     {
         $instanceName = $Configuration.InstanceName
+        $databaseName = $Configuration.DatabaseName
+        $serverVersion = $Configuration.Version
 
         Write-Verbose -Message ($script:localizedData.Request_SqlDscRSDatabaseUpgradeScript_Generating -f $instanceName)
 
         $invokeRsCimMethodParameters = @{
             CimInstance = $Configuration
             MethodName  = 'GenerateDatabaseUpgradeScript'
+            Arguments   = @{
+                DatabaseName  = $databaseName
+                ServerVersion = $serverVersion
+            }
         }
 
         try
