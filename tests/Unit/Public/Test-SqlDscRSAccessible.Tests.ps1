@@ -384,19 +384,53 @@ Describe 'Test-SqlDscRSAccessible' {
     }
 
     Context 'When testing default parameter values' {
-        It 'Should have $env:COMPUTERNAME as default value for ServerName parameter' {
+        BeforeAll {
+            Mock -CommandName Get-ComputerName -MockWith {
+                return 'TESTSERVER'
+            }
+
+            Mock -CommandName Get-SqlDscRSUrlReservation -MockWith {
+                return @{
+                    Application = @('ReportServerWebService')
+                    UrlString   = @('http://+:80')
+                }
+            }
+
+            Mock -CommandName Invoke-WebRequest -MockWith {
+                return @{
+                    StatusCode = 200
+                }
+            }
+
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName                  = 'SSRS'
+                VirtualDirectoryReportServer  = 'ReportServer'
+                VirtualDirectoryReportManager = 'Reports'
+            }
+        }
+
+        It 'Should use Get-ComputerName as default ServerName when not specified' {
+            $result = Test-SqlDscRSAccessible -Configuration $mockCimInstance -TimeoutSeconds 5 -RetryIntervalSeconds 1
+
+            $result | Should -BeTrue
+
+            Should -Invoke -CommandName Get-ComputerName -Exactly -Times 1
+            Should -Invoke -CommandName Invoke-WebRequest -ParameterFilter {
+                $Uri -eq 'http://TESTSERVER/ReportServer'
+            }
+        }
+
+        It 'Should have ServerName parameter in Configuration parameter set' {
             $command = Get-Command -Name 'Test-SqlDscRSAccessible'
             $serverNameParam = $command.Parameters['ServerName']
 
-            # The default value script block should reference $env:COMPUTERNAME
+            $serverNameParam | Should -Not -BeNullOrEmpty
+
             $serverNameParam.Attributes | Where-Object -FilterScript {
                 $_ -is [System.Management.Automation.ParameterAttribute]
             } | ForEach-Object -Process {
                 $_.ParameterSetName | Should -Be 'Configuration'
             }
-
-            # Verify the parameter exists and is in the correct parameter set
-            $serverNameParam | Should -Not -BeNullOrEmpty
         }
     }
 }

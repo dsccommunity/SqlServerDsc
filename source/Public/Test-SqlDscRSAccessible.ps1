@@ -115,7 +115,7 @@ function Test-SqlDscRSAccessible
 
         [Parameter(ParameterSetName = 'Configuration')]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName,
 
         [Parameter(ParameterSetName = 'Uri')]
         [ValidateNotNullOrEmpty()]
@@ -196,6 +196,12 @@ function Test-SqlDscRSAccessible
 
         if ($PSCmdlet.ParameterSetName -eq 'Configuration')
         {
+            # Use Get-ComputerName for cross-platform compatibility if ServerName not specified
+            if (-not $PSBoundParameters.ContainsKey('ServerName'))
+            {
+                $ServerName = Get-ComputerName
+            }
+
             $instanceName = $Configuration.InstanceName
 
             Write-Verbose -Message ($script:localizedData.Test_SqlDscRSAccessible_Testing -f $instanceName)
