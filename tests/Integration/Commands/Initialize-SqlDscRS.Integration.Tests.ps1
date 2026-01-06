@@ -56,7 +56,7 @@ Describe 'Initialize-SqlDscRS' {
             $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
         }
 
-        It 'Should return configuration when using PassThru on initialized instance' -Skip:(-not $script:isInitialized) {
+        It 'Should return configuration when using PassThru on initialized instance' {
             # Re-initialize (should be idempotent)
             $result = $script:configuration | Initialize-SqlDscRS -Force -PassThru -ErrorAction 'Stop'
 
@@ -79,7 +79,7 @@ Describe 'Initialize-SqlDscRS' {
             $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
         }
 
-        It 'Should return configuration when using PassThru on initialized instance' -Skip:(-not $script:isInitialized) {
+        It 'Should return configuration when using PassThru on initialized instance' {
             $result = $script:configuration | Initialize-SqlDscRS -Force -PassThru -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
@@ -101,7 +101,7 @@ Describe 'Initialize-SqlDscRS' {
             $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
         }
 
-        It 'Should return configuration when using PassThru on initialized instance' -Skip:(-not $script:isInitialized) {
+        It 'Should return configuration when using PassThru on initialized instance' {
             $result = $script:configuration | Initialize-SqlDscRS -Force -PassThru -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
@@ -123,7 +123,7 @@ Describe 'Initialize-SqlDscRS' {
             $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
         }
 
-        It 'Should return configuration when using PassThru on initialized instance' -Skip:(-not $script:isInitialized) {
+        It 'Should return configuration when using PassThru on initialized instance' {
             $result = $script:configuration | Initialize-SqlDscRS -Force -PassThru -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty

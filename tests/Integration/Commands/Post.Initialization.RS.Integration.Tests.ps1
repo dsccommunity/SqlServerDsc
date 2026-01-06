@@ -36,11 +36,20 @@ BeforeAll {
         This test file validates that Reporting Services sites are accessible
         after initialization. It runs after Initialize-SqlDscRS to verify
         the RS configuration is complete and functional.
+
+        Uses explicit URIs instead of relying on URL reservations from the
+        configuration CIM instance, as the ListReservedUrls CIM method may
+        not return data reliably in all CI scenarios.
 #>
 Describe 'Post.Initialization.RS' {
     Context 'When validating SQL Server 2017 Reporting Services accessibility' -Tag @('Integration_SQL2017_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+
+            # SSRS 2017 and later use fixed virtual directories without instance suffix
+            $computerName = Get-ComputerName
+            $script:reportServerUri = 'http://{0}/ReportServer' -f $computerName
+            $script:reportsUri = 'http://{0}/Reports' -f $computerName
         }
 
         It 'Should have an initialized instance' {
@@ -49,21 +58,31 @@ Describe 'Post.Initialization.RS' {
             $isInitialized | Should -BeTrue
         }
 
-        It 'Should have accessible Reporting Services sites' {
-            $result = $script:configuration | Test-SqlDscRSAccessible -Detailed -ErrorAction 'Stop'
+        It 'Should have accessible ReportServer site' {
+            $result = Test-SqlDscRSAccessible -ReportServerUri $script:reportServerUri -Detailed -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
+            $result.Accessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
+            $result.StatusCode | Should -Be 200 -Because 'the ReportServer web service should return HTTP 200'
+        }
 
-            $result | ForEach-Object -Process {
-                $_.Accessible | Should -BeTrue -Because ('the site ''{0}'' should be accessible' -f $_.Site)
-                $_.StatusCode | Should -Be 200 -Because ('the site ''{0}'' should return HTTP 200' -f $_.Site)
-            }
+        It 'Should have accessible Reports site' {
+            $result = Test-SqlDscRSAccessible -ReportsUri $script:reportsUri -Detailed -ErrorAction 'Stop'
+
+            $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
+            $result.Accessible | Should -BeTrue -Because 'the Reports web portal should be accessible'
+            $result.StatusCode | Should -Be 200 -Because 'the Reports web portal should return HTTP 200'
         }
     }
 
     Context 'When validating SQL Server 2019 Reporting Services accessibility' -Tag @('Integration_SQL2019_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+
+            # SSRS 2019 uses fixed virtual directories without instance suffix
+            $computerName = Get-ComputerName
+            $script:reportServerUri = 'http://{0}/ReportServer' -f $computerName
+            $script:reportsUri = 'http://{0}/Reports' -f $computerName
         }
 
         It 'Should have an initialized instance' {
@@ -72,21 +91,31 @@ Describe 'Post.Initialization.RS' {
             $isInitialized | Should -BeTrue
         }
 
-        It 'Should have accessible Reporting Services sites' {
-            $result = $script:configuration | Test-SqlDscRSAccessible -Detailed -ErrorAction 'Stop'
+        It 'Should have accessible ReportServer site' {
+            $result = Test-SqlDscRSAccessible -ReportServerUri $script:reportServerUri -Detailed -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
+            $result.Accessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
+            $result.StatusCode | Should -Be 200 -Because 'the ReportServer web service should return HTTP 200'
+        }
 
-            $result | ForEach-Object -Process {
-                $_.Accessible | Should -BeTrue -Because ('the site ''{0}'' should be accessible' -f $_.Site)
-                $_.StatusCode | Should -Be 200 -Because ('the site ''{0}'' should return HTTP 200' -f $_.Site)
-            }
+        It 'Should have accessible Reports site' {
+            $result = Test-SqlDscRSAccessible -ReportsUri $script:reportsUri -Detailed -ErrorAction 'Stop'
+
+            $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
+            $result.Accessible | Should -BeTrue -Because 'the Reports web portal should be accessible'
+            $result.StatusCode | Should -Be 200 -Because 'the Reports web portal should return HTTP 200'
         }
     }
 
     Context 'When validating SQL Server 2022 Reporting Services accessibility' -Tag @('Integration_SQL2022_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+
+            # SSRS 2022 uses fixed virtual directories without instance suffix
+            $computerName = Get-ComputerName
+            $script:reportServerUri = 'http://{0}/ReportServer' -f $computerName
+            $script:reportsUri = 'http://{0}/Reports' -f $computerName
         }
 
         It 'Should have an initialized instance' {
@@ -95,21 +124,31 @@ Describe 'Post.Initialization.RS' {
             $isInitialized | Should -BeTrue
         }
 
-        It 'Should have accessible Reporting Services sites' {
-            $result = $script:configuration | Test-SqlDscRSAccessible -Detailed -ErrorAction 'Stop'
+        It 'Should have accessible ReportServer site' {
+            $result = Test-SqlDscRSAccessible -ReportServerUri $script:reportServerUri -Detailed -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
+            $result.Accessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
+            $result.StatusCode | Should -Be 200 -Because 'the ReportServer web service should return HTTP 200'
+        }
 
-            $result | ForEach-Object -Process {
-                $_.Accessible | Should -BeTrue -Because ('the site ''{0}'' should be accessible' -f $_.Site)
-                $_.StatusCode | Should -Be 200 -Because ('the site ''{0}'' should return HTTP 200' -f $_.Site)
-            }
+        It 'Should have accessible Reports site' {
+            $result = Test-SqlDscRSAccessible -ReportsUri $script:reportsUri -Detailed -ErrorAction 'Stop'
+
+            $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
+            $result.Accessible | Should -BeTrue -Because 'the Reports web portal should be accessible'
+            $result.StatusCode | Should -Be 200 -Because 'the Reports web portal should return HTTP 200'
         }
     }
 
     Context 'When validating Power BI Report Server accessibility' -Tag @('Integration_PowerBI') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
+
+            # Power BI Report Server uses fixed virtual directories
+            $computerName = Get-ComputerName
+            $script:reportServerUri = 'http://{0}/ReportServer' -f $computerName
+            $script:reportsUri = 'http://{0}/Reports' -f $computerName
         }
 
         It 'Should have an initialized instance' {
@@ -118,15 +157,20 @@ Describe 'Post.Initialization.RS' {
             $isInitialized | Should -BeTrue
         }
 
-        It 'Should have accessible Reporting Services sites' {
-            $result = $script:configuration | Test-SqlDscRSAccessible -Detailed -ErrorAction 'Stop'
+        It 'Should have accessible ReportServer site' {
+            $result = Test-SqlDscRSAccessible -ReportServerUri $script:reportServerUri -Detailed -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
+            $result.Accessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
+            $result.StatusCode | Should -Be 200 -Because 'the ReportServer web service should return HTTP 200'
+        }
 
-            $result | ForEach-Object -Process {
-                $_.Accessible | Should -BeTrue -Because ('the site ''{0}'' should be accessible' -f $_.Site)
-                $_.StatusCode | Should -Be 200 -Because ('the site ''{0}'' should return HTTP 200' -f $_.Site)
-            }
+        It 'Should have accessible Reports site' {
+            $result = Test-SqlDscRSAccessible -ReportsUri $script:reportsUri -Detailed -ErrorAction 'Stop'
+
+            $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
+            $result.Accessible | Should -BeTrue -Because 'the Reports web portal should be accessible'
+            $result.StatusCode | Should -Be 200 -Because 'the Reports web portal should return HTTP 200'
         }
     }
 }
