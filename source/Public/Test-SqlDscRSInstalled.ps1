@@ -35,7 +35,6 @@
 #>
 function Test-SqlDscRSInstalled
 {
-    # cSpell: ignore PBIRS
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param

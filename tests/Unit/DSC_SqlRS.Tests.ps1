@@ -400,19 +400,6 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 return
             }
-
-            # Inject a stub in the module scope to support testing cross-plattform
-            function script:Invoke-CimMethod
-            {
-                [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules\Measure-ParameterBlockParameterAttribute', '', Justification='The stub cannot use [Parameter()].')]
-                param
-                (
-                    $MethodName,
-                    $Arguments
-                )
-
-                return
-            }
         }
 
         $mockNamedInstanceName = 'INSTANCE'
@@ -429,10 +416,6 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         $mockVirtualDirectoryReportManagerName = 'Reports_SQL2016'
         $mockVirtualDirectoryReportServerName = 'ReportServer_SQL2016'
         $mockReportingServicesServiceName = 'SQLServerReportingServices'
-
-        $mockInvokeCimMethod = {
-            throw 'Should not call Invoke-CimMethod directly, should call the wrapper Invoke-RsCimMethod.'
-        }
 
         $mockInvokeRsCimMethod_ListReservedUrls = {
             return New-Object -TypeName Object |
@@ -505,23 +488,17 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
         Mock -CommandName Get-SqlDscRSUrlReservation -MockWith $mockInvokeRsCimMethod_ListReservedUrls
 
-        <#
-            This is mocked here so that no calls are made to it directly,
-            or if any mock of Invoke-RsCimMethod are wrong.
-        #>
-        Mock -CommandName Invoke-CimMethod -MockWith $mockInvokeCimMethod
-
         Mock -CommandName Import-SqlDscPreferredModule
         Mock -CommandName Invoke-SqlDscQuery
         Mock -CommandName Enable-SqlDscRsSecureConnection
         Mock -CommandName Disable-SqlDscRsSecureConnection
-        Mock -CommandName Restart-ReportingServicesService
+        Mock -CommandName Restart-SqlDscRSService
         Mock -CommandName Start-Sleep
         Mock -CommandName Set-SqlDscRSVirtualDirectory
         Mock -CommandName Add-SqlDscRSUrlReservation
         Mock -CommandName Remove-SqlDscRSUrlReservation
         Mock -CommandName Set-SqlDscRSUrlReservation
-        Mock -CommandName Invoke-RsCimMethod
+        Mock -CommandName Initialize-SqlDscRS
         Mock -CommandName Request-SqlDscRSDatabaseScript -MockWith {
             return 'select * from something'
         }
@@ -529,12 +506,6 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             return 'select * from something'
         }
         Mock -CommandName Set-SqlDscRSDatabaseConnection
-
-        <#
-            This is mocked here so that no calls are made to it directly,
-            or if any mock of Invoke-RsCimMethod are wrong.
-        #>
-        Mock -CommandName Invoke-CimMethod -MockWith $mockInvokeCimMethod
 
         $mockDynamicReportServerApplicationName = $mockReportServerApplicationName
         $mockDynamicReportsApplicationName = $mockReportsApplicationName
@@ -545,19 +516,6 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             $script:mockNamedInstanceName = 'INSTANCE'
             $script:mockReportingServicesDatabaseServerName = 'SERVER'
             $script:mockReportingServicesDatabaseNamedInstanceName = $mockNamedInstanceName
-
-            # Inject a stub in the module scope to support testing cross-plattform
-            function script:Invoke-CimMethod
-            {
-                [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules\Measure-ParameterBlockParameterAttribute', '', Justification='The stub cannot use [Parameter()].')]
-                param
-                (
-                    $MethodName,
-                    $Arguments
-                )
-
-                return
-            }
         }
     }
 
@@ -612,13 +570,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'RemoveURL'
-                } -Exactly -Times 0 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'InitializeReportServer'
-                } -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Initialize-SqlDscRS -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 1 -Scope It
 
@@ -644,7 +596,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It
-                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
+                Should -Invoke -CommandName Restart-SqlDscRSService -Exactly -Times 2 -Scope It
             }
 
             Context 'When there is no Reporting Services instance after Set-TargetResource has been called' {
@@ -862,9 +814,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $Application -eq $mockReportsApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'InitializeReportServer'
-                } -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Initialize-SqlDscRS -Exactly -Times 0 -Scope It
 
                 Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 0 -Scope It
 
@@ -890,7 +840,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Restart-SqlDscRSService -Exactly -Times 1 -Scope It
             }
         }
 
@@ -960,9 +910,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $Application -eq $mockReportsApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'InitializeReportServer'
-                } -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Initialize-SqlDscRS -Exactly -Times 0 -Scope It
 
                 Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 0 -Scope It
 
@@ -988,7 +936,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Restart-SqlDscRSService -Exactly -Times 0 -Scope It
             }
         }
 
@@ -1038,13 +986,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             It 'Should configure Reporting Service without throwing an error' {
                 $null = Set-TargetResource @defaultParameters
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'RemoveURL'
-                } -Exactly -Times 0 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'InitializeReportServer'
-                } -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Initialize-SqlDscRS -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 1 -Scope It
 
@@ -1070,7 +1012,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It
-                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
+                Should -Invoke -CommandName Restart-SqlDscRSService -Exactly -Times 2 -Scope It
 
                 Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
                     $PesterBoundParameters.Keys -notcontains 'Encrypt'
@@ -1149,13 +1091,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             Should -Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Times 0 -Scope It
             Should -Invoke -CommandName Disable-SqlDscRsSecureConnection -Exactly -Times 0 -Scope It
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'RemoveURL'
-            } -Exactly -Times 0 -Scope It
-
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'InitializeReportServer'
-            } -Exactly -Times 0 -Scope It
+            Should -Invoke -CommandName Initialize-SqlDscRS -Exactly -Times 0 -Scope It
 
             Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 1 -Scope It
 
@@ -1181,7 +1117,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
             Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It
-            Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Restart-SqlDscRSService -Exactly -Times 1 -Scope It
         }
     }
 }
@@ -1437,142 +1373,6 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
                 $resultTestTargetResource = Test-TargetResource @defaultParameters
 
                 $resultTestTargetResource | Should -BeTrue
-            }
-        }
-    }
-}
-
-Describe 'SqlRS\Invoke-RsCimMethod' -Tag 'Helper' {
-    BeforeAll {
-        InModuleScope -ScriptBlock {
-            $script:mockCimInstance = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList @(
-                'MSReportServer_ConfigurationSetting'
-                'root/Microsoft/SQLServer/ReportServer/RS_SQL2016/v13/Admin'
-            )
-
-            # Inject a stub in the module scope to support testing cross-plattform
-            function script:Invoke-CimMethod
-            {
-                [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules\Measure-ParameterBlockParameterAttribute', '', Justification='The stub cannot use [Parameter()].')]
-                param
-                (
-                    $MethodName,
-                    $Arguments
-                )
-
-                return
-            }
-        }
-    }
-
-    Context 'When calling a method that execute successfully' {
-        BeforeAll {
-            Mock -CommandName Invoke-CimMethod -MockWith {
-                return @{
-                    HRESULT = 0 # cSpell: disable-line
-                }
-            }
-        }
-
-        Context 'When calling Invoke-CimMethod without arguments' {
-            It 'Should call Invoke-CimMethod without throwing an error' {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $invokeRsCimMethodParameters = @{
-                        CimInstance = $mockCimInstance
-                        MethodName  = 'AnyMethod'
-                    }
-
-                    $resultTestTargetResource = Invoke-RsCimMethod @invokeRsCimMethodParameters
-                    $resultTestTargetResource.HRESULT | Should -Be 0 # cSpell: disable-line
-                }
-
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
-                    $MethodName -eq 'AnyMethod' -and $Arguments -eq $null
-                } -Exactly -Times 1
-            }
-        }
-
-        Context 'When calling Invoke-CimMethod with arguments' {
-            It 'Should call Invoke-CimMethod without throwing an error' {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $invokeRsCimMethodParameters = @{
-                        CimInstance = $mockCimInstance
-                        MethodName  = 'AnyMethod'
-                        Arguments   = @{
-                            Argument1 = 'ArgumentValue1'
-                        }
-                    }
-
-                    $resultTestTargetResource = Invoke-RsCimMethod @invokeRsCimMethodParameters
-                    $resultTestTargetResource.HRESULT | Should -Be 0 # cSpell: disable-line
-                }
-
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
-                    $MethodName -eq 'AnyMethod' -and $Arguments.Argument1 -eq 'ArgumentValue1'
-                } -Exactly -Times 1
-            }
-        }
-    }
-
-    Context 'When calling a method that fails with an error' {
-        Context 'When Invoke-CimMethod fails and returns an object with a Error property' {
-            BeforeAll {
-                Mock -CommandName Invoke-CimMethod -MockWith {
-                    return @{
-                        HRESULT = 1 # cSpell: disable-line
-                        Error   = 'Something went wrong'
-                    }
-                }
-            }
-
-            It 'Should call Invoke-CimMethod and throw the correct error' {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $invokeRsCimMethodParameters = @{
-                        CimInstance = $mockCimInstance
-                        MethodName  = 'AnyMethod'
-                    }
-
-                    # cSpell: disable-next
-                    { Invoke-RsCimMethod @invokeRsCimMethodParameters } | Should -Throw 'Method AnyMethod() failed with an error. Error: Something went wrong (HRESULT:1)'
-                }
-
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
-                    $MethodName -eq 'AnyMethod'
-                } -Exactly -Times 1
-            }
-        }
-
-        Context 'When Invoke-CimMethod fails and returns an object with a ExtendedErrors property' {
-            BeforeAll {
-                Mock -CommandName Invoke-CimMethod -MockWith {
-                    return New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name 'HRESULT' -Value 1 -PassThru | # cSpell: disable-line
-                        Add-Member -MemberType NoteProperty -Name 'ExtendedErrors' -Value @('Something went wrong', 'Another thing went wrong') -PassThru -Force
-                }
-            }
-
-            It 'Should call Invoke-CimMethod and throw the correct error' {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $invokeRsCimMethodParameters = @{
-                        CimInstance = $mockCimInstance
-                        MethodName  = 'AnyMethod'
-                    }
-
-                    # cSpell: disable-next
-                    { Invoke-RsCimMethod @invokeRsCimMethodParameters } | Should -Throw 'Method AnyMethod() failed with an error. Error: Something went wrong;Another thing went wrong (HRESULT:1)'
-                }
-
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
-                    $MethodName -eq 'AnyMethod'
-                } -Exactly -Times 1
             }
         }
     }

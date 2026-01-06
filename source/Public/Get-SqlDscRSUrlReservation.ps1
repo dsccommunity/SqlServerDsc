@@ -50,7 +50,6 @@
 #>
 function Get-SqlDscRSUrlReservation
 {
-    # cSpell: ignore PBIRS
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the examples use pipeline input the rule cannot validate.')]
     [CmdletBinding()]
     [OutputType([Microsoft.Management.Infrastructure.CimMethodResult])]

@@ -135,7 +135,6 @@ Describe 'Get-SqlDscRSUrlReservation' {
     }
 
     Context 'When getting URL reservations for Power BI Report Server' -Tag @('Integration_PowerBI') {
-        # cSpell: ignore PBIRS
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
         }

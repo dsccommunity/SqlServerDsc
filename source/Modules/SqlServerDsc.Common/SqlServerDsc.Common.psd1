@@ -31,7 +31,6 @@
         'Connect-SQLAnalysis'
         'Get-SqlInstanceMajorVersion'
         'Restart-SqlService'
-        'Restart-ReportingServicesService'
         'Update-AvailabilityGroupReplica'
         'Test-LoginEffectivePermissions'
         'Test-AvailabilityReplicaSeedingModeAutomatic'

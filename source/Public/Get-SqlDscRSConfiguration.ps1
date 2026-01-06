@@ -51,7 +51,6 @@
 #>
 function Get-SqlDscRSConfiguration
 {
-    # cSpell: ignore PBIRS
     [CmdletBinding()]
     [OutputType([Microsoft.Management.Infrastructure.CimInstance])]
     param

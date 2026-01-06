@@ -44,7 +44,7 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         }
 
         It 'Should generate the database rights script without throwing' {
-            { $script:rightsScript = $script:configuration | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName $script:serviceAccount -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:rightsScript = $script:configuration | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName $script:serviceAccount -ErrorAction 'Stop'
         }
 
         It 'Should return a string containing T-SQL' {
@@ -66,7 +66,7 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         }
 
         It 'Should generate the database rights script without throwing' {
-            { $script:rightsScript = $script:configuration | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName $script:serviceAccount -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:rightsScript = $script:configuration | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName $script:serviceAccount -ErrorAction 'Stop'
         }
 
         It 'Should return a string containing T-SQL' {
@@ -87,7 +87,7 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         }
 
         It 'Should generate the database rights script without throwing' {
-            { $script:rightsScript = $script:configuration | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName $script:serviceAccount -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:rightsScript = $script:configuration | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName $script:serviceAccount -ErrorAction 'Stop'
         }
 
         It 'Should return a string containing T-SQL' {
@@ -108,7 +108,7 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         }
 
         It 'Should generate the database rights script without throwing' {
-            { $script:rightsScript = $script:configuration | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName $script:serviceAccount -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:rightsScript = $script:configuration | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName $script:serviceAccount -ErrorAction 'Stop'
         }
 
         It 'Should return a string containing T-SQL' {

@@ -552,6 +552,11 @@ stages:
                   'tests/Integration/Commands/Remove-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscRSDatabaseConnection.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Restart-SqlDscRSService.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Request-SqlDscRSDatabaseUpgradeScript.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Test-SqlDscRSInitialized.Integration.Tests.ps1'
+                  # Group 4
+                  'tests/Integration/Commands/Initialize-SqlDscRS.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscReportingService.Integration.Tests.ps1'
                   # Group 9
@@ -631,6 +636,10 @@ stages:
                   'tests/Integration/Commands/Remove-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscRSDatabaseConnection.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Restart-SqlDscRSService.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Test-SqlDscRSInitialized.Integration.Tests.ps1'
+                  # Group 4
+                  'tests/Integration/Commands/Initialize-SqlDscRS.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscPowerBIReportServer.Integration.Tests.ps1'
                   # Group 9

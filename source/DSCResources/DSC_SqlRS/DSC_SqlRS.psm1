@@ -80,7 +80,7 @@ function Get-TargetResource
             $getTargetResourceResult.DatabaseInstanceName = 'MSSQLSERVER'
         }
 
-        $isInitialized = $rsConfiguration.IsInitialized
+        $isInitialized = $rsConfiguration | Test-SqlDscRSInitialized
 
         [System.Boolean] $getTargetResourceResult.IsInitialized = $isInitialized
 
@@ -348,7 +348,7 @@ function Set-TargetResource
         $language = $wmiOperatingSystem.OSLanguage
         $restartReportingService = $false
 
-        if (-not $rsConfiguration.IsInitialized)
+        if (-not ($rsConfiguration | Test-SqlDscRSInitialized))
         {
             Write-Verbose -Message "Initializing Reporting Services on $DatabaseServerName\$DatabaseInstanceName."
 
@@ -456,7 +456,7 @@ function Set-TargetResource
             #>
             Write-Verbose -Message $script:localizedData.RestartToFinishInitialization
 
-            Restart-ReportingServicesService -ServiceName $reportingServicesServiceName -WaitTime 30
+            Restart-SqlDscRSService -ServiceName $reportingServicesServiceName -WaitTime 30 -Force
 
             <#
                 Wait for the service to be fully ready after restart before attempting
@@ -481,7 +481,7 @@ function Set-TargetResource
                 InitializeReportServer will fail on SQL Server Standard and
                 lower editions.
             #>
-            if (-not $rsConfiguration.IsInitialized)
+            if (-not ($rsConfiguration | Test-SqlDscRSInitialized))
             {
                 Write-Verbose -Message "Did not help restarting the Reporting Services service, running the CIM method to initialize report server on $DatabaseServerName\$DatabaseInstanceName for instance ID '$($rsConfiguration.InstallationID)'."
 
@@ -498,15 +498,7 @@ function Set-TargetResource
 
                 $restartReportingService = $true
 
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $rsConfiguration
-                    MethodName  = 'InitializeReportServer'
-                    Arguments   = @{
-                        InstallationId = $rsConfiguration.InstallationID
-                    }
-                }
-
-                Invoke-RsCimMethod @invokeRsCimMethodParameters -ErrorAction 'Stop'
+                $rsConfiguration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
             }
             else
             {
@@ -646,7 +638,7 @@ function Set-TargetResource
         elseif ( $restartReportingService -and (-not $SuppressRestart) )
         {
             Write-Verbose -Message $script:localizedData.Restart
-            Restart-ReportingServicesService -ServiceName $reportingServicesServiceName -WaitTime 30
+            Restart-SqlDscRSService -ServiceName $reportingServicesServiceName -WaitTime 30 -Force
 
             <#
                 Wait for the service to be fully ready after restart before attempting
@@ -849,82 +841,4 @@ function Test-TargetResource
     }
 
     $result
-}
-
-<#
-    .SYNOPSIS
-        A wrapper for Invoke-CimMethod to be able to handle errors in one place.
-
-    .PARAMETER CimInstance
-        The CIM instance object that contains the method to call.
-
-    .PARAMETER MethodName
-        The method to call in the CIM Instance object.
-
-    .PARAMETER Arguments
-        The arguments that should be
-#>
-function Invoke-RsCimMethod
-{
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('AvoidThrowOutsideOfTry', '', Justification = 'Because the code throws based on an prior expression')]
-    [CmdletBinding()]
-    [OutputType([Microsoft.Management.Infrastructure.CimMethodResult])]
-    param
-    (
-
-        [Parameter(Mandatory = $true)]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $CimInstance,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $MethodName,
-
-        [Parameter()]
-        [System.Collections.Hashtable]
-        $Arguments
-    )
-
-    $invokeCimMethodParameters = @{
-        MethodName  = $MethodName
-        ErrorAction = 'Stop'
-    }
-
-    if ($PSBoundParameters.ContainsKey('Arguments'))
-    {
-        $invokeCimMethodParameters['Arguments'] = $Arguments
-    }
-
-    $invokeCimMethodResult = $CimInstance | Invoke-CimMethod @invokeCimMethodParameters
-
-    <#
-        Successfully calling the method returns $invokeCimMethodResult.HRESULT -eq 0.
-        If an general error occur in the Invoke-CimMethod, like calling a method
-        that does not exist, returns $null in $invokeCimMethodResult.
-
-        cSpell: ignore HRESULT
-    #>
-    if ($invokeCimMethodResult -and $invokeCimMethodResult.HRESULT -ne 0)
-    {
-        if ($invokeCimMethodResult | Get-Member -Name 'ExtendedErrors')
-        {
-            <#
-                The returned object property ExtendedErrors is an array
-                so that needs to be concatenated.
-            #>
-            $errorMessage = $invokeCimMethodResult.ExtendedErrors -join ';'
-        }
-        else
-        {
-            $errorMessage = $invokeCimMethodResult.Error
-        }
-
-        throw 'Method {0}() failed with an error. Error: {1} (HRESULT:{2})' -f @(
-            $MethodName
-            $errorMessage
-            $invokeCimMethodResult.HRESULT
-        )
-    }
-
-    return $invokeCimMethodResult
 }

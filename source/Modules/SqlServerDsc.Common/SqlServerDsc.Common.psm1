@@ -1130,64 +1130,6 @@ function Restart-SqlClusterService
 
 <#
     .SYNOPSIS
-        Restarts a Reporting Services instance and associated services
-
-    .PARAMETER ServiceName
-        Name of the service to be restarted.
-
-    .PARAMETER WaitTime
-        Number of seconds to wait between service stop and service start.
-        Default value is 0 seconds.
-#>
-function Restart-ReportingServicesService
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $ServiceName,
-
-        [Parameter()]
-        [System.UInt16]
-        $WaitTime = 0
-    )
-
-    Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
-    $reportingServicesService = Get-Service -Name $ServiceName
-
-    <#
-        Get all dependent services that are running.
-        There are scenarios where an automatic service is stopped and should
-        not be restarted automatically.
-    #>
-    $dependentService = $reportingServicesService.DependentServices | Where-Object -FilterScript {
-        $_.Status -eq 'Running'
-    }
-
-    Write-Verbose -Message ($script:localizedData.RestartService -f $reportingServicesService.DisplayName) -Verbose
-
-    Write-Verbose -Message ($script:localizedData.StoppingService -f $reportingServicesService.DisplayName) -Verbose
-    $reportingServicesService | Stop-Service -Force
-
-    if ($WaitTime -ne 0)
-    {
-        Write-Verbose -Message ($script:localizedData.WaitServiceRestart -f $WaitTime, $reportingServicesService.DisplayName) -Verbose
-        Start-Sleep -Seconds $WaitTime
-    }
-
-    Write-Verbose -Message ($script:localizedData.StartingService -f $reportingServicesService.DisplayName) -Verbose
-    $reportingServicesService | Start-Service
-
-    # Start dependent services
-    $dependentService | ForEach-Object -Process {
-        Write-Verbose -Message ($script:localizedData.StartingDependentService -f $_.DisplayName) -Verbose
-        $_ | Start-Service
-    }
-}
-
-<#
-    .SYNOPSIS
         Executes the alter method on an Availability Group Replica object.
 
     .PARAMETER AvailabilityGroupReplica

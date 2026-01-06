@@ -39,7 +39,7 @@ Describe 'Prerequisites - RSDB SQL Server Instance' -Tag @('Integration_SQL2017_
         $computerName = Get-ComputerName
     }
 
-    Context 'Install SQL Server Database Engine instance RSDB for Reporting Services database' {
+    Context 'When installing SQL Server Database Engine instance RSDB for Reporting Services database' {
         It 'Should install the RSDB instance without throwing' {
             <#
                 Install a minimal SQL Server Database Engine instance named RSDB

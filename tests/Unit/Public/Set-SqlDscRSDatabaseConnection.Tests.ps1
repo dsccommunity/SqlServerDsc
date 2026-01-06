@@ -73,7 +73,7 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
         }
 
         It 'Should set database connection without errors' {
-            { $mockCimInstance | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -DatabaseName 'ReportServer' -Confirm:$false } | Should -Not -Throw
+            $mockCimInstance | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -DatabaseName 'ReportServer' -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'SetDatabaseConnection' -and
@@ -119,7 +119,7 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
         }
 
         It 'Should set database connection without confirmation' {
-            { $mockCimInstance | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -DatabaseName 'ReportServer' -Force } | Should -Not -Throw
+            $mockCimInstance | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -DatabaseName 'ReportServer' -Force
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
@@ -140,7 +140,7 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
         }
 
         It 'Should use the Windows credentials type (0)' {
-            { $mockCimInstance | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -DatabaseName 'ReportServer' -Type 'Windows' -Credential $mockCredential -Confirm:$false } | Should -Not -Throw
+            $mockCimInstance | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -DatabaseName 'ReportServer' -Type 'Windows' -Credential $mockCredential -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $Arguments.CredentialsType -eq 0 -and
@@ -165,7 +165,7 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
         }
 
         It 'Should use the SqlServer credentials type (1)' {
-            { $mockCimInstance | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -DatabaseName 'ReportServer' -Type 'SqlServer' -Credential $mockCredential -Confirm:$false } | Should -Not -Throw
+            $mockCimInstance | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -DatabaseName 'ReportServer' -Type 'SqlServer' -Credential $mockCredential -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $Arguments.CredentialsType -eq 1 -and
@@ -185,7 +185,7 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
         }
 
         It 'Should use the ServiceAccount credentials type (2)' {
-            { $mockCimInstance | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -DatabaseName 'ReportServer' -Type 'ServiceAccount' -Confirm:$false } | Should -Not -Throw
+            $mockCimInstance | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -DatabaseName 'ReportServer' -Type 'ServiceAccount' -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $Arguments.CredentialsType -eq 2 -and
@@ -265,7 +265,7 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
         }
 
         It 'Should set database connection' {
-            { Set-SqlDscRSDatabaseConnection -Configuration $mockCimInstance -ServerName 'localhost' -DatabaseName 'ReportServer' -Confirm:$false } | Should -Not -Throw
+            Set-SqlDscRSDatabaseConnection -Configuration $mockCimInstance -ServerName 'localhost' -DatabaseName 'ReportServer' -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
@@ -281,7 +281,7 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
         }
 
         It 'Should pass the correct server name format when InstanceName is specified' {
-            { $mockCimInstance | Set-SqlDscRSDatabaseConnection -ServerName 'SqlServer01' -InstanceName 'MSSQLSERVER' -DatabaseName 'ReportServer' -Confirm:$false } | Should -Not -Throw
+            $mockCimInstance | Set-SqlDscRSDatabaseConnection -ServerName 'SqlServer01' -InstanceName 'MSSQLSERVER' -DatabaseName 'ReportServer' -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $Arguments.Server -eq 'SqlServer01\MSSQLSERVER'
@@ -289,7 +289,7 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
         }
 
         It 'Should pass only the server name when InstanceName is not specified' {
-            { $mockCimInstance | Set-SqlDscRSDatabaseConnection -ServerName 'SqlServer01' -DatabaseName 'ReportServer' -Confirm:$false } | Should -Not -Throw
+            $mockCimInstance | Set-SqlDscRSDatabaseConnection -ServerName 'SqlServer01' -DatabaseName 'ReportServer' -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $Arguments.Server -eq 'SqlServer01'
@@ -307,7 +307,7 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
         }
 
         It 'Should pass the correct database name' {
-            { $mockCimInstance | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -DatabaseName 'ReportServer$SSRS' -Confirm:$false } | Should -Not -Throw
+            $mockCimInstance | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -DatabaseName 'ReportServer$SSRS' -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $Arguments.DatabaseName -eq 'ReportServer$SSRS'

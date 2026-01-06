@@ -175,6 +175,9 @@ Get-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequi
 Add-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Remove-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Set-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Restart-SqlDscRSService | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Test-SqlDscRSInitialized | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Initialize-SqlDscRS | 4 | 3 (Set-SqlDscRSDatabaseConnection), 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Set-SqlDscRSDatabaseConnection | 3 | 2 (Request-SqlDscRSDatabaseScript, Request-SqlDscRSDatabaseRightsScript), 1 (Install-SqlDscReportingService), 0 (Prerequisites, Prerequisites.RSDB) | SSRS, RSDB | ReportServer, ReportServerTempDB databases
 Repair-SqlDscReportingService | 8 | 1 (Install-SqlDscReportingService) | SSRS | -
 Uninstall-SqlDscReportingService | 9 | 8 (Repair-SqlDscReportingService) | - | -
@@ -205,6 +208,9 @@ Get-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prere
 Add-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Remove-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Set-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Restart-SqlDscRSService | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Test-SqlDscRSInitialized | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Initialize-SqlDscRS | 4 | 3 (Set-SqlDscRSDatabaseConnection), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Set-SqlDscRSDatabaseConnection | 3 | 2 (Request-SqlDscRSDatabaseScript, Request-SqlDscRSDatabaseRightsScript), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites, Prerequisites.RSDB) | PBIRS, RSDB | ReportServer, ReportServerTempDB databases
 Repair-SqlDscPowerBIReportServer | 8 | 1 (Install-SqlDscPowerBIReportServer) | PBIRS | -
 Uninstall-SqlDscPowerBIReportServer | 9 | 8 (Repair-SqlDscPowerBIReportServer) | - | -
