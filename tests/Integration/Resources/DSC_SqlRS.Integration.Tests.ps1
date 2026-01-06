@@ -174,7 +174,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         It 'Should be able to access the ReportServer site without any error' {
             if ($script:sqlVersion -in @('140', '150', '160'))
             {
-                # SSRS 2017 and 2019 do not support multiple instances
+                # SSRS 2017 and later do not support multiple instances
                 $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
             }
             else
@@ -182,61 +182,16 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
             }
 
-            # Retry logic to wait for ReportServer to be ready (up to 2 minutes)
-            $maxRetries = 24
-            $retryIntervalSeconds = 5
-            $webRequestStatusCode = 0
+            $result = Test-SqlDscRSAccessible -ReportServerUri $reportServerUri -Detailed -ErrorAction 'Stop'
 
-            for ($attempt = 1; $attempt -le $maxRetries; $attempt++)
-            {
-                try
-                {
-                    $webRequestReportServer = Invoke-WebRequest -Uri $reportServerUri -UseDefaultCredentials -UseBasicParsing -ErrorAction Stop
-                    # if the request finishes successfully this should return status code 200.
-                    $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
-
-                    if ($webRequestStatusCode -eq 200)
-                    {
-                        Write-Verbose -Message "ReportServer is accessible (attempt $attempt)." -Verbose
-                        break
-                    }
-                }
-                catch
-                {
-                    <#
-                        If the request generated an exception i.e. "HTTP Error 503. The service is unavailable."
-                        we can pull the status code from the Exception.Response property.
-                    #>
-                    $webRequestResponse = $_.Exception.Response
-                    $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
-
-                    if ($webRequestStatusCode -eq 0 -and $attempt -lt $maxRetries)
-                    {
-                        Write-Verbose -Message "ReportServer not yet accessible (attempt $attempt of $maxRetries). Waiting $retryIntervalSeconds seconds..." -Verbose
-                        Start-Sleep -Seconds $retryIntervalSeconds
-                    }
-                    elseif ($webRequestStatusCode -eq 0 -and $attempt -eq $maxRetries)
-                    {
-                        # On the last attempt with status code 0, re-throw to get error details
-                        Write-Verbose -Message "ReportServer still not accessible after $maxRetries attempts. Re-throwing exception for diagnostics." -Verbose
-                        throw $_
-                    }
-                    elseif ($webRequestStatusCode -ne 0)
-                    {
-                        # If we got an actual HTTP error code, break and let the assertion handle it
-                        Write-Verbose -Message "ReportServer returned HTTP status code $webRequestStatusCode (attempt $attempt)." -Verbose
-                        break
-                    }
-                }
-            }
-
-            $webRequestStatusCode | Should -BeExactly 200
+            $result.ReportServerAccessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
+            $result.ReportServerStatusCode | Should -Be 200
         }
 
         It 'Should be able to access the Reports site without any error' {
             if ($script:sqlVersion -in @('140', '150', '160'))
             {
-                # SSRS 2017 and 2019 do not support multiple instances
+                # SSRS 2017 and later do not support multiple instances
                 $reportsUri = 'http://{0}/Reports' -f $env:COMPUTERNAME
             }
             else
@@ -244,55 +199,10 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 $reportsUri = 'http://{0}/Reports_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
             }
 
-            # Retry logic to wait for Reports site to be ready (up to 2 minutes)
-            $maxRetries = 24
-            $retryIntervalSeconds = 5
-            $webRequestStatusCode = 0
+            $result = Test-SqlDscRSAccessible -ReportsUri $reportsUri -Detailed -ErrorAction 'Stop'
 
-            for ($attempt = 1; $attempt -le $maxRetries; $attempt++)
-            {
-                try
-                {
-                    $webRequestReportServer = Invoke-WebRequest -Uri $reportsUri -UseDefaultCredentials -UseBasicParsing -ErrorAction Stop
-                    # if the request finishes successfully this should return status code 200.
-                    $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
-
-                    if ($webRequestStatusCode -eq 200)
-                    {
-                        Write-Verbose -Message "Reports site is accessible (attempt $attempt)." -Verbose
-                        break
-                    }
-                }
-                catch
-                {
-                    <#
-                        If the request generated an exception i.e. "HTTP Error 503. The service is unavailable."
-                        we can pull the status code from the Exception.Response property.
-                    #>
-                    $webRequestResponse = $_.Exception.Response
-                    $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
-
-                    if ($webRequestStatusCode -eq 0 -and $attempt -lt $maxRetries)
-                    {
-                        Write-Verbose -Message "Reports site not yet accessible (attempt $attempt of $maxRetries). Waiting $retryIntervalSeconds seconds..." -Verbose
-                        Start-Sleep -Seconds $retryIntervalSeconds
-                    }
-                    elseif ($webRequestStatusCode -eq 0 -and $attempt -eq $maxRetries)
-                    {
-                        # On the last attempt with status code 0, re-throw to get error details
-                        Write-Verbose -Message "Reports site still not accessible after $maxRetries attempts. Re-throwing exception for diagnostics." -Verbose
-                        throw $_
-                    }
-                    elseif ($webRequestStatusCode -ne 0)
-                    {
-                        # If we got an actual HTTP error code, break and let the assertion handle it
-                        Write-Verbose -Message "Reports site returned HTTP status code $webRequestStatusCode (attempt $attempt)." -Verbose
-                        break
-                    }
-                }
-            }
-
-            $webRequestStatusCode | Should -BeExactly 200
+            $result.ReportsAccessible | Should -BeTrue -Because 'the Reports web portal should be accessible'
+            $result.ReportsStatusCode | Should -Be 200
         }
     }
 
