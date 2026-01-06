@@ -212,14 +212,9 @@ function Test-SqlDscRSAccessible
             {
                 $errorMessage = $script:localizedData.Test_SqlDscRSAccessible_NoUrlReservations -f $instanceName
 
-                $PSCmdlet.ThrowTerminatingError(
-                    [System.Management.Automation.ErrorRecord]::new(
-                        [System.InvalidOperationException]::new($errorMessage),
-                        'TSRSA0001',
-                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                        $Configuration
-                    )
-                )
+                $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'TSRSA0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+
+                $PSCmdlet.ThrowTerminatingError($errorRecord)
             }
 
             # Determine which sites to test
