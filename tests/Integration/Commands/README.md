@@ -176,6 +176,7 @@ Add-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequi
 Remove-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Set-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Restart-SqlDscRSService | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Request-SqlDscRSDatabaseUpgradeScript | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Test-SqlDscRSInitialized | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Initialize-SqlDscRS | 4 | 3 (Set-SqlDscRSDatabaseConnection), 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Set-SqlDscRSDatabaseConnection | 3 | 2 (Request-SqlDscRSDatabaseScript, Request-SqlDscRSDatabaseRightsScript), 1 (Install-SqlDscReportingService), 0 (Prerequisites, Prerequisites.RSDB) | SSRS, RSDB | ReportServer, ReportServerTempDB databases
@@ -208,9 +209,26 @@ Get-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prere
 Add-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Remove-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Set-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Get-SqlDscRSSslCertificateBinding | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Add-SqlDscRSSslCertificateBinding | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Remove-SqlDscRSSslCertificateBinding | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Set-SqlDscRSSslCertificateBinding | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Get-SqlDscRSServiceAccount | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Set-SqlDscRSServiceAccount | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Restart-SqlDscRSService | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Get-SqlDscRSSslCertificate | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Get-SqlDscRSIPAddress | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Get-SqlDscRSDatabaseInstallation | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Request-SqlDscRSDatabaseUpgradeScript | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Set-SqlDscRSEmailConfiguration | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Set-SqlDscRSUnattendedExecutionAccount | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Remove-SqlDscRSUnattendedExecutionAccount | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Test-SqlDscRSInitialized | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Initialize-SqlDscRS | 4 | 3 (Set-SqlDscRSDatabaseConnection), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Backup-SqlDscRSEncryptionKey | 5 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Restore-SqlDscRSEncryptionKey | 5 | 5 (Backup-SqlDscRSEncryptionKey), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+New-SqlDscRSEncryptionKey | 7 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | Destroys encrypted content
+Remove-SqlDscRSEncryptionKey | 7 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | Removes encrypted content
 Set-SqlDscRSDatabaseConnection | 3 | 2 (Request-SqlDscRSDatabaseScript, Request-SqlDscRSDatabaseRightsScript), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites, Prerequisites.RSDB) | PBIRS, RSDB | ReportServer, ReportServerTempDB databases
 Repair-SqlDscPowerBIReportServer | 8 | 1 (Install-SqlDscPowerBIReportServer) | PBIRS | -
 Uninstall-SqlDscPowerBIReportServer | 9 | 8 (Repair-SqlDscPowerBIReportServer) | - | -
