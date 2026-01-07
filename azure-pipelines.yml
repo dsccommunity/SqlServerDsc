@@ -69,11 +69,9 @@ stages:
               publishLocation: 'pipeline'
               parallel: true
 
-  # TEMPORARILY DISABLED FOR DEBUGGING RS INTEGRATION TESTS
   - stage: Quality_Test_and_Unit_Test
     displayName: 'Quality Test and Unit Test'
     dependsOn: Build
-    condition: false
     jobs:
       - job: Determine_DSC_Resource_Test_Requirements
         displayName: 'Determine DSC Resource Test Requirements'
@@ -237,11 +235,9 @@ stages:
               bash <(curl -s https://codecov.io/bash) -f "./$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml" -F unit
             displayName: 'Publish Code Coverage to Codecov.io'
 
-  # TEMPORARILY DISABLED FOR DEBUGGING RS INTEGRATION TESTS
   - stage: Integration_Test_Commands_SqlServer
     displayName: 'Integration Test Commands - SQL Server'
     dependsOn: Quality_Test_and_Unit_Test
-    condition: false
     jobs:
       - job: Test_Integration
         displayName: 'Commands'
@@ -408,11 +404,9 @@ stages:
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration Commands ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
-  # TEMPORARILY DISABLED FOR DEBUGGING RS INTEGRATION TESTS
   - stage: Integration_Test_Commands_SqlServer_PreparedImage
     displayName: 'Integration Test Commands - SQL Server (Prepared Image)'
     dependsOn: Quality_Test_and_Unit_Test
-    condition: false
     jobs:
       - job: Test_Integration_PreparedImage
         displayName: 'Commands - Prepared Image'
@@ -487,8 +481,7 @@ stages:
 
   - stage: Integration_Test_Commands_ReportingServices
     displayName: 'Integration Test Commands - Reporting Services'
-    # TEMPORARILY CHANGED FOR DEBUGGING - was: dependsOn: Integration_Test_Commands_SqlServer
-    dependsOn: Build
+    dependsOn: Integration_Test_Commands_SqlServer
     jobs:
       - job: Test_Integration
         displayName: 'Commands'
@@ -583,8 +576,7 @@ stages:
 
   - stage: Integration_Test_Commands_BIReportServer
     displayName: 'Integration Test Commands - BI Report Server'
-    # TEMPORARILY CHANGED FOR DEBUGGING - was: dependsOn: Integration_Test_Commands_SqlServer
-    dependsOn: Build
+    dependsOn: Integration_Test_Commands_SqlServer
     jobs:
       - job: Test_Integration
         displayName: 'Commands'
@@ -667,11 +659,14 @@ stages:
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration Commands ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
-  # TEMPORARILY DISABLED FOR DEBUGGING RS INTEGRATION TESTS
   - stage: Integration_Test_Resources_SqlServer
     displayName: 'Integration Test Resources - SQL Server'
     dependsOn: Quality_Test_and_Unit_Test
-    condition: false
+    condition: |
+      and(
+        succeeded(),
+        eq(lower(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests']), 'true')
+      )
     jobs:
       - job: Test_Integration
         displayName: 'Integration'
@@ -762,11 +757,14 @@ stages:
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration Resources ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
-  # TEMPORARILY DISABLED FOR DEBUGGING RS INTEGRATION TESTS
   - stage: Integration_Test_Resources_SqlServer_dbatools
     displayName: 'Integration Test Resources - SQL Server (dbatools)'
     dependsOn: Integration_Test_Resources_SqlServer
-    condition: false
+    condition: |
+      and(
+        succeeded(),
+        eq(lower(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests']), 'true')
+      )
     jobs:
       - job: Test_Integration
         displayName: 'Integration'
@@ -854,11 +852,14 @@ stages:
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration (dbatools) ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
-  # TEMPORARILY DISABLED FOR DEBUGGING RS INTEGRATION TESTS
   - stage: Integration_Test_Resources_ReportingServices
     displayName: 'Integration Test Resources - Reporting Services'
     dependsOn: Integration_Test_Resources_SqlServer
-    condition: false
+    condition: |
+      and(
+        succeeded(),
+        eq(lower(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests']), 'true')
+      )
     jobs:
       - job: Test_Integration
         displayName: 'Integration'
@@ -927,11 +928,14 @@ stages:
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration RS ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
-  # TEMPORARILY DISABLED FOR DEBUGGING RS INTEGRATION TESTS
   - stage: Integration_Test_Resources_PowerBIReportServer
     displayName: 'Integration Test Resources - Power BI Report Server'
     dependsOn: Quality_Test_and_Unit_Test
-    condition: false
+    condition: |
+      and(
+        succeeded(),
+        eq(lower(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests']), 'true')
+      )
     jobs:
       - job: Test_Integration
         displayName: 'Integration'
@@ -991,11 +995,14 @@ stages:
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration RS ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
-  # TEMPORARILY DISABLED FOR DEBUGGING RS INTEGRATION TESTS
   - stage: Integration_Test_Resources_ReportingServices_dbatools
     displayName: 'Integration Test Resources - Reporting Services (dbatools)'
     dependsOn: Integration_Test_Resources_SqlServer
-    condition: false
+    condition: |
+      and(
+        succeeded(),
+        eq(lower(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests']), 'true')
+      )
     jobs:
       - job: Test_Integration
         displayName: 'Integration'
