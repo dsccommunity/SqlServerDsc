@@ -146,20 +146,13 @@ function Test-SqlDscRSAccessible
             $paramDictionary = [System.Management.Automation.RuntimeDefinedParameterDictionary]::new()
 
             # Get URL reservations to populate ValidateSet
-            try
-            {
-                $urlReservations = Get-SqlDscRSUrlReservation -Configuration $PSBoundParameters['Configuration'] -ErrorAction 'Stop'
+            $urlReservations = Get-SqlDscRSUrlReservation -Configuration $PSBoundParameters['Configuration'] -ErrorAction 'SilentlyContinue'
 
-                if ($urlReservations -and $urlReservations.Application)
-                {
-                    $availableSites = $urlReservations.Application | Select-Object -Unique
-                }
-                else
-                {
-                    $availableSites = @()
-                }
+            if ($urlReservations -and $urlReservations.Application)
+            {
+                $availableSites = $urlReservations.Application | Select-Object -Unique
             }
-            catch
+            else
             {
                 $availableSites = @()
             }
@@ -236,14 +229,9 @@ function Test-SqlDscRSAccessible
                 {
                     $errorMessage = $script:localizedData.Test_SqlDscRSAccessible_SiteNotConfigured -f $site, $instanceName
 
-                    $PSCmdlet.ThrowTerminatingError(
-                        [System.Management.Automation.ErrorRecord]::new(
-                            [System.InvalidOperationException]::new($errorMessage),
-                            'TSRSA0002',
-                            [System.Management.Automation.ErrorCategory]::InvalidArgument,
-                            $site
-                        )
-                    )
+                    $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'TSRSA0002' -ErrorCategory 'InvalidArgument' -TargetObject $site
+
+                    $PSCmdlet.ThrowTerminatingError($errorRecord)
                 }
 
                 $urlPattern = $urlReservations.UrlString[$siteIndex]
@@ -309,14 +297,9 @@ function Test-SqlDscRSAccessible
             {
                 $errorMessage = $script:localizedData.Test_SqlDscRSAccessible_NoUrisSpecified
 
-                $PSCmdlet.ThrowTerminatingError(
-                    [System.Management.Automation.ErrorRecord]::new(
-                        [System.InvalidOperationException]::new($errorMessage),
-                        'TSRSA0003',
-                        [System.Management.Automation.ErrorCategory]::InvalidArgument,
-                        $null
-                    )
-                )
+                $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'TSRSA0003' -ErrorCategory 'InvalidArgument' -TargetObject $null
+
+                $PSCmdlet.ThrowTerminatingError($errorRecord)
             }
         }
 

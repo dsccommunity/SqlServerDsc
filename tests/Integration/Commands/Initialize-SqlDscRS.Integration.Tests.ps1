@@ -57,7 +57,7 @@ Describe 'Initialize-SqlDscRS' {
         }
 
         It 'Should return configuration when using PassThru on initialized instance' {
-            # Re-initialize (should be idempotent)
+            # Initialize with PassThru (should be idempotent - succeeds whether already initialized or not)
             $result = $script:configuration | Initialize-SqlDscRS -Force -PassThru -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
@@ -71,6 +71,11 @@ Describe 'Initialize-SqlDscRS' {
                 the behavior in the SqlRS MOF resource.
             #>
             $script:configuration | Restart-SqlDscRSService -WaitTime 30 -Force -ErrorAction 'Stop'
+
+            # Verify configuration is still accessible after restart
+            $result = Get-SqlDscRSConfiguration -InstanceName $script:configuration.InstanceName -ErrorAction 'Stop'
+
+            $result | Should -Not -BeNullOrEmpty
         }
     }
 
@@ -89,6 +94,7 @@ Describe 'Initialize-SqlDscRS' {
         }
 
         It 'Should return configuration when using PassThru on initialized instance' {
+            # Initialize with PassThru (should be idempotent - succeeds whether already initialized or not)
             $result = $script:configuration | Initialize-SqlDscRS -Force -PassThru -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
@@ -102,6 +108,11 @@ Describe 'Initialize-SqlDscRS' {
                 the behavior in the SqlRS MOF resource.
             #>
             $script:configuration | Restart-SqlDscRSService -WaitTime 30 -Force -ErrorAction 'Stop'
+
+            # Verify configuration is still accessible after restart
+            $result = Get-SqlDscRSConfiguration -InstanceName $script:configuration.InstanceName -ErrorAction 'Stop'
+
+            $result | Should -Not -BeNullOrEmpty
         }
     }
 
@@ -120,6 +131,7 @@ Describe 'Initialize-SqlDscRS' {
         }
 
         It 'Should return configuration when using PassThru on initialized instance' {
+            # Initialize with PassThru (should be idempotent - succeeds whether already initialized or not)
             $result = $script:configuration | Initialize-SqlDscRS -Force -PassThru -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
@@ -133,6 +145,11 @@ Describe 'Initialize-SqlDscRS' {
                 the behavior in the SqlRS MOF resource.
             #>
             $script:configuration | Restart-SqlDscRSService -WaitTime 30 -Force -ErrorAction 'Stop'
+
+            # Verify configuration is still accessible after restart
+            $result = Get-SqlDscRSConfiguration -InstanceName $script:configuration.InstanceName -ErrorAction 'Stop'
+
+            $result | Should -Not -BeNullOrEmpty
         }
     }
 
@@ -151,6 +168,7 @@ Describe 'Initialize-SqlDscRS' {
         }
 
         It 'Should return configuration when using PassThru on initialized instance' {
+            # Initialize with PassThru (should be idempotent - succeeds whether already initialized or not)
             $result = $script:configuration | Initialize-SqlDscRS -Force -PassThru -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
@@ -164,6 +182,11 @@ Describe 'Initialize-SqlDscRS' {
                 the behavior in the SqlRS MOF resource.
             #>
             $script:configuration | Restart-SqlDscRSService -WaitTime 30 -Force -ErrorAction 'Stop'
+
+            # Verify configuration is still accessible after restart
+            $result = Get-SqlDscRSConfiguration -InstanceName $script:configuration.InstanceName -ErrorAction 'Stop'
+
+            $result | Should -Not -BeNullOrEmpty
         }
     }
 }
