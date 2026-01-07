@@ -127,11 +127,11 @@ Describe 'Test-SqlDscRSAccessible' {
             }
         }
 
-        Context 'When site returns HTTP error' {
+        Context 'When site returns HTTP 5xx server error (transient error)' {
             BeforeAll {
                 $mockException = [System.Net.WebException]::new('The remote server returned an error: (503) Service Unavailable.')
 
-                # Create a mock response with a non-zero status code
+                # Create a mock response with a 503 status code
                 $mockResponse = [PSCustomObject] @{
                     StatusCode = 503
                 }
@@ -143,10 +143,42 @@ Describe 'Test-SqlDscRSAccessible' {
                 }
             }
 
-            It 'Should return $false' {
+            It 'Should return $false after exhausting retries (5xx errors are retried)' {
+                # With TimeoutSeconds=5 and RetryIntervalSeconds=1, we get 5 retries
                 $result = Test-SqlDscRSAccessible -ReportServerUri 'http://localhost/ReportServer' -TimeoutSeconds 5 -RetryIntervalSeconds 1
 
                 $result | Should -BeFalse
+
+                # Should have retried multiple times (5 retries for TimeoutSeconds=5)
+                Should -Invoke -CommandName Invoke-WebRequest -Times 5
+                Should -Invoke -CommandName Start-Sleep -Times 4
+            }
+        }
+
+        Context 'When site returns HTTP 4xx client error' {
+            BeforeAll {
+                $mockException = [System.Net.WebException]::new('The remote server returned an error: (404) Not Found.')
+
+                # Create a mock response with a 404 status code
+                $mockResponse = [PSCustomObject] @{
+                    StatusCode = 404
+                }
+
+                $mockException | Add-Member -NotePropertyName 'Response' -NotePropertyValue $mockResponse -Force
+
+                Mock -CommandName Invoke-WebRequest -MockWith {
+                    throw $mockException
+                }
+            }
+
+            It 'Should return $false immediately without retrying (4xx errors are not retried)' {
+                $result = Test-SqlDscRSAccessible -ReportServerUri 'http://localhost/ReportServer' -TimeoutSeconds 5 -RetryIntervalSeconds 1
+
+                $result | Should -BeFalse
+
+                # Should NOT have retried (4xx errors break immediately)
+                Should -Invoke -CommandName Invoke-WebRequest -Times 1
+                Should -Invoke -CommandName Start-Sleep -Times 0
             }
         }
 
@@ -365,6 +397,42 @@ Describe 'Test-SqlDscRSAccessible' {
 
                 $result | Should -BeTrue
                 $script:invokeCount | Should -Be 2
+            }
+        }
+
+        Context 'When site returns 503 initially but becomes accessible on retry' {
+            BeforeAll {
+                $script:invokeCount = 0
+
+                Mock -CommandName Invoke-WebRequest -MockWith {
+                    $script:invokeCount++
+
+                    if ($script:invokeCount -lt 3)
+                    {
+                        $mockException = [System.Net.WebException]::new('The remote server returned an error: (503) Service Unavailable.')
+                        $mockResponse = [PSCustomObject] @{
+                            StatusCode = 503
+                        }
+                        $mockException | Add-Member -NotePropertyName 'Response' -NotePropertyValue $mockResponse -Force
+
+                        throw $mockException
+                    }
+
+                    return @{
+                        StatusCode = 200
+                    }
+                }
+            }
+
+            AfterAll {
+                Remove-Variable -Name 'invokeCount' -Scope 'Script'
+            }
+
+            It 'Should return $true after 503 is retried and succeeds' {
+                $result = Test-SqlDscRSAccessible -ReportServerUri 'http://localhost/ReportServer' -TimeoutSeconds 10 -RetryIntervalSeconds 1
+
+                $result | Should -BeTrue
+                $script:invokeCount | Should -Be 3
             }
         }
 

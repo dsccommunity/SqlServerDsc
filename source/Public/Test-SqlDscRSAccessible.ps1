@@ -337,7 +337,12 @@ function Test-SqlDscRSAccessible
                     $webRequestResponse = $_.Exception.Response
                     $statusCode = $webRequestResponse.StatusCode -as [System.Int32]
 
-                    if ($statusCode -eq 0 -and $attempt -lt $maxRetries)
+                    # Retry on connection errors (status code 0) or server errors (5xx)
+                    # Server errors like 503 (Service Unavailable) are transient and
+                    # can occur when the service is starting up after a restart.
+                    $shouldRetry = ($statusCode -eq 0 -or ($statusCode -ge 500 -and $statusCode -lt 600)) -and $attempt -lt $maxRetries
+
+                    if ($shouldRetry)
                     {
                         Write-Verbose -Message ($script:localizedData.Test_SqlDscRSAccessible_RetryingAccess -f $siteName, $attempt, $maxRetries, $RetryIntervalSeconds)
 
