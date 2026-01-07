@@ -56,12 +56,26 @@ Describe 'Initialize-SqlDscRS' {
             $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
         }
 
-        It 'Should return configuration when using PassThru on initialized instance' -Skip:(-not $script:isInitialized) {
-            # Re-initialize (should be idempotent)
+        It 'Should return configuration when using PassThru on initialized instance' {
+            # Initialize with PassThru (should be idempotent - succeeds whether already initialized or not)
             $result = $script:configuration | Initialize-SqlDscRS -Force -PassThru -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'SSRS'
+        }
+
+        It 'Should restart the service to ensure initialization is complete' {
+            <#
+                After initialization, the Reporting Services service must be restarted
+                for the web services to be fully functional. This is consistent with
+                the behavior in the SqlRS MOF resource.
+            #>
+            $script:configuration | Restart-SqlDscRSService -WaitTime 30 -Force -ErrorAction 'Stop'
+
+            # Verify configuration is still accessible after restart
+            $result = Get-SqlDscRSConfiguration -InstanceName $script:configuration.InstanceName -ErrorAction 'Stop'
+
+            $result | Should -Not -BeNullOrEmpty
         }
     }
 
@@ -79,11 +93,26 @@ Describe 'Initialize-SqlDscRS' {
             $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
         }
 
-        It 'Should return configuration when using PassThru on initialized instance' -Skip:(-not $script:isInitialized) {
+        It 'Should return configuration when using PassThru on initialized instance' {
+            # Initialize with PassThru (should be idempotent - succeeds whether already initialized or not)
             $result = $script:configuration | Initialize-SqlDscRS -Force -PassThru -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'SSRS'
+        }
+
+        It 'Should restart the service to ensure initialization is complete' {
+            <#
+                After initialization, the Reporting Services service must be restarted
+                for the web services to be fully functional. This is consistent with
+                the behavior in the SqlRS MOF resource.
+            #>
+            $script:configuration | Restart-SqlDscRSService -WaitTime 30 -Force -ErrorAction 'Stop'
+
+            # Verify configuration is still accessible after restart
+            $result = Get-SqlDscRSConfiguration -InstanceName $script:configuration.InstanceName -ErrorAction 'Stop'
+
+            $result | Should -Not -BeNullOrEmpty
         }
     }
 
@@ -101,11 +130,26 @@ Describe 'Initialize-SqlDscRS' {
             $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
         }
 
-        It 'Should return configuration when using PassThru on initialized instance' -Skip:(-not $script:isInitialized) {
+        It 'Should return configuration when using PassThru on initialized instance' {
+            # Initialize with PassThru (should be idempotent - succeeds whether already initialized or not)
             $result = $script:configuration | Initialize-SqlDscRS -Force -PassThru -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'SSRS'
+        }
+
+        It 'Should restart the service to ensure initialization is complete' {
+            <#
+                After initialization, the Reporting Services service must be restarted
+                for the web services to be fully functional. This is consistent with
+                the behavior in the SqlRS MOF resource.
+            #>
+            $script:configuration | Restart-SqlDscRSService -WaitTime 30 -Force -ErrorAction 'Stop'
+
+            # Verify configuration is still accessible after restart
+            $result = Get-SqlDscRSConfiguration -InstanceName $script:configuration.InstanceName -ErrorAction 'Stop'
+
+            $result | Should -Not -BeNullOrEmpty
         }
     }
 
@@ -123,11 +167,26 @@ Describe 'Initialize-SqlDscRS' {
             $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
         }
 
-        It 'Should return configuration when using PassThru on initialized instance' -Skip:(-not $script:isInitialized) {
+        It 'Should return configuration when using PassThru on initialized instance' {
+            # Initialize with PassThru (should be idempotent - succeeds whether already initialized or not)
             $result = $script:configuration | Initialize-SqlDscRS -Force -PassThru -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'PBIRS'
+        }
+
+        It 'Should restart the service to ensure initialization is complete' {
+            <#
+                After initialization, the Reporting Services service must be restarted
+                for the web services to be fully functional. This is consistent with
+                the behavior in the SqlRS MOF resource.
+            #>
+            $script:configuration | Restart-SqlDscRSService -WaitTime 30 -Force -ErrorAction 'Stop'
+
+            # Verify configuration is still accessible after restart
+            $result = Get-SqlDscRSConfiguration -InstanceName $script:configuration.InstanceName -ErrorAction 'Stop'
+
+            $result | Should -Not -BeNullOrEmpty
         }
     }
 }

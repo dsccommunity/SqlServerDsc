@@ -108,7 +108,8 @@
         "maxdop",
         "hotfixes",
         "checkpointing",
-        "HRESULT"
+        "HRESULT",
+        "RSDB"
     ],
     "cSpell.ignorePaths": [
         ".git"

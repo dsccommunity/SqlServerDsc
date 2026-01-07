@@ -35,6 +35,9 @@ Describe 'Get-SqlDscRSUrlReservation' {
     Context 'When getting URL reservations for SQL Server Reporting Services' -Tag @('Integration_SQL2017_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+
+            # This test runs after Add-SqlDscRSUrlReservation which adds a test URL reservation
+            $script:testUrl = 'http://+:18080'
         }
 
         It 'Should return URL reservations using pipeline' {
@@ -52,23 +55,37 @@ Describe 'Get-SqlDscRSUrlReservation' {
         It 'Should return result with expected properties' {
             $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            # The result should be a CIM method result with URL reservation properties
             $result | Should -Not -BeNullOrEmpty
             $result.HRESULT | Should -Be 0
-
-            <#
-                Application and UrlString properties may be empty arrays if no URL
-                reservations exist (e.g., freshly installed but not initialized SSRS).
-                Just verify the properties exist.
-            #>
             $result.PSObject.Properties.Name | Should -Contain 'Application'
             $result.PSObject.Properties.Name | Should -Contain 'UrlString'
+        }
+
+        It 'Should contain the test URL reservation for ReportServerWebService' {
+            $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
+
+            $webServiceIndex = [System.Array]::IndexOf($result.Application, 'ReportServerWebService')
+
+            $webServiceIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebService should be in the applications'
+            $result.UrlString[$webServiceIndex] | Should -Be $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
+        }
+
+        It 'Should contain the test URL reservation for ReportServerWebApp' {
+            $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
+
+            $webAppIndex = [System.Array]::IndexOf($result.Application, 'ReportServerWebApp')
+
+            $webAppIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
+            $result.UrlString[$webAppIndex] | Should -Be $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
         }
     }
 
     Context 'When getting URL reservations for SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+
+            # This test runs after Add-SqlDscRSUrlReservation which adds a test URL reservation
+            $script:testUrl = 'http://+:18080'
         }
 
         It 'Should return URL reservations using pipeline' {
@@ -86,23 +103,37 @@ Describe 'Get-SqlDscRSUrlReservation' {
         It 'Should return result with expected properties' {
             $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            # The result should be a CIM method result with URL reservation properties
             $result | Should -Not -BeNullOrEmpty
             $result.HRESULT | Should -Be 0
-
-            <#
-                Application and UrlString properties may be empty arrays if no URL
-                reservations exist (e.g., freshly installed but not initialized SSRS).
-                Just verify the properties exist.
-            #>
             $result.PSObject.Properties.Name | Should -Contain 'Application'
             $result.PSObject.Properties.Name | Should -Contain 'UrlString'
+        }
+
+        It 'Should contain the test URL reservation for ReportServerWebService' {
+            $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
+
+            $webServiceIndex = [System.Array]::IndexOf($result.Application, 'ReportServerWebService')
+
+            $webServiceIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebService should be in the applications'
+            $result.UrlString[$webServiceIndex] | Should -Be $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
+        }
+
+        It 'Should contain the test URL reservation for ReportServerWebApp' {
+            $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
+
+            $webAppIndex = [System.Array]::IndexOf($result.Application, 'ReportServerWebApp')
+
+            $webAppIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
+            $result.UrlString[$webAppIndex] | Should -Be $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
         }
     }
 
     Context 'When getting URL reservations for SQL Server Reporting Services' -Tag @('Integration_SQL2022_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+
+            # This test runs after Add-SqlDscRSUrlReservation which adds a test URL reservation
+            $script:testUrl = 'http://+:18080'
         }
 
         It 'Should return URL reservations using pipeline' {
@@ -120,23 +151,37 @@ Describe 'Get-SqlDscRSUrlReservation' {
         It 'Should return result with expected properties' {
             $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            # The result should be a CIM method result with URL reservation properties
             $result | Should -Not -BeNullOrEmpty
             $result.HRESULT | Should -Be 0
-
-            <#
-                Application and UrlString properties may be empty arrays if no URL
-                reservations exist (e.g., freshly installed but not initialized SSRS).
-                Just verify the properties exist.
-            #>
             $result.PSObject.Properties.Name | Should -Contain 'Application'
             $result.PSObject.Properties.Name | Should -Contain 'UrlString'
+        }
+
+        It 'Should contain the test URL reservation for ReportServerWebService' {
+            $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
+
+            $webServiceIndex = [System.Array]::IndexOf($result.Application, 'ReportServerWebService')
+
+            $webServiceIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebService should be in the applications'
+            $result.UrlString[$webServiceIndex] | Should -Be $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
+        }
+
+        It 'Should contain the test URL reservation for ReportServerWebApp' {
+            $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
+
+            $webAppIndex = [System.Array]::IndexOf($result.Application, 'ReportServerWebApp')
+
+            $webAppIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
+            $result.UrlString[$webAppIndex] | Should -Be $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
         }
     }
 
     Context 'When getting URL reservations for Power BI Report Server' -Tag @('Integration_PowerBI') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
+
+            # This test runs after Add-SqlDscRSUrlReservation which adds a test URL reservation
+            $script:testUrl = 'http://+:18080'
         }
 
         It 'Should return URL reservations using pipeline' {
@@ -154,17 +199,28 @@ Describe 'Get-SqlDscRSUrlReservation' {
         It 'Should return result with expected properties' {
             $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            # The result should be a CIM method result with URL reservation properties
             $result | Should -Not -BeNullOrEmpty
             $result.HRESULT | Should -Be 0
-
-            <#
-                Application and UrlString properties may be empty arrays if no URL
-                reservations exist (e.g., freshly installed but not initialized PBIRS).
-                Just verify the properties exist.
-            #>
             $result.PSObject.Properties.Name | Should -Contain 'Application'
             $result.PSObject.Properties.Name | Should -Contain 'UrlString'
+        }
+
+        It 'Should contain the test URL reservation for ReportServerWebService' {
+            $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
+
+            $webServiceIndex = [System.Array]::IndexOf($result.Application, 'ReportServerWebService')
+
+            $webServiceIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebService should be in the applications'
+            $result.UrlString[$webServiceIndex] | Should -Be $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
+        }
+
+        It 'Should contain the test URL reservation for ReportServerWebApp' {
+            $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
+
+            $webAppIndex = [System.Array]::IndexOf($result.Application, 'ReportServerWebApp')
+
+            $webAppIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
+            $result.UrlString[$webAppIndex] | Should -Be $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
         }
     }
 }

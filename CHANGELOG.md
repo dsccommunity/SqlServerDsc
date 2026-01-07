@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added public command `Test-SqlDscRSAccessible` to verify that SQL Server
+  Reporting Services or Power BI Report Server web sites are accessible.
+  Supports both CIM configuration input (with dynamic `-Site` parameter) and
+  explicit URIs. Includes retry logic and optional detailed output with HTTP
+  status codes.
+- Added post-initialization integration tests for RS commands
+  (`Post.Initialization.RS.Integration.Tests.ps1`) to verify that SSRS and
+  PBIRS sites are fully accessible after `Initialize-SqlDscRS` runs.
 - Added public command `Request-SqlDscRSDatabaseScript` to generate T-SQL scripts
   for creating report server databases. Wraps the `GenerateDatabaseCreationScript`
   CIM method and supports configuring database name, language (LCID), and
@@ -189,6 +197,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   by calling the `InitializeReportServer` CIM method. Used to complete initial
   configuration after database and URL setup
   ([issue #2014](https://github.com/dsccommunity/SqlServerDsc/issues/2014)).
+- Added public command `Request-SqlDscRSDatabaseUpgradeScript` to generate a
+  T-SQL script for upgrading the report server database schema. Wraps the
+  `GenerateDatabaseUpgradeScript` CIM method.
 
 ### Changed
 
