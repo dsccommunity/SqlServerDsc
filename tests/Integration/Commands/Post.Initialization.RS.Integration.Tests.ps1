@@ -46,6 +46,11 @@ Describe 'Post.Initialization.RS' {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
+            # Get actual URL reservations from the configuration
+            $script:urlReservations = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'SilentlyContinue'
+
+            Write-Verbose -Message "URL Reservations: $($script:urlReservations | ConvertTo-Json -Compress -Depth 3)" -Verbose
+
             # SSRS 2017 and later use fixed virtual directories without instance suffix
             $computerName = Get-ComputerName
             $script:reportServerUri = 'http://{0}/ReportServer' -f $computerName
@@ -82,6 +87,11 @@ Describe 'Post.Initialization.RS' {
     Context 'When validating SQL Server 2019 Reporting Services accessibility' -Tag @('Integration_SQL2019_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+
+            # Get actual URL reservations from the configuration
+            $script:urlReservations = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'SilentlyContinue'
+
+            Write-Verbose -Message "URL Reservations: $($script:urlReservations | ConvertTo-Json -Compress -Depth 3)" -Verbose
 
             # SSRS 2019 uses fixed virtual directories without instance suffix
             $computerName = Get-ComputerName
@@ -120,6 +130,11 @@ Describe 'Post.Initialization.RS' {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
+            # Get actual URL reservations from the configuration
+            $script:urlReservations = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'SilentlyContinue'
+
+            Write-Verbose -Message "URL Reservations: $($script:urlReservations | ConvertTo-Json -Compress -Depth 3)" -Verbose
+
             # SSRS 2022 uses fixed virtual directories without instance suffix
             $computerName = Get-ComputerName
             $script:reportServerUri = 'http://{0}/ReportServer' -f $computerName
@@ -156,6 +171,11 @@ Describe 'Post.Initialization.RS' {
     Context 'When validating Power BI Report Server accessibility' -Tag @('Integration_PowerBI') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
+
+            # Get actual URL reservations from the configuration
+            $script:urlReservations = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'SilentlyContinue'
+
+            Write-Verbose -Message "URL Reservations: $($script:urlReservations | ConvertTo-Json -Compress -Depth 3)" -Verbose
 
             # Power BI Report Server uses fixed virtual directories
             $computerName = Get-ComputerName
