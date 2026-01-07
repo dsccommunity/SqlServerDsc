@@ -556,7 +556,6 @@ stages:
                   'tests/Integration/Commands/Set-SqlDscRSVirtualDirectory.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Add-SqlDscRSUrlReservation.Integration.Tests.ps1'
-                  'tests/Integration/Commands/Remove-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscRSDatabaseConnection.Integration.Tests.ps1'
                   'tests/Integration/Commands/Restart-SqlDscRSService.Integration.Tests.ps1'
@@ -568,6 +567,7 @@ stages:
                   'tests/Integration/Commands/Post.Initialization.RS.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscReportingService.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Remove-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   # Group 9
                   'tests/Integration/Commands/Uninstall-SqlDscReportingService.Integration.Tests.ps1'
               )
@@ -643,7 +643,6 @@ stages:
                   'tests/Integration/Commands/Set-SqlDscRSVirtualDirectory.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Add-SqlDscRSUrlReservation.Integration.Tests.ps1'
-                  'tests/Integration/Commands/Remove-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscRSDatabaseConnection.Integration.Tests.ps1'
                   'tests/Integration/Commands/Restart-SqlDscRSService.Integration.Tests.ps1'
@@ -654,6 +653,7 @@ stages:
                   'tests/Integration/Commands/Post.Initialization.RS.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscPowerBIReportServer.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Remove-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   # Group 9
                   'tests/Integration/Commands/Uninstall-SqlDscPowerBIReportServer.Integration.Tests.ps1'
               )
