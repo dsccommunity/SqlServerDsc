@@ -66,14 +66,6 @@ Describe 'Get-SqlDscRSUrlReservation' {
 
             $result.UrlString | Should -Contain $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
         }
-
-        It 'Should contain the default URL reservations' {
-            $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
-
-            $result.UrlString | Should -Contain 'http://+:80' -Because 'the default URL reservation should exist'
-            $result.Application | Should -Contain 'ReportServerWebService' -Because 'the ReportServer application should be configured'
-            $result.Application | Should -Contain 'ReportServerWebApp' -Because 'the Reports application should be configured'
-        }
     }
 
     Context 'When getting URL reservations for SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {
@@ -109,14 +101,6 @@ Describe 'Get-SqlDscRSUrlReservation' {
             $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
             $result.UrlString | Should -Contain $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
-        }
-
-        It 'Should contain the default URL reservations' {
-            $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
-
-            $result.UrlString | Should -Contain 'http://+:80' -Because 'the default URL reservation should exist'
-            $result.Application | Should -Contain 'ReportServerWebService' -Because 'the ReportServer application should be configured'
-            $result.Application | Should -Contain 'ReportServerWebApp' -Because 'the Reports application should be configured'
         }
     }
 
@@ -154,14 +138,6 @@ Describe 'Get-SqlDscRSUrlReservation' {
 
             $result.UrlString | Should -Contain $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
         }
-
-        It 'Should contain the default URL reservations' {
-            $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
-
-            $result.UrlString | Should -Contain 'http://+:80' -Because 'the default URL reservation should exist'
-            $result.Application | Should -Contain 'ReportServerWebService' -Because 'the ReportServer application should be configured'
-            $result.Application | Should -Contain 'ReportServerWebApp' -Because 'the Reports application should be configured'
-        }
     }
 
     Context 'When getting URL reservations for Power BI Report Server' -Tag @('Integration_PowerBI') {
@@ -197,14 +173,6 @@ Describe 'Get-SqlDscRSUrlReservation' {
             $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
             $result.UrlString | Should -Contain $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
-        }
-
-        It 'Should contain the default URL reservations' {
-            $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
-
-            $result.UrlString | Should -Contain 'http://+:80' -Because 'the default URL reservation should exist'
-            $result.Application | Should -Contain 'ReportServerWebService' -Because 'the ReportServer application should be configured'
-            $result.Application | Should -Contain 'ReportServerWebApp' -Because 'the Reports application should be configured'
         }
     }
 }

@@ -44,7 +44,7 @@ Describe 'Add-SqlDscRSUrlReservation' {
             $script:testUrl = "http://+:$script:testPort"
         }
 
-        It 'Should add URL reservation using pipeline' {
+        It 'Should add URL reservation for ReportServerWebService using pipeline' {
             $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
 
             # Verify the URL was added
@@ -52,6 +52,20 @@ Describe 'Add-SqlDscRSUrlReservation' {
             $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
             $reservations.UrlString | Should -Contain $script:testUrl
+        }
+
+        It 'Should add URL reservation for ReportServerWebApp using pipeline' {
+            $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebApp' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
+
+            # Verify the URL was added for ReportServerWebApp
+            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+            $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
+
+            # Find the index for ReportServerWebApp
+            $webAppIndex = [System.Array]::IndexOf($reservations.Application, 'ReportServerWebApp')
+
+            $webAppIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
+            $reservations.UrlString[$webAppIndex] | Should -Be $script:testUrl
         }
 
         It 'Should return configuration when using PassThru' {
@@ -83,7 +97,7 @@ Describe 'Add-SqlDscRSUrlReservation' {
             $script:testUrl = "http://+:$script:testPort"
         }
 
-        It 'Should add URL reservation using pipeline' {
+        It 'Should add URL reservation for ReportServerWebService using pipeline' {
             $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
 
             # Verify the URL was added
@@ -91,6 +105,20 @@ Describe 'Add-SqlDscRSUrlReservation' {
             $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
             $reservations.UrlString | Should -Contain $script:testUrl
+        }
+
+        It 'Should add URL reservation for ReportServerWebApp using pipeline' {
+            $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebApp' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
+
+            # Verify the URL was added for ReportServerWebApp
+            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+            $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
+
+            # Find the index for ReportServerWebApp
+            $webAppIndex = [System.Array]::IndexOf($reservations.Application, 'ReportServerWebApp')
+
+            $webAppIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
+            $reservations.UrlString[$webAppIndex] | Should -Be $script:testUrl
         }
 
         It 'Should return configuration when using PassThru' {
@@ -122,7 +150,7 @@ Describe 'Add-SqlDscRSUrlReservation' {
             $script:testUrl = "http://+:$script:testPort"
         }
 
-        It 'Should add URL reservation using pipeline' {
+        It 'Should add URL reservation for ReportServerWebService using pipeline' {
             $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
 
             # Verify the URL was added
@@ -130,6 +158,20 @@ Describe 'Add-SqlDscRSUrlReservation' {
             $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
             $reservations.UrlString | Should -Contain $script:testUrl
+        }
+
+        It 'Should add URL reservation for ReportServerWebApp using pipeline' {
+            $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebApp' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
+
+            # Verify the URL was added for ReportServerWebApp
+            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+            $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
+
+            # Find the index for ReportServerWebApp
+            $webAppIndex = [System.Array]::IndexOf($reservations.Application, 'ReportServerWebApp')
+
+            $webAppIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
+            $reservations.UrlString[$webAppIndex] | Should -Be $script:testUrl
         }
 
         It 'Should return configuration when using PassThru' {
@@ -161,7 +203,7 @@ Describe 'Add-SqlDscRSUrlReservation' {
             $script:testUrl = "http://+:$script:testPort"
         }
 
-        It 'Should add URL reservation for PBIRS using pipeline' {
+        It 'Should add URL reservation for ReportServerWebService using pipeline' {
             $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
 
             # Verify the URL was added
@@ -169,6 +211,20 @@ Describe 'Add-SqlDscRSUrlReservation' {
             $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
             $reservations.UrlString | Should -Contain $script:testUrl
+        }
+
+        It 'Should add URL reservation for ReportServerWebApp using pipeline' {
+            $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebApp' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
+
+            # Verify the URL was added for ReportServerWebApp
+            $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
+            $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
+
+            # Find the index for ReportServerWebApp
+            $webAppIndex = [System.Array]::IndexOf($reservations.Application, 'ReportServerWebApp')
+
+            $webAppIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
+            $reservations.UrlString[$webAppIndex] | Should -Be $script:testUrl
         }
 
         It 'Should return configuration when using PassThru' {
