@@ -61,10 +61,22 @@ Describe 'Get-SqlDscRSUrlReservation' {
             $result.PSObject.Properties.Name | Should -Contain 'UrlString'
         }
 
-        It 'Should contain the test URL reservation added by Add-SqlDscRSUrlReservation' {
+        It 'Should contain the test URL reservation for ReportServerWebService' {
             $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            $result.UrlString | Should -Contain $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
+            $webServiceIndex = [System.Array]::IndexOf($result.Application, 'ReportServerWebService')
+
+            $webServiceIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebService should be in the applications'
+            $result.UrlString[$webServiceIndex] | Should -Be $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
+        }
+
+        It 'Should contain the test URL reservation for ReportServerWebApp' {
+            $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
+
+            $webAppIndex = [System.Array]::IndexOf($result.Application, 'ReportServerWebApp')
+
+            $webAppIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
+            $result.UrlString[$webAppIndex] | Should -Be $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
         }
     }
 
@@ -97,10 +109,22 @@ Describe 'Get-SqlDscRSUrlReservation' {
             $result.PSObject.Properties.Name | Should -Contain 'UrlString'
         }
 
-        It 'Should contain the test URL reservation added by Add-SqlDscRSUrlReservation' {
+        It 'Should contain the test URL reservation for ReportServerWebService' {
             $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            $result.UrlString | Should -Contain $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
+            $webServiceIndex = [System.Array]::IndexOf($result.Application, 'ReportServerWebService')
+
+            $webServiceIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebService should be in the applications'
+            $result.UrlString[$webServiceIndex] | Should -Be $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
+        }
+
+        It 'Should contain the test URL reservation for ReportServerWebApp' {
+            $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
+
+            $webAppIndex = [System.Array]::IndexOf($result.Application, 'ReportServerWebApp')
+
+            $webAppIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
+            $result.UrlString[$webAppIndex] | Should -Be $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
         }
     }
 
@@ -133,10 +157,22 @@ Describe 'Get-SqlDscRSUrlReservation' {
             $result.PSObject.Properties.Name | Should -Contain 'UrlString'
         }
 
-        It 'Should contain the test URL reservation added by Add-SqlDscRSUrlReservation' {
+        It 'Should contain the test URL reservation for ReportServerWebService' {
             $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            $result.UrlString | Should -Contain $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
+            $webServiceIndex = [System.Array]::IndexOf($result.Application, 'ReportServerWebService')
+
+            $webServiceIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebService should be in the applications'
+            $result.UrlString[$webServiceIndex] | Should -Be $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
+        }
+
+        It 'Should contain the test URL reservation for ReportServerWebApp' {
+            $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
+
+            $webAppIndex = [System.Array]::IndexOf($result.Application, 'ReportServerWebApp')
+
+            $webAppIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
+            $result.UrlString[$webAppIndex] | Should -Be $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
         }
     }
 
@@ -169,10 +205,22 @@ Describe 'Get-SqlDscRSUrlReservation' {
             $result.PSObject.Properties.Name | Should -Contain 'UrlString'
         }
 
-        It 'Should contain the test URL reservation added by Add-SqlDscRSUrlReservation' {
+        It 'Should contain the test URL reservation for ReportServerWebService' {
             $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            $result.UrlString | Should -Contain $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
+            $webServiceIndex = [System.Array]::IndexOf($result.Application, 'ReportServerWebService')
+
+            $webServiceIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebService should be in the applications'
+            $result.UrlString[$webServiceIndex] | Should -Be $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
+        }
+
+        It 'Should contain the test URL reservation for ReportServerWebApp' {
+            $result = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
+
+            $webAppIndex = [System.Array]::IndexOf($result.Application, 'ReportServerWebApp')
+
+            $webAppIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
+            $result.UrlString[$webAppIndex] | Should -Be $script:testUrl -Because 'the test URL reservation should have been added by Add-SqlDscRSUrlReservation integration test'
         }
     }
 }

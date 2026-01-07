@@ -46,6 +46,15 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
             $config.VirtualDirectoryReportServer | Should -Be 'ReportServer'
         }
 
+        It 'Should set virtual directory for ReportServerWebApp using pipeline' {
+            { $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebApp' -VirtualDirectory 'Reports' -Force -ErrorAction 'Stop' } | Should -Not -Throw
+
+            # Verify the virtual directory was set
+            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+
+            $config.VirtualDirectoryReportManager | Should -Be 'Reports'
+        }
+
         It 'Should return configuration when using PassThru' {
             $result = $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Force -PassThru -ErrorAction 'Stop'
 
@@ -66,6 +75,15 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
             $config.VirtualDirectoryReportServer | Should -Be 'ReportServer'
+        }
+
+        It 'Should set virtual directory for ReportServerWebApp using pipeline' {
+            { $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebApp' -VirtualDirectory 'Reports' -Force -ErrorAction 'Stop' } | Should -Not -Throw
+
+            # Verify the virtual directory was set
+            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+
+            $config.VirtualDirectoryReportManager | Should -Be 'Reports'
         }
 
         It 'Should return configuration when using PassThru' {
@@ -90,6 +108,15 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
             $config.VirtualDirectoryReportServer | Should -Be 'ReportServer'
         }
 
+        It 'Should set virtual directory for ReportServerWebApp using pipeline' {
+            { $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebApp' -VirtualDirectory 'Reports' -Force -ErrorAction 'Stop' } | Should -Not -Throw
+
+            # Verify the virtual directory was set
+            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+
+            $config.VirtualDirectoryReportManager | Should -Be 'Reports'
+        }
+
         It 'Should return configuration when using PassThru' {
             $result = $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Force -PassThru -ErrorAction 'Stop'
 
@@ -110,6 +137,15 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
 
             $config.VirtualDirectoryReportServer | Should -Be 'ReportServer'
+        }
+
+        It 'Should set virtual directory for ReportServerWebApp using pipeline' {
+            { $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebApp' -VirtualDirectory 'Reports' -Force -ErrorAction 'Stop' } | Should -Not -Throw
+
+            # Verify the virtual directory was set
+            $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
+
+            $config.VirtualDirectoryReportManager | Should -Be 'Reports'
         }
 
         It 'Should return configuration when using PassThru' {
