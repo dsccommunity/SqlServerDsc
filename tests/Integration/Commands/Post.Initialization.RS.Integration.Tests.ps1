@@ -37,24 +37,18 @@ BeforeAll {
         after initialization. It runs after Initialize-SqlDscRS to verify
         the RS configuration is complete and functional.
 
-        Uses explicit URIs instead of relying on URL reservations from the
-        configuration CIM instance, as the ListReservedUrls CIM method may
-        not return data reliably in all CI scenarios.
+        Uses URL reservations from the configuration CIM instance via the
+        Configuration parameter set of Test-SqlDscRSAccessible.
 #>
 Describe 'Post.Initialization.RS' {
     Context 'When validating SQL Server 2017 Reporting Services accessibility' -Tag @('Integration_SQL2017_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            # Get actual URL reservations from the configuration
-            $script:urlReservations = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'SilentlyContinue'
+            # Get expected URL reservations
+            $script:urlReservations = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            Write-Verbose -Message "URL Reservations: $($script:urlReservations | ConvertTo-Json -Compress -Depth 3)" -Verbose
-
-            # SSRS 2017 and later use fixed virtual directories without instance suffix
-            $computerName = Get-ComputerName
-            $script:reportServerUri = 'http://{0}/ReportServer' -f $computerName
-            $script:reportsUri = 'http://{0}/Reports' -f $computerName
+            Write-Verbose -Message "URL Reservations: Application=$($script:urlReservations.Application -join ',') UrlString=$($script:urlReservations.UrlString -join ',')" -Verbose
         }
 
         It 'Should have an initialized instance' {
@@ -63,24 +57,31 @@ Describe 'Post.Initialization.RS' {
             $isInitialized | Should -BeTrue
         }
 
-        It 'Should have accessible ReportServer site' {
-            $result = Test-SqlDscRSAccessible -ReportServerUri $script:reportServerUri -Detailed -ErrorAction 'Stop'
-
-            Write-Verbose -Message "ReportServer accessibility result: $($result | ConvertTo-Json -Compress)" -Verbose
-
-            $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
-            $result.Accessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
-            $result.StatusCode | Should -Be 200 -Because 'the ReportServer web service should return HTTP 200'
+        It 'Should have URL reservations configured' {
+            $script:urlReservations | Should -Not -BeNullOrEmpty
+            $script:urlReservations.Application | Should -Not -BeNullOrEmpty -Because 'URL reservations should have applications configured'
+            $script:urlReservations.UrlString | Should -Not -BeNullOrEmpty -Because 'URL reservations should have URL strings configured'
         }
 
-        It 'Should have accessible Reports site' {
-            $result = Test-SqlDscRSAccessible -ReportsUri $script:reportsUri -Detailed -ErrorAction 'Stop'
+        It 'Should have all configured sites accessible' {
+            $results = $script:configuration | Test-SqlDscRSAccessible -Detailed -ErrorAction 'Stop'
 
-            Write-Verbose -Message "Reports accessibility result: $($result | ConvertTo-Json -Compress)" -Verbose
+            Write-Verbose -Message "Accessibility results: $($results | ConvertTo-Json -Compress)" -Verbose
 
-            $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
-            $result.Accessible | Should -BeTrue -Because 'the Reports web portal should be accessible'
-            $result.StatusCode | Should -Be 200 -Because 'the Reports web portal should return HTTP 200'
+            # Verify we got results for the expected applications
+            $expectedApplications = $script:urlReservations.Application | Select-Object -Unique
+
+            $results | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
+            $results | Should -HaveCount $expectedApplications.Count -Because "we expect results for each unique application ($($expectedApplications -join ', '))"
+
+            foreach ($application in $expectedApplications)
+            {
+                $siteResult = $results | Where-Object -FilterScript { $_.Site -eq $application }
+
+                $siteResult | Should -Not -BeNullOrEmpty -Because "the '$application' site should have a result"
+                $siteResult.Accessible | Should -BeTrue -Because "the '$application' site should be accessible"
+                $siteResult.StatusCode | Should -Be 200 -Because "the '$application' site should return HTTP 200"
+            }
         }
     }
 
@@ -88,15 +89,10 @@ Describe 'Post.Initialization.RS' {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            # Get actual URL reservations from the configuration
-            $script:urlReservations = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'SilentlyContinue'
+            # Get expected URL reservations
+            $script:urlReservations = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            Write-Verbose -Message "URL Reservations: $($script:urlReservations | ConvertTo-Json -Compress -Depth 3)" -Verbose
-
-            # SSRS 2019 uses fixed virtual directories without instance suffix
-            $computerName = Get-ComputerName
-            $script:reportServerUri = 'http://{0}/ReportServer' -f $computerName
-            $script:reportsUri = 'http://{0}/Reports' -f $computerName
+            Write-Verbose -Message "URL Reservations: Application=$($script:urlReservations.Application -join ',') UrlString=$($script:urlReservations.UrlString -join ',')" -Verbose
         }
 
         It 'Should have an initialized instance' {
@@ -105,24 +101,31 @@ Describe 'Post.Initialization.RS' {
             $isInitialized | Should -BeTrue
         }
 
-        It 'Should have accessible ReportServer site' {
-            $result = Test-SqlDscRSAccessible -ReportServerUri $script:reportServerUri -Detailed -ErrorAction 'Stop'
-
-            Write-Verbose -Message "ReportServer accessibility result: $($result | ConvertTo-Json -Compress)" -Verbose
-
-            $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
-            $result.Accessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
-            $result.StatusCode | Should -Be 200 -Because 'the ReportServer web service should return HTTP 200'
+        It 'Should have URL reservations configured' {
+            $script:urlReservations | Should -Not -BeNullOrEmpty
+            $script:urlReservations.Application | Should -Not -BeNullOrEmpty -Because 'URL reservations should have applications configured'
+            $script:urlReservations.UrlString | Should -Not -BeNullOrEmpty -Because 'URL reservations should have URL strings configured'
         }
 
-        It 'Should have accessible Reports site' {
-            $result = Test-SqlDscRSAccessible -ReportsUri $script:reportsUri -Detailed -ErrorAction 'Stop'
+        It 'Should have all configured sites accessible' {
+            $results = $script:configuration | Test-SqlDscRSAccessible -Detailed -ErrorAction 'Stop'
 
-            Write-Verbose -Message "Reports accessibility result: $($result | ConvertTo-Json -Compress)" -Verbose
+            Write-Verbose -Message "Accessibility results: $($results | ConvertTo-Json -Compress)" -Verbose
 
-            $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
-            $result.Accessible | Should -BeTrue -Because 'the Reports web portal should be accessible'
-            $result.StatusCode | Should -Be 200 -Because 'the Reports web portal should return HTTP 200'
+            # Verify we got results for the expected applications
+            $expectedApplications = $script:urlReservations.Application | Select-Object -Unique
+
+            $results | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
+            $results | Should -HaveCount $expectedApplications.Count -Because "we expect results for each unique application ($($expectedApplications -join ', '))"
+
+            foreach ($application in $expectedApplications)
+            {
+                $siteResult = $results | Where-Object -FilterScript { $_.Site -eq $application }
+
+                $siteResult | Should -Not -BeNullOrEmpty -Because "the '$application' site should have a result"
+                $siteResult.Accessible | Should -BeTrue -Because "the '$application' site should be accessible"
+                $siteResult.StatusCode | Should -Be 200 -Because "the '$application' site should return HTTP 200"
+            }
         }
     }
 
@@ -130,15 +133,10 @@ Describe 'Post.Initialization.RS' {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            # Get actual URL reservations from the configuration
-            $script:urlReservations = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'SilentlyContinue'
+            # Get expected URL reservations
+            $script:urlReservations = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            Write-Verbose -Message "URL Reservations: $($script:urlReservations | ConvertTo-Json -Compress -Depth 3)" -Verbose
-
-            # SSRS 2022 uses fixed virtual directories without instance suffix
-            $computerName = Get-ComputerName
-            $script:reportServerUri = 'http://{0}/ReportServer' -f $computerName
-            $script:reportsUri = 'http://{0}/Reports' -f $computerName
+            Write-Verbose -Message "URL Reservations: Application=$($script:urlReservations.Application -join ',') UrlString=$($script:urlReservations.UrlString -join ',')" -Verbose
         }
 
         It 'Should have an initialized instance' {
@@ -147,24 +145,31 @@ Describe 'Post.Initialization.RS' {
             $isInitialized | Should -BeTrue
         }
 
-        It 'Should have accessible ReportServer site' {
-            $result = Test-SqlDscRSAccessible -ReportServerUri $script:reportServerUri -Detailed -ErrorAction 'Stop'
-
-            Write-Verbose -Message "ReportServer accessibility result: $($result | ConvertTo-Json -Compress)" -Verbose
-
-            $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
-            $result.Accessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
-            $result.StatusCode | Should -Be 200 -Because 'the ReportServer web service should return HTTP 200'
+        It 'Should have URL reservations configured' {
+            $script:urlReservations | Should -Not -BeNullOrEmpty
+            $script:urlReservations.Application | Should -Not -BeNullOrEmpty -Because 'URL reservations should have applications configured'
+            $script:urlReservations.UrlString | Should -Not -BeNullOrEmpty -Because 'URL reservations should have URL strings configured'
         }
 
-        It 'Should have accessible Reports site' {
-            $result = Test-SqlDscRSAccessible -ReportsUri $script:reportsUri -Detailed -ErrorAction 'Stop'
+        It 'Should have all configured sites accessible' {
+            $results = $script:configuration | Test-SqlDscRSAccessible -Detailed -ErrorAction 'Stop'
 
-            Write-Verbose -Message "Reports accessibility result: $($result | ConvertTo-Json -Compress)" -Verbose
+            Write-Verbose -Message "Accessibility results: $($results | ConvertTo-Json -Compress)" -Verbose
 
-            $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
-            $result.Accessible | Should -BeTrue -Because 'the Reports web portal should be accessible'
-            $result.StatusCode | Should -Be 200 -Because 'the Reports web portal should return HTTP 200'
+            # Verify we got results for the expected applications
+            $expectedApplications = $script:urlReservations.Application | Select-Object -Unique
+
+            $results | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
+            $results | Should -HaveCount $expectedApplications.Count -Because "we expect results for each unique application ($($expectedApplications -join ', '))"
+
+            foreach ($application in $expectedApplications)
+            {
+                $siteResult = $results | Where-Object -FilterScript { $_.Site -eq $application }
+
+                $siteResult | Should -Not -BeNullOrEmpty -Because "the '$application' site should have a result"
+                $siteResult.Accessible | Should -BeTrue -Because "the '$application' site should be accessible"
+                $siteResult.StatusCode | Should -Be 200 -Because "the '$application' site should return HTTP 200"
+            }
         }
     }
 
@@ -172,15 +177,10 @@ Describe 'Post.Initialization.RS' {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
 
-            # Get actual URL reservations from the configuration
-            $script:urlReservations = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'SilentlyContinue'
+            # Get expected URL reservations
+            $script:urlReservations = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            Write-Verbose -Message "URL Reservations: $($script:urlReservations | ConvertTo-Json -Compress -Depth 3)" -Verbose
-
-            # Power BI Report Server uses fixed virtual directories
-            $computerName = Get-ComputerName
-            $script:reportServerUri = 'http://{0}/ReportServer' -f $computerName
-            $script:reportsUri = 'http://{0}/Reports' -f $computerName
+            Write-Verbose -Message "URL Reservations: Application=$($script:urlReservations.Application -join ',') UrlString=$($script:urlReservations.UrlString -join ',')" -Verbose
         }
 
         It 'Should have an initialized instance' {
@@ -189,24 +189,31 @@ Describe 'Post.Initialization.RS' {
             $isInitialized | Should -BeTrue
         }
 
-        It 'Should have accessible ReportServer site' {
-            $result = Test-SqlDscRSAccessible -ReportServerUri $script:reportServerUri -Detailed -ErrorAction 'Stop'
-
-            Write-Verbose -Message "ReportServer accessibility result: $($result | ConvertTo-Json -Compress)" -Verbose
-
-            $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
-            $result.Accessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
-            $result.StatusCode | Should -Be 200 -Because 'the ReportServer web service should return HTTP 200'
+        It 'Should have URL reservations configured' {
+            $script:urlReservations | Should -Not -BeNullOrEmpty
+            $script:urlReservations.Application | Should -Not -BeNullOrEmpty -Because 'URL reservations should have applications configured'
+            $script:urlReservations.UrlString | Should -Not -BeNullOrEmpty -Because 'URL reservations should have URL strings configured'
         }
 
-        It 'Should have accessible Reports site' {
-            $result = Test-SqlDscRSAccessible -ReportsUri $script:reportsUri -Detailed -ErrorAction 'Stop'
+        It 'Should have all configured sites accessible' {
+            $results = $script:configuration | Test-SqlDscRSAccessible -Detailed -ErrorAction 'Stop'
 
-            Write-Verbose -Message "Reports accessibility result: $($result | ConvertTo-Json -Compress)" -Verbose
+            Write-Verbose -Message "Accessibility results: $($results | ConvertTo-Json -Compress)" -Verbose
 
-            $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
-            $result.Accessible | Should -BeTrue -Because 'the Reports web portal should be accessible'
-            $result.StatusCode | Should -Be 200 -Because 'the Reports web portal should return HTTP 200'
+            # Verify we got results for the expected applications
+            $expectedApplications = $script:urlReservations.Application | Select-Object -Unique
+
+            $results | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
+            $results | Should -HaveCount $expectedApplications.Count -Because "we expect results for each unique application ($($expectedApplications -join ', '))"
+
+            foreach ($application in $expectedApplications)
+            {
+                $siteResult = $results | Where-Object -FilterScript { $_.Site -eq $application }
+
+                $siteResult | Should -Not -BeNullOrEmpty -Because "the '$application' site should have a result"
+                $siteResult.Accessible | Should -BeTrue -Because "the '$application' site should be accessible"
+                $siteResult.StatusCode | Should -Be 200 -Because "the '$application' site should return HTTP 200"
+            }
         }
     }
 }

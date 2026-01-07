@@ -44,19 +44,6 @@ Describe 'Add-SqlDscRSUrlReservation' {
             $script:testUrl = "http://+:$script:testPort"
         }
 
-        AfterAll {
-            # Clean up: remove the test URL reservation if it was added
-            try
-            {
-                $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-                $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'SilentlyContinue'
-            }
-            catch
-            {
-                # Ignore errors during cleanup
-            }
-        }
-
         It 'Should add URL reservation using pipeline' {
             $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
 
@@ -94,19 +81,6 @@ Describe 'Add-SqlDscRSUrlReservation' {
             # Use a unique port for testing to avoid conflicts
             $script:testPort = 18080
             $script:testUrl = "http://+:$script:testPort"
-        }
-
-        AfterAll {
-            # Clean up: remove the test URL reservation if it was added
-            try
-            {
-                $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-                $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'SilentlyContinue'
-            }
-            catch
-            {
-                # Ignore errors during cleanup
-            }
         }
 
         It 'Should add URL reservation using pipeline' {
@@ -148,19 +122,6 @@ Describe 'Add-SqlDscRSUrlReservation' {
             $script:testUrl = "http://+:$script:testPort"
         }
 
-        AfterAll {
-            # Clean up: remove the test URL reservation if it was added
-            try
-            {
-                $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-                $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'SilentlyContinue'
-            }
-            catch
-            {
-                # Ignore errors during cleanup
-            }
-        }
-
         It 'Should add URL reservation using pipeline' {
             $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
 
@@ -198,19 +159,6 @@ Describe 'Add-SqlDscRSUrlReservation' {
             # Use a unique port for testing to avoid conflicts
             $script:testPort = 18080
             $script:testUrl = "http://+:$script:testPort"
-        }
-
-        AfterAll {
-            # Clean up: remove the test URL reservation if it was added
-            try
-            {
-                $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
-                $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'SilentlyContinue'
-            }
-            catch
-            {
-                # Ignore errors during cleanup
-            }
         }
 
         It 'Should add URL reservation for PBIRS using pipeline' {
