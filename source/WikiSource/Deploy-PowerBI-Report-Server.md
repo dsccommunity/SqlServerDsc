@@ -4,7 +4,7 @@ Category: How-to
 
 # Deploy Power BI Report Server
 
-This guide walks you through deploying Power BI Report Server using SqlServerDsc
+This guide walks you through deploying Power BI Report Server using _SqlServerDsc_
 PowerShell commands. You will learn how to download the installation media,
 install a dedicated SQL Server instance to host the report server database,
 install and configure Power BI Report Server, and verify that everything is
@@ -16,7 +16,7 @@ reports, and KPIs. It provides a web portal for viewing and managing reports,
 similar to the Power BI service but hosted within your own infrastructure.
 
 > [!NOTE]
-> This guide uses SqlServerDsc module commands to automate the entire deployment
+> This guide uses _SqlServerDsc_ module commands to automate the entire deployment
 > process. The same commands can be used in DSC configurations, scripts, or
 > interactive PowerShell sessions.
 
@@ -53,8 +53,10 @@ user accounts for the SQL Server service and SQL Server Agent service:
 <!-- markdownlint-disable MD013 -->
 ```powershell
 # Define passwords for service accounts
-$servicePassword = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
-$adminPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+# NOTE: Replace these placeholders with strong, unique passwords for production use.
+#       Never commit actual passwords to source control.
+$servicePassword = ConvertTo-SecureString -String '<YOUR_SERVICE_ACCOUNT_PASSWORD>' -AsPlainText -Force
+$adminPassword = ConvertTo-SecureString -String '<YOUR_ADMIN_PASSWORD>' -AsPlainText -Force
 
 # Create SQL Server service account
 New-LocalUser -Name 'svc-SqlPrimary' `
@@ -187,13 +189,13 @@ $installSqlServerParams = @{
         'BUILTIN\Administrators'
     )
     SqlSvcAccount         = "$env:COMPUTERNAME\svc-SqlPrimary"
-    SqlSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
+    SqlSvcPassword        = $servicePassword  # Use the variable defined earlier
     SqlSvcStartupType     = 'Automatic'
     AgtSvcAccount         = "$env:COMPUTERNAME\svc-SqlAgentPri"
-    AgtSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
+    AgtSvcPassword        = $servicePassword  # Use the variable defined earlier
     AgtSvcStartupType     = 'Automatic'
     SecurityMode          = 'SQL'
-    SAPwd                 = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+    SAPwd                 = $adminPassword     # Use the variable defined earlier
     NpEnabled             = $true
     TcpEnabled            = $true
     MediaPath             = $sqlMediaPath
