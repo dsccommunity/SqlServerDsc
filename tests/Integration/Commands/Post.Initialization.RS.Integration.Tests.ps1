@@ -61,6 +61,8 @@ Describe 'Post.Initialization.RS' {
         It 'Should have accessible ReportServer site' {
             $result = Test-SqlDscRSAccessible -ReportServerUri $script:reportServerUri -Detailed -ErrorAction 'Stop'
 
+            Write-Verbose -Message "ReportServer accessibility result: $($result | ConvertTo-Json -Compress)" -Verbose
+
             $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
             $result.Accessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
             $result.StatusCode | Should -Be 200 -Because 'the ReportServer web service should return HTTP 200'
@@ -68,6 +70,8 @@ Describe 'Post.Initialization.RS' {
 
         It 'Should have accessible Reports site' {
             $result = Test-SqlDscRSAccessible -ReportsUri $script:reportsUri -Detailed -ErrorAction 'Stop'
+
+            Write-Verbose -Message "Reports accessibility result: $($result | ConvertTo-Json -Compress)" -Verbose
 
             $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
             $result.Accessible | Should -BeTrue -Because 'the Reports web portal should be accessible'
@@ -94,6 +98,8 @@ Describe 'Post.Initialization.RS' {
         It 'Should have accessible ReportServer site' {
             $result = Test-SqlDscRSAccessible -ReportServerUri $script:reportServerUri -Detailed -ErrorAction 'Stop'
 
+            Write-Verbose -Message "ReportServer accessibility result: $($result | ConvertTo-Json -Compress)" -Verbose
+
             $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
             $result.Accessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
             $result.StatusCode | Should -Be 200 -Because 'the ReportServer web service should return HTTP 200'
@@ -101,6 +107,8 @@ Describe 'Post.Initialization.RS' {
 
         It 'Should have accessible Reports site' {
             $result = Test-SqlDscRSAccessible -ReportsUri $script:reportsUri -Detailed -ErrorAction 'Stop'
+
+            Write-Verbose -Message "Reports accessibility result: $($result | ConvertTo-Json -Compress)" -Verbose
 
             $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
             $result.Accessible | Should -BeTrue -Because 'the Reports web portal should be accessible'
@@ -127,6 +135,8 @@ Describe 'Post.Initialization.RS' {
         It 'Should have accessible ReportServer site' {
             $result = Test-SqlDscRSAccessible -ReportServerUri $script:reportServerUri -Detailed -ErrorAction 'Stop'
 
+            Write-Verbose -Message "ReportServer accessibility result: $($result | ConvertTo-Json -Compress)" -Verbose
+
             $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
             $result.Accessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
             $result.StatusCode | Should -Be 200 -Because 'the ReportServer web service should return HTTP 200'
@@ -134,6 +144,8 @@ Describe 'Post.Initialization.RS' {
 
         It 'Should have accessible Reports site' {
             $result = Test-SqlDscRSAccessible -ReportsUri $script:reportsUri -Detailed -ErrorAction 'Stop'
+
+            Write-Verbose -Message "Reports accessibility result: $($result | ConvertTo-Json -Compress)" -Verbose
 
             $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
             $result.Accessible | Should -BeTrue -Because 'the Reports web portal should be accessible'
@@ -160,6 +172,8 @@ Describe 'Post.Initialization.RS' {
         It 'Should have accessible ReportServer site' {
             $result = Test-SqlDscRSAccessible -ReportServerUri $script:reportServerUri -Detailed -ErrorAction 'Stop'
 
+            Write-Verbose -Message "ReportServer accessibility result: $($result | ConvertTo-Json -Compress)" -Verbose
+
             $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
             $result.Accessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
             $result.StatusCode | Should -Be 200 -Because 'the ReportServer web service should return HTTP 200'
@@ -167,6 +181,8 @@ Describe 'Post.Initialization.RS' {
 
         It 'Should have accessible Reports site' {
             $result = Test-SqlDscRSAccessible -ReportsUri $script:reportsUri -Detailed -ErrorAction 'Stop'
+
+            Write-Verbose -Message "Reports accessibility result: $($result | ConvertTo-Json -Compress)" -Verbose
 
             $result | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
             $result.Accessible | Should -BeTrue -Because 'the Reports web portal should be accessible'

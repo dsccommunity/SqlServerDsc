@@ -63,6 +63,15 @@ Describe 'Initialize-SqlDscRS' {
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'SSRS'
         }
+
+        It 'Should restart the service to ensure initialization is complete' {
+            <#
+                After initialization, the Reporting Services service must be restarted
+                for the web services to be fully functional. This is consistent with
+                the behavior in the SqlRS MOF resource.
+            #>
+            $script:configuration | Restart-SqlDscRSService -WaitTime 30 -Force -ErrorAction 'Stop'
+        }
     }
 
     Context 'When initializing SQL Server 2019 Reporting Services' -Tag @('Integration_SQL2019_RS') {
@@ -84,6 +93,15 @@ Describe 'Initialize-SqlDscRS' {
 
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'SSRS'
+        }
+
+        It 'Should restart the service to ensure initialization is complete' {
+            <#
+                After initialization, the Reporting Services service must be restarted
+                for the web services to be fully functional. This is consistent with
+                the behavior in the SqlRS MOF resource.
+            #>
+            $script:configuration | Restart-SqlDscRSService -WaitTime 30 -Force -ErrorAction 'Stop'
         }
     }
 
@@ -107,6 +125,15 @@ Describe 'Initialize-SqlDscRS' {
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'SSRS'
         }
+
+        It 'Should restart the service to ensure initialization is complete' {
+            <#
+                After initialization, the Reporting Services service must be restarted
+                for the web services to be fully functional. This is consistent with
+                the behavior in the SqlRS MOF resource.
+            #>
+            $script:configuration | Restart-SqlDscRSService -WaitTime 30 -Force -ErrorAction 'Stop'
+        }
     }
 
     Context 'When initializing Power BI Report Server' -Tag @('Integration_PowerBI') {
@@ -128,6 +155,15 @@ Describe 'Initialize-SqlDscRS' {
 
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'PBIRS'
+        }
+
+        It 'Should restart the service to ensure initialization is complete' {
+            <#
+                After initialization, the Reporting Services service must be restarted
+                for the web services to be fully functional. This is consistent with
+                the behavior in the SqlRS MOF resource.
+            #>
+            $script:configuration | Restart-SqlDscRSService -WaitTime 30 -Force -ErrorAction 'Stop'
         }
     }
 }
