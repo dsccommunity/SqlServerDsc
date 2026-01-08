@@ -92,6 +92,13 @@ Describe 'Prerequisites' {
             $user.Name | Should -Be 'svc-SqlAgentSec'
             (Get-LocalUser -Name 'svc-SqlAgentSec').Name | Should -Be 'svc-SqlAgentSec'
         }
+
+        It 'Should create svc-RS user' -Tag @('Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
+            $user = New-LocalUser -Name 'svc-RS' -Password $password -FullName 'svc-RS' -Description 'Runs the Reporting Services service.'
+
+            $user.Name | Should -Be 'svc-RS'
+            (Get-LocalUser -Name 'svc-RS').Name | Should -Be 'svc-RS'
+        }
     }
 
     Context 'Create required local Windows groups' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {

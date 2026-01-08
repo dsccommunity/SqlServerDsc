@@ -34,6 +34,12 @@
     .PARAMETER Force
         If specified, suppresses the confirmation prompt.
 
+    .PARAMETER RecreateExisting
+        If specified, removes and re-adds all specified URL reservations even
+        if they already exist. This is useful after changing the Windows service
+        account, as URL reservations are tied to a specific service account and
+        must be recreated to use the new account.
+
     .INPUTS
         Microsoft.Management.Infrastructure.CimInstance
 
@@ -62,6 +68,15 @@
 
         Sets the URL reservations for the ReportServerWebApp application on a
         Power BI Report Server instance and returns the configuration object.
+
+    .EXAMPLE
+        $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+        $urlReservations = $config | Get-SqlDscRSUrlReservation
+        $config | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $urlReservations.UrlString -RecreateExisting -Force
+
+        Refreshes the existing URL reservations for the ReportServerWebService
+        application. This is useful after changing the service account to update
+        the reservations to use the new account.
 
     .NOTES
         This command calls the ReserveUrl and RemoveURL methods on the
@@ -112,7 +127,11 @@ function Set-SqlDscRSUrlReservation
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $Force
+        $Force,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $RecreateExisting
     )
 
     process
@@ -156,6 +175,14 @@ function Set-SqlDscRSUrlReservation
             # Determine URLs to add (in desired but not in current)
             $urlsToAdd = $UrlString | Where-Object -FilterScript { $_ -notin $currentUrls }
 
+            # Determine URLs to recreate (in both current and desired, when RecreateExisting is specified)
+            $urlsToRecreate = @()
+
+            if ($RecreateExisting.IsPresent)
+            {
+                $urlsToRecreate = $UrlString | Where-Object -FilterScript { $_ -in $currentUrls }
+            }
+
             # Build common parameters for Add/Remove commands
             $commonParams = @{
                 Application = $Application
@@ -182,6 +209,15 @@ function Set-SqlDscRSUrlReservation
                 Write-Verbose -Message ($script:localizedData.Set_SqlDscRSUrlReservation_AddingUrl -f $urlToAdd, $Application, $instanceName)
 
                 $Configuration | Add-SqlDscRSUrlReservation @commonParams -UrlString $urlToAdd
+            }
+
+            # Recreate URLs that already exist (remove and re-add)
+            foreach ($urlToRecreate in $urlsToRecreate)
+            {
+                Write-Verbose -Message ($script:localizedData.Set_SqlDscRSUrlReservation_RecreatingUrl -f $urlToRecreate, $Application, $instanceName)
+
+                $Configuration | Remove-SqlDscRSUrlReservation @commonParams -UrlString $urlToRecreate
+                $Configuration | Add-SqlDscRSUrlReservation @commonParams -UrlString $urlToRecreate
             }
 
             if ($PassThru.IsPresent)

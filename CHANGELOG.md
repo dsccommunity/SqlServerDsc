@@ -189,6 +189,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   for SQL Server Reporting Services or Power BI Report Server. Supports waiting
   for dependent services, configurable wait time, and accepts pipeline input
   from `Get-SqlDscRSConfiguration`.
+- Added public commands `Get-SqlDscRSServiceAccount` and
+  `Set-SqlDscRSServiceAccount` to get and set the Windows service account for
+  SQL Server Reporting Services or Power BI Report Server. `Set-SqlDscRSServiceAccount`
+  wraps the `SetWindowsServiceIdentity` CIM method and supports updating encryption
+  key backups.
 - Added public command `Test-SqlDscRSInitialized` to test whether a Reporting
   Services instance is initialized by checking the `IsInitialized` property of
   the configuration CIM instance
@@ -254,6 +259,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     of the deprecated private function `Get-ProtocolNameProperties`
 - `Class-Based Dsc Resource Tests`
   - Updated tests for ResourceBase 2.0.
+- `Set-SqlDscRSUrlReservation`
+  - Added parameter `RecreateExisting` to remove and re-add all specified URL
+    reservations even if they already exist. This is useful after changing the
+    Windows service account, as URL reservations are tied to a specific service
+    account and must be recreated to use the new account.
+- Prerequisites Integration Tests
+  - Added `svc-RS` local Windows user for Reporting Services service account
+    integration testing.
 
 ### Fixed
 
