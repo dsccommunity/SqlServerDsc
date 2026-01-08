@@ -106,7 +106,7 @@ Describe 'Post.DatabaseRights.RS' -Tag @('Integration_SQL2017_RS', 'Integration_
                     ErrorAction  = 'Stop'
                 }
 
-                { Invoke-SqlDscQuery @invokeSqlDscQueryParameters } | Should -Not -Throw -Because 'the database rights script should execute successfully'
+                Invoke-SqlDscQuery @invokeSqlDscQueryParameters
             }
             finally
             {
