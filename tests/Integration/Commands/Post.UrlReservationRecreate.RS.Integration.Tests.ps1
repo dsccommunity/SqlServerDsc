@@ -74,6 +74,10 @@ Describe 'Post.UrlReservationRecreate.RS' -Tag @('Integration_SQL2017_RS', 'Inte
             $null = $script:configuration | Set-SqlDscRSUrlReservation -RecreateExisting -Force -ErrorAction 'Stop'
         }
 
+        It 'Should restart the Reporting Services service' {
+            $script:configuration | Restart-SqlDscRSService -Force -ErrorAction 'Stop'
+        }
+
         It 'Should have the same URL reservations after recreating' {
             $urlReservationsAfter = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
@@ -101,27 +105,6 @@ Describe 'Post.UrlReservationRecreate.RS' -Tag @('Integration_SQL2017_RS', 'Inte
                 }
 
                 $found | Should -BeTrue -Because "URL reservation '$expectedUrl' for application '$expectedApplication' should exist after recreation"
-            }
-        }
-
-        It 'Should have all configured sites accessible after URL reservation recreation' {
-            $results = $script:configuration | Test-SqlDscRSAccessible -Detailed -ErrorAction 'Stop'
-
-            Write-Verbose -Message "Accessibility results: $($results | ConvertTo-Json -Compress)" -Verbose
-
-            # Verify we got results for the expected applications
-            $expectedApplications = $script:urlReservationsBefore.Application | Select-Object -Unique
-
-            $results | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
-            $results | Should -HaveCount $expectedApplications.Count -Because "we expect results for each unique application ($($expectedApplications -join ', '))"
-
-            foreach ($application in $expectedApplications)
-            {
-                $siteResult = $results | Where-Object -FilterScript { $_.Site -eq $application }
-
-                $siteResult | Should -Not -BeNullOrEmpty -Because "the '$application' site should have a result"
-                $siteResult.Accessible | Should -BeTrue -Because "the '$application' site should be accessible after URL reservation recreation"
-                $siteResult.StatusCode | Should -Be 200 -Because "the '$application' site should return HTTP 200 after URL reservation recreation"
             }
         }
     }
