@@ -75,7 +75,7 @@ Describe 'Post.UrlReservationRecreate.RS' -Tag @('Integration_SQL2017_RS', 'Inte
         }
 
         It 'Should restart the Reporting Services service' {
-            $script:configuration | Restart-SqlDscRSService -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Restart-SqlDscRSService -Force -ErrorAction 'Stop'
         }
 
         It 'Should have the same URL reservations after recreating' {

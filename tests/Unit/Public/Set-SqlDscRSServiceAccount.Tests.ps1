@@ -78,7 +78,7 @@ Describe 'Set-SqlDscRSServiceAccount' {
         }
 
         It 'Should set service account without errors' {
-            { $mockCimInstance | Set-SqlDscRSServiceAccount -Credential $mockCredential -Confirm:$false } | Should -Not -Throw
+            $mockCimInstance | Set-SqlDscRSServiceAccount -Credential $mockCredential -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'SetWindowsServiceIdentity' -and
@@ -109,7 +109,7 @@ Describe 'Set-SqlDscRSServiceAccount' {
         }
 
         It 'Should set built-in service account' {
-            { $mockCimInstance | Set-SqlDscRSServiceAccount -Credential $mockCredential -UseBuiltInAccount -Confirm:$false } | Should -Not -Throw
+            $mockCimInstance | Set-SqlDscRSServiceAccount -Credential $mockCredential -UseBuiltInAccount -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $Arguments.UseBuiltInAccount -eq $true
@@ -154,7 +154,7 @@ Describe 'Set-SqlDscRSServiceAccount' {
         }
 
         It 'Should set service account without confirmation' {
-            { $mockCimInstance | Set-SqlDscRSServiceAccount -Credential $mockCredential -Force } | Should -Not -Throw
+            $mockCimInstance | Set-SqlDscRSServiceAccount -Credential $mockCredential -Force
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
@@ -217,7 +217,7 @@ Describe 'Set-SqlDscRSServiceAccount' {
         }
 
         It 'Should set service account' {
-            { Set-SqlDscRSServiceAccount -Configuration $mockCimInstance -Credential $mockCredential -Confirm:$false } | Should -Not -Throw
+            Set-SqlDscRSServiceAccount -Configuration $mockCimInstance -Credential $mockCredential -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
@@ -240,7 +240,7 @@ Describe 'Set-SqlDscRSServiceAccount' {
         }
 
         It 'Should restart the service after setting the service account' {
-            { $mockCimInstance | Set-SqlDscRSServiceAccount -Credential $mockCredential -RestartService -Confirm:$false } | Should -Not -Throw
+            $mockCimInstance | Set-SqlDscRSServiceAccount -Credential $mockCredential -RestartService -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
             Should -Invoke -CommandName Restart-SqlDscRSService -ParameterFilter {
@@ -267,7 +267,7 @@ Describe 'Set-SqlDscRSServiceAccount' {
         }
 
         It 'Should write a warning about URL reservations' {
-            { $mockCimInstance | Set-SqlDscRSServiceAccount -Credential $mockCredential -Confirm:$false } | Should -Not -Throw
+            $mockCimInstance | Set-SqlDscRSServiceAccount -Credential $mockCredential -Confirm:$false
 
             Should -Invoke -CommandName Write-Warning -Exactly -Times 1
         }
@@ -290,7 +290,7 @@ Describe 'Set-SqlDscRSServiceAccount' {
         }
 
         It 'Should not write a warning about URL reservations' {
-            { $mockCimInstance | Set-SqlDscRSServiceAccount -Credential $mockCredential -SuppressUrlReservationWarning -Confirm:$false } | Should -Not -Throw
+            $mockCimInstance | Set-SqlDscRSServiceAccount -Credential $mockCredential -SuppressUrlReservationWarning -Confirm:$false
 
             Should -Invoke -CommandName Write-Warning -Exactly -Times 0
         }

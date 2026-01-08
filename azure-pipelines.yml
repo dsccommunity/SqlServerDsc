@@ -576,6 +576,7 @@ stages:
                   # Group 6 - Service account change
                   'tests/Integration/Commands/Set-SqlDscRSServiceAccount.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSServiceAccount.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Post.DatabaseRights.RS.Integration.Tests.ps1'
                   'tests/Integration/Commands/Post.UrlReservationRecreate.RS.Integration.Tests.ps1'
                   'tests/Integration/Commands/Post.ServiceAccountChange.RS.Integration.Tests.ps1'
                   # Group 8
@@ -666,6 +667,7 @@ stages:
                   # Group 6 - Service account change
                   'tests/Integration/Commands/Set-SqlDscRSServiceAccount.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSServiceAccount.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Post.DatabaseRights.RS.Integration.Tests.ps1'
                   'tests/Integration/Commands/Post.UrlReservationRecreate.RS.Integration.Tests.ps1'
                   'tests/Integration/Commands/Post.ServiceAccountChange.RS.Integration.Tests.ps1'
                   # Group 8
