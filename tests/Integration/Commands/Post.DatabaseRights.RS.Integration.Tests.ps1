@@ -68,7 +68,23 @@ Describe 'Post.DatabaseRights.RS' -Tag @('Integration_SQL2017_RS', 'Integration_
     }
 
     Context 'When granting database rights to the new service account' {
+        It 'Should create a SQL Server login for the new service account' {
+            # Use the RSDB instance that hosts the ReportServer database
+            $serverObject = Connect-SqlDscDatabaseEngine -ServerName 'localhost' -InstanceName 'RSDB' -ErrorAction 'Stop'
+
+            try
+            {
+                # The login must exist before granting database rights
+                $null = New-SqlDscLogin -ServerObject $serverObject -Name $script:serviceAccount -LoginType 'WindowsUser' -Force -ErrorAction 'Stop'
+            }
+            finally
+            {
+                Disconnect-SqlDscDatabaseEngine -ServerObject $serverObject -ErrorAction 'SilentlyContinue'
+            }
+        }
+
         It 'Should generate database rights script for the new service account' {
+            # When IsWindowsUser is set to false, the SQL Server user must already exist on the SQL Server for the script to run successfully.
             $script:databaseRightsScript = $script:configuration |
                 Request-SqlDscRSDatabaseRightsScript -DatabaseName $script:databaseName -UserName $script:serviceAccount -ErrorAction 'Stop'
 
