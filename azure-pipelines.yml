@@ -116,8 +116,8 @@ stages:
                 Write-Host "Variable ShouldRunDscResourceIntegrationTests is set to: $shouldRun"
               pwsh: true
 
-      - job: Test_HQRM
-        displayName: 'HQRM'
+      - job: Test_QA
+        displayName: 'QA Test'
         pool:
           vmImage: 'windows-latest'
         timeoutInMinutes: '0'
@@ -147,10 +147,25 @@ stages:
               Invoke-Pester -Configuration $pesterConfig
             name: qualityTest
             displayName: 'Run SqlServerDsc QA Test'
+
+      - job: Test_HQRM
+        displayName: 'HQRM Test'
+        pool:
+          vmImage: 'windows-latest'
+        timeoutInMinutes: '0'
+        variables:
+          # This sets environment variable $env:SqlServerDscCI.
+          SqlServerDscCI: true
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
           - task: PowerShell@2
             name: test
             displayName: 'Run HQRM Test'
-            condition: succeededOrFailed()
             inputs:
               filePath: './build.ps1'
               arguments: '-Tasks hqrmtest'
