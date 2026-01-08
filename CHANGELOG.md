@@ -208,6 +208,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- SqlServerDsc
+  - Split the `Test_HQRM` pipeline job into two parallel jobs (`Test_QA` and
+    `Test_HQRM`) to reduce overall pipeline execution time by approximately
+    15 minutes.
 - `Install-SqlDscServer`
   - **BREAKING CHANGE:** Removed `PrepareImage`, `Upgrade`, `EditionUpgrade`,
     `PrepareFailoverCluster`, and `InstallFailoverCluster` parameter sets. Use
