@@ -67,17 +67,14 @@ Describe 'Get-SqlDscRSServiceAccount' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName = 'SSRS'
-                WindowsServiceIdentityConfigured = 'NT SERVICE\SQLServerReportingServices'
                 WindowsServiceIdentityActual = 'NT SERVICE\SQLServerReportingServices'
             }
         }
 
-        It 'Should return the service account information' {
+        It 'Should return the service account name' {
             $result = $mockCimInstance | Get-SqlDscRSServiceAccount
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.ConfiguredAccount | Should -Be 'NT SERVICE\SQLServerReportingServices'
-            $result.ActualAccount | Should -Be 'NT SERVICE\SQLServerReportingServices'
+            $result | Should -Be 'NT SERVICE\SQLServerReportingServices'
         }
     }
 
@@ -85,35 +82,14 @@ Describe 'Get-SqlDscRSServiceAccount' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName = 'SSRS'
-                WindowsServiceIdentityConfigured = 'DOMAIN\ServiceAccount'
                 WindowsServiceIdentityActual = 'DOMAIN\ServiceAccount'
             }
         }
 
-        It 'Should return the service account information' {
+        It 'Should return the service account name' {
             $result = Get-SqlDscRSServiceAccount -Configuration $mockCimInstance
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.ConfiguredAccount | Should -Be 'DOMAIN\ServiceAccount'
-            $result.ActualAccount | Should -Be 'DOMAIN\ServiceAccount'
-        }
-    }
-
-    Context 'When configured and actual accounts differ' {
-        BeforeAll {
-            $mockCimInstance = [PSCustomObject] @{
-                InstanceName = 'SSRS'
-                WindowsServiceIdentityConfigured = 'DOMAIN\NewAccount'
-                WindowsServiceIdentityActual = 'DOMAIN\OldAccount'
-            }
-        }
-
-        It 'Should return both configured and actual accounts' {
-            $result = $mockCimInstance | Get-SqlDscRSServiceAccount
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.ConfiguredAccount | Should -Be 'DOMAIN\NewAccount'
-            $result.ActualAccount | Should -Be 'DOMAIN\OldAccount'
+            $result | Should -Be 'DOMAIN\ServiceAccount'
         }
     }
 }
