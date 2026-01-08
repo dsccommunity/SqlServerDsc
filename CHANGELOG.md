@@ -260,10 +260,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Class-Based Dsc Resource Tests`
   - Updated tests for ResourceBase 2.0.
 - `Set-SqlDscRSUrlReservation`
-  - Added parameter `RecreateExisting` to remove and re-add all specified URL
-    reservations even if they already exist. This is useful after changing the
-    Windows service account, as URL reservations are tied to a specific service
-    account and must be recreated to use the new account.
+  - Added separate parameter set `Recreate` with the parameter `RecreateExisting`
+    to remove and re-add all existing URL reservations for all applications.
+    This is useful after changing the Windows service account, as URL reservations
+    are tied to a specific service account and must be recreated to use the new
+    account. The `Recreate` parameter set does not require `Application` or
+    `UrlString` parameters.
 - Prerequisites Integration Tests
   - Added `svc-RS` local Windows user for Reporting Services service account
     integration testing.

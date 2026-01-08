@@ -561,6 +561,7 @@ stages:
                   # Group 6 - Service account change
                   'tests/Integration/Commands/Set-SqlDscRSServiceAccount.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSServiceAccount.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Post.UrlReservationRecreate.RS.Integration.Tests.ps1'
                   'tests/Integration/Commands/Post.ServiceAccountChange.RS.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscReportingService.Integration.Tests.ps1'
@@ -650,7 +651,7 @@ stages:
                   # Group 6 - Service account change
                   'tests/Integration/Commands/Set-SqlDscRSServiceAccount.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSServiceAccount.Integration.Tests.ps1'
-                  # Group 6a - Post-service account change validation
+                  'tests/Integration/Commands/Post.UrlReservationRecreate.RS.Integration.Tests.ps1'
                   'tests/Integration/Commands/Post.ServiceAccountChange.RS.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscPowerBIReportServer.Integration.Tests.ps1'

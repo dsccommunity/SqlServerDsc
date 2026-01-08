@@ -762,6 +762,11 @@ ConvertFrom-StringData @'
     Set_SqlDscRSUrlReservation_RemovingUrl = Removing URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'.
     Set_SqlDscRSUrlReservation_AddingUrl = Adding URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'.
     Set_SqlDscRSUrlReservation_RecreatingUrl = Recreating URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'. (SSRUR0001)
+    Set_SqlDscRSUrlReservation_Recreate_ShouldProcessVerboseDescription = Recreating all URL reservations on Reporting Services instance '{0}'.
+    Set_SqlDscRSUrlReservation_Recreate_ShouldProcessVerboseWarning = Are you sure you want to recreate all URL reservations on Reporting Services instance '{0}'? All existing reservations will be removed and re-added.
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Set_SqlDscRSUrlReservation_Recreate_ShouldProcessCaption = Recreate URL reservations for Reporting Services instance
+    Set_SqlDscRSUrlReservation_NoReservationsToRecreate = No URL reservations found to recreate on Reporting Services instance '{0}'.
 
     ## Set-SqlDscRSVirtualDirectory
     Set_SqlDscRSVirtualDirectory_Setting = Setting virtual directory '{0}' for application '{1}' on Reporting Services instance '{2}'.
@@ -810,7 +815,7 @@ ConvertFrom-StringData @'
     Set_SqlDscRSServiceAccount_ShouldProcessCaption = Set service account for Reporting Services instance
     Set_SqlDscRSServiceAccount_FailedToSet = Failed to set service account for Reporting Services instance '{0}'. {1} (SSRSSA0001)
     Set_SqlDscRSServiceAccount_RestartingService = Restarting Reporting Services service '{0}'.
-    Set_SqlDscRSServiceAccount_UrlReservationWarning = The service account has been changed from '{0}' to '{1}'. URL reservations are tied to the service account and must be recreated. To recreate URL reservations for the new service account, run: Get-SqlDscRSConfiguration | Set-SqlDscRSUrlReservation -Application '<ApplicationName>' -UrlString '<UrlStrings>' -RecreateExisting -Force. Use Get-SqlDscRSUrlReservation to get the current URL reservations. (SSRSSA0002)
+    Set_SqlDscRSServiceAccount_UrlReservationWarning = The service account has been changed from '{0}' to '{1}'. URL reservations are tied to the service account and must be recreated. To recreate URL reservations for the new service account, run: `Get-SqlDscRSConfiguration -InstanceName '<InstanceName>' | Set-SqlDscRSUrlReservation -RecreateExisting -Force` (SSRSSA0002)
 
     ## Test-SqlDscRSInitialized
     Test_SqlDscRSInitialized_Testing = Testing if Reporting Services instance '{0}' is initialized.
