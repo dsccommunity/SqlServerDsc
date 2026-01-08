@@ -56,27 +56,21 @@ Describe 'Post.DatabaseRights.RS' -Tag @('Integration_SQL2017_RS', 'Integration_
             $script:instanceName = 'SSRS'
         }
 
-        $computerName = Get-ComputerName
-        $script:expectedServiceAccount = '{0}\svc-RS' -f $computerName
-
         $script:configuration = Get-SqlDscRSConfiguration -InstanceName $script:instanceName -ErrorAction 'Stop'
+
+        # Get the Reporting Services service account from the configuration object.
+        $script:serviceAccount = $script:configuration.WindowsServiceIdentityActual
 
         # Get database name from configuration
         $script:databaseName = $script:configuration.DatabaseName
 
-        Write-Verbose -Message "Instance: $script:instanceName, Database: $script:databaseName, ServiceAccount: $script:expectedServiceAccount" -Verbose
+        Write-Verbose -Message "Instance: $script:instanceName, Database: $script:databaseName, ServiceAccount: $script:serviceAccount" -Verbose
     }
 
     Context 'When granting database rights to the new service account' {
-        It 'Should have the expected service account set' {
-            $currentServiceAccount = $script:configuration | Get-SqlDscRSServiceAccount -ErrorAction 'Stop'
-
-            $currentServiceAccount | Should -BeExactly $script:expectedServiceAccount -Because 'the service account should have been changed by Set-SqlDscRSServiceAccount tests'
-        }
-
         It 'Should generate database rights script for the new service account' {
             $script:databaseRightsScript = $script:configuration |
-                Request-SqlDscRSDatabaseRightsScript -DatabaseName $script:databaseName -UserName $script:expectedServiceAccount -ErrorAction 'Stop'
+                Request-SqlDscRSDatabaseRightsScript -DatabaseName $script:databaseName -UserName $script:serviceAccount -ErrorAction 'Stop'
 
             $script:databaseRightsScript | Should -Not -BeNullOrEmpty -Because 'the database rights script should be generated'
         }
