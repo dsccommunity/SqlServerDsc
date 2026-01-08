@@ -48,7 +48,7 @@ Describe 'Set-SqlDscRSServiceAccount' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-Configuration] <Object> [-Credential] <pscredential> [-UseBuiltInAccount] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '[-Configuration] <Object> [-Credential] <pscredential> [-UseBuiltInAccount] [-RestartService] [-PassThru] [-Force] [-SuppressUrlReservationWarning] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Set-SqlDscRSServiceAccount').ParameterSets |
@@ -177,7 +177,7 @@ Describe 'Set-SqlDscRSServiceAccount' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Set-SqlDscRSServiceAccount -Credential $mockCredential -Confirm:$false } | Should -Throw -ErrorId 'SSRSA0001,Set-SqlDscRSServiceAccount'
+            { $mockCimInstance | Set-SqlDscRSServiceAccount -Credential $mockCredential -Confirm:$false } | Should -Throw -ErrorId 'SSRSSA0001,Set-SqlDscRSServiceAccount'
         }
     }
 
