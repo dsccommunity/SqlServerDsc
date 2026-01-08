@@ -69,9 +69,7 @@ Describe 'Post.UrlReservationRecreate.RS' -Tag @('Integration_SQL2017_RS', 'Inte
         }
 
         It 'Should recreate all URL reservations without throwing' {
-            {
-                $script:configuration | Set-SqlDscRSUrlReservation -RecreateExisting -Force -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $null = $script:configuration | Set-SqlDscRSUrlReservation -RecreateExisting -Force -ErrorAction 'Stop'
         }
 
         It 'Should have the same URL reservations after recreating' {

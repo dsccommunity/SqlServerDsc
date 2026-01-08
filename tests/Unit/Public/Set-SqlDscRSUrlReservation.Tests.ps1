@@ -368,9 +368,9 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
         It 'Should remove and re-add all existing URL reservations' {
             $mockCimInstance | Set-SqlDscRSUrlReservation -RecreateExisting -Force
 
-            Should -Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 1
-            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 4
-            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 4
+            Should -Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 4 -Scope It
+            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 4 -Scope It
         }
 
         It 'Should remove each URL reservation before re-adding' {
@@ -378,19 +378,19 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
 
             Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
                 $Application -eq 'ReportServerWebService' -and $UrlString -eq 'http://+:80'
-            } -Exactly -Times 1
+            } -Exactly -Times 1 -Scope It
 
             Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
                 $Application -eq 'ReportServerWebService' -and $UrlString -eq 'https://+:443'
-            } -Exactly -Times 1
+            } -Exactly -Times 1 -Scope It
 
             Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
                 $Application -eq 'ReportServerWebApp' -and $UrlString -eq 'http://+:80'
-            } -Exactly -Times 1
+            } -Exactly -Times 1 -Scope It
 
             Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
                 $Application -eq 'ReportServerWebApp' -and $UrlString -eq 'https://+:443'
-            } -Exactly -Times 1
+            } -Exactly -Times 1 -Scope It
         }
 
         It 'Should re-add each URL reservation' {
@@ -398,19 +398,19 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
 
             Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
                 $Application -eq 'ReportServerWebService' -and $UrlString -eq 'http://+:80'
-            } -Exactly -Times 1
+            } -Exactly -Times 1 -Scope It
 
             Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
                 $Application -eq 'ReportServerWebService' -and $UrlString -eq 'https://+:443'
-            } -Exactly -Times 1
+            } -Exactly -Times 1 -Scope It
 
             Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
                 $Application -eq 'ReportServerWebApp' -and $UrlString -eq 'http://+:80'
-            } -Exactly -Times 1
+            } -Exactly -Times 1 -Scope It
 
             Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
                 $Application -eq 'ReportServerWebApp' -and $UrlString -eq 'https://+:443'
-            } -Exactly -Times 1
+            } -Exactly -Times 1 -Scope It
         }
     }
 

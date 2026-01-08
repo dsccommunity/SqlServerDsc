@@ -222,4 +222,77 @@ Describe 'Set-SqlDscRSServiceAccount' {
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
+
+    Context 'When using RestartService switch' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'SSRS'
+                ServiceName  = 'SQLServerReportingServices'
+            }
+
+            $mockCredential = [System.Management.Automation.PSCredential]::new(
+                'DOMAIN\ServiceAccount',
+                (ConvertTo-SecureString -String 'P@ssw0rd' -AsPlainText -Force)
+            )
+
+            Mock -CommandName Invoke-RsCimMethod
+            Mock -CommandName Restart-SqlDscRSService
+        }
+
+        It 'Should restart the service after setting the service account' {
+            { $mockCimInstance | Set-SqlDscRSServiceAccount -Credential $mockCredential -RestartService -Confirm:$false } | Should -Not -Throw
+
+            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should -Invoke -CommandName Restart-SqlDscRSService -ParameterFilter {
+                $ServiceName -eq 'SQLServerReportingServices' -and
+                $Force -eq $true
+            } -Exactly -Times 1
+        }
+    }
+
+    Context 'When service account changes and SuppressUrlReservationWarning is not specified' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName                 = 'SSRS'
+                WindowsServiceIdentityActual = 'DOMAIN\OldAccount'
+            }
+
+            $mockCredential = [System.Management.Automation.PSCredential]::new(
+                'DOMAIN\NewAccount',
+                (ConvertTo-SecureString -String 'P@ssw0rd' -AsPlainText -Force)
+            )
+
+            Mock -CommandName Invoke-RsCimMethod
+            Mock -CommandName Write-Warning
+        }
+
+        It 'Should write a warning about URL reservations' {
+            { $mockCimInstance | Set-SqlDscRSServiceAccount -Credential $mockCredential -Confirm:$false } | Should -Not -Throw
+
+            Should -Invoke -CommandName Write-Warning -Exactly -Times 1
+        }
+    }
+
+    Context 'When service account changes and SuppressUrlReservationWarning is specified' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName                 = 'SSRS'
+                WindowsServiceIdentityActual = 'DOMAIN\OldAccount'
+            }
+
+            $mockCredential = [System.Management.Automation.PSCredential]::new(
+                'DOMAIN\NewAccount',
+                (ConvertTo-SecureString -String 'P@ssw0rd' -AsPlainText -Force)
+            )
+
+            Mock -CommandName Invoke-RsCimMethod
+            Mock -CommandName Write-Warning
+        }
+
+        It 'Should not write a warning about URL reservations' {
+            { $mockCimInstance | Set-SqlDscRSServiceAccount -Credential $mockCredential -SuppressUrlReservationWarning -Confirm:$false } | Should -Not -Throw
+
+            Should -Invoke -CommandName Write-Warning -Exactly -Times 0
+        }
+    }
 }
