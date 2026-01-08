@@ -75,7 +75,7 @@ Describe 'Post.DatabaseRights.RS' -Tag @('Integration_SQL2017_RS', 'Integration_
             try
             {
                 # The login must exist before granting database rights
-                $null = New-SqlDscLogin -ServerObject $serverObject -Name $script:serviceAccount -LoginType 'WindowsUser' -Force -ErrorAction 'Stop'
+                $null = New-SqlDscLogin -ServerObject $serverObject -Name $script:serviceAccount -WindowsUser -Force -ErrorAction 'Stop'
             }
             finally
             {
