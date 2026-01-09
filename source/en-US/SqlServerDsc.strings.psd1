@@ -791,6 +791,7 @@ ConvertFrom-StringData @'
     ## Request-SqlDscRSDatabaseRightsScript
     Request_SqlDscRSDatabaseRightsScript_Generating = Generating database rights script for database '{0}' and user '{1}' for Reporting Services instance '{2}'.
     Request_SqlDscRSDatabaseRightsScript_FailedToGenerate = Failed to generate database rights script for Reporting Services instance '{0}'. {1} (RSRDBRS0001)
+    Request_SqlDscRSDatabaseRightsScript_InvalidUserNameFormat = When using IsRemote with Windows authentication, the UserName must be in the format '<domain>\<username>'. The provided value '{0}' is not in the correct format.
 
     ## Set-SqlDscRSDatabaseConnection
     Set_SqlDscRSDatabaseConnection_Setting = Setting report server database connection to database '{0}' on server '{1}' for Reporting Services instance '{2}'.
@@ -810,6 +811,24 @@ ConvertFrom-StringData @'
     Restart_SqlDscRSService_ShouldProcessCaption = Restart Reporting Services service
     Restart_SqlDscRSService_WaitingBeforeStart = Waiting {0} seconds before starting service '{1}'.
     Restart_SqlDscRSService_StartingDependentService = Starting dependent service '{0}'.
+
+    ## New-SqlDscRSEncryptionKey
+    New_SqlDscRSEncryptionKey_Generating = Generating new encryption key for Reporting Services instance '{0}'.
+    New_SqlDscRSEncryptionKey_ShouldProcessDescription = Generating new encryption key for Reporting Services instance '{0}'. This will invalidate existing encryption key backups.
+    New_SqlDscRSEncryptionKey_ShouldProcessConfirmation = Are you sure you want to generate a new encryption key for Reporting Services instance '{0}'? This will invalidate existing backups.
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    New_SqlDscRSEncryptionKey_ShouldProcessCaption = Generate new encryption key for Reporting Services instance
+    New_SqlDscRSEncryptionKey_FailedToGenerate = Failed to generate new encryption key for Reporting Services instance '{0}'. {1} (NSRSEK0001)
+    New_SqlDscRSEncryptionKey_BackupReminder = A new encryption key has been generated. Previous encryption key backups are no longer valid. Back up the new encryption key immediately using Backup-SqlDscRSEncryptionKey.
+
+    ## Remove-SqlDscRSEncryptionKey
+    Remove_SqlDscRSEncryptionKey_Removing = Removing encryption key from Reporting Services instance '{0}'.
+    Remove_SqlDscRSEncryptionKey_ShouldProcessDescription = Removing encryption key from Reporting Services instance '{0}'. This is a destructive operation.
+    Remove_SqlDscRSEncryptionKey_ShouldProcessConfirmation = Are you sure you want to remove the encryption key from Reporting Services instance '{0}'? This is a destructive operation.
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Remove_SqlDscRSEncryptionKey_ShouldProcessCaption = Remove encryption key from Reporting Services instance
+    Remove_SqlDscRSEncryptionKey_FailedToRemove = Failed to remove encryption key from Reporting Services instance '{0}'. {1} (RRSEK0001)
+    Remove_SqlDscRSEncryptionKey_DeletingEncryptedInformation = Deleting encrypted information from Reporting Services instance '{0}'.
 
     ## Get-SqlDscRSServiceAccount
     Get_SqlDscRSServiceAccount_Getting = Getting service account for Reporting Services instance '{0}'.
