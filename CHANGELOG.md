@@ -210,6 +210,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added public command `Request-SqlDscRSDatabaseUpgradeScript` to generate a
   T-SQL script for upgrading the report server database schema. Wraps the
   `GenerateDatabaseUpgradeScript` CIM method.
+- Added wiki article `Troubleshooting-Report-Server` documenting how to
+  retrieve and analyze log files and Windows event logs for Power BI Report
+  Server and SQL Server Reporting Services.
 
 ### Changed
 
