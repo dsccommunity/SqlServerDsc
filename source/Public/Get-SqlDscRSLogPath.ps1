@@ -98,26 +98,26 @@ function Get-SqlDscRSLogPath
 
         $setupConfiguration = Get-SqlDscRSSetupConfiguration -InstanceName $InstanceName
 
-    if (-not $setupConfiguration)
-    {
-        $errorMessage = $script:localizedData.Get_SqlDscRSLogPath_InstanceNotFound -f $InstanceName
+        if (-not $setupConfiguration)
+        {
+            $errorMessage = $script:localizedData.Get_SqlDscRSLogPath_InstanceNotFound -f $InstanceName
 
-        $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GSRSLP0001' -ErrorCategory 'ObjectNotFound' -TargetObject $InstanceName
+            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GSRSLP0001' -ErrorCategory 'ObjectNotFound' -TargetObject $InstanceName
 
-        $PSCmdlet.ThrowTerminatingError($errorRecord)
-    }
+            $PSCmdlet.ThrowTerminatingError($errorRecord)
+        }
 
-    if ([System.String]::IsNullOrEmpty($setupConfiguration.ErrorDumpDirectory))
-    {
-        $errorMessage = $script:localizedData.Get_SqlDscRSLogPath_LogPathNotFound -f $InstanceName
+        if ([System.String]::IsNullOrEmpty($setupConfiguration.ErrorDumpDirectory))
+        {
+            $errorMessage = $script:localizedData.Get_SqlDscRSLogPath_LogPathNotFound -f $InstanceName
 
-        $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GSRSLP0002' -ErrorCategory 'ObjectNotFound' -TargetObject $InstanceName
+            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GSRSLP0002' -ErrorCategory 'ObjectNotFound' -TargetObject $InstanceName
 
-        $PSCmdlet.ThrowTerminatingError($errorRecord)
-    }
+            $PSCmdlet.ThrowTerminatingError($errorRecord)
+        }
 
-    Write-Verbose -Message ($script:localizedData.Get_SqlDscRSLogPath_FoundPath -f $setupConfiguration.ErrorDumpDirectory)
+        Write-Verbose -Message ($script:localizedData.Get_SqlDscRSLogPath_FoundPath -f $setupConfiguration.ErrorDumpDirectory)
 
-    return $setupConfiguration.ErrorDumpDirectory
+        return $setupConfiguration.ErrorDumpDirectory
     }
 }
