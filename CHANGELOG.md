@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added public command `Get-SqlDscRSLogPath` to get the log file folder path
+  for SQL Server Reporting Services or Power BI Report Server. Returns the
+  ErrorDumpDirectory from the instance's setup configuration, which can be
+  used with `Get-ChildItem` and `Get-Content` to access service logs, portal
+  logs, and memory dumps.
 - Added public command `Test-SqlDscRSAccessible` to verify that SQL Server
   Reporting Services or Power BI Report Server web sites are accessible.
   Supports both CIM configuration input (with dynamic `-Site` parameter) and

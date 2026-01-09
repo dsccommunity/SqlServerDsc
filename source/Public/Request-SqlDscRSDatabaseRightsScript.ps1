@@ -32,6 +32,11 @@
         If specified, indicates that the database is on a remote server.
         By default, assumes the database is local.
 
+        When specified with Windows authentication (default), the UserName must
+        be in the format `<domain>\<username>`. See the Microsoft documentation
+        for more information about username requirements:
+        https://learn.microsoft.com/en-us/sql/reporting-services/wmi-provider-library-reference/configurationsetting-method-generatedatabaserightsscript
+
     .PARAMETER UseSqlAuthentication
         If specified, indicates the user is a SQL Server authentication user.
         By default, assumes Windows authentication.
@@ -112,6 +117,17 @@ function Request-SqlDscRSDatabaseRightsScript
     process
     {
         $rsInstanceName = $Configuration.InstanceName
+
+        # Validate UserName format when IsRemote is used with Windows authentication
+        if ($IsRemote.IsPresent -and -not $UseSqlAuthentication.IsPresent)
+        {
+            if ($UserName -notmatch '^[^\\]+\\[^\\]+$')
+            {
+                $errorMessage = $script:localizedData.Request_SqlDscRSDatabaseRightsScript_InvalidUserNameFormat -f $UserName
+
+                New-InvalidArgumentException -ArgumentName 'UserName' -Message $errorMessage
+            }
+        }
 
         Write-Verbose -Message ($script:localizedData.Request_SqlDscRSDatabaseRightsScript_Generating -f $DatabaseName, $UserName, $rsInstanceName)
 

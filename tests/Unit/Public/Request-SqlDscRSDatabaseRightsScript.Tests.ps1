@@ -174,4 +174,88 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
             { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'NT SERVICE\SQLServerReportingServices' } | Should -Throw -ErrorId 'RSRDBRS0001,Request-SqlDscRSDatabaseRightsScript'
         }
     }
+
+    Context 'When IsRemote is used with Windows authentication and invalid username format' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'SSRS'
+            }
+        }
+
+        It 'Should throw a terminating error when UserName does not contain a backslash' {
+            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'SQLRSUser' -IsRemote } | Should -Throw -ErrorId 'UserName,New-ArgumentException'
+        }
+
+        It 'Should throw a terminating error when UserName contains multiple backslashes' {
+            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'DOMAIN\SUB\SQLRSUser' -IsRemote } | Should -Throw -ErrorId 'UserName,New-ArgumentException'
+        }
+
+        It 'Should throw a terminating error when UserName is only a domain' {
+            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'DOMAIN\' -IsRemote } | Should -Throw -ErrorId 'UserName,New-ArgumentException'
+        }
+
+        It 'Should throw a terminating error when UserName is only a username' {
+            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName '\SQLRSUser' -IsRemote } | Should -Throw -ErrorId 'UserName,New-ArgumentException'
+        }
+    }
+
+    Context 'When IsRemote is used with Windows authentication and valid username format' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'SSRS'
+            }
+
+            Mock -CommandName Invoke-RsCimMethod -MockWith {
+                return [PSCustomObject] @{
+                    Script = 'GRANT SELECT ON [ReportServer] TO [DOMAIN\SQLRSUser]'
+                }
+            }
+        }
+
+        It 'Should not throw when UserName is in <domain>\<username> format' {
+            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'DOMAIN\SQLRSUser' -IsRemote } | Should -Not -Throw
+        }
+
+        It 'Should call Invoke-RsCimMethod when username is valid' {
+            $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'DOMAIN\SQLRSUser' -IsRemote
+
+            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                $MethodName -eq 'GenerateDatabaseRightsScript' -and
+                $Arguments.DatabaseName -eq 'ReportServer' -and
+                $Arguments.UserName -eq 'DOMAIN\SQLRSUser' -and
+                $Arguments.IsRemote -eq $true -and
+                $Arguments.IsWindowsUser -eq $true
+            } -Exactly -Times 1
+        }
+    }
+
+    Context 'When IsRemote is used with SQL Server authentication' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'SSRS'
+            }
+
+            Mock -CommandName Invoke-RsCimMethod -MockWith {
+                return [PSCustomObject] @{
+                    Script = 'GRANT SELECT ON [ReportServer] TO [SqlUser]'
+                }
+            }
+        }
+
+        It 'Should not validate username format when UseSqlAuthentication is specified' {
+            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'SqlUser' -IsRemote -UseSqlAuthentication } | Should -Not -Throw
+        }
+
+        It 'Should call Invoke-RsCimMethod with correct parameters' {
+            $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'SqlUser' -IsRemote -UseSqlAuthentication
+
+            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                $MethodName -eq 'GenerateDatabaseRightsScript' -and
+                $Arguments.DatabaseName -eq 'ReportServer' -and
+                $Arguments.UserName -eq 'SqlUser' -and
+                $Arguments.IsRemote -eq $true -and
+                $Arguments.IsWindowsUser -eq $false
+            } -Exactly -Times 1
+        }
+    }
 }
