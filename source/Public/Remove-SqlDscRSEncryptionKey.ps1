@@ -80,7 +80,7 @@ function Remove-SqlDscRSEncryptionKey
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the examples use pipeline input the rule cannot validate.')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
-    [OutputType([System.Object])]
+    [OutputType([Microsoft.Management.Infrastructure.CimInstance])]
     param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
@@ -131,14 +131,9 @@ function Remove-SqlDscRSEncryptionKey
             }
             catch
             {
-                $PSCmdlet.ThrowTerminatingError(
-                    [System.Management.Automation.ErrorRecord]::new(
-                        ($script:localizedData.Remove_SqlDscRSEncryptionKey_FailedToRemove -f $instanceName, $_.Exception.Message),
-                        'RRSEK0001',
-                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                        $Configuration
-                    )
-                )
+                $errorRecord = New-ErrorRecord -Message ($script:localizedData.Remove_SqlDscRSEncryptionKey_FailedToRemove -f $instanceName, $_.Exception.Message) -ErrorId 'RRSEK0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+
+                $PSCmdlet.ThrowTerminatingError($errorRecord)
             }
 
             if ($IncludeEncryptedInformation.IsPresent)

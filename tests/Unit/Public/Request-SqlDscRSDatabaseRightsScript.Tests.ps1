@@ -180,22 +180,41 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName = 'SSRS'
             }
+
+            # Mock is needed so that Should -Not -Invoke can verify it was not called
+            Mock -CommandName Invoke-RsCimMethod
         }
 
         It 'Should throw a terminating error when UserName does not contain a backslash' {
             { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'SQLRSUser' -IsRemote } | Should -Throw -ErrorId 'UserName,New-ArgumentException'
+
+            Should -Not -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                $MethodName -eq 'GenerateDatabaseRightsScript'
+            }
         }
 
         It 'Should throw a terminating error when UserName contains multiple backslashes' {
             { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'DOMAIN\SUB\SQLRSUser' -IsRemote } | Should -Throw -ErrorId 'UserName,New-ArgumentException'
+
+            Should -Not -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                $MethodName -eq 'GenerateDatabaseRightsScript'
+            }
         }
 
         It 'Should throw a terminating error when UserName is only a domain' {
             { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'DOMAIN\' -IsRemote } | Should -Throw -ErrorId 'UserName,New-ArgumentException'
+
+            Should -Not -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                $MethodName -eq 'GenerateDatabaseRightsScript'
+            }
         }
 
         It 'Should throw a terminating error when UserName is only a username' {
             { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName '\SQLRSUser' -IsRemote } | Should -Throw -ErrorId 'UserName,New-ArgumentException'
+
+            Should -Not -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                $MethodName -eq 'GenerateDatabaseRightsScript'
+            }
         }
     }
 
@@ -213,7 +232,11 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         }
 
         It 'Should not throw when UserName is in <domain>\<username> format' {
-            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'DOMAIN\SQLRSUser' -IsRemote } | Should -Not -Throw
+            $null = $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'DOMAIN\SQLRSUser' -IsRemote
+
+            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                $MethodName -eq 'GenerateDatabaseRightsScript'
+            } -Exactly -Times 1
         }
 
         It 'Should call Invoke-RsCimMethod when username is valid' {
@@ -243,7 +266,11 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         }
 
         It 'Should not validate username format when UseSqlAuthentication is specified' {
-            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'SqlUser' -IsRemote -UseSqlAuthentication } | Should -Not -Throw
+            $null = $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'SqlUser' -IsRemote -UseSqlAuthentication
+
+            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                $MethodName -eq 'GenerateDatabaseRightsScript'
+            } -Exactly -Times 1
         }
 
         It 'Should call Invoke-RsCimMethod with correct parameters' {

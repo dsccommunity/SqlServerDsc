@@ -73,7 +73,7 @@ Describe 'New-SqlDscRSEncryptionKey' {
         }
 
         It 'Should create new encryption key without errors' {
-            { $mockCimInstance | New-SqlDscRSEncryptionKey -Confirm:$false } | Should -Not -Throw
+            $null = $mockCimInstance | New-SqlDscRSEncryptionKey -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'ReencryptSecureInformation'
@@ -114,7 +114,7 @@ Describe 'New-SqlDscRSEncryptionKey' {
         }
 
         It 'Should create new encryption key without confirmation' {
-            { $mockCimInstance | New-SqlDscRSEncryptionKey -Force } | Should -Not -Throw
+            $null = $mockCimInstance | New-SqlDscRSEncryptionKey -Force
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
@@ -127,7 +127,7 @@ Describe 'New-SqlDscRSEncryptionKey' {
             }
 
             Mock -CommandName Invoke-RsCimMethod -MockWith {
-                throw 'Method DeleteEncryptionKey() failed with an error.'
+                throw 'Method ReencryptSecureInformation() failed with an error.'
             }
         }
 
@@ -162,7 +162,7 @@ Describe 'New-SqlDscRSEncryptionKey' {
         }
 
         It 'Should create new encryption key' {
-            { New-SqlDscRSEncryptionKey -Configuration $mockCimInstance -Confirm:$false } | Should -Not -Throw
+            $null = New-SqlDscRSEncryptionKey -Configuration $mockCimInstance -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }

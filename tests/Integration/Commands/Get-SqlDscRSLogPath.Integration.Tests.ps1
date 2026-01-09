@@ -42,7 +42,7 @@ Describe 'Get-SqlDscRSLogPath' {
         It 'Should return a path that contains log files' {
             $logPath = Get-SqlDscRSLogPath -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            $logFiles = Get-ChildItem -Path $logPath -Filter '*.log' -ErrorAction SilentlyContinue
+            $logFiles = Get-ChildItem -Path $logPath -Filter '*.log' -ErrorAction 'Stop'
 
             # After initialization, there should be log files
             $logFiles | Should -Not -BeNullOrEmpty
@@ -70,7 +70,7 @@ Describe 'Get-SqlDscRSLogPath' {
         It 'Should return a path that contains log files' {
             $logPath = Get-SqlDscRSLogPath -InstanceName 'PBIRS' -ErrorAction 'Stop'
 
-            $logFiles = Get-ChildItem -Path $logPath -Filter '*.log' -ErrorAction SilentlyContinue
+            $logFiles = Get-ChildItem -Path $logPath -Filter '*.log' -ErrorAction 'Stop'
 
             # After initialization, there should be log files
             $logFiles | Should -Not -BeNullOrEmpty

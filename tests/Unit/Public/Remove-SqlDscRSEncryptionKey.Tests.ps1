@@ -74,7 +74,7 @@ Describe 'Remove-SqlDscRSEncryptionKey' {
         }
 
         It 'Should remove encrypted content without errors' {
-            { $mockCimInstance | Remove-SqlDscRSEncryptionKey -Confirm:$false } | Should -Not -Throw
+            $null = $mockCimInstance | Remove-SqlDscRSEncryptionKey -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'DeleteEncryptionKey' -and
@@ -118,7 +118,7 @@ Describe 'Remove-SqlDscRSEncryptionKey' {
         }
 
         It 'Should remove encrypted content without confirmation' {
-            { $mockCimInstance | Remove-SqlDscRSEncryptionKey -Force } | Should -Not -Throw
+            $null = $mockCimInstance | Remove-SqlDscRSEncryptionKey -Force
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
@@ -169,7 +169,7 @@ Describe 'Remove-SqlDscRSEncryptionKey' {
         }
 
         It 'Should remove encrypted content' {
-            { Remove-SqlDscRSEncryptionKey -Configuration $mockCimInstance -Confirm:$false } | Should -Not -Throw
+            $null = Remove-SqlDscRSEncryptionKey -Configuration $mockCimInstance -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
@@ -186,7 +186,7 @@ Describe 'Remove-SqlDscRSEncryptionKey' {
         }
 
         It 'Should call both DeleteEncryptionKey and DeleteEncryptedInformation methods' {
-            { $mockCimInstance | Remove-SqlDscRSEncryptionKey -IncludeEncryptedInformation -Confirm:$false } | Should -Not -Throw
+            $null = $mockCimInstance | Remove-SqlDscRSEncryptionKey -IncludeEncryptedInformation -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'DeleteEncryptionKey'

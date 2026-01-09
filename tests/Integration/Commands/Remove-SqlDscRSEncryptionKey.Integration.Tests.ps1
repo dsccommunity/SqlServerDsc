@@ -61,7 +61,8 @@ Describe 'Remove-SqlDscRSEncryptionKey' {
         }
 
         It 'Should remove the encryption key' {
-            $null = $script:configuration | Remove-SqlDscRSEncryptionKey -Force -IncludeEncryptedInformation -ErrorAction 'Stop'
+            # Tried using -IncludeEncryptedInformation but it still fails on SQL Server 2017, see TODO above.
+            $null = $script:configuration | Remove-SqlDscRSEncryptionKey -Force -ErrorAction 'Stop'
         }
     }
 

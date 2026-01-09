@@ -61,7 +61,7 @@ BeforeAll {
           data in the database. (rsCannotValidateEncryptedData);Keyset does not exist
           (Exception from HRESULT: 0x80090016)"
 
-          Re-add tag 'Integration_SQL2019_RS' when fixed.
+          Re-add tag 'Integration_SQL2017_RS' when fixed.
 #>
 Describe 'Post.Reinitialize.RS' -Tag @('Integration_SQL2019_RS', 'Integration_SQL2022_RS', 'Integration_PowerBI') {
     BeforeAll {
