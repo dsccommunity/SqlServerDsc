@@ -44,7 +44,7 @@ Describe 'Remove-SqlDscRSEncryptionKey' {
         }
 
         It 'Should remove the encryption key' {
-            $null = $script:configuration | Remove-SqlDscRSEncryptionKey -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Remove-SqlDscRSEncryptionKey -Force -IncludeEncryptedInformation -ErrorAction 'Stop'
         }
     }
 
