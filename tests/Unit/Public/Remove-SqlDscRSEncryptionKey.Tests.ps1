@@ -174,4 +174,64 @@ Describe 'Remove-SqlDscRSEncryptionKey' {
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
+
+    Context 'When removing encrypted information successfully' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'SSRS'
+                InstallationID = 'Test-Installation-ID'
+            }
+
+            Mock -CommandName Invoke-RsCimMethod
+        }
+
+        It 'Should call both DeleteEncryptionKey and DeleteEncryptedInformation methods' {
+            { $mockCimInstance | Remove-SqlDscRSEncryptionKey -IncludeEncryptedInformation -Confirm:$false } | Should -Not -Throw
+
+            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                $MethodName -eq 'DeleteEncryptionKey'
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                $MethodName -eq 'DeleteEncryptedInformation'
+            } -Exactly -Times 1
+        }
+    }
+
+    Context 'When DeleteEncryptedInformation method fails' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'SSRS'
+                InstallationID = 'Test-Installation-ID'
+            }
+
+            # Mock to allow DeleteEncryptionKey to succeed but DeleteEncryptedInformation to fail
+            Mock -CommandName Invoke-RsCimMethod -MockWith {
+                if ($MethodName -eq 'DeleteEncryptedInformation')
+                {
+                    throw 'Method DeleteEncryptedInformation() failed with an error.'
+                }
+                # DeleteEncryptionKey succeeds (returns nothing)
+            }
+        }
+
+        It 'Should throw a terminating error with error code RRSEK0002' {
+            { $mockCimInstance | Remove-SqlDscRSEncryptionKey -IncludeEncryptedInformation -Confirm:$false } | Should -Throw -ErrorId 'RRSEK0002,Remove-SqlDscRSEncryptionKey'
+        }
+
+        It 'Should have called DeleteEncryptionKey before failing' {
+            try
+            {
+                $mockCimInstance | Remove-SqlDscRSEncryptionKey -IncludeEncryptedInformation -Confirm:$false
+            }
+            catch
+            {
+                # Expected to throw
+            }
+
+            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                $MethodName -eq 'DeleteEncryptionKey'
+            } -Exactly -Times 1
+        }
+    }
 }
