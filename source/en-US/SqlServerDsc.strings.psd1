@@ -829,6 +829,7 @@ ConvertFrom-StringData @'
     Remove_SqlDscRSEncryptionKey_ShouldProcessCaption = Remove encryption key from Reporting Services instance
     Remove_SqlDscRSEncryptionKey_FailedToRemove = Failed to remove encryption key from Reporting Services instance '{0}'. {1} (RRSEK0001)
     Remove_SqlDscRSEncryptionKey_DeletingEncryptedInformation = Deleting encrypted information from Reporting Services instance '{0}'.
+    Remove_SqlDscRSEncryptionKey_FailedToDeleteEncryptedInformation = Failed to delete encrypted information from Reporting Services instance '{0}'. {1} (RRSEK0002)
 
     ## Get-SqlDscRSServiceAccount
     Get_SqlDscRSServiceAccount_Getting = Getting service account for Reporting Services instance '{0}'.

@@ -128,18 +128,6 @@ function Remove-SqlDscRSEncryptionKey
                 }
 
                 $null = Invoke-RsCimMethod @invokeRsCimMethodParameters -ErrorAction 'Stop'
-
-                if ($IncludeEncryptedInformation.IsPresent)
-                {
-                    Write-Verbose -Message ($script:localizedData.Remove_SqlDscRSEncryptionKey_DeletingEncryptedInformation -f $instanceName)
-
-                    $invokeRsCimMethodParameters = @{
-                        CimInstance = $Configuration
-                        MethodName  = 'DeleteEncryptedInformation'
-                    }
-
-                    $null = Invoke-RsCimMethod @invokeRsCimMethodParameters -ErrorAction 'Stop'
-                }
             }
             catch
             {
@@ -151,6 +139,32 @@ function Remove-SqlDscRSEncryptionKey
                         $Configuration
                     )
                 )
+            }
+
+            if ($IncludeEncryptedInformation.IsPresent)
+            {
+                Write-Verbose -Message ($script:localizedData.Remove_SqlDscRSEncryptionKey_DeletingEncryptedInformation -f $instanceName)
+
+                try
+                {
+                    $invokeRsCimMethodParameters = @{
+                        CimInstance = $Configuration
+                        MethodName  = 'DeleteEncryptedInformation'
+                    }
+
+                    $null = Invoke-RsCimMethod @invokeRsCimMethodParameters -ErrorAction 'Stop'
+                }
+                catch
+                {
+                    $PSCmdlet.ThrowTerminatingError(
+                        [System.Management.Automation.ErrorRecord]::new(
+                            ($script:localizedData.Remove_SqlDscRSEncryptionKey_FailedToDeleteEncryptedInformation -f $instanceName, $_.Exception.Message),
+                            'RRSEK0002',
+                            [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                            $Configuration
+                        )
+                    )
+                }
             }
         }
 
