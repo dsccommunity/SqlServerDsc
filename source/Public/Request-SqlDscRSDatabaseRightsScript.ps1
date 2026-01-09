@@ -125,7 +125,7 @@ function Request-SqlDscRSDatabaseRightsScript
             {
                 $errorMessage = $script:localizedData.Request_SqlDscRSDatabaseRightsScript_InvalidUserNameFormat -f $UserName
 
-                New-InvalidArgumentException -ArgumentName 'UserName' -Message $errorMessage
+                New-ArgumentException -ArgumentName 'UserName' -Message $errorMessage
             }
         }
 
