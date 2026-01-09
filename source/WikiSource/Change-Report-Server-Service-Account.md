@@ -27,11 +27,11 @@ are affected:
    Windows security context. The new account cannot decrypt data encrypted by
    the old account.
 
-2. **Database Permissions** — The Report Server databases (`ReportServer` and
+1. **Database Permissions** — The Report Server databases (`ReportServer` and
    `ReportServerTempDB`) grant permissions to the service account. The new
    account has no access until you explicitly grant it.
 
-3. **URL Reservations** — URL reservations in HTTP.sys are registered with the
+1. **URL Reservations** — URL reservations in HTTP.sys are registered with the
    service account's Security Identifier (SID). After changing accounts, the
    old reservations reference a SID that no longer matches the running service.
 
@@ -91,11 +91,14 @@ $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
 $newCredential = Get-Credential -Message 'Enter the new service account credentials (DOMAIN\Username)'
 
 # Change the service account
-$configuration | Set-SqlDscRSServiceAccount `
-    -Credential $newCredential `
-    -RestartService `
-    -SuppressUrlReservationWarning `
-    -Force
+$setRSServiceAccountParams = @{
+    Credential                   = $newCredential
+    RestartService               = $true
+    SuppressUrlReservationWarning = $true
+    Force                        = $true
+}
+
+$configuration | Set-SqlDscRSServiceAccount @setRSServiceAccountParams
 ```
 <!-- markdownlint-enable MD013 -->
 

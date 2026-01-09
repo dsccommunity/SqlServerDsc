@@ -578,6 +578,7 @@ stages:
                   'tests/Integration/Commands/Set-SqlDscRSServiceAccount.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSServiceAccount.Integration.Tests.ps1'
                   'tests/Integration/Commands/Post.DatabaseRights.RS.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Post.EncryptedInformation.RS.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscRSEncryptionKey.Integration.Tests.ps1'
                   'tests/Integration/Commands/New-SqlDscRSEncryptionKey.Integration.Tests.ps1'
                   'tests/Integration/Commands/Post.UrlReservationRecreate.RS.Integration.Tests.ps1'
@@ -586,6 +587,7 @@ stages:
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscReportingService.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscRSUrlReservation.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Remove-SqlDscRSEncryptedInformation.Integration.Tests.ps1'
                   # Group 9
                   'tests/Integration/Commands/Uninstall-SqlDscReportingService.Integration.Tests.ps1'
               )

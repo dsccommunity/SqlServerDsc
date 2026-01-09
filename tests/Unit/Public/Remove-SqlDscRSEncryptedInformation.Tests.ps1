@@ -43,7 +43,7 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'Remove-SqlDscRSEncryptionKey' {
+Describe 'Remove-SqlDscRSEncryptedInformation' {
     Context 'When validating parameter sets' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
@@ -51,7 +51,7 @@ Describe 'Remove-SqlDscRSEncryptionKey' {
                 ExpectedParameters = '[-Configuration] <Object> [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
-            $result = (Get-Command -Name 'Remove-SqlDscRSEncryptionKey').ParameterSets |
+            $result = (Get-Command -Name 'Remove-SqlDscRSEncryptedInformation').ParameterSets |
                 Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
                 Select-Object -Property @(
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
@@ -63,62 +63,58 @@ Describe 'Remove-SqlDscRSEncryptionKey' {
         }
     }
 
-    Context 'When removing encrypted content successfully' {
+    Context 'When removing encrypted information successfully' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName = 'SSRS'
-                InstallationID = 'Test-Installation-ID'
             }
 
             Mock -CommandName Invoke-RsCimMethod
         }
 
-        It 'Should remove encrypted content without errors' {
-            $null = $mockCimInstance | Remove-SqlDscRSEncryptionKey -Confirm:$false
+        It 'Should remove encrypted information without errors' {
+            $null = $mockCimInstance | Remove-SqlDscRSEncryptedInformation -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'DeleteEncryptionKey' -and
-                $Arguments.InstallationID -eq 'Test-Installation-ID'
+                $MethodName -eq 'DeleteEncryptedInformation'
             } -Exactly -Times 1
         }
 
         It 'Should not return anything by default' {
-            $result = $mockCimInstance | Remove-SqlDscRSEncryptionKey -Confirm:$false
+            $result = $mockCimInstance | Remove-SqlDscRSEncryptedInformation -Confirm:$false
 
             $result | Should -BeNullOrEmpty
         }
     }
 
-    Context 'When removing encrypted content with PassThru' {
+    Context 'When removing encrypted information with PassThru' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName = 'SSRS'
-                InstallationID = 'Test-Installation-ID'
             }
 
             Mock -CommandName Invoke-RsCimMethod
         }
 
         It 'Should return the configuration CIM instance' {
-            $result = $mockCimInstance | Remove-SqlDscRSEncryptionKey -PassThru -Confirm:$false
+            $result = $mockCimInstance | Remove-SqlDscRSEncryptedInformation -PassThru -Confirm:$false
 
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'SSRS'
         }
     }
 
-    Context 'When removing encrypted content with Force' {
+    Context 'When removing encrypted information with Force' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName = 'SSRS'
-                InstallationID = 'Test-Installation-ID'
             }
 
             Mock -CommandName Invoke-RsCimMethod
         }
 
-        It 'Should remove encrypted content without confirmation' {
-            $null = $mockCimInstance | Remove-SqlDscRSEncryptionKey -Force
+        It 'Should remove encrypted information without confirmation' {
+            $null = $mockCimInstance | Remove-SqlDscRSEncryptedInformation -Force
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
@@ -128,16 +124,15 @@ Describe 'Remove-SqlDscRSEncryptionKey' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName = 'SSRS'
-                InstallationID = 'Test-Installation-ID'
             }
 
             Mock -CommandName Invoke-RsCimMethod -MockWith {
-                throw 'Method DeleteEncryptionKey() failed with an error.'
+                throw 'Method DeleteEncryptedInformation() failed with an error.'
             }
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Remove-SqlDscRSEncryptionKey -Confirm:$false } | Should -Throw -ErrorId 'RRSEK0001,Remove-SqlDscRSEncryptionKey'
+            { $mockCimInstance | Remove-SqlDscRSEncryptedInformation -Confirm:$false } | Should -Throw -ErrorId 'RRSREI0001,Remove-SqlDscRSEncryptedInformation'
         }
     }
 
@@ -145,14 +140,13 @@ Describe 'Remove-SqlDscRSEncryptionKey' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName = 'SSRS'
-                InstallationID = 'Test-Installation-ID'
             }
 
             Mock -CommandName Invoke-RsCimMethod
         }
 
         It 'Should not call Invoke-RsCimMethod' {
-            $mockCimInstance | Remove-SqlDscRSEncryptionKey -WhatIf
+            $mockCimInstance | Remove-SqlDscRSEncryptedInformation -WhatIf
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
         }
@@ -162,14 +156,13 @@ Describe 'Remove-SqlDscRSEncryptionKey' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName = 'SSRS'
-                InstallationID = 'Test-Installation-ID'
             }
 
             Mock -CommandName Invoke-RsCimMethod
         }
 
-        It 'Should remove encrypted content' {
-            $null = Remove-SqlDscRSEncryptionKey -Configuration $mockCimInstance -Confirm:$false
+        It 'Should remove encrypted information' {
+            $null = Remove-SqlDscRSEncryptedInformation -Configuration $mockCimInstance -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
