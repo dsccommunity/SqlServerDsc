@@ -496,7 +496,7 @@ stages:
 
   - stage: Integration_Test_Commands_ReportingServices
     displayName: 'Integration Test Commands - Reporting Services'
-    dependsOn: Integration_Test_Commands_SqlServer
+    dependsOn: Build #Integration_Test_Commands_SqlServer
     jobs:
       - job: Test_Integration
         displayName: 'Commands'
@@ -597,7 +597,7 @@ stages:
 
   - stage: Integration_Test_Commands_BIReportServer
     displayName: 'Integration Test Commands - BI Report Server'
-    dependsOn: Integration_Test_Commands_SqlServer
+    dependsOn: Build #Integration_Test_Commands_SqlServer
     jobs:
       - job: Test_Integration
         displayName: 'Commands'
