@@ -87,7 +87,7 @@ Describe 'Post.ServiceAccountChange.RS' -Tag @('Integration_SQL2017_RS', 'Integr
         }
 
         It 'Should have all configured sites accessible after service account change' {
-            $results = $script:configuration | Test-SqlDscRSAccessible -Detailed -ErrorAction 'Stop'
+            $results = $script:configuration | Test-SqlDscRSAccessible -Detailed -TimeoutSeconds 240 -RetryIntervalSeconds 10 -ErrorAction 'Stop' -Verbose
 
             Write-Verbose -Message "Accessibility results: $($results | ConvertTo-Json -Compress)" -Verbose
 
@@ -105,6 +105,57 @@ Describe 'Post.ServiceAccountChange.RS' -Tag @('Integration_SQL2017_RS', 'Integr
                 $siteResult.Accessible | Should -BeTrue -Because "the '$application' site should be accessible after service account change"
                 $siteResult.StatusCode | Should -Be 200 -Because "the '$application' site should return HTTP 200 after service account change"
             }
+        }
+
+        It 'Should output diagnostic information for troubleshooting' {
+            # Get RS log path
+            $logPath = $script:configuration | Get-SqlDscRSLogPath -ErrorAction 'Stop'
+
+            Write-Verbose -Message "Reporting Services log path: $logPath" -Verbose
+
+            # Output all files recursively in the log folder
+            if (Test-Path -Path $logPath)
+            {
+                $allFiles = Get-ChildItem -Path $logPath -Recurse -File -ErrorAction 'SilentlyContinue'
+
+                Write-Verbose -Message "Files in log folder ($($allFiles.Count) files):" -Verbose
+
+                foreach ($file in $allFiles)
+                {
+                    Write-Verbose -Message "  $($file.FullName) (Size: $($file.Length) bytes, LastWriteTime: $($file.LastWriteTime))" -Verbose
+                }
+
+                # Output last 50 lines of each *.log file
+                $logFiles = $allFiles | Where-Object -FilterScript { $_.Extension -eq '.log' }
+
+                foreach ($logFile in $logFiles)
+                {
+                    Write-Verbose -Message "--- Last 50 lines of $($logFile.Name) ---" -Verbose
+
+                    $content = Get-Content -Path $logFile.FullName -Tail 50 -ErrorAction 'SilentlyContinue' | Out-String
+
+                    Write-Verbose -Message "`r`n$content" -Verbose
+
+                    Write-Verbose -Message "--- End of $($logFile.Name) ---" -Verbose
+                }
+            }
+            else
+            {
+                Write-Verbose -Message "Log path does not exist: $logPath" -Verbose
+            }
+
+            # Output last 50 events from Windows Application log
+            Write-Verbose -Message "--- Last 50 Windows Application log events ---" -Verbose
+
+            $applicationEvents = Get-WinEvent -LogName 'Application' -MaxEvents 50 -ErrorAction 'SilentlyContinue'
+
+            $eventsOutput = $applicationEvents | ForEach-Object -Process {
+                "[$($_.TimeCreated)] [$($_.LevelDisplayName)] [$($_.ProviderName)] $($_.Message)"
+            } | Out-String
+
+            Write-Verbose -Message "`r`n$eventsOutput" -Verbose
+
+            Write-Verbose -Message "--- End of Windows Application log events ---" -Verbose
         }
     }
 }

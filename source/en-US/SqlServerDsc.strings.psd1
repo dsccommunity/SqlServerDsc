@@ -296,6 +296,13 @@ ConvertFrom-StringData @'
     Get_SqlDscRSConfiguration_FailedToGetConfiguration = Failed to get the configuration CIM instance for Reporting Services instance '{0}': {1} (GSRSCD0003)
     Get_SqlDscRSConfiguration_ConfigurationNotFound = Could not find the configuration CIM instance for Reporting Services instance '{0}'. (GSRSCD0004)
 
+    ## Get-SqlDscRSLogPath
+    # cSpell: ignore GSRSLP
+    Get_SqlDscRSLogPath_GettingPath = Getting log file path for Reporting Services instance '{0}'.
+    Get_SqlDscRSLogPath_FoundPath = Found log file path: '{0}'.
+    Get_SqlDscRSLogPath_InstanceNotFound = Could not find a Reporting Services instance with the name '{0}'. (GSRSLP0001)
+    Get_SqlDscRSLogPath_LogPathNotFound = Could not determine the log file path for Reporting Services instance '{0}'. The ErrorDumpDirectory registry value is empty. (GSRSLP0002)
+
     ## Get-SqlDscRSWebPortalApplicationName
     Get_SqlDscRSWebPortalApplicationName_GettingApplicationName = Getting web portal application name.
 

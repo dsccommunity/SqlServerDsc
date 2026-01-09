@@ -51,6 +51,8 @@ Describe 'Set-SqlDscRSServiceAccount' {
 
         It 'Should have the original service account set' {
             $script:originalServiceAccount | Should -Not -BeNullOrEmpty
+
+            Write-Verbose -Message "Original service account: $script:originalServiceAccount" -Verbose
         }
 
         It 'Should change the service account to svc-RS' {
@@ -63,6 +65,8 @@ Describe 'Set-SqlDscRSServiceAccount' {
             $result = $configuration | Get-SqlDscRSServiceAccount -ErrorAction 'Stop'
 
             $result | Should -BeExactly $script:serviceAccountName
+
+            Write-Verbose -Message "New service account after change: $result" -Verbose
         }
     }
 
@@ -79,6 +83,8 @@ Describe 'Set-SqlDscRSServiceAccount' {
 
         It 'Should have the original service account set' {
             $script:originalServiceAccount | Should -Not -BeNullOrEmpty
+
+            Write-Verbose -Message "Original service account: $script:originalServiceAccount" -Verbose
         }
 
         It 'Should change the service account to svc-RS' {
@@ -91,6 +97,8 @@ Describe 'Set-SqlDscRSServiceAccount' {
             $result = $configuration | Get-SqlDscRSServiceAccount -ErrorAction 'Stop'
 
             $result | Should -BeExactly $script:serviceAccountName
+
+            Write-Verbose -Message "New service account after change: $result" -Verbose
         }
     }
 
@@ -107,6 +115,8 @@ Describe 'Set-SqlDscRSServiceAccount' {
 
         It 'Should have the original service account set' {
             $script:originalServiceAccount | Should -Not -BeNullOrEmpty
+
+            Write-Verbose -Message "Original service account: $script:originalServiceAccount" -Verbose
         }
 
         It 'Should change the service account to svc-RS' {
@@ -119,6 +129,8 @@ Describe 'Set-SqlDscRSServiceAccount' {
             $result = $configuration | Get-SqlDscRSServiceAccount -ErrorAction 'Stop'
 
             $result | Should -BeExactly $script:serviceAccountName
+
+            Write-Verbose -Message "New service account after change: $result" -Verbose
         }
     }
 
@@ -135,6 +147,8 @@ Describe 'Set-SqlDscRSServiceAccount' {
 
         It 'Should have the original service account set' {
             $script:originalServiceAccount | Should -Not -BeNullOrEmpty
+
+            Write-Verbose -Message "Original service account: $script:originalServiceAccount" -Verbose
         }
 
         It 'Should change the service account to svc-RS' {
@@ -147,6 +161,8 @@ Describe 'Set-SqlDscRSServiceAccount' {
             $result = $configuration | Get-SqlDscRSServiceAccount -ErrorAction 'Stop'
 
             $result | Should -BeExactly $script:serviceAccountName
+
+            Write-Verbose -Message "New service account after change: $result" -Verbose
         }
     }
 }
