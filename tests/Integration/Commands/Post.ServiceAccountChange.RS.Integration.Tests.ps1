@@ -144,10 +144,10 @@ Describe 'Post.ServiceAccountChange.RS' -Tag @('Integration_SQL2017_RS', 'Integr
                 Write-Verbose -Message "Log path does not exist: $logPath" -Verbose
             }
 
-            # Output last 50 events from Windows Application log
-            Write-Verbose -Message "--- Last 50 Windows Application log events ---" -Verbose
+            # Output last 50 error events from Windows Application log
+            Write-Verbose -Message "--- Last 50 Windows Application log error events ---" -Verbose
 
-            $applicationEvents = Get-WinEvent -LogName 'Application' -MaxEvents 50 -ErrorAction 'SilentlyContinue'
+            $applicationEvents = Get-WinEvent -LogName 'Application' -MaxEvents 50 -FilterXPath '*[System[Level=2]]' -ErrorAction 'SilentlyContinue'
 
             $eventsOutput = $applicationEvents | ForEach-Object -Process {
                 "[$($_.TimeCreated)] [$($_.LevelDisplayName)] [$($_.ProviderName)] $($_.Message)"
@@ -155,7 +155,19 @@ Describe 'Post.ServiceAccountChange.RS' -Tag @('Integration_SQL2017_RS', 'Integr
 
             Write-Verbose -Message "`r`n$eventsOutput" -Verbose
 
-            Write-Verbose -Message "--- End of Windows Application log events ---" -Verbose
+            Write-Verbose -Message "--- End of Windows Application log error events ---" -Verbose
+
+            # Output unique provider names from recent Application log events for filtering reference
+            Write-Verbose -Message "--- Unique provider names in last 200 Application log events ---" -Verbose
+
+            $recentEvents = Get-WinEvent -LogName 'Application' -MaxEvents 200 -ErrorAction 'SilentlyContinue'
+            $uniqueProviders = $recentEvents | Select-Object -ExpandProperty ProviderName -Unique | Sort-Object
+
+            $providersOutput = $uniqueProviders -join "`r`n"
+
+            Write-Verbose -Message "`r`n$providersOutput" -Verbose
+
+            Write-Verbose -Message "--- End of unique provider names ---" -Verbose
         }
     }
 }
