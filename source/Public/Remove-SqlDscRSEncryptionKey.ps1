@@ -119,7 +119,9 @@ function Remove-SqlDscRSEncryptionKey
             }
             catch
             {
-                $errorRecord = New-ErrorRecord -Message ($script:localizedData.Remove_SqlDscRSEncryptionKey_FailedToRemove -f $instanceName, $_.Exception.Message) -ErrorId 'RRSEK0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+                $exception = New-Exception -Message ($script:localizedData.Remove_SqlDscRSEncryptionKey_FailedToRemove -f $instanceName) -ErrorRecord $_
+
+                $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'RRSEK0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
 
                 $PSCmdlet.ThrowTerminatingError($errorRecord)
             }
