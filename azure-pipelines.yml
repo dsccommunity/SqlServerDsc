@@ -566,8 +566,8 @@ stages:
                   'tests/Integration/Commands/Get-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscRSDatabaseConnection.Integration.Tests.ps1'
-                  'tests/Integration/Commands/Restart-SqlDscRSService.Integration.Tests.ps1'
                   'tests/Integration/Commands/Request-SqlDscRSDatabaseUpgradeScript.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Restart-SqlDscRSService.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscRSInitialized.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSLogPath.Integration.Tests.ps1'
                   # Group 4
@@ -662,6 +662,7 @@ stages:
                   'tests/Integration/Commands/Get-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscRSUrlReservation.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscRSDatabaseConnection.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Request-SqlDscRSDatabaseUpgradeScript.Integration.Tests.ps1'
                   'tests/Integration/Commands/Restart-SqlDscRSService.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscRSInitialized.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSLogPath.Integration.Tests.ps1'
