@@ -1,4 +1,4 @@
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
 BeforeDiscovery {
@@ -6,45 +6,44 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
     $env:SqlServerDscCI = $true
 
-    Import-Module -Name $script:dscModuleName
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
     # Loading mocked classes
     Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../Stubs') -ChildPath 'SMO.cs')
 
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
-
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -65,7 +64,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
         }
         @{
             MockParameterSetName = 'FileWithMaxFiles'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'FileWithMaxRolloverFiles'
@@ -490,74 +489,6 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             $mockCreateAuditObject.MaximumFiles | Should -Be 2
 
             $mockMethodCreateCallCount | Should -Be 1
-        }
-    }
-
-    Context 'When passing file audit optional parameters MaximumFiles and ReserveDiskSpace' {
-        BeforeAll {
-            $script:mockCreateAuditObject = $null
-
-            Mock -CommandName New-Object -ParameterFilter {
-                $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Audit'
-            } -MockWith {
-                <#
-                    The Audit object is created in the script scope so that the
-                    properties can be validated.
-                #>
-                $script:mockCreateAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
-                    $PesterBoundParameters.ArgumentList[0],
-                    $PesterBoundParameters.ArgumentList[1]
-                ) |
-                    Add-Member -MemberType 'ScriptMethod' -Name 'Create' -Value {
-                        $script:mockMethodCreateCallCount += 1
-                    } -PassThru -Force
-
-                return $script:mockCreateAuditObject
-            }
-
-            Mock -CommandName Get-SqlDscAudit
-
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-            $mockServerObject.InstanceName = 'TestInstance'
-
-            $mockDefaultParameters = @{
-                ServerObject = $mockServerObject
-                Name = 'Log1'
-                Path = Get-TemporaryFolder
-                Force = $true
-            }
-        }
-
-        BeforeEach {
-            $script:mockMethodCreateCallCount = 0
-        }
-
-        It 'Should call the mocked method and have correct values in the object' {
-            New-SqlDscAudit -MaximumFiles 2 -ReserveDiskSpace @mockDefaultParameters
-
-            # This is the object created by the mock and modified by the command.
-            $mockCreateAuditObject.Name | Should -Be 'Log1'
-            $mockCreateAuditObject.DestinationType | Should -Be 'File'
-            $mockCreateAuditObject.FilePath | Should -Be (Get-TemporaryFolder)
-            $mockCreateAuditObject.MaximumFiles | Should -Be 2
-            $mockCreateAuditObject.ReserveDiskSpace | Should -BeTrue
-
-            $mockMethodCreateCallCount | Should -Be 1
-        }
-
-        Context 'When ReserveDiskSpace is set to $false' {
-            It 'Should call the mocked method and have correct values in the object' {
-                New-SqlDscAudit -MaximumFiles 2 -ReserveDiskSpace:$false @mockDefaultParameters
-
-                # This is the object created by the mock and modified by the command.
-                $mockCreateAuditObject.Name | Should -Be 'Log1'
-                $mockCreateAuditObject.DestinationType | Should -Be 'File'
-                $mockCreateAuditObject.FilePath | Should -Be (Get-TemporaryFolder)
-                $mockCreateAuditObject.MaximumFiles | Should -Be 2
-                $mockCreateAuditObject.ReserveDiskSpace | Should -BeFalse
-
-                $mockMethodCreateCallCount | Should -Be 1
-            }
         }
     }
 

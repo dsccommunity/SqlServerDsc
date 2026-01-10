@@ -22,8 +22,15 @@
 
         Returns the calculated version as a string.
 
+    .INPUTS
+        `System.Management.Automation.PSModuleInfo`
+
+        Accepts a PowerShell module info object via the pipeline.
+
     .OUTPUTS
-        [System.String]
+        `System.String`
+
+        Returns the calculated version as a string.
 #>
 function Get-SMOModuleCalculatedVersion
 {

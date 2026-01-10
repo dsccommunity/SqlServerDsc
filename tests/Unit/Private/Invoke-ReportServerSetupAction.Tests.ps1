@@ -1,4 +1,4 @@
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'because ConvertTo-SecureString is used to simplify the tests.')]
 param ()
 
@@ -7,33 +7,35 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
     $env:SqlServerDscCI = $true
 
-    Import-Module -Name $script:dscModuleName
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 
     # Adding these mocks to handle the ValidateScript blocks
     Mock -CommandName Test-Path -ParameterFilter {
@@ -53,9 +55,6 @@ AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
-
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -96,6 +95,46 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
 
             $result.ParameterSetName | Should -Be $MockParameterSetName
             $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        }
+    }
+
+    Context 'When user is not elevated' {
+        BeforeAll {
+            # Mock Assert-ElevatedUser to throw the same error it would in a real scenario
+            Mock -CommandName Assert-ElevatedUser -MockWith {
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        'This command must run in an elevated PowerShell session. (DRC0043)',
+                        'UserNotElevated',
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        'Command parameters'
+                    )
+                )
+            }
+
+            # Create a valid executable file for the test
+            New-Item -Path "$TestDrive/ssrs.exe" -ItemType File -Force | Out-Null
+
+            InModuleScope -ScriptBlock {
+                $script:mockDefaultParameters = @{
+                    Install = $true
+                    AcceptLicensingTerms = $true
+                    MediaPath = "$TestDrive/ssrs.exe"
+                    Force = $true
+                }
+            }
+        }
+
+        It 'Should throw a terminating error and not continue execution' {
+            InModuleScope -ScriptBlock {
+                # This test verifies the fix for issue #2070 where Assert-ElevatedUser
+                # would throw an error but the function would continue executing
+                { Invoke-ReportServerSetupAction @mockDefaultParameters } |
+                    Should -Throw -ExpectedMessage '*This command must run in an elevated PowerShell session*'
+            }
+
+            # Ensure Assert-ElevatedUser was called
+            Should -Invoke -CommandName Assert-ElevatedUser -Exactly -Times 1 -Scope It
         }
     }
 
@@ -385,6 +424,134 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
 
                         # Return wether the correct command was called or not.
                         $correctMessage
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+        }
+
+        Context 'When path parameters contain environment variables' {
+            BeforeAll {
+                # Mock Test-Path to return $true for all paths in this context
+                Mock -CommandName Test-Path -MockWith {
+                    return $true
+                }
+
+                Mock -CommandName Start-SqlSetupProcess -MockWith {
+                    return 0
+                } -RemoveParameterValidation 'FilePath'
+
+                Mock -CommandName Format-Path -MockWith {
+                    # Return expanded path for testing
+                    return 'C:\Logs\Test\setup.log'
+                } -ParameterFilter {
+                    $Path -eq '%TEMP%\setup.log'
+                }
+
+                Mock -CommandName Format-Path -MockWith {
+                    return 'C:\Program Files\ReportServer'
+                } -ParameterFilter {
+                    $Path -eq '%ProgramFiles%\ReportServer'
+                }
+
+                Mock -CommandName Format-Path -MockWith {
+                    return 'C:\SqlMedia\setup.exe'
+                } -ParameterFilter {
+                    $Path -eq '%SystemDrive%\SqlMedia\setup.exe'
+                }
+
+                InModuleScope -ScriptBlock {
+                    $script:mockDefaultParameters = @{
+                        Install              = $true
+                        AcceptLicensingTerms = $true
+                        MediaPath            = '%SystemDrive%\SqlMedia\setup.exe'
+                        Force                = $true
+                    }
+                }
+            }
+
+            It 'Should call Format-Path for MediaPath parameter' {
+                InModuleScope -ScriptBlock {
+                    Invoke-ReportServerSetupAction @mockDefaultParameters
+
+                    Should -Invoke -CommandName Format-Path -ParameterFilter {
+                        $Path -eq '%SystemDrive%\SqlMedia\setup.exe' -and
+                        $EnsureDriveLetterRoot -eq $true -and
+                        $NoTrailingDirectorySeparator -eq $true -and
+                        $ExpandEnvironmentVariable -eq $true
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            It 'Should call Format-Path for LogPath parameter when specified' {
+                InModuleScope -ScriptBlock {
+                    $installParameters = $mockDefaultParameters.Clone()
+                    $installParameters.LogPath = '%TEMP%\setup.log'
+
+                    Invoke-ReportServerSetupAction @installParameters
+
+                    Should -Invoke -CommandName Format-Path -ParameterFilter {
+                        $Path -eq '%TEMP%\setup.log' -and
+                        $EnsureDriveLetterRoot -eq $true -and
+                        $NoTrailingDirectorySeparator -eq $true -and
+                        $ExpandEnvironmentVariable -eq $true
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            It 'Should call Format-Path for InstallFolder parameter when specified' {
+                InModuleScope -ScriptBlock {
+                    $installParameters = $mockDefaultParameters.Clone()
+                    $installParameters.InstallFolder = '%ProgramFiles%\ReportServer'
+
+                    Invoke-ReportServerSetupAction @installParameters
+
+                    Should -Invoke -CommandName Format-Path -ParameterFilter {
+                        $Path -eq '%ProgramFiles%\ReportServer' -and
+                        $EnsureDriveLetterRoot -eq $true -and
+                        $NoTrailingDirectorySeparator -eq $true -and
+                        $ExpandEnvironmentVariable -eq $true
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            It 'Should pass the expanded path to Start-SqlSetupProcess for MediaPath' {
+                InModuleScope -ScriptBlock {
+                    Invoke-ReportServerSetupAction @mockDefaultParameters
+
+                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        $FilePath -eq 'C:\SqlMedia\setup.exe'
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            It 'Should pass the expanded path in ArgumentList for LogPath' {
+                InModuleScope -ScriptBlock {
+                    $installParameters = $mockDefaultParameters.Clone()
+                    $installParameters.LogPath = '%TEMP%\setup.log'
+
+                    Invoke-ReportServerSetupAction @installParameters
+
+                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        $ArgumentList | Should -MatchExactly '\/log "C:\\Logs\\Test\\setup\.log"'
+
+                        # Return $true if none of the above throw.
+                        $true
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            It 'Should pass the expanded path in ArgumentList for InstallFolder' {
+                InModuleScope -ScriptBlock {
+                    $installParameters = $mockDefaultParameters.Clone()
+                    $installParameters.InstallFolder = '%ProgramFiles%\ReportServer'
+
+                    Invoke-ReportServerSetupAction @installParameters
+
+                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        $ArgumentList | Should -MatchExactly '\/InstallFolder="C:\\Program Files\\ReportServer"'
+
+                        # Return $true if none of the above throw.
+                        $true
                     } -Exactly -Times 1 -Scope It
                 }
             }

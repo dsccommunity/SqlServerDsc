@@ -4,7 +4,7 @@
 #>
 
 # Suppressing this rule because Script Analyzer does not understand Pester's syntax.
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
 BeforeDiscovery {
@@ -12,36 +12,39 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
     $script:dscResourceName = 'DSC_SqlProtocolTcpIp'
 
     $env:SqlServerDscCI = $true
 
     $script:testEnvironment = Initialize-TestEnvironment `
-        -DSCModuleName $script:dscModuleName `
+        -DSCModuleName $script:moduleName `
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
         -TestType 'Unit'
 
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
+    # Load the SMO stub types
+    Add-Type -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs\SMO.cs')
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
@@ -76,9 +79,7 @@ Describe 'SqlProtocolTcpIp\Get-TargetResource' -Tag 'Get' {
     Context 'When the system is not in the desired state' {
         Context 'When the SQL Server instance does not exist' {
             BeforeAll {
-                Mock -CommandName Get-ServerProtocolObject -MockWith {
-                    return $null
-                }
+                Mock -CommandName Get-SqlDscServerProtocol
             }
 
             It 'Should return the correct values' {
@@ -117,7 +118,7 @@ Describe 'SqlProtocolTcpIp\Get-TargetResource' -Tag 'Get' {
         Context 'When the IP address group is missing' {
             BeforeAll {
                 Mock -CommandName Write-Warning
-                Mock -CommandName Get-ServerProtocolObject -MockWith {
+                Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                     return @{
                         IPAddresses = @(
                             [PSCustomObject] @{
@@ -140,7 +141,7 @@ Describe 'SqlProtocolTcpIp\Get-TargetResource' -Tag 'Get' {
                         IpAddressGroup = 'IP2'
                     }
 
-                    { Get-TargetResource @getTargetResourceParameters } | Should -Not -Throw
+                    $null = Get-TargetResource @getTargetResourceParameters
                 }
 
                 Should -Invoke -CommandName Write-Warning
@@ -152,7 +153,7 @@ Describe 'SqlProtocolTcpIp\Get-TargetResource' -Tag 'Get' {
         Context 'When the IP address group is IPAll' {
             Context 'When the IP address group is using dynamic port' {
                 BeforeAll {
-                    Mock -CommandName Get-ServerProtocolObject -MockWith {
+                    Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                         return @{
                             IPAddresses = @{
                                 Name  = 'IPAll'
@@ -201,7 +202,7 @@ Describe 'SqlProtocolTcpIp\Get-TargetResource' -Tag 'Get' {
 
             Context 'When the IP address group is using static TCP ports' {
                 BeforeAll {
-                    Mock -CommandName Get-ServerProtocolObject -MockWith {
+                    Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                         return @{
                             IPAddresses = @{
                                 Name  = 'IPAll'
@@ -252,7 +253,7 @@ Describe 'SqlProtocolTcpIp\Get-TargetResource' -Tag 'Get' {
         Context 'When the IP address group is IPx (where x is an available group number)' {
             Context 'When the IP address group is using dynamic port' {
                 BeforeAll {
-                    Mock -CommandName Get-ServerProtocolObject -MockWith {
+                    Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                         return @{
                             IPAddresses = @{
                                 Name  = 'IP1'
@@ -311,7 +312,7 @@ Describe 'SqlProtocolTcpIp\Get-TargetResource' -Tag 'Get' {
 
             Context 'When the IP address group is using static TCP ports' {
                 BeforeAll {
-                    Mock -CommandName Get-ServerProtocolObject -MockWith {
+                    Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                         return @{
                             IPAddresses = @{
                                 Name  = 'IP1'
@@ -959,9 +960,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                 )
             }
 
-            Mock -CommandName Get-ServerProtocolObject -MockWith {
-                return $null
-            }
+            Mock -CommandName Get-SqlDscServerProtocol
         }
 
         It 'Should throw the correct error' {
@@ -991,7 +990,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                 )
             }
 
-            Mock -CommandName Get-ServerProtocolObject -MockWith {
+            Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                 return @{
                     IPAddresses = @(
                         [PSCustomObject] @{
@@ -1044,7 +1043,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                     IpAddressGroup    = 'IPAll'
                 }
 
-                { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                $null = Set-TargetResource @setTargetResourceParameters
             }
 
             Should -Invoke -CommandName Compare-TargetResourceState -Exactly -Times 1 -Scope It
@@ -1066,7 +1065,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                     )
                 }
 
-                Mock -CommandName Get-ServerProtocolObject -MockWith {
+                Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                     return New-Object -TypeName PSObject |
                             Add-Member -MemberType NoteProperty -Name 'IPAddresses' -Value @{
                                 Name  = 'IPAll'
@@ -1112,13 +1111,13 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                         UseTcpDynamicPort = $true
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setTargetResourceParameters
 
                     <#
                         Addition evaluation is done in the mock to test if the
                         object is set correctly.
                     #>
-                    $script:wasMethodAlterCalled | Should -BeTru
+                    $script:wasMethodAlterCalled | Should -BeTrue
                 }
 
                 Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
@@ -1139,7 +1138,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                     )
                 }
 
-                Mock -CommandName Get-ServerProtocolObject -MockWith {
+                Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                     return New-Object -TypeName PSObject |
                             Add-Member -MemberType NoteProperty -Name 'IPAddresses' -Value @{
                                 Name  = 'IPAll'
@@ -1185,7 +1184,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                         TcpPort        = '1433,1500,1501'
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setTargetResourceParameters
 
                     <#
                         Addition evaluation is done in the mock to test if the
@@ -1213,7 +1212,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                         )
                     }
 
-                    Mock -CommandName Get-ServerProtocolObject -MockWith {
+                    Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                         return New-Object -TypeName PSObject |
                                 Add-Member -MemberType NoteProperty -Name 'IPAddresses' -Value @{
                                     Name  = 'IP1'
@@ -1256,7 +1255,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                             Enabled        = $true
                         }
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @setTargetResourceParameters
 
                         <#
                             Addition evaluation is done in the mock to test if the
@@ -1283,7 +1282,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                         )
                     }
 
-                    Mock -CommandName Get-ServerProtocolObject -MockWith {
+                    Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                         return New-Object -TypeName PSObject |
                                 Add-Member -MemberType NoteProperty -Name 'IPAddresses' -Value @{
                                     Name  = 'IP1'
@@ -1326,7 +1325,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                             Enabled        = $false
                         }
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @setTargetResourceParameters
 
                         <#
                             Addition evaluation is done in the mock to test if the
@@ -1355,7 +1354,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                         )
                     }
 
-                    Mock -CommandName Get-ServerProtocolObject -MockWith {
+                    Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                         return New-Object -TypeName PSObject |
                                 Add-Member -MemberType NoteProperty -Name 'IPAddresses' -Value @{
                                     Name  = 'IP1'
@@ -1402,7 +1401,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                             IpAddress      = $MockExpectedIpAddress
                         }
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @setTargetResourceParameters
 
                         <#
                             Addition evaluation is done in the mock to test if the
@@ -1430,7 +1429,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                         )
                     }
 
-                    Mock -CommandName Get-ServerProtocolObject -MockWith {
+                    Mock -CommandName Get-SqlDscServerProtocol -MockWith {
                         return New-Object -TypeName PSObject |
                                 Add-Member -MemberType NoteProperty -Name 'IPAddresses' -Value @{
                                     Name  = 'IP1'
@@ -1455,7 +1454,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                             SuppressRestart = $true
                         }
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @setTargetResourceParameters
                     }
 
                     Should -Invoke -CommandName Restart-SqlService -Exactly -Times 0 -Scope It

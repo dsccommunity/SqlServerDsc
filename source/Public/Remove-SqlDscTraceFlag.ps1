@@ -47,6 +47,11 @@
         Removes the trace flags 4199 and 3226 from the Database Engine instance
         'SQL2022' on the server where the command in run.
 
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Wmi.Service`
+
+        Accepts input via the pipeline.
+
     .OUTPUTS
         None.
 #>
@@ -96,17 +101,21 @@ function Remove-SqlDscTraceFlag
         }
 
         # Copy $PSBoundParameters to keep it intact.
-        $getSqlDscTraceFlagParameters = @{} + $PSBoundParameters
+        $getSqlDscTraceFlagParameters = Remove-CommonParameter -Hashtable $PSBoundParameters
 
-        $commonParameters = [System.Management.Automation.PSCmdlet]::OptionalCommonParameters
-
-        # Remove parameters that Get-SqlDscTraceFLag does not have/support.
-        $commonParameters + @('Force', 'TraceFlag') |
+        # Remove parameters that Get-SqlDscTraceFlag does not have/support.
+        @('Force', 'TraceFlag') |
             ForEach-Object -Process {
                 $getSqlDscTraceFlagParameters.Remove($_)
             }
 
+        $originalErrorActionPreference = $ErrorActionPreference
+
+        $ErrorActionPreference = 'Stop'
+
         $currentTraceFlags = Get-SqlDscTraceFlag @getSqlDscTraceFlagParameters -ErrorAction 'Stop'
+
+        $ErrorActionPreference = $originalErrorActionPreference
 
         if ($currentTraceFlags)
         {
@@ -122,6 +131,13 @@ function Remove-SqlDscTraceFlag
                     }
             )
 
+            # Short-circuit if removal results in no effective change
+            if (-not (Compare-Object -ReferenceObject $currentTraceFlags -DifferenceObject $desiredTraceFlags))
+            {
+                Write-Debug -Message $script:localizedData.TraceFlag_Remove_NoChange
+                return
+            }
+
             $verboseDescriptionMessage = $script:localizedData.TraceFlag_Remove_ShouldProcessVerboseDescription -f $InstanceName, ($TraceFlag -join ', ')
             $verboseWarningMessage = $script:localizedData.TraceFlag_Remove_ShouldProcessVerboseWarning -f $InstanceName
             $captionMessage = $script:localizedData.TraceFlag_Remove_ShouldProcessCaption
@@ -129,11 +145,17 @@ function Remove-SqlDscTraceFlag
             if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
             {
                 # Copy $PSBoundParameters to keep it intact.
-                $setSqlDscTraceFlagParameters = @{} + $PSBoundParameters
+                $setSqlDscTraceFlagParameters = Remove-CommonParameter -Hashtable $PSBoundParameters
 
-                $setSqlDscTraceFlagParameters.TraceFLag = $desiredTraceFlags
+                $setSqlDscTraceFlagParameters.TraceFlag = $desiredTraceFlags
+
+                $originalErrorActionPreference = $ErrorActionPreference
+
+                $ErrorActionPreference = 'Stop'
 
                 Set-SqlDscTraceFlag @setSqlDscTraceFlagParameters -ErrorAction 'Stop'
+
+                $ErrorActionPreference = $originalErrorActionPreference
             }
         }
         else

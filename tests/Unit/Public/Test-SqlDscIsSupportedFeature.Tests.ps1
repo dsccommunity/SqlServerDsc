@@ -1,4 +1,4 @@
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
 BeforeDiscovery {
@@ -6,45 +6,44 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
     $env:SqlServerDscCI = $true
 
-    Import-Module -Name $script:dscModuleName
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
     # Loading mocked classes
     Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../Stubs') -ChildPath 'SMO.cs')
 
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
-
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -103,6 +102,32 @@ Describe 'Test-SqlDscIsSupportedFeature' -Tag 'Public' {
 
         It 'Should return $false for an older major version' {
             Test-SqlDscIsSupportedFeature -Feature 'PolyBaseJava' -ProductVersion 14 | Should -BeFalse
+        }
+    }
+
+    Context 'When DQ, DQC, and MDS features are discontinued in SQL Server 2025 (17.x)' {
+        It 'Should return $true for feature <Feature> on major version 16' -ForEach @(
+            @{ Feature = 'DQ' }
+            @{ Feature = 'DQC' }
+            @{ Feature = 'MDS' }
+        ) {
+            Test-SqlDscIsSupportedFeature -Feature $Feature -ProductVersion 16 | Should -BeTrue
+        }
+
+        It 'Should return $false for feature <Feature> on major version 17' -ForEach @(
+            @{ Feature = 'DQ' }
+            @{ Feature = 'DQC' }
+            @{ Feature = 'MDS' }
+        ) {
+            Test-SqlDscIsSupportedFeature -Feature $Feature -ProductVersion 17 | Should -BeFalse
+        }
+
+        It 'Should return $false for feature <Feature> on major version 999 (future version)' -ForEach @(
+            @{ Feature = 'DQ' }
+            @{ Feature = 'DQC' }
+            @{ Feature = 'MDS' }
+        ) {
+            Test-SqlDscIsSupportedFeature -Feature $Feature -ProductVersion 999 | Should -BeFalse
         }
     }
 }

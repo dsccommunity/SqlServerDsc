@@ -14,10 +14,21 @@
         ConvertTo-ManagedServiceType -ServiceType 'DatabaseEngine'
 
         Returns the manged service type name for the normalized service type 'DatabaseEngine'.
+
+    .INPUTS
+        `System.String`
+
+        Accepts a normalized service type name via the pipeline.
+
+    .OUTPUTS
+        `Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType`
+
+        Returns the managed service type.
 #>
 function ConvertTo-ManagedServiceType
 {
     [CmdletBinding()]
+    [OutputType([Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType])]
     param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]

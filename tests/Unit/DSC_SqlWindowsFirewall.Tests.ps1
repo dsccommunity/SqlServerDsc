@@ -4,7 +4,7 @@
 #>
 
 # Suppressing this rule because Script Analyzer does not understand Pester's syntax.
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 # Suppressing this rule because tests are mocking passwords in clear text.
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param ()
@@ -14,31 +14,31 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
     $script:dscResourceName = 'DSC_SqlWindowsFirewall'
 
     $env:SqlServerDscCI = $true
 
     $script:testEnvironment = Initialize-TestEnvironment `
-        -DSCModuleName $script:dscModuleName `
+        -DSCModuleName $script:moduleName `
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
         -TestType 'Unit'
@@ -120,19 +120,19 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
                 between the other major versions.
             #>
             @{
-                MockFeatures = 'SQLENGINE'
+                MockFeatures        = 'SQLENGINE'
                 MockSqlMajorVersion = '11' # SQL Server 2012
             }
             @{
                 # Using lower-case to test that casing does not matter.
-                MockFeatures = 'SQLEngine'
+                MockFeatures        = 'SQLEngine'
                 MockSqlMajorVersion = '10' # SQL Server 2008 and 2008 R2
             }
         ) {
             Context 'When the feature is not installed (the service is missing)' {
                 BeforeAll {
-                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                        return $MockSqlMajorVersion
+                    Mock -CommandName Get-FileVersion -MockWith {
+                        return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                     }
 
                     Mock -CommandName Get-Service -MockWith {
@@ -193,8 +193,8 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
             Context 'When the feature is installed' {
                 BeforeAll {
-                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                        return $MockSqlMajorVersion
+                    Mock -CommandName Get-FileVersion -MockWith {
+                        return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                     }
 
                     Mock -CommandName Get-Service -MockWith {
@@ -475,19 +475,19 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
                 between the other major versions.
             #>
             @{
-                MockFeatures = 'AS'
+                MockFeatures        = 'AS'
                 MockSqlMajorVersion = '11' # SQL Server 2012
             }
             @{
                 # Using lower-case to test that casing does not matter.
-                MockFeatures = 'As'
+                MockFeatures        = 'As'
                 MockSqlMajorVersion = '10' # SQL Server 2008 and 2008 R2
             }
         ) {
             Context 'When the feature is not installed (the service is missing)' {
                 BeforeAll {
-                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                        return $MockSqlMajorVersion
+                    Mock -CommandName Get-FileVersion -MockWith {
+                        return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                     }
 
                     Mock -CommandName Get-Service -MockWith {
@@ -548,8 +548,8 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
             Context 'When the feature is installed' {
                 BeforeAll {
-                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                        return $MockSqlMajorVersion
+                    Mock -CommandName Get-FileVersion -MockWith {
+                        return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                     }
 
                     Mock -CommandName Get-Service -MockWith {
@@ -830,19 +830,19 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
                 between the other major versions.
             #>
             @{
-                MockFeatures = 'RS'
+                MockFeatures        = 'RS'
                 MockSqlMajorVersion = '11' # SQL Server 2012
             }
             @{
                 # Using lower-case to test that casing does not matter.
-                MockFeatures = 'Rs'
+                MockFeatures        = 'Rs'
                 MockSqlMajorVersion = '10' # SQL Server 2008 and 2008 R2
             }
         ) {
             Context 'When the feature is not installed (the service is missing)' {
                 BeforeAll {
-                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                        return $MockSqlMajorVersion
+                    Mock -CommandName Get-FileVersion -MockWith {
+                        return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                     }
 
                     Mock -CommandName Get-Service -MockWith {
@@ -903,8 +903,8 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
             Context 'When the feature is installed' {
                 BeforeAll {
-                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                        return $MockSqlMajorVersion
+                    Mock -CommandName Get-FileVersion -MockWith {
+                        return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                     }
 
                     Mock -CommandName Get-Service -MockWith {
@@ -1185,19 +1185,19 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
                 between the other major versions.
             #>
             @{
-                MockFeatures = 'IS'
+                MockFeatures        = 'IS'
                 MockSqlMajorVersion = '11' # SQL Server 2012
             }
             @{
                 # Using lower-case to test that casing does not matter.
-                MockFeatures = 'Is'
+                MockFeatures        = 'Is'
                 MockSqlMajorVersion = '10' # SQL Server 2008 and 2008 R2
             }
         ) {
             Context 'When the feature is not installed (the service is missing)' {
                 BeforeAll {
-                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                        return $MockSqlMajorVersion
+                    Mock -CommandName Get-FileVersion -MockWith {
+                        return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                     }
 
                     Mock -CommandName Get-Service -MockWith {
@@ -1258,8 +1258,8 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
             Context 'When the feature is installed' {
                 BeforeAll {
-                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                        return $MockSqlMajorVersion
+                    Mock -CommandName Get-FileVersion -MockWith {
+                        return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                     }
 
                     Mock -CommandName Get-Service -MockWith {
@@ -1532,19 +1532,19 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
                 between the other major versions.
             #>
             @{
-                MockFeatures = 'RS,AS,SQLENGINE,IS'
+                MockFeatures        = 'RS,AS,SQLENGINE,IS'
                 MockSqlMajorVersion = '11' # SQL Server 2012
             }
             @{
                 # Using another order and lower-case to test that casing and order does not matter.
-                MockFeatures = 'Is,Rs,As,SQLEngine'
+                MockFeatures        = 'Is,Rs,As,SQLEngine'
                 MockSqlMajorVersion = '10' # SQL Server 2008 and 2008 R2
             }
         ) {
             Context 'When the features are not installed (the service is missing)' {
                 BeforeAll {
-                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                        return $MockSqlMajorVersion
+                    Mock -CommandName Get-FileVersion -MockWith {
+                        return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                     }
 
                     Mock -CommandName Get-Service -MockWith {
@@ -1605,8 +1605,8 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
             Context 'When the feature is installed' {
                 BeforeAll {
-                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                        return $MockSqlMajorVersion
+                    Mock -CommandName Get-FileVersion -MockWith {
+                        return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                     }
 
                     Mock -CommandName Get-Service -MockWith {
@@ -1712,8 +1712,8 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
         Context 'When passing credentials in the parameter SourceCredential' {
             BeforeAll {
-                Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                    return $MockSqlMajorVersion
+                Mock -CommandName Get-FileVersion -MockWith {
+                    return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                 }
 
                 Mock -CommandName Get-Service -MockWith {
@@ -1740,7 +1740,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
                         ('dummyPassword' | ConvertTo-SecureString -AsPlainText -Force)
                     )
 
-                    { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                    $null = Get-TargetResource @mockGetTargetResourceParameters
                 }
 
                 Should -Invoke New-SmbMapping -Exactly -Times 1 -Scope It
@@ -1908,19 +1908,19 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                 between the other major versions.
             #>
             @{
-                MockFeatures = 'SQLENGINE'
+                MockFeatures        = 'SQLENGINE'
                 MockSqlMajorVersion = '11' # SQL Server 2012
             }
             @{
                 # Using lower-case to test that casing does not matter.
-                MockFeatures = 'SQLEngine'
+                MockFeatures        = 'SQLEngine'
                 MockSqlMajorVersion = '10' # SQL Server 2008 and 2008 R2
             }
         ) {
             Context 'When the feature is not installed' {
                 BeforeAll {
-                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                        return $MockSqlMajorVersion
+                    Mock -CommandName Get-FileVersion -MockWith {
+                        return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                     }
 
                     Mock -CommandName Get-TargetResource -MockWith {
@@ -1940,7 +1940,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
 
                         Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
                         Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
@@ -1950,8 +1950,8 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
 
             Context 'When the feature is installed' {
                 BeforeAll {
-                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                        return $MockSqlMajorVersion
+                    Mock -CommandName Get-FileVersion -MockWith {
+                        return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                     }
                 }
 
@@ -1965,9 +1965,9 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     BeforeAll {
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
-                                Features = 'SQLENGINE'
+                                Features               = 'SQLENGINE'
                                 DatabaseEngineFirewall = $true
-                                BrowserFirewall = $true
+                                BrowserFirewall        = $true
                             }
                         }
                     }
@@ -1976,7 +1976,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = Set-TargetResource @mockSetTargetResourceParameters
 
                             Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
                             Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
@@ -1988,9 +1988,9 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     BeforeAll {
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
-                                Features = 'SQLENGINE'
+                                Features               = 'SQLENGINE'
                                 DatabaseEngineFirewall = $false
-                                BrowserFirewall = $true
+                                BrowserFirewall        = $true
                             }
                         }
 
@@ -2012,7 +2012,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                             InModuleScope -ScriptBlock {
                                 Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = Set-TargetResource @mockSetTargetResourceParameters
 
                                 Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 1 -Scope It
                                 Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
@@ -2029,7 +2029,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                             InModuleScope -ScriptBlock {
                                 Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = Set-TargetResource @mockSetTargetResourceParameters
 
                                 Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
                                 Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 1 -Scope It
@@ -2042,9 +2042,9 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     BeforeAll {
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
-                                Features = 'SQLENGINE'
+                                Features               = 'SQLENGINE'
                                 DatabaseEngineFirewall = $true
-                                BrowserFirewall = $false
+                                BrowserFirewall        = $false
                             }
                         }
                     }
@@ -2054,7 +2054,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                             InModuleScope -ScriptBlock {
                                 Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = Set-TargetResource @mockSetTargetResourceParameters
 
                                 Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
                                 Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 1 -Scope It
@@ -2067,9 +2067,9 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     BeforeAll {
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
-                                Features = 'SQLENGINE'
+                                Features               = 'SQLENGINE'
                                 DatabaseEngineFirewall = $false
-                                BrowserFirewall = $false
+                                BrowserFirewall        = $false
                             }
                         }
 
@@ -2091,7 +2091,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                             InModuleScope -ScriptBlock {
                                 Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = Set-TargetResource @mockSetTargetResourceParameters
 
                                 Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 1 -Scope It #-Because 'the rule already exist for the Database Engine'
                                 Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 1 -Scope It #-Because 'no rule exist for the SQL Browser'
@@ -2108,7 +2108,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                             InModuleScope -ScriptBlock {
                                 Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = Set-TargetResource @mockSetTargetResourceParameters
 
                                 Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It #-Because 'no rules exist to change'
                                 Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 2 -Scope It #-Because 'no rule exist for either the Database Engine or SQL Browser'
@@ -2126,19 +2126,19 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                 between the other major versions.
             #>
             @{
-                MockFeatures = 'AS'
+                MockFeatures        = 'AS'
                 MockSqlMajorVersion = '11' # SQL Server 2012
             }
             @{
                 # Using lower-case to test that casing does not matter.
-                MockFeatures = 'As'
+                MockFeatures        = 'As'
                 MockSqlMajorVersion = '10' # SQL Server 2008 and 2008 R2
             }
         ) {
             Context 'When the feature is not installed' {
                 BeforeAll {
-                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                        return $MockSqlMajorVersion
+                    Mock -CommandName Get-FileVersion -MockWith {
+                        return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                     }
 
                     Mock -CommandName Get-TargetResource -MockWith {
@@ -2158,7 +2158,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
 
                         Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
                     }
@@ -2167,8 +2167,8 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
 
             Context 'When the feature is installed' {
                 BeforeAll {
-                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                        return $MockSqlMajorVersion
+                    Mock -CommandName Get-FileVersion -MockWith {
+                        return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                     }
                 }
 
@@ -2182,9 +2182,9 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     BeforeAll {
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
-                                Features = 'AS'
+                                Features                 = 'AS'
                                 AnalysisServicesFirewall = $true
-                                BrowserFirewall = $true
+                                BrowserFirewall          = $true
                             }
                         }
                     }
@@ -2193,7 +2193,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = Set-TargetResource @mockSetTargetResourceParameters
 
                             Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
                         }
@@ -2204,9 +2204,9 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     BeforeAll {
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
-                                Features = 'AS'
+                                Features                 = 'AS'
                                 AnalysisServicesFirewall = $false
-                                BrowserFirewall = $true
+                                BrowserFirewall          = $true
                             }
                         }
                     }
@@ -2215,7 +2215,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = Set-TargetResource @mockSetTargetResourceParameters
 
                             Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 1 -Scope It
                         }
@@ -2226,9 +2226,9 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     BeforeAll {
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
-                                Features = 'AS'
+                                Features                 = 'AS'
                                 AnalysisServicesFirewall = $true
-                                BrowserFirewall = $false
+                                BrowserFirewall          = $false
                             }
                         }
                     }
@@ -2238,7 +2238,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                             InModuleScope -ScriptBlock {
                                 Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = Set-TargetResource @mockSetTargetResourceParameters
 
                                 Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 1 -Scope It
                             }
@@ -2250,9 +2250,9 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     BeforeAll {
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
-                                Features = 'AS'
+                                Features                 = 'AS'
                                 AnalysisServicesFirewall = $false
-                                BrowserFirewall = $false
+                                BrowserFirewall          = $false
                             }
                         }
                     }
@@ -2261,7 +2261,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = Set-TargetResource @mockSetTargetResourceParameters
 
                             Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 2 -Scope It #-Because 'no rule exist for either Analysis Services or SQL Browser'
                         }
@@ -2277,19 +2277,19 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                 between the other major versions.
             #>
             @{
-                MockFeatures = 'RS'
+                MockFeatures        = 'RS'
                 MockSqlMajorVersion = '11' # SQL Server 2012
             }
             @{
                 # Using lower-case to test that casing does not matter.
-                MockFeatures = 'Rs'
+                MockFeatures        = 'Rs'
                 MockSqlMajorVersion = '10' # SQL Server 2008 and 2008 R2
             }
         ) {
             Context 'When the feature is not installed' {
                 BeforeAll {
-                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                        return $MockSqlMajorVersion
+                    Mock -CommandName Get-FileVersion -MockWith {
+                        return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                     }
 
                     Mock -CommandName Get-TargetResource -MockWith {
@@ -2309,7 +2309,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
 
                         Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
                     }
@@ -2318,8 +2318,8 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
 
             Context 'When the feature is installed' {
                 BeforeAll {
-                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                        return $MockSqlMajorVersion
+                    Mock -CommandName Get-FileVersion -MockWith {
+                        return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                     }
                 }
 
@@ -2333,7 +2333,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     BeforeAll {
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
-                                Features = 'RS'
+                                Features                  = 'RS'
                                 ReportingServicesFirewall = $true
                             }
                         }
@@ -2343,7 +2343,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = Set-TargetResource @mockSetTargetResourceParameters
 
                             Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
                         }
@@ -2354,7 +2354,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     BeforeAll {
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
-                                Features = 'RS'
+                                Features                  = 'RS'
                                 ReportingServicesFirewall = $false
                             }
                         }
@@ -2364,7 +2364,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = Set-TargetResource @mockSetTargetResourceParameters
 
                             Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 2 -Scope It
                         }
@@ -2381,19 +2381,19 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                 between the other major versions.
             #>
             @{
-                MockFeatures = 'IS'
+                MockFeatures        = 'IS'
                 MockSqlMajorVersion = '11' # SQL Server 2012
             }
             @{
                 # Using lower-case to test that casing does not matter.
-                MockFeatures = 'Is'
+                MockFeatures        = 'Is'
                 MockSqlMajorVersion = '10' # SQL Server 2008 and 2008 R2
             }
         ) {
             Context 'When the feature is not installed' {
                 BeforeAll {
-                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                        return $MockSqlMajorVersion
+                    Mock -CommandName Get-FileVersion -MockWith {
+                        return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                     }
 
                     Mock -CommandName Get-TargetResource -MockWith {
@@ -2413,7 +2413,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters
 
                         Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
                     }
@@ -2422,8 +2422,8 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
 
             Context 'When the feature is installed' {
                 BeforeAll {
-                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                        return $MockSqlMajorVersion
+                    Mock -CommandName Get-FileVersion -MockWith {
+                        return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                     }
                 }
 
@@ -2437,7 +2437,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     BeforeAll {
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
-                                Features = 'IS'
+                                Features                    = 'IS'
                                 IntegrationServicesFirewall = $true
                             }
                         }
@@ -2447,7 +2447,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = Set-TargetResource @mockSetTargetResourceParameters
 
                             Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
                         }
@@ -2458,7 +2458,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     BeforeAll {
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
-                                Features = 'IS'
+                                Features                    = 'IS'
                                 IntegrationServicesFirewall = $false
                             }
                         }
@@ -2472,7 +2472,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = Set-TargetResource @mockSetTargetResourceParameters
 
                             Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 2 -Scope It
                         }
@@ -2483,8 +2483,8 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
 
         Context 'When passing credentials in the parameter SourceCredential' {
             BeforeAll {
-                Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                    return $MockSqlMajorVersion
+                Mock -CommandName Get-FileVersion -MockWith {
+                    return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                 }
 
                 Mock -CommandName Get-TargetResource -MockWith {
@@ -2513,7 +2513,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         ('dummyPassword' | ConvertTo-SecureString -AsPlainText -Force)
                     )
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
                 Should -Invoke New-SmbMapping -Exactly -Times 1 -Scope It
@@ -2523,8 +2523,8 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
 
         Context 'When Test-TargetResource returns false at the end of Set-TargetResource' {
             BeforeAll {
-                Mock -CommandName Get-FilePathMajorVersion -MockWith {
-                    return $MockSqlMajorVersion
+                Mock -CommandName Get-FileVersion -MockWith {
+                    return @{ ProductVersion = "$MockSqlMajorVersion.0.0.0" }
                 }
 
                 Mock -CommandName Get-TargetResource -MockWith {
@@ -2563,16 +2563,16 @@ Describe 'SqlWindowsFirewall/Get-SqlRootPath' -Tag 'Helper' {
     BeforeDiscovery {
         $mockTestCases = @(
             @{
-                MockFeature = 'AS'
+                MockFeature         = 'AS'
                 MockSqlMajorVersion = $null
             }
             @{
                 # Lower-case to test that casing does not matter.
-                MockFeature = 'SQLEngine'
+                MockFeature         = 'SQLEngine'
                 MockSqlMajorVersion = $null
             }
             @{
-                MockFeature = 'IS'
+                MockFeature         = 'IS'
                 MockSqlMajorVersion = '12'
             }
         )
@@ -2647,9 +2647,9 @@ Describe 'SqlWindowsFirewall/Test-IsFirewallRuleInDesiredState' -Tag 'Helper' {
                 return @(
                     @{
                         DisplayName = 'RuleName'
-                        Enabled = 'True'
-                        Profile = 'Any'
-                        Direction = 'Inbound'
+                        Enabled     = 'True'
+                        Profile     = 'Any'
+                        Direction   = 'Inbound'
                     }
                 )
             }
@@ -2702,9 +2702,9 @@ Describe 'SqlWindowsFirewall/Test-IsFirewallRuleInDesiredState' -Tag 'Helper' {
                         (
                             New-CimInstance -ClassName 'MSFT_NetFirewallRule' -Property @{
                                 DisplayName = 'RuleName'
-                                Enabled = $true
-                                Profile = 'Any'
-                                Direction = 1 # 1 = Inbound, 2 = Outbound
+                                Enabled     = $true
+                                Profile     = 'Any'
+                                Direction   = 1 # 1 = Inbound, 2 = Outbound
                             } -Namespace 'root/standardcimv2' -ClientOnly
                         )
                     )
@@ -2747,9 +2747,9 @@ Describe 'SqlWindowsFirewall/Test-IsFirewallRuleInDesiredState' -Tag 'Helper' {
                         (
                             New-CimInstance -ClassName 'MSFT_NetFirewallRule' -Property @{
                                 DisplayName = 'RuleName'
-                                Enabled = $true
-                                Profile = 'Any'
-                                Direction = 1 # 1 = Inbound, 2 = Outbound
+                                Enabled     = $true
+                                Profile     = 'Any'
+                                Direction   = 1 # 1 = Inbound, 2 = Outbound
                             } -Namespace 'root/standardcimv2' -ClientOnly
                         )
                     )
@@ -2802,9 +2802,9 @@ Describe 'SqlWindowsFirewall/Test-IsFirewallRuleInDesiredState' -Tag 'Helper' {
                         (
                             New-CimInstance -ClassName 'MSFT_NetFirewallRule' -Property @{
                                 DisplayName = 'RuleName'
-                                Enabled = $true
-                                Profile = 'Any'
-                                Direction = 1 # 1 = Inbound, 2 = Outbound
+                                Enabled     = $true
+                                Profile     = 'Any'
+                                Direction   = 1 # 1 = Inbound, 2 = Outbound
                             } -Namespace 'root/standardcimv2' -ClientOnly
                         )
                     )
@@ -2813,7 +2813,7 @@ Describe 'SqlWindowsFirewall/Test-IsFirewallRuleInDesiredState' -Tag 'Helper' {
                 Mock -CommandName Get-NetFirewallPortFilter -MockWith {
                     return @(
                         @{
-                            Protocol = 'TCP'
+                            Protocol  = 'TCP'
                             LocalPort = '1433'
                         }
                     )

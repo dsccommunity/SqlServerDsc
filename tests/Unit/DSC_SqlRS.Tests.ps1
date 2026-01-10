@@ -4,7 +4,7 @@
 #>
 
 # Suppressing this rule because Script Analyzer does not understand Pester's syntax.
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
 BeforeDiscovery {
@@ -12,31 +12,31 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
     $script:dscResourceName = 'DSC_SqlRS'
 
     $env:SqlServerDscCI = $true
 
     $script:testEnvironment = Initialize-TestEnvironment `
-        -DSCModuleName $script:dscModuleName `
+        -DSCModuleName $script:moduleName `
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
         -TestType 'Unit'
@@ -87,6 +87,7 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
         $mockReportServerApplicationUrl = 'http://+:80'
         $mockVirtualDirectoryReportManagerName = 'Reports_SQL2016'
         $mockVirtualDirectoryReportServerName = 'ReportServer_SQL2016'
+        $mockReportingServicesServiceName = 'SQLServerReportingServices'
 
         $mockInvokeRsCimMethod_ListReservedUrls = {
             return New-Object -TypeName Object |
@@ -98,8 +99,8 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
             } -PassThru |
                 Add-Member -MemberType ScriptProperty -Name 'UrlString' -Value {
                 return @(
-                    $mockDynamicReportsApplicationUrlString,
-                    $mockDynamicReportServerApplicationUrlString
+                    $mockDynamicReportServerApplicationUrlString,
+                    $mockDynamicReportsApplicationUrlString
                 )
             } -PassThru -Force
         }
@@ -115,7 +116,9 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
                         Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockNamedInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value $mockVirtualDirectoryReportServerName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value $mockVirtualDirectoryReportManagerName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $mockReportingServicesServiceName -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'WindowsServiceIdentityActual' -Value 'NT SERVICE\SQLServerReportingServices' -PassThru -Force
                 ),
                 (
                     # Array is a regression test for issue #819.
@@ -136,12 +139,11 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
                 Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockDefaultInstanceName -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value '' -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru -Force |
-                Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force
+                Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force |
+                Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $mockReportingServicesServiceName -PassThru -Force
         }
 
-        Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_ListReservedUrls -ParameterFilter {
-            $MethodName -eq 'ListReservedUrls'
-        }
+        Mock -CommandName Get-SqlDscRSUrlReservation -MockWith $mockInvokeRsCimMethod_ListReservedUrls
 
         InModuleScope -ScriptBlock {
             $script:mockNamedInstanceName = 'INSTANCE'
@@ -159,11 +161,18 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
 
     Context 'When the system is in the desired state' {
         BeforeAll {
-            Mock -CommandName Get-ReportingServicesData -MockWith {
+            Mock -CommandName Get-SqlDscRSConfiguration -MockWith {
+                return (& $mockGetCimInstance_ConfigurationSetting_NamedInstance)[0]
+            }
+
+            Mock -CommandName Get-SqlDscRSWebPortalApplicationName -MockWith {
+                return 'ReportServerWebApp'
+            }
+
+            Mock -CommandName Get-SqlDscRSSetupConfiguration -MockWith {
                 return @{
-                    Configuration          = (& $mockGetCimInstance_ConfigurationSetting_NamedInstance)[0]
-                    ReportsApplicationName = 'ReportServerWebApp'
-                    SqlVersion             = 13
+                    InstanceName   = $mockNamedInstanceName
+                    CurrentVersion = '13.0.0.0'
                 }
             }
 
@@ -213,9 +222,7 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
                 $resultGetTargetResource.UseSsl | Should -BeFalse
             }
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'ListReservedUrls'
-            } -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 1 -Scope It
         }
 
         Context 'When SSL is not used' {
@@ -253,11 +260,18 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
 
     Context 'When the system is not in the desired state' {
         BeforeAll {
-            Mock -CommandName Get-ReportingServicesData -MockWith {
+            Mock -CommandName Get-SqlDscRSConfiguration -MockWith {
+                return (& $mockGetCimInstance_ConfigurationSetting_DefaultInstance)[0]
+            }
+
+            Mock -CommandName Get-SqlDscRSWebPortalApplicationName -MockWith {
+                return 'ReportServerWebApp'
+            }
+
+            Mock -CommandName Get-SqlDscRSSetupConfiguration -MockWith {
                 return @{
-                    Configuration          = (& $mockGetCimInstance_ConfigurationSetting_DefaultInstance)[0]
-                    ReportsApplicationName = 'ReportServerWebApp'
-                    SqlVersion             = 13
+                    InstanceName   = $mockDefaultInstanceName
+                    CurrentVersion = '13.0.0.0'
                 }
             }
 
@@ -300,9 +314,7 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
                 $resultGetTargetResource.ReportsReservedUrl | Should -BeNullOrEmpty
             }
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'ListReservedUrls'
-            } -Exactly -Times 0 -Scope It
+            Should -Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 0 -Scope It
         }
 
         # Regression test for issue #822.
@@ -342,10 +354,8 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
 
     Context 'When there is no Reporting Services instance' {
         BeforeAll {
-            Mock -CommandName Get-ReportingServicesData -MockWith {
-                return @{
-                    Configuration          = $null
-                }
+            Mock -CommandName Get-SqlDscRSConfiguration -MockWith {
+                return $null
             }
         }
 
@@ -390,19 +400,6 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 return
             }
-
-            # Inject a stub in the module scope to support testing cross-plattform
-            function script:Invoke-CimMethod
-            {
-                [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules\Measure-ParameterBlockParameterAttribute', '', Justification='The stub cannot use [Parameter()].')]
-                param
-                (
-                    $MethodName,
-                    $Arguments
-                )
-
-                return
-            }
         }
 
         $mockNamedInstanceName = 'INSTANCE'
@@ -418,10 +415,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         $mockReportServerApplicationUrl = 'http://+:80'
         $mockVirtualDirectoryReportManagerName = 'Reports_SQL2016'
         $mockVirtualDirectoryReportServerName = 'ReportServer_SQL2016'
-
-        $mockInvokeCimMethod = {
-            throw 'Should not call Invoke-CimMethod directly, should call the wrapper Invoke-RsCimMethod.'
-        }
+        $mockReportingServicesServiceName = 'SQLServerReportingServices'
 
         $mockInvokeRsCimMethod_ListReservedUrls = {
             return New-Object -TypeName Object |
@@ -433,22 +427,10 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             } -PassThru |
                 Add-Member -MemberType ScriptProperty -Name 'UrlString' -Value {
                 return @(
-                    $mockDynamicReportsApplicationUrlString,
-                    $mockDynamicReportServerApplicationUrlString
+                    $mockDynamicReportServerApplicationUrlString,
+                    $mockDynamicReportsApplicationUrlString
                 )
             } -PassThru -Force
-        }
-
-        $mockInvokeRsCimMethod_GenerateDatabaseCreationScript = {
-            return @{
-                Script = 'select * from something'
-            }
-        }
-
-        $mockInvokeRsCimMethod_GenerateDatabaseRightsScript = {
-            return @{
-                Script = 'select * from something'
-            }
         }
 
         $mockGetCimInstance_ConfigurationSetting_NamedInstance = {
@@ -462,7 +444,9 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                         Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockNamedInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value $mockVirtualDirectoryReportServerName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value $mockVirtualDirectoryReportManagerName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $mockReportingServicesServiceName -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'WindowsServiceIdentityActual' -Value 'NT SERVICE\SQLServerReportingServices' -PassThru -Force
                 ),
                 (
                     # Array is a regression test for issue #819.
@@ -483,7 +467,9 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockDefaultInstanceName -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value '' -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru -Force |
-                Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force
+                Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force |
+                Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $mockReportingServicesServiceName -PassThru -Force |
+                Add-Member -MemberType NoteProperty -Name 'WindowsServiceIdentityActual' -Value 'NT SERVICE\SQLServerReportingServices' -PassThru -Force
         }
 
         $mockGetCimInstance_ConfigurationSetting_ParameterFilter = {
@@ -500,33 +486,26 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             $ClassName -eq 'Win32_OperatingSystem'
         }
 
-        Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_ListReservedUrls -ParameterFilter {
-            $MethodName -eq 'ListReservedUrls'
-        }
-
-        <#
-            This is mocked here so that no calls are made to it directly,
-            or if any mock of Invoke-RsCimMethod are wrong.
-        #>
-        Mock -CommandName Invoke-CimMethod -MockWith $mockInvokeCimMethod
+        Mock -CommandName Get-SqlDscRSUrlReservation -MockWith $mockInvokeRsCimMethod_ListReservedUrls
 
         Mock -CommandName Import-SqlDscPreferredModule
         Mock -CommandName Invoke-SqlDscQuery
-        Mock -CommandName Restart-ReportingServicesService
-        Mock -CommandName Invoke-RsCimMethod
-        Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_GenerateDatabaseCreationScript -ParameterFilter {
-            $MethodName -eq 'GenerateDatabaseCreationScript'
+        Mock -CommandName Enable-SqlDscRsSecureConnection
+        Mock -CommandName Disable-SqlDscRsSecureConnection
+        Mock -CommandName Restart-SqlDscRSService
+        Mock -CommandName Start-Sleep
+        Mock -CommandName Set-SqlDscRSVirtualDirectory
+        Mock -CommandName Add-SqlDscRSUrlReservation
+        Mock -CommandName Remove-SqlDscRSUrlReservation
+        Mock -CommandName Set-SqlDscRSUrlReservation
+        Mock -CommandName Initialize-SqlDscRS
+        Mock -CommandName Request-SqlDscRSDatabaseScript -MockWith {
+            return 'select * from something'
         }
-
-        Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_GenerateDatabaseRightsScript -ParameterFilter {
-            $MethodName -eq 'GenerateDatabaseRightsScript'
+        Mock -CommandName Request-SqlDscRSDatabaseRightsScript -MockWith {
+            return 'select * from something'
         }
-
-        <#
-            This is mocked here so that no calls are made to it directly,
-            or if any mock of Invoke-RsCimMethod are wrong.
-        #>
-        Mock -CommandName Invoke-CimMethod -MockWith $mockInvokeCimMethod
+        Mock -CommandName Set-SqlDscRSDatabaseConnection
 
         $mockDynamicReportServerApplicationName = $mockReportServerApplicationName
         $mockDynamicReportsApplicationName = $mockReportsApplicationName
@@ -537,19 +516,6 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             $script:mockNamedInstanceName = 'INSTANCE'
             $script:mockReportingServicesDatabaseServerName = 'SERVER'
             $script:mockReportingServicesDatabaseNamedInstanceName = $mockNamedInstanceName
-
-            # Inject a stub in the module scope to support testing cross-plattform
-            function script:Invoke-CimMethod
-            {
-                [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules\Measure-ParameterBlockParameterAttribute', '', Justification='The stub cannot use [Parameter()].')]
-                param
-                (
-                    $MethodName,
-                    $Arguments
-                )
-
-                return
-            }
         }
     }
 
@@ -558,12 +524,23 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             BeforeAll {
                 $mockDynamicIsInitialized = $false
 
-                Mock -CommandName Get-ReportingServicesData -MockWith {
+                Mock -CommandName Get-SqlDscRSConfiguration -MockWith {
+                    return (& $mockGetCimInstance_ConfigurationSetting_NamedInstance)[0]
+                }
+
+                Mock -CommandName Get-SqlDscRSWebPortalApplicationName -MockWith {
+                    return 'ReportServerWebApp'
+                }
+
+                Mock -CommandName Get-SqlDscRSSetupConfiguration -MockWith {
                     return @{
-                        Configuration          = (& $mockGetCimInstance_ConfigurationSetting_NamedInstance)[0]
-                        ReportsApplicationName = 'ReportServerWebApp'
-                        SqlVersion             = $TestCaseVersion
+                        InstanceName   = $mockNamedInstanceName
+                        CurrentVersion = "$TestCaseVersion.0.0.0"
                     }
+                }
+
+                Mock -CommandName Get-SqlDscRSVersion -MockWith {
+                    return [System.Version] "$TestCaseVersion.0.0.0"
                 }
 
                 Mock -CommandName Test-TargetResource -MockWith {
@@ -588,52 +565,38 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                         UseSsl               = $true
                     }
 
-                    { Set-TargetResource @mockDefaultParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockDefaultParameters
                 }
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetSecureConnectionLevel'
+                Should -Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Initialize-SqlDscRS -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Request-SqlDscRSDatabaseRightsScript -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                    $Application -eq $mockReportServerApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'RemoveURL'
-                } -Exactly -Times 0 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'InitializeReportServer'
+                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                    $Application -eq $mockReportsApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetDatabaseConnection'
+                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportServerApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'GenerateDatabaseRightsScript'
-                } -Exactly -Times 1 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'GenerateDatabaseCreationScript'
-                } -Exactly -Times 1 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 1 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportsApplicationName
-                } -Exactly -Times 1 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 1 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
+                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportsApplicationName
                 } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It
-                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
+                Should -Invoke -CommandName Restart-SqlDscRSService -Exactly -Times 2 -Scope It
             }
 
             Context 'When there is no Reporting Services instance after Set-TargetResource has been called' {
@@ -686,18 +649,127 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     }
                 }
             }
+
+            Context 'When Configuration.ServiceName is null or empty for SQL Server version 14 and higher' {
+                BeforeAll {
+                    $mockDynamicIsInitialized = $false
+
+                    $mockGetCimInstance_ConfigurationSetting_ServiceNameNull = {
+                        return @(
+                            (
+                                New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList @(
+                                    'MSReportServer_ConfigurationSetting'
+                                    'root/Microsoft/SQLServer/ReportServer/RS_SQL2016/v14/Admin'
+                                ) | Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName" -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $false -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockNamedInstanceName -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value '' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force |
+                                    Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $null -PassThru -Force
+                            )
+                        )
+                    }
+
+                    Mock -CommandName Get-SqlDscRSConfiguration -MockWith {
+                        return (& $mockGetCimInstance_ConfigurationSetting_ServiceNameNull)[0]
+                    }
+
+                    Mock -CommandName Get-SqlDscRSWebPortalApplicationName -MockWith {
+                        return 'ReportServerWebApp'
+                    }
+
+                    Mock -CommandName Get-SqlDscRSSetupConfiguration -MockWith {
+                        return @{
+                            InstanceName   = $mockNamedInstanceName
+                            CurrentVersion = '14.0.0.0'
+                        }
+                    }
+
+                    Mock -CommandName Get-SqlDscRSVersion -MockWith {
+                        return [System.Version] '14.0.0.0'
+                    }
+
+                    Mock -CommandName Get-CimInstance `
+                        -MockWith $mockGetCimInstance_Language `
+                        -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter
+                }
+
+                It 'Should throw the correct error message when ServiceName is null' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockDefaultParameters = @{
+                            InstanceName         = $mockNamedInstanceName
+                            DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                            DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                        }
+
+                        { Set-TargetResource @mockDefaultParameters } | Should -Throw -ExpectedMessage ('*' + ($script:localizedData.ServiceNameIsNullOrEmpty -f $mockNamedInstanceName))
+                    }
+                }
+
+                It 'Should throw the correct error message when ServiceName is empty' {
+                    Mock -CommandName Get-SqlDscRSConfiguration -MockWith {
+                        return (
+                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList @(
+                                'MSReportServer_ConfigurationSetting'
+                                'root/Microsoft/SQLServer/ReportServer/RS_SQL2016/v14/Admin'
+                            ) | Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value '' -PassThru -Force
+                        )
+                    }
+
+                    Mock -CommandName Get-SqlDscRSWebPortalApplicationName -MockWith {
+                        return 'ReportServerWebApp'
+                    }
+
+                    Mock -CommandName Get-SqlDscRSSetupConfiguration -MockWith {
+                        return @{
+                            InstanceName   = $mockNamedInstanceName
+                            CurrentVersion = '14.0.0.0'
+                        }
+                    }
+
+                    Mock -CommandName Get-SqlDscRSVersion -MockWith {
+                        return [System.Version] '14.0.0.0'
+                    }
+
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockDefaultParameters = @{
+                            InstanceName         = $mockNamedInstanceName
+                            DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                            DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                        }
+
+                        { Set-TargetResource @mockDefaultParameters } | Should -Throw -ExpectedMessage ('*' + ($script:localizedData.ServiceNameIsNullOrEmpty -f $mockNamedInstanceName))
+                    }
+                }
+            }
         }
 
         Context "When configuring a named instance that are already initialized (<TestCaseVersionName>)" {
             BeforeAll {
                 $mockDynamicIsInitialized = $true
 
-                Mock -CommandName Get-ReportingServicesData -MockWith {
+                Mock -CommandName Get-SqlDscRSConfiguration -MockWith {
+                    return (& $mockGetCimInstance_ConfigurationSetting_NamedInstance)[0]
+                }
+
+                Mock -CommandName Get-SqlDscRSWebPortalApplicationName -MockWith {
+                    return 'ReportServerWebApp'
+                }
+
+                Mock -CommandName Get-SqlDscRSSetupConfiguration -MockWith {
                     return @{
-                        Configuration          = (& $mockGetCimInstance_ConfigurationSetting_NamedInstance)[0]
-                        ReportsApplicationName = 'ReportServerWebApp'
-                        SqlVersion             = $TestCaseVersion
+                        InstanceName   = $mockNamedInstanceName
+                        CurrentVersion = "$TestCaseVersion.0.0.0"
                     }
+                }
+
+                Mock -CommandName Get-SqlDscRSVersion -MockWith {
+                    return [System.Version] "$TestCaseVersion.0.0.0"
                 }
 
                 Mock -CommandName Get-TargetResource -MockWith {
@@ -730,55 +802,45 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             }
 
             It 'Should configure Reporting Service without throwing an error' {
-                { Set-TargetResource @testParameters } | Should -Not -Throw
+                $null = Set-TargetResource @testParameters
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetSecureConnectionLevel'
+                Should -Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportServerApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'RemoveURL' -and $Arguments.Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 2 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'RemoveURL' -and $Arguments.Application -eq $mockReportsApplicationName
-                } -Exactly -Times 2 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'InitializeReportServer'
-                } -Exactly -Times 0 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetDatabaseConnection'
-                } -Exactly -Times 0 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'GenerateDatabaseRightsScript'
-                } -Exactly -Times 0 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'GenerateDatabaseCreationScript'
-                } -Exactly -Times 0 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportServerApplicationName
+                Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportsApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportsApplicationName
+                Should -Invoke -CommandName Initialize-SqlDscRS -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Request-SqlDscRSDatabaseRightsScript -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                    $Application -eq $mockReportServerApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 2 -Scope It
+                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                    $Application -eq $mockReportsApplicationName
+                } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
-                } -Exactly -Times 2 -Scope It
+                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportServerApplicationName
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportsApplicationName
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Restart-SqlDscRSService -Exactly -Times 1 -Scope It
             }
         }
 
@@ -786,12 +848,23 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             BeforeAll {
                 $mockDynamicIsInitialized = $true
 
-                Mock -CommandName Get-ReportingServicesData -MockWith {
+                Mock -CommandName Get-SqlDscRSConfiguration -MockWith {
+                    return (& $mockGetCimInstance_ConfigurationSetting_NamedInstance)[0]
+                }
+
+                Mock -CommandName Get-SqlDscRSWebPortalApplicationName -MockWith {
+                    return 'ReportServerWebApp'
+                }
+
+                Mock -CommandName Get-SqlDscRSSetupConfiguration -MockWith {
                     return @{
-                        Configuration          = (& $mockGetCimInstance_ConfigurationSetting_NamedInstance)[0]
-                        ReportsApplicationName = 'ReportServerWebApp'
-                        SqlVersion             = $TestCaseVersion
+                        InstanceName   = $mockNamedInstanceName
+                        CurrentVersion = "$TestCaseVersion.0.0.0"
                     }
+                }
+
+                Mock -CommandName Get-SqlDscRSVersion -MockWith {
+                    return [System.Version] "$TestCaseVersion.0.0.0"
                 }
 
                 Mock -CommandName Get-TargetResource -MockWith {
@@ -825,55 +898,45 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             }
 
             It 'Should configure Reporting Service without throwing an error' {
-                { Set-TargetResource @testParameters } | Should -Not -Throw
+                $null = Set-TargetResource @testParameters
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetSecureConnectionLevel'
+                Should -Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportServerApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'RemoveURL' -and $Arguments.Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 2 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'RemoveURL' -and $Arguments.Application -eq $mockReportsApplicationName
-                } -Exactly -Times 2 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'InitializeReportServer'
-                } -Exactly -Times 0 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetDatabaseConnection'
-                } -Exactly -Times 0 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'GenerateDatabaseRightsScript'
-                } -Exactly -Times 0 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'GenerateDatabaseCreationScript'
-                } -Exactly -Times 0 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportServerApplicationName
+                Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportsApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportsApplicationName
+                Should -Invoke -CommandName Initialize-SqlDscRS -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Request-SqlDscRSDatabaseRightsScript -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                    $Application -eq $mockReportServerApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 2 -Scope It
+                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                    $Application -eq $mockReportsApplicationName
+                } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
-                } -Exactly -Times 2 -Scope It
+                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportServerApplicationName
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportsApplicationName
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Restart-SqlDscRSService -Exactly -Times 0 -Scope It
             }
         }
 
@@ -896,12 +959,23 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
             BeforeEach {
                 # This mocks the SQL Server Reporting Services 2014 and older
-                Mock -CommandName Get-ReportingServicesData -MockWith {
+                Mock -CommandName Get-SqlDscRSConfiguration -MockWith {
+                    return (& $mockGetCimInstance_ConfigurationSetting_DefaultInstance)[0]
+                }
+
+                Mock -CommandName Get-SqlDscRSWebPortalApplicationName -MockWith {
+                    return 'ReportManager'
+                }
+
+                Mock -CommandName Get-SqlDscRSSetupConfiguration -MockWith {
                     return @{
-                        Configuration          = (& $mockGetCimInstance_ConfigurationSetting_DefaultInstance)[0]
-                        ReportsApplicationName = 'ReportManager'
-                        SqlVersion             = $TestCaseVersion
+                        InstanceName   = $mockDefaultInstanceName
+                        CurrentVersion = "$TestCaseVersion.0.0.0"
                     }
+                }
+
+                Mock -CommandName Get-SqlDscRSVersion -MockWith {
+                    return [System.Version] "$TestCaseVersion.0.0.0"
                 }
 
                 Mock -CommandName Get-CimInstance `
@@ -910,47 +984,35 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             }
 
             It 'Should configure Reporting Service without throwing an error' {
-                { Set-TargetResource @defaultParameters } | Should -Not -Throw
+                $null = Set-TargetResource @defaultParameters
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'RemoveURL'
-                } -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Initialize-SqlDscRS -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'InitializeReportServer'
+                Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Request-SqlDscRSDatabaseRightsScript -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                    $Application -eq $mockReportServerApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetDatabaseConnection'
+                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                    $Application -eq $mockReportsApplicationNameLegacy
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'GenerateDatabaseRightsScript'
+                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportServerApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'GenerateDatabaseCreationScript'
-                } -Exactly -Times 1 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 1 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportsApplicationNameLegacy
-                } -Exactly -Times 1 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 1 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationNameLegacy
+                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                    $Application -eq $mockReportsApplicationNameLegacy
                 } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It
-                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
+                Should -Invoke -CommandName Restart-SqlDscRSService -Exactly -Times 2 -Scope It
 
                 Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
                     $PesterBoundParameters.Keys -notcontains 'Encrypt'
@@ -961,33 +1023,48 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
     Context "When configuring a named instance of SQL Server Reporting Services 2019 that have been initialized by restarting the service" {
         BeforeAll {
-            $script:alreadyCalledGetReportingServicesData = $false
+            $script:alreadyCalledGetSqlDscRSConfiguration = $false
             $script:mockDynamicIsInitialized = $false
             $script:mockDynamicSecureConnectionLevel = $false
 
-            Mock -CommandName Get-ReportingServicesData -MockWith {
-                if ($script:alreadyCalledGetReportingServicesData)
+            Mock -CommandName Get-SqlDscRSConfiguration -MockWith {
+                if ($script:alreadyCalledGetSqlDscRSConfiguration)
                 {
                     $script:mockDynamicIsInitialized = $true
                 }
                 else
                 {
-                    $script:alreadyCalledGetReportingServicesData = $true
+                    $script:alreadyCalledGetSqlDscRSConfiguration = $true
                 }
 
+                return (
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList @(
+                        'MSReportServer_ConfigurationSetting'
+                        'root/Microsoft/SQLServer/ReportServer/RS_SQL2019/v15/Admin'
+                    ) | Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName" -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $script:mockDynamicIsInitialized -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockNamedInstanceName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value $mockVirtualDirectoryReportServerName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value $mockVirtualDirectoryReportManagerName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $script:mockDynamicSecureConnectionLevel -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $mockReportingServicesServiceName -PassThru -Force |
+                        Add-Member -MemberType NoteProperty -Name 'WindowsServiceIdentityActual' -Value 'NT SERVICE\SQLServerReportingServices' -PassThru
+                )
+            }
+
+            Mock -CommandName Get-SqlDscRSWebPortalApplicationName -MockWith {
+                return 'ReportServerWebApp'
+            }
+
+            Mock -CommandName Get-SqlDscRSSetupConfiguration -MockWith {
                 return @{
-                    Configuration          = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList @(
-                                'MSReportServer_ConfigurationSetting'
-                                'root/Microsoft/SQLServer/ReportServer/RS_SQL2019/v15/Admin'
-                            ) | Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName" -PassThru |
-                                Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $script:mockDynamicIsInitialized -PassThru |
-                                Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockNamedInstanceName -PassThru |
-                                Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value $mockVirtualDirectoryReportServerName -PassThru |
-                                Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value $mockVirtualDirectoryReportManagerName -PassThru |
-                                Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $script:mockDynamicSecureConnectionLevel -PassThru -Force
-                    ReportsApplicationName = 'ReportServerWebApp'
-                    SqlVersion             = $sqlVersion.Version
+                    InstanceName   = $mockNamedInstanceName
+                    CurrentVersion = '15.0.0.0'
                 }
+            }
+
+            Mock -CommandName Get-SqlDscRSVersion -MockWith {
+                return [System.Version] '15.0.0.0'
             }
 
             Mock -CommandName Test-TargetResource -MockWith {
@@ -1009,51 +1086,38 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         }
 
         It 'Should configure Reporting Service without throwing an error' {
-            { Set-TargetResource @defaultParameters } | Should -Not -Throw
+            $null = Set-TargetResource @defaultParameters
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'SetSecureConnectionLevel'
-            } -Exactly -Times 0 -Scope It
+            Should -Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Times 0 -Scope It
+            Should -Invoke -CommandName Disable-SqlDscRsSecureConnection -Exactly -Times 0 -Scope It
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'RemoveURL'
-            } -Exactly -Times 0 -Scope It
+            Should -Invoke -CommandName Initialize-SqlDscRS -Exactly -Times 0 -Scope It
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'InitializeReportServer'
-            } -Exactly -Times 0 -Scope It
+            Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 1 -Scope It
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'SetDatabaseConnection'
+            Should -Invoke -CommandName Request-SqlDscRSDatabaseRightsScript -Exactly -Times 1 -Scope It
+
+            Should -Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Times 1 -Scope It
+
+            Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                $Application -eq $mockReportServerApplicationName
             } -Exactly -Times 1 -Scope It
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'GenerateDatabaseRightsScript'
+            Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                $Application -eq $mockReportsApplicationName
             } -Exactly -Times 1 -Scope It
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'GenerateDatabaseCreationScript'
+            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                $Application -eq $mockReportServerApplicationName
             } -Exactly -Times 1 -Scope It
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportServerApplicationName
-            } -Exactly -Times 1 -Scope It
-
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportsApplicationName
-            } -Exactly -Times 1 -Scope It
-
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
-            } -Exactly -Times 1 -Scope It
-
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
+            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                $Application -eq $mockReportsApplicationName
             } -Exactly -Times 1 -Scope It
 
             Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It
-            Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Restart-SqlDscRSService -Exactly -Times 1 -Scope It
         }
     }
 }
@@ -1309,393 +1373,6 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
                 $resultTestTargetResource = Test-TargetResource @defaultParameters
 
                 $resultTestTargetResource | Should -BeTrue
-            }
-        }
-    }
-}
-
-Describe 'SqlRS\Invoke-RsCimMethod' -Tag 'Helper' {
-    BeforeAll {
-        InModuleScope -ScriptBlock {
-            $script:mockCimInstance = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList @(
-                'MSReportServer_ConfigurationSetting'
-                'root/Microsoft/SQLServer/ReportServer/RS_SQL2016/v13/Admin'
-            )
-
-            # Inject a stub in the module scope to support testing cross-plattform
-            function script:Invoke-CimMethod
-            {
-                [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules\Measure-ParameterBlockParameterAttribute', '', Justification='The stub cannot use [Parameter()].')]
-                param
-                (
-                    $MethodName,
-                    $Arguments
-                )
-
-                return
-            }
-        }
-    }
-
-    Context 'When calling a method that execute successfully' {
-        BeforeAll {
-            Mock -CommandName Invoke-CimMethod -MockWith {
-                return @{
-                    HRESULT = 0 # cSpell: disable-line
-                }
-            }
-        }
-
-        Context 'When calling Invoke-CimMethod without arguments' {
-            It 'Should call Invoke-CimMethod without throwing an error' {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $invokeRsCimMethodParameters = @{
-                        CimInstance = $mockCimInstance
-                        MethodName  = 'AnyMethod'
-                    }
-
-                    $resultTestTargetResource = Invoke-RsCimMethod @invokeRsCimMethodParameters
-                    $resultTestTargetResource.HRESULT | Should -Be 0 # cSpell: disable-line
-                }
-
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
-                    $MethodName -eq 'AnyMethod' -and $Arguments -eq $null
-                } -Exactly -Times 1
-            }
-        }
-
-        Context 'When calling Invoke-CimMethod with arguments' {
-            It 'Should call Invoke-CimMethod without throwing an error' {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $invokeRsCimMethodParameters = @{
-                        CimInstance = $mockCimInstance
-                        MethodName  = 'AnyMethod'
-                        Arguments   = @{
-                            Argument1 = 'ArgumentValue1'
-                        }
-                    }
-
-                    $resultTestTargetResource = Invoke-RsCimMethod @invokeRsCimMethodParameters
-                    $resultTestTargetResource.HRESULT | Should -Be 0 # cSpell: disable-line
-                }
-
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
-                    $MethodName -eq 'AnyMethod' -and $Arguments.Argument1 -eq 'ArgumentValue1'
-                } -Exactly -Times 1
-            }
-        }
-    }
-
-    Context 'When calling a method that fails with an error' {
-        Context 'When Invoke-CimMethod fails and returns an object with a Error property' {
-            BeforeAll {
-                Mock -CommandName Invoke-CimMethod -MockWith {
-                    return @{
-                        HRESULT = 1 # cSpell: disable-line
-                        Error   = 'Something went wrong'
-                    }
-                }
-            }
-
-            It 'Should call Invoke-CimMethod and throw the correct error' {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $invokeRsCimMethodParameters = @{
-                        CimInstance = $mockCimInstance
-                        MethodName  = 'AnyMethod'
-                    }
-
-                    # cSpell: disable-next
-                    { Invoke-RsCimMethod @invokeRsCimMethodParameters } | Should -Throw 'Method AnyMethod() failed with an error. Error: Something went wrong (HRESULT:1)'
-                }
-
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
-                    $MethodName -eq 'AnyMethod'
-                } -Exactly -Times 1
-            }
-        }
-
-        Context 'When Invoke-CimMethod fails and returns an object with a ExtendedErrors property' {
-            BeforeAll {
-                Mock -CommandName Invoke-CimMethod -MockWith {
-                    return New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name 'HRESULT' -Value 1 -PassThru | # cSpell: disable-line
-                        Add-Member -MemberType NoteProperty -Name 'ExtendedErrors' -Value @('Something went wrong', 'Another thing went wrong') -PassThru -Force
-                }
-            }
-
-            It 'Should call Invoke-CimMethod and throw the correct error' {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $invokeRsCimMethodParameters = @{
-                        CimInstance = $mockCimInstance
-                        MethodName  = 'AnyMethod'
-                    }
-
-                    # cSpell: disable-next
-                    { Invoke-RsCimMethod @invokeRsCimMethodParameters } | Should -Throw 'Method AnyMethod() failed with an error. Error: Something went wrong;Another thing went wrong (HRESULT:1)'
-                }
-
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
-                    $MethodName -eq 'AnyMethod'
-                } -Exactly -Times 1
-            }
-        }
-    }
-}
-
-Describe 'SqlRS\Get-ReportingServicesData' -Tag 'Helper' {
-    BeforeAll {
-        $mockInstanceId = 'MSRS13.INSTANCE' # cSpell: disable-line
-
-        $mockGetItemProperty_Sql2014 = {
-            return @{
-                Version = '12.0.6024.0'
-            }
-        }
-
-        $mockGetItemProperty_Sql2016 = {
-            return @{
-                Version ='13.0.4001.0'
-            }
-        }
-
-        $mockGetItemProperty_Sql2017 = {
-            return @{
-                CurrentVersion = '14.0.6514.11481'
-            }
-        }
-
-        $mockGetItemProperty_Sql2019 = {
-            return @{
-                CurrentVersion = '15.0.2000.5'
-            }
-        }
-
-        $mockGetItemProperty_InstanceNames_ParameterFilter = {
-            $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS'
-        }
-
-        $mockGetItemProperty_Sql2014AndSql2016_ParameterFilter = {
-            $Path -eq ('HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\Setup' -f $mockInstanceId)
-        }
-
-        $mockGetItemProperty_Sql2017AndSql2019_ParameterFilter = {
-            $Path -eq ('HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\MSSQLServer\CurrentVersion' -f $mockInstanceId)
-        }
-
-        # Inject a stub in the module scope to support testing cross-plattform
-        InModuleScope -ScriptBlock {
-            function script:Get-CimInstance
-            {
-                [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules\Measure-ParameterBlockParameterAttribute', '', Justification='The stub cannot use [Parameter()].')]
-                param
-                (
-                    $ClassName
-                )
-
-                return
-            }
-        }
-    }
-
-    Context 'When there is a Reporting Services instance' {
-        BeforeAll {
-            Mock -CommandName Get-ItemProperty -MockWith {
-                return @{
-                    'INSTANCE' = $mockInstanceId
-                }
-            } -ParameterFilter $mockGetItemProperty_InstanceNames_ParameterFilter
-
-            Mock -CommandName Get-CimInstance -MockWith {
-                    return @(
-                        (
-                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList @(
-                                'MSReportServer_ConfigurationSetting'
-                                'root/Microsoft/SQLServer/ReportServer/RS_SQL2016/v13/Admin'
-                            ) | Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value 'MockDatabaseServer\MockDatabaseInstance' -PassThru |
-                                Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $false -PassThru |
-                                Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value 'INSTANCE' -PassThru |
-                                Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value 'ReportServer' -PassThru |
-                                Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value 'Reports' -PassThru |
-                                Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $false -PassThru -Force
-                        ),
-                        (
-                            # Array is a regression test for issue #819.
-                            New-Object -TypeName Object |
-                                Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value 'MockDatabaseServer\MockDatabaseInstance' -PassThru |
-                                Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $true -PassThru |
-                                Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value 'DummyInstance' -PassThru -Force
-                        )
-                    )
-                } -ParameterFilter {
-                    $ClassName -eq 'MSReportServer_ConfigurationSetting'
-                }
-        }
-
-        Context 'When the instance is SQL Server Reporting Services 2014 or older' {
-            BeforeAll {
-                Mock -CommandName Test-Path -MockWith {
-                    return $false
-                }
-
-                Mock -CommandName Get-ItemProperty `
-                    -MockWith $mockGetItemProperty_Sql2014 `
-                    -ParameterFilter $mockGetItemProperty_Sql2014AndSql2016_ParameterFilter
-            }
-
-            It 'Should return the correct information' {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $getReportingServicesDataResult = Get-ReportingServicesData -InstanceName 'INSTANCE'
-
-                    $getReportingServicesDataResult.Configuration | Should -BeOfType [Microsoft.Management.Infrastructure.CimInstance]
-                    $getReportingServicesDataResult.Configuration.InstanceName | Should -Be 'INSTANCE'
-                    $getReportingServicesDataResult.Configuration.DatabaseServerName | Should -Be 'MockDatabaseServer\MockDatabaseInstance'
-                    $getReportingServicesDataResult.Configuration.IsInitialized | Should -BeFalse
-                    $getReportingServicesDataResult.Configuration.VirtualDirectoryReportServer | Should -Be 'ReportServer'
-                    $getReportingServicesDataResult.Configuration.VirtualDirectoryReportManager | Should -Be 'Reports'
-                    $getReportingServicesDataResult.Configuration.SecureConnectionLevel | Should -Be 0
-                    $getReportingServicesDataResult.ReportsApplicationName | Should -Be 'ReportManager'
-                    $getReportingServicesDataResult.SqlVersion | Should -Be '12'
-                }
-
-                Should -Invoke -CommandName Get-ItemProperty `
-                    -ParameterFilter $mockGetItemProperty_InstanceNames_ParameterFilter `
-                    -Exactly -Times 2 -Scope 'It'
-
-                Should -Invoke -CommandName Get-ItemProperty `
-                    -ParameterFilter $mockGetItemProperty_Sql2014AndSql2016_ParameterFilter `
-                    -Exactly -Times 1 -Scope 'It'
-
-                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope 'It'
-            }
-        }
-
-        Context 'When the instance is SQL Server Reporting Services 2016' {
-            BeforeAll {
-                Mock -CommandName Test-Path -MockWith {
-                    return $false
-                }
-
-                Mock -CommandName Get-ItemProperty `
-                    -MockWith $mockGetItemProperty_Sql2016 `
-                    -ParameterFilter $mockGetItemProperty_Sql2014AndSql2016_ParameterFilter
-            }
-
-            It 'Should return the correct information' {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $getReportingServicesDataResult = Get-ReportingServicesData -InstanceName 'INSTANCE'
-
-                    $getReportingServicesDataResult.Configuration | Should -BeOfType [Microsoft.Management.Infrastructure.CimInstance]
-                    $getReportingServicesDataResult.Configuration.InstanceName | Should -Be 'INSTANCE'
-                    $getReportingServicesDataResult.Configuration.DatabaseServerName | Should -Be 'MockDatabaseServer\MockDatabaseInstance'
-                    $getReportingServicesDataResult.Configuration.IsInitialized | Should -BeFalse
-                    $getReportingServicesDataResult.Configuration.VirtualDirectoryReportServer | Should -Be 'ReportServer'
-                    $getReportingServicesDataResult.Configuration.VirtualDirectoryReportManager | Should -Be 'Reports'
-                    $getReportingServicesDataResult.Configuration.SecureConnectionLevel | Should -Be 0
-                    $getReportingServicesDataResult.ReportsApplicationName | Should -Be 'ReportServerWebApp'
-                    $getReportingServicesDataResult.SqlVersion | Should -Be '13'
-                }
-
-                Should -Invoke -CommandName Get-ItemProperty `
-                    -ParameterFilter $mockGetItemProperty_InstanceNames_ParameterFilter `
-                    -Exactly -Times 2 -Scope 'It'
-
-                Should -Invoke -CommandName Get-ItemProperty `
-                    -ParameterFilter $mockGetItemProperty_Sql2014AndSql2016_ParameterFilter `
-                    -Exactly -Times 1 -Scope 'It'
-
-                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope 'It'
-            }
-        }
-
-        Context 'When the instance is SQL Server Reporting Services 2017' {
-            BeforeAll {
-                Mock -CommandName Test-Path -MockWith {
-                    return $true
-                }
-
-                Mock -CommandName Get-ItemProperty `
-                    -MockWith $mockGetItemProperty_Sql2017 `
-                    -ParameterFilter $mockGetItemProperty_Sql2017AndSql2019_ParameterFilter
-            }
-
-            It 'Should return the correct information' {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $getReportingServicesDataResult = Get-ReportingServicesData -InstanceName 'INSTANCE'
-
-                    $getReportingServicesDataResult.Configuration | Should -BeOfType [Microsoft.Management.Infrastructure.CimInstance]
-                    $getReportingServicesDataResult.Configuration.InstanceName | Should -Be 'INSTANCE'
-                    $getReportingServicesDataResult.Configuration.DatabaseServerName | Should -Be 'MockDatabaseServer\MockDatabaseInstance'
-                    $getReportingServicesDataResult.Configuration.IsInitialized | Should -BeFalse
-                    $getReportingServicesDataResult.Configuration.VirtualDirectoryReportServer | Should -Be 'ReportServer'
-                    $getReportingServicesDataResult.Configuration.VirtualDirectoryReportManager | Should -Be 'Reports'
-                    $getReportingServicesDataResult.Configuration.SecureConnectionLevel | Should -Be 0
-                    $getReportingServicesDataResult.ReportsApplicationName | Should -Be 'ReportServerWebApp'
-                    $getReportingServicesDataResult.SqlVersion | Should -Be '14'
-                }
-
-                Should -Invoke -CommandName Get-ItemProperty `
-                    -ParameterFilter $mockGetItemProperty_InstanceNames_ParameterFilter `
-                    -Exactly -Times 2 -Scope 'It'
-
-                Should -Invoke -CommandName Get-ItemProperty `
-                    -ParameterFilter $mockGetItemProperty_Sql2017AndSql2019_ParameterFilter `
-                    -Exactly -Times 1 -Scope 'It'
-
-                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope 'It'
-            }
-        }
-
-        Context 'When the instance is SQL Server Reporting Services 2019' {
-            BeforeAll {
-                Mock -CommandName Test-Path -MockWith {
-                    return $true
-                }
-
-                Mock -CommandName Get-ItemProperty `
-                    -MockWith $mockGetItemProperty_Sql2019 `
-                    -ParameterFilter $mockGetItemProperty_Sql2017AndSql2019_ParameterFilter
-            }
-
-            It 'Should return the correct information' {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $getReportingServicesDataResult = Get-ReportingServicesData -InstanceName 'INSTANCE'
-
-                    $getReportingServicesDataResult.Configuration | Should -BeOfType [Microsoft.Management.Infrastructure.CimInstance]
-                    $getReportingServicesDataResult.Configuration.InstanceName | Should -Be 'INSTANCE'
-                    $getReportingServicesDataResult.Configuration.DatabaseServerName | Should -Be 'MockDatabaseServer\MockDatabaseInstance'
-                    $getReportingServicesDataResult.Configuration.IsInitialized | Should -BeFalse
-                    $getReportingServicesDataResult.Configuration.VirtualDirectoryReportServer | Should -Be 'ReportServer'
-                    $getReportingServicesDataResult.Configuration.VirtualDirectoryReportManager | Should -Be 'Reports'
-                    $getReportingServicesDataResult.Configuration.SecureConnectionLevel | Should -Be 0
-                    $getReportingServicesDataResult.ReportsApplicationName | Should -Be 'ReportServerWebApp'
-                    $getReportingServicesDataResult.SqlVersion | Should -Be '15'
-                }
-
-                Should -Invoke -CommandName Get-ItemProperty `
-                    -ParameterFilter $mockGetItemProperty_InstanceNames_ParameterFilter `
-                    -Exactly -Times 2 -Scope 'It'
-
-                Should -Invoke -CommandName Get-ItemProperty `
-                    -ParameterFilter $mockGetItemProperty_Sql2017AndSql2019_ParameterFilter `
-                    -Exactly -Times 1 -Scope 'It'
-
-                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope 'It'
             }
         }
     }

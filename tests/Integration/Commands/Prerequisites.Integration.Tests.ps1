@@ -6,26 +6,34 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
+}
+
+BeforeAll {
+    $script:moduleName = 'SqlServerDsc'
+
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 }
 
 # CSpell: ignore Remoting
 Describe 'Prerequisites' {
-    Context 'Create required local Windows users' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
+    Context 'Create required local Windows users' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
         BeforeAll {
             $password = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
         }
@@ -43,9 +51,16 @@ Describe 'Prerequisites' {
             $user.Name | Should -Be 'SqlAdmin'
             (Get-LocalUser -Name 'SqlAdmin').Name | Should -Be 'SqlAdmin'
         }
+
+        It 'Should create SqlIntegrationTest user' {
+            $user = New-LocalUser -Name 'SqlIntegrationTest' -Password $password -FullName 'SQL Integration Test User' -Description 'User for SQL integration testing.'
+
+            $user.Name | Should -Be 'SqlIntegrationTest'
+            (Get-LocalUser -Name 'SqlIntegrationTest').Name | Should -Be 'SqlIntegrationTest'
+        }
     }
 
-    Context 'Should create required local Windows service accounts' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
+    Context 'Should create required local Windows service accounts' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
         BeforeAll {
             $password = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
         }
@@ -77,6 +92,22 @@ Describe 'Prerequisites' {
             $user.Name | Should -Be 'svc-SqlAgentSec'
             (Get-LocalUser -Name 'svc-SqlAgentSec').Name | Should -Be 'svc-SqlAgentSec'
         }
+
+        It 'Should create svc-RS user' -Tag @('Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
+            $user = New-LocalUser -Name 'svc-RS' -Password $password -FullName 'svc-RS' -Description 'Runs the Reporting Services service.'
+
+            $user.Name | Should -Be 'svc-RS'
+            (Get-LocalUser -Name 'svc-RS').Name | Should -Be 'svc-RS'
+        }
+    }
+
+    Context 'Create required local Windows groups' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
+        It 'Should create SqlIntegrationTestGroup group' {
+            $group = New-LocalGroup -Name 'SqlIntegrationTestGroup' -Description 'Local Windows group for SQL integration testing.'
+
+            $group.Name | Should -Be 'SqlIntegrationTestGroup'
+            (Get-LocalGroup -Name 'SqlIntegrationTestGroup').Name | Should -Be 'SqlIntegrationTestGroup'
+        }
     }
 
     Context 'Add local Windows users to local groups' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
@@ -88,6 +119,16 @@ Describe 'Prerequisites' {
             $adminGroup = Get-LocalGroup -Name 'Administrators'
             $adminGroupMembers = Get-LocalGroupMember -Group $adminGroup
             $adminGroupMembers.Name | Should -Contain ('{0}\SqlInstall' -f (Get-ComputerName))
+        }
+
+        It 'Should add SqlIntegrationTest to SqlIntegrationTestGroup group' {
+            # Add user to the local group
+            Add-LocalGroupMember -Group 'SqlIntegrationTestGroup' -Member 'SqlIntegrationTest'
+
+            # Verify if user is part of the local group
+            $testGroup = Get-LocalGroup -Name 'SqlIntegrationTestGroup'
+            $testGroupMembers = Get-LocalGroupMember -Group $testGroup
+            $testGroupMembers.Name | Should -Contain ('{0}\SqlIntegrationTest' -f (Get-ComputerName))
         }
     }
 

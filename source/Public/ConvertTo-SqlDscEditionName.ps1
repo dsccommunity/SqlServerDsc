@@ -21,8 +21,14 @@
 
         Returns information about the edition ID 2017617798.
 
-    .NOTES
-        Author: SqlServerDsc
+    .INPUTS
+        None.
+
+    .OUTPUTS
+        `System.Management.Automation.PSCustomObject`
+
+        Returns a custom object with EditionId, Edition, and EditionName properties.
+
 #>
 function ConvertTo-SqlDscEditionName
 {

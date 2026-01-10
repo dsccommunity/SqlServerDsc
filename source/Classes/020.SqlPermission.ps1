@@ -1,17 +1,23 @@
 <#
     .SYNOPSIS
         The `SqlPermission` DSC resource is used to grant, deny or revoke
-        server permissions for a login.
+        server permissions for a login or server role.
 
     .DESCRIPTION
         The `SqlPermission` DSC resource is used to grant, deny or revoke
-        Server permissions for a login. For more information about permissions,
-        please read the article [Permissions (Database Engine)](https://docs.microsoft.com/en-us/sql/relational-databases/security/permissions-database-engine).
+        server permissions for a login or server role. For more information about
+        permissions, please read the article [Permissions (Database Engine)](https://docs.microsoft.com/en-us/sql/relational-databases/security/permissions-database-engine).
 
         > [!CAUTION]
         > When revoking permission with PermissionState 'GrantWithGrant', both the
         > grantee and _all the other users the grantee has granted the same permission_
         > _to_, will also get their permission revoked.
+
+        > [!NOTE]
+        > The parameter **Name** can specify either a login or a server role. If
+        > a name exists as both a login and a server role, the login will take
+        > precedence. To avoid ambiguity, use unique names for logins and server
+        > roles.
 
         ## Requirements
 
@@ -61,7 +67,8 @@
         ```
 
     .PARAMETER Name
-        The name of the user that should be granted or denied the permission.
+        The name of the principal (login or server role) that should be granted
+        or denied the permission.
 
     .PARAMETER Permission
         An array of server permissions to enforce. Any permission that is not
@@ -157,12 +164,9 @@ class SqlPermission : SqlResourceBase
 
     SqlPermission() : base ()
     {
-        # These properties will not be enforced.
-        $this.ExcludeDscProperties = @(
-            'ServerName'
-            'InstanceName'
+        # Append to the properties set in SqlResourceBase that will not be enforced.
+        $this.ExcludeDscProperties += @(
             'Name'
-            'Credential'
         )
     }
 
@@ -353,15 +357,22 @@ class SqlPermission : SqlResourceBase
     {
         $serverObject = $this.GetServerObject()
 
-        $testSqlDscIsLoginParameters = @{
+        $testSqlDscIsPrincipalParameters = @{
             ServerObject = $serverObject
             Name         = $this.Name
         }
 
-        # This will test wether the principal exist.
-        $isLogin = Test-SqlDscIsLogin @testSqlDscIsLoginParameters
+        # This will test whether the principal exist.
+        $isLogin = Test-SqlDscIsLogin @testSqlDscIsPrincipalParameters
+        $isRole = $false
 
+        # Only test for role if not already found as a login.
         if (-not $isLogin)
+        {
+            $isRole = Test-SqlDscIsRole @testSqlDscIsPrincipalParameters
+        }
+
+        if (-not $isLogin -and -not $isRole)
         {
             $missingPrincipalMessage = $this.localizedData.NameIsMissing -f @(
                 $this.Name,
@@ -369,6 +380,32 @@ class SqlPermission : SqlResourceBase
             )
 
             New-InvalidOperationException -Message $missingPrincipalMessage
+        }
+
+        # Get the principal object (Login or ServerRole)
+        $principalObject = $null
+
+        if ($isLogin)
+        {
+            $principalObject = $serverObject | Get-SqlDscLogin -Name $this.Name -ErrorAction 'Stop'
+        }
+        else
+        {
+            $principalObject = $serverObject | Get-SqlDscRole -Name $this.Name -ErrorAction 'Stop'
+        }
+
+        # Create splatting parameter for principal to avoid repeated if/else blocks
+        $principalParameter = if ($isLogin)
+        {
+            @{
+                Login = $principalObject
+            }
+        }
+        else
+        {
+            @{
+                ServerRole = $principalObject
+            }
         }
 
         # This holds each state and their permissions to be revoked.
@@ -455,32 +492,34 @@ class SqlPermission : SqlResourceBase
             #>
             foreach ($currentStateToRevoke in $permissionsToRevoke)
             {
-                $revokePermissionSet = $currentStateToRevoke | ConvertFrom-SqlDscServerPermission
+                # Convert ServerPermission to array of SqlServerPermission enum values
+                $permissionsToRevokeArray = $currentStateToRevoke.Permission
 
-                $setSqlDscServerPermissionParameters = @{
-                    ServerObject = $serverObject
-                    Name         = $this.Name
-                    Permission   = $revokePermissionSet
-                    State        = 'Revoke'
-                    Force        = $true
-                }
-
-                if ($currentStateToRevoke.State -eq 'GrantWithGrant')
+                # Only revoke if there are permissions to revoke
+                if ($permissionsToRevokeArray.Count -gt 0)
                 {
-                    $setSqlDscServerPermissionParameters.WithGrant = $true
-                }
+                    $revokeSqlDscServerPermissionParameters = @{
+                        Permission = $permissionsToRevokeArray
+                        Force      = $true
+                    }
 
-                try
-                {
-                    Set-SqlDscServerPermission @setSqlDscServerPermissionParameters
-                }
-                catch
-                {
-                    $errorMessage = $this.localizedData.FailedToRevokePermissionFromCurrentState -f @(
-                        $this.Name
-                    )
+                    if ($currentStateToRevoke.State -eq 'GrantWithGrant')
+                    {
+                        $revokeSqlDscServerPermissionParameters.WithGrant = $true
+                    }
 
-                    New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                    try
+                    {
+                        Revoke-SqlDscServerPermission @principalParameter @revokeSqlDscServerPermissionParameters
+                    }
+                    catch
+                    {
+                        $errorMessage = $this.localizedData.FailedToRevokePermissionFromCurrentState -f @(
+                            $this.Name
+                        )
+
+                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                    }
                 }
             }
         }
@@ -496,27 +535,42 @@ class SqlPermission : SqlResourceBase
                 # If there is not an empty array, change permissions.
                 if (-not [System.String]::IsNullOrEmpty($currentDesiredPermissionState.Permission))
                 {
-                    $permissionSet = $currentDesiredPermissionState | ConvertFrom-SqlDscServerPermission
-
-                    $setSqlDscServerPermissionParameters = @{
-                        ServerObject = $serverObject
-                        Name         = $this.Name
-                        Permission   = $permissionSet
-                        Force        = $true
-                    }
+                    # Convert ServerPermission to array of SqlServerPermission enum values
+                    $permissionsArray = $currentDesiredPermissionState.Permission
 
                     try
                     {
                         switch ($currentDesiredPermissionState.State)
                         {
-                            'GrantWithGrant'
+                            'Grant'
                             {
-                                Set-SqlDscServerPermission @setSqlDscServerPermissionParameters -State 'Grant' -WithGrant
+                                $grantParameters = @{
+                                    Permission = $permissionsArray
+                                    Force      = $true
+                                }
+
+                                Grant-SqlDscServerPermission @principalParameter @grantParameters
                             }
 
-                            default
+                            'GrantWithGrant'
                             {
-                                Set-SqlDscServerPermission @setSqlDscServerPermissionParameters -State $currentDesiredPermissionState.State
+                                $grantParameters = @{
+                                    Permission = $permissionsArray
+                                    WithGrant  = $true
+                                    Force      = $true
+                                }
+
+                                Grant-SqlDscServerPermission @principalParameter @grantParameters
+                            }
+
+                            'Deny'
+                            {
+                                $denyParameters = @{
+                                    Permission = $permissionsArray
+                                    Force      = $true
+                                }
+
+                                Deny-SqlDscServerPermission @principalParameter @denyParameters
                             }
                         }
                     }
@@ -567,7 +621,7 @@ class SqlPermission : SqlResourceBase
         {
             $errorMessage = $this.localizedData.MustAssignOnePermissionProperty
 
-            New-InvalidArgumentException -ArgumentName 'Permission, PermissionToInclude, PermissionToExclude' -Message $errorMessage
+            New-ArgumentException -ArgumentName 'Permission, PermissionToInclude, PermissionToExclude' -Message $errorMessage
         }
 
         foreach ($currentAssignedPermissionProperty in $assignedPermissionProperty)
@@ -583,7 +637,7 @@ class SqlPermission : SqlResourceBase
             {
                 $errorMessage = $this.localizedData.DuplicatePermissionState
 
-                New-InvalidArgumentException -ArgumentName $currentAssignedPermissionProperty -Message $errorMessage
+                New-ArgumentException -ArgumentName $currentAssignedPermissionProperty -Message $errorMessage
             }
 
             # A specific permission must only exist in one permission state.
@@ -595,7 +649,7 @@ class SqlPermission : SqlResourceBase
             {
                 $errorMessage = $this.localizedData.DuplicatePermissionBetweenState
 
-                New-InvalidArgumentException -ArgumentName $currentAssignedPermissionProperty -Message $errorMessage
+                New-ArgumentException -ArgumentName $currentAssignedPermissionProperty -Message $errorMessage
             }
         }
 
@@ -612,7 +666,7 @@ class SqlPermission : SqlResourceBase
             {
                 $errorMessage = $this.localizedData.MissingPermissionState
 
-                New-InvalidArgumentException -ArgumentName 'Permission' -Message $errorMessage
+                New-ArgumentException -ArgumentName 'Permission' -Message $errorMessage
             }
         }
 
@@ -630,7 +684,7 @@ class SqlPermission : SqlResourceBase
                     {
                         $errorMessage = $this.localizedData.MustHaveMinimumOnePermissionInState -f $currentAssignedPermissionProperty
 
-                        New-InvalidArgumentException -ArgumentName $currentAssignedPermissionProperty -Message $errorMessage
+                        New-ArgumentException -ArgumentName $currentAssignedPermissionProperty -Message $errorMessage
                     }
                 }
             }

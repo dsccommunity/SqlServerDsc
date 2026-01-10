@@ -40,12 +40,16 @@
         Get all the trace flags from the Database Engine instance 'SQL2022' on the
         server where the command in run.
 
+    .INPUTS
+        None.
+
     .OUTPUTS
-        `[System.UInt32[]]`
+        `System.UInt32[]`
+
+        Returns an array of trace flags as unsigned 32-bit integer values.
 #>
 function Get-SqlDscTraceFlag
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Justification = 'Because the rule does not understands that the command returns [System.UInt32[]] when using , (comma) in the return statement')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
     [OutputType([System.UInt32[]])]
     [CmdletBinding(DefaultParameterSetName = 'ByServerName')]
@@ -74,14 +78,17 @@ function Get-SqlDscTraceFlag
 
     $traceFlags = [System.UInt32[]] @()
 
-    if ($startupParameter)
+    if ($startupParameter -and $startupParameter.TraceFlag)
     {
-        $traceFlags = $startupParameter.TraceFlag
+        # Filter out null and zero values (nulls get converted to 0 in UInt32 arrays).
+        # Valid trace flags start at 1.
+        $traceFlags = $startupParameter.TraceFlag |
+            Where-Object -FilterScript { $_ -ne 0 }
     }
 
     Write-Debug -Message (
         $script:localizedData.TraceFlag_Get_DebugReturningTraceFlags -f $MyInvocation.MyCommand, ($traceFlags -join ', ')
     )
 
-    return , [System.UInt32[]] $traceFlags
+    return [System.UInt32[]] $traceFlags
 }

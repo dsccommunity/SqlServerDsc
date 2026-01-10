@@ -19,8 +19,13 @@
 
         Returns the managed computer object for the server 'MyServer'.
 
+    .INPUTS
+        None.
+
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer]`
+        `Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer`
+
+        A managed computer object representing the SQL Server instance.
 #>
 function Get-SqlDscManagedComputer
 {

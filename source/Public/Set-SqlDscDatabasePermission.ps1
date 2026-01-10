@@ -31,17 +31,20 @@
     .PARAMETER Force
         Specifies that the permissions should be set without any confirmation.
 
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        The SQL Server instance connection object to configure.
+
     .OUTPUTS
         None.
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
-
         $setPermission = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
             Connect = $true
             Update = $true
         }
-
         Set-SqlDscDatabasePermission -ServerObject $serverInstance -DatabaseName 'MyDatabase' -Name 'MyPrincipal' -State 'Grant' -Permission $setPermission
 
         Sets the permissions for the principal 'MyPrincipal'.

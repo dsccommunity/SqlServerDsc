@@ -1,4 +1,4 @@
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
 BeforeDiscovery {
@@ -6,42 +6,41 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
     $env:SqlServerDscCI = $true
 
-    Import-Module -Name $script:dscModuleName
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
-
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -85,13 +84,15 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             # Mock instance objects
             $mockSSRSInstance = @{
                 InstanceName = 'SSRS'
-                ServiceName = 'ReportServer'
+                InstanceId   = 'SSRS'
+                ServiceName  = 'ReportServer'
             }
 
             # Mock instance objects
             $mockPBIRSInstance = @{
                 InstanceName = 'PBIRS'
-                ServiceName = 'PowerBIReportServer'
+                InstanceId   = 'PBIRS'
+                ServiceName  = 'PowerBIReportServer'
             }
 
             # Mock registry values
@@ -113,7 +114,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
                 (
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\Setup' -or
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\Setup'
-                 ) -and
+                ) -and
                 $Name -eq 'InstallRootDirectory'
             } -MockWith {
                 return $mockInstallFolder
@@ -183,7 +184,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
                 (
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\MSSQLServer\CurrentVersion' -or
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\MSSQLServer\CurrentVersion'
-                 ) -and
+                ) -and
                 $Name -eq 'CurrentVersion'
             } -MockWith {
                 return $mockCurrentVersion
@@ -193,18 +194,30 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
                 (
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\MSSQLServer\CurrentVersion' -or
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\MSSQLServer\CurrentVersion'
-                 ) -and
+                ) -and
                 $Name -eq 'ProductVersion'
             } -MockWith {
                 return $mockProductVersion
             }
 
-            Mock -CommandName Get-CimInstance -MockWith {
+            Mock -CommandName Get-CimInstance -ParameterFilter {
+                $Namespace -eq 'root\Microsoft\SqlServer\ReportServer\RS_SSRS\v15'
+            } -MockWith {
                 return [PSCustomObject] @{
-                    EditionID = 2176971986
-                    EditionName = 'SQL Server Developer'
+                    EditionID              = 2176971986
+                    EditionName            = 'SQL Server Developer'
                     IsSharePointIntegrated = $false
-                    InstanceId = 'SSRS'
+                    InstanceId             = 'SSRS'
+                }
+            }
+            Mock -CommandName Get-CimInstance -ParameterFilter {
+                $Namespace -eq 'root\Microsoft\SqlServer\ReportServer\RS_PBIRS\v15'
+            } -MockWith {
+                return [PSCustomObject] @{
+                    EditionID              = 2176971986
+                    EditionName            = 'SQL Server Developer'
+                    IsSharePointIntegrated = $false
+                    InstanceId             = 'PBIRS'
                 }
             }
         }
@@ -240,10 +253,10 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result[1].EnableErrorReporting | Should -Be $mockEnableErrorReporting
             $result[1].CurrentVersion | Should -Be $mockCurrentVersion
             $result[1].ProductVersion | Should -Be $mockProductVersion
-            $result[0].EditionID | Should -Be 2176971986
-            $result[0].EditionName | Should -Be 'SQL Server Developer'
-            $result[0].IsSharePointIntegrated | Should -BeFalse
-            $result[0].InstanceId | Should -Be 'SSRS'
+            $result[1].EditionID | Should -Be 2176971986
+            $result[1].EditionName | Should -Be 'SQL Server Developer'
+            $result[1].IsSharePointIntegrated | Should -BeFalse
+            $result[1].InstanceId | Should -Be 'PBIRS'
 
             Should -Invoke -CommandName Get-SqlDscInstalledInstance -ParameterFilter {
                 $ServiceType -eq 'ReportingServices' -and
@@ -258,8 +271,9 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
         BeforeAll {
             # Mock instance objects
             $mockSSRSInstance = @{
-                InstanceName = 'SSRS'
-                ServiceName = 'ReportServer'
+                InstanceName   = 'SSRS'
+                InstanceId     = 'SSRS'
+                ServiceName    = 'ReportServer'
                 CurrentVersion = '15.0.1.0'
             }
 
@@ -280,11 +294,11 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
 
             Mock -CommandName Get-CimInstance -MockWith {
                 return [PSCustomObject] @{
-                    EditionID = 2176971986
-                    EditionName = 'SQL Server Developer'
+                    EditionID              = 2176971986
+                    EditionName            = 'SQL Server Developer'
                     IsSharePointIntegrated = $false
-                    Version = '15.0.1.0'
-                    InstanceId = 'SSRS'
+                    Version                = '15.0.1.0'
+                    InstanceId             = 'SSRS'
                 }
             }
         }
@@ -299,7 +313,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
                 $InstanceName -eq 'SSRS'
             } -Exactly -Times 1
 
-            Should -Invoke -CommandName Get-RegistryPropertyValue -Exactly -Times 9
+            Should -Invoke -CommandName Get-RegistryPropertyValue -Exactly -Times 10
         }
     }
 
@@ -339,7 +353,8 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             # Mock instance objects
             $mockSSRSInstance = @{
                 InstanceName = 'SSRS'
-                ServiceName = 'ReportServer'
+                InstanceId   = 'SSRS'
+                ServiceName  = 'ReportServer'
             }
 
             Mock -CommandName Get-SqlDscInstalledInstance -MockWith {
@@ -366,6 +381,232 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result.EnableErrorReporting | Should -BeNullOrEmpty
             $result.CurrentVersion | Should -BeNullOrEmpty
             $result.ProductVersion | Should -BeNullOrEmpty
+            $result.InstanceId | Should -Be 'SSRS'
+        }
+    }
+
+    Context 'When getting SSRS 2016 instance where InstanceName differs from InstanceId' {
+        BeforeAll {
+            # Mock SSRS 2016 instance where InstanceName = "MSSQLSERVER" but InstanceId = "MSRS13.MSSQLSERVER"
+            $mockSSRS2016Instance = @{
+                InstanceName = 'MSSQLSERVER'
+                InstanceId   = 'MSRS13.MSSQLSERVER'
+                ServiceName  = 'ReportServer'
+            }
+
+            # Mock registry values
+            $mockSQLPath = 'C:\Program Files\Microsoft SQL Server\MSRS13.MSSQLSERVER\Reporting Services\'
+            $mockServiceName = $null
+            $mockVirtualRootServer = 'ReportServer'
+            $mockConfigFilePath = $null
+            $mockErrorDumpDirectory = $null
+            $mockProductVersion = $null
+            $mockCustomerFeedback = 1
+            $mockEnableErrorReporting = 1
+            $mockCurrentVersion = '13.0.6404.1'
+
+            Mock -CommandName Get-SqlDscInstalledInstance -MockWith {
+                return @($mockSSRS2016Instance)
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'InstallRootDirectory'
+            } -MockWith {
+                return $null
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'SQLPath'
+            } -MockWith {
+                return $mockSQLPath
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'ServiceName'
+            } -MockWith {
+                return $mockServiceName
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'RSVirtualRootServer'
+            } -MockWith {
+                return $mockVirtualRootServer
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'RsConfigFilePath'
+            } -MockWith {
+                return $mockConfigFilePath
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\CPE' -and
+                $Name -eq 'ErrorDumpDir'
+            } -MockWith {
+                return $mockErrorDumpDirectory
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\CPE' -and
+                $Name -eq 'CustomerFeedback'
+            } -MockWith {
+                return $mockCustomerFeedback
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\CPE' -and
+                $Name -eq 'EnableErrorReporting'
+            } -MockWith {
+                return $mockEnableErrorReporting
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\MSSQLServer\CurrentVersion' -and
+                $Name -eq 'CurrentVersion'
+            } -MockWith {
+                return $mockCurrentVersion
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\MSSQLServer\CurrentVersion' -and
+                $Name -eq 'ProductVersion'
+            } -MockWith {
+                return $mockProductVersion
+            }
+
+            Mock -CommandName Get-CimInstance -MockWith {
+                return [PSCustomObject] @{
+                    EditionID              = 610778273
+                    EditionName            = 'SQL Server Developer'
+                    IsSharePointIntegrated = $false
+                    InstanceId             = 'MSRS13.MSSQLSERVER'
+                }
+            }
+        }
+
+        It 'Should use InstanceId in registry paths and return correct configuration' {
+            $result = Get-SqlDscRSSetupConfiguration -InstanceName 'MSSQLSERVER'
+
+            $result | Should -Not -BeNullOrEmpty
+            $result.InstanceName | Should -Be 'MSSQLSERVER'
+            $result.InstanceId | Should -Be 'MSRS13.MSSQLSERVER'
+            $result.InstallFolder | Should -Be $mockSQLPath.TrimEnd('\')
+            $result.ServiceName | Should -Be $mockServiceName
+            $result.VirtualRootServer | Should -Be $mockVirtualRootServer
+            $result.ConfigFilePath | Should -Be $mockConfigFilePath
+            $result.ErrorDumpDirectory | Should -Be $mockErrorDumpDirectory
+            $result.CustomerFeedback | Should -Be $mockCustomerFeedback
+            $result.EnableErrorReporting | Should -Be $mockEnableErrorReporting
+            $result.CurrentVersion | Should -Be $mockCurrentVersion
+            $result.ProductVersion | Should -Be $mockProductVersion
+            $result.EditionID | Should -Be 610778273
+            $result.EditionName | Should -Be 'SQL Server Developer'
+            $result.IsSharePointIntegrated | Should -BeFalse
+
+            # Verify that registry paths used InstanceId, not InstanceName
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'InstallRootDirectory'
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'SQLPath'
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'ServiceName'
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'RSVirtualRootServer'
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'RsConfigFilePath'
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\CPE' -and
+                $Name -eq 'ErrorDumpDir'
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\CPE' -and
+                $Name -eq 'CustomerFeedback'
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\CPE' -and
+                $Name -eq 'EnableErrorReporting'
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\MSSQLServer\CurrentVersion' -and
+                $Name -eq 'CurrentVersion'
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\MSSQLServer\CurrentVersion' -and
+                $Name -eq 'ProductVersion'
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -like 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQLSERVER*'
+            } -Exactly -Times 0
+
+            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1
+        }
+    }
+
+    Context 'When getting SSRS 2016 instance installed to the drive root' {
+        BeforeAll {
+            $mockSSRS2016Instance = @{
+                InstanceName = 'MSSQLSERVER'
+                InstanceId   = 'MSRS13.MSSQLSERVER'
+                ServiceName  = 'ReportServer'
+            }
+
+            # Mock registry values
+            $mockSQLPath = 'C:\'
+            $mockServiceName = $null
+            $mockVirtualRootServer = 'ReportServer'
+            $mockConfigFilePath = $null
+            $mockErrorDumpDirectory = $null
+            $mockProductVersion = $null
+            $mockCustomerFeedback = 1
+            $mockEnableErrorReporting = 1
+            $mockCurrentVersion = '13.0.6404.1'
+
+            Mock -CommandName Get-SqlDscInstalledInstance -MockWith {
+                return @($mockSSRS2016Instance)
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue  -MockWith {
+                return $null
+            }
+
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
+                $Name -eq 'SQLPath'
+            } -MockWith {
+                return $mockSQLPath
+            }
+        }
+
+        It 'Should return correct install folder' {
+            $result = Get-SqlDscRSSetupConfiguration -InstanceName 'MSSQLSERVER'
+
+            $result.InstallFolder | Should -Be $mockSQLPath
+
         }
     }
 }

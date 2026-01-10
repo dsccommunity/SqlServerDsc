@@ -1,4 +1,4 @@
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
 BeforeDiscovery {
@@ -6,20 +6,20 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 
     $projectPath = "$($PSScriptRoot)\..\.." | Convert-Path
@@ -40,7 +40,7 @@ BeforeDiscovery {
 
     $mut = Get-Module -Name $script:moduleName -ListAvailable |
         Select-Object -First 1 |
-            Import-Module -Force -ErrorAction Stop -PassThru
+            Import-Module -Force -ErrorAction 'Stop' -PassThru
 }
 
 BeforeAll {
@@ -66,7 +66,7 @@ BeforeAll {
                     -and $(
                     try
                     {
-                        Test-ModuleManifest -Path $_.FullName -ErrorAction Stop
+                        Test-ModuleManifest -Path $_.FullName -ErrorAction 'Stop'
                     }
                     catch
                     {
@@ -98,23 +98,25 @@ Describe 'Changelog Management' -Tag 'Changelog' {
     }
 
     It 'Changelog format compliant with keepachangelog format' -Skip:(![bool](Get-Command git -EA SilentlyContinue)) {
-        { Get-ChangelogData -Path (Join-Path $ProjectPath 'CHANGELOG.md') -ErrorAction Stop } | Should -Not -Throw
+        $null = Get-ChangelogData -Path (Join-Path $ProjectPath 'CHANGELOG.md') -ErrorAction 'Stop'
     }
 
     It 'Changelog should have an Unreleased header' -Skip:$skipTest {
-        (Get-ChangelogData -Path (Join-Path -Path $ProjectPath -ChildPath 'CHANGELOG.md') -ErrorAction Stop).Unreleased | Should -Not -BeNullOrEmpty
+        (Get-ChangelogData -Path (Join-Path -Path $ProjectPath -ChildPath 'CHANGELOG.md') -ErrorAction 'Stop').Unreleased | Should -Not -BeNullOrEmpty
     }
 }
 
 Describe 'General module control' -Tags 'FunctionalQuality' {
     It 'Should import without errors' {
-        { Import-Module -Name $script:moduleName -Force -ErrorAction Stop } | Should -Not -Throw
+        # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+        # PowerShell class types to get new identities, breaking type comparisons.
+        $null = Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
         Get-Module -Name $script:moduleName | Should -Not -BeNullOrEmpty
     }
 
     It 'Should remove without error' {
-        { Remove-Module -Name $script:moduleName -ErrorAction Stop } | Should -Not -Throw
+        $null = Remove-Module -Name $script:moduleName -ErrorAction 'Stop'
 
         Get-Module $script:moduleName | Should -BeNullOrEmpty
     }
@@ -125,22 +127,18 @@ BeforeDiscovery {
     $allModuleFunctions = & $mut { Get-Command -Module $args[0] -CommandType Function } $script:moduleName
 
     # Build test cases.
-    $testCasesAllModuleFunction = @()
-
-    foreach ($function in $allModuleFunctions)
+    $testCasesAllModuleFunction = foreach ($function in $allModuleFunctions)
     {
-        $testCasesAllModuleFunction += @{
+        @{
             Name = $function.Name
         }
     }
 
     $allPublicCommand = (Get-Command -Module $script:moduleName).Name
 
-    $testCasesPublicCommand = @()
-
-    foreach ($command in $allPublicCommand)
+    $testCasesPublicCommand = foreach ($command in $allPublicCommand)
     {
-        $testCasesPublicCommand += @{
+        @{
             Name = $command
         }
     }
@@ -179,6 +177,161 @@ Describe 'Quality for module' -Tags 'TestQuality' {
     }
 }
 
+Describe 'Comment-based help structure' -Tags 'helpQuality' {
+    Context 'Validating comment-based help structure for <Name>' -ForEach $testCasesAllModuleFunction -Tag 'helpQuality' {
+        BeforeAll {
+            $functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$Name.ps1"
+
+            $scriptFileRawContent = Get-Content -Raw -Path $functionFile.FullName
+        }
+
+        It 'Should not have invalid help directives in comment-based help for <Name>' {
+            # Valid help directives (case-insensitive) from:
+            # https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_comment_based_help
+            $validDirectives = @(
+                'SYNOPSIS'
+                'DESCRIPTION'
+                'PARAMETER'
+                'EXAMPLE'
+                'INPUTS'
+                'OUTPUTS'
+                'NOTES'
+                'LINK'
+                'COMPONENT'
+                'ROLE'
+                'FUNCTIONALITY'
+                'FORWARDHELPTARGETNAME'
+                'FORWARDHELPCATEGORY'
+                'REMOTEHELPRUNSPACE'
+                'EXTERNALHELP'
+            )
+
+            # Find the comment-based help block
+            if ($scriptFileRawContent -match '(?s)<#(.*?)#>')
+            {
+                $helpBlock = $Matches[1]
+
+                # Split into lines to check each one
+                $helpLines = $helpBlock -split "`n"
+
+                $invalidDirectives = foreach ($line in $helpLines)
+                {
+                    # Check if line starts with whitespace followed by a period and text
+                    if ($line -match '^\s+\.([a-zA-Z]+)')
+                    {
+                        $directive = $Matches[1]
+
+                        # Check if it's a valid directive
+                        if ($directive -notin $validDirectives)
+                        {
+                            $directive
+                        }
+                    }
+                }
+
+                $invalidDirectives | Should -BeNullOrEmpty -Because ('invalid help directives found that will break help parsing: {0}' -f ($invalidDirectives -join ', '))
+            }
+        }
+
+        It 'Should not have comments within multi-line example code blocks for <Name>' {
+            <#
+                PlatyPS expects .EXAMPLE blocks to have: code (no comments) → blank line → description.
+                Comments (lines starting with #) within the code portion cause "Expect Heading" errors
+                during documentation generation because PlatyPS interprets them incorrectly.
+            #>
+            if ($scriptFileRawContent -match '(?s)<#(.*?)#>')
+            {
+                $helpBlock = $Matches[1]
+
+                # Find all .EXAMPLE blocks
+                $exampleMatches = [regex]::Matches($helpBlock, '(?s)\.EXAMPLE\s*\r?\n(.*?)(?=\r?\n\s*\.(?:EXAMPLE|PARAMETER|SYNOPSIS|DESCRIPTION|INPUTS|OUTPUTS|NOTES|LINK|COMPONENT|ROLE|FUNCTIONALITY)|$)')
+
+                $examplesWithComments = @()
+
+                foreach ($exampleMatch in $exampleMatches)
+                {
+                    $exampleContent = $exampleMatch.Groups[1].Value
+                    $exampleLines = $exampleContent -split '\r?\n'
+
+                    # Find where the description starts (first line after a blank line that follows code)
+                    $inCodeBlock = $true
+
+                    foreach ($line in $exampleLines)
+                    {
+                        $trimmedLine = $line.Trim()
+
+                        if ($inCodeBlock)
+                        {
+                            if ([string]::IsNullOrEmpty($trimmedLine))
+                            {
+                                # Blank line - marks end of code block
+                                $inCodeBlock = $false
+                            }
+                            elseif ($trimmedLine -match '^#(?!region|endregion)')
+                            {
+                                # Found a comment in the code block (excluding #region/#endregion)
+                                $examplesWithComments += $trimmedLine
+                            }
+                        }
+                    }
+                }
+
+                $examplesWithComments | Should -BeNullOrEmpty -Because ('comments within example code blocks break PlatyPS documentation generation: {0}' -f ($examplesWithComments -join ', '))
+            }
+        }
+
+        It 'Should not have blank lines within multi-line example code blocks for <Name>' {
+            <#
+                PlatyPS expects .EXAMPLE blocks to have: code → blank line → description.
+                Blank lines within the code portion (before the description separator) cause
+                the documentation generator to incorrectly interpret the code block structure.
+            #>
+            if ($scriptFileRawContent -match '(?s)<#(.*?)#>')
+            {
+                $helpBlock = $Matches[1]
+
+                # Find all .EXAMPLE blocks
+                $exampleMatches = [regex]::Matches($helpBlock, '(?s)\.EXAMPLE\s*\r?\n(.*?)(?=\r?\n\s*\.(?:EXAMPLE|PARAMETER|SYNOPSIS|DESCRIPTION|INPUTS|OUTPUTS|NOTES|LINK|COMPONENT|ROLE|FUNCTIONALITY)|$)')
+
+                $examplesWithBlankLines = @()
+
+                foreach ($exampleMatch in $exampleMatches)
+                {
+                    $exampleContent = $exampleMatch.Groups[1].Value
+                    $exampleLines = $exampleContent -split '\r?\n'
+                    $inCodeBlock = $true
+                    $lineNum = 0
+
+                    foreach ($line in $exampleLines)
+                    {
+                        $lineNum++
+                        $trimmedLine = $line.Trim()
+
+                        if ($inCodeBlock)
+                        {
+                            if ([string]::IsNullOrEmpty($trimmedLine))
+                            {
+                                # Check if next non-empty line looks like code (starts with $, command, [, or @{)
+                                $remainingLines = $exampleLines[$lineNum..($exampleLines.Length - 1)]
+                                $nextNonEmpty = $remainingLines | Where-Object -FilterScript { $_.Trim() } | Select-Object -First 1
+
+                                if ($nextNonEmpty -and ($nextNonEmpty.Trim() -match '^\$|^[A-Z][a-z]+-|^\[|^@\{'))
+                                {
+                                    $examplesWithBlankLines += "blank line at position $lineNum followed by: $($nextNonEmpty.Trim().Substring(0, [Math]::Min(30, $nextNonEmpty.Trim().Length)))..."
+                                }
+
+                                $inCodeBlock = $false
+                            }
+                        }
+                    }
+                }
+
+                $examplesWithBlankLines | Should -BeNullOrEmpty -Because ('blank lines within example code blocks break PlatyPS documentation generation: {0}' -f ($examplesWithBlankLines -join '; '))
+            }
+        }
+    }
+}
+
 Describe 'Help for module' -Tags 'helpQuality' {
     Context 'Validating help for <Name>' -ForEach $testCasesAllModuleFunction -Tag 'helpQuality' {
         BeforeAll {
@@ -186,7 +339,16 @@ Describe 'Help for module' -Tags 'helpQuality' {
 
             $scriptFileRawContent = Get-Content -Raw -Path $functionFile.FullName
 
-            $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $null)
+            $parseErrors = $null
+            $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $parseErrors)
+
+            if ($parseErrors)
+            {
+                foreach ($parseError in $parseErrors)
+                {
+                    Write-Warning -Message ('Parse error in {0}: {1}' -f $functionFile.FullName, $parseError.Message)
+                }
+            }
 
             $astSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
 

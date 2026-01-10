@@ -3,7 +3,7 @@
         Unit test for DatabasePermission class.
 #>
 
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
 BeforeDiscovery {
@@ -11,42 +11,41 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
     $env:SqlServerDscCI = $true
 
-    Import-Module -Name $script:dscModuleName
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
-
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -55,6 +54,8 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
     Context 'When instantiating the class' {
         It 'Should not throw an error' {
             $script:mockDatabasePermissionInstance = InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 [DatabasePermission]::new()
             }
         }
@@ -65,21 +66,23 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
         }
     }
 
-    Context 'When setting an reading values' {
+    Context 'When setting and reading values' {
         It 'Should be able to set value in instance' {
             $script:mockDatabasePermissionInstance = InModuleScope -ScriptBlock {
-                $databasPermissionInstance = [DatabasePermission]::new()
+                Set-StrictMode -Version 1.0
 
-                $databasPermissionInstance.State = 'Grant'
-                $databasPermissionInstance.Permission = 'select'
+                $databasePermissionInstance = [DatabasePermission]::new()
 
-                return $databasPermissionInstance
+                $databasePermissionInstance.State = 'Grant'
+                $databasePermissionInstance.Permission = 'select'
+
+                return $databasePermissionInstance
             }
         }
 
         It 'Should be able read the values from instance' {
             $mockDatabasePermissionInstance.State | Should -Be 'Grant'
-            $mockDatabasePermissionInstance.Permission = 'select'
+            $mockDatabasePermissionInstance.Permission | Should -Be 'select'
         }
     }
 
@@ -88,17 +91,19 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
             Context 'When property Permission has a single value' {
                 It 'Should return $true' {
                     InModuleScope -ScriptBlock {
-                        $databasPermissionInstance1 = [DatabasePermission]::new()
+                        Set-StrictMode -Version 1.0
 
-                        $databasPermissionInstance1.State = 'Grant'
-                        $databasPermissionInstance1.Permission = 'select'
+                        $databasePermissionInstance1 = [DatabasePermission]::new()
 
-                        $databasPermissionInstance2 = [DatabasePermission]::new()
+                        $databasePermissionInstance1.State = 'Grant'
+                        $databasePermissionInstance1.Permission = 'select'
 
-                        $databasPermissionInstance2.State = 'Grant'
-                        $databasPermissionInstance2.Permission = 'select'
+                        $databasePermissionInstance2 = [DatabasePermission]::new()
 
-                        $databasPermissionInstance1 -eq $databasPermissionInstance2 | Should -BeTrue
+                        $databasePermissionInstance2.State = 'Grant'
+                        $databasePermissionInstance2.Permission = 'select'
+
+                        $databasePermissionInstance1 -eq $databasePermissionInstance2 | Should -BeTrue
                     }
                 }
             }
@@ -106,66 +111,108 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
             Context 'When property Permission has a multiple values' {
                 It 'Should return $true' {
                     InModuleScope -ScriptBlock {
-                        $databasPermissionInstance1 = [DatabasePermission]::new()
+                        Set-StrictMode -Version 1.0
 
-                        $databasPermissionInstance1.State = 'Grant'
-                        $databasPermissionInstance1.Permission = @('select', 'update')
+                        $databasePermissionInstance1 = [DatabasePermission]::new()
 
-                        $databasPermissionInstance2 = [DatabasePermission]::new()
+                        $databasePermissionInstance1.State = 'Grant'
+                        $databasePermissionInstance1.Permission = @('select', 'update')
 
-                        $databasPermissionInstance2.State = 'Grant'
-                        $databasPermissionInstance2.Permission = @('select', 'update')
+                        $databasePermissionInstance2 = [DatabasePermission]::new()
 
-                        $databasPermissionInstance1 -eq $databasPermissionInstance2 | Should -BeTrue
+                        $databasePermissionInstance2.State = 'Grant'
+                        $databasePermissionInstance2.Permission = @('select', 'update')
+
+                        $databasePermissionInstance1 -eq $databasePermissionInstance2 | Should -BeTrue
                     }
                 }
             }
         }
 
         Context 'When object has different value for property State' {
-            It 'Should instantiate two objects' {
-                $script:mockDatabasePermissionInstance1 = InModuleScope -ScriptBlock {
-                    $databasPermissionInstance = [DatabasePermission]::new()
+            Context 'When comparing Deny with Grant' {
+                It 'Should instantiate two objects' {
+                    $script:mockDatabasePermissionInstance1 = InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
 
-                    $databasPermissionInstance.State = 'Deny'
-                    $databasPermissionInstance.Permission = 'select'
+                        $databasePermissionInstance = [DatabasePermission]::new()
 
-                    return $databasPermissionInstance
+                        $databasePermissionInstance.State = 'Deny'
+                        $databasePermissionInstance.Permission = 'select'
+
+                        return $databasePermissionInstance
+                    }
+
+                    $script:mockDatabasePermissionInstance2 = InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $databasePermissionInstance = [DatabasePermission]::new()
+
+                        $databasePermissionInstance.State = 'Grant'
+                        $databasePermissionInstance.Permission = 'select'
+
+                        return $databasePermissionInstance
+                    }
                 }
 
-                $script:mockDatabasePermissionInstance1 = InModuleScope -ScriptBlock {
-                    $databasPermissionInstance = [DatabasePermission]::new()
-
-                    $databasPermissionInstance.State = 'Grant'
-                    $databasPermissionInstance.Permission = 'select'
-
-                    return $databasPermissionInstance
+                It 'Should return $false' {
+                    $mockDatabasePermissionInstance1 -eq $mockDatabasePermissionInstance2 | Should -BeFalse
                 }
             }
 
-            It 'Should return $false' {
-                $mockDatabasePermissionInstance1 -eq $mockDatabasePermissionInstance2 | Should -BeFalse
+            Context 'When comparing Grant with GrantWithGrant' {
+                It 'Should instantiate two objects' {
+                    $script:mockDatabasePermissionInstance1 = InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $databasePermissionInstance = [DatabasePermission]::new()
+
+                        $databasePermissionInstance.State = 'Grant'
+                        $databasePermissionInstance.Permission = 'select'
+
+                        return $databasePermissionInstance
+                    }
+
+                    $script:mockDatabasePermissionInstance2 = InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $databasePermissionInstance = [DatabasePermission]::new()
+
+                        $databasePermissionInstance.State = 'GrantWithGrant'
+                        $databasePermissionInstance.Permission = 'select'
+
+                        return $databasePermissionInstance
+                    }
+                }
+
+                It 'Should return $false' {
+                    $mockDatabasePermissionInstance1 -eq $mockDatabasePermissionInstance2 | Should -BeFalse
+                }
             }
         }
 
         Context 'When object has different value for property Permission' {
             It 'Should instantiate two objects' {
                 $script:mockDatabasePermissionInstance1 = InModuleScope -ScriptBlock {
-                    $databasPermissionInstance = [DatabasePermission]::new()
+                    Set-StrictMode -Version 1.0
 
-                    $databasPermissionInstance.State = 'Grant'
-                    $databasPermissionInstance.Permission = 'select'
+                    $databasePermissionInstance = [DatabasePermission]::new()
 
-                    return $databasPermissionInstance
+                    $databasePermissionInstance.State = 'Grant'
+                    $databasePermissionInstance.Permission = 'select'
+
+                    return $databasePermissionInstance
                 }
 
-                $script:mockDatabasePermissionInstance1 = InModuleScope -ScriptBlock {
-                    $databasPermissionInstance = [DatabasePermission]::new()
+                $script:mockDatabasePermissionInstance2 = InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
 
-                    $databasPermissionInstance.State = 'Grant'
-                    $databasPermissionInstance.Permission = 'update'
+                    $databasePermissionInstance = [DatabasePermission]::new()
 
-                    return $databasPermissionInstance
+                    $databasePermissionInstance.State = 'Grant'
+                    $databasePermissionInstance.Permission = 'update'
+
+                    return $databasePermissionInstance
                 }
             }
 
@@ -175,10 +222,68 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
         }
     }
 
+    Context 'When calling method GetHashCode()' {
+        Context 'When two objects are equal' {
+            It 'Should return the same hash code' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $databasePermissionInstance1 = [DatabasePermission]::new()
+                    $databasePermissionInstance1.State = 'Grant'
+                    $databasePermissionInstance1.Permission = @('Select', 'Update')
+
+                    $databasePermissionInstance2 = [DatabasePermission]::new()
+                    $databasePermissionInstance2.State = 'Grant'
+                    $databasePermissionInstance2.Permission = @('Update', 'Select')
+
+                    $databasePermissionInstance1.GetHashCode() | Should -Be $databasePermissionInstance2.GetHashCode()
+                }
+            }
+        }
+
+        Context 'When two objects have different State' {
+            It 'Should return different hash codes' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $databasePermissionInstance1 = [DatabasePermission]::new()
+                    $databasePermissionInstance1.State = 'Grant'
+                    $databasePermissionInstance1.Permission = 'Select'
+
+                    $databasePermissionInstance2 = [DatabasePermission]::new()
+                    $databasePermissionInstance2.State = 'Deny'
+                    $databasePermissionInstance2.Permission = 'Select'
+
+                    $databasePermissionInstance1.GetHashCode() | Should -Not -Be $databasePermissionInstance2.GetHashCode()
+                }
+            }
+        }
+
+        Context 'When two objects have different Permission' {
+            It 'Should return different hash codes' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $databasePermissionInstance1 = [DatabasePermission]::new()
+                    $databasePermissionInstance1.State = 'Grant'
+                    $databasePermissionInstance1.Permission = 'Select'
+
+                    $databasePermissionInstance2 = [DatabasePermission]::new()
+                    $databasePermissionInstance2.State = 'Grant'
+                    $databasePermissionInstance2.Permission = 'Update'
+
+                    $databasePermissionInstance1.GetHashCode() | Should -Not -Be $databasePermissionInstance2.GetHashCode()
+                }
+            }
+        }
+    }
+
     Context 'When comparing two objects using method CompareTo()' {
         Context 'When the instance is compared against an invalid object' {
             It 'Should return a value less than zero' {
                 $mockDatabasePermissionInstance1 = InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     [DatabasePermission] @{
                         State      = 'Grant'
                         Permission = 'Select'
@@ -186,6 +291,8 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
                 }
 
                 $mockErrorMessage = InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:localizedData.InvalidTypeForCompare
                 }
 
@@ -205,22 +312,28 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
         }
 
         Context 'When the instance precedes the object being compared' {
-            Context 'When the instance has the state ''<MockInstanceState>'' and object has state ''<MockObjectState>''' -ForEach @(
-                @{
-                    MockInstanceState = 'Grant'
-                    MockObjectState   = 'GrantWithGrant'
-                }
-                @{
-                    MockInstanceState = 'Grant'
-                    MockObjectState   = 'Deny'
-                }
-                @{
-                    MockInstanceState = 'GrantWithGrant'
-                    MockObjectState   = 'Deny'
-                }
-            ) {
+            BeforeDiscovery {
+                $testCases = @(
+                    @{
+                        MockInstanceState = 'Grant'
+                        MockObjectState   = 'GrantWithGrant'
+                    }
+                    @{
+                        MockInstanceState = 'Grant'
+                        MockObjectState   = 'Deny'
+                    }
+                    @{
+                        MockInstanceState = 'GrantWithGrant'
+                        MockObjectState   = 'Deny'
+                    }
+                )
+            }
+
+            Context 'When the instance has the state ''<MockInstanceState>'' and object has state ''<MockObjectState>''' -ForEach $testCases {
                 It 'Should return a value less than zero' {
                     $mockDatabasePermissionInstance1 = InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         [DatabasePermission] @{
                             State      = $MockInstanceState
                             Permission = 'Select'
@@ -228,6 +341,8 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
                     }
 
                     $mockDatabasePermissionInstance2 = InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         [DatabasePermission] @{
                             State      = $MockObjectState
                             Permission = 'Select'
@@ -240,22 +355,28 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
         }
 
         Context 'When the instance follows the object being compared' {
-            Context 'When the instance has the state ''<MockInstanceState>'' and object has state ''<MockObjectState>''' -ForEach @(
-                @{
-                    MockInstanceState = 'Deny'
-                    MockObjectState   = 'Grant'
-                }
-                @{
-                    MockInstanceState = 'GrantWithGrant'
-                    MockObjectState   = 'Grant'
-                }
-                @{
-                    MockInstanceState = 'Deny'
-                    MockObjectState   = 'GrantWithGrant'
-                }
-            ) {
+            BeforeDiscovery {
+                $testCases = @(
+                    @{
+                        MockInstanceState = 'Deny'
+                        MockObjectState   = 'Grant'
+                    }
+                    @{
+                        MockInstanceState = 'GrantWithGrant'
+                        MockObjectState   = 'Grant'
+                    }
+                    @{
+                        MockInstanceState = 'Deny'
+                        MockObjectState   = 'GrantWithGrant'
+                    }
+                )
+            }
+
+            Context 'When the instance has the state ''<MockInstanceState>'' and object has state ''<MockObjectState>''' -ForEach $testCases {
                 It 'Should return a value less than zero' {
                     $mockDatabasePermissionInstance1 = InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         [DatabasePermission] @{
                             State      = $MockInstanceState
                             Permission = 'Select'
@@ -263,6 +384,8 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
                     }
 
                     $mockDatabasePermissionInstance2 = InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         [DatabasePermission] @{
                             State      = $MockObjectState
                             Permission = 'Select'
@@ -276,6 +399,8 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
             Context 'When the instance is compared against an object that is $null' {
                 It 'Should return a value less than zero' {
                     $mockDatabasePermissionInstance1 = InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         [DatabasePermission] @{
                             State      = 'Grant'
                             Permission = 'Select'
@@ -288,22 +413,28 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
         }
 
         Context 'When the instance is in the same position as the object being compared' {
-            Context 'When the instance has the state ''<MockInstanceState>'' and object has state ''<MockObjectState>''' -ForEach @(
-                @{
-                    MockInstanceState = 'Grant'
-                    MockObjectState   = 'Grant'
-                }
-                @{
-                    MockInstanceState = 'GrantWithGrant'
-                    MockObjectState   = 'GrantWithGrant'
-                }
-                @{
-                    MockInstanceState = 'Deny'
-                    MockObjectState   = 'Deny'
-                }
-            ) {
+            BeforeDiscovery {
+                $testCases = @(
+                    @{
+                        MockInstanceState = 'Grant'
+                        MockObjectState   = 'Grant'
+                    }
+                    @{
+                        MockInstanceState = 'GrantWithGrant'
+                        MockObjectState   = 'GrantWithGrant'
+                    }
+                    @{
+                        MockInstanceState = 'Deny'
+                        MockObjectState   = 'Deny'
+                    }
+                )
+            }
+
+            Context 'When the instance has the state ''<MockInstanceState>'' and object has state ''<MockObjectState>''' -ForEach $testCases {
                 It 'Should return a value less than zero' {
                     $mockDatabasePermissionInstance1 = InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         [DatabasePermission] @{
                             State      = $MockInstanceState
                             Permission = 'Select'
@@ -311,6 +442,8 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
                     }
 
                     $mockDatabasePermissionInstance2 = InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         [DatabasePermission] @{
                             State      = $MockObjectState
                             Permission = 'Select'
@@ -323,28 +456,34 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
         }
 
         Context 'When sorting the instances' {
-            It 'Should always sort in the correct order' -ForEach @(
-                @{
-                    MockState = @('Grant', 'GrantWithGrant', 'Deny')
-                }
-                @{
-                    MockState = @('GrantWithGrant', 'Grant', 'Deny')
-                }
-                @{
-                    MockState = @('GrantWithGrant', 'Deny', 'Grant')
-                }
-                @{
-                    MockState = @('Deny', 'GrantWithGrant', 'Grant')
-                }
-                @{
-                    MockState = @('Grant', 'Deny', 'GrantWithGrant')
-                }
-                @{
-                    MockState = @('Deny', 'Grant', 'GrantWithGrant')
-                }
-            ) {
+            BeforeDiscovery {
+                $testCases = @(
+                    @{
+                        MockState = @('Grant', 'GrantWithGrant', 'Deny')
+                    }
+                    @{
+                        MockState = @('GrantWithGrant', 'Grant', 'Deny')
+                    }
+                    @{
+                        MockState = @('GrantWithGrant', 'Deny', 'Grant')
+                    }
+                    @{
+                        MockState = @('Deny', 'GrantWithGrant', 'Grant')
+                    }
+                    @{
+                        MockState = @('Grant', 'Deny', 'GrantWithGrant')
+                    }
+                    @{
+                        MockState = @('Deny', 'Grant', 'GrantWithGrant')
+                    }
+                )
+            }
+
+            It 'Should always sort in the correct order' -ForEach $testCases {
                 $mockDatabasePermissionArray = @(
                     InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         foreach ($currentMockState in $MockState)
                         {
                             [DatabasePermission] @{

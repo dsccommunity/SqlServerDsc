@@ -319,7 +319,7 @@ function Set-TargetResource
                             $LoginCreateOptions = [Microsoft.SqlServer.Management.Smo.LoginCreateOptions]::None
                         }
 
-                        New-SQLServerLogin -Login $login -LoginCreateOptions $LoginCreateOptions -SecureString $LoginCredential.Password -ErrorAction Stop
+                        New-SQLServerLogin -Login $login -LoginCreateOptions $LoginCreateOptions -SecureString $LoginCredential.Password -ErrorAction 'Stop'
                     }
 
                     default
@@ -674,7 +674,7 @@ function Update-SQLServerLogin
         The SecureString object that contains the password for a SQL login.
 
     .EXAMPLE
-        CreateLogin -Login $login -LoginCreateOptions $LoginCreateOptions -SecureString $LoginCredential.Password -ErrorAction Stop
+        CreateLogin -Login $login -LoginCreateOptions $LoginCreateOptions -SecureString $LoginCredential.Password -ErrorAction 'Stop'
 
     .EXAMPLE
         CreateLogin -Login $login

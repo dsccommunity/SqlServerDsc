@@ -6,20 +6,20 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
-                & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+                & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 
     <#
@@ -34,12 +34,12 @@ BeforeAll {
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\..\TestHelpers\CommonTestHelper.psm1')
 
     # Need to define the variables here which will be used in Pester Run.
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
     $script:dscResourceFriendlyName = 'SqlRSSetup'
     $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 
     $script:testEnvironment = Initialize-TestEnvironment `
-        -DSCModuleName $script:dscModuleName `
+        -DSCModuleName $script:moduleName `
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
         -TestType 'Integration'
@@ -89,7 +89,7 @@ BeforeAll {
 
         Write-Verbose -Message ('Start downloading the {1} executable at {0}.' -f (Get-Date -Format 'yyyy-MM-dd hh:mm:ss'), $script:mockSourceMediaDisplayName) -Verbose
 
-        Invoke-WebRequest -Uri $script:mockSourceMediaUrl -OutFile $ConfigurationData.AllNodes.MediaPath
+        Invoke-WebRequest -Uri $script:mockSourceMediaUrl -OutFile $ConfigurationData.AllNodes.MediaPath -UseBasicParsing
 
         Write-Verbose -Message ('{1} executable file has SHA1 hash ''{0}''.' -f (Get-FileHash -Path $ConfigurationData.AllNodes.MediaPath -Algorithm 'SHA1').Hash, $script:mockSourceMediaDisplayName) -Verbose
 
@@ -144,32 +144,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                       = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData                = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath                       = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData                = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -202,26 +198,24 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath        = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath        = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
     }
 }

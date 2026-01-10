@@ -31,7 +31,6 @@
         'Connect-SQLAnalysis'
         'Get-SqlInstanceMajorVersion'
         'Restart-SqlService'
-        'Restart-ReportingServicesService'
         'Update-AvailabilityGroupReplica'
         'Test-LoginEffectivePermissions'
         'Test-AvailabilityReplicaSeedingModeAutomatic'
@@ -45,11 +44,8 @@
         'Find-ExceptionByNumber'
         'Compare-ResourcePropertyState'
         'Test-DscPropertyState'
-        'Get-ProtocolNameProperties'
-        'Get-ServerProtocolObject'
         'Import-Assembly'
         'ConvertTo-ServerInstanceName'
-        'Get-FilePathMajorVersion'
         'Test-FeatureFlag'
     )
 

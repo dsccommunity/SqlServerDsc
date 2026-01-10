@@ -63,6 +63,14 @@
         Save-SqlDscSqlServerMediaFile -Url 'https://download.microsoft.com/download/9/0/7/907AD35F-9F9C-43A5-9789-52470555DB90/ENU/SQLServer2016SP1-FullSlipstream-x64-ENU.iso' -DestinationPath 'C:\path\to\destination'
 
         This downloads the SQL Server 2016 media and saves it to the specified destination path.
+
+    .INPUTS
+        None.
+
+    .OUTPUTS
+        `System.IO.FileInfo`
+
+        Returns a FileInfo object representing the downloaded media file.
 #>
 function Save-SqlDscSqlServerMediaFile
 {
@@ -107,22 +115,9 @@ function Save-SqlDscSqlServerMediaFile
         $ConfirmPreference = 'None'
     }
 
-    if ((Get-Item -Path "$DestinationPath/*.iso" -Force).Count -gt 0 -and -not $SkipExecution)
-    {
-        $auditAlreadyPresentMessage = $script:localizedData.SqlServerMediaFile_Save_InvalidDestinationFolder
-
-        $PSCmdlet.ThrowTerminatingError(
-            [System.Management.Automation.ErrorRecord]::new(
-                $auditAlreadyPresentMessage,
-                'SSDSSM0001', # cspell: disable-line
-                [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                $DestinationPath
-            )
-        )
-    }
-
     $destinationFilePath = Join-Path -Path $DestinationPath -ChildPath $FileName
 
+    # Handle target file if it exists - Force parameter controls overwrite behavior
     if ((Test-Path -Path $destinationFilePath))
     {
         $verboseDescriptionMessage = $script:localizedData.SqlServerMediaFile_Save_ShouldProcessVerboseDescription -f $destinationFilePath
@@ -171,7 +166,7 @@ function Save-SqlDscSqlServerMediaFile
     Write-Verbose -Message ($script:localizedData.SqlServerMediaFile_Save_DownloadingInformation -f $Url)
 
     # Download the URL content.
-    Invoke-WebRequest -Uri $Url -OutFile $downloadedFilePath | Out-Null
+    Invoke-WebRequest -Uri $Url -OutFile $downloadedFilePath -UseBasicParsing | Out-Null
 
     if ($Quiet.IsPresent)
     {
@@ -226,10 +221,11 @@ function Save-SqlDscSqlServerMediaFile
                 Message      = $script:localizedData.SqlServerMediaFile_Save_MultipleFilesFoundAfterDownload
                 Category     = 'InvalidOperation'
                 ErrorId      = 'SSDSSM0002' # CSpell: disable-line
-                TargetObject = $ServiceType
+                TargetObject = $DestinationPath
             }
 
             Write-Error @writeErrorParameters
+            return
         }
 
         Write-Verbose -Message ($script:localizedData.SqlServerMediaFile_Save_RenamingFile -f $isoFile.Name, $FileName)

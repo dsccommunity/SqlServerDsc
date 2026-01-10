@@ -4,7 +4,7 @@
 #>
 
 # Suppressing this rule because Script Analyzer does not understand Pester's syntax.
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
 BeforeDiscovery {
@@ -12,31 +12,31 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first'
     }
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
     $script:dscResourceName = 'DSC_SqlRole'
 
     $env:SqlServerDscCI = $true
 
     $script:testEnvironment = Initialize-TestEnvironment `
-        -DSCModuleName $script:dscModuleName `
+        -DSCModuleName $script:moduleName `
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
         -TestType 'Unit'
@@ -714,7 +714,7 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                 $mockTestParameters.Ensure = 'Absent'
                 $mockTestParameters.ServerRoleName = $mockSqlServerRole
 
-                { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
             }
         }
 
@@ -755,7 +755,7 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                 $mockTestParameters.Ensure         = 'Present'
                 $mockTestParameters.ServerRoleName = $mockSqlServerRoleAdd
 
-                { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
             }
 
             Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -850,7 +850,7 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                 $mockTestParameters.ServerRoleName   = 'AdminSqlForBI'
                 $mockTestParameters.MembersToInclude = 'CONTOSO\Lucy'
 
-                { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
             }
 
             Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -923,7 +923,7 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                 $mockTestParameters.ServerRoleName   = 'AdminSqlForBI'
                 $mockTestParameters.MembersToExclude = 'CONTOSO\Kelly'
 
-                { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
             }
 
             Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -1023,7 +1023,7 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                 $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
                 $mockTestParameters.Members        = @('CONTOSO\John', 'CONTOSO\Lucy')
 
-                { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
             }
 
             Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -1044,7 +1044,7 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                     $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
                     $mockTestParameters.Members = @('CONTOSO\John', 'CONTOSO\Kelly', 'TestChildRole')
 
-                    { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -1064,7 +1064,7 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                     $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
                     $mockTestParameters.MembersToInclude = @('TestChildRole')
 
-                    { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -1084,7 +1084,7 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                     $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
                     $mockTestParameters.MembersToExclude = @('TestChildRole')
 
-                    { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -1104,7 +1104,7 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                     $mockTestParameters.Ensure = 'Present'
                     $mockTestParameters.Members = 'CONTOSO\John'.ToUpper()
 
-                    { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -1120,7 +1120,7 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                     $mockTestParameters.Ensure = 'Present'
                     $mockTestParameters.Members = @('CONTOSO\John'.ToUpper(), 'CONTOSO\Kelly')
 
-                    { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
 
                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -1138,7 +1138,7 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                     $mockTestParameters.Ensure = 'Present'
                     $mockTestParameters.MembersToInclude = @('CONTOSO\John'.ToUpper())
 
-                    { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -1154,7 +1154,7 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                     $mockTestParameters.Ensure = 'Present'
                     $mockTestParameters.MembersToExclude = @('CONTOSO\John'.ToUpper())
 
-                    { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It

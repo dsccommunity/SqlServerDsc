@@ -17,6 +17,9 @@
 
         Throws an exception if the bound parameters are not in the correct state.
 
+    .INPUTS
+        None.
+
     .OUTPUTS
         None.
 
@@ -39,12 +42,19 @@ function Assert-SetupActionProperties
         $SetupAction
     )
 
+    $setupExecutableFileVersion = $null
+
+    <#
+        Assumes that the MediaPath parameter is always specified as this should
+        only be called internally by Invoke-SetupAction that have MediaPath as a
+        mandatory parameter.
+    #>
+    $setupExecutableFileVersion = $Property.MediaPath |
+        Join-Path -ChildPath 'setup.exe' |
+        Get-FileVersion
+
     if ($Property.ContainsKey('Features'))
     {
-        $setupExecutableFileVersion = $Property.MediaPath |
-            Join-Path -ChildPath 'setup.exe' |
-            Get-FileVersionInformation
-
         $Property.Features |
             Assert-Feature -ProductVersion $setupExecutableFileVersion.ProductVersion
     }
@@ -131,17 +141,38 @@ function Assert-SetupActionProperties
         )
     }
 
-    # If feature is SQLENGINE, then for specified setup actions the parameter AgtSvcAccount is mandatory.
-    if ($SetupAction -in ('CompleteImage', 'InstallFailoverCluster', 'PrepareFailoverCluster', 'AddNode'))
+    if ($SetupAction -in @('CompleteImage'))
     {
+        # If feature is SQLENGINE, then InstanceId, SqlSvcAccount and AgtSvcAccount are mandatory.
+        if ($Property.ContainsKey('Features') -and $Property.Features -contains 'SQLENGINE')
+        {
+            Assert-BoundParameter -BoundParameterList $Property -RequiredParameter @(
+                'InstanceId'
+                'SqlSvcAccount'
+                'AgtSvcAccount'
+            )
+        }
+    }
+
+    if ($SetupAction -in @('PrepareImage'))
+    {
+        # If feature is SQLENGINE, then InstanceId is mandatory.
+        if ($Property.ContainsKey('Features') -and $Property.Features -contains 'SQLENGINE')
+        {
+            Assert-BoundParameter -BoundParameterList $Property -RequiredParameter @(
+                'InstanceId'
+            )
+        }
+    }
+
+    if ($SetupAction -in @('InstallFailoverCluster', 'PrepareFailoverCluster', 'AddNode'))
+    {
+        # If feature is SQLENGINE, then for specified setup actions the parameter AgtSvcAccount is mandatory.
         if ($Property.ContainsKey('Features') -and $Property.Features -contains 'SQLENGINE')
         {
             Assert-BoundParameter -BoundParameterList $Property -RequiredParameter @('AgtSvcAccount')
         }
-    }
 
-    if ($SetupAction -in ('InstallFailoverCluster', 'PrepareFailoverCluster', 'AddNode'))
-    {
         # The parameter ASSvcAccount is mandatory if feature AS is installed and setup action is InstallFailoverCluster, PrepareFailoverCluster, or AddNode.
         if ($Property.ContainsKey('Features') -and $Property.Features -contains 'AS')
         {
@@ -211,6 +242,24 @@ function Assert-SetupActionProperties
         {
             Assert-BoundParameter -BoundParameterList $Property -RequiredParameter @(
                 'ASSysAdminAccounts'
+            )
+        }
+    }
+
+    # The parameter AllowDqRemoval is only allowed for SQL Server 2025 (17.x) and later versions.
+    if ($Property.ContainsKey('AllowDqRemoval'))
+    {
+        $majorVersion = $setupExecutableFileVersion.ProductVersion.Split('.')[0]
+
+        if ([System.Int32] $majorVersion -lt 17)
+        {
+            $PSCmdlet.ThrowTerminatingError(
+                [System.Management.Automation.ErrorRecord]::new(
+                    ($script:localizedData.InstallSqlServerProperties_AllowDqRemovalInvalidVersion -f $majorVersion),
+                    'ASAP0003', # cSpell: disable-line
+                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                    'Command parameters'
+                )
             )
         }
     }

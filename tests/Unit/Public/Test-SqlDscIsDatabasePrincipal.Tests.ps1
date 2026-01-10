@@ -1,4 +1,4 @@
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
 BeforeDiscovery {
@@ -6,45 +6,44 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
     $env:SqlServerDscCI = $true
 
-    Import-Module -Name $script:dscModuleName
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
     # Loading mocked classes
     Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../Stubs') -ChildPath 'SMO.cs')
 
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
-
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -167,6 +166,131 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
                     $result = Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'Zebes\SamusAran' -ExcludeUsers
 
                     $result | Should -BeFalse
+                }
+            }
+
+            Context 'When using the Refresh parameter' {
+                BeforeAll {
+                    $script:refreshCalled = $false
+
+                    $mockServerObjectWithRefresh = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                        Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                            return @{
+                                'AdventureWorks' = New-Object -TypeName Object |
+                                    Add-Member -MemberType 'NoteProperty' -Name Name -Value 'AdventureWorks' -PassThru |
+                                    Add-Member -MemberType 'ScriptProperty' -Name 'Users' -Value {
+                                        return @{
+                                            'Zebes\SamusAran' = New-Object -TypeName Object |
+                                                Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'Zebes\SamusAran' -PassThru -Force
+                                        } | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                                            $script:refreshCalled = $true
+                                        } -PassThru -Force
+                                    } -PassThru |
+                                    Add-Member -MemberType 'ScriptProperty' -Name 'ApplicationRoles' -Value {
+                                        return @{} | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                                            # Mock refresh for ApplicationRoles
+                                        } -PassThru -Force
+                                    } -PassThru |
+                                    Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
+                                        return @{} | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                                            # Mock refresh for Roles
+                                        } -PassThru -Force
+                                    } -PassThru -Force
+                            } | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                                # Mock refresh for Databases collection
+                                $script:refreshCalled = $true
+                            } -PassThru -Force
+                        } -PassThru -Force
+                }
+
+                It 'Should call Refresh on the database collections when Refresh parameter is specified' {
+                    $result = Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObjectWithRefresh -DatabaseName 'AdventureWorks' -Name 'Zebes\SamusAran' -Refresh
+
+                    $result | Should -BeTrue
+                    $script:refreshCalled | Should -BeTrue
+                }
+
+                It 'Should only refresh Users collection when other types are excluded' {
+                    $script:usersRefreshed = $false
+                    $script:rolesRefreshed = $false
+                    $script:appRolesRefreshed = $false
+
+                    $mockServerObjectOptimized = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                        Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                            return @{
+                                'AdventureWorks' = New-Object -TypeName Object |
+                                    Add-Member -MemberType 'NoteProperty' -Name Name -Value 'AdventureWorks' -PassThru |
+                                    Add-Member -MemberType 'ScriptProperty' -Name 'Users' -Value {
+                                        return @{
+                                            'Zebes\SamusAran' = New-Object -TypeName Object |
+                                                Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'Zebes\SamusAran' -PassThru -Force
+                                        } | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                                            $script:usersRefreshed = $true
+                                        } -PassThru -Force
+                                    } -PassThru |
+                                    Add-Member -MemberType 'ScriptProperty' -Name 'ApplicationRoles' -Value {
+                                        return @{} | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                                            $script:appRolesRefreshed = $true
+                                        } -PassThru -Force
+                                    } -PassThru |
+                                    Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
+                                        return @{} | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                                            $script:rolesRefreshed = $true
+                                        } -PassThru -Force
+                                    } -PassThru -Force
+                            } | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                                # Mock refresh for Databases collection
+                            } -PassThru -Force
+                        } -PassThru -Force
+
+                    $result = Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObjectOptimized -DatabaseName 'AdventureWorks' -Name 'Zebes\SamusAran' -Refresh -ExcludeRoles -ExcludeApplicationRoles
+
+                    $result | Should -BeTrue
+                    $script:usersRefreshed | Should -BeTrue
+                    $script:rolesRefreshed | Should -BeFalse
+                    $script:appRolesRefreshed | Should -BeFalse
+                }
+
+                It 'Should only refresh Roles collection when Users and ApplicationRoles are excluded' {
+                    $script:usersRefreshed = $false
+                    $script:rolesRefreshed = $false
+                    $script:appRolesRefreshed = $false
+
+                    $mockServerObjectOptimized = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                        Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                            return @{
+                                'AdventureWorks' = New-Object -TypeName Object |
+                                    Add-Member -MemberType 'NoteProperty' -Name Name -Value 'AdventureWorks' -PassThru |
+                                    Add-Member -MemberType 'ScriptProperty' -Name 'Users' -Value {
+                                        return @{} | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                                            $script:usersRefreshed = $true
+                                        } -PassThru -Force
+                                    } -PassThru |
+                                    Add-Member -MemberType 'ScriptProperty' -Name 'ApplicationRoles' -Value {
+                                        return @{} | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                                            $script:appRolesRefreshed = $true
+                                        } -PassThru -Force
+                                    } -PassThru |
+                                    Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
+                                        return @{
+                                            'TestRole' = New-Object -TypeName Object |
+                                                Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestRole' -PassThru |
+                                                Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $false -PassThru -Force
+                                        } | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                                            $script:rolesRefreshed = $true
+                                        } -PassThru -Force
+                                    } -PassThru -Force
+                            } | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                                # Mock refresh for Databases collection
+                            } -PassThru -Force
+                        } -PassThru -Force
+
+                    $result = Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObjectOptimized -DatabaseName 'AdventureWorks' -Name 'TestRole' -Refresh -ExcludeUsers -ExcludeApplicationRoles
+
+                    $result | Should -BeTrue
+                    $script:usersRefreshed | Should -BeFalse
+                    $script:rolesRefreshed | Should -BeTrue
+                    $script:appRolesRefreshed | Should -BeFalse
                 }
             }
         }

@@ -28,7 +28,7 @@ function Write-ModuleStubFile
     )
 
     # Import the supplied module
-    Import-Module -Name $ModuleName -DisableNameChecking -Force -ErrorAction Stop
+    Import-Module -Name $ModuleName -DisableNameChecking -Force -ErrorAction 'Stop'
 
     # Get the module object
     $module = Get-Module -Name $ModuleName

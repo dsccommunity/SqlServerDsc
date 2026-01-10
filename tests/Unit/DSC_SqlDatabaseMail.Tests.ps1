@@ -5,7 +5,7 @@
 #>
 
 # Suppressing this rule because Script Analyzer does not understand Pester's syntax.
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
 BeforeDiscovery {
@@ -13,31 +13,31 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
     $script:dscResourceName = 'DSC_SqlDatabaseMail'
 
     $env:SqlServerDscCI = $true
 
     $script:testEnvironment = Initialize-TestEnvironment `
-        -DSCModuleName $script:dscModuleName `
+        -DSCModuleName $script:moduleName `
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
         -TestType 'Unit'
@@ -861,7 +861,7 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                     $setTargetResourceParameters.AccountName = 'MissingAccount'
                     $setTargetResourceParameters.ProfileName = 'MissingProfile'
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
                     $script:MailAccountCreateMethodCallCount | Should -Be 0
                     $script:MailServerRenameMethodCallCount | Should -Be 0
@@ -905,7 +905,7 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                     $setTargetResourceParameters['TcpPort'] = $MockTcpPort
                     $setTargetResourceParameters['UseDefaultCredentials'] = $MockUseDefaultCredentials
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
                     $script:MailAccountCreateMethodCallCount | Should -Be 0
                     $script:MailServerRenameMethodCallCount | Should -Be 0
@@ -937,7 +937,7 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                     $setTargetResourceParameters = $mockDefaultParameters.Clone()
                     $setTargetResourceParameters.Ensure = 'Absent'
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
                     $script:JobServerAlterMethodCallCount | Should -Be 1
                     $script:MailProfileDropMethodCallCount | Should -Be 1
@@ -995,7 +995,7 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                         $setTargetResourceParameters['TcpPort'] = 2525
                         $setTargetResourceParameters['UseDefaultCredentials'] = $true
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
                         $script:MailAccountCreateMethodCallCount | Should -Be 1
                         $script:MailServerRenameMethodCallCount | Should -Be 1
@@ -1070,7 +1070,7 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
 
                         $setTargetResourceParameters.$Property = $PropertyValue
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
                         $script:MailAccountCreateMethodCallCount | Should -Be 0
 

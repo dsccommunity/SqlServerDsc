@@ -24,6 +24,11 @@
 
         Asserts that the computer managed service object is of the type Database Engine.
 
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Wmi.Service`
+
+        Accepts a SQL Server managed service object via the pipeline.
+
     .OUTPUTS
         None.
 #>

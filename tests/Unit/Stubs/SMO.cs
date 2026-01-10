@@ -4,7 +4,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Globalization;
+using System.Linq;
 using System.Security;
 using System.Runtime.InteropServices;
 
@@ -155,6 +157,214 @@ namespace Microsoft.SqlServer.Management.Smo
         Dropped = 4,
     }
 
+    public enum TerminationClause : int
+    {
+        FailOnOpenTransactions = 0,
+        RollbackTransactionsImmediately = 1,
+        CloseAllConnectionsImmediately = 2
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.DatabaseUserAccess
+    // Used by:
+    //  New-SqlDscDatabase.Tests.ps1
+    //  Set-SqlDscDatabaseProperty.Tests.ps1
+    public enum DatabaseUserAccess : int
+    {
+        Multiple = 0,
+        Single = 1,
+        Restricted = 2
+    }
+
+    // Database-specific enums
+    public enum CompatibilityLevel : int
+    {
+        Version60 = 60,
+        Version65 = 65,
+        Version70 = 70,
+        Version80 = 80,
+        Version90 = 90,
+        Version100 = 100,
+        Version110 = 110,
+        Version120 = 120,
+        Version130 = 130,
+        Version140 = 140,
+        Version150 = 150,
+        Version160 = 160,
+        Version170 = 170
+    }
+
+    public enum ContainmentType : int
+    {
+        None = 0,
+        Partial = 1
+    }
+
+    public enum CatalogCollationType : int
+    {
+        DatabaseDefault = 0,
+        ContainedDatabaseFixedCollation = 1,
+        SQLLatin1GeneralCP1CIAS = 2 // cSpell:ignore CIAS
+    }
+
+    public enum FilestreamNonTransactedAccessType : int
+    {
+        Off = 0,
+        ReadOnly = 1,
+        Full = 2
+    }
+
+    public enum PageVerify : int
+    {
+        None = 0,
+        TornPageDetection = 1,
+        Checksum = 2
+    }
+
+    public enum RecoveryModel : int
+    {
+        Full = 1,
+        BulkLogged = 2,
+        Simple = 3
+    }
+
+    public enum RetentionPeriodUnits : int
+    {
+        None = 0,
+        Days = 1,
+        Hours = 2,
+        Minutes = 3
+    }
+
+    public enum AvailabilityDatabaseSynchronizationState : int
+    {
+        NotSynchronizing = 0,
+        Synchronizing = 1,
+        Synchronized = 2,
+        Reverting = 3,
+        Initializing = 4
+    }
+
+    public enum LogReuseWaitStatus : int
+    {
+        Nothing = 0,
+        Checkpoint = 1,
+        LogBackup = 2,
+        BackupOrRestore = 3,
+        Transaction = 4,
+        Mirroring = 5,
+        Replication = 6,
+        SnapshotCreation = 7,
+        LogScan = 8,
+        Other = 9
+    }
+
+    public enum MirroringSafetyLevel : int
+    {
+        None = 0,
+        Unknown = 1,
+        Off = 2,
+        Full = 3
+    }
+
+    public enum DelayedDurability : int
+    {
+        Disabled = 0,
+        Allowed = 1,
+        Forced = 2
+    }
+
+    public enum DatabaseScopedConfigurationOnOff : int
+    {
+        Off = 0,
+        On = 1,
+        Primary = 2
+    }
+
+    public enum MirroringStatus : int
+    {
+        None = 0,
+        Suspended = 1,
+        Disconnected = 2,
+        Synchronizing = 3,
+        PendingFailover = 4,
+        Synchronized = 5
+    }
+
+    public enum MirroringWitnessStatus : int
+    {
+        None = 0,
+        Unknown = 1,
+        Connected = 2,
+        Disconnected = 3
+    }
+
+    [System.Flags]
+    public enum ReplicationOptions : int
+    {
+        None = 0,
+        Published = 1,
+        Subscribed = 2,
+        MergePublished = 4,
+        MergeSubscribed = 8
+    }
+
+    public enum SnapshotIsolationState : int
+    {
+        Disabled = 0,
+        Enabled = 1,
+        PendingOff = 2,
+        PendingOn = 3
+    }
+
+    [System.Flags]
+    public enum DatabaseStatus : int
+    {
+        Normal = 1,
+        Restoring = 2,
+        RecoveryPending = 4,
+        Recovering = 8,
+        Suspect = 16,
+        Offline = 32,
+        Inaccessible = 62,
+        Standby = 64,
+        Shutdown = 128,
+        EmergencyMode = 256,
+        AutoClosed = 512
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.BackupActionType
+    // Used by:
+    //  Backup-SqlDscDatabase.Tests.ps1
+    public enum BackupActionType : int
+    {
+        Database = 0,
+        Files = 1,
+        Log = 2
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.BackupCompressionOptions
+    // Used by:
+    //  Backup-SqlDscDatabase.Tests.ps1
+    public enum BackupCompressionOptions : int
+    {
+        Default = 0,
+        On = 1,
+        Off = 2
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.DeviceType
+    // Used by:
+    //  Backup-SqlDscDatabase.Tests.ps1
+    public enum DeviceType : int
+    {
+        LogicalDevice = 0,
+        Tape = 1,
+        File = 2,
+        Pipe = 3,
+        VirtualDevice = 4,
+        Url = 5
+    }
+
     #endregion Public Enums
 
     #region Public Classes
@@ -297,6 +507,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public string NetName;
         public Hashtable Roles = new Hashtable();
         public Hashtable Version = new Hashtable();
+        public int VersionMajor;
 
         public Server(){}
         public Server(string name)
@@ -324,7 +535,8 @@ namespace Microsoft.SqlServer.Management.Smo
                 NetName = this.NetName,
                 Roles = this.Roles,
                 ServiceName = this.ServiceName,
-                Version = this.Version
+                Version = this.Version,
+                VersionMajor = this.VersionMajor
             };
         }
 
@@ -345,6 +557,60 @@ namespace Microsoft.SqlServer.Management.Smo
         public void Revoke( Microsoft.SqlServer.Management.Smo.ServerPermissionSet permission, string granteeName )
         {
         }
+
+        public void KillAllProcesses( string databaseName )
+        {
+        }
+
+        public void KillProcess( int processId )
+        {
+        }
+
+        public DataTable EnumProcesses( string loginName )
+        {
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("Spid", typeof(int));
+            dataTable.Columns.Add("Login", typeof(string));
+
+            // Return a row with SPID 51 for any login name
+            var row = dataTable.NewRow();
+            row["Spid"] = 51;
+            row["Login"] = loginName;
+            dataTable.Rows.Add(row);
+
+            return dataTable;
+        }
+
+        // Property for SQL Agent support
+        public Microsoft.SqlServer.Management.Smo.Agent.JobServer JobServer { get; set; }
+
+        // Property for server configuration
+        public Microsoft.SqlServer.Management.Smo.Configuration Configuration { get; set; }
+
+        // Fabricated constructor
+        private Server(string name, bool dummyParam)
+        {
+            this.Name = name;
+        }
+
+        public static Server CreateTypeInstance()
+        {
+            var server = new Server();
+
+            server.JobServer = new Microsoft.SqlServer.Management.Smo.Agent.JobServer
+            {
+                Parent = server,
+                Alerts = Microsoft.SqlServer.Management.Smo.Agent.AlertCollection.CreateTypeInstance(),
+                Operators = Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection.CreateTypeInstance()
+            };
+
+            server.JobServer.Alerts.Parent = server.JobServer;
+            server.JobServer.Operators.Parent = server.JobServer;
+
+            server.Configuration = Microsoft.SqlServer.Management.Smo.Configuration.CreateTypeInstance();
+
+            return server;
+        }
     }
 
     // TypeName: Microsoft.SqlServer.Management.Smo.Login
@@ -357,11 +623,13 @@ namespace Microsoft.SqlServer.Management.Smo
 
         public string Name;
         public LoginType LoginType = LoginType.Unknown;
+        public bool MockCreateCalled = false;
         public bool MustChangePassword = false;
         public bool PasswordPolicyEnforced = false;
         public bool PasswordExpirationEnabled = false;
         public bool IsDisabled = false;
         public string DefaultDatabase;
+        public Server Parent;
 
         public Login( string name )
         {
@@ -371,11 +639,16 @@ namespace Microsoft.SqlServer.Management.Smo
         public Login( Server server, string name )
         {
             this.Name = name;
+            this.Parent = server;
         }
 
         public Login( Object server, string name )
         {
             this.Name = name;
+            if (server is Server)
+            {
+                this.Parent = (Server)server;
+            }
         }
 
         public void Alter()
@@ -427,6 +700,8 @@ namespace Microsoft.SqlServer.Management.Smo
             if( this.LoginType == LoginType.SqlLogin && _mockPasswordPassed != true ) {
                 throw new System.Exception( "Called Create() method for the LoginType 'SqlLogin' but called with the wrong overloaded method. Did not pass the password with the Create() method." );
             }
+
+            this.MockCreateCalled = true;
         }
 
         public void Create( SecureString secureString )
@@ -478,6 +753,20 @@ namespace Microsoft.SqlServer.Management.Smo
             }
         }
 
+        public void Disable()
+        {
+            this.IsDisabled = true;
+        }
+
+        public void Enable()
+        {
+            this.IsDisabled = false;
+        }
+
+        public string Certificate;
+        public string AsymmetricKey;
+        public string Language;
+
         public void Drop()
         {
         }
@@ -491,15 +780,38 @@ namespace Microsoft.SqlServer.Management.Smo
     {
         public ServerRole( Server server, string name ) {
             this.Name = name;
+            this.Parent = server;
         }
 
         public ServerRole( Object server, string name ) {
             this.Name = name;
+            this.Parent = (Server)server;
         }
 
         public string Name;
+        public Server Parent;
     }
 
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.DefaultLanguage
+    // Used by:
+    //  Database.DefaultLanguage
+    //  Database.DefaultFullTextLanguage
+    public class DefaultLanguage
+    {
+        public DefaultLanguage()
+        {
+        }
+
+        public DefaultLanguage(int lcid, string name)
+        {
+            this.Lcid = lcid;
+            this.Name = name;
+        }
+
+        public int Lcid { get; set; }
+        public string Name { get; set; }
+    }
 
     // TypeName: Microsoft.SqlServer.Management.Smo.Database
     // BaseType: Microsoft.SqlServer.Management.Smo.ScriptNameObjectBase
@@ -509,44 +821,192 @@ namespace Microsoft.SqlServer.Management.Smo
     //  DSC_SqlDatabasePermission
     public class Database
     {
+        // Boolean Properties
+        public bool AcceleratedRecoveryEnabled = true;
+        public bool ActiveDirectory = false;
+        public bool AnsiNullDefault = true;
+        public bool AnsiNullsEnabled = true;
+        public bool AnsiPaddingEnabled = true;
+        public bool AnsiWarningsEnabled = true;
+        public bool ArithmeticAbortEnabled = true;
         public bool AutoClose = false;
-        public string AvailabilityGroupName = "";
+        public bool AutoCreateIncrementalStatisticsEnabled = true;
+        public bool AutoCreateStatisticsEnabled = true;
+        public bool AutoShrink = false;
+        public bool AutoUpdateStatisticsAsync = false;
+        public bool AutoUpdateStatisticsEnabled = true;
+        public bool BrokerEnabled = false;
+        public bool CaseSensitive = false;
+        public bool ChangeTrackingAutoCleanUp = true;
+        public bool ChangeTrackingEnabled = false;
+        public bool CloseCursorsOnCommitEnabled = false;
+        public bool ConcatenateNullYieldsNull = true;
+        public bool DatabaseOwnershipChaining = false;
+        public bool DataRetentionEnabled = false;
+        public bool DateCorrelationOptimization = false;
+        public DelayedDurability DelayedDurability = DelayedDurability.Disabled;
+        public bool EncryptionEnabled = false;
+        public bool HasDatabaseEncryptionKey = false;
+        public bool HasFileInCloud = false;
+        public bool HasMemoryOptimizedObjects = false;
+        public bool HonorBrokerPriority = false;
+        public bool IsAccessible = true;
+        public bool IsDatabaseSnapshot = false;
+        public bool IsDatabaseSnapshotBase = false;
+        public bool IsDbAccessAdmin = false;
+        public bool IsDbBackupOperator = false;
+        public bool IsDbDatareader = false;
+        public bool IsDbDatawriter = false;
+        public bool IsDbDdlAdmin = false;
+        public bool IsDbDenyDatareader = false;
+        public bool IsDbDenyDatawriter = false;
+        public bool IsDbManager = false;
+        public bool IsDbOwner = true;
+        public bool IsDbSecurityAdmin = false;
+        public bool IsFabricDatabase = false;
+        public bool IsFullTextEnabled = false;
+        public bool IsLedger = false;
+        public bool IsLoginManager = false;
+        public bool IsMailHost = false;
+        public bool IsManagementDataWarehouse = false;
+        public bool IsMaxSizeApplicable = false;
+        public bool IsMirroringEnabled = false;
+        public bool IsParameterizationForced = false;
+        public bool IsReadCommittedSnapshotOn = false;
+        public bool IsSqlDw = false;
+        public bool IsSqlDwEdition = false;
+        public bool IsSystemObject = false;
+        public bool IsVarDecimalStorageFormatEnabled = false;
+        public bool IsVarDecimalStorageFormatSupported = true;
+        public bool LegacyCardinalityEstimation = false;
+        public bool LegacyCardinalityEstimationForSecondary = false;
+        public bool LocalCursorsDefault = false;
+        public bool NestedTriggersEnabled = true;
+        public bool NumericRoundAbortEnabled = false;
+        public bool ParameterSniffing = true;
+        public bool ParameterSniffingForSecondary = true;
+        public bool QueryOptimizerHotfixes = false;
+        public bool QueryOptimizerHotfixesForSecondary = false;
+        public bool QuotedIdentifiersEnabled = true;
+        public bool ReadOnly = false;
+        public bool RecursiveTriggersEnabled = false;
+        public bool RemoteDataArchiveEnabled = false;
+        public bool RemoteDataArchiveUseFederatedServiceAccount = false;
+        public bool TemporalHistoryRetentionEnabled = true;
+        public bool TransformNoiseWords = false;
+        public bool Trustworthy = false;
+        public bool WarnOnRename = true;
+
+        // String Properties
+        public string AvailabilityGroupName = "TestAG";
+        public string AzureServiceObjective = "S1";
+        public CatalogCollationType CatalogCollation = CatalogCollationType.DatabaseDefault;
+        public string Collation = "SQL_Latin1_General_CP1_CI_AS";
+        public string DboLogin = "sa";
+        public string DefaultFileGroup = "PRIMARY";
+        public string DefaultFileStreamFileGroup = "FileStreamGroup";
+        public string DefaultFullTextCatalog = "TestCatalog";
+        public string DefaultSchema = "dbo";
+        public string FilestreamDirectoryName = "TestDirectory";
+        public string MirroringPartner = "TestPartner";
+        public string MirroringPartnerInstance = "TestInstance";
+        public string MirroringWitness = "TestWitness";
+        public string Owner = "sa";
+        public string PersistentVersionStoreFileGroup = "PRIMARY";
+        public string PrimaryFilePath = "C:\\Data\\";
+        public string RemoteDataArchiveCredential = "TestCredential";
+        public string RemoteDataArchiveEndpoint = "https://test.endpoint.com";
+        public string RemoteDataArchiveLinkedServer = "TestLinkedServer";
+        public string RemoteDatabaseName = "RemoteDB";
+        public string UserName = "TestUser";
+
+        // Integer Properties
+        public int ActiveConnections = 5;
+        public int ChangeTrackingRetentionPeriod = 2;
+        public int ID = 5;
+        public int MaxDop = 0;
+        public int MaxDopForSecondary = 0;
+        public int MirroringRedoQueueMaxSize = 100;
+        public int MirroringRoleSequence = 1;
+        public int MirroringSafetySequence = 1;
+        public int MirroringTimeout = 10;
+        public int TargetRecoveryTime = 60;
+
+        // Language Properties
+        public DefaultLanguage DefaultFullTextLanguage = new DefaultLanguage(1033, "English");
+        public DefaultLanguage DefaultLanguage = new DefaultLanguage(0, "");
+        public int TwoDigitYearCutoff = 2049;
+        public int Version = 904;
+
+        // Enum Properties
+        public AvailabilityDatabaseSynchronizationState AvailabilityDatabaseSynchronizationState = AvailabilityDatabaseSynchronizationState.Synchronized;
+        public RetentionPeriodUnits ChangeTrackingRetentionPeriodUnits = RetentionPeriodUnits.Days;
+        public CompatibilityLevel CompatibilityLevel = CompatibilityLevel.Version150;
+        public Microsoft.SqlServer.Management.Common.DatabaseEngineEdition DatabaseEngineEdition = Microsoft.SqlServer.Management.Common.DatabaseEngineEdition.Standard;
+        public Microsoft.SqlServer.Management.Common.DatabaseEngineType DatabaseEngineType = Microsoft.SqlServer.Management.Common.DatabaseEngineType.Standalone;
+        public ContainmentType ContainmentType = ContainmentType.None;
+        public FilestreamNonTransactedAccessType FilestreamNonTransactedAccess = FilestreamNonTransactedAccessType.Off;
+        public LogReuseWaitStatus LogReuseWaitStatus = LogReuseWaitStatus.Nothing;
+        public MirroringSafetyLevel MirroringSafetyLevel = MirroringSafetyLevel.Full;
+        public MirroringStatus MirroringStatus = MirroringStatus.None;
+        public MirroringWitnessStatus MirroringWitnessStatus = MirroringWitnessStatus.None;
+        public ReplicationOptions ReplicationOptions = ReplicationOptions.None;
+        public SnapshotIsolationState SnapshotIsolationState = SnapshotIsolationState.Disabled;
+        public PageVerify PageVerify = PageVerify.Checksum;
+        public RecoveryModel RecoveryModel = RecoveryModel.Full;
+        public DatabaseUserAccess UserAccess = DatabaseUserAccess.Multiple;
+        public SqlSmoState State = SqlSmoState.Existing;
+        public DatabaseStatus Status = DatabaseStatus.Normal;
+
+        // Other existing properties
         public Certificate[] Certificates;
-        public string ContainmentType = "None";
         public DateTime CreateDate;
         public DatabaseEncryptionKey DatabaseEncryptionKey;
-        public string DefaultFileStreamFileGroup;
-        public bool EncryptionEnabled = false;
-        public Hashtable FileGroups;
-        public string FilestreamDirectoryName;
-        public string FilestreamNonTransactedAccess = "Off";
-        public int ID = 6;
-        public bool IsMirroringEnabled = false;
         public DateTime LastBackupDate = DateTime.Now;
+        public FileGroupCollection FileGroups { get; set; }
         public Hashtable LogFiles;
-        public string Owner = "sa";
-        public bool ReadOnly = false;
-        public string RecoveryModel = "Full";
-        public string UserAccess = "Multiple";
+        public string DatabaseSnapshotBaseName;
 
 
-        public Database( Server server, string name ) {
+        public Database( Server server, string name )
+        {
             this.Name = name;
+            this.Parent = server;
+            this.FileGroups = new FileGroupCollection();
         }
 
-        public Database( Object server, string name ) {
+        public Database( Object server, string name )
+        {
             this.Name = name;
+            this.Parent = (Server)server;
+            this.FileGroups = new FileGroupCollection();
         }
 
-        public Database() {}
+        public Database()
+        {
+            this.FileGroups = new FileGroupCollection();
+        }
 
         public string Name;
+        public Server Parent;
 
         public void Create()
         {
         }
 
         public void Drop()
+        {
+        }
+
+        public void Alter()
+        {
+        }
+
+        public void Alter(TerminationClause terminationClause)
+        {
+        }
+
+        public void Refresh()
         {
         }
 
@@ -565,6 +1025,184 @@ namespace Microsoft.SqlServer.Management.Smo
 
         public void Deny( Microsoft.SqlServer.Management.Smo.DatabasePermissionSet permission, string granteeName )
         {
+        }
+
+        public void SetDefaultFileGroup( string fileGroupName )
+        {
+            if (fileGroupName == "ThrowException")
+            {
+                throw new System.Exception("Failed to set default filegroup");
+            }
+            this.DefaultFileGroup = fileGroupName;
+        }
+
+        public void SetDefaultFileStreamFileGroup( string fileGroupName )
+        {
+            if (fileGroupName == "ThrowException")
+            {
+                throw new System.Exception("Failed to set default FILESTREAM filegroup");
+            }
+            this.DefaultFileStreamFileGroup = fileGroupName;
+        }
+
+        public void SetDefaultFullTextCatalog( string catalogName )
+        {
+            if (catalogName == "ThrowException")
+            {
+                throw new System.Exception("Failed to set default Full-Text catalog");
+            }
+            this.DefaultFullTextCatalog = catalogName;
+        }
+
+        public void SetSnapshotIsolation( bool enable )
+        {
+            if (enable)
+            {
+                this.SnapshotIsolationState = SnapshotIsolationState.Enabled;
+            }
+            else
+            {
+                this.SnapshotIsolationState = SnapshotIsolationState.Disabled;
+            }
+        }
+
+        public void SetOnline()
+        {
+            this.Status = DatabaseStatus.Normal;
+        }
+
+        public void SetOffline()
+        {
+            this.Status = DatabaseStatus.Offline;
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.FileGroup
+    // Used by:
+    //  New-SqlDscDatabase.Tests.ps1
+    //  New-SqlDscDatabaseSnapshot.Tests.ps1
+    public class FileGroup
+    {
+        public FileGroup()
+        {
+            this.Files = new DataFileCollection();
+        }
+
+        public FileGroup(Database database)
+        {
+            this.Parent = database;
+            this.Files = new DataFileCollection();
+        }
+
+        public FileGroup(Database database, string name)
+        {
+            this.Parent = database;
+            this.Name = name;
+            this.Files = new DataFileCollection();
+        }
+
+        public string Name { get; set; }
+        public Database Parent { get; set; }
+        public DataFileCollection Files { get; set; }
+        public bool ReadOnly { get; set; }
+        public bool IsDefault { get; set; }
+
+        public void Create()
+        {
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.FileGroupCollection
+    // Used by:
+    //  New-SqlDscDatabase.Tests.ps1
+    //  New-SqlDscDatabaseSnapshot.Tests.ps1
+    public class FileGroupCollection : Collection<FileGroup>
+    {
+        public FileGroup this[string name]
+        {
+            get
+            {
+                foreach (FileGroup fileGroup in this)
+                {
+                    if (name == fileGroup.Name)
+                    {
+                        return fileGroup;
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        new public void Add(FileGroup fileGroup)
+        {
+            base.Add(fileGroup);
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.DataFile
+    // Used by:
+    //  New-SqlDscDatabase.Tests.ps1
+    //  New-SqlDscDatabaseSnapshot.Tests.ps1
+    //  New-SqlDscDataFile.Tests.ps1
+    public class DataFile
+    {
+        public DataFile()
+        {
+        }
+
+        public DataFile(FileGroup fileGroup, string name)
+        {
+            this.Parent = fileGroup;
+            this.Name = name;
+        }
+
+        public DataFile(FileGroup fileGroup, string name, string fileName)
+        {
+            this.Parent = fileGroup;
+            this.Name = name;
+            this.FileName = fileName;
+        }
+
+        public string Name { get; set; }
+        public string FileName { get; set; }
+        public FileGroup Parent { get; set; }
+        public double Size { get; set; }
+        public double MaxSize { get; set; }
+        public double Growth { get; set; }
+        public string GrowthType { get; set; }
+        public bool IsPrimaryFile { get; set; }
+
+        public void Create()
+        {
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.DataFileCollection
+    // Used by:
+    //  New-SqlDscDatabase.Tests.ps1
+    //  New-SqlDscDatabaseSnapshot.Tests.ps1
+    public class DataFileCollection : Collection<DataFile>
+    {
+        public DataFile this[string name]
+        {
+            get
+            {
+                foreach (DataFile dataFile in this)
+                {
+                    if (name == dataFile.Name)
+                    {
+                        return dataFile;
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        new public void Add(DataFile dataFile)
+        {
+            base.Add(dataFile);
         }
     }
 
@@ -727,12 +1365,21 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Common.ServerConnection
     // Used by:
     //  SqlAGDatabase
+    //  Invoke-SqlDscScalarQuery
     public class ServerConnection
     {
         public string TrueLogin;
+        public int StatementTimeout;
 
         public void Create()
         {}
+
+        // Method: ExecuteScalar
+        // Used for testing scalar query execution in Invoke-SqlDscScalarQuery
+        public object ExecuteScalar(string query)
+        {
+            return null;
+        }
     }
 
     // TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityDatabase
@@ -980,7 +1627,7 @@ namespace Microsoft.SqlServer.Management.Smo
         }
     }
 
-    public class ConfigPropertyCollection
+    public class ConfigPropertyCollection : IEnumerable
     {
         // Property
         public System.Int32 Count { get; set; }
@@ -988,11 +1635,251 @@ namespace Microsoft.SqlServer.Management.Smo
         public System.Object SyncRoot { get; set; }
         public Microsoft.SqlServer.Management.Smo.ConfigProperty Item { get; set; }
 
+        // For enumeration
+        private List<Microsoft.SqlServer.Management.Smo.ConfigProperty> _items = new List<Microsoft.SqlServer.Management.Smo.ConfigProperty>();
+
+        // Implement IEnumerable
+        public IEnumerator GetEnumerator()
+        {
+            return _items.GetEnumerator();
+        }
+
+        // Add method to add items
+        public void Add(Microsoft.SqlServer.Management.Smo.ConfigProperty item)
+        {
+            _items.Add(item);
+        }
+
         // Fabricated constructor
         private ConfigPropertyCollection() { }
         public static ConfigPropertyCollection CreateTypeInstance()
         {
             return new ConfigPropertyCollection();
+        }
+    }
+
+    public class Configuration
+    {
+        // Property
+        public Microsoft.SqlServer.Management.Smo.ConfigPropertyCollection Properties { get; set; }
+
+        // Method
+        public void Alter()
+        {
+        }
+
+        // Fabricated constructor
+        private Configuration() { }
+        public static Configuration CreateTypeInstance()
+        {
+            return new Configuration()
+            {
+                Properties = ConfigPropertyCollection.CreateTypeInstance()
+            };
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.BackupDeviceItem
+    // Used by:
+    //  Backup-SqlDscDatabase.Tests.ps1
+    public class BackupDeviceItem
+    {
+        // Constructor
+        public BackupDeviceItem() { }
+        public BackupDeviceItem(System.String name, DeviceType deviceType)
+        {
+            this.Name = name;
+            this.DeviceType = deviceType;
+        }
+
+        // Properties
+        public System.String Name { get; set; }
+        public DeviceType DeviceType { get; set; }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.BackupDeviceList
+    // Used by:
+    //  Backup-SqlDscDatabase.Tests.ps1
+    public class BackupDeviceList : Collection<BackupDeviceItem>
+    {
+        public BackupDeviceList() { }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Backup
+    // Used by:
+    //  Backup-SqlDscDatabase.Tests.ps1
+    public class Backup
+    {
+        // Constructor
+        public Backup() { Devices = new BackupDeviceList(); }
+
+        // Properties
+        public BackupActionType Action { get; set; }
+        public System.String Database { get; set; }
+        public BackupDeviceList Devices { get; set; }
+        public System.Boolean Incremental { get; set; }
+        public System.Boolean CopyOnly { get; set; }
+        public BackupCompressionOptions CompressionOption { get; set; }
+        public System.Boolean Checksum { get; set; }
+        public System.String BackupSetDescription { get; set; }
+        public System.String BackupSetName { get; set; }
+        public System.Int32 RetainDays { get; set; }
+        public System.Boolean Initialize { get; set; }
+        public System.DateTime ExpirationDate { get; set; }
+
+        // Mock tracking properties for testing
+        public int MockSqlBackupCalled { get; set; }
+        public bool MockShouldThrowOnSqlBackup { get; set; }
+
+        // Method
+        public void SqlBackup(Server serverObject)
+        {
+            MockSqlBackupCalled++;
+
+            if (MockShouldThrowOnSqlBackup)
+            {
+                throw new System.Exception("Simulated SqlBackup() failure for testing purposes.");
+            }
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.RestoreActionType
+    // Used by:
+    //  Restore-SqlDscDatabase.Tests.ps1
+    //  Test-SqlDscBackupFile.Tests.ps1
+    //  Get-SqlDscBackupFileList.Tests.ps1
+    public enum RestoreActionType : int
+    {
+        Database = 0,
+        Files = 1,
+        OnlinePage = 2,
+        OnlineFiles = 3,
+        Log = 4
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.RelocateFile
+    // Used by:
+    //  Restore-SqlDscDatabase.Tests.ps1
+    public class RelocateFile
+    {
+        // Constructors
+        public RelocateFile() { }
+        public RelocateFile(System.String logicalFileName, System.String physicalFileName)
+        {
+            this.LogicalFileName = logicalFileName;
+            this.PhysicalFileName = physicalFileName;
+        }
+
+        // Properties
+        public System.String LogicalFileName { get; set; }
+        public System.String PhysicalFileName { get; set; }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.RelocateFileList
+    // Used by:
+    //  Restore-SqlDscDatabase.Tests.ps1
+    public class RelocateFileList : Collection<RelocateFile>
+    {
+        public RelocateFileList() { }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Restore
+    // Used by:
+    //  Restore-SqlDscDatabase.Tests.ps1
+    //  Test-SqlDscBackupFile.Tests.ps1
+    //  Get-SqlDscBackupFileList.Tests.ps1
+    public class Restore
+    {
+        // Constructor
+        public Restore()
+        {
+            Devices = new BackupDeviceList();
+            RelocateFiles = new RelocateFileList();
+        }
+
+        // Properties
+        public RestoreActionType Action { get; set; }
+        public System.String Database { get; set; }
+        public BackupDeviceList Devices { get; set; }
+        public System.Boolean NoRecovery { get; set; }
+        public System.Boolean ReplaceDatabase { get; set; }
+        public RelocateFileList RelocateFiles { get; set; }
+        public System.Boolean Checksum { get; set; }
+        public System.Boolean RestrictedUser { get; set; }
+        public System.Boolean Partial { get; set; }
+        public System.Int32 FileNumber { get; set; }
+        public System.String StandbyFile { get; set; }
+        public System.Boolean KeepReplication { get; set; }
+        public System.String ToPointInTime { get; set; }
+        public System.String StopAtMarkName { get; set; }
+        public System.String StopAtMarkAfterDate { get; set; }
+        public System.String StopBeforeMarkName { get; set; }
+        public System.String StopBeforeMarkAfterDate { get; set; }
+        public System.Int32 BlockSize { get; set; }
+        public System.Int32 BufferCount { get; set; }
+        public System.Int32 MaxTransferSize { get; set; }
+
+        // Mock tracking properties for testing
+        public int MockSqlRestoreCalled { get; set; }
+        public bool MockShouldThrowOnSqlRestore { get; set; }
+        public int MockSqlVerifyCalled { get; set; }
+        public bool MockSqlVerifyResult { get; set; }
+        public bool MockShouldThrowOnSqlVerify { get; set; }
+        public int MockReadFileListCalled { get; set; }
+        public System.Data.DataTable MockReadFileListResult { get; set; }
+        public bool MockShouldThrowOnReadFileList { get; set; }
+
+        // Methods
+        public void SqlRestore(Server serverObject)
+        {
+            MockSqlRestoreCalled++;
+
+            if (MockShouldThrowOnSqlRestore)
+            {
+                throw new System.Exception("Simulated SqlRestore() failure for testing purposes.");
+            }
+        }
+
+        public System.Boolean SqlVerify(Server serverObject)
+        {
+            MockSqlVerifyCalled++;
+
+            if (MockShouldThrowOnSqlVerify)
+            {
+                throw new System.Exception("Simulated SqlVerify() failure for testing purposes.");
+            }
+
+            return MockSqlVerifyResult;
+        }
+
+        public System.Boolean SqlVerify(Server serverObject, bool loadHistory, ref string errorMessage)
+        {
+            MockSqlVerifyCalled++;
+
+            if (MockShouldThrowOnSqlVerify)
+            {
+                throw new System.Exception("Simulated SqlVerify() failure for testing purposes.");
+            }
+
+            // Set error message if verification fails
+            if (!MockSqlVerifyResult)
+            {
+                errorMessage = "Simulated verification failure for testing purposes.";
+            }
+
+            return MockSqlVerifyResult;
+        }
+
+        public System.Data.DataTable ReadFileList(Server serverObject)
+        {
+            MockReadFileListCalled++;
+
+            if (MockShouldThrowOnReadFileList)
+            {
+                throw new System.Exception("Simulated ReadFileList() failure for testing purposes.");
+            }
+
+            return MockReadFileListResult;
         }
     }
 
@@ -1260,13 +2147,46 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
         }
     }
 
-    public class IPAddressPropertyCollection
+    public class IPAddressPropertyCollection : System.Collections.IEnumerable
     {
-        // Property
-        public System.Int32 Count { get; set; }
+        // Properties
+        public System.Int32 Count { get { return properties.Count; } }
         public System.Boolean IsSynchronized { get; set; }
         public System.Object SyncRoot { get; set; }
-        public Microsoft.SqlServer.Management.Smo.Wmi.ProtocolProperty Item { get; set; }
+
+        // Collection of properties
+        private readonly System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ProtocolProperty> properties =
+            new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ProtocolProperty>(System.StringComparer.OrdinalIgnoreCase);
+
+        // Indexer
+        public Microsoft.SqlServer.Management.Smo.Wmi.ProtocolProperty this[string name]
+        {
+            get
+            {
+                if (properties.ContainsKey(name))
+                {
+                    return properties[name];
+                }
+                return null;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    properties.Remove(name);
+                }
+                else
+                {
+                    properties[name] = value;
+                }
+            }
+        }
+
+        // IEnumerable implementation
+        public System.Collections.IEnumerator GetEnumerator()
+        {
+            return properties.Values.GetEnumerator();
+        }
 
         // Fabricated constructor
         private IPAddressPropertyCollection() { }
@@ -1296,13 +2216,46 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
         }
     }
 
-    public class ServerIPAddressCollection
+    public class ServerIPAddressCollection : System.Collections.IEnumerable
     {
-        // Property
-        public Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress Item { get; set; }
-        public System.Int32 Count { get; set; }
+        // Properties
+        public System.Int32 Count { get { return addresses.Count; } }
         public System.Boolean IsSynchronized { get; set; }
         public System.Object SyncRoot { get; set; }
+
+        // Collection of addresses
+        private readonly System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress> addresses =
+            new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress>(System.StringComparer.OrdinalIgnoreCase);
+
+        // Indexer
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress this[string name]
+        {
+            get
+            {
+                if (addresses.ContainsKey(name))
+                {
+                    return addresses[name];
+                }
+                return null;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    addresses.Remove(name);
+                }
+                else
+                {
+                    addresses[name] = value;
+                }
+            }
+        }
+
+        // IEnumerable implementation
+        public System.Collections.IEnumerator GetEnumerator()
+        {
+            return addresses.Values.GetEnumerator();
+        }
 
         // Fabricated constructor
         private ServerIPAddressCollection() { }
@@ -1335,13 +2288,46 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
         }
     }
 
-    public class ServerProtocolCollection
+    public class ServerProtocolCollection : System.Collections.IEnumerable
     {
-        // Property
-        public Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol Item { get; set; }
-        public System.Int32 Count { get; set; }
+        // Properties
+        public System.Int32 Count { get { return protocols.Count; } }
         public System.Boolean IsSynchronized { get; set; }
         public System.Object SyncRoot { get; set; }
+
+        // Collection of protocols
+        private readonly System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol> protocols =
+            new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol>(System.StringComparer.OrdinalIgnoreCase);
+
+        // Indexer
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol this[string name]
+        {
+            get
+            {
+                if (protocols.ContainsKey(name))
+                {
+                    return protocols[name];
+                }
+                return null;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    protocols.Remove(name);
+                }
+                else
+                {
+                    protocols[name] = value;
+                }
+            }
+        }
+
+        // IEnumerable implementation
+        public System.Collections.IEnumerator GetEnumerator()
+        {
+            return protocols.Values.GetEnumerator();
+        }
 
         // Fabricated constructor
         private ServerProtocolCollection() { }
@@ -1370,13 +2356,45 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
         }
     }
 
-    public class ServerInstanceCollection
+    public class ServerInstanceCollection : System.Collections.IEnumerable
     {
-        // Property
-        public Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance Item { get; set; }
-        public System.Int32 Count { get; set; }
+        // Properties
+        public System.Int32 Count { get { return instances.Count; } }
         public System.Boolean IsSynchronized { get; set; }
         public System.Object SyncRoot { get; set; }
+
+        // Collection of instances
+        private System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance> instances = new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance>(System.StringComparer.OrdinalIgnoreCase);
+
+        // Indexer
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance this[string name]
+        {
+            get
+            {
+                if (instances.ContainsKey(name))
+                {
+                    return instances[name];
+                }
+                return null;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    instances.Remove(name);
+                }
+                else
+                {
+                    instances[name] = value;
+                }
+            }
+        }
+
+        // IEnumerable implementation
+        public System.Collections.IEnumerator GetEnumerator()
+        {
+            return instances.Values.GetEnumerator();
+        }
 
         // Fabricated constructor
         private ServerInstanceCollection() { }
@@ -1443,6 +2461,338 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
         public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
         public System.Object UserData { get; set; }
         public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+    }
+
+    #endregion
+}
+
+namespace Microsoft.SqlServer.Management.Smo.Agent
+{
+    #region Public Enums
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.AlertType
+    // Used by:
+    //  Get-SqlDscAgentAlert.Tests.ps1
+    //  New-SqlDscAgentAlert.Tests.ps1
+    //  Set-SqlDscAgentAlert.Tests.ps1
+    //  Remove-SqlDscAgentAlert.Tests.ps1
+    //  Test-SqlDscIsAgentAlert.Tests.ps1
+    //  SqlAgentAlert.Tests.ps1
+    public enum AlertType
+    {
+        SqlServerEvent = 1,
+        SqlServerPerformanceCondition = 2,
+        NonSqlServerEvent = 3,
+        WmiEvent = 4
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.CompletionAction
+    // Used by:
+    //  SQL Agent Alert commands unit tests
+    //  SqlAgentAlert.Tests.ps1
+    public enum CompletionAction
+    {
+        Never = 0,
+        OnSuccess = 1,
+        OnFailure = 2,
+        Always = 3
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.WeekDays
+    // Used by:
+    //  SQL Agent Operator commands unit tests
+    //  New-SqlDscAgentOperator.Tests.ps1
+    //  Set-SqlDscAgentOperator.Tests.ps1
+    public enum WeekDays
+    {
+        Sunday = 1,
+        Monday = 2,
+        Tuesday = 4,
+        Wednesday = 8,
+        Thursday = 16,
+        Friday = 32,
+        Weekdays = 62,
+        Saturday = 64,
+        WeekEnds = 65,
+        EveryDay = 127
+    }
+
+    #endregion
+
+    #region Public Classes
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.JobServer
+    // Used by:
+    //  SQL Agent Alert commands unit tests
+    //  SqlAgentAlert.Tests.ps1
+    //  SQL Agent Operator commands unit tests
+    //  SqlAgentOperator.Tests.ps1
+    public class JobServer
+    {
+        // Constructor
+        public JobServer() { }
+
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Agent.AlertCollection Alerts { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection Operators { get; set; }
+        public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
+        public System.String Name { get; set; }
+        public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Server Parent { get; set; }
+
+        // Mock property counters for tracking method calls
+        public System.Int32 MockOperatorMethodCreateCalled { get; set; }
+        public System.Int32 MockOperatorMethodDropCalled { get; set; }
+        public System.Int32 MockOperatorMethodAlterCalled { get; set; }
+
+        // Fabricated constructor
+        private JobServer(Microsoft.SqlServer.Management.Smo.Server server) { }
+        public static JobServer CreateTypeInstance()
+        {
+            return new JobServer();
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.AlertCollection
+    // Used by:
+    //  SQL Agent Alert commands unit tests
+    //  SqlAgentAlert.Tests.ps1
+    public class AlertCollection : ICollection
+    {
+        private System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Agent.Alert> alerts = new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Agent.Alert>();
+
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Agent.Alert this[System.String name]
+        {
+            get { return alerts.ContainsKey(name) ? alerts[name] : null; }
+            set { alerts[name] = value; }
+        }
+        public Microsoft.SqlServer.Management.Smo.Agent.Alert this[System.Int32 index]
+        {
+            get { return alerts.Values.ElementAtOrDefault(index); }
+            set { /* Not implemented for stub */ }
+        }
+        public System.Int32 Count { get { return alerts.Count; } set { } }
+        public System.Boolean IsSynchronized { get; set; }
+        public System.Object SyncRoot { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.JobServer Parent { get; set; }
+
+        // Method
+        public void Add(Microsoft.SqlServer.Management.Smo.Agent.Alert alert) { alerts[alert.Name] = alert; }
+        public void Remove(Microsoft.SqlServer.Management.Smo.Agent.Alert alert) { alerts.Remove(alert.Name); }
+        public void Remove(System.String name) { alerts.Remove(name); }
+        public void CopyTo(System.Array array, System.Int32 index) { }
+        public IEnumerator GetEnumerator() { return alerts.Values.GetEnumerator(); }
+        public void Refresh() { /* Stub implementation for refreshing alerts */ }
+
+        // Fabricated constructor
+        private AlertCollection() { }
+        public static AlertCollection CreateTypeInstance()
+        {
+            return new AlertCollection();
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.Alert
+    // Used by:
+    //  Get-SqlDscAgentAlert.Tests.ps1
+    //  New-SqlDscAgentAlert.Tests.ps1
+    //  Set-SqlDscAgentAlert.Tests.ps1
+    //  Remove-SqlDscAgentAlert.Tests.ps1
+    //  Test-SqlDscIsAgentAlert.Tests.ps1
+    public class Alert
+    {
+        // Constructor
+        public Alert() { }
+        public Alert(Microsoft.SqlServer.Management.Smo.Agent.JobServer jobServer, System.String name)
+        {
+            this.Name = name;
+        }
+
+        // Property
+        public System.String Name { get; set; }
+        public System.Boolean IsEnabled { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.AlertType AlertType { get; set; }
+        public System.String DatabaseName { get; set; }
+        public System.String DelayBetweenResponses { get; set; }
+        public System.String EventDescriptionKeyword { get; set; }
+        public System.String EventSource { get; set; }
+        public System.Boolean HasNotification { get; set; }
+        public System.Boolean IncludeEventDescription { get; set; }
+        public System.Int32 MessageID { get; set; }
+        public System.String NotificationMessage { get; set; }
+        public System.String PerformanceCondition { get; set; }
+        public System.Int32 Severity { get; set; }
+        public System.String WmiEventNamespace { get; set; }
+        public System.String WmiEventQuery { get; set; }
+        public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
+        public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.JobServer Parent { get; set; }
+
+        // Method
+        public void Create() { }
+        public void Drop() { }
+        public void Alter() { }
+
+        // Fabricated constructor
+        private Alert(Microsoft.SqlServer.Management.Smo.Agent.JobServer jobServer, System.String name, System.Boolean dummyParam) { }
+        public static Alert CreateTypeInstance()
+        {
+            return new Alert();
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.OperatorCollection
+    // Used by:
+    //  SQL Agent Operator commands unit tests
+    //  SqlAgentOperator.Tests.ps1
+    public class OperatorCollection : ICollection
+    {
+        private System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Agent.Operator> operators = new System.Collections.Generic.Dictionary<string, Microsoft.SqlServer.Management.Smo.Agent.Operator>();
+
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Agent.Operator this[System.String name]
+        {
+            get { return operators.ContainsKey(name) ? operators[name] : null; }
+            set { operators[name] = value; }
+        }
+        public Microsoft.SqlServer.Management.Smo.Agent.Operator this[System.Int32 index]
+        {
+            get { return operators.Values.ElementAtOrDefault(index); }
+            set { /* Not implemented for stub */ }
+        }
+        public System.Int32 Count { get { return operators.Count; } set { } }
+        public System.Boolean IsSynchronized { get { return false; } set { } }
+        public System.Object SyncRoot { get { return null; } set { } }
+        public Microsoft.SqlServer.Management.Smo.Agent.JobServer Parent { get; set; }
+
+        public void Add(Microsoft.SqlServer.Management.Smo.Agent.Operator operatorObj) { operators[operatorObj.Name] = operatorObj; }
+        public void Remove(Microsoft.SqlServer.Management.Smo.Agent.Operator operatorObj) { operators.Remove(operatorObj.Name); }
+        public void CopyTo(System.Array array, System.Int32 index) { /* Not implemented for stub */ }
+        public System.Collections.IEnumerator GetEnumerator() { return operators.Values.GetEnumerator(); }
+        public void Refresh() { /* Not implemented for stub */ }
+
+        // Fabricated constructor
+        private OperatorCollection() { }
+        public static OperatorCollection CreateTypeInstance()
+        {
+            return new OperatorCollection();
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Agent.Operator
+    // Used by:
+    //  Get-SqlDscAgentOperator.Tests.ps1
+    //  New-SqlDscAgentOperator.Tests.ps1
+    //  Set-SqlDscAgentOperator.Tests.ps1
+    //  Remove-SqlDscAgentOperator.Tests.ps1
+    //  Test-SqlDscAgentOperator.Tests.ps1
+    public class Operator
+    {
+        public Operator() { }
+        public Operator(Microsoft.SqlServer.Management.Smo.Agent.JobServer jobServer, System.String name)
+        {
+            this.Parent = jobServer;
+            this.Name = name;
+        }
+
+        // Property
+        public System.String Name { get; set; }
+        public System.String EmailAddress { get; set; }
+        public System.String CategoryName { get; set; }
+        public System.String NetSendAddress { get; set; }
+        public System.String PagerAddress { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.WeekDays PagerDays { get; set; }
+        public System.TimeSpan SaturdayPagerEndTime { get; set; }
+        public System.TimeSpan SaturdayPagerStartTime { get; set; }
+        public System.TimeSpan SundayPagerEndTime { get; set; }
+        public System.TimeSpan SundayPagerStartTime { get; set; }
+        public System.TimeSpan WeekdayPagerEndTime { get; set; }
+        public System.TimeSpan WeekdayPagerStartTime { get; set; }
+        public System.Boolean Enabled { get; set; }
+        public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
+        public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Agent.JobServer Parent { get; set; }
+
+        // Method
+        public void Create()
+        {
+            if (this.Parent != null)
+            {
+                this.Parent.MockOperatorMethodCreateCalled++;
+            }
+
+            // Mock failure for specific operator name used in testing
+            if (this.Name == "MockFailMethodCreateOperator")
+            {
+                throw new System.Exception("Simulated Create() method failure for testing purposes.");
+            }
+        }
+        public void Drop()
+        {
+            if (this.Parent != null)
+            {
+                this.Parent.MockOperatorMethodDropCalled++;
+            }
+        }
+        public void Alter()
+        {
+            if (this.Parent != null)
+            {
+                this.Parent.MockOperatorMethodAlterCalled++;
+            }
+        }
+
+        // Fabricated constructor
+        private Operator(Microsoft.SqlServer.Management.Smo.Agent.JobServer jobServer, System.String name, System.Boolean dummyParam) { }
+        public static Operator CreateTypeInstance()
+        {
+            return new Operator();
+        }
+    }
+
+    #endregion
+}
+
+namespace Microsoft.SqlServer.Management.Common
+{
+    #region Public Enums
+
+    // TypeName: Microsoft.SqlServer.Management.Common.DatabaseEngineEdition
+    // BaseType: System.Enum
+    // Used by:
+    //  Test-SqlDscDatabaseProperty
+    public enum DatabaseEngineEdition : int
+    {
+        Unknown = 0,
+        Personal = 1,
+        Standard = 2,
+        Enterprise = 3,
+        Express = 4,
+        SqlDatabase = 5,
+        SqlDataWarehouse = 6,
+        SqlStretchDatabase = 7,
+        SqlManagedInstance = 8,
+        SqlDatabaseEdge = 9,
+        SqlAzureArcManagedInstance = 10,
+        SqlOnDemand = 11
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Common.DatabaseEngineType
+    // BaseType: System.Enum
+    // Used by:
+    //  Test-SqlDscDatabaseProperty
+    public enum DatabaseEngineType : int
+    {
+        Unknown = 0,
+        Standalone = 1,
+        SqlAzureDatabase = 2,
     }
 
     #endregion

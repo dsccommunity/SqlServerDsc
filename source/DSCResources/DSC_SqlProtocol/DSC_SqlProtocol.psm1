@@ -80,7 +80,7 @@ function Get-TargetResource
         HasMultiIPAddresses    = $false
     }
 
-    $protocolNameProperties = Get-ProtocolNameProperties -ProtocolName $ProtocolName
+    $protocolNameProperties = Get-SqlDscServerProtocolName -ProtocolName $ProtocolName
 
     # Getting the server protocol properties by using the computer name.
     $computerName = Get-ComputerName
@@ -95,13 +95,13 @@ function Get-TargetResource
         Must connect to the local machine name because $ServerName can point
         to a cluster instance or availability group listener.
     #>
-    $getServerProtocolObjectParameters = @{
+    $getSqlDscServerProtocolParameters = @{
         ServerName   = $computerName
-        Instance     = $InstanceName
+        InstanceName = $InstanceName
         ProtocolName = $ProtocolName
     }
 
-    $serverProtocolProperties = Get-ServerProtocolObject @getServerProtocolObjectParameters
+    $serverProtocolProperties = Get-SqlDscServerProtocol @getSqlDscServerProtocolParameters
 
     if ($serverProtocolProperties)
     {
@@ -229,12 +229,10 @@ function Set-TargetResource
         $RestartTimeout = 120
     )
 
-    $protocolNameProperties = Get-ProtocolNameProperties -ProtocolName $ProtocolName
+    $protocolNameProperties = Get-SqlDscServerProtocolName -ProtocolName $ProtocolName
 
     <#
-        Compare the current state against the desired state. Calling this will
-        also import the necessary module to later call Get-ServerProtocolObject
-        which uses the SMO class ManagedComputer.
+        Compare the current state against the desired state.
     #>
     $propertyState = Compare-TargetResourceState @PSBoundParameters
 
@@ -254,13 +252,13 @@ function Set-TargetResource
             Must connect to the local machine name because $ServerName can point
             to a cluster instance or availability group listener.
         #>
-        $getServerProtocolObjectParameters = @{
+        $getSqlDscServerProtocolParameters = @{
             ServerName   = $computerName
-            Instance     = $InstanceName
+            InstanceName = $InstanceName
             ProtocolName = $ProtocolName
         }
 
-        $serverProtocolProperties = Get-ServerProtocolObject @getServerProtocolObjectParameters
+        $serverProtocolProperties = Get-SqlDscServerProtocol @getSqlDscServerProtocolParameters
 
         if ($serverProtocolProperties)
         {
@@ -459,7 +457,7 @@ function Test-TargetResource
         $RestartTimeout = 120
     )
 
-    $protocolNameProperties = Get-ProtocolNameProperties -ProtocolName $ProtocolName
+    $protocolNameProperties = Get-SqlDscServerProtocolName -ProtocolName $ProtocolName
 
     Write-Verbose -Message (
         $script:localizedData.TestDesiredState -f $protocolNameProperties.DisplayName, $InstanceName, $ServerName

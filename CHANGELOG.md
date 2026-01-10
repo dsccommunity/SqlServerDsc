@@ -5,11 +5,1085 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- SqlServerDsc
+  - Added class `ReportServerUri` to represent URLs returned by the
+    `GetReportServerUrls` CIM method on `MSReportServer_Instance`.
+- Added public command `Get-SqlDscRSUrl` to get the Report Server URLs for
+  SQL Server Reporting Services or Power BI Report Server. This command
+  invokes the `GetReportServerUrls` CIM method on `MSReportServer_Instance`
+  and returns an array of `ReportServerUri` objects containing the instance
+  name, application name, and URL for each configured URL.
+- Added public command `Get-SqlDscRSConfigFile` to get the RsReportServer.config
+  configuration file for SQL Server Reporting Services (SSRS) or Power BI
+  Report Server (PBIRS) as an XML document object. Supports three parameter
+  sets: `ByInstanceName` (looks up path via registry), `ByConfiguration`
+  (accepts pipeline input from `Get-SqlDscRSSetupConfiguration`), and `ByPath`
+  (reads from a direct file path). The returned XML object supports standard
+  XML navigation and XPath queries for accessing configuration settings.
+- Added public command `Get-SqlDscRSLogPath` to get the log file folder path
+  for SQL Server Reporting Services or Power BI Report Server. Returns the
+  ErrorDumpDirectory from the instance's setup configuration, which can be
+  used with `Get-ChildItem` and `Get-Content` to access service logs, portal
+  logs, and memory dumps.
+- Added public command `Test-SqlDscRSAccessible` to verify that SQL Server
+  Reporting Services or Power BI Report Server web sites are accessible.
+  Supports both CIM configuration input (with dynamic `-Site` parameter) and
+  explicit URIs. Includes retry logic and optional detailed output with HTTP
+  status codes.
+- Added post-initialization integration tests for RS commands
+  (`Post.Initialization.RS.Integration.Tests.ps1`) to verify that SSRS and
+  PBIRS sites are fully accessible after `Initialize-SqlDscRS` runs.
+- Added public command `Request-SqlDscRSDatabaseScript` to generate T-SQL scripts
+  for creating report server databases. Wraps the `GenerateDatabaseCreationScript`
+  CIM method and supports configuring database name, language (LCID), and
+  SharePoint mode ([issue #2017](https://github.com/dsccommunity/SqlServerDsc/issues/2017)).
+- Added public command `Request-SqlDscRSDatabaseRightsScript` to generate T-SQL
+  scripts for granting permissions on report server databases. Wraps the
+  `GenerateDatabaseRightsScript` CIM method and supports configuring database
+  name, user name, remote connections, and Windows/SQL authentication types
+  ([issue #2019](https://github.com/dsccommunity/SqlServerDsc/issues/2019)).
+- Added public command `Set-SqlDscRSDatabaseConnection` to set
+  the report server database connection for SQL Server Reporting Services or
+  Power BI Report Server. Wraps the `SetDatabaseConnection` CIM method and
+  supports Windows, SQL Server, and Service Account authentication types
+  ([issue #2021](https://github.com/dsccommunity/SqlServerDsc/issues/2021)).
+- Added public command `Set-SqlDscRSVirtualDirectory` to set the virtual directory
+  for Reporting Services applications. Wraps the `SetVirtualDirectory` CIM method
+  and supports ReportServerWebService, ReportServerWebApp, and ReportManager
+  applications ([issue #2015](https://github.com/dsccommunity/SqlServerDsc/issues/2015)).
+- Added public commands `Get-SqlDscRSUrlReservation`, `Add-SqlDscRSUrlReservation`,
+  `Remove-SqlDscRSUrlReservation`, and `Set-SqlDscRSUrlReservation` to manage
+  URL reservations for SQL Server Reporting Services or Power BI Report Server.
+  These commands wrap the `ListReservedUrls`, `ReserveUrl`, and `RemoveURL` CIM
+  methods respectively. The `Set-SqlDscRSUrlReservation` command provides a
+  declarative approach to set URL reservations to an exact list, removing any
+  existing reservations not in the specified list
+  ([issue #2016](https://github.com/dsccommunity/SqlServerDsc/issues/2016))
+  ([issue #2024](https://github.com/dsccommunity/SqlServerDsc/issues/2024)).
+- Added public command `Get-SqlDscRSConfiguration` to retrieve the
+  `MSReportServer_ConfigurationSetting` CIM instance for SQL Server Reporting
+  Services or Power BI Report Server. Supports auto-detection of the Reporting
+  Services version or explicit version specification. The returned CIM instance
+  can be piped to `Enable-SqlDscRsSecureConnection` or `Disable-SqlDscRsSecureConnection`
+  ([issue #2022](https://github.com/dsccommunity/SqlServerDsc/issues/2022)).
+- Added public command `Get-SqlDscRSWebPortalApplicationName` to get the
+  Reporting Services web portal application name based on the SQL Server
+  version. Returns 'ReportServerWebApp' for SQL Server 2016 (version 13) and
+  later, or 'ReportManager' for earlier versions. Accepts the setup configuration
+  object from `Get-SqlDscRSSetupConfiguration` via pipeline.
+- Added public command `Enable-SqlDscRsSecureConnection` to enable secure
+  connection for SQL Server Reporting Services or Power BI Report Server by
+  setting the secure connection level to 1. Accepts the configuration CIM
+  instance from pipeline, supports `-WhatIf`/`-Confirm`, and `-PassThru` to
+  return the configuration object
+  ([issue #2022](https://github.com/dsccommunity/SqlServerDsc/issues/2022)).
+- Added public command `Disable-SqlDscRsSecureConnection` to disable secure
+  connection for SQL Server Reporting Services or Power BI Report Server by
+  setting the secure connection level to 0. Accepts the configuration CIM
+  instance from pipeline, supports `-WhatIf`/`-Confirm`, and `-PassThru` to
+  return the configuration object
+  ([issue #2023](https://github.com/dsccommunity/SqlServerDsc/issues/2023)).
+- Added private function `Invoke-RsCimMethod` to invoke CIM methods on Reporting
+  Services configuration instances with consistent error handling. This function
+  is used by `Enable-SqlDscRsSecureConnection`, `Disable-SqlDscRsSecureConnection`,
+  and the `SqlRS` resource.
+- Added private function `Get-HResultMessage` to translate common Windows HRESULT
+  error codes into human-readable messages. Used by `Invoke-RsCimMethod` to
+  provide actionable error messages when Reporting Services CIM methods fail
+  without detailed error information.
+- `Invoke-ReportServerSetupAction`
+  - Now uses `Format-Path` with `-ExpandEnvironmentVariable` to expand environment
+    variables in all path parameters (`MediaPath`, `LogPath`, `InstallFolder`)
+    ([issue #2085](https://github.com/dsccommunity/SqlServerDsc/issues/2085)).
+- Added public command `Get-SqlDscServerProtocolTcpIp` to retrieve TCP/IP address
+  group information for SQL Server instances. Returns `ServerIPAddress` objects
+  containing port configuration including `TcpPort`, `TcpDynamicPorts`, `Enabled`,
+  and `Active` properties. Supports filtering by specific IP address group name
+  and accepts pipeline input from `Get-SqlDscServerProtocol`.
+- `SqlResourceBase`
+  - Added `Protocol` property to specify the network protocol (`tcp`, `np`, `lpc`)
+    when connecting to SQL Server instances
+    ([issue #2041](https://github.com/dsccommunity/SqlServerDsc/issues/2041)).
+  - Added `Port` property to specify the TCP port number when connecting to SQL
+    Server instances
+    ([issue #2041](https://github.com/dsccommunity/SqlServerDsc/issues/2041)).
+- `Connect-SqlDscDatabaseEngine`
+  - Added `Protocol` parameter to specify the network protocol when connecting.
+  - Added `Port` parameter to specify the TCP port number when connecting.
+    Connection strings now support the format `[protocol:]hostname[\instance][,port]`.
+- `SqlDatabase`
+  - Added new class-based resource to create, modify, or remove databases on a
+    SQL Server instance. Supports a comprehensive set of database properties
+    that can be configured with `Set-SqlDscDatabaseProperty`
+    ([issue #2174](https://github.com/dsccommunity/SqlServerDsc/issues/2174)).
+- `Install-SqlDscServer`
+  - Added parameter `AllowDqRemoval` to the `Upgrade` parameter set
+    ([issue #2155](https://github.com/dsccommunity/SqlServerDsc/issues/2155)).
+- `Test-SqlDscIsSupportedFeature`
+  - Added DQ, DQC, and MDS features as discontinued starting with SQL Server 2025
+    (17.x) and later versions ([issue #2380](https://github.com/dsccommunity/SqlServerDsc/issues/2380)).
+- Added public command `Get-SqlDscRSPackage` to retrieve package information for
+  SQL Server Reporting Services or Power BI Report Server. Supports getting version
+  information from an executable file
+  ([issue #2082](https://github.com/dsccommunity/SqlServerDsc/issues/2082)).
+- Added public command `Get-SqlDscBackupFileList` to read the list of database
+  files contained in a SQL Server backup file. Useful for planning file
+  relocations during restore operations ([issue #2026](https://github.com/dsccommunity/SqlServerDsc/issues/2026)).
+- Added public command `Test-SqlDscBackupFile` to verify the integrity of a
+  SQL Server backup file ([issue #2026](https://github.com/dsccommunity/SqlServerDsc/issues/2026)).
+- Added public command `Restore-SqlDscDatabase` to restore SQL Server databases
+  from backup files. Supports full, differential, transaction log, and file
+  restores with options for file relocation (both simple path-based and
+  explicit RelocateFile objects), point-in-time recovery, NoRecovery/Standby
+  modes, and various performance tuning options ([issue #2026](https://github.com/dsccommunity/SqlServerDsc/issues/2026)).
+- Added public command `Backup-SqlDscDatabase`. Supports full, differential,
+  and transaction log backups with options for compression, copy-only, checksum,
+  and retention ([issue #2365](https://github.com/dsccommunity/SqlServerDsc/issues/2365)).
+- Added public command `Invoke-SqlDscScalarQuery` to execute scalar queries using
+  `Server.ConnectionContext.ExecuteScalar()`. Server-level, lightweight execution
+  that does not require any database to be online
+  ([issue #2423](https://github.com/dsccommunity/SqlServerDsc/issues/2423)).
+- Added public command `Get-SqlDscDateTime` to retrieve current date and time from
+  SQL Server instance. Supports multiple T-SQL date/time functions to eliminate
+  clock-skew and timezone issues between client and server
+  ([issue #2423](https://github.com/dsccommunity/SqlServerDsc/issues/2423)).
+- Added public command `Backup-SqlDscDatabase` to perform database backups using
+  SMO's `Microsoft.SqlServer.Management.Smo.Backup` class. Supports full,
+  differential, and transaction log backups with options for compression,
+  copy-only, checksum, and retention. Accepts both Server and Database objects
+  via pipeline
+  ([issue #2365](https://github.com/dsccommunity/SqlServerDsc/issues/2365)).
+- `Set-SqlDscServerPermission`
+  - Added integration tests for negative test scenarios including invalid
+    permission names and non-existent principals.
+- `SqlPermission`
+  - Added integration tests for server role permissions to complement the
+    existing login permission tests.
+- `New-SqlDscDatabase`
+  - Added comprehensive set of settable database properties that were previously
+    only available in `Set-SqlDscDatabaseProperty`
+    ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
+- Added public command `Resume-SqlDscDatabase` to bring a database online using
+  SMO `Database.SetOnline()`. Supports Server and Database pipeline input
+  ([issue #2191](https://github.com/dsccommunity/SqlServerDsc/issues/2191)).
+- Added public command `Suspend-SqlDscDatabase` to take a database offline using
+  SMO `Database.SetOffline()`. Supports Server and Database pipeline input;
+  includes `Force` to disconnect active users
+  ([issue #2192](https://github.com/dsccommunity/SqlServerDsc/issues/2192)).
+- `Remove-SqlDscLogin`
+  - Added parameter `-KillActiveSessions` to automatically terminate any active
+    sessions for a login before dropping it
+    ([issue #2372](https://github.com/dsccommunity/SqlServerDsc/issues/2372)).
+- `Invoke-SetupAction`
+  - Added parameter `AllowDqRemoval` for the `Upgrade` action to allow removal
+    of Data Quality (DQ) Services during upgrade to SQL Server 2025 (17.x) and
+    later versions.
+  - Now outputs setup progress when `-Verbose` is passed by using `/QUIETSIMPLE`
+    instead of `/QUIET`.
+- `SqlResourceBase`
+  - Added the method `ConvertToSmoEnumType()` to convert string values to SMO
+    enum types at runtime. This method can be used by all resources inheriting
+    from `SqlResourceBase` and supports a default namespace parameter to avoid
+    repeating the full type name
+    ([issue #2174](https://github.com/dsccommunity/SqlServerDsc/issues/2174)).
+- Added public command `Initialize-SqlDscImage` to prepare a SQL Server image
+  for later configuration with `Complete-SqlDscImage`. Extracted from
+  `Install-SqlDscServer` PrepareImage parameter set
+  ([issue #2396](https://github.com/dsccommunity/SqlServerDsc/issues/2396)).
+- Added public command `Update-SqlDscServerEdition` to upgrade the edition of an
+  existing SQL Server instance using the EditionUpgrade setup action
+  ([issue #2393](https://github.com/dsccommunity/SqlServerDsc/issues/2393)).
+- Added public command `Update-SqlDscServer` to upgrade an existing SQL Server
+  instance to a newer version using the Upgrade setup action
+  ([issue #2394](https://github.com/dsccommunity/SqlServerDsc/issues/2394)).
+- Added public command `Initialize-SqlDscFailoverCluster` to prepare a failover
+  cluster node for later completion with `Complete-SqlDscFailoverCluster`.
+  Extracted from `Install-SqlDscServer` PrepareFailoverCluster parameter set
+  ([issue #2395](https://github.com/dsccommunity/SqlServerDsc/issues/2395)).
+- Added public command `Install-SqlDscFailoverCluster` to install SQL Server in
+  a failover cluster configuration. Extracted from `Install-SqlDscServer`
+  InstallFailoverCluster parameter set.
+- Added public command `Restart-SqlDscRSService` to restart the Windows service
+  for SQL Server Reporting Services or Power BI Report Server. Supports waiting
+  for dependent services, configurable wait time, and accepts pipeline input
+  from `Get-SqlDscRSConfiguration`.
+- Added public command `New-SqlDscRSEncryptionKey` to delete and regenerate the
+  Reporting Services encryption key. Wraps the `DeleteEncryptionKey` CIM method.
+  Warning: This operation cannot be undone and renders all encrypted content
+  unreadable.
+- Added public command `Remove-SqlDscRSEncryptionKey` to remove all encrypted
+  content from the report server database. Wraps the `DeleteEncryptionKey` CIM
+  method with `DeleteEncryptedContent` mode.
+- Added public command `Remove-SqlDscRSEncryptedInformation` to remove all encrypted
+  information from the report server database, including stored credentials and
+  connection strings. Wraps the `DeleteEncryptedInformation` CIM method.
+- Added public commands `Get-SqlDscRSServiceAccount` and
+  `Set-SqlDscRSServiceAccount` to get and set the Windows service account for
+  SQL Server Reporting Services or Power BI Report Server. `Set-SqlDscRSServiceAccount`
+  wraps the `SetWindowsServiceIdentity` CIM method and supports updating encryption
+  key backups.
+- Added public command `Test-SqlDscRSInitialized` to test whether a Reporting
+  Services instance is initialized by checking the `IsInitialized` property of
+  the configuration CIM instance
+  ([issue #2014](https://github.com/dsccommunity/SqlServerDsc/issues/2014)).
+- Added public command `Initialize-SqlDscRS` to initialize Reporting Services
+  by calling the `InitializeReportServer` CIM method. Used to complete initial
+  configuration after database and URL setup
+  ([issue #2014](https://github.com/dsccommunity/SqlServerDsc/issues/2014)).
+- Added public command `Request-SqlDscRSDatabaseUpgradeScript` to generate a
+  T-SQL script for upgrading the report server database schema. Wraps the
+  `GenerateDatabaseUpgradeScript` CIM method.
+- Added wiki article `Troubleshooting-Report-Server` documenting how to
+  retrieve and analyze log files and Windows event logs for Power BI Report
+  Server and SQL Server Reporting Services.
+- Updated wiki article `Change-Report-Server-Service-Account` with SQL Server
+  2017 specific workflow. SQL Server 2017 RS requires using
+  `Remove-SqlDscRSEncryptedInformation` and `Set-SqlDscRSDatabaseConnection`
+  instead of `Remove-SqlDscRSEncryptionKey` and `New-SqlDscRSEncryptionKey`
+  which fail with "rsCannotValidateEncryptedData" and "Keyset does not exist"
+  errors on SQL Server 2017.
+
 ### Changed
 
+- SqlServerDsc
+  - Split the `Test_HQRM` pipeline job into two parallel jobs (`Test_QA` and
+    `Test_HQRM`) to reduce overall pipeline execution time by approximately
+    15 minutes.
+- `Install-SqlDscServer`
+  - **BREAKING CHANGE:** Removed `PrepareImage`, `Upgrade`, `EditionUpgrade`,
+    `PrepareFailoverCluster`, and `InstallFailoverCluster` parameter sets. Use
+    the new dedicated commands `Initialize-SqlDscImage`, `Update-SqlDscServer`,
+    `Update-SqlDscServerEdition`, `Initialize-SqlDscFailoverCluster`, and
+    `Install-SqlDscFailoverCluster` instead
+    ([issue #2393](https://github.com/dsccommunity/SqlServerDsc/issues/2393))
+    ([issue #2394](https://github.com/dsccommunity/SqlServerDsc/issues/2394))
+    ([issue #2395](https://github.com/dsccommunity/SqlServerDsc/issues/2395))
+    ([issue #2396](https://github.com/dsccommunity/SqlServerDsc/issues/2396)).
+  - Removed misleading Uninstall parameter documentation from comment-based help
+    ([issue #2448](https://github.com/dsccommunity/SqlServerDsc/issues/2448)).
+- `SqlRS`
+  - Refactored to use the public commands `Enable-SqlDscRsSecureConnection` and
+    `Disable-SqlDscRsSecureConnection` for setting the secure connection level
+    instead of calling the CIM method directly.
+  - Refactored to use the public commands `Get-SqlDscRSUrlReservation`,
+    `Add-SqlDscRSUrlReservation`, `Remove-SqlDscRSUrlReservation`, and
+    `Set-SqlDscRSUrlReservation` for managing URL reservations instead of calling
+    the CIM methods directly.
+  - Refactored to use the public command `Set-SqlDscRSVirtualDirectory` for
+    setting virtual directories instead of calling the CIM method directly
+    ([issue #2015](https://github.com/dsccommunity/SqlServerDsc/issues/2015)).
+  - Refactored to use the public commands `Request-SqlDscRSDatabaseScript`,
+    `Request-SqlDscRSDatabaseRightsScript`, and `Set-SqlDscRSDatabaseConnection`
+    for creating and configuring the report server database instead of calling
+    the CIM methods directly
+    ([issue #2017](https://github.com/dsccommunity/SqlServerDsc/issues/2017))
+    ([issue #2019](https://github.com/dsccommunity/SqlServerDsc/issues/2019))
+    ([issue #2021](https://github.com/dsccommunity/SqlServerDsc/issues/2021)).
+  - Refactored to use the public command `Restart-SqlDscRSService` for restarting
+    the Reporting Services Windows service instead of calling the private
+    function `Restart-ReportingServicesService` directly.
+  - Refactored to use the public commands `Test-SqlDscRSInitialized` and
+    `Initialize-SqlDscRS` for checking and performing Reporting Services
+    initialization instead of accessing the `IsInitialized` property and
+    calling the CIM method directly
+    ([issue #2014](https://github.com/dsccommunity/SqlServerDsc/issues/2014)).
+- `Assert-SetupActionProperties`
+  - Refactored to use the command `Get-FileVersion` from the DscResource.Common
+    module instead of the private function `Get-FileVersionInformation`
+    ([issue #2373](https://github.com/dsccommunity/SqlServerDsc/issues/2373)).
+- Renamed commands `*-SqlDscBIReportServer` to `*-SqlDscPowerBIReportServer` for
+  clarity. The old names `*-SqlDscBIReportServer` and `*-SqlDscPBIReportServer`
+  are available as aliases for backward compatibility
+  ([issue #2071](https://github.com/dsccommunity/SqlServerDsc/issues/2071)).
+- `SqlProtocol`
+  - Refactored to use the public command `Get-SqlDscServerProtocolName` instead
+    of the deprecated private function `Get-ProtocolNameProperties`
+- `Class-Based Dsc Resource Tests`
+  - Updated tests for ResourceBase 2.0.
+- `Set-SqlDscRSUrlReservation`
+  - Added separate parameter set `Recreate` with the parameter `RecreateExisting`
+    to remove and re-add all existing URL reservations for all applications.
+    This is useful after changing the Windows service account, as URL reservations
+    are tied to a specific service account and must be recreated to use the new
+    account. The `Recreate` parameter set does not require `Application` or
+    `UrlString` parameters.
+- Prerequisites Integration Tests
+  - Added `svc-RS` local Windows user for Reporting Services service account
+    integration testing.
+
+### Fixed
+
+- `Invoke-RsCimMethod`
+  - Enhanced error messages to include human-readable translations of common
+    HRESULT error codes. When Reporting Services CIM methods fail without
+    detailed error information, the error message now includes actionable
+    guidance based on the HRESULT code (e.g., service not running, access
+    denied, logon type not granted).
+  - Fixed error handling to properly surface error details. Previously, when
+    the `ExtendedErrors` property existed but was empty, the error message
+    would show an empty error description. Now it correctly falls back to
+    the `Error` property and provides a descriptive fallback message if
+    neither property contains error details.
+- Prerequisites Integration Tests
+  - Fixed missing RS (Reporting Services) integration test tags on Context blocks
+    that create local Windows users, service accounts, and groups. Added tags
+    `Integration_SQL2017_RS`, `Integration_SQL2019_RS`, and `Integration_SQL2022_RS`
+    to ensure these prerequisites run before Reporting Services integration tests.
+- `New-SqlDscFileGroup`
+  - Fixed comment-based help example formatting by moving inline comment
+    to the description text.
+- QA Tests
+  - Added new test to detect comments within multi-line example code blocks
+    in comment-based help. Comments in the code portion of `.EXAMPLE` blocks
+    cause PlatyPS documentation generation to fail with "Expect Heading" errors.
+  - Added new test to detect blank lines within multi-line example code blocks
+    in comment-based help. Blank lines within the code portion of `.EXAMPLE`
+    blocks cause similar issues with documentation generation.
+- `Deny-SqlDscServerPermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks that would cause documentation generation issues.
+- `Get-SqlDscServerPermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks that would cause documentation generation issues.
+- `Grant-SqlDscServerPermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks that would cause documentation generation issues.
+- `New-SqlDscDatabase`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks.
+- `New-SqlDscDatabaseSnapshot`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks.
+- `Revoke-SqlDscServerPermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks.
+- `Set-SqlDscDatabasePermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks.
+- `Set-SqlDscServerPermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks.
+- `Test-SqlDscServerPermission`
+  - Fixed comment-based help example formatting by removing blank lines
+    within code blocks.
+- Unit Tests
+  - Fixed PowerShell class type identity issues that caused "Cannot convert
+    'Type' to 'Type'" errors when running multiple test files in the same
+    Pester job. The issue occurred because using `Import-Module -Force` and
+    `Remove-Module` between test files caused PowerShell to create new type
+    identities for module-defined classes. Changed all unit test files to not
+    use `-Force` when importing the module being tested and removed the module
+    unload from `AfterAll` blocks. This prevents class type identity mismatches
+    while maintaining test isolation through mock cleanup.
+- Fixed all `Invoke-WebRequest` calls throughout the codebase to include the
+  `-UseBasicParsing` parameter. This addresses a Windows PowerShell 5.1 security
+  update (CVE-2025-54100) released December 9, 2025, which changed the default
+  behavior of `Invoke-WebRequest` to require an interactive prompt unless
+  `-UseBasicParsing` is specified. This change prevents failures in non-interactive
+  CI environments. Affected files include integration tests, production code, and
+  build scripts
+  ([issue #2376](https://github.com/dsccommunity/SqlServerDsc/issues/2376)).
+- `SqlRS`
+  - Fixed integration tests failing with status code 0 when checking ReportServer
+    and Reports site accessibility by implementing retry logic (up to 2 minutes)
+    to handle timing issues where Reporting Services web services are not immediately
+    ready after DSC configuration completes. On final retry attempt with status
+    code 0, the exception is now re-thrown to provide detailed error diagnostics
+    ([issue #2376](https://github.com/dsccommunity/SqlServerDsc/issues/2376)).
+  - Refactored to use the public command `Get-SqlDscServerProtocol` instead
+    of the deprecated private function `Get-ServerProtocolObject`
+    ([issue #2104](https://github.com/dsccommunity/SqlServerDsc/issues/2104)).
+- `SqlProtocolTcpIp`
+  - Refactored to use the public command `Get-SqlDscServerProtocol` instead
+    of the deprecated private function `Get-ServerProtocolObject`
+    ([issue #2104](https://github.com/dsccommunity/SqlServerDsc/issues/2104)).
+- `SqlPermission`
+  - Refactored to use the new object-based server permission commands
+    (`Grant-SqlDscServerPermission`, `Deny-SqlDscServerPermission`,
+    `Revoke-SqlDscServerPermission`, and `Get-SqlDscServerPermission`)
+    instead of the deprecated `Set-SqlDscServerPermission` command
+    ([issue #2159](https://github.com/dsccommunity/SqlServerDsc/issues/2159)).
+  - Updated documentation to clarify that the resource supports both logins
+    and server roles as principals.
+  - Added a note in documentation clarifying that if a name exists as both
+    a login and a server role, the login will take precedence.
+- BREAKING CHANGE: `Set-SqlDscServerPermission`
+  - Completely refactored to set exact server permissions for a principal. The
+    command now accepts Login or ServerRole objects (same as `Grant-SqlDscServerPermission`,
+    `Deny-SqlDscServerPermission`, and `Revoke-SqlDscServerPermission`) and uses
+    `-Grant`, `-GrantWithGrant`, and `-Deny` parameters to specify the exact
+    permissions that should exist within each specified category. Within a
+    specified category, any existing permissions not listed are revoked;
+    categories not specified are left unchanged. The command internally uses
+    `Get-SqlDscServerPermission`, `Grant-SqlDscServerPermission`,
+    `Deny-SqlDscServerPermission`, and `Revoke-SqlDscServerPermission` to
+    achieve this
+    ([issue #2159](https://github.com/dsccommunity/SqlServerDsc/issues/2159)).
+- Updated comment-based help `.INPUTS` and `.OUTPUTS` sections across all public
+  commands and private functions to comply with DSC community style guidelines
+  ([issue #2103](https://github.com/dsccommunity/SqlServerDsc/issues/2103)).
+- `Set-SqlDscDatabaseProperty`
+  - Updated comment-based help to reference correct enum values.
+  - Added SQL Server version requirements to version-specific parameter help.
+- `DatabasePermission`
+  - Fixed `Equals()` method to compare both `State` and `Permission` properties.
+    Previously, the method incorrectly referenced a non-existent `Grant` property,
+    causing incorrect equality comparisons when instances had different `State`
+    values ([issue #2386](https://github.com/dsccommunity/SqlServerDsc/issues/2386)).
+  - Added `GetHashCode()` override to align with `Equals()` semantics, ensuring
+    consistent behavior when instances are used in hash-based collections
+    ([issue #2386](https://github.com/dsccommunity/SqlServerDsc/issues/2386)).
+- `ServerPermission`
+  - Fixed `Equals()` method to compare both `State` and `Permission` properties.
+    Previously, the method incorrectly referenced a non-existent `Grant` property,
+    causing incorrect equality comparisons when instances had different `State`
+    values ([issue #2386](https://github.com/dsccommunity/SqlServerDsc/issues/2386)).
+  - Added `GetHashCode()` override to align with `Equals()` semantics, ensuring
+    consistent behavior when instances are used in hash-based collections
+    ([issue #2386](https://github.com/dsccommunity/SqlServerDsc/issues/2386)).
+- Unit Tests
+  - Fixed misleading variable naming in ServerPermission.Tests.ps1 where
+    `$databasePermissionInstance` was used for `[ServerPermission]` objects.
+    All instances have been renamed to `$serverPermissionInstance`.
+- `Set-SqlDscServerPermission`
+  - Fixed an issue where unspecified permission parameters would incorrectly
+    revoke existing permissions. The command now only processes permission
+    categories that are explicitly specified via parameters. For example,
+    specifying only `-Grant @()` will now correctly revoke only Grant permissions
+    while leaving GrantWithGrant and Deny permissions unchanged
+    ([issue #2159](https://github.com/dsccommunity/SqlServerDsc/issues/2159)).
+- `New-SqlDscDatabase`
+  - Fixed parameter types for database-scoped configuration properties from
+    `System.Boolean` to `Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff`
+    to match SMO property types and support all valid values (Off, On, Primary)
+    ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
+  - Fixed parameter types for boolean database properties from `System.Boolean`
+    to `System.Management.Automation.SwitchParameter` to follow PowerShell best
+    practices ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
+- `New-SqlDscRole`
+  - Fixed duplicate verbose output by removing manual `Write-Verbose` call, as
+    `$PSCmdlet.ShouldProcess()` already generates appropriate verbose output
+    ([issue #2156](https://github.com/dsccommunity/SqlServerDsc/issues/2156)).
+- `Set-SqlDscDatabaseProperty`
+  - Fixed parameter types for database-scoped configuration properties from
+    `System.Boolean` to `Microsoft.SqlServer.Management.Smo.DatabaseScopedConfigurationOnOff`
+    to match SMO property types and support all valid values (Off, On, Primary)
+    ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
+  - Fixed parameter types for boolean database properties from `System.Boolean`
+    to `System.Management.Automation.SwitchParameter` to follow PowerShell best
+    practices ([issue #2190](https://github.com/dsccommunity/SqlServerDsc/issues/2190)).
+
+### Removed
+
+- `DSC_SqlDatabase`
+  - Removed the legacy MOF-based resource. Use the new class-based `SqlDatabase`
+    resource instead
+    ([issue #2174](https://github.com/dsccommunity/SqlServerDsc/issues/2174)).
+- Removed helper function `Get-FilePathMajorVersion` from the SqlServerDsc.Common
+  module. Refactored usages to use the command `Get-FileVersion` from the
+  DscResource.Common module instead
+- Removed private function `Get-FileVersionInformation`. Use the command
+  `Get-FileVersion` from the DscResource.Common module instead
+  ([issue #2373](https://github.com/dsccommunity/SqlServerDsc/issues/2373)).
+- Removed deprecated private function `Get-ProtocolNameProperties` from the
+  SqlServerDsc.Common module. Use the public command `Get-SqlDscServerProtocolName`
+  instead ([issue #2104](https://github.com/dsccommunity/SqlServerDsc/issues/2104)).
+- Removed deprecated private function `Get-ServerProtocolObject` from the
+  SqlServerDsc.Common module. Use the public command `Get-SqlDscServerProtocol`
+  instead ([issue #2104](https://github.com/dsccommunity/SqlServerDsc/issues/2104)).
+
+## [17.3.0] - 2025-12-01
+
+### Removed
+
+- BREAKING CHANGE: Removed public command `Test-SqlDscDatabase`. Use
+  `Test-SqlDscIsDatabase` to check existence. For property checks, use
+  `Test-SqlDscDatabaseProperty`. See [issue #2201](https://github.com/dsccommunity/SqlServerDsc/issues/2201).
+- BREAKING CHANGE: `Set-SqlDscDatabase`
+  - Removed parameter `OwnerName` [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
+    Use the new command `Set-SqlDscDatabaseOwner` to change database ownership instead.
+- BREAKING CHANGE: `Set-SqlDscDatabaseProperty`
+  - Removed parameters `AzureEdition` and `AzureServiceObjective`. Azure SQL Database
+    service tier and SLO changes should be managed using `Set-AzSqlDatabase`
+    from the Azure PowerShell module instead. See [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
+  - Removed parameter `DatabaseSnapshotBaseName`. Database snapshots should be
+    created using the `New-SqlDscDatabaseSnapshot`, or the `New-SqlDscDatabase`
+    command with the `-DatabaseSnapshotBaseName` parameter.
+  - Removed parameter `DefaultSchema`. Default schema is a user-level property,
+    not a database-level property. See [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
+  - Removed parameter `IsLedger`. Ledger status is read-only after database creation.
+    Use `New-SqlDscDatabase` with the `-IsLedger` parameter to create ledger databases
+    [issue #2351](https://github.com/dsccommunity/SqlServerDsc/issues/2351).
+
+### Added
+
+- Added public command `Enable-SqlDscDatabaseSnapshotIsolation` to enable snapshot
+  isolation for a database in a SQL Server Database Engine instance. This command
+  uses the SMO `SetSnapshotIsolation()` method to enable row-versioning and snapshot
+  isolation settings to optimize concurrency and consistency ([issue #2329](https://github.com/dsccommunity/SqlServerDsc/issues/2329)).
+- Added public command `Disable-SqlDscDatabaseSnapshotIsolation` to disable snapshot
+  isolation for a database in a SQL Server Database Engine instance. This command
+  uses the SMO `SetSnapshotIsolation()` method to disable row-versioning and snapshot
+  isolation settings ([issue #2329](https://github.com/dsccommunity/SqlServerDsc/issues/2329)).
+- Added public command `New-SqlDscDatabaseSnapshot` to create database snapshots
+  in a SQL Server Database Engine instance using SMO. This command provides an
+  automated and DSC-friendly approach to snapshot management by leveraging
+  `New-SqlDscDatabase` for the actual creation. The command now supports `FileGroup`
+  and `DataFile` parameters to allow control over snapshot file placement and
+  structure ([issue #2341](https://github.com/dsccommunity/SqlServerDsc/issues/2341)).
+- Added public command `New-SqlDscFileGroup` to create FileGroup objects for SQL
+  Server databases. This command simplifies creating FileGroup objects that
+  can be used with `New-SqlDscDatabase` and other database-related commands.
+  The `Database` parameter is optional, allowing FileGroup objects to be
+  created standalone and added to a Database later using `Add-SqlDscFileGroup`.
+- Added public command `New-SqlDscDataFile` to create DataFile objects for SQL
+  Server FileGroups. This command simplifies creating DataFile objects with
+  specified physical file paths, supporting both regular database files (.mdf, .ndf)
+  and sparse files for database snapshots (.ss). The `FileGroup` parameter is
+  mandatory, requiring DataFile objects to be created with an associated FileGroup.
+- Added public command `Add-SqlDscFileGroup` to add one or more FileGroup objects
+  to a Database. This command provides a clean way to associate FileGroup objects
+  with a Database after they have been created.
+- Added public command `ConvertTo-SqlDscDataFile` to convert `DatabaseFileSpec`
+  objects to SMO DataFile objects.
+- Added public command `ConvertTo-SqlDscFileGroup` to convert `DatabaseFileGroupSpec`
+  objects to SMO FileGroup objects.
+- Added class `DatabaseFileSpec` to define data file specifications without requiring
+  a database or SMO context.
+- Added class `DatabaseFileGroupSpec` to define file group specifications with
+  associated data files without requiring a database or SMO context.
+- `New-SqlDscDatabase`
+  - Added `FileGroup` and `DataFile` parameters to allow specifying custom file
+    locations and structure. These parameters apply to both regular databases and
+    database snapshots, enabling control over file placement for snapshots (sparse
+    files) and custom filegroup/datafile configuration for regular databases
+    ([issue #2341](https://github.com/dsccommunity/SqlServerDsc/issues/2341)).
+  - Added `IsLedger` parameter to support creating ledger databases at creation
+    time. Ledger status is read-only after database creation and can only be set
+    when creating a new database ([issue #2351](https://github.com/dsccommunity/SqlServerDsc/issues/2351)).
+- Added public command `Set-SqlDscDatabaseOwner` to change the owner of a SQL Server
+  database [issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177).
+  This command uses the SMO `SetOwner()` method and supports both `ServerObject`
+  and `DatabaseObject` parameter sets. This replaces the ownership changes
+  previously done via the `OwnerName` parameter in `Set-SqlDscDatabase`.
+- Added public command `Test-SqlDscIsDatabase` to test if a database exists on a
+  SQL Server Database Engine instance ([issue #2201](https://github.com/dsccommunity/SqlServerDsc/issues/2201)).
+- Added public command `Get-SqlDscSetupLog` to retrieve SQL Server setup bootstrap
+  logs (Summary.txt) from the most recent setup operation. This command can be used
+  interactively for troubleshooting or within integration tests to help diagnose
+  setup failures. Integration tests have been updated to use this command instead
+  of duplicated error handling code [issue #2311](https://github.com/dsccommunity/SqlServerDsc/issues/2311).
+- Added script `Remove-SqlServerFromCIImage.ps1` to remove pre-installed SQL Server
+  components from Microsoft Hosted agents that conflict with PrepareImage operations.
+  The script is now run automatically in the CI pipeline before PrepareImage tests
+  to resolve Sysprep compatibility errors [issue #2212](https://github.com/dsccommunity/SqlServerDsc/issues/2212).
+- Added integration tests for `Complete-SqlDscImage` command to ensure command
+  reliability in prepared image installation workflows. The test runs in a separate
+  pipeline job `Integration_Test_Commands_SqlServer_PreparedImage` with its own
+  CI worker, and verifies the completion of SQL Server instances prepared using
+  `Install-SqlDscServer` with the `-PrepareImage` parameter. The test includes
+  scenarios with minimal parameters and various service account/directory
+  configurations [issue #2212](https://github.com/dsccommunity/SqlServerDsc/issues/2212).
+- Added integration test for `Install-SqlDscServer` with the `-PrepareImage`
+  parameter set to support the prepared image installation workflow. This test
+  (`Install-SqlDscServer.Integration.PrepareImage.Tests.ps1`) runs in the
+  `Integration_Test_Commands_SqlServer_PreparedImage` pipeline job and prepares
+  a DSCSQLTEST instance that is later completed by `Complete-SqlDscImage` tests
+  [issue #2212](https://github.com/dsccommunity/SqlServerDsc/issues/2212).
+- Added integration tests for `Initialize-SqlDscRebuildDatabase` command to ensure
+  command reliability. The test runs in group 8, alongside `Repair-SqlDscServer`,
+  to verify the rebuild database functionality on the DSCSQLTEST instance
+  [issue #2242](https://github.com/dsccommunity/SqlServerDsc/issues/2242).
+- Added integration tests for `Repair-SqlDscServer` command to ensure command
+  reliability. The test runs in group 8, before `Uninstall-SqlDscServer` in
+  group 9, to verify the repair functionality on the DSCSQLTEST instance
+  [issue #2238](https://github.com/dsccommunity/SqlServerDsc/issues/2238).
+- Added integration tests for `ConvertTo-SqlDscServerPermission` command to ensure
+  command reliability [issue #2207](https://github.com/dsccommunity/SqlServerDsc/issues/2207).
+- Added post-installation configuration integration test to configure SSL certificate
+  support for SQL Server instance DSCSQLTEST in CI environment, enabling testing
+  of encryption-related functionality. The new `PostInstallationConfiguration`
+  integration test includes:
+  - Self-signed SSL certificate creation and installation
+  - Certificate configuration for SQL Server Database Engine
+  - Service account permissions for certificate private key access
+  - Certificate trust chain configuration
+  - Verification that encryption is properly configured
+  - Enabled previously skipped encryption tests in `Invoke-SqlDscQuery`
+  - Added integration tests for `Connect-SqlDscDatabaseEngine` command to verify
+    the `-Encrypt` parameter functionality
+  [issue #2290](https://github.com/dsccommunity/SqlServerDsc/issues/2290).
+- Added integration tests for `Get-SqlDscDatabasePermission` command to ensure
+  database permission retrieval functions correctly in real environments
+  [issue #2221](https://github.com/dsccommunity/SqlServerDsc/issues/2221).
+- Added integration tests for `Get-SqlDscManagedComputer` command to ensure it
+  functions correctly in real environments
+  [issue #2220](https://github.com/dsccommunity/SqlServerDsc/issues/2220).
+- Added integration tests for `Remove-SqlDscAudit` command to ensure it functions
+  correctly in real environments
+  [issue #2241](https://github.com/dsccommunity/SqlServerDsc/issues/2241).
+- Added integration tests for `ConvertFrom-SqlDscDatabasePermission` command to
+  ensure it functions correctly in real environments
+  [issue #2211](https://github.com/dsccommunity/SqlServerDsc/issues/2211).
+- Added integration tests for `Get-SqlDscStartupParameter` command to ensure it
+  functions correctly in real environments
+  [issue #2217](https://github.com/dsccommunity/SqlServerDsc/issues/2217).
+- Added integration tests for `Get-SqlDscTraceFlag` command to ensure it functions
+  correctly in real environments
+  [issue #2216](https://github.com/dsccommunity/SqlServerDsc/issues/2216).
+- Added integration tests for `Get-SqlDscPreferredModule` command to ensure it
+  functions correctly in real environments
+  [issue #2218](https://github.com/dsccommunity/SqlServerDsc/issues/2218).
+- Added integration tests for `Enable-SqlDscAudit` command to ensure command
+  reliability [issue #2223](https://github.com/dsccommunity/SqlServerDsc/issues/2223).
+- Added integration tests for `Get-SqlDscAudit` command to ensure it functions
+  correctly in real environments
+  [issue #2222](https://github.com/dsccommunity/SqlServerDsc/issues/2222).
+- Added integration tests for `Disconnect-SqlDscDatabaseEngine` command to ensure
+  command reliability in real environments
+  [issue #2224](https://github.com/dsccommunity/SqlServerDsc/issues/2224).
+- Added integration tests for `Invoke-SqlDscQuery` command to ensure it functions
+  correctly in real environments
+  [issue #2227](https://github.com/dsccommunity/SqlServerDsc/issues/2227).
+- Added integration tests for `New-SqlDscAudit` command to ensure it functions
+  correctly in real environments
+  [issue #2226](https://github.com/dsccommunity/SqlServerDsc/issues/2226).
+- Added integration tests for `Test-SqlDscIsLogin` command to ensure it functions
+  correctly in real environments
+  [issue #2230](https://github.com/dsccommunity/SqlServerDsc/issues/2230).
+- Added integration tests for `Test-SqlDscIsDatabasePrincipal` command to ensure
+  it functions correctly in real environments
+  [issue #2231](https://github.com/dsccommunity/SqlServerDsc/issues/2231).
+- Added public command `Test-SqlDscDatabaseProperty` to test database properties
+  on SQL Server Database Engine instances. This command supports two parameter sets:
+  `ServerObject` with **DatabaseName**, and `DatabaseObject` (from `Get-SqlDscDatabase`).
+  It allows users to specify any non-collection properties of the SMO Database object
+  as dynamic parameters to test, returning `$true` if all tested properties match
+  their expected values, and `$false` otherwise. This command improves maintainability
+  of SQL DSC resources and provides granular database configuration testing
+  [issue #2306](https://github.com/dsccommunity/SqlServerDsc/issues/2306).
+
+### Fixed
+
+- `SqlDatabaseObjectPermission`
+  - Added validation to ensure each `DSC_DatabaseObjectPermission` instance
+    only contains a single permission name. Specifying multiple permissions
+    as a comma-separated string now throws a descriptive error
+    ([issue #2345](https://github.com/dsccommunity/SqlServerDsc/issues/2345)).
+- `Get-SqlDscRSSetupConfiguration`
+  - Fixed issue where the function doesn't provide an output for SSRS 2016 instances
+    because registry paths were using `InstanceName` instead of `InstanceId`.
+    [issue #2346](https://github.com/dsccommunity/SqlServerDsc/issues/2346).
+  - Added fallback to `SQLPath` registry value for SQL 2016 and earlier when
+    `InstallRootDirectory` is not found [issue #2346](https://github.com/dsccommunity/SqlServerDsc/issues/2346).
+  - Added filtering to `MSReportServer_Instance` retrieval logic to handle the case
+    with many SSRSs.
+- `SqlRS`
+  - Obtain the Reporting service name from WMI for version 14 and higher.
+    [issue #2313](https://github.com/dsccommunity/SqlServerDsc/issues/2313)
+  - Added validation to ensure Configuration.ServiceName is not null or empty
+    for SQL Server version 14 and higher [issue #2342](https://github.com/dsccommunity/SqlServerDsc/issues/2342).
+- `Repair-SqlDscServer`
+  - Removed the `Features` parameter from the command as SQL Server Repair action
+    does not accept the `/FEATURES` parameter. SQL Server automatically repairs
+    all installed features when using the Repair action. This fixes the error
+    "The setting 'FEATURES' is not allowed when the value of setting 'ACTION'
+    is 'Repair'." that occurred when attempting to repair a SQL Server instance
+    [issue #2238](https://github.com/dsccommunity/SqlServerDsc/issues/2238).
+- Corrected error message in test file to recommend 'noop' task instead of 'build'
+  task for resolving dependencies
+  ([issue #2279](https://github.com/dsccommunity/SqlServerDsc/issues/2279)).
+- Updated integration test documentation in `tests/Integration/Commands/README.md`
+  to correctly reflect that `ConvertFrom-SqlDscDatabasePermission` test does not
+  require database instance connectivity
+  [issue #2284](https://github.com/dsccommunity/SqlServerDsc/issues/2284).
+- Updated unit test assertion in `Get-SqlDscSetupLog.Tests.ps1` to use
+  `Should -BeFalse` instead of `Should -Contain $false` to comply with DSC
+  Community Pester style guidelines
+  [issue #2315](https://github.com/dsccommunity/SqlServerDsc/issues/2315).
+- Added integration tests for `Set-SqlDscAudit` command to ensure it functions
+  correctly in real environments
+  [issue #2236](https://github.com/dsccommunity/SqlServerDsc/issues/2236).
+- Added integration tests for `Set-SqlDscStartupParameter` command to ensure
+  reliable startup parameter configuration
+  [issue #2233](https://github.com/dsccommunity/SqlServerDsc/issues/2233).
+- Added integration tests for `Set-SqlDscServerPermission` command to ensure it
+  functions correctly in real environments
+  [issue #2234](https://github.com/dsccommunity/SqlServerDsc/issues/2234).
+- Added integration tests for `Save-SqlDscSqlServerMediaFile` command to ensure
+  it functions correctly in real environments
+  [issue #2237](https://github.com/dsccommunity/SqlServerDsc/issues/2237).
+- Added integration tests for `Disable-SqlDscAudit` command to ensure it functions
+  correctly in real environments
+  [issue #2206](https://github.com/dsccommunity/SqlServerDsc/issues/2206).
+- Added integration tests for `ConvertTo-SqlDscDatabasePermission` command to
+  ensure command reliability
+  [issue #2209](https://github.com/dsccommunity/SqlServerDsc/issues/2209).
+- Added integration tests for `Set-SqlDscDatabasePermission` command to ensure
+  command reliability
+  [issue #2235](https://github.com/dsccommunity/SqlServerDsc/issues/2235).
+- Added integration test for `ConvertTo-SqlDscEditionName` command to ensure
+  command reliability in real environments
+  [issue #2208](https://github.com/dsccommunity/SqlServerDsc/issues/2208).
+- Added integration tests for `Import-SqlDscPreferredModule` command to ensure
+  proper module import functionality in real environments
+  [issue #2225](https://github.com/dsccommunity/SqlServerDsc/issues/2225).
+- Added integration tests for `Test-SqlDscIsSupportedFeature` command to ensure
+  it functions correctly in real environments
+  [issue #2228](https://github.com/dsccommunity/SqlServerDsc/issues/2228).
+- Added integration test for `Get-SqlDscManagedComputerService` command to ensure
+  command reliability [issue #2219](https://github.com/dsccommunity/SqlServerDsc/issues/2219).
+- Added integration tests for `Set-SqlDscTraceFlag` command to ensure it functions
+  correctly in real environments
+  [issue #2232](https://github.com/dsccommunity/SqlServerDsc/issues/2232).
+- Added integration tests for `ConvertFrom-SqlDscServerPermission` command to
+  ensure it functions correctly in real environments
+  [issue #2210](https://github.com/dsccommunity/SqlServerDsc/issues/2210).
+- `Remove-SqlDscTraceFlag`
+  - Added missing integration test to ensure command reliability ([issue #2239](https://github.com/dsccommunity/SqlServerDsc/issues/2239)).
+- `Remove-SqlDscAudit`
+  - Added missing integration test to ensure command reliability ([issue #2241](https://github.com/dsccommunity/SqlServerDsc/issues/2241)).
+- Added integration tests for `Test-SqlDscIsRole` command to ensure it functions
+  correctly in real environments
+  [issue #2229](https://github.com/dsccommunity/SqlServerDsc/issues/2229).
+- Added integration tests for `Add-SqlDscTraceFlag` command to ensure it functions
+  correctly in real environments
+  [issue #2214](https://github.com/dsccommunity/SqlServerDsc/issues/2214).
+- `Set-SqlDscAudit`
+  - Added `AllowAuditGuidChange` parameter to enable modifying the audit GUID
+    by dropping and recreating the audit with the new GUID. This parameter is
+    required when changing the `AuditGuid` property because SQL Server does not
+    allow direct modification of the audit GUID ([issue #2287](https://github.com/dsccommunity/SqlServerDsc/issues/2287)).
+- `Save-SqlDscSqlServerMediaFile`
+  - Fixed the Force parameter to work correctly when the target ISO file already
+    exists. The command now properly overwrites the target file when Force is
+    specified. Removed the safety check that was incorrectly blocking execution
+    when other ISO files existed in the destination directory
+    ([issue #2280](https://github.com/dsccommunity/SqlServerDsc/issues/2280)).
+- `DSC_SqlRS`
+  - Fixed intermittent initialization failures on resource-constrained systems
+    (particularly Windows Server 2025 in CI) by adding an optional `RestartTimeout`
+    parameter that allows specifying a wait period (in seconds) after service
+    restart to allow Reporting Services to fully initialize before attempting
+    to get configuration data or run initialization methods. The timeout is applied
+    both after the initial service restart and before calling `InitializeReportServer()`
+    if needed, giving the WMI provider sufficient time to be ready. When not specified,
+    no additional wait time is applied, maintaining backward compatibility.
+- `New-SqlDscAudit`
+  - Fixed parameter validation to prevent the `ReserveDiskSpace` parameter from
+    being used with the `FileWithMaxFiles` parameter set (when only `MaximumFiles`
+    is specified without `MaximumFileSize`). This combination always resulted in
+    a SQL Server error because `RESERVE_DISK_SPACE` cannot be specified when
+    `MAXSIZE = UNLIMITED`. The `ReserveDiskSpace` parameter now correctly requires
+    both `MaximumFiles` and `MaximumFileSize` to be specified
+    ([issue #2289](https://github.com/dsccommunity/SqlServerDsc/issues/2289)).
+- `Add-SqlDscTraceFlag` and `Remove-SqlDscTraceFlag`
+  - Fixed parameter binding error when `ErrorAction` was specified both
+    explicitly and via `PSBoundParameters` by using `Remove-CommonParameter`
+    instead of manual parameter removal
+    ([issue #2239](https://github.com/dsccommunity/SqlServerDsc/issues/2239)).
+- `Remove-SqlDscTraceFlag`
+  - Optimized to skip unnecessary Set operations when removal results in no
+    effective change
+    ([issue #2239](https://github.com/dsccommunity/SqlServerDsc/issues/2239)).
+- Updated `.gitattributes` to enforce LF line endings for PowerShell files to
+  ensure cross-platform compatibility.
+
+### Changed
+
+- `New-SqlDscDatabase`
+  - Added support for creating database snapshots through a new `Snapshot`
+    parameter set. Use the `-DatabaseSnapshotBaseName` parameter to specify
+    the source database name when creating a snapshot ([issue #2333](https://github.com/dsccommunity/SqlServerDsc/issues/2333)).
+- `Restart-ReportingServicesService`
+  - BREAKING CHANGE: Removed the deprecated `InstanceName` parameter. All callers
+    must now use the `ServiceName` parameter instead.
+  - Added the `ServiceName` parameter to restart service with the service name specified.
+- BREAKING CHANGE: `Set-SqlDscDatabase` has been renamed to `Set-SqlDscDatabaseProperty`
+  to better reflect its purpose of setting database properties. All existing references
+  should be updated to use the new name.
+- `Set-SqlDscDatabaseProperty` (formerly `Set-SqlDscDatabase`)
+  - BREAKING CHANGE: Completely refactored to support settable SMO Database
+    properties as parameters ([issue #2177](https://github.com/dsccommunity/SqlServerDsc/issues/2177)).
+- `Remove-SqlDscAgentAlert`
+  - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
+    functions for proper terminating error handling ([issue #2193](https://github.com/dsccommunity/SqlServerDsc/issues/2193)).
+- `Set-SqlDscAgentAlert`
+  - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
+    functions for proper terminating error handling ([issue #2196](https://github.com/dsccommunity/SqlServerDsc/issues/2196)).
+- `Remove-SqlDscDatabase`
+  - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
+    functions for proper terminating error handling ([issue #2195](https://github.com/dsccommunity/SqlServerDsc/issues/2195)).
+- `Remove-SqlDscRole`
+  - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
+    functions for proper terminating error handling ([issue #2199](https://github.com/dsccommunity/SqlServerDsc/issues/2199)).
+- `New-SqlDscDatabase`
+  - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
+    functions for proper terminating error handling ([issue #2200](https://github.com/dsccommunity/SqlServerDsc/issues/2200)).
+- `Set-SqlDscDatabaseProperty` (formerly `Set-SqlDscDatabase`)
+  - Now uses `$PSCmdlet.ThrowTerminatingError()` instead of exception helper
+    functions for proper terminating error handling ([issue #2198](https://github.com/dsccommunity/SqlServerDsc/issues/2198)).
+- `Add-SqlDscTraceFlag`
+  - Improved de-duplication logic to normalize element types to `[System.UInt32]`
+    before sorting and removing duplicates, ensuring proper handling of mixed
+    numeric types ([issue #2277](https://github.com/dsccommunity/SqlServerDsc/issues/2277)).
+  - Added idempotent behavior by comparing current and desired trace flags before
+    calling `Set-SqlDscTraceFlag`, skipping unnecessary writes when there are no
+    effective changes ([issue #2277](https://github.com/dsccommunity/SqlServerDsc/issues/2277)).
+- Refactored integration tests to remove `finally` blocks from `It`-blocks and
+  use Pester `BeforeEach`/`AfterEach` blocks instead, following DSC Community
+  coding guidelines. This improves test cleanup reliability and maintainability
+  across the following test files ([issue #2288](https://github.com/dsccommunity/SqlServerDsc/issues/2288)):
+  - `New-SqlDscLogin.Integration.Tests.ps1`
+  - `New-SqlDscAudit.Integration.Tests.ps1`
+  - `Get-SqlDscDatabasePermission.Integration.Tests.ps1`
+  - `Get-SqlDscPreferredModule.Integration.Tests.ps1`
+  - `New-SqlDscDatabase.Integration.Tests.ps1`
+- Refactored unit tests to remove `finally` blocks from `It`-blocks and
+  use Pester `AfterEach` blocks instead, following DSC Community coding
+  guidelines. This improves test cleanup reliability and maintainability
+  across the following test files ([issue #2288](https://github.com/dsccommunity/SqlServerDsc/issues/2288)):
+  - `Set-SqlDscConfigurationOption.Tests.ps1`
+  - `Get-SqlDscConfigurationOption.Tests.ps1`
+  - `Test-SqlDscConfigurationOption.Tests.ps1`
+- `Test-SqlDscIsDatabasePrincipal` and `Get-SqlDscDatabasePermission`
+  - Added `Refresh` parameter to refresh SMO collections before checking
+    database principals, addressing issues with custom database roles created
+    via T-SQL that aren't immediately visible to SMO. The refresh logic is
+    optimized to only refresh collections that will be used based on exclude
+    parameters, improving performance on databases with large numbers of principals
+    ([issue #2221](https://github.com/dsccommunity/SqlServerDsc/issues/2221)).
+- Updated GitHub Copilot setup workflow to fix environment variable assignment
+  in task.
+- Updated VS Code tasks configuration to use proper build and test commands
+  with improved task grouping and problem matchers.
+- Updated instruction files to use correct build command (`noop` instead of
+  `build`) and fixed file pattern matching syntax.
+- Bump GitHub actions codeql-action/upload-sarif to v4
+- Bump GitHub actions checkout to v6
+- SqlDatabase
+  - Support enabling or disabling snapshot isolation
+    ([issue #845](https://github.com/dsccommunity/SqlServerDsc/issues/845)).
+
+## [17.2.0] - 2025-09-16
+
+### Fixed
+
+- Make sure tests forcibly imports the module being tested to avoid AI failing
+  when testing changes.
+- Fixed Azure DevOps pipeline conditions that were preventing DSC resource
+  integration tests from running when they should by removing incorrect quotes
+  around boolean values.
+- Refactored error handling by removing global `$ErrorActionPreference = 'Stop'`
+  from 64 PowerShell files and implementing targeted error control for specific
+  command calls that use `-ErrorAction 'Stop'`.
+- `SqlAgentAlert`
+  - Minor fix in `source/Classes/020.SqlAgentAlert.ps1` to correct `ExcludeDscProperties`
+    formatting (added missing delimiter).
+- `SqlRSSetup`
+  - Re-added `ReportServerEdition` enum and updated class to use enum instead of
+    ValidateSet for the Edition property.
+- Fixed commands continuing execution after `Assert-ElevatedUser` elevation
+  errors by setting `$ErrorActionPreference = 'Stop'` [issue #2070](https://github.com/dsccommunity/SqlServerDsc/issues/2070)
+- Fixed incorrect array-return syntax in several public `Get-*` commands by
+  removing a leading comma in return statements which could cause incorrect
+  output and ScriptAnalyzer warnings: `Get-SqlDscAudit`,
+  `Get-SqlDscConfigurationOption`, `Get-SqlDscDatabasePermission`,
+  `Get-SqlDscServerPermission`, and `Get-SqlDscTraceFlag`.
+- New-SqlDscDatabase: use `New-ArgumentException` instead of
+  `New-InvalidArgumentException` for parameter validation errors.
+
+### Added
+
+- Added setup workflow for GitHub Copilot.
+  - Switch the workflow to use Linux.
+- `Set-SqlDscDatabaseDefault`
+  - Added new command to set default objects of a database in a SQL Server
+    Database Engine instance (issue [#2178](https://github.com/dsccommunity/SqlServerDsc/issues/2178)).
+- `Set-SqlDscConfigurationOption`
+  - Added new command to set SQL Server Database Engine configuration options
+    using SMO with validation, ShouldProcess support, and dynamic tab completion.
+- `Test-SqlDscConfigurationOption`
+  - Added new command to test if SQL Server Database Engine configuration options
+    have the specified value using SMO with dynamic tab completion for both
+    option names and values.
+- `Get-SqlDscConfigurationOption`
+  - Enhanced existing command to return user-friendly metadata objects by default
+    with properties Name, RunValue, ConfigValue, Minimum, Maximum, and IsDynamic.
+  - Added `-Raw` switch to return original SMO ConfigProperty objects for
+    backward compatibility.
+  - Added dynamic tab completion for the `-Name` parameter.
+  - The command can set the default filegroup, default FILESTREAM filegroup,
+    and default Full-Text catalog using SMO methods SetDefaultFileGroup,
+    SetDefaultFileStreamFileGroup, and SetDefaultFullTextCatalog.
+- `SqlAgentAlert`
+  - Added new DSC resource to manage SQL Server Agent alerts.
+  - Improved AI instructions.
+  - Enhanced workflow with proper environment variable configuration and DSCv3 verification.
+  - Fixed environment variable persistence by using $GITHUB_ENV instead of
+    job-level env declaration.
+- `Grant-SqlDscServerPermission`
+  - Added new public command to grant server permissions to a principal
+    (Login or ServerRole) on a SQL Server Database Engine instance.
+- `Deny-SqlDscServerPermission`
+  - Added new public command to deny server permissions to a principal
+    (Login or ServerRole).
+- `Revoke-SqlDscServerPermission`
+  - Added new public command to revoke server permissions from a principal
+    (Login or ServerRole).
+- `Test-SqlDscServerPermission`
+  - Added new public command with Grant/Deny parameter sets (and `-WithGrant`)
+    to test server permissions for a principal.
+- `Assert-SqlDscLogin`
+  - Added new public command to validate that a specified SQL Server principal
+    is a login.
+- `Enable-SqlDscLogin`
+  - Added new public command to enable a SQL Server login.
+- `Get-SqlDscServerPermission`
+  - Enhanced command to support pipeline input for Login and ServerRole
+    objects while maintaining backward compatibility with the original
+    parameter set.
+- `Disable-SqlDscLogin`
+  - Added new public command to disable a SQL Server login.
+- `Test-SqlDscIsLoginEnabled`
+  - Added new public command to test whether a SQL Server login is enabled.
+    Throws a terminating error if the specified principal does not exist as a login.
+  - Supports pipeline input and provides detailed error messages with localization.
+  - Uses `Test-SqlDscIsLogin` command for login validation following module patterns.
+- Added `Get-SqlDscLogin`, `Get-SqlDscRole`, `New-SqlDscLogin`, `New-SqlDscRole`,
+  `Remove-SqlDscRole`, and `Remove-SqlDscLogin` commands for retrieving and managing
+   SQL Server logins and roles with support for refresh, pipeline input, and ShouldProcess.
+- Added `Get-SqlDscAgentAlert`, `New-SqlDscAgentAlert`,
+  `Set-SqlDscAgentAlert`, `Remove-SqlDscAgentAlert`, and `Test-SqlDscIsAgentAlert`
+  to manage SQL Agent alerts on a Database Engine instance.
+- Added new public commands for SQL Agent Operator management:
+  - `Get-SqlDscAgentOperator` - Get SQL Agent Operators from a SQL Server
+     Database Engine instance
+  - `New-SqlDscAgentOperator` - Create a new SQL Agent Operator with specified properties
+  - `Set-SqlDscAgentOperator` - Update existing SQL Agent Operator properties
+  - `Remove-SqlDscAgentOperator` - Remove a SQL Agent Operator from the instance
+  - `Enable-SqlDscAgentOperator` - Enable a SQL Agent Operator
+  - `Disable-SqlDscAgentOperator` - Disable a SQL Agent Operator
+  - `Test-SqlDscIsAgentOperator` - Test if a SQL Agent Operator exists
+  - Supports pipeline input for both ServerObject and OperatorObject where applicable
+  - Includes comprehensive unit tests and follows ShouldProcess patterns
+- Added new public commands for database management:
+  - `Get-SqlDscDatabase` - Get databases from a SQL Server Database Engine instance
+  - `New-SqlDscDatabase` - Create a new database with specified properties
+  - `Set-SqlDscDatabase` - Modify properties of an existing database
+  - `Remove-SqlDscDatabase` - Remove a database from SQL Server instance
+  - `Test-SqlDscDatabase` - Test if a database is in the desired state
+  - All commands support pipeline input with ServerObject and follow established
+    patterns
+  - Database objects can also be used as pipeline input for Set and Remove operations
+  - Commands include comprehensive validation, localization, and ShouldProcess support
+- `Test-SqlDscAgentAlertProperty`
+  - New command to test specific properties of SQL Agent alerts.
+  - Supports testing severity and message ID properties.
+  - Requires at least one property parameter to be specified.
+  - Supports pipeline input of
+    `[Microsoft.SqlServer.Management.Smo.Agent.Alert]` objects.
+- Added private function `Get-CommandParameter` to filter command parameters
+  by excluding specified parameter names and common parameters, providing a
+  reusable way to determine settable properties on objects.
+- `Get-SqlDscServerProtocolName`
+  - New public command for SQL Server protocol name mappings with support
+    for protocol name, display name, and short name parameter sets.
+- `Get-SqlDscManagedComputerInstance`
+  - New public command for retrieving SQL Server managed computer instance
+    information with pipeline support.
+- `Get-SqlDscServerProtocol`
+  - Enhanced to support multiple parameter sets including pipeline input
+    from managed computer and instance objects.
+  - Enhanced to optionally return all protocols when ProtocolName parameter
+    is not specified.
+- All tests was changed to no longer use `Should -Not -Throw` for testing
+  that commands do not throw errors. Instead, tests now simply call the command
+  and will fail if an error is thrown, following best practices (follows
+  Pester 6 syntax).
+
+### Changed
+
+- Optimized integration test performance by leaving the DSCSQLTEST service running
+  for subsequent tests, significantly improving CI build times.
+- Improved code quality by ensuring all function invocations in the private
+  and public functions use named parameters instead of positional parameters.
+- SqlServerDsc
+  - Updated GitVersion.yml feature branch regex pattern to use anchor `^f(eature(s)?)?[\/-]`
+    for more precise branch name matching.
+- Refactored GitHub Copilot workflow setup to be module-agnostic via MODULE_NAME
+  environment variable, includes full-history detection, uses idempotent .NET
+  tool install, and adds Linux dependency handling ([issue #2127](https://github.com/dsccommunity/SqlServerDsc/issues/2127)).
+- `SqlAgentAlert`
+  - Added additional unit tests covering MessageId-based alerts, the hidden
+    `Modify()` method behavior, and `AssertProperties()` validation scenarios.
+- Module now outputs a verbose message instead of a warning when the SMO
+  dependency module is missing during import to work around a DSC v3 issue.
+- VS Code tasks configuration was improved to support AI.
+- `.vscode/settings.json`
+  - Set `terminal.integrated.defaultProfile.osx` and `terminal.integrated.defaultProfile.linux`
+    to `pwsh` and added terminal profiles for macOS and Linux to ensure the
+    integrated terminal defaults to `pwsh` in developer environments.
+- `Prerequisites` tests
+  - Added creation of `SqlIntegrationTest` local Windows user for integration testing.
+- `tests/Integration/Commands/README.md`
+  - Added documentation for `SqlIntegrationTest` user and
+    `IntegrationTestSqlLogin` login.
+  - Added run order information for `New-SqlDscLogin` integration test.
+- `Get-SqlDscServerPermission`
+  - Enhanced the command to support server roles in addition to logins by
+    utilizing `Test-SqlDscIsRole` alongside the existing `Test-SqlDscIsLogin`
+    check.
+  - The command now accepts both login principals and server role principals
+    as the `Name` parameter (issue [#2063](https://github.com/dsccommunity/SqlServerDsc/issues/2063)).
 - `azure-pipelines.yml`
   - Remove `windows-2019` images fixes [#2106](https://github.com/dsccommunity/SqlServerDsc/issues/2106).
   - Move individual tasks to `windows-latest`.
+  - Added integration tests for `Assert-SqlDscLogin` command in Group 2.
+  - Added conditional logic to skip DSC resource integration tests when
+    changes don't affect DSC resources, improving CI/CD performance for
+    non-DSC changes.
+- `SqlServerDsc.psd1`
+  - Set `CmdletsToExport` to `*` in module manifest to fix issue [#2109](https://github.com/dsccommunity/SqlServerDsc/issues/2109).
+- Added optimization for DSC resource integration tests
+  - Created `.build/Test-ShouldRunDscResourceIntegrationTests.ps1` to analyze
+    git changes and decide when DSC resource integration tests are needed.
+  - DSC resource integration test stages now run only when changes affect DSC
+    resources, public commands used by resources, or related components.
+  - Unit tests, QA tests, and command integration tests continue to run for
+    all changes.
+- Bump actions/checkout task to v5.
+- `.build/Test-ShouldRunDscResourceIntegrationTests.ps1`
+  - Improved performance by adding an early optimization to check for changes
+    under the configured SourcePath before expensive analysis.
+  - Moved public command discovery to only run when source changes are detected.
+- `.build/README.md`
+  - Added flow diagram showing decision process for DSC resource integration tests.
+  - Improved documentation with optimized analysis workflow description.
+- DSC community style guidelines
+  - Added requirement to follow guidelines over existing code patterns.
+- Improved markdown, pester, powershell, and changelog instructions.
+  - Fixed `Ignore` that seems in edge-cases fail.
+  - Improved markdown and changelog instructions.
+- `RequiredModules.psd1`
+  - Updated `DscResource.Test` dependency to `latest` (was pinned to `0.17.2`).
+- Examples
+  - `source/Examples/Resources/SqlSetup/5-InstallNamedInstanceInFailoverClusterSecondNode.ps1`
+    - Removed redundant `$SqlAdministratorCredential` parameter from example
+      configuration.
+- `New-SqlDscAgentAlert`
+  - Updated the command to use `Test-SqlDscIsAgentAlert` instead of directly
+    calling `Get-AgentAlertObject` when checking if an alert already exists
+    (issue [#2202](https://github.com/dsccommunity/SqlServerDsc/issues/2202)).
+- `Test-SqlDscIsAgentAlert`
+  - Removed optional `Severity` and `MessageId` parameters - use
+    `Test-SqlDscAgentAlertProperty` instead for property testing.
+  - Now only tests for alert existence.
+  - Added support for pipeline input of
+    `[Microsoft.SqlServer.Management.Smo.Agent.Alert]` objects.
+  - Updated examples and documentation to reflect the simplified functionality.
 
 ## [17.1.0] - 2025-05-22
 
@@ -42,6 +1116,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       `Developer`.
     - The read-only properties `CurrentVersion`, `ServiceName` and `ErrorDumpDirectory`
       were removed.
+- Bump GitHub Actions Stale to v10
 
 ### Added
 
@@ -618,7 +1693,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed `Test-IsNumericType` from private functions ([issue #1795](https://github.com/dsccommunity/SqlServerDsc/issues/1795)).
     - `Test-IsNumericType` added to _DscResource.Common_ public functions
     ([issue #87](https://github.com/dsccommunity/DscResource.Common/issues/87)).
-  - Removed `Test-ServiceAccountRequirePassword` from private functions ([issue #1794](https://github.com/dsccommunity/SqlServerDsc/issues/1794)
+  - Removed `Test-ServiceAccountRequirePassword` from private functions
+    ([issue #1794](https://github.com/dsccommunity/SqlServerDsc/issues/1794)
     - Replaced by `Test-AccountRequirePassword` that was added to _DscResource.Common_
       public functions ([issue #93](https://github.com/dsccommunity/DscResource.Common/issues/93)).
   - Removed `Assert-RequiredCommandParameter` from private functions ([issue #1796](https://github.com/dsccommunity/SqlServerDsc/issues/1796)).
@@ -858,8 +1934,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The deprecated DSC resource SqlServerEndpointState have been removed _(and_
   _replaced by a property in [**SqlEndpoint**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqlendpoint))_
   ([issue #1725](https://github.com/dsccommunity/SqlServerDsc/issues/1725)).
-- The deprecated DSC resource SqlServerNetwork have been removed _(and replaced by_
-  _[**SqlProtocol**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqlprotocol)_
+- The deprecated DSC resource SqlServerNetwork have been removed _(and replaced_
+  _by [**SqlProtocol**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqlprotocol)_
   _and [**SqlProtocolTcpIp**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqlprotocoltcpip))_
   ([issue #1725](https://github.com/dsccommunity/SqlServerDsc/issues/1725)).
 - CommonTestHelper
@@ -1834,8 +2910,8 @@ in a future release.
     or `features`.
   - Now code coverage is reported to Codecov, and a codecov.yml was added.
   - Updated to support DscResource.Common v0.7.1.
-  - Changed to point to CONTRIBUTING.md on master branch to avoid "404 Page not found"
-    ([issue #1508](https://github.com/dsccommunity/SqlServerDsc/issues/1508)).
+  - Changed to point to CONTRIBUTING.md on master branch to avoid
+    "404 Page not found" ([issue #1508](https://github.com/dsccommunity/SqlServerDsc/issues/1508)).
 - SqlAGDatabase
   - Fixed unit tests that failed intermittently when running unit tests
     in PowerShell 7 ([issue #1532](https://github.com/dsccommunity/SqlServerDsc/issues/1532)).
@@ -2981,8 +4057,8 @@ in a future release.
     - Changed the tests so that the local SqlInstall account is added as a member
       of the local administrators group.
     - Changed the tests so that the local SqlInstall account is added as a member
-      of the system administrators in SQL Server (Database Engine) - needed for the
-      xSQLServerAlwaysOnService integration tests.
+      of the system administrators in SQL Server (Database Engine) - needed for
+      the xSQLServerAlwaysOnService integration tests.
     - Changed so that only one of the Modules-folder for the SQLPS PowerShell module
       for SQL Server 2016 is renamed back so it can be used with the integration
       tests. There was an issue when more than one SQLPS module was present (see
@@ -3445,7 +4521,8 @@ in a future release.
 - Changes to xSQLServerSetup
   - Added a note to the README.md saying that it is not possible to add or remove
     features from a SQL Server failover cluster (issue #433).
-  - Changed so that it reports false if the desired state is not correct (issue #432).
+  - Changed so that it reports false if the desired state is not correct
+    (issue #432).
     - Added a test to make sure we always return false if a SQL Server failover
       cluster is missing features.
   - Helper function Connect-SQLAnalysis

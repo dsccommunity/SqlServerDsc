@@ -47,7 +47,7 @@
 
     .PARAMETER ReserveDiskSpace
         Specifies if the needed file space should be reserved. To use this parameter
-        the parameter **MaximumFiles** must also be used.
+        the parameters **MaximumFiles** and **MaximumFileSize** must also be used.
 
     .PARAMETER MaximumFiles
         Specifies the number of files on disk.
@@ -66,9 +66,15 @@
     .PARAMETER PassThru
         If specified the created audit object will be returned.
 
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Server`
+
+        Specifies the SQL Server instance for audit creation.
+
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Audit]` is passing parameter **PassThru**,
-         otherwise none.
+        `Microsoft.SqlServer.Management.Smo.Audit`
+
+        When passing parameter **PassThru**.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
@@ -188,7 +194,6 @@ function New-SqlDscAudit
         [System.UInt32]
         $MaximumFiles,
 
-        [Parameter(ParameterSetName = 'FileWithMaxFiles')]
         [Parameter(ParameterSetName = 'FileWithSizeAndMaxFiles')]
         [System.Management.Automation.SwitchParameter]
         $ReserveDiskSpace,

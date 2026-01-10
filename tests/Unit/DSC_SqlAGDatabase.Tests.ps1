@@ -8,7 +8,7 @@ return
 
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-$script:dscModuleName = 'SqlServerDsc'
+$script:moduleName = 'SqlServerDsc'
 $script:dscResourceName = 'DSC_SqlAGDatabase'
 
 function Invoke-TestSetup
@@ -19,11 +19,11 @@ function Invoke-TestSetup
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks noop" first.'
     }
 
     $script:testEnvironment = Initialize-TestEnvironment `
-        -DSCModuleName $script:dscModuleName `
+        -DSCModuleName $script:moduleName `
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
         -TestType 'Unit'
@@ -426,12 +426,12 @@ REVERT'
 
                     foreach ( $resultDatabaseName in $result.DatabaseName )
                     {
-                        $mockAvailabilityDatabaseNames -contains $resultDatabaseName | Should -Be $true
+                        $mockAvailabilityDatabaseNames -contains $resultDatabaseName | Should -BeTrue
                     }
 
                     foreach ( $mockAvailabilityDatabaseName in $mockAvailabilityDatabaseNames )
                     {
-                        $result.DatabaseName -contains $mockAvailabilityDatabaseName | Should -Be $true
+                        $result.DatabaseName -contains $mockAvailabilityDatabaseName | Should -BeTrue
                     }
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
@@ -809,7 +809,7 @@ REVERT'
 
                 Context 'When Ensure is Present' {
                     It 'Should add the specified databases to the availability group' {
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
@@ -836,7 +836,7 @@ REVERT'
                     It 'Should add the specified databases to the availability group when the primary replica is on another server' {
                         $mockSetTargetResourceParameters.AvailabilityGroupName = $mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServerName
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
@@ -863,7 +863,7 @@ REVERT'
                     It 'Should not do anything if no databases were found to add' {
                         $mockSetTargetResourceParameters.DatabaseName = $mockAvailabilityDatabaseNames
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
@@ -890,7 +890,7 @@ REVERT'
                     It 'Should add the specified databases to the availability group when "MatchDatabaseOwner" is $false' {
                         $mockSetTargetResourceParameters.MatchDatabaseOwner = $false
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
@@ -918,7 +918,7 @@ REVERT'
                         $mockSetTargetResourceParameters.DatabaseName = 'DB1'
                         $mockSetTargetResourceParameters.ReplaceExisting = $true
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
@@ -1217,7 +1217,7 @@ REVERT'
                     It 'Should add the specified databases to the availability group when the database has not been previously backed up' {
                         $mockServerObject.Databases['DB1'].LastBackupDate = 0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
@@ -1357,7 +1357,7 @@ REVERT'
                     }
 
                     It 'Should ensure the database membership of the availability group is exactly as specified' {
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
@@ -1470,7 +1470,7 @@ REVERT'
                     }
 
                     It 'Should remove the specified database from the availability group(s)' {
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                         Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
                         Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
@@ -1869,7 +1869,7 @@ REVERT'
 
                 Context 'When Ensure is Present' {
                      It 'Should add the specified databases to the availability group.' {
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
@@ -1896,7 +1896,7 @@ REVERT'
                     It 'Should add the specified databases to the availability group when the primary replica is on another server' {
                         $mockSetTargetResourceParameters.AvailabilityGroupName = $mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServerName
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
@@ -1923,7 +1923,7 @@ REVERT'
                     It 'Should not do anything if no databases were found to add' {
                         $mockSetTargetResourceParameters.DatabaseName = $mockAvailabilityDatabaseNames
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
@@ -1950,7 +1950,7 @@ REVERT'
                     It 'Should add the specified databases to the availability group when "MatchDatabaseOwner" is $false' {
                         $mockSetTargetResourceParameters.MatchDatabaseOwner = $false
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
@@ -1978,7 +1978,7 @@ REVERT'
                         $mockSetTargetResourceParameters.DatabaseName = 'DB1'
                         $mockSetTargetResourceParameters.ReplaceExisting = $true
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
@@ -2278,7 +2278,7 @@ REVERT'
                         $mockServerObject.Databases['DB1'].CreateDate = '2020-10-20 10:00:00'
                         $mockServerObject.Databases['DB1'].LastBackupDate = '2020-10-10 10:00:00'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
@@ -2368,7 +2368,7 @@ REVERT'
                     }
 
                     It 'Should ensure the database membership of the availability group is exactly as specified' {
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
@@ -2753,7 +2753,7 @@ REVERT'
                 It 'Should return $true when the configuration is in the desired state' {
                     $mockTestTargetResourceParameters.DatabaseName = $mockAvailabilityDatabaseNames.Clone()
 
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeTrue
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
@@ -2764,7 +2764,7 @@ REVERT'
                 It 'Should return $false when the specified availability group is not found' {
                     $mockTestTargetResourceParameters.AvailabilityGroupName = 'NonExistentAvailabilityGroup'
 
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -Be $false
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeFalse
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
@@ -2775,7 +2775,7 @@ REVERT'
                 It 'Should return $false when no matching databases are found' {
                     $mockTestTargetResourceParameters.DatabaseName = $mockDatabaseNameParameterWithNonExistingDatabases.Clone()
 
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -Be $false
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeFalse
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
@@ -2784,7 +2784,7 @@ REVERT'
                 }
 
                 It 'Should return $false when databases are found to add to the availability group' {
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -Be $false
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeFalse
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
@@ -2796,7 +2796,7 @@ REVERT'
                     $mockTestTargetResourceParameters.DatabaseName = $mockAvailabilityDatabaseNames.Clone()
                     $mockTestTargetResourceParameters.AvailabilityGroupName = $mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Name
 
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeTrue
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
@@ -2810,7 +2810,7 @@ REVERT'
                     $mockTestTargetResourceParameters.DatabaseName = $mockAvailabilityDatabaseNames.Clone()
                     $mockTestTargetResourceParameters.ProcessOnlyOnActiveNode = $mockProcessOnlyOnActiveNode
 
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeTrue
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
@@ -2827,7 +2827,7 @@ REVERT'
                 It 'Should return $true when the configuration is in the desired state' {
                     $mockTestTargetResourceParameters.DatabaseName = $mockDatabaseNameParameterWithNonExistingDatabases.Clone()
 
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeTrue
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
@@ -2838,7 +2838,7 @@ REVERT'
                 It 'Should return $true when no matching databases are found' {
                     $mockTestTargetResourceParameters.DatabaseName = $mockDatabaseNameParameterWithNonExistingDatabases.Clone()
 
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeTrue
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
@@ -2846,7 +2846,7 @@ REVERT'
                 }
 
                 It 'Should return $false when databases are found to remove from the availability group' {
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -Be $false
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeFalse
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
@@ -2857,7 +2857,7 @@ REVERT'
                     $mockTestTargetResourceParameters.DatabaseName = $mockDatabaseNameParameterWithNonExistingDatabases.Clone()
                     $mockTestTargetResourceParameters.AvailabilityGroupName = $mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Name
 
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeTrue
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
@@ -2873,7 +2873,7 @@ REVERT'
                 It 'Should return $true when the configuration is in the desired state' {
                     $mockTestTargetResourceParameters.DatabaseName = $mockAvailabilityDatabaseNames.Clone()
 
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeTrue
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
@@ -2883,7 +2883,7 @@ REVERT'
                 It 'Should return $false when no matching databases are found' {
                     $mockTestTargetResourceParameters.DatabaseName = $mockDatabaseNameParameterWithNonExistingDatabases.Clone()
 
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -Be $false
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeFalse
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
@@ -2891,7 +2891,7 @@ REVERT'
                 }
 
                 It 'Should return $false when databases are found to add to the availability group' {
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -Be $false
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeFalse
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
@@ -2899,7 +2899,7 @@ REVERT'
                 }
 
                 It 'Should return $false when databases are found to remove from the availability group' {
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -Be $false
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeFalse
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
@@ -2910,7 +2910,7 @@ REVERT'
                     $mockTestTargetResourceParameters.DatabaseName = $mockAvailabilityDatabaseNames.Clone()
                     $mockTestTargetResourceParameters.AvailabilityGroupName = $mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Name
 
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeTrue
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
@@ -2935,7 +2935,7 @@ REVERT'
 
                     foreach ( $result in $results )
                     {
-                        $mockAvailabilityDatabasePresentResults -contains $result | Should -Be $true
+                        $mockAvailabilityDatabasePresentResults -contains $result | Should -BeTrue
                     }
                 }
 
@@ -2946,7 +2946,7 @@ REVERT'
 
                     foreach ( $result in $results )
                     {
-                        $mockPresentDatabaseNames -contains $result | Should -Be $true
+                        $mockPresentDatabaseNames -contains $result | Should -BeTrue
                     }
                 }
 
@@ -2979,7 +2979,7 @@ REVERT'
 
                     foreach ( $result in $results )
                     {
-                        $mockAvailabilityDatabaseAbsentResults -contains $result | Should -Be $true
+                        $mockAvailabilityDatabaseAbsentResults -contains $result | Should -BeTrue
                     }
                 }
 
@@ -2990,7 +2990,7 @@ REVERT'
 
                     foreach ( $result in $results )
                     {
-                        $mockAvailabilityDatabaseAbsentResults -contains $result | Should -Be $true
+                        $mockAvailabilityDatabaseAbsentResults -contains $result | Should -BeTrue
                     }
                 }
 
@@ -3011,7 +3011,7 @@ REVERT'
 
                     foreach ( $result in $results )
                     {
-                        $mockAvailabilityDatabaseExactlyRemoveResults -contains $result | Should -Be $true
+                        $mockAvailabilityDatabaseExactlyRemoveResults -contains $result | Should -BeTrue
                     }
                 }
 
@@ -3023,13 +3023,13 @@ REVERT'
                     # Ensure all of the results are in the Availability Databases
                     foreach ( $result in $results )
                     {
-                        $mockAvailabilityDatabaseNames -contains $result | Should -Be $true
+                        $mockAvailabilityDatabaseNames -contains $result | Should -BeTrue
                     }
 
                     # Ensure all of the Availability Databases are in the results
                     foreach ( $mockAvailabilityDatabaseName in $mockAvailabilityDatabaseNames )
                     {
-                        $results -contains $mockAvailabilityDatabaseName | Should -Be $true
+                        $results -contains $mockAvailabilityDatabaseName | Should -BeTrue
                     }
                 }
             }
@@ -3061,7 +3061,7 @@ REVERT'
 
                      foreach ( $result in $results )
                      {
-                         $mockPresentDatabaseNames -contains $result | Should -Be $true
+                         $mockPresentDatabaseNames -contains $result | Should -BeTrue
                      }
                 }
 
@@ -3072,7 +3072,7 @@ REVERT'
 
                     foreach ( $result in $results )
                     {
-                        $mockPresentDatabaseNames -contains $result | Should -Be $true
+                        $mockPresentDatabaseNames -contains $result | Should -BeTrue
                     }
                }
             }
@@ -3108,7 +3108,7 @@ REVERT'
 
                     foreach ( $result in $results )
                     {
-                        $mockMissingDatabases -contains $result | Should -Be $true
+                        $mockMissingDatabases -contains $result | Should -BeTrue
                     }
                 }
 

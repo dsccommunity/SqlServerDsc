@@ -17,8 +17,29 @@
         If parameter **Credential'* is not provided then the resource instance is
         run using the credential that runs the configuration.
 
+    .PARAMETER Protocol
+        Specifies the network protocol to use when connecting to the _SQL Server_
+        instance. Valid values are `'tcp'` for TCP/IP, `'np'` for Named Pipes,
+        and `'lpc'` for Shared Memory.
+
+        If not specified, the connection will use the default protocol order
+        configured on the client.
+
+    .PARAMETER Port
+        Specifies the TCP port number to use when connecting to the _SQL Server_
+        instance. This parameter is only applicable when connecting via TCP/IP.
+
+        If not specified for a named instance, the SQL Server Browser service
+        will be used to determine the port. For default instances, port 1433
+        is used by default.
+
     .PARAMETER Reasons
         Returns the reason a property is not in desired state.
+
+    .NOTES
+        The protocol values (`'tcp'`, `'np'`, `'lpc'`) are lowercase to match
+        the SQL Server connection string prefix format, e.g.,
+        `tcp:ServerName\Instance,Port`.
 #>
 class SqlResourceBase : ResourceBase
 {
@@ -42,6 +63,15 @@ class SqlResourceBase : ResourceBase
     [PSCredential]
     $Credential
 
+    [DscProperty()]
+    [ValidateSet('tcp', 'np', 'lpc')]
+    [System.String]
+    $Protocol
+
+    [DscProperty()]
+    [Nullable[System.UInt16]]
+    $Port
+
     [DscProperty(NotConfigurable)]
     [SqlReason[]]
     $Reasons
@@ -50,6 +80,18 @@ class SqlResourceBase : ResourceBase
     SqlResourceBase () : base ($PSScriptRoot)
     {
         $this.SqlServerObject = $null
+
+        <#
+            These connection properties will not be enforced. Child classes
+            should use += to append their own properties to this list.
+        #>
+        $this.ExcludeDscProperties = @(
+            'ServerName'
+            'InstanceName'
+            'Credential'
+            'Protocol'
+            'Port'
+        )
     }
 
     <#
@@ -73,6 +115,16 @@ class SqlResourceBase : ResourceBase
             if ($this.Credential)
             {
                 $connectSqlDscDatabaseEngineParameters.Credential = $this.Credential
+            }
+
+            if ($this.Protocol)
+            {
+                $connectSqlDscDatabaseEngineParameters.Protocol = $this.Protocol
+            }
+
+            if ($this.Port)
+            {
+                $connectSqlDscDatabaseEngineParameters.Port = $this.Port
             }
 
             $this.SqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters

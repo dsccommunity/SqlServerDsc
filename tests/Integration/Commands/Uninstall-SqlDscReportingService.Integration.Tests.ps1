@@ -6,21 +6,29 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
+}
+
+BeforeAll {
+    $script:moduleName = 'SqlServerDsc'
+
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 }
 
 Describe 'Uninstall-SqlDscReportingService' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
@@ -44,19 +52,17 @@ Describe 'Uninstall-SqlDscReportingService' -Tag @('Integration_SQL2017', 'Integ
 
     Context 'When uninstalling Reporting Services' {
         It 'Should run the command without throwing' {
-            {
-                # Set splatting parameters for Uninstall-SqlDscReportingService
-                $uninstallSqlDscReportingServiceParameters = @{
-                    MediaPath       = $reportingServicesExecutable
-                    LogPath         = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Uninstall.log'
-                    SuppressRestart = $true
-                    Verbose         = $true
-                    ErrorAction     = 'Stop'
-                    Force           = $true
-                }
+            # Set splatting parameters for Uninstall-SqlDscReportingService
+            $uninstallSqlDscReportingServiceParameters = @{
+                MediaPath       = $reportingServicesExecutable
+                LogPath         = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Uninstall.log'
+                SuppressRestart = $true
+                Verbose         = $true
+                ErrorAction     = 'Stop'
+                Force           = $true
+            }
 
-                Uninstall-SqlDscReportingService @uninstallSqlDscReportingServiceParameters
-            } | Should -Not -Throw
+            $null = Uninstall-SqlDscReportingService @uninstallSqlDscReportingServiceParameters
         }
 
         It 'Should not have a SQL Server Reporting Services service' {

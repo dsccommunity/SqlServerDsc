@@ -19,8 +19,15 @@
         Get all permissions for the principal 'MyPrincipal' and converts the permissions
         into an array of `[DatabasePermission[]]`.
 
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]`
+
+        Accepts database permission info objects via the pipeline.
+
     .OUTPUTS
-        [DatabasePermission[]]
+        `DatabasePermission[]`
+
+        Returns an array of DatabasePermission objects.
 #>
 function ConvertTo-SqlDscDatabasePermission
 {

@@ -17,6 +17,11 @@
 
         Throws an exception if the feature is not supported.
 
+    .INPUTS
+        `System.String[]`
+
+        Accepts an array of feature names via the pipeline.
+
     .OUTPUTS
         None.
 #>

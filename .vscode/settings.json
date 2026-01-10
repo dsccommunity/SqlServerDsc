@@ -78,7 +78,39 @@
         "sqlcmd",
         "PBIRS",
         "SSRS",
-        "PSDSC"
+        "PSDSC",
+        "DSCSQLTEST",
+        "unshallow",
+        "pullrequest",
+        "targetbranch",
+        "hqrm",
+        "sqlps",
+        "securestring",
+        "encryptorname",
+        "wsfc",
+        "SOURCEBRANCH",
+        "SOURCEBRANCHNAME",
+        "setvariable",
+        "RAISERROR",
+        "filegroup",
+        "checkdb",
+        "msdb",
+        "db_datawriter",
+        "db_ddladmin",
+        "db_owner",
+        "db_accessadmin",
+        "db_securityadmin",
+        "db_backupoperator",
+        "db_denydatareader",
+        "db_denydatawriter",
+        "OLTP",
+        "LCID",
+        "varchar",
+        "maxdop",
+        "hotfixes",
+        "checkpointing",
+        "HRESULT",
+        "RSDB"
     ],
     "cSpell.ignorePaths": [
         ".git"
@@ -99,7 +131,7 @@
         "/@prkelly/g",
         "/@glennsarti/g",
         "/tempdb/g",
-        "/sqlcmd\\.exe/g"
+        "/\\b[A-Za-z]{2,}\\d{4}\\b/g"
     ],
     "[markdown]": {
         "files.trimTrailingWhitespace": true,
@@ -118,5 +150,52 @@
     "markdownlint.ignore": [
         ".github/CODEOWNERS"
     ],
-    "github.copilot.chat.codeGeneration.useInstructionFiles": true
+    "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+    "terminal.integrated.defaultProfile.osx": "pwsh",
+    "terminal.integrated.profiles.osx": {
+        "pwsh": {
+            "path": "pwsh",
+            "args": []
+        },
+        "zsh": {
+            "path": "zsh",
+            "args": []
+        },
+        "bash": {
+            "path": "bash",
+            "args": []
+        }
+    },
+    "terminal.integrated.defaultProfile.linux": "pwsh",
+    "terminal.integrated.profiles.linux": {
+        "pwsh": {
+            "path": "pwsh",
+            "args": []
+        },
+        "bash": {
+            "path": "bash",
+            "args": []
+        }
+    },
+    "chat.tools.terminal.terminalProfile.osx": {
+        "path": "pwsh",
+        "args": [],
+        "env": {
+            "COPILOT": "1"
+        }
+    },
+    "chat.tools.terminal.terminalProfile.linux": {
+        "path": "pwsh",
+        "args": [],
+        "env": {
+            "COPILOT": "1"
+        }
+    },
+    "chat.tools.terminal.terminalProfile.windows": {
+        "path": "pwsh.exe",
+        "args": [],
+        "env": {
+            "COPILOT": "1"
+        }
+    }
 }

@@ -16,11 +16,18 @@
             Permission = 'Connect'
         } | ConvertFrom-SqlDscServerPermission
 
-        Returns an object of `[Microsoft.SqlServer.Management.Smo.ServerPermissionSet]`
+        Returns an object of type `[Microsoft.SqlServer.Management.Smo.ServerPermissionSet]`
         with all the permissions set to $true that was part of the `[ServerPermission]`.
 
+    .INPUTS
+        `ServerPermission`
+
+        Accepts a ServerPermission object via the pipeline.
+
     .OUTPUTS
-        [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]
+        `Microsoft.SqlServer.Management.Smo.ServerPermissionSet`
+
+        Returns a server permission set object.
 #>
 function ConvertFrom-SqlDscServerPermission
 {

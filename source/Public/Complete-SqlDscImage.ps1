@@ -157,11 +157,14 @@
     .LINK
         https://docs.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt
 
+    .INPUTS
+        None.
+
     .OUTPUTS
         None.
 
     .EXAMPLE
-        Complete-SqlDscImage -AcceptLicensingTerms -MediaPath 'E:\'
+        Complete-SqlDscImage -AcceptLicensingTerms -MediaPath 'E:\' -InstanceId 'MSSQLSERVER' -SqlSvcAccount 'NT Service\MSSQLSERVER' -AgtSvcAccount 'NT Service\MSSQLSERVER'
 
         Completes the image installation of the SQL Server default instance that
         was prepared using `Install-SqlDscServer` with the parameter `-PrepareImage`.

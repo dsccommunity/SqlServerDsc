@@ -24,9 +24,6 @@ ConvertFrom-StringData @'
     BringSqlServerAgentClusterResourcesOnline = Bringing the SQL Server Agent resource online. (SQLCOMMON0036)
     GetServiceInformation = Getting information about service '{0}'. (SQLCOMMON0037)
     RestartService = '{0}' service is restarting. (SQLCOMMON0038)
-    StoppingService = '{0}' service is stopping. (SQLCOMMON0039)
-    StartingService = '{0}' service is starting. (SQLCOMMON0040)
-    WaitServiceRestart = Waiting {0} seconds before starting service '{1}'. (SQLCOMMON0041)
     StartingDependentService = Starting service '{0}'. (SQLCOMMON0042)
     WaitingInstanceTimeout = Waiting for instance {0}\\{1} to report status online, with a timeout value of {2} seconds. (SQLCOMMON0043)
     FailedToConnectToInstanceTimeout = Failed to connect to the instance {0}\\{1} within the timeout period of {2} seconds. (SQLCOMMON0044)
@@ -43,7 +40,6 @@ ConvertFrom-StringData @'
     NotOwnerOfClusterResource = The node '{0}' is not the owner of the cluster resource '{1}'. The owner is '{2}' so no restart is needed. (SQLCOMMON0067)
     LoadedAssembly = Loaded the assembly '{0}'. (SQLCOMMON0068)
     FailedToLoadAssembly = Failed to load the assembly '{0}'. (SQLCOMMON0069)
-    FailedToObtainServerInstance = Failed to obtain a SQL Server instance with name '{0}' on server '{1}'. Ensure the SQL Server instance exists on the server and that the 'SQLServer' module references a version of the 'Microsoft.SqlServer.Management.Smo.Wmi' library that supports the version of the SQL Server instance. (SQLCOMMON0070)
     DatabaseEngineInstanceNotOnline = The SQL instance '{0}' was expected to have the status 'Online', but had status '{1}'. (SQLCOMMON0071)
     WaitForDatabaseEngineInstanceStatus = The SQL instance status is '{0}' expected '{1}', waiting {2} seconds.  (SQLCOMMON0072)
 '@

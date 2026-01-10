@@ -1,4 +1,4 @@
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'because ConvertTo-SecureString is used to simplify the tests.')]
 param ()
 
@@ -7,42 +7,41 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
     $env:SqlServerDscCI = $true
 
-    Import-Module -Name $script:dscModuleName
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
-
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -156,7 +155,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
                 return $sqlServerModule
             }
 
-            { Import-SqlDscPreferredModule } | Should -Not -Throw
+            $null = Import-SqlDscPreferredModule
 
             Should -Invoke -CommandName Import-Module -Exactly -Times 0 -Scope It
         }
@@ -181,7 +180,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         }
 
         It 'Should use the already loaded module and not call Import-Module' {
-            { Import-SqlDscPreferredModule } | Should -Not -Throw
+            $null = Import-SqlDscPreferredModule
 
             Should -Invoke -CommandName Import-Module -Exactly -Times 0 -Scope It
         }
@@ -205,7 +204,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         }
 
         It 'Should import the SqlServer module without throwing' {
-            { Import-SqlDscPreferredModule } | Should -Not -Throw
+            $null = Import-SqlDscPreferredModule
 
             Should -Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Push-Location -Exactly -Times 1 -Scope It
@@ -231,7 +230,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         }
 
         It 'Should import the SqlServer module without throwing' {
-            { Import-SqlDscPreferredModule -Name 'OtherModule' } | Should -Not -Throw
+            $null = Import-SqlDscPreferredModule -Name 'OtherModule'
 
             Should -Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Push-Location -Exactly -Times 1 -Scope It
@@ -258,7 +257,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         }
 
         It 'Should import the SQLPS module without throwing' {
-            { Import-SqlDscPreferredModule -Force } | Should -Not -Throw
+            $null = Import-SqlDscPreferredModule -Force
 
             Should -Invoke -CommandName Get-SqlDscPreferredModule -ParameterFilter {
                 $PesterBoundParameters.ContainsKey('Refresh') -and $Refresh -eq $true
@@ -311,7 +310,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         }
 
         It 'Should import the SQLPD module without throwing' {
-            { Import-SqlDscPreferredModule -Name 'OtherModule' -Force } | Should -Not -Throw
+            $null = Import-SqlDscPreferredModule -Name 'OtherModule' -Force
 
             Should -Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Get-Module -Exactly -Times 1 -Scope It

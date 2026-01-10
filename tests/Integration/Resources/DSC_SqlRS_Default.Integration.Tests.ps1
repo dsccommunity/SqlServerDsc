@@ -6,20 +6,20 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 
     <#
@@ -34,12 +34,12 @@ BeforeAll {
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\..\TestHelpers\CommonTestHelper.psm1')
 
     # Need to define the variables here which will be used in Pester Run.
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
     $script:dscResourceFriendlyName = 'SqlRS'
     $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 
     $script:testEnvironment = Initialize-TestEnvironment `
-        -DSCModuleName $script:dscModuleName `
+        -DSCModuleName $script:moduleName `
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
         -TestType 'Integration'
@@ -96,26 +96,24 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                         = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData                  = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath        = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
     }
 
@@ -131,45 +129,41 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                         = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData                  = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath        = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
             $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
                 $_.ConfigurationName -eq $configurationName `
-                -and $_.ResourceId -eq $resourceId
+                    -and $_.ResourceId -eq $resourceId
             }
 
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
             $resourceCurrentState.DatabaseServerName | Should -Be $ConfigurationData.AllNodes.DatabaseServerName
             $resourceCurrentState.DatabaseInstanceName | Should -Be $ConfigurationData.AllNodes.DatabaseInstanceName
-            $resourceCurrentState.IsInitialized | Should -Be $true
-            $resourceCurrentState.UseSsl | Should -Be $false
+            $resourceCurrentState.IsInitialized | Should -BeTrue
+            $resourceCurrentState.UseSsl | Should -BeFalse
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -177,9 +171,6 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should be able to access the ReportServer site without any error' {
-            # Wait for 1 minute for the ReportServer to be ready.
-            Start-Sleep -Seconds 30
-
             if ($script:sqlVersion -in @('140', '150', '160'))
             {
                 # SSRS 2017 and 2019 do not support multiple instances
@@ -190,20 +181,52 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
             }
 
-            try
+            # Retry logic to wait for ReportServer to be ready (up to 2 minutes)
+            $maxRetries = 24
+            $retryIntervalSeconds = 5
+            $webRequestStatusCode = 0
+
+            for ($attempt = 1; $attempt -le $maxRetries; $attempt++)
             {
-                $webRequestReportServer = Invoke-WebRequest -Uri $reportServerUri -UseDefaultCredentials
-                # if the request finishes successfully this should return status code 200.
-                $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
-            }
-            catch
-            {
-                <#
-                    If the request generated an exception i.e. "HTTP Error 503. The service is unavailable."
-                    we can pull the status code from the Exception.Response property.
-                #>
-                $webRequestResponse = $_.Exception.Response
-                $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
+                try
+                {
+                    $webRequestReportServer = Invoke-WebRequest -Uri $reportServerUri -UseDefaultCredentials -UseBasicParsing -ErrorAction Stop
+                    # if the request finishes successfully this should return status code 200.
+                    $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
+
+                    if ($webRequestStatusCode -eq 200)
+                    {
+                        Write-Verbose -Message "ReportServer is accessible (attempt $attempt)." -Verbose
+                        break
+                    }
+                }
+                catch
+                {
+                    <#
+                        If the request generated an exception i.e. "HTTP Error 503. The service is unavailable."
+                        we can pull the status code from the Exception.Response property.
+                    #>
+                    $webRequestResponse = $_.Exception.Response
+                    $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
+
+                    if ($webRequestStatusCode -eq 0 -and $attempt -lt $maxRetries)
+                    {
+                        Write-Verbose -Message "ReportServer not yet accessible (attempt $attempt of $maxRetries). Waiting $retryIntervalSeconds seconds..." -Verbose
+                        Start-Sleep -Seconds $retryIntervalSeconds
+                    }
+                    elseif ($webRequestStatusCode -eq 0 -and $attempt -eq $maxRetries)
+                    {
+                        # On the last attempt with status code 0, re-throw to get error details
+                        Write-Verbose -Message "ReportServer still not accessible after $maxRetries attempts. Re-throwing exception for diagnostics." -Verbose
+                        throw $_
+                    }
+                    elseif ($webRequestStatusCode -ne 0)
+                    {
+                        # If we got an actual HTTP error code, break and let the assertion handle it
+                        Write-Verbose -Message "ReportServer returned HTTP status code $webRequestStatusCode (attempt $attempt)." -Verbose
+                        break
+                    }
+                }
             }
 
             $webRequestStatusCode | Should -BeExactly 200
@@ -220,20 +243,52 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 $reportsUri = 'http://{0}/Reports_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
             }
 
-            try
+            # Retry logic to wait for Reports site to be ready (up to 2 minutes)
+            $maxRetries = 24
+            $retryIntervalSeconds = 5
+            $webRequestStatusCode = 0
+
+            for ($attempt = 1; $attempt -le $maxRetries; $attempt++)
             {
-                $webRequestReportServer = Invoke-WebRequest -Uri $reportsUri -UseDefaultCredentials
-                # if the request finishes successfully this should return status code 200.
-                $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
-            }
-            catch
-            {
-                <#
-                    If the request generated an exception i.e. "HTTP Error 503. The service is unavailable."
-                    we can pull the status code from the Exception.Response property.
-                #>
-                $webRequestResponse = $_.Exception.Response
-                $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
+                try
+                {
+                    $webRequestReportServer = Invoke-WebRequest -Uri $reportsUri -UseDefaultCredentials -UseBasicParsing -ErrorAction Stop
+                    # if the request finishes successfully this should return status code 200.
+                    $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
+
+                    if ($webRequestStatusCode -eq 200)
+                    {
+                        Write-Verbose -Message "Reports site is accessible (attempt $attempt)." -Verbose
+                        break
+                    }
+                }
+                catch
+                {
+                    <#
+                        If the request generated an exception i.e. "HTTP Error 503. The service is unavailable."
+                        we can pull the status code from the Exception.Response property.
+                    #>
+                    $webRequestResponse = $_.Exception.Response
+                    $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
+
+                    if ($webRequestStatusCode -eq 0 -and $attempt -lt $maxRetries)
+                    {
+                        Write-Verbose -Message "Reports site not yet accessible (attempt $attempt of $maxRetries). Waiting $retryIntervalSeconds seconds..." -Verbose
+                        Start-Sleep -Seconds $retryIntervalSeconds
+                    }
+                    elseif ($webRequestStatusCode -eq 0 -and $attempt -eq $maxRetries)
+                    {
+                        # On the last attempt with status code 0, re-throw to get error details
+                        Write-Verbose -Message "Reports site still not accessible after $maxRetries attempts. Re-throwing exception for diagnostics." -Verbose
+                        throw $_
+                    }
+                    elseif ($webRequestStatusCode -ne 0)
+                    {
+                        # If we got an actual HTTP error code, break and let the assertion handle it
+                        Write-Verbose -Message "Reports site returned HTTP status code $webRequestStatusCode (attempt $attempt)." -Verbose
+                        break
+                    }
+                }
             }
 
             $webRequestStatusCode | Should -BeExactly 200
@@ -252,41 +307,37 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                         = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData                  = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath        = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
             $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
                 $_.ConfigurationName -eq $configurationName `
-                -and $_.ResourceId -eq $resourceId
+                    -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.UseSsl | Should -Be $true
+            $resourceCurrentState.UseSsl | Should -BeTrue
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -310,7 +361,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
             }
 
-            { Invoke-WebRequest -Uri $reportServerUri -UseDefaultCredentials } | Should -Throw
+            { Invoke-WebRequest -Uri $reportServerUri -UseDefaultCredentials -UseBasicParsing } | Should -Throw
         }
     }
 
@@ -326,41 +377,37 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                         = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData                  = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath        = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
             $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
                 $_.ConfigurationName -eq $configurationName `
-                -and $_.ResourceId -eq $resourceId
+                    -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.UseSsl | Should -Be $false
+            $resourceCurrentState.UseSsl | Should -BeFalse
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -378,20 +425,52 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
             }
 
-            try
+            # Retry logic to wait for ReportServer to be ready (up to 2 minutes)
+            $maxRetries = 24
+            $retryIntervalSeconds = 5
+            $webRequestStatusCode = 0
+
+            for ($attempt = 1; $attempt -le $maxRetries; $attempt++)
             {
-                $webRequestReportServer = Invoke-WebRequest -Uri $reportServerUri -UseDefaultCredentials
-                # if the request finishes successfully this should return status code 200.
-                $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
-            }
-            catch
-            {
-                <#
-                    If the request generated an exception i.e. "HTTP Error 503. The service is unavailable."
-                    we can pull the status code from the Exception.Response property.
-                #>
-                $webRequestResponse = $_.Exception.Response
-                $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
+                try
+                {
+                    $webRequestReportServer = Invoke-WebRequest -Uri $reportServerUri -UseDefaultCredentials -UseBasicParsing -ErrorAction Stop
+                    # if the request finishes successfully this should return status code 200.
+                    $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
+
+                    if ($webRequestStatusCode -eq 200)
+                    {
+                        Write-Verbose -Message "ReportServer is accessible (attempt $attempt)." -Verbose
+                        break
+                    }
+                }
+                catch
+                {
+                    <#
+                        If the request generated an exception i.e. "HTTP Error 503. The service is unavailable."
+                        we can pull the status code from the Exception.Response property.
+                    #>
+                    $webRequestResponse = $_.Exception.Response
+                    $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
+
+                    if ($webRequestStatusCode -eq 0 -and $attempt -lt $maxRetries)
+                    {
+                        Write-Verbose -Message "ReportServer not yet accessible (attempt $attempt of $maxRetries). Waiting $retryIntervalSeconds seconds..." -Verbose
+                        Start-Sleep -Seconds $retryIntervalSeconds
+                    }
+                    elseif ($webRequestStatusCode -eq 0 -and $attempt -eq $maxRetries)
+                    {
+                        # On the last attempt with status code 0, re-throw to get error details
+                        Write-Verbose -Message "ReportServer still not accessible after $maxRetries attempts. Re-throwing exception for diagnostics." -Verbose
+                        throw $_
+                    }
+                    elseif ($webRequestStatusCode -ne 0)
+                    {
+                        # If we got an actual HTTP error code, break and let the assertion handle it
+                        Write-Verbose -Message "ReportServer returned HTTP status code $webRequestStatusCode (attempt $attempt)." -Verbose
+                        break
+                    }
+                }
             }
 
             $webRequestStatusCode | Should -BeExactly 200
@@ -408,20 +487,52 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 $reportsUri = 'http://{0}/Reports_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
             }
 
-            try
+            # Retry logic to wait for Reports site to be ready (up to 2 minutes)
+            $maxRetries = 24
+            $retryIntervalSeconds = 5
+            $webRequestStatusCode = 0
+
+            for ($attempt = 1; $attempt -le $maxRetries; $attempt++)
             {
-                $webRequestReportServer = Invoke-WebRequest -Uri $reportsUri -UseDefaultCredentials
-                # if the request finishes successfully this should return status code 200.
-                $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
-            }
-            catch
-            {
-                <#
-                    If the request generated an exception i.e. "HTTP Error 503. The service is unavailable."
-                    we can pull the status code from the Exception.Response property.
-                #>
-                $webRequestResponse = $_.Exception.Response
-                $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
+                try
+                {
+                    $webRequestReportServer = Invoke-WebRequest -Uri $reportsUri -UseDefaultCredentials -UseBasicParsing -ErrorAction Stop
+                    # if the request finishes successfully this should return status code 200.
+                    $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
+
+                    if ($webRequestStatusCode -eq 200)
+                    {
+                        Write-Verbose -Message "Reports site is accessible (attempt $attempt)." -Verbose
+                        break
+                    }
+                }
+                catch
+                {
+                    <#
+                        If the request generated an exception i.e. "HTTP Error 503. The service is unavailable."
+                        we can pull the status code from the Exception.Response property.
+                    #>
+                    $webRequestResponse = $_.Exception.Response
+                    $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
+
+                    if ($webRequestStatusCode -eq 0 -and $attempt -lt $maxRetries)
+                    {
+                        Write-Verbose -Message "Reports site not yet accessible (attempt $attempt of $maxRetries). Waiting $retryIntervalSeconds seconds..." -Verbose
+                        Start-Sleep -Seconds $retryIntervalSeconds
+                    }
+                    elseif ($webRequestStatusCode -eq 0 -and $attempt -eq $maxRetries)
+                    {
+                        # On the last attempt with status code 0, re-throw to get error details
+                        Write-Verbose -Message "Reports site still not accessible after $maxRetries attempts. Re-throwing exception for diagnostics." -Verbose
+                        throw $_
+                    }
+                    elseif ($webRequestStatusCode -ne 0)
+                    {
+                        # If we got an actual HTTP error code, break and let the assertion handle it
+                        Write-Verbose -Message "Reports site returned HTTP status code $webRequestStatusCode (attempt $attempt)." -Verbose
+                        break
+                    }
+                }
             }
 
             $webRequestStatusCode | Should -BeExactly 200
@@ -440,26 +551,24 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath        = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath        = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
     }
 }

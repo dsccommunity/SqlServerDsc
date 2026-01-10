@@ -13,7 +13,7 @@
         Specifies the server name where the instance exist.
 
     .PARAMETER InstanceName
-       Specifies the instance name on which to remove the trace flags.
+       Specifies the instance name on which to add the trace flags.
 
     .PARAMETER TraceFlag
         Specifies the trace flags to add.
@@ -47,6 +47,11 @@
         Adds the trace flags 4199 and 3226 on the Database Engine instance
         'SQL2022' on the server where the command in run.
 
+    .INPUTS
+        `Microsoft.SqlServer.Management.Smo.Wmi.Service`
+
+        Accepts a SQL Server managed service object via the pipeline.
+
     .OUTPUTS
         None.
 #>
@@ -72,6 +77,7 @@ function Add-SqlDscTraceFlag
         $InstanceName = 'MSSQLSERVER',
 
         [Parameter(Mandatory = $true)]
+        [ValidateRange(1, [System.UInt32]::MaxValue)]
         [System.UInt32[]]
         $TraceFlag,
 
@@ -96,41 +102,67 @@ function Add-SqlDscTraceFlag
         }
 
         # Copy $PSBoundParameters to keep it intact.
-        $getSqlDscTraceFlagParameters = @{} + $PSBoundParameters
+        $getSqlDscTraceFlagParameters = Remove-CommonParameter -Hashtable $PSBoundParameters
 
-        $commonParameters = [System.Management.Automation.PSCmdlet]::OptionalCommonParameters
-
-        # Remove parameters that Get-SqlDscTraceFLag does not have/support.
-        $commonParameters + @('Force', 'TraceFlag') |
+        # Remove parameters that Get-SqlDscTraceFlag does not have/support.
+        @('Force', 'TraceFlag') |
             ForEach-Object -Process {
                 $getSqlDscTraceFlagParameters.Remove($_)
             }
 
+        $originalErrorActionPreference = $ErrorActionPreference
+
+        $ErrorActionPreference = 'Stop'
+
         $currentTraceFlags = Get-SqlDscTraceFlag @getSqlDscTraceFlagParameters -ErrorAction 'Stop'
 
-        $desiredTraceFlags = [System.UInt32[]] $currentTraceFlags + @(
-            $TraceFlag |
-                ForEach-Object -Process {
-                    # Add only when it does not already exist.
-                    if ($_ -notin $currentTraceFlags)
-                    {
-                        $_
-                    }
-                }
-        )
+        $ErrorActionPreference = $originalErrorActionPreference
 
-        $verboseDescriptionMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseDescription -f $InstanceName, ($TraceFlag -join ', ')
-        $verboseWarningMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseWarning -f $InstanceName
-        $captionMessage = $script:localizedData.TraceFlag_Add_ShouldProcessCaption
+        # Normalize current trace flags: sort uniquely.
+        # Get-SqlDscTraceFlag already filters out nulls and zeros, and returns [UInt32[]].
+        $normalizedCurrentTraceFlags = $currentTraceFlags | Sort-Object -Unique
 
-        if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        # Ensure $normalizedCurrentTraceFlags is an empty array if no trace flags exist.
+        if ($null -eq $normalizedCurrentTraceFlags)
         {
-            # Copy $PSBoundParameters to keep it intact.
-            $setSqlDscTraceFlagParameters = @{} + $PSBoundParameters
+            $normalizedCurrentTraceFlags = [System.UInt32[]] @()
+        }
 
-            $setSqlDscTraceFlagParameters.TraceFLag = $desiredTraceFlags
+        # Normalize input trace flags: sort uniquely.
+        # Parameter type [System.UInt32[]] with ValidateRange already ensures non-null values and valid range.
+        $normalizedInputTraceFlags = $TraceFlag | Sort-Object -Unique
 
-            Set-SqlDscTraceFlag @setSqlDscTraceFlagParameters -ErrorAction 'Stop'
+        # Combine normalized current and input trace flags to get the desired state
+        $desiredTraceFlags = [System.UInt32[]] @(
+            $normalizedCurrentTraceFlags
+            $normalizedInputTraceFlags
+        ) |
+            Sort-Object -Unique
+
+        # Compare normalized current and desired trace flags to determine if there's an effective change
+        $compareResult = Compare-Object -ReferenceObject $normalizedCurrentTraceFlags -DifferenceObject $desiredTraceFlags
+
+        if ($compareResult)
+        {
+            $descriptionMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseDescription -f $InstanceName, ($desiredTraceFlags -join ', ')
+            $confirmationMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseWarning -f $InstanceName
+            $captionMessage = $script:localizedData.TraceFlag_Add_ShouldProcessCaption
+
+            if ($PSCmdlet.ShouldProcess($descriptionMessage, $confirmationMessage, $captionMessage))
+            {
+                # Copy $PSBoundParameters to keep it intact.
+                $setSqlDscTraceFlagParameters = Remove-CommonParameter -Hashtable $PSBoundParameters
+
+                $setSqlDscTraceFlagParameters.TraceFlag = $desiredTraceFlags
+
+                $originalErrorActionPreference = $ErrorActionPreference
+
+                $ErrorActionPreference = 'Stop'
+
+                Set-SqlDscTraceFlag @setSqlDscTraceFlagParameters -ErrorAction 'Stop'
+
+                $ErrorActionPreference = $originalErrorActionPreference
+            }
         }
     }
 }

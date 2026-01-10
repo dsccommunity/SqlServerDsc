@@ -25,7 +25,7 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 #>
 function Get-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'Neither command is needed for this function since it uses CIM methods when calling Get-ReportingServicesData')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'Neither command is needed for this function since it uses CIM methods when calling Get-SqlDscRSConfiguration')]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -65,28 +65,28 @@ function Get-TargetResource
         Encrypt                      = $Encrypt
     }
 
-    $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
+    $rsConfiguration = Get-SqlDscRSConfiguration -InstanceName $InstanceName -ErrorAction 'SilentlyContinue'
 
-    if ( $null -ne $reportingServicesData.Configuration )
+    if ($null -ne $rsConfiguration)
     {
-        if ( $reportingServicesData.Configuration.DatabaseServerName.Contains('\') )
+        if ($rsConfiguration.DatabaseServerName.Contains('\'))
         {
-            $getTargetResourceResult.DatabaseServerName = $reportingServicesData.Configuration.DatabaseServerName.Split('\')[0]
-            $getTargetResourceResult.DatabaseInstanceName = $reportingServicesData.Configuration.DatabaseServerName.Split('\')[1]
+            $getTargetResourceResult.DatabaseServerName = $rsConfiguration.DatabaseServerName.Split('\')[0]
+            $getTargetResourceResult.DatabaseInstanceName = $rsConfiguration.DatabaseServerName.Split('\')[1]
         }
         else
         {
-            $getTargetResourceResult.DatabaseServerName = $reportingServicesData.Configuration.DatabaseServerName
+            $getTargetResourceResult.DatabaseServerName = $rsConfiguration.DatabaseServerName
             $getTargetResourceResult.DatabaseInstanceName = 'MSSQLSERVER'
         }
 
-        $isInitialized = $reportingServicesData.Configuration.IsInitialized
+        $isInitialized = $rsConfiguration | Test-SqlDscRSInitialized
 
         [System.Boolean] $getTargetResourceResult.IsInitialized = $isInitialized
 
-        if ( $isInitialized )
+        if ($isInitialized)
         {
-            if ( $reportingServicesData.Configuration.SecureConnectionLevel )
+            if ($rsConfiguration.SecureConnectionLevel)
             {
                 $getTargetResourceResult.UseSsl = $true
             }
@@ -95,27 +95,25 @@ function Get-TargetResource
                 $getTargetResourceResult.UseSsl = $false
             }
 
-            $getTargetResourceResult.ReportServerVirtualDirectory = $reportingServicesData.Configuration.VirtualDirectoryReportServer
-            $getTargetResourceResult.ReportsVirtualDirectory = $reportingServicesData.Configuration.VirtualDirectoryReportManager
+            $getTargetResourceResult.ReportServerVirtualDirectory = $rsConfiguration.VirtualDirectoryReportServer
+            $getTargetResourceResult.ReportsVirtualDirectory = $rsConfiguration.VirtualDirectoryReportManager
 
-            $invokeRsCimMethodParameters = @{
-                CimInstance = $reportingServicesData.Configuration
-                MethodName  = 'ListReservedUrls'
-            }
-
-            $reservedUrls = Invoke-RsCimMethod @invokeRsCimMethodParameters
+            $reservedUrls = $rsConfiguration | Get-SqlDscRSUrlReservation -ErrorAction 'SilentlyContinue'
 
             $reportServerReservedUrl = @()
             $reportsReservedUrl = @()
 
-            for ( $i = 0; $i -lt $reservedUrls.Application.Count; ++$i )
+            $rsSetupConfiguration = Get-SqlDscRSSetupConfiguration -InstanceName $InstanceName -ErrorAction 'SilentlyContinue'
+            $reportsApplicationName = $rsSetupConfiguration | Get-SqlDscRSWebPortalApplicationName -ErrorAction 'SilentlyContinue'
+
+            for ($i = 0; $i -lt $reservedUrls.Application.Count; ++$i)
             {
-                if ( $reservedUrls.Application[$i] -eq 'ReportServerWebService' )
+                if ($reservedUrls.Application[$i] -eq 'ReportServerWebService')
                 {
                     $reportServerReservedUrl += $reservedUrls.UrlString[$i]
                 }
 
-                if ( $reservedUrls.Application[$i] -eq $reportingServicesData.ReportsApplicationName )
+                if ($reservedUrls.Application[$i] -eq $reportsApplicationName)
                 {
                     $reportsReservedUrl += $reservedUrls.UrlString[$i]
                 }
@@ -128,7 +126,7 @@ function Get-TargetResource
         {
             <#
                 Make sure the value returned is false, if the value returned was
-                either empty, $null or $false. Fic for issue #822.
+                either empty, $null or $false. Fix for issue #822.
             #>
             [System.Boolean] $getTargetResourceResult.IsInitialized = $false
         }
@@ -180,6 +178,12 @@ function Get-TargetResource
         settings change. If this parameter is set to $true, Reporting Services
         will not be restarted, even after initialization.
 
+    .PARAMETER RestartTimeout
+        The number of seconds to wait after restarting Reporting Services before
+        continuing with configuration. This is useful on resource-constrained
+        systems where the service may take longer to fully initialize. If not
+        specified, no additional wait time is applied after service restart.
+
     .PARAMETER Encrypt
         Specifies how encryption should be enforced. There are currently no
         difference between using `Mandatory` or `Strict`.
@@ -200,14 +204,13 @@ function Get-TargetResource
         (Get-CimClass @getCimClassParameters).CimClassMethods[$methodName].Parameters
         ```
 
-        Or run the following using the helper function in this code. Make sure
-        to have the helper function loaded in the session.
+        Or run the following using the Get-SqlDscRSConfiguration command.
 
         ```
         $methodName = 'ReserveUrl'
         $instanceName = 'SQL2016'
-        $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
-        $reportingServicesData.Configuration.CimClass.CimClassMethods[$methodName].Parameters
+        $rsConfiguration = Get-SqlDscRSConfiguration -InstanceName $InstanceName
+        $rsConfiguration.CimClass.CimClassMethods[$methodName].Parameters
         ```
 
         SecureConnectionLevel (the parameter UseSsl):
@@ -264,31 +267,47 @@ function Set-TargetResource
         $SuppressRestart,
 
         [Parameter()]
+        [System.UInt32]
+        $RestartTimeout,
+
+        [Parameter()]
         [ValidateSet('Mandatory', 'Optional', 'Strict')]
         [System.String]
         $Encrypt
     )
 
-    $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
+    $rsConfiguration = Get-SqlDscRSConfiguration -InstanceName $InstanceName -ErrorAction 'SilentlyContinue'
 
-    if ( $null -ne $reportingServicesData.Configuration )
+    if ($null -ne $rsConfiguration)
     {
-        if ( $reportingServicesData.SqlVersion -ge 14 )
+        $rsSetupConfiguration = Get-SqlDscRSSetupConfiguration -InstanceName $InstanceName -ErrorAction 'SilentlyContinue'
+        $sqlVersion = $rsSetupConfiguration | Get-SqlDscRSVersion -ErrorAction 'SilentlyContinue'
+        $reportsApplicationName = $rsSetupConfiguration | Get-SqlDscRSWebPortalApplicationName -ErrorAction 'SilentlyContinue'
+
+        if ($sqlVersion.Major -ge 14)
         {
-            if ( [string]::IsNullOrEmpty($ReportServerVirtualDirectory) )
+            if ([System.String]::IsNullOrEmpty($ReportServerVirtualDirectory))
             {
                 $ReportServerVirtualDirectory = 'ReportServer'
             }
 
-            if ( [string]::IsNullOrEmpty($ReportsVirtualDirectory) )
+            if ([System.String]::IsNullOrEmpty($ReportsVirtualDirectory))
             {
                 $ReportsVirtualDirectory = 'Reports'
             }
 
-            $reportingServicesServiceName = 'SQLServerReportingServices'
+            $reportingServicesServiceName = $rsConfiguration.ServiceName
+
+            if ([System.String]::IsNullOrEmpty($reportingServicesServiceName))
+            {
+                $errorMessage = $script:localizedData.ServiceNameIsNullOrEmpty -f $InstanceName
+
+                New-InvalidOperationException -Message $errorMessage
+            }
+
             $reportingServicesDatabaseName = 'ReportServer'
         }
-        elseif ( $InstanceName -eq 'MSSQLSERVER' )
+        elseif ($InstanceName -eq 'MSSQLSERVER')
         {
             if ( [System.String]::IsNullOrEmpty($ReportServerVirtualDirectory) )
             {
@@ -329,7 +348,7 @@ function Set-TargetResource
         $language = $wmiOperatingSystem.OSLanguage
         $restartReportingService = $false
 
-        if ( -not $reportingServicesData.Configuration.IsInitialized )
+        if (-not ($rsConfiguration | Test-SqlDscRSInitialized))
         {
             Write-Verbose -Message "Initializing Reporting Services on $DatabaseServerName\$DatabaseInstanceName."
 
@@ -348,106 +367,43 @@ function Set-TargetResource
                 $ReportsReservedUrl = @('http://+:80')
             }
 
-            if ( $reportingServicesData.Configuration.VirtualDirectoryReportServer -ne $ReportServerVirtualDirectory )
+            if ($rsConfiguration.VirtualDirectoryReportServer -ne $ReportServerVirtualDirectory)
             {
                 Write-Verbose -Message "Setting report server virtual directory on $DatabaseServerName\$DatabaseInstanceName to '$ReportServerVirtualDirectory'."
 
                 # cSpell: ignore Lcid
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $reportingServicesData.Configuration
-                    MethodName  = 'SetVirtualDirectory'
-                    Arguments   = @{
-                        Application      = 'ReportServerWebService'
-                        VirtualDirectory = $ReportServerVirtualDirectory
-                        Lcid             = $language
-                    }
-                }
-
-                Invoke-RsCimMethod @invokeRsCimMethodParameters
+                $rsConfiguration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory $ReportServerVirtualDirectory -Lcid $language -Force -ErrorAction 'Stop'
 
                 $ReportServerReservedUrl | ForEach-Object -Process {
                     Write-Verbose -Message "Adding report server URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
 
-                    $invokeRsCimMethodParameters = @{
-                        CimInstance = $reportingServicesData.Configuration
-                        MethodName  = 'ReserveUrl'
-                        Arguments   = @{
-                            Application = 'ReportServerWebService'
-                            UrlString   = $_
-                            Lcid        = $language
-                        }
-                    }
-
-                    Invoke-RsCimMethod @invokeRsCimMethodParameters
+                    $rsConfiguration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $_ -Lcid $language -Force -ErrorAction 'Stop'
                 }
             }
 
-            if ( $reportingServicesData.Configuration.VirtualDirectoryReportManager -ne $ReportsVirtualDirectory )
+            if ($rsConfiguration.VirtualDirectoryReportManager -ne $ReportsVirtualDirectory)
             {
                 Write-Verbose -Message "Setting reports virtual directory on $DatabaseServerName\$DatabaseInstanceName to '$ReportServerVirtualDirectory'."
 
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $reportingServicesData.Configuration
-                    MethodName  = 'SetVirtualDirectory'
-                    Arguments   = @{
-                        Application      = $reportingServicesData.ReportsApplicationName
-                        VirtualDirectory = $ReportsVirtualDirectory
-                        Lcid             = $language
-                    }
-                }
-
-                Invoke-RsCimMethod @invokeRsCimMethodParameters
+                $rsConfiguration | Set-SqlDscRSVirtualDirectory -Application $reportsApplicationName -VirtualDirectory $ReportsVirtualDirectory -Lcid $language -Force -ErrorAction 'Stop'
 
                 $ReportsReservedUrl | ForEach-Object -Process {
                     Write-Verbose -Message "Adding reports URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
 
-                    $invokeRsCimMethodParameters = @{
-                        CimInstance = $reportingServicesData.Configuration
-                        MethodName  = 'ReserveUrl'
-                        Arguments   = @{
-                            Application = $reportingServicesData.ReportsApplicationName
-                            UrlString   = $_
-                            Lcid        = $language
-                        }
-                    }
-
-                    Invoke-RsCimMethod @invokeRsCimMethodParameters
+                    $rsConfiguration | Add-SqlDscRSUrlReservation -Application $reportsApplicationName -UrlString $_ -Lcid $language -Force -ErrorAction 'Stop'
                 }
             }
 
             Write-Verbose -Message "Generate database creation script on $DatabaseServerName\$DatabaseInstanceName for database '$reportingServicesDatabaseName'."
 
-            $invokeRsCimMethodParameters = @{
-                CimInstance = $reportingServicesData.Configuration
-                MethodName  = 'GenerateDatabaseCreationScript'
-                Arguments   = @{
-                    DatabaseName     = $reportingServicesDatabaseName
-                    IsSharePointMode = $false
-                    Lcid             = $language
-                }
-            }
+            $reportingServicesDatabaseScript = $rsConfiguration | Request-SqlDscRSDatabaseScript -DatabaseName $reportingServicesDatabaseName -Lcid $language -ErrorAction 'Stop'
 
-            $reportingServicesDatabaseScript = Invoke-RsCimMethod @invokeRsCimMethodParameters
-
-            # Determine RS service account
-            $reportingServicesServiceAccountUserName = (Get-CimInstance -ClassName Win32_Service | Where-Object -FilterScript {
-                    $_.Name -eq $reportingServicesServiceName
-                }).StartName
+            # The WindowsServiceIdentityActual property contains the actual account name actively used by the service.
+            $reportingServicesServiceAccountUserName = $rsConfiguration.WindowsServiceIdentityActual
 
             Write-Verbose -Message "Generate database rights script on $DatabaseServerName\$DatabaseInstanceName for database '$reportingServicesDatabaseName' and user '$reportingServicesServiceAccountUserName'."
 
-            $invokeRsCimMethodParameters = @{
-                CimInstance = $reportingServicesData.Configuration
-                MethodName  = 'GenerateDatabaseRightsScript'
-                Arguments   = @{
-                    DatabaseName  = $reportingServicesDatabaseName
-                    UserName      = $reportingServicesServiceAccountUserName
-                    IsRemote      = $false
-                    IsWindowsUser = $true
-                }
-            }
-
-            $reportingServicesDatabaseRightsScript = Invoke-RsCimMethod @invokeRsCimMethodParameters
+            $reportingServicesDatabaseRightsScript = $rsConfiguration | Request-SqlDscRSDatabaseRightsScript -DatabaseName $reportingServicesDatabaseName -UserName $reportingServicesServiceAccountUserName -ErrorAction 'Stop'
 
             Import-SqlDscPreferredModule
 
@@ -465,49 +421,25 @@ function Set-TargetResource
                 $invokeSqlDscQueryParameters.Encrypt = $true
             }
 
-            Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $reportingServicesDatabaseScript.Script
-            Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $reportingServicesDatabaseRightsScript.Script
+            Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $reportingServicesDatabaseScript
+            Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $reportingServicesDatabaseRightsScript
 
             Write-Verbose -Message "Set database connection on $DatabaseServerName\$DatabaseInstanceName to database '$reportingServicesDatabaseName'."
 
-            if ( $DatabaseInstanceName -eq 'MSSQLSERVER' )
+            $setSqlDscRSDatabaseConnectionParameters = @{
+                ServerName   = $DatabaseServerName
+                DatabaseName = $reportingServicesDatabaseName
+                Type         = 'ServiceAccount'
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
+
+            if ($DatabaseInstanceName -ne 'MSSQLSERVER')
             {
-                $reportingServicesConnection = $DatabaseServerName
-            }
-            else
-            {
-                $reportingServicesConnection = "$DatabaseServerName\$DatabaseInstanceName"
+                $setSqlDscRSDatabaseConnectionParameters.InstanceName = $DatabaseInstanceName
             }
 
-            $invokeRsCimMethodParameters = @{
-                CimInstance = $reportingServicesData.Configuration
-                MethodName  = 'SetDatabaseConnection'
-                Arguments   = @{
-                    Server          = $reportingServicesConnection
-                    DatabaseName    = $reportingServicesDatabaseName
-                    Username        = ''
-                    Password        = ''
-
-                    <#
-                        Can be set to either:
-                        0 = Windows
-                        1 = Sql Server
-                        2 = Windows Service (Integrated Security)
-
-                        When set to 2 the Reporting Server Web service will use
-                        either the ASP.NET account or an application pool’s account
-                        and the Windows service account to access the report server
-                        database.
-
-                        See more in the article
-                        https://docs.microsoft.com/en-us/sql/reporting-services/wmi-provider-library-reference/configurationsetting-method-setdatabaseconnection#remarks
-
-                    #>
-                    CredentialsType = 2
-                }
-            }
-
-            Invoke-RsCimMethod @invokeRsCimMethodParameters
+            $rsConfiguration | Set-SqlDscRSDatabaseConnection @setSqlDscRSDatabaseConnectionParameters
 
             <#
                 When initializing SSRS 2019, the call to InitializeReportServer
@@ -524,11 +456,24 @@ function Set-TargetResource
             #>
             Write-Verbose -Message $script:localizedData.RestartToFinishInitialization
 
-            Restart-ReportingServicesService -InstanceName $InstanceName -WaitTime 30
+            Restart-SqlDscRSService -ServiceName $reportingServicesServiceName -WaitTime 30 -Force
+
+            <#
+                Wait for the service to be fully ready after restart before attempting
+                to get reporting services data or initialize. This is especially important
+                on resource-constrained systems where the service may take longer to
+                fully initialize (e.g., Windows Server 2025 in CI environments).
+            #>
+            if ($PSBoundParameters.ContainsKey('RestartTimeout'))
+            {
+                Write-Verbose -Message ($script:localizedData.WaitingForServiceReady -f $RestartTimeout)
+                Start-Sleep -Seconds $RestartTimeout
+            }
 
             $restartReportingService = $false
 
-            $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
+            # Refresh the configuration after restart
+            $rsConfiguration = Get-SqlDscRSConfiguration -InstanceName $InstanceName -ErrorAction 'Stop'
 
             <#
                 Only execute InitializeReportServer if SetDatabaseConnection hasn't
@@ -536,42 +481,44 @@ function Set-TargetResource
                 InitializeReportServer will fail on SQL Server Standard and
                 lower editions.
             #>
-            if ( -not $reportingServicesData.Configuration.IsInitialized )
+            if (-not ($rsConfiguration | Test-SqlDscRSInitialized))
             {
-                Write-Verbose -Message "Did not help restarting the Reporting Services service, running the CIM method to initialize report server on $DatabaseServerName\$DatabaseInstanceName for instance ID '$($reportingServicesData.Configuration.InstallationID)'."
+                Write-Verbose -Message "Did not help restarting the Reporting Services service, running the CIM method to initialize report server on $DatabaseServerName\$DatabaseInstanceName for instance ID '$($rsConfiguration.InstallationID)'."
+
+                <#
+                    Add an additional wait before calling InitializeReportServer to give
+                    the WMI provider more time to be fully ready. This is especially
+                    important on resource-constrained systems.
+                #>
+                if ($PSBoundParameters.ContainsKey('RestartTimeout'))
+                {
+                    Write-Verbose -Message ($script:localizedData.WaitingForServiceReady -f $RestartTimeout)
+                    Start-Sleep -Seconds $RestartTimeout
+                }
 
                 $restartReportingService = $true
 
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $reportingServicesData.Configuration
-                    MethodName  = 'InitializeReportServer'
-                    Arguments   = @{
-                        InstallationId = $reportingServicesData.Configuration.InstallationID
-                    }
-                }
-
-                Invoke-RsCimMethod @invokeRsCimMethodParameters
+                $rsConfiguration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
             }
             else
             {
                 Write-Verbose -Message "Reporting Services on $DatabaseServerName\$DatabaseInstanceName is initialized."
             }
 
-            if ( $PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $reportingServicesData.Configuration.SecureConnectionLevel )
+            if ( $PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $rsConfiguration.SecureConnectionLevel )
             {
                 Write-Verbose -Message "Changing value for using SSL to '$UseSsl'."
 
                 $restartReportingService = $true
 
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $reportingServicesData.Configuration
-                    MethodName  = 'SetSecureConnectionLevel'
-                    Arguments   = @{
-                        Level = @(0, 1)[$UseSsl]
-                    }
+                if ($UseSsl)
+                {
+                    $rsConfiguration | Enable-SqlDscRsSecureConnection -Force -ErrorAction 'Stop'
                 }
-
-                Invoke-RsCimMethod @invokeRsCimMethodParameters
+                else
+                {
+                    $rsConfiguration | Disable-SqlDscRsSecureConnection -Force -ErrorAction 'Stop'
+                }
             }
         }
         else
@@ -612,43 +559,13 @@ function Set-TargetResource
                 $restartReportingService = $true
 
                 $currentConfig.ReportServerReservedUrl | ForEach-Object -Process {
-                    $invokeRsCimMethodParameters = @{
-                        CimInstance = $reportingServicesData.Configuration
-                        MethodName  = 'RemoveURL'
-                        Arguments   = @{
-                            Application = 'ReportServerWebService'
-                            UrlString   = $_
-                            Lcid        = $language
-                        }
-                    }
-
-                    Invoke-RsCimMethod @invokeRsCimMethodParameters
+                    $rsConfiguration | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $_ -Lcid $language -Force -ErrorAction 'Stop'
                 }
 
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $reportingServicesData.Configuration
-                    MethodName  = 'SetVirtualDirectory'
-                    Arguments   = @{
-                        Application      = 'ReportServerWebService'
-                        VirtualDirectory = $ReportServerVirtualDirectory
-                        Lcid             = $language
-                    }
-                }
-
-                Invoke-RsCimMethod @invokeRsCimMethodParameters
+                $rsConfiguration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory $ReportServerVirtualDirectory -Lcid $language -Force -ErrorAction 'Stop'
 
                 $currentConfig.ReportServerReservedUrl | ForEach-Object -Process {
-                    $invokeRsCimMethodParameters = @{
-                        CimInstance = $reportingServicesData.Configuration
-                        MethodName  = 'ReserveUrl'
-                        Arguments   = @{
-                            Application = 'ReportServerWebService'
-                            UrlString   = $_
-                            Lcid        = $language
-                        }
-                    }
-
-                    Invoke-RsCimMethod @invokeRsCimMethodParameters
+                    $rsConfiguration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $_ -Lcid $language -Force -ErrorAction 'Stop'
                 }
             }
 
@@ -659,43 +576,13 @@ function Set-TargetResource
                 $restartReportingService = $true
 
                 $currentConfig.ReportsReservedUrl | ForEach-Object -Process {
-                    $invokeRsCimMethodParameters = @{
-                        CimInstance = $reportingServicesData.Configuration
-                        MethodName  = 'RemoveURL'
-                        Arguments   = @{
-                            Application = $reportingServicesData.ReportsApplicationName
-                            UrlString   = $_
-                            Lcid        = $language
-                        }
-                    }
-
-                    Invoke-RsCimMethod @invokeRsCimMethodParameters
+                    $rsConfiguration | Remove-SqlDscRSUrlReservation -Application $reportsApplicationName -UrlString $_ -Lcid $language -Force -ErrorAction 'Stop'
                 }
 
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $reportingServicesData.Configuration
-                    MethodName  = 'SetVirtualDirectory'
-                    Arguments   = @{
-                        Application      = $reportingServicesData.ReportsApplicationName
-                        VirtualDirectory = $ReportsVirtualDirectory
-                        Lcid             = $language
-                    }
-                }
-
-                Invoke-RsCimMethod @invokeRsCimMethodParameters
+                $rsConfiguration | Set-SqlDscRSVirtualDirectory -Application $reportsApplicationName -VirtualDirectory $ReportsVirtualDirectory -Lcid $language -Force -ErrorAction 'Stop'
 
                 $currentConfig.ReportsReservedUrl | ForEach-Object -Process {
-                    $invokeRsCimMethodParameters = @{
-                        CimInstance = $reportingServicesData.Configuration
-                        MethodName  = 'ReserveUrl'
-                        Arguments   = @{
-                            Application = $reportingServicesData.ReportsApplicationName
-                            UrlString   = $_
-                            Lcid        = $language
-                        }
-                    }
-
-                    Invoke-RsCimMethod @invokeRsCimMethodParameters
+                    $rsConfiguration | Add-SqlDscRSUrlReservation -Application $reportsApplicationName -UrlString $_ -Lcid $language -Force -ErrorAction 'Stop'
                 }
             }
 
@@ -706,36 +593,11 @@ function Set-TargetResource
 
             if ( ($null -ne $ReportServerReservedUrl) -and ($null -ne (Compare-Object @compareParameters)) )
             {
+                Write-Verbose -Message "Updating report server URL reservations on $DatabaseServerName\$DatabaseInstanceName."
+
                 $restartReportingService = $true
 
-                $currentConfig.ReportServerReservedUrl | ForEach-Object -Process {
-                    $invokeRsCimMethodParameters = @{
-                        CimInstance = $reportingServicesData.Configuration
-                        MethodName  = 'RemoveURL'
-                        Arguments   = @{
-                            Application = 'ReportServerWebService'
-                            UrlString   = $_
-                            Lcid        = $language
-                        }
-                    }
-
-                    Invoke-RsCimMethod @invokeRsCimMethodParameters
-                }
-
-                $ReportServerReservedUrl | ForEach-Object -Process {
-                    Write-Verbose -Message "Adding report server URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
-                    $invokeRsCimMethodParameters = @{
-                        CimInstance = $reportingServicesData.Configuration
-                        MethodName  = 'ReserveUrl'
-                        Arguments   = @{
-                            Application = 'ReportServerWebService'
-                            UrlString   = $_
-                            Lcid        = $language
-                        }
-                    }
-
-                    Invoke-RsCimMethod @invokeRsCimMethodParameters
-                }
+                $rsConfiguration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $ReportServerReservedUrl -Lcid $language -Force -ErrorAction 'Stop'
             }
 
             $compareParameters = @{
@@ -745,37 +607,11 @@ function Set-TargetResource
 
             if ( ($null -ne $ReportsReservedUrl) -and ($null -ne (Compare-Object @compareParameters)) )
             {
+                Write-Verbose -Message "Updating reports URL reservations on $DatabaseServerName\$DatabaseInstanceName."
+
                 $restartReportingService = $true
 
-                $currentConfig.ReportsReservedUrl | ForEach-Object -Process {
-                    $invokeRsCimMethodParameters = @{
-                        CimInstance = $reportingServicesData.Configuration
-                        MethodName  = 'RemoveURL'
-                        Arguments   = @{
-                            Application = $reportingServicesData.ReportsApplicationName
-                            UrlString   = $_
-                            Lcid        = $language
-                        }
-                    }
-
-                    Invoke-RsCimMethod @invokeRsCimMethodParameters
-                }
-
-                $ReportsReservedUrl | ForEach-Object -Process {
-                    Write-Verbose -Message "Adding reports URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
-
-                    $invokeRsCimMethodParameters = @{
-                        CimInstance = $reportingServicesData.Configuration
-                        MethodName  = 'ReserveUrl'
-                        Arguments   = @{
-                            Application = $reportingServicesData.ReportsApplicationName
-                            UrlString   = $_
-                            Lcid        = $language
-                        }
-                    }
-
-                    Invoke-RsCimMethod @invokeRsCimMethodParameters
-                }
+                $rsConfiguration | Set-SqlDscRSUrlReservation -Application $reportsApplicationName -UrlString $ReportsReservedUrl -Lcid $language -Force -ErrorAction 'Stop'
             }
 
             if ( $PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $currentConfig.UseSsl )
@@ -784,15 +620,14 @@ function Set-TargetResource
 
                 $restartReportingService = $true
 
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $reportingServicesData.Configuration
-                    MethodName  = 'SetSecureConnectionLevel'
-                    Arguments   = @{
-                        Level = @(0, 1)[$UseSsl]
-                    }
+                if ($UseSsl)
+                {
+                    $rsConfiguration | Enable-SqlDscRsSecureConnection -Force -ErrorAction 'Stop'
                 }
-
-                Invoke-RsCimMethod @invokeRsCimMethodParameters
+                else
+                {
+                    $rsConfiguration | Disable-SqlDscRsSecureConnection -Force -ErrorAction 'Stop'
+                }
             }
         }
 
@@ -803,7 +638,18 @@ function Set-TargetResource
         elseif ( $restartReportingService -and (-not $SuppressRestart) )
         {
             Write-Verbose -Message $script:localizedData.Restart
-            Restart-ReportingServicesService -InstanceName $InstanceName -WaitTime 30
+            Restart-SqlDscRSService -ServiceName $reportingServicesServiceName -WaitTime 30 -Force
+
+            <#
+                Wait for the service to be fully ready after restart before attempting
+                to test the configuration. This is especially important on resource-constrained
+                systems where the service may take longer to fully initialize.
+            #>
+            if ($PSBoundParameters.ContainsKey('RestartTimeout'))
+            {
+                Write-Verbose -Message ($script:localizedData.WaitingForServiceReady -f $RestartTimeout)
+                Start-Sleep -Seconds $RestartTimeout
+            }
         }
     }
 
@@ -851,6 +697,9 @@ function Set-TargetResource
         settings change. If this parameter is set to $true, Reporting Services
         will not be restarted, even after initialization.
 
+    .PARAMETER RestartTimeout
+        Not used in Test-TargetResource.
+
     .PARAMETER Encrypt
         Specifies how encryption should be enforced. There are currently no
         difference between using `Mandatory` or `Strict`.
@@ -897,6 +746,10 @@ function Test-TargetResource
         [Parameter()]
         [System.Boolean]
         $SuppressRestart,
+
+        [Parameter()]
+        [System.UInt32]
+        $RestartTimeout,
 
         [Parameter()]
         [ValidateSet('Mandatory', 'Optional', 'Strict')]
@@ -988,144 +841,4 @@ function Test-TargetResource
     }
 
     $result
-}
-
-<#
-    .SYNOPSIS
-        Returns SQL Reporting Services data: configuration object used to initialize and configure
-        SQL Reporting Services and the name of the Reports Web application name (changed in SQL 2016)
-
-    .PARAMETER InstanceName
-        Name of the SQL Server Reporting Services instance for which the data is being retrieved.
-#>
-function Get-ReportingServicesData
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $InstanceName
-    )
-
-    $instanceNamesRegistryKey = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS'
-
-    if (Get-ItemProperty -Path $instanceNamesRegistryKey -Name $InstanceName -ErrorAction SilentlyContinue)
-    {
-        $instanceId = (Get-ItemProperty -Path $instanceNamesRegistryKey -Name $InstanceName).$InstanceName
-
-        if (Test-Path -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\MSSQLServer\CurrentVersion")
-        {
-            # SQL Server 2017 and 2019 SSRS stores current SQL Server version to a different Registry path.
-            $sqlVersion = [int]((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$InstanceId\MSSQLServer\CurrentVersion" -Name 'CurrentVersion').CurrentVersion).Split('.')[0]
-        }
-        else
-        {
-            $sqlVersion = [int]((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\Setup" -Name 'Version').Version).Split('.')[0]
-        }
-
-        $reportingServicesConfiguration = Get-CimInstance -ClassName MSReportServer_ConfigurationSetting -Namespace "root\Microsoft\SQLServer\ReportServer\RS_$InstanceName\v$sqlVersion\Admin"
-        $reportingServicesConfiguration = $reportingServicesConfiguration | Where-Object -FilterScript {
-            $_.InstanceName -eq $InstanceName
-        }
-
-        <#
-            SQL Server Reporting Services Web Portal application name changed
-            in SQL Server 2016.
-            https://docs.microsoft.com/en-us/sql/reporting-services/breaking-changes-in-sql-server-reporting-services-in-sql-server-2016
-        #>
-        if ($sqlVersion -ge 13)
-        {
-            $reportsApplicationName = 'ReportServerWebApp'
-        }
-        else
-        {
-            $reportsApplicationName = 'ReportManager'
-        }
-    }
-
-    @{
-        Configuration          = $reportingServicesConfiguration
-        ReportsApplicationName = $reportsApplicationName
-        SqlVersion             = $sqlVersion
-    }
-}
-
-<#
-    .SYNOPSIS
-        A wrapper for Invoke-CimMethod to be able to handle errors in one place.
-
-    .PARAMETER CimInstance
-        The CIM instance object that contains the method to call.
-
-    .PARAMETER MethodName
-        The method to call in the CIM Instance object.
-
-    .PARAMETER Arguments
-        The arguments that should be
-#>
-function Invoke-RsCimMethod
-{
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('AvoidThrowOutsideOfTry', '', Justification = 'Because the code throws based on an prior expression')]
-    [CmdletBinding()]
-    [OutputType([Microsoft.Management.Infrastructure.CimMethodResult])]
-    param
-    (
-
-        [Parameter(Mandatory = $true)]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $CimInstance,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $MethodName,
-
-        [Parameter()]
-        [System.Collections.Hashtable]
-        $Arguments
-    )
-
-    $invokeCimMethodParameters = @{
-        MethodName  = $MethodName
-        ErrorAction = 'Stop'
-    }
-
-    if ($PSBoundParameters.ContainsKey('Arguments'))
-    {
-        $invokeCimMethodParameters['Arguments'] = $Arguments
-    }
-
-    $invokeCimMethodResult = $CimInstance | Invoke-CimMethod @invokeCimMethodParameters
-
-    <#
-        Successfully calling the method returns $invokeCimMethodResult.HRESULT -eq 0.
-        If an general error occur in the Invoke-CimMethod, like calling a method
-        that does not exist, returns $null in $invokeCimMethodResult.
-
-        cSpell: ignore HRESULT
-    #>
-    if ($invokeCimMethodResult -and $invokeCimMethodResult.HRESULT -ne 0)
-    {
-        if ($invokeCimMethodResult | Get-Member -Name 'ExtendedErrors')
-        {
-            <#
-                The returned object property ExtendedErrors is an array
-                so that needs to be concatenated.
-            #>
-            $errorMessage = $invokeCimMethodResult.ExtendedErrors -join ';'
-        }
-        else
-        {
-            $errorMessage = $invokeCimMethodResult.Error
-        }
-
-        throw 'Method {0}() failed with an error. Error: {1} (HRESULT:{2})' -f @(
-            $MethodName
-            $errorMessage
-            $invokeCimMethodResult.HRESULT
-        )
-    }
-
-    return $invokeCimMethodResult
 }

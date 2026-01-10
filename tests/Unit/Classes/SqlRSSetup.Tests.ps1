@@ -4,7 +4,7 @@
 #>
 
 # Suppressing this rule because Script Analyzer does not understand Pester's syntax.
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
 BeforeDiscovery {
@@ -12,42 +12,41 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
     $env:SqlServerDscCI = $true
 
-    Import-Module -Name $script:dscModuleName
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
-
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -58,7 +57,7 @@ Describe 'SqlRSSetup' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { [SqlRSSetup]::new() } | Should -Not -Throw
+                $null = [SqlRSSetup]::new()
             }
         }
 
@@ -103,13 +102,13 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
                     $script:mockSqlRSSetupInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
                             return [System.Collections.Hashtable] @{
-                                InstanceName   = 'SSRS'
+                                InstanceName = 'SSRS'
                             }
                         } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
                             return
                         } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
                             return
                         } -PassThru
                 }
@@ -129,7 +128,8 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
                     $currentState.MediaPath | Should -BeNullOrEmpty
                     $currentState.ProductKey | Should -BeNullOrEmpty
                     $currentState.EditionUpgrade | Should -BeNullOrEmpty
-                    $currentState.Edition | Should -BeNullOrEmpty
+                    # Returns 0, that means no value was set by GetCurrentState() from the enum ReportServerEdition
+                    $currentState.Edition | Should -Be 0
                     $currentState.LogPath | Should -BeNullOrEmpty
                     $currentState.InstallFolder | Should -BeNullOrEmpty
                     $currentState.SuppressRestart | Should -BeFalse
@@ -163,10 +163,10 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
                                 InstanceName = $null
                             }
                         } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
                             return
                         } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
                             return
                         } -PassThru
                 }
@@ -187,7 +187,8 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
                     $currentState.MediaPath | Should -BeNullOrEmpty
                     $currentState.ProductKey | Should -BeNullOrEmpty
                     $currentState.EditionUpgrade | Should -BeNullOrEmpty
-                    $currentState.Edition | Should -BeNullOrEmpty
+                    # Returns 0, that means no value was set by GetCurrentState() from the enum ReportServerEdition
+                    $currentState.Edition | Should -Be 0
                     $currentState.LogPath | Should -BeNullOrEmpty
                     $currentState.InstallFolder | Should -BeNullOrEmpty
                     $currentState.SuppressRestart | Should -BeFalse
@@ -200,6 +201,14 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
 }
 
 Describe 'SqlRSSetup\Test()' -Tag 'Test' {
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
+            $script:mockMethodGetCallCount = 0
+        }
+    }
+
     Context 'When the system is in the desired state' {
         Context 'When the parameter action is set to Install' {
             BeforeAll {
@@ -208,17 +217,13 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                         InstanceName = 'SSRS'
                         Edition      = 'Developer'
                         Action       = 'Install'
-                    } |
-                        # Mock method Compare() which is called by the base method Set()
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                            return $null
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-                            return
-                        } -PassThru
+                    }
+
+                    $script:mockSqlRSSetupInstance |
+                        # Mock method Get() which is called by the base method Test()
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
+                            $script:mockMethodGetCallCount += 1
+                        }
                 }
             }
 
@@ -227,6 +232,8 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                     Set-StrictMode -Version 1.0
 
                     $script:mockSqlRSSetupInstance.Test() | Should -BeTrue
+
+                    $script:mockMethodGetCallCount | Should -Be 1
                 }
             }
         }
@@ -238,27 +245,21 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                         InstanceName = 'SSRS'
                         Edition      = 'Developer'
                         Action       = 'Uninstall'
-                    } |
-                        # Mock method Compare() which is called by the base method Set()
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                            <#
-                                Compare() method shall only return the properties NOT in
-                                desired state, in the format of the command Compare-DscParameterState.
-                            #>
-                            return @(
-                                @{
-                                    Property      = 'InstanceName'
-                                    ExpectedValue = 'SSRS'
-                                    ActualValue   = $null
-                                }
-                            )
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-                            return
-                        } -PassThru
+                    }
+
+                    $script:mockSqlRSSetupInstance |
+                        # Mock method Get() which is called by the base method Test()
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
+                            $script:mockMethodGetCallCount += 1
+                        }
+
+                    $script:mockSqlRSSetupInstance.PropertiesNotInDesiredState = @(
+                        @{
+                            Property      = 'InstanceName'
+                            ExpectedValue = 'SSRS'
+                            ActualValue   = $null
+                        }
+                    )
                 }
             }
 
@@ -267,6 +268,8 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                     Set-StrictMode -Version 1.0
 
                     $script:mockSqlRSSetupInstance.Test() | Should -BeTrue
+
+                    $script:mockMethodGetCallCount | Should -Be 1
                 }
             }
         }
@@ -278,27 +281,21 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                         InstanceName = 'SSRS'
                         Edition      = 'Developer'
                         Action       = 'Repair'
-                    } |
-                        # Mock method Compare() which is called by the base method Set()
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                            <#
-                                Compare() method shall only return the properties NOT in
-                                desired state, in the format of the command Compare-DscParameterState.
-                            #>
-                            return @(
-                                @{
-                                    Property      = 'InstanceName'
-                                    ExpectedValue = 'SSRS'
-                                    ActualValue   = $null
-                                }
-                            )
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-                            return
-                        } -PassThru
+                    }
+
+                    $script:mockSqlRSSetupInstance |
+                        # Mock method Get() which is called by the base method Test()
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
+                            $script:mockMethodGetCallCount += 1
+                        }
+
+                    $script:mockSqlRSSetupInstance.PropertiesNotInDesiredState = @(
+                        @{
+                            Property      = 'InstanceName'
+                            ExpectedValue = 'SSRS'
+                            ActualValue   = $null
+                        }
+                    )
                 }
             }
 
@@ -307,6 +304,8 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                     Set-StrictMode -Version 1.0
 
                     $script:mockSqlRSSetupInstance.Test() | Should -BeTrue
+
+                    $script:mockMethodGetCallCount | Should -Be 1
                 }
             }
         }
@@ -320,17 +319,13 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                         Action         = 'Install'
                         VersionUpgrade = $true
                         MediaPath      = $TestDrive
-                    } |
-                        # Mock method Compare() which is called by the base method Set()
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                            return $null
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-                            return
-                        } -PassThru
+                    }
+
+                    $script:mockSqlRSSetupInstance |
+                        # Mock method Get() which is called by the base method Test()
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
+                            $script:mockMethodGetCallCount += 1
+                        }
                 }
 
                 Mock -CommandName Get-FileProductVersion -MockWith {
@@ -350,6 +345,8 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                     Set-StrictMode -Version 1.0
 
                     $script:mockSqlRSSetupInstance.Test() | Should -BeTrue
+
+                    $script:mockMethodGetCallCount | Should -Be 1
                 }
             }
         }
@@ -363,27 +360,21 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                         InstanceName = 'SSRS'
                         Edition      = 'Developer'
                         Action       = 'Install'
-                    } |
-                        # Mock method Compare() which is called by the base method Set()
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                            <#
-                                Compare() method shall only return the properties NOT in
-                                desired state, in the format of the command Compare-DscParameterState.
-                            #>
-                            return @(
-                                @{
-                                    Property      = 'InstanceName'
-                                    ExpectedValue = 'SSRS'
-                                    ActualValue   = $null
-                                }
-                            )
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-                            return
-                        } -PassThru
+                    }
+
+                    $script:mockSqlRSSetupInstance |
+                        # Mock method Get() which is called by the base method Test()
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
+                            $script:mockMethodGetCallCount += 1
+                        }
+
+                    $script:mockSqlRSSetupInstance.PropertiesNotInDesiredState = @(
+                        @{
+                            Property      = 'InstanceName'
+                            ExpectedValue = 'SSRS'
+                            ActualValue   = $null
+                        }
+                    )
                 }
             }
 
@@ -392,6 +383,8 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                     Set-StrictMode -Version 1.0
 
                     $script:mockSqlRSSetupInstance.Test() | Should -BeFalse
+
+                    $script:mockMethodGetCallCount | Should -Be 1
                 }
             }
         }
@@ -403,17 +396,13 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                         InstanceName = 'SSRS'
                         Edition      = 'Developer'
                         Action       = 'Uninstall'
-                    } |
-                        # Mock method Compare() which is called by the base method Set()
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                            return $null
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-                            return
-                        } -PassThru
+                    }
+
+                    $script:mockSqlRSSetupInstance |
+                        # Mock method Get() which is called by the base method Test()
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Test' -Value {
+                            $script:mockMethodGetCallCount += 1
+                        }
                 }
             }
 
@@ -422,6 +411,8 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                     Set-StrictMode -Version 1.0
 
                     $script:mockSqlRSSetupInstance.Test() | Should -BeFalse
+
+                    $script:mockMethodGetCallCount | Should -Be 1
                 }
             }
         }
@@ -433,17 +424,13 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                         InstanceName = 'SSRS'
                         Edition      = 'Developer'
                         Action       = 'Repair'
-                    } |
-                        # Mock method Compare() which is called by the base method Set()
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                            return $null
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-                            return
-                        } -PassThru
+                    }
+
+                    $script:mockSqlRSSetupInstance  |
+                        # Mock method Get() which is called by the base method Test()
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
+                            $script:mockMethodGetCallCount += 1
+                        }
                 }
             }
 
@@ -452,6 +439,8 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                     Set-StrictMode -Version 1.0
 
                     $script:mockSqlRSSetupInstance.Test() | Should -BeFalse
+
+                    $script:mockMethodGetCallCount | Should -Be 1
                 }
             }
         }
@@ -465,17 +454,13 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                         Action         = 'Install'
                         VersionUpgrade = $true
                         MediaPath      = $TestDrive
-                    } |
-                        # Mock method Compare() which is called by the base method Set()
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                            return $null
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-                            return
-                        } -PassThru
+                    }
+
+                    $script:mockSqlRSSetupInstance |
+                        # Mock method Get() which is called by the base method Test()
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
+                            $script:mockMethodGetCallCount += 1
+                        }
                 }
 
                 Mock -CommandName Get-FileProductVersion -MockWith {
@@ -495,6 +480,8 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                     Set-StrictMode -Version 1.0
 
                     $script:mockSqlRSSetupInstance.Test() | Should -BeFalse
+
+                    $script:mockMethodGetCallCount | Should -Be 1
                 }
             }
         }
@@ -521,6 +508,7 @@ Describe 'SqlRSSetup\Set()' -Tag 'Set' {
             Set-StrictMode -Version 1.0
 
             $script:mockMethodModifyCallCount = 0
+            $script:mockMethodTestCallCount = 0
         }
     }
 
@@ -528,16 +516,11 @@ Describe 'SqlRSSetup\Set()' -Tag 'Set' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 $script:mockSqlRSSetupInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return $null
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                        return
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-                        return
-                    } -PassThru
+                    # Mock method Test() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Test' -Value {
+                        $script:mockMethodTestCallCount += 1
+                        return $true
+                    }
             }
         }
 
@@ -548,6 +531,7 @@ Describe 'SqlRSSetup\Set()' -Tag 'Set' {
                 $script:mockSqlRSSetupInstance.Set()
 
                 $script:mockMethodModifyCallCount | Should -Be 0
+                $script:mockMethodTestCallCount | Should -Be 1
             }
         }
     }
@@ -556,17 +540,19 @@ Describe 'SqlRSSetup\Set()' -Tag 'Set' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 $script:mockSqlRSSetupInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return @{
-                            Property      = 'InstanceName'
-                            ExpectedValue = 'SSRS'
-                            ActualValue   = $null
-                        }
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                        return
-                    } -PassThru
+                    # Mock method Test() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Test' -Value {
+                        $script:mockMethodTestCallCount += 1
+                        return $false
+                    }
+
+                $script:mockSqlRSSetupInstance.PropertiesNotInDesiredState = @(
+                    @{
+                        Property      = 'InstanceName'
+                        ExpectedValue = 'SSRS'
+                        ActualValue   = $null
+                    }
+                )
             }
         }
 
@@ -577,6 +563,7 @@ Describe 'SqlRSSetup\Set()' -Tag 'Set' {
                 $script:mockSqlRSSetupInstance.Set()
 
                 $script:mockMethodModifyCallCount | Should -Be 1
+                $script:mockMethodTestCallCount | Should -Be 1
             }
         }
     }
@@ -607,6 +594,8 @@ Describe 'SqlRSSetup\GetCurrentState()' -Tag 'GetCurrentState' {
 
                 $currentState.InstanceName | Should -BeNullOrEmpty
             }
+
+            Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Times 1 -Scope It
         }
     }
 
@@ -621,8 +610,8 @@ Describe 'SqlRSSetup\GetCurrentState()' -Tag 'GetCurrentState' {
             Mock -CommandName Get-SqlDscRSSetupConfiguration -MockWith {
                 return @(
                     [PSCustomObject] @{
-                        InstanceName   = 'SSRS'
-                        InstallFolder  = 'C:\Program Files\SSRS'
+                        InstanceName  = 'SSRS'
+                        InstallFolder = 'C:\Program Files\SSRS'
                     }
                 )
             }
@@ -642,6 +631,8 @@ Describe 'SqlRSSetup\GetCurrentState()' -Tag 'GetCurrentState' {
                 $currentState.InstanceName | Should -Be 'SSRS'
                 $currentState.InstallFolder | Should -Be 'C:\Program Files\SSRS'
             }
+
+            Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Times 1 -Scope It
         }
     }
 }
@@ -674,9 +665,9 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                                 InstanceName = 'SSRS'
                             }
                         )
-
-                        Should -Invoke -CommandName 'Install-SqlDscReportingService' -Exactly -Times 1 -Scope It
                     }
+
+                    Should -Invoke -CommandName Install-SqlDscReportingService -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -707,10 +698,10 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                                 InstanceName = 'SSRS'
                             }
                         )
-
-                        Should -Invoke -CommandName 'Install-SqlDscReportingService' -Exactly -Times 1 -Scope It
-                        Should -Invoke -CommandName 'Set-DscMachineRebootRequired' -Exactly -Times 1 -Scope It
                     }
+
+                    Should -Invoke -CommandName Install-SqlDscReportingService -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Set-DscMachineRebootRequired -Exactly -Times 1 -Scope It
                 }
             }
         }
@@ -726,7 +717,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         }
                     }
 
-                    Mock -CommandName Install-SqlDscBIReportServer -MockWith {
+                    Mock -CommandName Install-SqlDscPowerBIReportServer -MockWith {
                         return 0
                     }
                 }
@@ -741,9 +732,9 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                                 InstanceName = 'PBIRS'
                             }
                         )
-
-                        Should -Invoke -CommandName 'Install-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
                     }
+
+                    Should -Invoke -CommandName Install-SqlDscPowerBIReportServer -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -757,7 +748,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         }
                     }
 
-                    Mock -CommandName Install-SqlDscBIReportServer -MockWith {
+                    Mock -CommandName Install-SqlDscPowerBIReportServer -MockWith {
                         return 3010
                     }
 
@@ -774,11 +765,10 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                                 InstanceName = 'PBIRS'
                             }
                         )
-
-                        Should -Invoke -CommandName 'Install-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
-
-                        Should -Invoke -CommandName 'Set-DscMachineRebootRequired' -Exactly -Times 1 -Scope It
                     }
+
+                    Should -Invoke -CommandName Install-SqlDscPowerBIReportServer -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Set-DscMachineRebootRequired -Exactly -Times 1 -Scope It
                 }
             }
         }
@@ -811,9 +801,9 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                                 InstanceName = 'SSRS'
                             }
                         )
-
-                        Should -Invoke -CommandName 'Uninstall-SqlDscReportingService' -Exactly -Times 1 -Scope It
                     }
+
+                    Should -Invoke -CommandName Uninstall-SqlDscReportingService -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -844,11 +834,10 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                                 InstanceName = 'SSRS'
                             }
                         )
-
-                        Should -Invoke -CommandName 'Uninstall-SqlDscReportingService' -Exactly -Times 1 -Scope It
-
-                        Should -Invoke -CommandName 'Set-DscMachineRebootRequired' -Exactly -Times 1 -Scope It
                     }
+
+                    Should -Invoke -CommandName Uninstall-SqlDscReportingService -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Set-DscMachineRebootRequired -Exactly -Times 1 -Scope It
                 }
             }
         }
@@ -864,7 +853,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         }
                     }
 
-                    Mock -CommandName Uninstall-SqlDscBIReportServer -MockWith {
+                    Mock -CommandName Uninstall-SqlDscPowerBIReportServer -MockWith {
                         return 0
                     }
                 }
@@ -879,9 +868,9 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                                 InstanceName = 'PBIRS'
                             }
                         )
-
-                        Should -Invoke -CommandName 'Uninstall-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
                     }
+
+                    Should -Invoke -CommandName Uninstall-SqlDscPowerBIReportServer -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -895,7 +884,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         }
                     }
 
-                    Mock -CommandName Uninstall-SqlDscBIReportServer -MockWith {
+                    Mock -CommandName Uninstall-SqlDscPowerBIReportServer -MockWith {
                         return 3010
                     }
 
@@ -912,11 +901,10 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                                 InstanceName = 'PBIRS'
                             }
                         )
-
-                        Should -Invoke -CommandName 'Uninstall-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
-
-                        Should -Invoke -CommandName 'Set-DscMachineRebootRequired' -Exactly -Times 1 -Scope It
                     }
+
+                    Should -Invoke -CommandName Uninstall-SqlDscPowerBIReportServer -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Set-DscMachineRebootRequired -Exactly -Times 1 -Scope It
                 }
             }
         }
@@ -949,9 +937,9 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                                 InstanceName = 'SSRS'
                             }
                         )
-
-                        Should -Invoke -CommandName 'Repair-SqlDscReportingService' -Exactly -Times 1 -Scope It
                     }
+
+                    Should -Invoke -CommandName Repair-SqlDscReportingService -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -982,11 +970,10 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                                 InstanceName = 'SSRS'
                             }
                         )
-
-                        Should -Invoke -CommandName 'Repair-SqlDscReportingService' -Exactly -Times 1 -Scope It
-
-                        Should -Invoke -CommandName 'Set-DscMachineRebootRequired' -Exactly -Times 1 -Scope It
                     }
+
+                    Should -Invoke -CommandName Repair-SqlDscReportingService -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Set-DscMachineRebootRequired -Exactly -Times 1 -Scope It
                 }
             }
         }
@@ -1002,7 +989,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         }
                     }
 
-                    Mock -CommandName Repair-SqlDscBIReportServer -MockWith {
+                    Mock -CommandName Repair-SqlDscPowerBIReportServer -MockWith {
                         return 0
                     }
                 }
@@ -1017,9 +1004,9 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                                 InstanceName = 'PBIRS'
                             }
                         )
-
-                        Should -Invoke -CommandName 'Repair-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
                     }
+
+                    Should -Invoke -CommandName Repair-SqlDscPowerBIReportServer -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -1033,7 +1020,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         }
                     }
 
-                    Mock -CommandName Repair-SqlDscBIReportServer -MockWith {
+                    Mock -CommandName Repair-SqlDscPowerBIReportServer -MockWith {
                         return 3010
                     }
 
@@ -1050,11 +1037,10 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                                 InstanceName = 'PBIRS'
                             }
                         )
-
-                        Should -Invoke -CommandName 'Repair-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
-
-                        Should -Invoke -CommandName 'Set-DscMachineRebootRequired' -Exactly -Times 1 -Scope It
                     }
+
+                    Should -Invoke -CommandName Repair-SqlDscPowerBIReportServer -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Set-DscMachineRebootRequired -Exactly -Times 1 -Scope It
                 }
             }
         }
@@ -1109,7 +1095,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                     Set-StrictMode -Version 1.0
 
                     $getInvalidArgumentRecordParameters = @{
-                        Message     = $script:mockSqlRSSetupInstance.localizedData.AcceptLicensingTerms_Required
+                        Message      = $script:mockSqlRSSetupInstance.localizedData.AcceptLicensingTerms_Required
                         ArgumentName = 'AcceptLicensingTerms'
                     }
 
@@ -1120,11 +1106,10 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                             @{
                                 InstanceName = 'SSRS'
                                 Action       = 'Install'
-
                                 MediaPath    = $TestDrive
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage.Exception.Message
                 }
             }
         }
@@ -1146,7 +1131,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                     Set-StrictMode -Version 1.0
 
                     $getInvalidArgumentRecordParameters = @{
-                        Message     = $script:mockSqlRSSetupInstance.localizedData.AcceptLicensingTerms_Required
+                        Message      = $script:mockSqlRSSetupInstance.localizedData.AcceptLicensingTerms_Required
                         ArgumentName = 'AcceptLicensingTerms'
                     }
 
@@ -1161,7 +1146,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                                 AcceptLicensingTerms = $false
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage.Exception.Message
                 }
             }
         }
@@ -1185,7 +1170,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                     Set-StrictMode -Version 1.0
 
                     $getInvalidArgumentRecordParameters = @{
-                        Message     = $script:mockSqlRSSetupInstance.localizedData.EditionOrProductKeyMissing
+                        Message      = $script:mockSqlRSSetupInstance.localizedData.EditionOrProductKeyMissing
                         ArgumentName = 'Edition, ProductKey'
                     }
 
@@ -1200,7 +1185,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                                 AcceptLicensingTerms = $true
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage.Exception.Message
                 }
             }
         }
@@ -1226,7 +1211,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                     Set-StrictMode -Version 1.0
 
                     $getInvalidArgumentRecordParameters = @{
-                        Message     = $script:mockSqlRSSetupInstance.localizedData.InstallFolder_ParentMissing -f ($TestDrive | Join-Path -ChildPath 'MissingParent')
+                        Message      = $script:mockSqlRSSetupInstance.localizedData.InstallFolder_ParentMissing -f ($TestDrive | Join-Path -ChildPath 'MissingParent')
                         ArgumentName = 'InstallFolder'
                     }
 
@@ -1243,7 +1228,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                                 InstallFolder        = $TestDrive | Join-Path -ChildPath 'MissingParent' | Join-Path -ChildPath 'SSRS'
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage.Exception.Message
                 }
             }
         }
@@ -1266,7 +1251,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                     Set-StrictMode -Version 1.0
 
                     $getInvalidArgumentRecordParameters = @{
-                        Message     = $script:mockSqlRSSetupInstance.localizedData.AcceptLicensingTerms_Required
+                        Message      = $script:mockSqlRSSetupInstance.localizedData.AcceptLicensingTerms_Required
                         ArgumentName = 'AcceptLicensingTerms'
                     }
 
@@ -1280,7 +1265,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                                 MediaPath    = $TestDrive
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage.Exception.Message
                 }
             }
         }
@@ -1302,7 +1287,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                     Set-StrictMode -Version 1.0
 
                     $getInvalidArgumentRecordParameters = @{
-                        Message     = $script:mockSqlRSSetupInstance.localizedData.AcceptLicensingTerms_Required
+                        Message      = $script:mockSqlRSSetupInstance.localizedData.AcceptLicensingTerms_Required
                         ArgumentName = 'AcceptLicensingTerms'
                     }
 
@@ -1317,7 +1302,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                                 AcceptLicensingTerms = $false
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage.Exception.Message
                 }
             }
         }
@@ -1342,7 +1327,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                     Set-StrictMode -Version 1.0
 
                     $getInvalidArgumentRecordParameters = @{
-                        Message     = $script:mockSqlRSSetupInstance.localizedData.EditionUpgrade_RequiresKeyOrEdition
+                        Message      = $script:mockSqlRSSetupInstance.localizedData.EditionUpgrade_RequiresKeyOrEdition
                         ArgumentName = 'EditionUpgrade'
                     }
 
@@ -1358,7 +1343,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                                 EditionUpgrade       = $true
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage.Exception.Message
                 }
             }
         }
@@ -1417,7 +1402,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                     Set-StrictMode -Version 1.0
 
                     $getInvalidArgumentRecordParameters = @{
-                        Message     = $script:mockSqlRSSetupInstance.localizedData.MediaPath_Invalid -f (Join-Path -Path $TestDrive -ChildPath 'InvalidFile.exe')
+                        Message      = $script:mockSqlRSSetupInstance.localizedData.MediaPath_Invalid -f (Join-Path -Path $TestDrive -ChildPath 'InvalidFile.exe')
                         ArgumentName = 'MediaPath'
                     }
 
@@ -1433,7 +1418,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                                 Edition              = 'Developer'
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage.Exception.Message
                 }
             }
         }
@@ -1459,7 +1444,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                     Set-StrictMode -Version 1.0
 
                     $getInvalidArgumentRecordParameters = @{
-                        Message     = $script:mockSqlRSSetupInstance.localizedData.MediaPath_DoesNotHaveRequiredExtension -f (Join-Path -Path $TestDrive -ChildPath 'InvalidFile.txt')
+                        Message      = $script:mockSqlRSSetupInstance.localizedData.MediaPath_DoesNotHaveRequiredExtension -f (Join-Path -Path $TestDrive -ChildPath 'InvalidFile.txt')
                         ArgumentName = 'MediaPath'
                     }
 
@@ -1475,7 +1460,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                                 Edition              = 'Developer'
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage.Exception.Message
                 }
             }
         }
@@ -1502,7 +1487,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                 Set-StrictMode -Version 1.0
 
                 $getInvalidArgumentRecordParameters = @{
-                    Message     = $script:mockSqlRSSetupInstance.localizedData.LogPath_ParentMissing -f (Join-Path -Path $TestDrive -ChildPath 'MissingParent')
+                    Message      = $script:mockSqlRSSetupInstance.localizedData.LogPath_ParentMissing -f (Join-Path -Path $TestDrive -ChildPath 'MissingParent')
                     ArgumentName = 'LogPath'
                 }
 
@@ -1519,7 +1504,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                             LogPath              = $TestDrive | Join-Path -ChildPath 'MissingParent' | Join-Path -ChildPath 'Logs'
                         }
                     )
-                } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+                } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage.Exception.Message
             }
         }
     }
@@ -1558,9 +1543,9 @@ Describe 'SqlRSSetup\NormalizeProperties()' -Tag 'NormalizeProperties' {
                         InstallFolder        = $TestDrive | Join-Path -ChildPath 'SSRS'
                     }
                 )
-
-                Should -Invoke -CommandName 'Format-Path' -Exactly -Times 3 -Scope It
             }
+
+            Should -Invoke -CommandName Format-Path -Exactly -Times 3 -Scope It
         }
     }
 
@@ -1592,9 +1577,9 @@ Describe 'SqlRSSetup\NormalizeProperties()' -Tag 'NormalizeProperties' {
                         LogPath              = $TestDrive | Join-Path -ChildPath 'Logs'
                     }
                 )
-
-                Should -Invoke -CommandName 'Format-Path' -Exactly -Times 1 -Scope It
             }
+
+            Should -Invoke -CommandName Format-Path -Exactly -Times 1 -Scope It
         }
     }
 }

@@ -39,10 +39,17 @@
 
         Imports the specified preferred module OtherSqlModule if it exist, otherwise
         it will try to import the module SQLPS.
+
+    .INPUTS
+        None.
+
+    .OUTPUTS
+        None.
 #>
 function Import-SqlDscPreferredModule
 {
     [CmdletBinding()]
+    [OutputType()]
     param
     (
         [Parameter()]
@@ -72,6 +79,10 @@ function Import-SqlDscPreferredModule
 
     $availableModule = $null
 
+    $originalErrorActionPreference = $ErrorActionPreference
+
+    $ErrorActionPreference = 'Stop'
+
     try
     {
         $availableModule = Get-SqlDscPreferredModule @getSqlDscPreferredModuleParameters -ErrorAction 'Stop'
@@ -86,6 +97,10 @@ function Import-SqlDscPreferredModule
                 'PreferredModule'
             )
         )
+    }
+    finally
+    {
+        $ErrorActionPreference = $originalErrorActionPreference
     }
 
     if ($Force.IsPresent -and -not $Confirm)
@@ -133,11 +148,17 @@ function Import-SqlDscPreferredModule
 
         Push-Location
 
+        $originalErrorActionPreference = $ErrorActionPreference
+
+        $ErrorActionPreference = 'Stop'
+
         <#
             SQLPS has unapproved verbs, disable checking to ignore Warnings.
             Suppressing verbose so all cmdlet is not listed.
         #>
         $importedModule = Import-Module -ModuleInfo $availableModule -DisableNameChecking -Verbose:$false -Force:$Force -Global -PassThru -ErrorAction 'Stop'
+
+        $ErrorActionPreference = $originalErrorActionPreference
 
         <#
             SQLPS returns two entries, one with module type 'Script' and another with module type 'Manifest'.

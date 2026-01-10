@@ -47,4 +47,3 @@ Configuration Example
         }
     }
 }
-

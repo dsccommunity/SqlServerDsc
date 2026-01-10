@@ -294,6 +294,10 @@
     .PARAMETER AllowUpgradeForSSRSSharePointMode
         See the notes section for more information.
 
+    .PARAMETER AllowDqRemoval
+        Specifies whether to allow removal of Data Quality (DQ) Services during
+        upgrade to SQL Server 2025 (17.x) and later versions.
+
     .PARAMETER NpEnabled
         See the notes section for more information.
 
@@ -372,6 +376,9 @@
     .LINK
         https://docs.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt
 
+    .INPUTS
+        None.
+
     .OUTPUTS
         None.
 
@@ -406,7 +413,7 @@
         Prepares the server for using the database engine for an instance named 'MyInstance'.
 
     .EXAMPLE
-        Invoke-SetupAction -CompleteImage -AcceptLicensingTerms -MediaPath 'E:\'
+        Invoke-SetupAction -CompleteImage -AcceptLicensingTerms -InstanceId 'MSSQLSERVER' -SqlSvcAccount 'NT Service\MSSQLSERVER' -AgtSvcAccount 'NT Service\MSSQLSERVER' -MediaPath 'E:\'
 
         Completes install on a server that was previously prepared (by using prepare image).
 
@@ -421,9 +428,9 @@
         Upgrades the instance 'MyInstance' with the SQL Server edition that is provided by the media path.
 
     .EXAMPLE
-        Invoke-SetupAction -Repair -InstanceName 'MyInstance' -Features 'SQLENGINE' -MediaPath 'E:\'
+        Invoke-SetupAction -Repair -InstanceName 'MyInstance' -MediaPath 'E:\'
 
-        Repairs the database engine of the instance 'MyInstance'.
+        Repairs all installed features of the instance 'MyInstance'.
 
     .EXAMPLE
         Invoke-SetupAction -RebuildDatabase -InstanceName 'MyInstance' -SqlSysAdminAccounts @('MyAdminAccount') -MediaPath 'E:\'
@@ -462,10 +469,18 @@
 
         For RebuildDatabase the parameter SAPwd must be set if the instance was
         installed with SecurityMode = 'SQL'.
+
+        SQL Server Repair action does not accept the FEATURES parameter. Although
+        Microsoft's documentation lists /FEATURES as required for the Repair action,
+        the actual SQL Server setup executable (tested with SQL Server 2017 and
+        SQL Server 2022) rejects this parameter with the error: "The setting
+        'FEATURES' is not allowed when the value of setting 'ACTION' is 'Repair'."
+        SQL Server automatically repairs all installed features during a repair
+        operation.
 #>
 function Invoke-SetupAction
 {
-    # cSpell: ignore PBDMS Admini AZUREEXTENSION BSTR
+    # cSpell: ignore PBDMS Admini AZUREEXTENSION BSTR QUIETSIMPLE
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType()]
     param
@@ -626,7 +641,6 @@ function Invoke-SetupAction
 
         [Parameter(ParameterSetName = 'Install', Mandatory = $true)]
         [Parameter(ParameterSetName = 'PrepareImage', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'Repair', Mandatory = $true)]
         [Parameter(ParameterSetName = 'Uninstall', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster', Mandatory = $true)]
@@ -687,6 +701,7 @@ function Invoke-SetupAction
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
+        [Parameter(ParameterSetName = 'PrepareImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [System.String]
@@ -703,7 +718,7 @@ function Invoke-SetupAction
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'PrepareImage', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'PrepareImage')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'Upgrade')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
@@ -1199,6 +1214,10 @@ function Invoke-SetupAction
         [System.Management.Automation.SwitchParameter]
         $AllowUpgradeForSSRSSharePointMode,
 
+        [Parameter(ParameterSetName = 'Upgrade')]
+        [System.Management.Automation.SwitchParameter]
+        $AllowDqRemoval,
+
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
@@ -1372,6 +1391,10 @@ function Invoke-SetupAction
         $Force
     )
 
+    $originalErrorActionPreference = $ErrorActionPreference
+
+    $ErrorActionPreference = 'Stop'
+
     if ($Force.IsPresent -and -not $Confirm)
     {
         $ConfirmPreference = 'None'
@@ -1411,7 +1434,29 @@ function Invoke-SetupAction
 
     Assert-SetupActionProperties -Property $PSBoundParameters -SetupAction $setupAction -ErrorAction 'Stop'
 
-    $setupArgument = '/QUIET /ACTION={0}' -f $setupAction
+    $ErrorActionPreference = $originalErrorActionPreference
+
+    $quietSimpleSetupActions = @(
+        'Install'
+        'PrepareImage'
+        'CompleteImage'
+        'InstallFailoverCluster'
+        'PrepareFailoverCluster'
+        'CompleteFailoverCluster'
+        'AddNode'
+        'RemoveNode'
+    )
+
+    if ($VerbosePreference -eq 'Continue' -and $setupAction -in $quietSimpleSetupActions)
+    {
+        $quietMode = '/QUIETSIMPLE'
+    }
+    else
+    {
+        $quietMode = '/QUIET'
+    }
+
+    $setupArgument = '{0} /ACTION={1}' -f $quietMode, $setupAction
 
     if ($DebugPreference -in @('Continue', 'Inquire'))
     {
@@ -1517,12 +1562,9 @@ function Invoke-SetupAction
             # Must be handled differently because the parameter name could not be $PID.
             'PRODUCTKEY' # cspell: disable-line
             {
-                # Remove the argument that was added above.
-                $setupArgument = $setupArgument -replace ' \/{0}' -f $parameterName
-
                 $sensitiveValue += $PSBoundParameters.$parameterName
 
-                $setupArgument += ' /PID="{0}"' -f $PSBoundParameters.$parameterName
+                $setupArgument = $setupArgument -replace $parameterName, ('PID="{0}"' -f $PSBoundParameters.$parameterName)
 
                 break
             }
@@ -1530,10 +1572,15 @@ function Invoke-SetupAction
             # Must be handled differently because the argument name shall have an underscore in the argument.
             'SQLINSTJAVA' # cspell: disable-line
             {
-                # Remove the argument that was added above.
-                $setupArgument = $setupArgument -replace ' \/{0}' -f $parameterName
+                $setupArgument = $setupArgument -replace $parameterName, 'SQL_INST_JAVA'
 
-                $setupArgument += ' /SQL_INST_JAVA'
+                break
+            }
+
+            # Must be handled differently because parameter name does not match the argument name.
+            'ALLOWDQREMOVAL' # cspell: disable-line
+            {
+                $setupArgument = $setupArgument -replace $parameterName, 'IACCEPTDQUNINSTALL' # cspell: disable-line
 
                 break
             }

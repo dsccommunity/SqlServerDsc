@@ -70,9 +70,13 @@
         https://learn.microsoft.com/en-us/power-bi/report-server/install-report-server
         https://learn.microsoft.com/en-us/sql/reporting-services/install-windows/install-reporting-services
 
+    .INPUTS
+        None.
+
     .OUTPUTS
-        When PassThru is specified the function will return the setup process exit
-        code as System.Int32. Otherwise, the function does not generate any output.
+        `System.Int32`
+
+        When PassThru is specified, returns the setup process exit code. Otherwise, no output is generated.
 
     .EXAMPLE
         Invoke-ReportServerSetupAction -Install -AcceptLicensingTerms -MediaPath 'E:\SQLServerReportingServices.exe'
@@ -196,12 +200,22 @@ function Invoke-ReportServerSetupAction
         $PassThru
     )
 
+    $previousErrorActionPreference = $ErrorActionPreference
+
+    $ErrorActionPreference = 'Stop'
+
     if ($Force.IsPresent -and -not $Confirm)
     {
         $ConfirmPreference = 'None'
     }
 
+    $originalErrorActionPreference = $ErrorActionPreference
+
+    $ErrorActionPreference = 'Stop'
+
     Assert-ElevatedUser -ErrorAction 'Stop'
+
+    $ErrorActionPreference = $originalErrorActionPreference
 
     $assertBoundParameters = @{
         BoundParameterList     = $PSBoundParameters
@@ -225,6 +239,28 @@ function Invoke-ReportServerSetupAction
     }
 
     Assert-BoundParameter @assertBoundParameters
+
+    $ErrorActionPreference = $previousErrorActionPreference
+
+    # Normalize paths: expand environment variables, ensure drive letter root, and remove trailing separators.
+    $formatPathParameters = @{
+        EnsureDriveLetterRoot        = $true
+        NoTrailingDirectorySeparator = $true
+        ExpandEnvironmentVariable    = $true
+        ErrorAction                  = 'Stop'
+    }
+
+    $MediaPath = Format-Path @formatPathParameters -Path $MediaPath
+
+    if ($PSBoundParameters.ContainsKey('LogPath'))
+    {
+        $LogPath = Format-Path @formatPathParameters -Path $LogPath
+    }
+
+    if ($PSBoundParameters.ContainsKey('InstallFolder'))
+    {
+        $InstallFolder = Format-Path @formatPathParameters -Path $InstallFolder
+    }
 
     # Sensitive values.
     $sensitiveValue = @()
@@ -302,10 +338,8 @@ function Invoke-ReportServerSetupAction
 
     if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
     {
-        $expandedMediaPath = [System.Environment]::ExpandEnvironmentVariables($MediaPath)
-
         $startProcessParameters = @{
-            FilePath     = $expandedMediaPath
+            FilePath     = $MediaPath
             ArgumentList = $setupArgument
             Timeout      = $Timeout
         }

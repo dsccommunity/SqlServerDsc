@@ -5,4 +5,6 @@ ConvertFrom-StringData @'
     ReportingServicesNotFound = SQL Reporting Services instance '{0}' does not exist.
     GetConfiguration = Get the current reporting services configuration for the instance '{0}'.
     RestartToFinishInitialization = Restarting Reporting Services to finish initialization.
+    WaitingForServiceReady = Waiting {0} seconds for Reporting Services to be fully ready after restart. (DSC_SQLRS0001)
+    ServiceNameIsNullOrEmpty = The Configuration.ServiceName property is null or empty for SQL Server Reporting Services instance '{0}'. This property is required to determine the service name for SQL Server version 14 and higher. (DSC_SQLRS0002)
 '@

@@ -6,20 +6,20 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 
     <#
@@ -34,12 +34,12 @@ BeforeAll {
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\..\TestHelpers\CommonTestHelper.psm1')
 
     # Need to define the variables here which will be used in Pester Run.
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
     $script:dscResourceFriendlyName = 'SqlRS'
     $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 
     $script:testEnvironment = Initialize-TestEnvironment `
-        -DSCModuleName $script:dscModuleName `
+        -DSCModuleName $script:moduleName `
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
         -TestType 'Integration'
@@ -96,26 +96,24 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                         = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData                  = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath                         = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData                  = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
     }
 
@@ -131,32 +129,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                         = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData                  = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath                         = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData                  = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -168,8 +162,8 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
             $resourceCurrentState.DatabaseServerName | Should -Be $ConfigurationData.AllNodes.DatabaseServerName
             $resourceCurrentState.DatabaseInstanceName | Should -Be $ConfigurationData.AllNodes.DatabaseInstanceName
-            $resourceCurrentState.IsInitialized | Should -Be $true
-            $resourceCurrentState.UseSsl | Should -Be $false
+            $resourceCurrentState.IsInitialized | Should -BeTrue
+            $resourceCurrentState.UseSsl | Should -BeFalse
             $resourceCurrentState.ReportServerReservedUrl | Should -Contain 'http://+:80'
         }
 
@@ -178,12 +172,9 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should be able to access the ReportServer site without any error' {
-            # Wait for 1 minute for the ReportServer to be ready.
-            Start-Sleep -Seconds 30
-
             if ($script:sqlVersion -in @('140', '150', '160'))
             {
-                # SSRS 2017 and 2019 do not support multiple instances
+                # SSRS 2017 and later do not support multiple instances
                 $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
             }
             else
@@ -191,29 +182,16 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
             }
 
-            try
-            {
-                $webRequestReportServer = Invoke-WebRequest -Uri $reportServerUri -UseDefaultCredentials
-                # if the request finishes successfully this should return status code 200.
-                $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
-            }
-            catch
-            {
-                <#
-                    If the request generated an exception i.e. "HTTP Error 503. The service is unavailable."
-                    we can pull the status code from the Exception.Response property.
-                #>
-                $webRequestResponse = $_.Exception.Response
-                $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
-            }
+            $result = Test-SqlDscRSAccessible -ReportServerUri $reportServerUri -Detailed -ErrorAction 'Stop'
 
-            $webRequestStatusCode | Should -BeExactly 200
+            $result.Accessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
+            $result.StatusCode | Should -Be 200
         }
 
         It 'Should be able to access the Reports site without any error' {
             if ($script:sqlVersion -in @('140', '150', '160'))
             {
-                # SSRS 2017 and 2019 do not support multiple instances
+                # SSRS 2017 and later do not support multiple instances
                 $reportsUri = 'http://{0}/Reports' -f $env:COMPUTERNAME
             }
             else
@@ -221,23 +199,10 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 $reportsUri = 'http://{0}/Reports_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
             }
 
-            try
-            {
-                $webRequestReportServer = Invoke-WebRequest -Uri $reportsUri -UseDefaultCredentials
-                # if the request finishes successfully this should return status code 200.
-                $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
-            }
-            catch
-            {
-                <#
-                    If the request generated an exception i.e. "HTTP Error 503. The service is unavailable."
-                    we can pull the status code from the Exception.Response property.
-                #>
-                $webRequestResponse = $_.Exception.Response
-                $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
-            }
+            $result = Test-SqlDscRSAccessible -ReportsUri $reportsUri -Detailed -ErrorAction 'Stop'
 
-            $webRequestStatusCode | Should -BeExactly 200
+            $result.Accessible | Should -BeTrue -Because 'the Reports web portal should be accessible'
+            $result.StatusCode | Should -Be 200
         }
     }
 
@@ -253,26 +218,24 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath        = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath        = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
     }
 }

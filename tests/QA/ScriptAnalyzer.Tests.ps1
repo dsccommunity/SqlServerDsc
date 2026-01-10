@@ -10,7 +10,7 @@
         repository DscResource.Test is resolved this should not be needed. See issue
         https://github.com/dsccommunity/DscResource.Test/issues/100.
 #>
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
 BeforeDiscovery {
@@ -18,20 +18,20 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 
     <#
@@ -39,16 +39,35 @@ BeforeDiscovery {
         (from Indented.ScriptAnalyzerRules) can properly parse parameters that uses SMO types,
         e.g. [Microsoft.SqlServer.Management.Smo.Server].
     #>
-    Add-Type -Path "$PSScriptRoot/../Unit/Stubs/SMO.cs"
+    if ($IsLinux -or $IsMacOS)
+    {
+        # .NET Core requires different assemblies than .NET Framework
+        $referencedAssemblies = @(
+            'System.Collections'
+            'System.Collections.Specialized'
+            'System.ComponentModel.TypeConverter'
+            'System.Data.Common'
+            'System.Linq'
+            'System.Net.Primitives'
+            'netstandard'
+        )
+    }
+    else
+    {
+        $referencedAssemblies = @(
+            'System.Data'
+            'System.Xml'
+        )
+    }
+
+    Add-Type -Path "$PSScriptRoot/../Unit/Stubs/SMO.cs" -ReferencedAssemblies $referencedAssemblies
 
     $repositoryPath = Resolve-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../..')
     $sourcePath = Join-Path -Path $repositoryPath -ChildPath 'source'
 
     $moduleFiles = Get-ChildItem -Path $sourcePath -Recurse -Include @('*.psm1', '*.ps1')
 
-    $testCases = @()
-
-    foreach ($moduleFile in $moduleFiles)
+    $testCases = foreach ($moduleFile in $moduleFiles)
     {
         # Skipping Examples on Linux and macOS as they cannot be parsed.
         if (($IsLinux -or $IsMacOs) -and $moduleFile.FullName -match 'Examples')
@@ -70,8 +89,8 @@ BeforeDiscovery {
         $escapedRepositoryPath = [System.Text.RegularExpressions.RegEx]::Escape($repositoryPathNormalized)
         $relativePath = $moduleFilePathNormalized -replace ($escapedRepositoryPath + '/')
 
-        $testCases += @{
-            ScriptPath = $moduleFile.FullName
+        @{
+            ScriptPath   = $moduleFile.FullName
             RelativePath = $relativePath
         }
     }
@@ -82,24 +101,21 @@ Describe 'Script Analyzer Rules' {
         BeforeAll {
             $repositoryPath = Resolve-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../..')
             $scriptAnalyzerSettingsPath = Join-Path -Path $repositoryPath -ChildPath '.vscode/analyzersettings.psd1'
-        }
-
-        It 'Should pass all PS Script Analyzer rules for file ''<RelativePath>''' -ForEach $testCases {
-            $pssaError = Invoke-ScriptAnalyzer -Path $ScriptPath -Settings $scriptAnalyzerSettingsPath
 
             $parseErrorTypes = @(
                 'TypeNotFound'
                 'RequiresModuleInvalid'
             )
+        }
 
+        It 'Should pass all PS Script Analyzer rules for file ''<RelativePath>''' -ForEach $testCases {
             # Filter out reported parse errors that is unable to be resolved in source files
-            $pssaError = $pssaError |
+            $pssaError = Invoke-ScriptAnalyzer -Path $ScriptPath -Settings $scriptAnalyzerSettingsPath |
                 Where-Object -FilterScript {
                     $_.RuleName -notin $parseErrorTypes
                 }
 
-            $report = $pssaError |
-                Format-Table -AutoSize | Out-String -Width 200
+            $report = $pssaError | Format-Table -AutoSize | Out-String -Width 200
 
             $pssaError | Should -HaveCount 0 -Because "all script analyzer rules should pass.`r`n`r`n $report`r`n"
         }

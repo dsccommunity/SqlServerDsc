@@ -1,4 +1,4 @@
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
 BeforeDiscovery {
@@ -6,33 +6,35 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
     $env:SqlServerDscCI = $true
 
-    Import-Module -Name $script:dscModuleName
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
@@ -40,13 +42,18 @@ AfterAll {
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
 
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
-
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
 Describe 'Assert-SetupActionProperties' -Tag 'Private' {
+    BeforeAll {
+        Mock -CommandName Get-FileVersion -MockWith {
+            return [PSCustomObject] @{
+                ProductVersion = '16.0.1000.6'
+            }
+        }
+    }
+
     Context 'When all properties are valid for setup action ''<MockSetupAction>''' -ForEach @(
         @{
             MockSetupAction = 'Install'
@@ -99,11 +106,10 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
     ) {
         It 'Should not throw an exception' {
             InModuleScope -Parameters $_ -ScriptBlock {
-                {
-                    Assert-SetupActionProperties -Property @{
-                        ValidProperty = 'Value'
-                    } -SetupAction $MockSetupAction
-                } | Should -Not -Throw
+                $null = Assert-SetupActionProperties -Property @{
+                    MediaPath     = $TestDrive
+                    ValidProperty = 'Value'
+                } -SetupAction $MockSetupAction -ErrorAction 'Stop'
             }
         }
     }
@@ -120,6 +126,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 {
                     Assert-SetupActionProperties -Property @{
+                        MediaPath          = $TestDrive
                         $MockParameterName = 'Value'
                     } -SetupAction 'NotUsed'
                 } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
@@ -164,6 +171,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
         It 'Should throw the correct error' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 {
+                    $MockParameters.MediaPath = $TestDrive
                     $MockParameters.Role = 'SPI_AS_NewFarm'
 
                     Assert-SetupActionProperties -Property $MockParameters -SetupAction 'NotUsed'
@@ -177,6 +185,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             InModuleScope -ScriptBlock {
                 {
                     Assert-SetupActionProperties -Property @{
+                        MediaPath    = $TestDrive
                         SecurityMode = 'SQL'
                     } -SetupAction 'NotUsed'
                 } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
@@ -189,11 +198,10 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             InModuleScope -Parameters @{
                 MockFileStreamLevel = $_
             } -ScriptBlock {
-                {
-                    Assert-SetupActionProperties -Property @{
-                        FileStreamLevel = $MockFileStreamLevel
-                    } -SetupAction 'NotUsed'
-                } | Should -Not -Throw
+                $null = Assert-SetupActionProperties -Property @{
+                    MediaPath       = $TestDrive
+                    FileStreamLevel = $MockFileStreamLevel
+                } -SetupAction 'NotUsed' -ErrorAction 'Stop'
             }
         }
     }
@@ -205,6 +213,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             } -ScriptBlock {
                 {
                     Assert-SetupActionProperties -Property @{
+                        MediaPath       = $TestDrive
                         FileStreamLevel = $MockFileStreamLevel
                     } -SetupAction 'NotUsed'
                 } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
@@ -242,6 +251,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 {
                     Assert-SetupActionProperties -Property @{
+                        MediaPath          = $TestDrive
                         $MockParameterName = 'AccountName'
                     } -SetupAction 'NotUsed'
                 } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
@@ -277,12 +287,11 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
      ) {
         It 'Should not throw an exception' {
             InModuleScope -Parameters $_ -ScriptBlock {
-                {
-                    Assert-SetupActionProperties -Property @{
-                        $MockParameterName = 'AccountName'
-                        ($MockParameterName -replace 'Account', 'Password') = 'Password'
-                    } -SetupAction 'NotUsed'
-                } | Should -Not -Throw
+                $null = Assert-SetupActionProperties -Property @{
+                    MediaPath                                          = $TestDrive
+                    $MockParameterName                                 = 'AccountName'
+                    ($MockParameterName -replace 'Account', 'Password') = 'Password'
+                } -SetupAction 'NotUsed' -ErrorAction 'Stop'
             }
         }
     }
@@ -321,11 +330,10 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
 
         It 'Should not throw an exception' {
             InModuleScope -Parameters $_ -ScriptBlock {
-                {
-                    Assert-SetupActionProperties -Property @{
-                        $MockParameterName = 'myMSA$'
-                    } -SetupAction 'NotUsed'
-                } | Should -Not -Throw
+                $null = Assert-SetupActionProperties -Property @{
+                    MediaPath          = $TestDrive
+                    $MockParameterName = 'myMSA$'
+                } -SetupAction 'NotUsed' -ErrorAction 'Stop'
             }
         }
     }
@@ -396,9 +404,9 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             Mock -CommandName Assert-Feature
 
             # Required mock for mocking Assert-Feature above.
-            Mock -CommandName Get-FileVersionInformation -MockWith {
-                return @{
-                    ProductVersion = 16
+            Mock -CommandName Get-FileVersion -MockWith {
+                return [PSCustomObject] @{
+                    ProductVersion = '16.0.1000.6'
                 }
             }
         }
@@ -423,6 +431,21 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
         @{
             MockSetupAction = 'CompleteImage'
             MockMissingParameterName = 'AgtSvcAccount'
+            MockFeature = 'SQLENGINE'
+        }
+        @{
+            MockSetupAction = 'CompleteImage'
+            MockMissingParameterName = 'InstanceId'
+            MockFeature = 'SQLENGINE'
+        }
+        @{
+            MockSetupAction = 'CompleteImage'
+            MockMissingParameterName = 'SqlSvcAccount'
+            MockFeature = 'SQLENGINE'
+        }
+        @{
+            MockSetupAction = 'PrepareImage'
+            MockMissingParameterName = 'InstanceId'
             MockFeature = 'SQLENGINE'
         }
         @{
@@ -515,9 +538,9 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             Mock -CommandName Assert-Feature
 
             # Required mock for mocking Assert-Feature above.
-            Mock -CommandName Get-FileVersionInformation -MockWith {
-                return @{
-                    ProductVersion = 16
+            Mock -CommandName Get-FileVersion -MockWith {
+                return [PSCustomObject] @{
+                    ProductVersion = '16.0.1000.6'
                 }
             }
         }
@@ -546,6 +569,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 {
                     Assert-SetupActionProperties -Property @{
+                        MediaPath    = $TestDrive
                         ASServerMode = 'PowerPivot'
                     } -SetupAction $MockSetupAction
                 } | Should -Throw -ErrorId 'ASAP0001,Assert-SetupActionProperties' # cSpell: disable-line
@@ -562,9 +586,50 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 {
                     Assert-SetupActionProperties -Property @{
+                        MediaPath     = $TestDrive
                         RsInstallMode = 'DefaultNativeMode'
                     } -SetupAction $MockSetupAction
                 } | Should -Throw -ErrorId 'ASAP0002,Assert-SetupActionProperties' # cSpell: disable-line
+            }
+        }
+    }
+
+    Context 'When specifying AllowDqRemoval with SQL Server version older than 2025 (17.x)' {
+        BeforeAll {
+            Mock -CommandName Get-FileVersion -MockWith {
+                return [PSCustomObject] @{
+                    ProductVersion = '16.0.1000.6'
+                }
+            }
+        }
+
+        It 'Should throw an exception' {
+            InModuleScope -ScriptBlock {
+                {
+                    Assert-SetupActionProperties -Property @{
+                        MediaPath = $TestDrive
+                        AllowDqRemoval = $true
+                    } -SetupAction 'Upgrade'
+                } | Should -Throw -ErrorId 'ASAP0003,Assert-SetupActionProperties' # cSpell: disable-line
+            }
+        }
+    }
+
+    Context 'When specifying AllowDqRemoval with SQL Server 2025 (17.x)' {
+        BeforeAll {
+            Mock -CommandName Get-FileVersion -MockWith {
+                return [PSCustomObject] @{
+                    ProductVersion = '17.0.1000.6'
+                }
+            }
+        }
+
+        It 'Should not throw an exception' {
+            InModuleScope -ScriptBlock {
+                $null = Assert-SetupActionProperties -Property @{
+                    MediaPath      = $TestDrive
+                    AllowDqRemoval = $true
+                } -SetupAction 'Upgrade' -ErrorAction 'Stop'
             }
         }
     }

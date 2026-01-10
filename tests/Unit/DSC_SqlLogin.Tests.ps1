@@ -4,7 +4,7 @@
 #>
 
 # Suppressing this rule because Script Analyzer does not understand Pester's syntax.
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 # Suppressing this rule because tests are mocking passwords in clear text.
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param ()
@@ -14,31 +14,31 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
     $script:dscResourceName = 'DSC_SqlLogin'
 
     $env:SqlServerDscCI = $true
 
     $script:testEnvironment = Initialize-TestEnvironment `
-        -DSCModuleName $script:dscModuleName `
+        -DSCModuleName $script:moduleName `
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
         -TestType 'Unit'
@@ -705,7 +705,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.Name = $MockLoginName
                         $mockSetTargetResourceParameters.LoginType = $MockLoginType
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -746,7 +746,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.LoginType = 'WindowsUser'
                         $mockSetTargetResourceParameters.DefaultDatabase = 'NewDatabase'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -800,7 +800,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.LoginType = 'WindowsUser'
                         $mockSetTargetResourceParameters.Disabled = $true
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                         $script:mockMethodDisableWasRun | Should -Be 1
                     }
@@ -839,7 +839,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.LoginMustChangePassword = $true
                         $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -887,7 +887,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.LoginMustChangePassword = $false
                         $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -931,7 +931,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.DefaultDatabase = 'NewDatabase'
                         $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -988,7 +988,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.Disabled = $true
                         $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                         $script:mockMethodDisableWasRun | Should -Be 1
                     }
@@ -1136,7 +1136,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.Ensure = 'Absent'
                         $mockSetTargetResourceParameters.Name = 'SqlLogin1'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -1195,7 +1195,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.LoginType = 'WindowsUser'
                         $mockSetTargetResourceParameters.Disabled = $MockPropertyValue
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                         if ($MockPropertyValue)
                         {
@@ -1245,7 +1245,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.LoginType = 'WindowsUser'
                         $mockSetTargetResourceParameters.$MockPropertyName = $MockPropertyValue
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -1305,7 +1305,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
                         $mockSetTargetResourceParameters.$MockPropertyName = $MockPropertyValue
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                     }
 
@@ -1363,7 +1363,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
                         $mockSetTargetResourceParameters.Disabled = $MockPropertyValue
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                         if ($MockPropertyValue)
                         {
@@ -1414,7 +1414,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
                         $mockSetTargetResourceParameters.$MockPropertyName = $MockPropertyValue
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -1489,7 +1489,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
                         $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
 
                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -1520,7 +1520,7 @@ Describe 'SqlLogin\Update-SQLServerLogin' {
 
                 $mockLogin.LoginType = 'WindowsUser'
 
-                { Update-SQLServerLogin -Login $mockLogin } | Should -Not -Throw
+                $null = Update-SQLServerLogin -Login $mockLogin -ErrorAction 'Stop'
 
                 $script:mockMethodAlterWasRun | Should -Be 1
             }
@@ -1569,7 +1569,7 @@ Describe 'SqlLogin\New-SQLServerLogin' {
 
                 $mockLogin.LoginType = 'WindowsUser'
 
-                { New-SQLServerLogin -Login $mockLogin } | Should -Not -Throw
+                $null = New-SQLServerLogin -Login $mockLogin -ErrorAction 'Stop'
 
                 $script:mockMethodCreateWasRun | Should -Be 1
             }
@@ -1593,7 +1593,7 @@ Describe 'SqlLogin\New-SQLServerLogin' {
                     LoginCreateOptions = 'None'
                 }
 
-                { New-SQLServerLogin @createLoginParameters } | Should -Not -Throw
+                $null = New-SQLServerLogin @createLoginParameters -ErrorAction 'Stop'
 
                 $script:mockMethodCreateWasRun | Should -Be 1
             }
@@ -1722,7 +1722,7 @@ Describe 'SqlLogin\Remove-SQLServerLogin' {
 
                 $mockLogin.LoginType = 'WindowsUser'
 
-                { Remove-SQLServerLogin -Login $mockLogin } | Should -Not -Throw
+                $null = Remove-SQLServerLogin -Login $mockLogin -ErrorAction 'Stop'
 
                 $script:mockMethodDropWasRun | Should -Be 1
             }
@@ -1775,7 +1775,7 @@ Describe 'SqlLogin\Set-SQLServerLoginPassword' {
                     SecureString = ConvertTo-SecureString -String 'P@ssw0rd-12P@ssw0rd-12' -AsPlainText -Force
                 }
 
-                { Set-SQLServerLoginPassword @setPasswordParameters } | Should -Not -Throw
+                $null = Set-SQLServerLoginPassword @setPasswordParameters -ErrorAction 'Stop'
 
                 $mockMethodChangePasswordWasRun | Should -Be 1
             }
@@ -1842,9 +1842,3 @@ Describe 'SqlLogin\Set-SQLServerLoginPassword' {
         }
     }
 }
-
-# }
-# finally
-# {
-#     Invoke-TestCleanup
-# }

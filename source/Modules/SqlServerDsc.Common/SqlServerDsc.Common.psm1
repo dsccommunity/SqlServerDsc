@@ -32,7 +32,7 @@ function Copy-ItemWithRobocopy
 
     $quotedPath = '"{0}"' -f $Path
     $quotedDestinationPath = '"{0}"' -f $DestinationPath
-    $robocopyExecutable = Get-Command -Name 'Robocopy.exe' -ErrorAction Stop
+    $robocopyExecutable = Get-Command -Name 'Robocopy.exe' -ErrorAction 'Stop'
 
     $robocopyArgumentSilent = '/njh /njs /ndl /nc /ns /nfl'
     $robocopyArgumentCopySubDirectoriesIncludingEmpty = '/e'
@@ -284,11 +284,11 @@ function Start-SqlSetupProcess
         ArgumentList = $ArgumentList
     }
 
-    $sqlSetupProcess = Start-Process @startProcessParameters -PassThru -NoNewWindow -ErrorAction Stop
+    $sqlSetupProcess = Start-Process @startProcessParameters -PassThru -NoNewWindow -ErrorAction 'Stop'
 
     Write-Verbose -Message ($script:localizedData.StartSetupProcess -f $sqlSetupProcess.Id, $startProcessParameters.FilePath, $Timeout) -Verbose
 
-    Wait-Process -InputObject $sqlSetupProcess -Timeout $Timeout -ErrorAction Stop
+    Wait-Process -InputObject $sqlSetupProcess -Timeout $Timeout -ErrorAction 'Stop'
 
     return $sqlSetupProcess.ExitCode
 }
@@ -369,6 +369,15 @@ function Connect-SQL
         $LoginType = 'WindowsUser',
 
         [Parameter()]
+        [ValidateSet('tcp', 'np', 'lpc')]
+        [System.String]
+        $Protocol,
+
+        [Parameter()]
+        [System.UInt16]
+        $Port,
+
+        [Parameter()]
         [ValidateNotNull()]
         [System.Int32]
         $StatementTimeout = 600,
@@ -380,6 +389,18 @@ function Connect-SQL
 
     Import-SqlDscPreferredModule
 
+    <#
+        Build the connection string in the format: [protocol:]hostname[\instance][,port]
+        Examples:
+        - ServerName (default instance, no protocol/port)
+        - ServerName\Instance (named instance)
+        - tcp:ServerName (default instance with protocol)
+        - tcp:ServerName\Instance (named instance with protocol)
+        - ServerName,1433 (default instance with port)
+        - ServerName\Instance,50200 (named instance with port)
+        - tcp:ServerName,1433 (default instance with protocol and port)
+        - tcp:ServerName\Instance,50200 (named instance with protocol and port)
+    #>
     if ($InstanceName -eq 'MSSQLSERVER')
     {
         $databaseEngineInstance = $ServerName
@@ -387,6 +408,18 @@ function Connect-SQL
     else
     {
         $databaseEngineInstance = '{0}\{1}' -f $ServerName, $InstanceName
+    }
+
+    # Append port if specified
+    if ($PSBoundParameters.ContainsKey('Port'))
+    {
+        $databaseEngineInstance = '{0},{1}' -f $databaseEngineInstance, $Port
+    }
+
+    # Prepend protocol if specified
+    if ($PSBoundParameters.ContainsKey('Protocol'))
+    {
+        $databaseEngineInstance = '{0}:{1}' -f $Protocol, $databaseEngineInstance
     }
 
     $sqlServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
@@ -1092,88 +1125,6 @@ function Restart-SqlClusterService
     else
     {
         Write-Warning -Message ($script:localizedData.ClusterResourceNotFoundOrOffline -f $InstanceName)
-    }
-}
-
-<#
-    .SYNOPSIS
-        Restarts a Reporting Services instance and associated services
-
-    .PARAMETER InstanceName
-        Name of the instance to be restarted. Default is 'MSSQLSERVER'
-        (the default instance).
-
-    .PARAMETER WaitTime
-        Number of seconds to wait between service stop and service start.
-        Default value is 0 seconds.
-#>
-function Restart-ReportingServicesService
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $InstanceName = 'MSSQLSERVER',
-
-        [Parameter()]
-        [System.UInt16]
-        $WaitTime = 0
-    )
-
-    if ($InstanceName -eq 'SSRS')
-    {
-        # Check if we're dealing with SSRS 2017 or SQL2019
-        $ServiceName = 'SQLServerReportingServices'
-
-        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
-        $reportingServicesService = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
-    }
-
-    if ($null -eq $reportingServicesService)
-    {
-        $ServiceName = 'ReportServer'
-
-        <#
-            Pre-2017 SSRS support multiple instances, check if we're dealing
-            with a named instance.
-        #>
-        if (-not ($InstanceName -eq 'MSSQLSERVER'))
-        {
-            $ServiceName += '${0}' -f $InstanceName
-        }
-
-        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
-        $reportingServicesService = Get-Service -Name $ServiceName
-    }
-
-    <#
-        Get all dependent services that are running.
-        There are scenarios where an automatic service is stopped and should
-        not be restarted automatically.
-    #>
-    $dependentService = $reportingServicesService.DependentServices | Where-Object -FilterScript {
-        $_.Status -eq 'Running'
-    }
-
-    Write-Verbose -Message ($script:localizedData.RestartService -f $reportingServicesService.DisplayName) -Verbose
-
-    Write-Verbose -Message ($script:localizedData.StoppingService -f $reportingServicesService.DisplayName) -Verbose
-    $reportingServicesService | Stop-Service -Force
-
-    if ($WaitTime -ne 0)
-    {
-        Write-Verbose -Message ($script:localizedData.WaitServiceRestart -f $WaitTime, $reportingServicesService.DisplayName) -Verbose
-        Start-Sleep -Seconds $WaitTime
-    }
-
-    Write-Verbose -Message ($script:localizedData.StartingService -f $reportingServicesService.DisplayName) -Verbose
-    $reportingServicesService | Start-Service
-
-    # Start dependent services
-    $dependentService | ForEach-Object -Process {
-        Write-Verbose -Message ($script:localizedData.StartingDependentService -f $_.DisplayName) -Verbose
-        $_ | Start-Service
     }
 }
 
@@ -1969,123 +1920,6 @@ function Find-ExceptionByNumber
 
 <#
     .SYNOPSIS
-        Get static name properties of he specified protocol.
-
-    .PARAMETER ProtocolName
-        Specifies the name of network protocol to return name properties for.
-        Possible values are 'TcpIp', 'NamedPipes', or 'ShareMemory'.
-
-    .NOTES
-        The static values returned matches the values returned by the class
-        ServerProtocol. The property DisplayName could potentially be localized
-        while the property Name must be exactly like it is returned by the
-        class ServerProtocol, with the correct casing.
-#>
-function Get-ProtocolNameProperties
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('TcpIp', 'NamedPipes', 'SharedMemory')]
-        [System.String]
-        $ProtocolName
-    )
-
-    $protocolNameProperties = @{ }
-
-    switch ($ProtocolName)
-    {
-        'TcpIp'
-        {
-            $protocolNameProperties.DisplayName = 'TCP/IP'
-            $protocolNameProperties.Name = 'Tcp'
-        }
-
-        'NamedPipes'
-        {
-            $protocolNameProperties.DisplayName = 'Named Pipes'
-            $protocolNameProperties.Name = 'Np'
-        }
-
-        'SharedMemory'
-        {
-            $protocolNameProperties.DisplayName = 'Shared Memory'
-            $protocolNameProperties.Name = 'Sm'
-        }
-    }
-
-    return $protocolNameProperties
-}
-
-<#
-    .SYNOPSIS
-        Returns the ServerProtocol object for the specified SQL Server instance
-        and protocol name.
-
-    .PARAMETER InstanceName
-        Specifies the name of the SQL Server instance to connect to.
-
-    .PARAMETER ProtocolName
-        Specifies the name of network protocol to be configured. Possible values
-        are 'TcpIp', 'NamedPipes', or 'ShareMemory'.
-
-    .PARAMETER ServerName
-        Specifies the host name of the SQL Server to connect to.
-
-    .NOTES
-        The class Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol is
-        returned by this function.
-#>
-function Get-ServerProtocolObject
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $InstanceName,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('TcpIp', 'NamedPipes', 'SharedMemory')]
-        [System.String]
-        $ProtocolName,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $ServerName
-    )
-
-    $serverProtocolProperties = $null
-
-    $newObjectParameters = @{
-        TypeName     = 'Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer'
-        ArgumentList = @($ServerName)
-    }
-
-    $managedComputerObject = New-Object @newObjectParameters
-
-    $serverInstance = $managedComputerObject.ServerInstances[$InstanceName]
-
-    if ($serverInstance)
-    {
-        $protocolNameProperties = Get-ProtocolNameProperties -ProtocolName $ProtocolName
-
-        $serverProtocolProperties = $serverInstance.ServerProtocols[$protocolNameProperties.Name]
-    }
-    else
-    {
-        $errorMessage = $script:localizedData.FailedToObtainServerInstance -f $InstanceName, $ServerName
-        New-InvalidOperationException -Message $errorMessage
-    }
-
-    return $serverProtocolProperties
-}
-
-<#
-    .SYNOPSIS
         Converts the combination of server name and instance name to
         the correct server instance name.
 
@@ -2120,31 +1954,6 @@ function ConvertTo-ServerInstanceName
     }
 
     return $serverInstance
-}
-
-<#
-    .SYNOPSIS
-        Returns the SQL Server major version from the setup.exe executable provided
-        in the Path parameter.
-
-    .PARAMETER Path
-        String containing the path to the SQL Server setup.exe executable.
-
-    .NOTES
-        This function should be removed when it is not longer used, and instead
-        the private function Get-FileVersionInformation shall be used.
-#>
-function Get-FilePathMajorVersion
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Path
-    )
-
-    (Get-Item -Path $Path).VersionInfo.ProductVersion.Split('.')[0]
 }
 
 <#

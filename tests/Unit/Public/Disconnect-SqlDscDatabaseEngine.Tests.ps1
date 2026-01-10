@@ -1,4 +1,4 @@
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'because ConvertTo-SecureString is used to simplify the tests.')]
 param ()
 
@@ -7,45 +7,44 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
     $env:SqlServerDscCI = $true
 
-    Import-Module -Name $script:dscModuleName
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
     # Loading mocked classes
     Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../Stubs') -ChildPath 'SMO.cs')
 
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
-
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -96,7 +95,7 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag 'Public' {
 
         Context 'When using parameter Confirm with value $false' {
             It 'Should call the correct mock with the expected parameters' {
-                { Disconnect-SqlDscDatabaseEngine -ServerObject $mockServerObject -Confirm:$false } | Should -Not -Throw
+                $null = Disconnect-SqlDscDatabaseEngine -ServerObject $mockServerObject -Confirm:$false
 
                 $mockMethodDisconnectCallCount | Should -Be 1
             }
@@ -104,7 +103,7 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag 'Public' {
 
         Context 'When using parameter Force' {
             It 'Should call the correct mock with the expected parameters' {
-                { Disconnect-SqlDscDatabaseEngine -ServerObject $mockServerObject -Force } | Should -Not -Throw
+                $null = Disconnect-SqlDscDatabaseEngine -ServerObject $mockServerObject -Force
 
                 $mockMethodDisconnectCallCount | Should -Be 1
             }
@@ -112,7 +111,7 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag 'Public' {
 
         Context 'When using parameter WhatIf' {
             It 'Should call the correct mock with the expected parameters' {
-                { Disconnect-SqlDscDatabaseEngine -ServerObject $mockServerObject -WhatIf } | Should -Not -Throw
+                $null = Disconnect-SqlDscDatabaseEngine -ServerObject $mockServerObject -WhatIf
 
                 $mockMethodDisconnectCallCount | Should -Be 0
             }
@@ -120,7 +119,7 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag 'Public' {
 
         Context 'When passing parameter ServerObject over the pipeline' {
             It 'Should call the correct mock with the expected parameters' {
-                { $mockServerObject | Disconnect-SqlDscDatabaseEngine -Force } | Should -Not -Throw
+                $null = $mockServerObject | Disconnect-SqlDscDatabaseEngine -Force
 
                 $mockMethodDisconnectCallCount | Should -Be 1
             }

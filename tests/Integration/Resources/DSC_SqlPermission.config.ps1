@@ -38,6 +38,9 @@ else
 
                 # This is created by the SqlLogin integration tests.
                 User1_Name        = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscUser1')
+
+                # This is created by the SqlRole integration tests.
+                Role1_Name        = 'DscServerRole1'
             }
         )
     }
@@ -195,6 +198,157 @@ Configuration DSC_SqlPermission_RemoveDeny_Config
                     Permission = @(
                         'ConnectSql'
                     )
+                }
+            )
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Grant rights for a role.
+#>
+Configuration DSC_SqlPermission_Role_Grant_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlPermission 'Integration_Test'
+        {
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+            Name                 = $Node.Role1_Name
+            Permission   = @(
+                ServerPermission
+                {
+                    State      = 'Grant'
+                    Permission = @(
+                        'ViewServerState'
+                        'AlterAnyEndpoint'
+                    )
+                }
+                ServerPermission
+                {
+                    State      = 'GrantWithGrant'
+                    Permission = @()
+                }
+                ServerPermission
+                {
+                    State      = 'Deny'
+                    Permission = @()
+                }
+            )
+
+            Credential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Remove granted rights for a role.
+#>
+Configuration DSC_SqlPermission_Role_RemoveGrant_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlPermission 'Integration_Test'
+        {
+            InstanceName         = $Node.InstanceName
+            Name                 = $Node.Role1_Name
+            Permission   = @(
+                ServerPermission
+                {
+                    State      = 'Grant'
+                    Permission = @()
+                }
+                ServerPermission
+                {
+                    State      = 'GrantWithGrant'
+                    Permission = @()
+                }
+                ServerPermission
+                {
+                    State      = 'Deny'
+                    Permission = @()
+                }
+            )
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Deny rights for a role.
+#>
+Configuration DSC_SqlPermission_Role_Deny_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlPermission 'Integration_Test'
+        {
+            InstanceName         = $Node.InstanceName
+            Name                 = $Node.Role1_Name
+            Permission   = @(
+                ServerPermission
+                {
+                    State      = 'Deny'
+                    Permission = @(
+                        'ViewServerState'
+                        'AlterAnyEndpoint'
+                    )
+                }
+                ServerPermission
+                {
+                    State      = 'GrantWithGrant'
+                    Permission = @()
+                }
+                ServerPermission
+                {
+                    State      = 'Grant'
+                    Permission = @()
+                }
+            )
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Remove deny rights for a role.
+#>
+Configuration DSC_SqlPermission_Role_RemoveDeny_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlPermission 'Integration_Test'
+        {
+            InstanceName         = $Node.InstanceName
+            Name                 = $Node.Role1_Name
+            Permission   = @(
+                ServerPermission
+                {
+                    State      = 'Deny'
+                    Permission = @()
+                }
+                ServerPermission
+                {
+                    State      = 'GrantWithGrant'
+                    Permission = @()
+                }
+                ServerPermission
+                {
+                    State      = 'Grant'
+                    Permission = @()
                 }
             )
         }

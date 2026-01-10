@@ -6,20 +6,20 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 
     <#
@@ -32,12 +32,12 @@ BeforeDiscovery {
 
 BeforeAll {
     # Need to define the variables here which will be used in Pester Run.
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
     $script:dscResourceFriendlyName = 'SqlLogin'
     $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 
     $script:testEnvironment = Initialize-TestEnvironment `
-        -DSCModuleName $script:dscModuleName `
+        -DSCModuleName $script:moduleName `
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
         -TestType 'Integration'
@@ -72,26 +72,24 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath        = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath        = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
     }
 
@@ -107,32 +105,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                 = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData          = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath                 = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData          = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -144,7 +138,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser1Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser1Type
-            $resourceCurrentState.Disabled | Should -Be $false
+            $resourceCurrentState.Disabled | Should -BeFalse
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -164,32 +158,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                 = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData          = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath                 = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData          = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -202,7 +192,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser2Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser2Type
             $resourceCurrentState.DefaultDatabase | Should -Be $ConfigurationData.AllNodes.DefaultDbName
-            $resourceCurrentState.Disabled | Should -Be $false
+            $resourceCurrentState.Disabled | Should -BeFalse
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -222,32 +212,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                 = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData          = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath                 = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData          = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -259,7 +245,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser3Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser3Type
-            $resourceCurrentState.Disabled | Should -Be $true
+            $resourceCurrentState.Disabled | Should -BeTrue
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -279,32 +265,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                 = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData          = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath                 = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData          = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -316,10 +298,10 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser4Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser4Type
-            $resourceCurrentState.Disabled | Should -Be $false
-            $resourceCurrentState.LoginMustChangePassword | Should -Be $false
-            $resourceCurrentState.LoginPasswordExpirationEnabled | Should -Be $true
-            $resourceCurrentState.LoginPasswordPolicyEnforced | Should -Be $true
+            $resourceCurrentState.Disabled | Should -BeFalse
+            $resourceCurrentState.LoginMustChangePassword | Should -BeFalse
+            $resourceCurrentState.LoginPasswordExpirationEnabled | Should -BeTrue
+            $resourceCurrentState.LoginPasswordPolicyEnforced | Should -BeTrue
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -335,11 +317,9 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
             $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database={4};' -f $serverName, $instanceName, $userName, $password, $databaseName
 
-            {
-                $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
-                $sqlConnection.Open()
-                $sqlConnection.Close()
-            } | Should -Not -Throw
+            $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
+            $sqlConnection.Open()
+            $sqlConnection.Close()
         }
 
         It 'Should allow SQL Server, login username and password to connect to correct, SQL instance, default database' {
@@ -352,20 +332,18 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
             $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;' -f $serverName, $instanceName, $userName, $password # Note: Not providing a database name
 
-            {
-                $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
-                $sqlCommand = New-Object System.Data.SqlClient.SqlCommand('SELECT DB_NAME() as CurrentDatabaseName', $sqlConnection)
+            $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
+            $sqlCommand = New-Object System.Data.SqlClient.SqlCommand('SELECT DB_NAME() as CurrentDatabaseName', $sqlConnection)
 
-                $sqlConnection.Open()
-                $sqlDataAdapter = New-Object System.Data.SqlClient.SqlDataAdapter $sqlCommand
-                $sqlDataSet = New-Object System.Data.DataSet
-                $sqlDataAdapter.Fill($sqlDataSet) | Out-Null
-                $sqlConnection.Close()
+            $sqlConnection.Open()
+            $sqlDataAdapter = New-Object System.Data.SqlClient.SqlDataAdapter $sqlCommand
+            $sqlDataSet = New-Object System.Data.DataSet
+            $sqlDataAdapter.Fill($sqlDataSet) | Out-Null
+            $sqlConnection.Close()
 
-                $sqlDataSet.Tables[0].Rows[0].CurrentDatabaseName | Should -Be $ConfigurationData.AllNodes.DefaultDbName
+            $sqlDataSet.Tables[0].Rows[0].CurrentDatabaseName | Should -Be $ConfigurationData.AllNodes.DefaultDbName
 
-                $script:CurrentDatabaseName = $sqlDataSet.Tables[0].Rows[0].CurrentDatabaseName
-            } | Should -Not -Throw
+            $script:CurrentDatabaseName = $sqlDataSet.Tables[0].Rows[0].CurrentDatabaseName
 
             $script:CurrentDatabaseName | Should -Be $ConfigurationData.AllNodes.DefaultDbName
 
@@ -385,32 +363,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                 = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData          = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath                 = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData          = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -422,10 +396,10 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser4Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser4Type
-            $resourceCurrentState.Disabled | Should -Be $false
-            $resourceCurrentState.LoginMustChangePassword | Should -Be $false # Left the same as this cannot be updated
-            $resourceCurrentState.LoginPasswordExpirationEnabled | Should -Be $false
-            $resourceCurrentState.LoginPasswordPolicyEnforced | Should -Be $false
+            $resourceCurrentState.Disabled | Should -BeFalse
+            $resourceCurrentState.LoginMustChangePassword | Should -BeFalse # Left the same as this cannot be updated
+            $resourceCurrentState.LoginPasswordExpirationEnabled | Should -BeFalse
+            $resourceCurrentState.LoginPasswordPolicyEnforced | Should -BeFalse
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -441,11 +415,9 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
             $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database={4};' -f $serverName, $instanceName, $userName, $password, $databaseName
 
-            {
-                $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
-                $sqlConnection.Open()
-                $sqlConnection.Close()
-            } | Should -Not -Throw
+            $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
+            $sqlConnection.Open()
+            $sqlConnection.Close()
         }
 
         It 'Should allow SQL Server, login username and (changed) password to connect to correct, SQL instance, default database' {
@@ -458,20 +430,18 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
             $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;' -f $serverName, $instanceName, $userName, $password # Note: Not providing a database name
 
-            {
-                $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
-                $sqlCommand = New-Object System.Data.SqlClient.SqlCommand('SELECT DB_NAME() as CurrentDatabaseName', $sqlConnection)
+            $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
+            $sqlCommand = New-Object System.Data.SqlClient.SqlCommand('SELECT DB_NAME() as CurrentDatabaseName', $sqlConnection)
 
-                $sqlConnection.Open()
-                $sqlDataAdapter = New-Object System.Data.SqlClient.SqlDataAdapter $sqlCommand
-                $sqlDataSet = New-Object System.Data.DataSet
-                $sqlDataAdapter.Fill($sqlDataSet) | Out-Null
-                $sqlConnection.Close()
+            $sqlConnection.Open()
+            $sqlDataAdapter = New-Object System.Data.SqlClient.SqlDataAdapter $sqlCommand
+            $sqlDataSet = New-Object System.Data.DataSet
+            $sqlDataAdapter.Fill($sqlDataSet) | Out-Null
+            $sqlConnection.Close()
 
-                $sqlDataSet.Tables[0].Rows[0].CurrentDatabaseName | Should -Be $ConfigurationData.AllNodes.DefaultDbName
+            $sqlDataSet.Tables[0].Rows[0].CurrentDatabaseName | Should -Be $ConfigurationData.AllNodes.DefaultDbName
 
-                $script:CurrentDatabaseName = $sqlDataSet.Tables[0].Rows[0].CurrentDatabaseName
-            } | Should -Not -Throw
+            $script:CurrentDatabaseName = $sqlDataSet.Tables[0].Rows[0].CurrentDatabaseName
 
             $script:CurrentDatabaseName | Should -Be $ConfigurationData.AllNodes.DefaultDbName
 
@@ -495,32 +465,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should re-compile and re-apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                 = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData          = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath                 = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData          = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -536,11 +502,9 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
             $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database={4};' -f $serverName, $instanceName, $userName, $password, $databaseName
 
-            {
-                $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
-                $sqlConnection.Open()
-                $sqlConnection.Close()
-            } | Should -Not -Throw
+            $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
+            $sqlConnection.Open()
+            $sqlConnection.Close()
         }
     }
 
@@ -556,32 +520,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                 = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData          = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath                 = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData          = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -593,7 +553,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser5Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser5Type
-            $resourceCurrentState.Disabled | Should -Be $false
+            $resourceCurrentState.Disabled | Should -BeFalse
             $resourceCurrentState.LoginMustChangePassword | Should -BeFalse
             $resourceCurrentState.LoginPasswordExpirationEnabled | Should -BeFalse
             $resourceCurrentState.LoginPasswordPolicyEnforced | Should -BeFalse
@@ -621,26 +581,24 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                 = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData          = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath                 = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData          = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -660,32 +618,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                 = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData          = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath                 = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData          = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -697,7 +651,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser5Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser5Type
-            $resourceCurrentState.Disabled | Should -Be $false
+            $resourceCurrentState.Disabled | Should -BeFalse
             $resourceCurrentState.LoginMustChangePassword | Should -BeFalse
             $resourceCurrentState.LoginPasswordExpirationEnabled | Should -BeFalse
             $resourceCurrentState.LoginPasswordPolicyEnforced | Should -BeTrue
@@ -725,26 +679,24 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                 = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData          = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath                 = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData          = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -771,7 +723,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     ConfigurationData          = $ConfigurationData
                 }
 
-                & $configurationName @configurationParameters
+                $null = & $configurationName @configurationParameters
 
                 $startDscConfigurationParameters = @{
                     Path         = $TestDrive
@@ -804,32 +756,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                 = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData          = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath                 = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData          = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -841,7 +789,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser5Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser5Type
-            $resourceCurrentState.Disabled | Should -Be $false
+            $resourceCurrentState.Disabled | Should -BeFalse
             $resourceCurrentState.LoginMustChangePassword | Should -BeFalse
             $resourceCurrentState.LoginPasswordExpirationEnabled | Should -BeTrue
             $resourceCurrentState.LoginPasswordPolicyEnforced | Should -BeTrue
@@ -864,32 +812,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                 = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData          = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath                 = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData          = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -901,7 +845,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser5Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser5Type
-            $resourceCurrentState.Disabled | Should -Be $false
+            $resourceCurrentState.Disabled | Should -BeFalse
             $resourceCurrentState.LoginMustChangePassword | Should -BeFalse
             $resourceCurrentState.LoginPasswordExpirationEnabled | Should -BeFalse
             # This was set to true by the previous test.
@@ -925,32 +869,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                 = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData          = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath                 = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData          = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -962,7 +902,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser5Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser5Type
-            $resourceCurrentState.Disabled | Should -Be $false
+            $resourceCurrentState.Disabled | Should -BeFalse
             $resourceCurrentState.LoginMustChangePassword | Should -BeFalse
             $resourceCurrentState.LoginPasswordExpirationEnabled | Should -BeFalse
             $resourceCurrentState.LoginPasswordPolicyEnforced | Should -BeFalse
@@ -985,32 +925,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                 = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData          = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath                 = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData          = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -1022,7 +958,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscSqlUsers1Name
             $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscSqlUsers1Type
-            $resourceCurrentState.Disabled | Should -Be $false
+            $resourceCurrentState.Disabled | Should -BeFalse
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -1042,32 +978,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                 = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData          = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath                 = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData          = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -1098,32 +1030,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                 = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData          = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath                 = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData          = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -1154,16 +1082,14 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
         # Uses the variable from the BeforeAll-block to fill the default database name.
         It ('Should be able to take the "<defaultDbName>" database offline without throwing') {
-            {
-                # Take database offline (closing any existing connections and transactions) before it is dropped in subsequent, 'CleanupDependencies' configuration/test
-                $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database=master;' -f $serverName, $instanceName, $userName, $password
-                $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
-                $sqlStatement = 'ALTER DATABASE [{0}] SET OFFLINE WITH ROLLBACK IMMEDIATE' -f $defaultDbName
-                $sqlCommand = New-Object System.Data.SqlClient.SqlCommand($sqlStatement, $sqlConnection)
-                $sqlConnection.Open()
-                $sqlCommand.ExecuteNonQuery()
-                $sqlConnection.Close()
-            } | Should -Not -Throw
+            # Take database offline (closing any existing connections and transactions) before it is dropped in subsequent, 'CleanupDependencies' configuration/test
+            $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database=master;' -f $serverName, $instanceName, $userName, $password
+            $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
+            $sqlStatement = 'ALTER DATABASE [{0}] SET OFFLINE WITH ROLLBACK IMMEDIATE' -f $defaultDbName
+            $sqlCommand = New-Object System.Data.SqlClient.SqlCommand($sqlStatement, $sqlConnection)
+            $sqlConnection.Open()
+            $sqlCommand.ExecuteNonQuery()
+            $sqlConnection.Close()
         }
     }
 
@@ -1179,26 +1105,24 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData = $ConfigurationData
-                }
+            $configurationParameters = @{
+                OutputPath = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData = $ConfigurationData
+            }
 
-                & $configurationName @configurationParameters
+            $null = & $configurationName @configurationParameters
 
-                $startDscConfigurationParameters = @{
-                    Path = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait = $true
-                    Verbose = $true
-                    Force = $true
-                    ErrorAction = 'Stop'
-                }
+            $startDscConfigurationParameters = @{
+                Path = $TestDrive
+                ComputerName = 'localhost'
+                Wait = $true
+                Verbose = $true
+                Force = $true
+                ErrorAction = 'Stop'
+            }
 
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            $null = Start-DscConfiguration @startDscConfigurationParameters
         }
     }
 }

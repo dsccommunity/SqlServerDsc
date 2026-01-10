@@ -3,7 +3,7 @@
         Unit test for ServerPermission class.
 #>
 
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
 BeforeDiscovery {
@@ -11,42 +11,41 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks noop" first.'
     }
 }
 
 BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
+    $script:moduleName = 'SqlServerDsc'
 
     $env:SqlServerDscCI = $true
 
-    Import-Module -Name $script:dscModuleName
+    # Do not use -Force. Doing so, or unloading the module in AfterAll, causes
+    # PowerShell class types to get new identities, breaking type comparisons.
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
-
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -55,31 +54,35 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
     Context 'When instantiating the class' {
         It 'Should not throw an error' {
             $script:mockServerPermissionInstance = InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 [ServerPermission]::new()
             }
         }
 
         It 'Should be of the correct type' {
-            $mockServerPermissionInstance | Should -Not -BeNullOrEmpty
-            $mockServerPermissionInstance.GetType().Name | Should -Be 'ServerPermission'
+            $script:mockServerPermissionInstance | Should -Not -BeNullOrEmpty
+            $script:mockServerPermissionInstance.GetType().Name | Should -Be 'ServerPermission'
         }
     }
 
     Context 'When setting an reading values' {
         It 'Should be able to set value in instance' {
             $script:mockServerPermissionInstance = InModuleScope -ScriptBlock {
-                $databasPermissionInstance = [ServerPermission]::new()
+                Set-StrictMode -Version 1.0
 
-                $databasPermissionInstance.State = 'Grant'
-                $databasPermissionInstance.Permission = 'ViewServerState'
+                $serverPermissionInstance = [ServerPermission]::new()
 
-                return $databasPermissionInstance
+                $serverPermissionInstance.State = 'Grant'
+                $serverPermissionInstance.Permission = 'ViewServerState'
+
+                return $serverPermissionInstance
             }
         }
 
         It 'Should be able read the values from instance' {
-            $mockServerPermissionInstance.State | Should -Be 'Grant'
-            $mockServerPermissionInstance.Permission = 'ViewServerState'
+            $script:mockServerPermissionInstance.State | Should -Be 'Grant'
+            $script:mockServerPermissionInstance.Permission | Should -Be 'ViewServerState'
         }
     }
 
@@ -88,17 +91,19 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
             Context 'When property Permission has a single value' {
                 It 'Should return $true' {
                     InModuleScope -ScriptBlock {
-                        $databasPermissionInstance1 = [ServerPermission]::new()
+                        Set-StrictMode -Version 1.0
 
-                        $databasPermissionInstance1.State = 'Grant'
-                        $databasPermissionInstance1.Permission = 'ViewServerState'
+                        $serverPermissionInstance1 = [ServerPermission]::new()
 
-                        $databasPermissionInstance2 = [ServerPermission]::new()
+                        $serverPermissionInstance1.State = 'Grant'
+                        $serverPermissionInstance1.Permission = 'ViewServerState'
 
-                        $databasPermissionInstance2.State = 'Grant'
-                        $databasPermissionInstance2.Permission = 'ViewServerState'
+                        $serverPermissionInstance2 = [ServerPermission]::new()
 
-                        $databasPermissionInstance1 -eq $databasPermissionInstance2 | Should -BeTrue
+                        $serverPermissionInstance2.State = 'Grant'
+                        $serverPermissionInstance2.Permission = 'ViewServerState'
+
+                        $serverPermissionInstance1 -eq $serverPermissionInstance2 | Should -BeTrue
                     }
                 }
             }
@@ -106,71 +111,169 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
             Context 'When property Permission has a multiple values' {
                 It 'Should return $true' {
                     InModuleScope -ScriptBlock {
-                        $databasPermissionInstance1 = [ServerPermission]::new()
+                        Set-StrictMode -Version 1.0
 
-                        $databasPermissionInstance1.State = 'Grant'
-                        $databasPermissionInstance1.Permission = @('ViewServerState', 'AlterAnyAvailabilityGroup')
+                        $serverPermissionInstance1 = [ServerPermission]::new()
 
-                        $databasPermissionInstance2 = [ServerPermission]::new()
+                        $serverPermissionInstance1.State = 'Grant'
+                        $serverPermissionInstance1.Permission = @('ViewServerState', 'AlterAnyAvailabilityGroup')
 
-                        $databasPermissionInstance2.State = 'Grant'
-                        $databasPermissionInstance2.Permission = @('ViewServerState', 'AlterAnyAvailabilityGroup')
+                        $serverPermissionInstance2 = [ServerPermission]::new()
 
-                        $databasPermissionInstance1 -eq $databasPermissionInstance2 | Should -BeTrue
+                        $serverPermissionInstance2.State = 'Grant'
+                        $serverPermissionInstance2.Permission = @('ViewServerState', 'AlterAnyAvailabilityGroup')
+
+                        $serverPermissionInstance1 -eq $serverPermissionInstance2 | Should -BeTrue
                     }
                 }
             }
         }
 
         Context 'When object has different value for property State' {
-            It 'Should instantiate two objects' {
-                $script:mockServerPermissionInstance1 = InModuleScope -ScriptBlock {
-                    $databasPermissionInstance = [ServerPermission]::new()
+            Context 'When comparing Deny with Grant' {
+                It 'Should instantiate two objects' {
+                    $script:mockServerPermissionInstance1 = InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
 
-                    $databasPermissionInstance.State = 'Deny'
-                    $databasPermissionInstance.Permission = 'ViewServerState'
+                        $serverPermissionInstance = [ServerPermission]::new()
 
-                    return $databasPermissionInstance
+                        $serverPermissionInstance.State = 'Deny'
+                        $serverPermissionInstance.Permission = 'ViewServerState'
+
+                        return $serverPermissionInstance
+                    }
+
+                    $script:mockServerPermissionInstance2 = InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $serverPermissionInstance = [ServerPermission]::new()
+
+                        $serverPermissionInstance.State = 'Grant'
+                        $serverPermissionInstance.Permission = 'ViewServerState'
+
+                        return $serverPermissionInstance
+                    }
                 }
 
-                $script:mockServerPermissionInstance1 = InModuleScope -ScriptBlock {
-                    $databasPermissionInstance = [ServerPermission]::new()
-
-                    $databasPermissionInstance.State = 'Grant'
-                    $databasPermissionInstance.Permission = 'ViewServerState'
-
-                    return $databasPermissionInstance
+                It 'Should return $false' {
+                    $script:mockServerPermissionInstance1 -eq $script:mockServerPermissionInstance2 | Should -BeFalse
                 }
             }
 
-            It 'Should return $false' {
-                $mockServerPermissionInstance1 -eq $mockServerPermissionInstance2 | Should -BeFalse
+            Context 'When comparing Grant with GrantWithGrant' {
+                It 'Should instantiate two objects' {
+                    $script:mockServerPermissionInstance1 = InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $serverPermissionInstance = [ServerPermission]::new()
+
+                        $serverPermissionInstance.State = 'Grant'
+                        $serverPermissionInstance.Permission = 'ViewServerState'
+
+                        return $serverPermissionInstance
+                    }
+
+                    $script:mockServerPermissionInstance2 = InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $serverPermissionInstance = [ServerPermission]::new()
+
+                        $serverPermissionInstance.State = 'GrantWithGrant'
+                        $serverPermissionInstance.Permission = 'ViewServerState'
+
+                        return $serverPermissionInstance
+                    }
+                }
+
+                It 'Should return $false' {
+                    $script:mockServerPermissionInstance1 -eq $script:mockServerPermissionInstance2 | Should -BeFalse
+                }
             }
         }
 
         Context 'When object has different value for property Permission' {
             It 'Should instantiate two objects' {
                 $script:mockServerPermissionInstance1 = InModuleScope -ScriptBlock {
-                    $databasPermissionInstance = [ServerPermission]::new()
+                    Set-StrictMode -Version 1.0
 
-                    $databasPermissionInstance.State = 'Grant'
-                    $databasPermissionInstance.Permission = 'ViewServerState'
+                    $serverPermissionInstance = [ServerPermission]::new()
 
-                    return $databasPermissionInstance
+                    $serverPermissionInstance.State = 'Grant'
+                    $serverPermissionInstance.Permission = 'ViewServerState'
+
+                    return $serverPermissionInstance
                 }
 
-                $script:mockServerPermissionInstance1 = InModuleScope -ScriptBlock {
-                    $databasPermissionInstance = [ServerPermission]::new()
+                $script:mockServerPermissionInstance2 = InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
 
-                    $databasPermissionInstance.State = 'Grant'
-                    $databasPermissionInstance.Permission = 'AlterAnyAvailabilityGroup'
+                    $serverPermissionInstance = [ServerPermission]::new()
 
-                    return $databasPermissionInstance
+                    $serverPermissionInstance.State = 'Grant'
+                    $serverPermissionInstance.Permission = 'AlterAnyAvailabilityGroup'
+
+                    return $serverPermissionInstance
                 }
             }
 
             It 'Should return $false' {
-                $mockServerPermissionInstance1 -eq $mockServerPermissionInstance2 | Should -BeFalse
+                $script:mockServerPermissionInstance1 -eq $script:mockServerPermissionInstance2 | Should -BeFalse
+            }
+        }
+    }
+
+    Context 'When calling method GetHashCode()' {
+        Context 'When two objects are equal' {
+            It 'Should return the same hash code' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $serverPermissionInstance1 = [ServerPermission]::new()
+                    $serverPermissionInstance1.State = 'Grant'
+                    $serverPermissionInstance1.Permission = @('ViewServerState', 'AlterAnyAvailabilityGroup')
+
+                    $serverPermissionInstance2 = [ServerPermission]::new()
+                    $serverPermissionInstance2.State = 'Grant'
+                    $serverPermissionInstance2.Permission = @('AlterAnyAvailabilityGroup', 'ViewServerState')
+
+                    $serverPermissionInstance1.GetHashCode() | Should -Be $serverPermissionInstance2.GetHashCode()
+                }
+            }
+        }
+
+        Context 'When two objects have different State' {
+            It 'Should return different hash codes' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $serverPermissionInstance1 = [ServerPermission]::new()
+                    $serverPermissionInstance1.State = 'Grant'
+                    $serverPermissionInstance1.Permission = 'ViewServerState'
+
+                    $serverPermissionInstance2 = [ServerPermission]::new()
+                    $serverPermissionInstance2.State = 'Deny'
+                    $serverPermissionInstance2.Permission = 'ViewServerState'
+
+                    $serverPermissionInstance1.GetHashCode() | Should -Not -Be $serverPermissionInstance2.GetHashCode()
+                }
+            }
+        }
+
+        Context 'When two objects have different Permission' {
+            It 'Should return different hash codes' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $serverPermissionInstance1 = [ServerPermission]::new()
+                    $serverPermissionInstance1.State = 'Grant'
+                    $serverPermissionInstance1.Permission = 'ViewServerState'
+
+                    $serverPermissionInstance2 = [ServerPermission]::new()
+                    $serverPermissionInstance2.State = 'Grant'
+                    $serverPermissionInstance2.Permission = 'AlterAnyAvailabilityGroup'
+
+                    $serverPermissionInstance1.GetHashCode() | Should -Not -Be $serverPermissionInstance2.GetHashCode()
+                }
             }
         }
     }
@@ -179,6 +282,8 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
         Context 'When the instance is compared against an invalid object' {
             It 'Should return a value less than zero' {
                 $mockServerPermissionInstance1 = InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     [ServerPermission] @{
                         State      = 'Grant'
                         Permission = 'ViewServerState'
@@ -186,6 +291,8 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                 }
 
                 $mockErrorMessage = InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:localizedData.InvalidTypeForCompare
                 }
 
@@ -205,22 +312,28 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
         }
 
         Context 'When the instance precedes the object being compared' {
-            Context 'When the instance has the state ''<MockInstanceState>'' and object has state ''<MockObjectState>''' -ForEach @(
-                @{
-                    MockInstanceState = 'Grant'
-                    MockObjectState   = 'GrantWithGrant'
-                }
-                @{
-                    MockInstanceState = 'Grant'
-                    MockObjectState   = 'Deny'
-                }
-                @{
-                    MockInstanceState = 'GrantWithGrant'
-                    MockObjectState   = 'Deny'
-                }
-            ) {
+            BeforeDiscovery {
+                $testCases = @(
+                    @{
+                        MockInstanceState = 'Grant'
+                        MockObjectState   = 'GrantWithGrant'
+                    }
+                    @{
+                        MockInstanceState = 'Grant'
+                        MockObjectState   = 'Deny'
+                    }
+                    @{
+                        MockInstanceState = 'GrantWithGrant'
+                        MockObjectState   = 'Deny'
+                    }
+                )
+            }
+
+            Context 'When the instance has the state ''<MockInstanceState>'' and object has state ''<MockObjectState>''' -ForEach $testCases {
                 It 'Should return a value less than zero' {
                     $mockServerPermissionInstance1 = InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         [ServerPermission] @{
                             State      = $MockInstanceState
                             Permission = 'ViewServerState'
@@ -228,6 +341,8 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                     }
 
                     $mockServerPermissionInstance2 = InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         [ServerPermission] @{
                             State      = $MockObjectState
                             Permission = 'ViewServerState'
@@ -240,22 +355,28 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
         }
 
         Context 'When the instance follows the object being compared' {
-            Context 'When the instance has the state ''<MockInstanceState>'' and object has state ''<MockObjectState>''' -ForEach @(
-                @{
-                    MockInstanceState = 'Deny'
-                    MockObjectState   = 'Grant'
-                }
-                @{
-                    MockInstanceState = 'GrantWithGrant'
-                    MockObjectState   = 'Grant'
-                }
-                @{
-                    MockInstanceState = 'Deny'
-                    MockObjectState   = 'GrantWithGrant'
-                }
-            ) {
+            BeforeDiscovery {
+                $testCases = @(
+                    @{
+                        MockInstanceState = 'Deny'
+                        MockObjectState   = 'Grant'
+                    }
+                    @{
+                        MockInstanceState = 'GrantWithGrant'
+                        MockObjectState   = 'Grant'
+                    }
+                    @{
+                        MockInstanceState = 'Deny'
+                        MockObjectState   = 'GrantWithGrant'
+                    }
+                )
+            }
+
+            Context 'When the instance has the state ''<MockInstanceState>'' and object has state ''<MockObjectState>''' -ForEach $testCases {
                 It 'Should return a value less than zero' {
                     $mockServerPermissionInstance1 = InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         [ServerPermission] @{
                             State      = $MockInstanceState
                             Permission = 'ViewServerState'
@@ -263,6 +384,8 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                     }
 
                     $mockServerPermissionInstance2 = InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         [ServerPermission] @{
                             State      = $MockObjectState
                             Permission = 'ViewServerState'
@@ -276,6 +399,8 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
             Context 'When the instance is compared against an object that is $null' {
                 It 'Should return a value less than zero' {
                     $mockServerPermissionInstance1 = InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         [ServerPermission] @{
                             State      = 'Grant'
                             Permission = 'ViewServerState'
@@ -288,22 +413,28 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
         }
 
         Context 'When the instance is in the same position as the object being compared' {
-            Context 'When the instance has the state ''<MockInstanceState>'' and object has state ''<MockObjectState>''' -ForEach @(
-                @{
-                    MockInstanceState = 'Grant'
-                    MockObjectState   = 'Grant'
-                }
-                @{
-                    MockInstanceState = 'GrantWithGrant'
-                    MockObjectState   = 'GrantWithGrant'
-                }
-                @{
-                    MockInstanceState = 'Deny'
-                    MockObjectState   = 'Deny'
-                }
-            ) {
+            BeforeDiscovery {
+                $testCases = @(
+                    @{
+                        MockInstanceState = 'Grant'
+                        MockObjectState   = 'Grant'
+                    }
+                    @{
+                        MockInstanceState = 'GrantWithGrant'
+                        MockObjectState   = 'GrantWithGrant'
+                    }
+                    @{
+                        MockInstanceState = 'Deny'
+                        MockObjectState   = 'Deny'
+                    }
+                )
+            }
+
+            Context 'When the instance has the state ''<MockInstanceState>'' and object has state ''<MockObjectState>''' -ForEach $testCases {
                 It 'Should return a value less than zero' {
                     $mockServerPermissionInstance1 = InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         [ServerPermission] @{
                             State      = $MockInstanceState
                             Permission = 'ViewServerState'
@@ -311,6 +442,8 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                     }
 
                     $mockServerPermissionInstance2 = InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         [ServerPermission] @{
                             State      = $MockObjectState
                             Permission = 'ViewServerState'
@@ -323,28 +456,34 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
         }
 
         Context 'When sorting the instances' {
-            It 'Should always sort in the correct order' -ForEach @(
-                @{
-                    MockState = @('Grant', 'GrantWithGrant', 'Deny')
-                }
-                @{
-                    MockState = @('GrantWithGrant', 'Grant', 'Deny')
-                }
-                @{
-                    MockState = @('GrantWithGrant', 'Deny', 'Grant')
-                }
-                @{
-                    MockState = @('Deny', 'GrantWithGrant', 'Grant')
-                }
-                @{
-                    MockState = @('Grant', 'Deny', 'GrantWithGrant')
-                }
-                @{
-                    MockState = @('Deny', 'Grant', 'GrantWithGrant')
-                }
-            ) {
+            BeforeDiscovery {
+                $testCases = @(
+                    @{
+                        MockState = @('Grant', 'GrantWithGrant', 'Deny')
+                    }
+                    @{
+                        MockState = @('GrantWithGrant', 'Grant', 'Deny')
+                    }
+                    @{
+                        MockState = @('GrantWithGrant', 'Deny', 'Grant')
+                    }
+                    @{
+                        MockState = @('Deny', 'GrantWithGrant', 'Grant')
+                    }
+                    @{
+                        MockState = @('Grant', 'Deny', 'GrantWithGrant')
+                    }
+                    @{
+                        MockState = @('Deny', 'Grant', 'GrantWithGrant')
+                    }
+                )
+            }
+
+            It 'Should always sort in the correct order' -ForEach $testCases {
                 $mockServerPermissionArray = @(
                     InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         foreach ($currentMockState in $MockState)
                         {
                             [ServerPermission] @{

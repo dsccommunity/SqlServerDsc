@@ -12,7 +12,7 @@ ConvertFrom-StringData @'
     EvaluateServerPermissionForPrincipal = Evaluate the current permissions for the principal '{0}' on the instance '{1}'. (SP0001)
     DesiredPermissionAreAbsent = The desired permission '{0}' that shall be present are absent. (SP0002)
     DesiredAbsentPermissionArePresent = The desired permission '{0}' that shall be absent are present. (SP0003)
-    NameIsMissing = The name '{0}' is not a login on the instance '{1}'. (SP0004)
+    NameIsMissing = The name '{0}' is not a login or server role on the instance '{1}'. (SP0004)
     FailedToRevokePermissionFromCurrentState = Failed to revoke the permissions from the current state for the user '{0}'. (SP0005)
     FailedToSetPermission = Failed to set the desired permissions for the user '{0}'. (SP0006)
     DuplicatePermissionState = One or more permission states was added more than once. It is only allowed to specify one of each permission state. (SP0007)

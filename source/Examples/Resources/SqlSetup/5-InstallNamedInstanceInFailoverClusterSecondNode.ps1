@@ -36,11 +36,6 @@ Configuration Example
         [System.Management.Automation.PSCredential]
         $SqlInstallCredential,
 
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential = $SqlInstallCredential,
-
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
