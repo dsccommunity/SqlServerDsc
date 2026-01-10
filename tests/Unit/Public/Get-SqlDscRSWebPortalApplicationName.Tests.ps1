@@ -68,9 +68,30 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
             Mock -CommandName Get-SqlDscRSVersion
         }
 
-        It 'Should return ReportServerWebApp for SQL Server 2016 (version 13)' {
+        It 'Should return <ExpectedApplicationName> for SQL Server <VersionDescription> (version <Version>)' -ForEach @(
+            @{
+                Version = '13.0.4001.0'
+                VersionDescription = '2016'
+                ExpectedApplicationName = 'ReportServerWebApp'
+            }
+            @{
+                Version = '14.0.600.0'
+                VersionDescription = '2017'
+                ExpectedApplicationName = 'ReportServerWebApp'
+            }
+            @{
+                Version = '15.0.1100.0'
+                VersionDescription = '2019'
+                ExpectedApplicationName = 'ReportServerWebApp'
+            }
+            @{
+                Version = '16.0.1000.0'
+                VersionDescription = '2022'
+                ExpectedApplicationName = 'ReportServerWebApp'
+            }
+        ) {
             Mock -CommandName Get-SqlDscRSVersion -MockWith {
-                return [System.Version] '13.0.4001.0'
+                return [System.Version] $Version
             }
 
             $mockSetupConfiguration = @{
@@ -79,49 +100,7 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
 
             $result = $mockSetupConfiguration | Get-SqlDscRSWebPortalApplicationName
 
-            $result | Should -Be 'ReportServerWebApp'
-        }
-
-        It 'Should return ReportServerWebApp for SQL Server 2017 (version 14)' {
-            Mock -CommandName Get-SqlDscRSVersion -MockWith {
-                return [System.Version] '14.0.600.0'
-            }
-
-            $mockSetupConfiguration = @{
-                InstanceName = 'SSRS'
-            }
-
-            $result = $mockSetupConfiguration | Get-SqlDscRSWebPortalApplicationName
-
-            $result | Should -Be 'ReportServerWebApp'
-        }
-
-        It 'Should return ReportServerWebApp for SQL Server 2019 (version 15)' {
-            Mock -CommandName Get-SqlDscRSVersion -MockWith {
-                return [System.Version] '15.0.1100.0'
-            }
-
-            $mockSetupConfiguration = @{
-                InstanceName = 'SSRS'
-            }
-
-            $result = $mockSetupConfiguration | Get-SqlDscRSWebPortalApplicationName
-
-            $result | Should -Be 'ReportServerWebApp'
-        }
-
-        It 'Should return ReportServerWebApp for SQL Server 2022 (version 16)' {
-            Mock -CommandName Get-SqlDscRSVersion -MockWith {
-                return [System.Version] '16.0.1000.0'
-            }
-
-            $mockSetupConfiguration = @{
-                InstanceName = 'SSRS'
-            }
-
-            $result = $mockSetupConfiguration | Get-SqlDscRSWebPortalApplicationName
-
-            $result | Should -Be 'ReportServerWebApp'
+            $result | Should -Be $ExpectedApplicationName
         }
     }
 
@@ -130,9 +109,20 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
             Mock -CommandName Get-SqlDscRSVersion
         }
 
-        It 'Should return ReportManager for SQL Server 2014 (version 12)' {
+        It 'Should return <ExpectedApplicationName> for SQL Server <VersionDescription> (version <Version>)' -ForEach @(
+            @{
+                Version = '12.0.4100.0'
+                VersionDescription = '2014'
+                ExpectedApplicationName = 'ReportManager'
+            }
+            @{
+                Version = '11.0.5000.0'
+                VersionDescription = '2012'
+                ExpectedApplicationName = 'ReportManager'
+            }
+        ) {
             Mock -CommandName Get-SqlDscRSVersion -MockWith {
-                return [System.Version] '12.0.4100.0'
+                return [System.Version] $Version
             }
 
             $mockSetupConfiguration = @{
@@ -141,21 +131,7 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
 
             $result = $mockSetupConfiguration | Get-SqlDscRSWebPortalApplicationName
 
-            $result | Should -Be 'ReportManager'
-        }
-
-        It 'Should return ReportManager for SQL Server 2012 (version 11)' {
-            Mock -CommandName Get-SqlDscRSVersion -MockWith {
-                return [System.Version] '11.0.5000.0'
-            }
-
-            $mockSetupConfiguration = @{
-                InstanceName = 'SSRS'
-            }
-
-            $result = $mockSetupConfiguration | Get-SqlDscRSWebPortalApplicationName
-
-            $result | Should -Be 'ReportManager'
+            $result | Should -Be $ExpectedApplicationName
         }
     }
 

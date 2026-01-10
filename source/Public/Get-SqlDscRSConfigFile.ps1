@@ -10,7 +10,7 @@
 
         The configuration file path is automatically determined from the
         instance's setup configuration in the registry when using the
-        `InstanceName` or `Configuration` parameters. Alternatively, a direct
+        `InstanceName` or `SetupConfiguration` parameter. Alternatively, a direct
         file path can be specified using the `Path` parameter.
 
     .PARAMETER InstanceName
