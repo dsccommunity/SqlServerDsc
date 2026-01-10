@@ -63,7 +63,7 @@ BeforeAll {
 
           Re-add tag 'Integration_SQL2017_RS' when fixed.
 #>
-Describe 'Post.ServiceAccountChange.RS' -Tag @('Integration_SQL2019_RS', 'Integration_SQL2022_RS', 'Integration_PowerBI') {
+Describe 'Post.ServiceAccountChange.RS' -Tag @('Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS', 'Integration_PowerBI') {
     BeforeAll {
         if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_PowerBI')
         {
