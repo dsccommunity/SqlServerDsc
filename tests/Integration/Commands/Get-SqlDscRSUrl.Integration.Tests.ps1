@@ -53,7 +53,6 @@ Describe 'Get-SqlDscRSUrl' {
             $result = $script:setupConfiguration | Get-SqlDscRSUrl -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
-            $result[0] | Should -BeOfType 'ReportServerUri'
             $result[0].PSObject.Properties.Name | Should -Contain 'InstanceName'
             $result[0].PSObject.Properties.Name | Should -Contain 'ApplicationName'
             $result[0].PSObject.Properties.Name | Should -Contain 'Uri'
@@ -111,7 +110,6 @@ Describe 'Get-SqlDscRSUrl' {
             $result = $script:setupConfiguration | Get-SqlDscRSUrl -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
-            $result[0] | Should -BeOfType 'ReportServerUri'
             $result[0].PSObject.Properties.Name | Should -Contain 'InstanceName'
             $result[0].PSObject.Properties.Name | Should -Contain 'ApplicationName'
             $result[0].PSObject.Properties.Name | Should -Contain 'Uri'

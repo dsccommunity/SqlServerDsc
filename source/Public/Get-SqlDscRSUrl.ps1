@@ -56,7 +56,7 @@ function Get-SqlDscRSUrl
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the examples use pipeline input the rule cannot validate.')]
     [CmdletBinding()]
-    [OutputType([ReportServerUri[]])]
+    [OutputType([System.Object[]])]
     param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
