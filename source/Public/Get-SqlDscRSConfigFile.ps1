@@ -193,7 +193,7 @@ function Get-SqlDscRSConfigFile
 
         try
         {
-            [xml] $configXml = Get-Content -Path $configFilePath -ErrorAction 'Stop'
+            [xml] $configXml = Get-Content -Path $configFilePath -Raw -ErrorAction 'Stop'
         }
         catch
         {
