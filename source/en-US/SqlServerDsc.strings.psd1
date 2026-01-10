@@ -827,7 +827,7 @@ ConvertFrom-StringData @'
     Remove_SqlDscRSEncryptionKey_ShouldProcessConfirmation = Are you sure you want to remove the encryption key from Reporting Services instance '{0}'? This is a destructive operation.
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Remove_SqlDscRSEncryptionKey_ShouldProcessCaption = Remove encryption key from Reporting Services instance
-    Remove_SqlDscRSEncryptionKey_FailedToRemove = Failed to remove encryption key from Reporting Services instance '{0}'. (RRSEK0001)
+    Remove_SqlDscRSEncryptionKey_FailedToRemove = Failed to remove encryption key from Reporting Services instance '{0}'. (RSREK0001)
 
     ## Remove-SqlDscRSEncryptedInformation
     Remove_SqlDscRSEncryptedInformation_Removing = Removing encrypted information from Reporting Services instance '{0}'.
@@ -835,7 +835,7 @@ ConvertFrom-StringData @'
     Remove_SqlDscRSEncryptedInformation_ShouldProcessConfirmation = Are you sure you want to remove all encrypted information from Reporting Services instance '{0}'? This is a destructive operation.
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Remove_SqlDscRSEncryptedInformation_ShouldProcessCaption = Remove encrypted information from Reporting Services instance
-    Remove_SqlDscRSEncryptedInformation_FailedToRemove = Failed to remove encrypted information from Reporting Services instance '{0}'. (RRSREI0001)
+    Remove_SqlDscRSEncryptedInformation_FailedToRemove = Failed to remove encrypted information from Reporting Services instance '{0}'. (RSRSEI0001)
 
     ## Get-SqlDscRSServiceAccount
     Get_SqlDscRSServiceAccount_Getting = Getting service account for Reporting Services instance '{0}'.

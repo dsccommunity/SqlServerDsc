@@ -143,10 +143,20 @@ stages:
               $pesterConfig.Run.Path = '.\tests\QA'
               $pesterConfig.Run.Throw = $true
               $pesterConfig.Output.Verbosity = 'Detailed'
+              $pesterConfig.TestResult.Enabled = $true
+              $pesterConfig.TestResult.OutputFormat = 'NUnitXml'
+              $pesterConfig.TestResult.OutputPath = ".\$(buildFolderName)\$(testResultFolderName)\NUnit_QA.xml"
 
               Invoke-Pester -Configuration $pesterConfig
             name: qualityTest
             displayName: 'Run SqlServerDsc QA Test'
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit_QA.xml'
+              testRunTitle: 'QA'
 
       - job: Test_HQRM
         displayName: 'HQRM Test'
@@ -684,6 +694,7 @@ stages:
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscPowerBIReportServer.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscRSUrlReservation.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Remove-SqlDscRSEncryptedInformation.Integration.Tests.ps1'
                   # Group 9
                   'tests/Integration/Commands/Uninstall-SqlDscPowerBIReportServer.Integration.Tests.ps1'
               )

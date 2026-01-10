@@ -194,6 +194,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   for SQL Server Reporting Services or Power BI Report Server. Supports waiting
   for dependent services, configurable wait time, and accepts pipeline input
   from `Get-SqlDscRSConfiguration`.
+- Added public command `New-SqlDscRSEncryptionKey` to delete and regenerate the
+  Reporting Services encryption key. Wraps the `DeleteEncryptionKey` CIM method.
+  Warning: This operation cannot be undone and renders all encrypted content
+  unreadable.
+- Added public command `Remove-SqlDscRSEncryptionKey` to remove all encrypted
+  content from the report server database. Wraps the `DeleteEncryptionKey` CIM
+  method with `DeleteEncryptedContent` mode.
+- Added public command `Remove-SqlDscRSEncryptedInformation` to remove all encrypted
+  information from the report server database, including stored credentials and
+  connection strings. Wraps the `DeleteEncryptedInformation` CIM method.
 - Added public commands `Get-SqlDscRSServiceAccount` and
   `Set-SqlDscRSServiceAccount` to get and set the Windows service account for
   SQL Server Reporting Services or Power BI Report Server. `Set-SqlDscRSServiceAccount`

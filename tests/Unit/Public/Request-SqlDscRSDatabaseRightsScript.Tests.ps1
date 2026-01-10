@@ -186,7 +186,7 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         }
 
         It 'Should throw terminating error for UserName without backslash with IsRemote' {
-            $null = { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'SQLRSUser' -IsRemote } | Should -Throw -ErrorId 'UserName,New-ArgumentException'
+            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'SQLRSUser' -IsRemote } | Should -Throw -ErrorId 'UserName,New-ArgumentException'
 
             Should -Not -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'GenerateDatabaseRightsScript'
@@ -194,7 +194,7 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         }
 
         It 'Should throw terminating error for UserName with multiple backslashes with IsRemote' {
-            $null = { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'DOMAIN\SUB\SQLRSUser' -IsRemote } | Should -Throw -ErrorId 'UserName,New-ArgumentException'
+            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'DOMAIN\SUB\SQLRSUser' -IsRemote } | Should -Throw -ErrorId 'UserName,New-ArgumentException'
 
             Should -Not -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'GenerateDatabaseRightsScript'
@@ -202,7 +202,7 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         }
 
         It 'Should throw terminating error for UserName with only domain with IsRemote' {
-            $null = { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'DOMAIN\' -IsRemote } | Should -Throw -ErrorId 'UserName,New-ArgumentException'
+            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'DOMAIN\' -IsRemote } | Should -Throw -ErrorId 'UserName,New-ArgumentException'
 
             Should -Not -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'GenerateDatabaseRightsScript'
@@ -210,7 +210,7 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         }
 
         It 'Should throw terminating error for UserName with only username with IsRemote' {
-            $null = { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName '\SQLRSUser' -IsRemote } | Should -Throw -ErrorId 'UserName,New-ArgumentException'
+            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName '\SQLRSUser' -IsRemote } | Should -Throw -ErrorId 'UserName,New-ArgumentException'
 
             Should -Not -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'GenerateDatabaseRightsScript'
