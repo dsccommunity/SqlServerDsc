@@ -67,7 +67,7 @@ Describe 'Post.ServiceAccountChange.PowerBI.RS' -Tag @('Integration_PowerBI') {
         $script:databaseName = $script:configuration.DatabaseName
 
         $script:computerName = Get-ComputerName
-        $script:expectedServiceAccount = '{0}\svc-PBIRS' -f $script:computerName
+        $script:expectedServiceAccount = '{0}\svc-RS' -f $script:computerName
 
         Write-Verbose -Message "Instance: $script:instanceName, Database: $script:databaseName, ServiceAccount: $script:serviceAccount" -Verbose
     }
