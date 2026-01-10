@@ -143,10 +143,20 @@ stages:
               $pesterConfig.Run.Path = '.\tests\QA'
               $pesterConfig.Run.Throw = $true
               $pesterConfig.Output.Verbosity = 'Detailed'
+              $pesterConfig.TestResult.Enabled = $true
+              $pesterConfig.TestResult.OutputFormat = 'NUnitXml'
+              $pesterConfig.TestResult.OutputPath = ".\$(buildFolderName)\$(testResultFolderName)\NUnit_QA.xml"
 
               Invoke-Pester -Configuration $pesterConfig
             name: qualityTest
             displayName: 'Run SqlServerDsc QA Test'
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit_QA.xml'
+              testRunTitle: 'QA'
 
       - job: Test_HQRM
         displayName: 'HQRM Test'
@@ -570,15 +580,18 @@ stages:
                   'tests/Integration/Commands/Restart-SqlDscRSService.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscRSInitialized.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSLogPath.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscRSConfigFile.Integration.Tests.ps1'
                   # Group 4
                   'tests/Integration/Commands/Initialize-SqlDscRS.Integration.Tests.ps1'
                   # Group 5 - Post-initialization validation
                   'tests/Integration/Commands/Post.Initialization.RS.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscRSUrl.Integration.Tests.ps1'
                   # Group 6 - Service account change
                   'tests/Integration/Commands/Set-SqlDscRSServiceAccount.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSServiceAccount.Integration.Tests.ps1'
                   'tests/Integration/Commands/Post.DatabaseRights.RS.Integration.Tests.ps1'
                   'tests/Integration/Commands/Post.EncryptedInformation.RS.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Post.DatabaseConnection.RS.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscRSEncryptionKey.Integration.Tests.ps1'
                   'tests/Integration/Commands/New-SqlDscRSEncryptionKey.Integration.Tests.ps1'
                   'tests/Integration/Commands/Post.UrlReservationRecreate.RS.Integration.Tests.ps1'
@@ -668,10 +681,12 @@ stages:
                   'tests/Integration/Commands/Restart-SqlDscRSService.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscRSInitialized.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSLogPath.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscRSConfigFile.Integration.Tests.ps1'
                   # Group 4
                   'tests/Integration/Commands/Initialize-SqlDscRS.Integration.Tests.ps1'
                   # Group 5 - Post-initialization validation
                   'tests/Integration/Commands/Post.Initialization.RS.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscRSUrl.Integration.Tests.ps1'
                   # Group 6 - Service account change
                   'tests/Integration/Commands/Set-SqlDscRSServiceAccount.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSServiceAccount.Integration.Tests.ps1'
@@ -684,6 +699,7 @@ stages:
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscPowerBIReportServer.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscRSUrlReservation.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Remove-SqlDscRSEncryptedInformation.Integration.Tests.ps1'
                   # Group 9
                   'tests/Integration/Commands/Uninstall-SqlDscPowerBIReportServer.Integration.Tests.ps1'
               )

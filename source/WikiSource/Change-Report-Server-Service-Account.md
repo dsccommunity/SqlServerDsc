@@ -64,18 +64,21 @@ Before starting, ensure you have:
 ## The Complete Workflow
 
 The service account change process consists of eight steps that must be executed
-in order:
+in order. **Steps 4 and 5 differ for SQL Server 2017 RS** — see the notes in
+those steps for version-specific commands.
 
-| Step | Action | Command |
-|------|--------|---------|
-| 1 | Change the service account | `Set-SqlDscRSServiceAccount` |
-| 2 | Verify the change | `Get-SqlDscRSServiceAccount` |
-| 3 | Grant database permissions | `New-SqlDscLogin`, `Request-SqlDscRSDatabaseRightsScript`, `Invoke-SqlDscQuery` |
-| 4 | Remove the old encryption key | `Remove-SqlDscRSEncryptionKey` |
-| 5 | Create a new encryption key | `New-SqlDscRSEncryptionKey` |
-| 6 | Recreate URL reservations | `Set-SqlDscRSUrlReservation -RecreateExisting` |
-| 7 | Re-initialize the Report Server | `Initialize-SqlDscRS` |
-| 8 | Validate accessibility | `Test-SqlDscRSAccessible` |
+<!-- markdownlint-disable MD013 -->
+| Step | Action | SQL Server 2019/2022 RS & Power BI | SQL Server 2017 RS |
+| --- | --- | --- | --- |
+| 1 | Change the service account | `Set-SqlDscRSServiceAccount` | Same |
+| 2 | Verify the change | `Get-SqlDscRSServiceAccount` | Same |
+| 3 | Grant database permissions | `New-SqlDscLogin`, `Request-SqlDscRSDatabaseRightsScript`, `Invoke-SqlDscQuery` | Same |
+| 4 | Handle encryption | `Remove-SqlDscRSEncryptionKey` | `Remove-SqlDscRSEncryptedInformation` |
+| 5 | Restore encryption capability | `New-SqlDscRSEncryptionKey` | `Set-SqlDscRSDatabaseConnection` |
+| 6 | Recreate URL reservations | `Set-SqlDscRSUrlReservation -RecreateExisting` | Same |
+| 7 | Re-initialize the Report Server | `Initialize-SqlDscRS` | Same |
+| 8 | Validate accessibility | `Test-SqlDscRSAccessible` | Same |
+<!-- markdownlint-enable MD013 -->
 
 ## Step 1: Change the Service Account
 
@@ -180,17 +183,23 @@ Request the database rights script from Report Server and execute it:
 $databaseName = $configuration.DatabaseName
 
 # Generate the T-SQL script that grants required permissions
-$databaseRightsScript = $configuration | Request-SqlDscRSDatabaseRightsScript `
-    -DatabaseName $databaseName `
-    -UserName $currentServiceAccount
+$requestSqlDscRSDatabaseRightsScriptParams = @{
+    DatabaseName = $databaseName
+    UserName = $currentServiceAccount
+}
+
+$databaseRightsScript = $configuration | Request-SqlDscRSDatabaseRightsScript @requestSqlDscRSDatabaseRightsScriptParams
 
 # Execute the script on the SQL Server
-Invoke-SqlDscQuery `
-    -ServerName 'localhost' `
-    -InstanceName 'RSDB' `
-    -DatabaseName 'master' `
-    -Query $databaseRightsScript `
-    -Force
+$invokeSqlDscQueryParams = @{
+    ServerName = 'localhost'
+    InstanceName = 'RSDB'
+    DatabaseName = 'master'
+    Query = $databaseRightsScript
+    Force = $true
+}
+
+Invoke-SqlDscQuery @invokeSqlDscQueryParams
 ```
 <!-- markdownlint-enable MD013 -->
 
@@ -209,12 +218,21 @@ $configuration | Restart-SqlDscRSService -Force
 After this step, the Report Server can connect to its databases using the new
 service account.
 
-## Step 4: Remove the Old Encryption Key
+## Step 4: Handle Encryption
 
 > [!WARNING]
-> This is a destructive operation. Once you remove the encryption key, the old
-> key cannot be recovered. Any data encrypted with the old key (stored credentials,
-> connection strings) will be inaccessible until a new key is generated.
+> This is a destructive operation. Once you remove the encryption key or encrypted
+> information, the old data cannot be recovered. Any data encrypted with the old
+> key (stored credentials, connection strings) will be inaccessible.
+
+**What this affects:**
+
+- Stored credentials for data sources
+- Connection strings with embedded credentials
+- Subscription delivery settings with credentials
+- Unattended execution account credentials
+
+### For SQL Server 2019/2022 RS and Power BI Report Server
 
 Remove the existing encryption key that was tied to the old service account:
 
@@ -225,16 +243,28 @@ $configuration | Remove-SqlDscRSEncryptionKey -Force
 This command calls the WMI method `DeleteEncryptionKey`, which removes the
 symmetric encryption key from the Report Server.
 
-**What this affects:**
-
-- Stored credentials for data sources
-- Connection strings with embedded credentials
-- Subscription delivery settings with credentials
-
 After removing the key, the Report Server cannot decrypt any previously encrypted
 data. You must proceed to Step 5 immediately.
 
-## Step 5: Create a New Encryption Key
+### For SQL Server 2017 RS Only
+
+> [!CAUTION]
+> **Do NOT run `Remove-SqlDscRSEncryptionKey` on SQL Server 2017 RS.** This command
+> fails with "rsCannotValidateEncryptedData" and "Keyset does not exist" errors
+> and will leave the Report Server in an inconsistent state.
+
+Instead, remove all encrypted information from the database:
+
+```powershell
+$configuration | Remove-SqlDscRSEncryptedInformation -Force
+```
+
+This command removes all encrypted data from the Report Server database as a
+workaround for the encryption key validation issue in SQL Server 2017.
+
+## Step 5: Restore Encryption Capability
+
+### For SQL Server 2019/2022 RS and Power BI Report Server
 
 Generate a new encryption key tied to the new service account:
 
@@ -254,6 +284,37 @@ After this step, the Report Server can again encrypt and decrypt sensitive data.
 > After completing the entire service account change process, back up the new
 > encryption key using `Backup-SqlDscRSEncryptionKey`. This backup is critical
 > for disaster recovery scenarios.
+
+### For SQL Server 2017 RS Only
+
+> [!CAUTION]
+> **Do NOT run `New-SqlDscRSEncryptionKey` on SQL Server 2017 RS.** This command
+> fails with "rsCannotValidateEncryptedData" and "Keyset does not exist" errors.
+
+Instead, re-establish the database connection to restore encryption capability:
+
+```powershell
+$setSqlDscRSDatabaseConnectionParams = @{
+    ServerName = 'localhost'
+    InstanceName = 'RSDB'
+    DatabaseName = 'ReportServer'
+    Force = $true
+}
+
+$configuration | Set-SqlDscRSDatabaseConnection @setSqlDscRSDatabaseConnectionParams
+```
+
+> [!NOTE]
+> Replace `'localhost'`, `'RSDB'`, and `'ReportServer'` with your actual SQL
+> Server name, instance name, and Report Server database name.
+
+This command re-establishes the database connection after removing encrypted
+information, allowing the Report Server to function with the new service account.
+
+> [!IMPORTANT]
+> **SQL Server 2017 trade-off:** All previously stored credentials are lost.
+> After completing the service account change, you must manually re-enter all
+> credentials for data sources, subscriptions, and the unattended execution account.
 
 ## Step 6: Recreate URL Reservations
 
@@ -358,11 +419,14 @@ Write-Information -MessageData "Current service account: $($configuration.Window
 
 Write-Information -MessageData "`n[Step 1] Changing service account..." -InformationAction 'Continue'
 
-$configuration | Set-SqlDscRSServiceAccount `
-    -Credential $newCredential `
-    -RestartService `
-    -SuppressUrlReservationWarning `
-    -Force
+$setSqlDscRSServiceAccountParams = @{
+    Credential = $newCredential
+    RestartService = $true
+    SuppressUrlReservationWarning = $true
+    Force = $true
+}
+
+$configuration | Set-SqlDscRSServiceAccount @setSqlDscRSServiceAccountParams
 
 # ============================================================================
 # STEP 2: Verify the change
@@ -388,16 +452,23 @@ Disconnect-SqlDscDatabaseEngine -ServerObject $serverObject
 
 # Generate and execute database rights script
 $databaseName = $configuration.DatabaseName
-$databaseRightsScript = $configuration | Request-SqlDscRSDatabaseRightsScript `
-    -DatabaseName $databaseName `
-    -UserName $currentServiceAccount
 
-Invoke-SqlDscQuery `
-    -ServerName $dbServerName `
-    -InstanceName $dbInstanceName `
-    -DatabaseName 'master' `
-    -Query $databaseRightsScript `
-    -Force
+$requestSqlDscRSDatabaseRightsScriptParams = @{
+    DatabaseName = $databaseName
+    UserName = $currentServiceAccount
+}
+
+$databaseRightsScript = $configuration | Request-SqlDscRSDatabaseRightsScript @requestSqlDscRSDatabaseRightsScriptParams
+
+$invokeSqlDscQueryParams = @{
+    ServerName = $dbServerName
+    InstanceName = $dbInstanceName
+    DatabaseName = 'master'
+    Query = $databaseRightsScript
+    Force = $true
+}
+
+Invoke-SqlDscQuery @invokeSqlDscQueryParams
 
 # Restart service to apply permissions
 $configuration | Restart-SqlDscRSService -Force
@@ -405,7 +476,10 @@ $configuration | Restart-SqlDscRSService -Force
 Write-Information -MessageData "Database permissions granted" -InformationAction 'Continue'
 
 # ============================================================================
-# STEP 4: Remove old encryption key
+# STEP 4: Handle encryption (version-specific)
+# ============================================================================
+# NOTE: For SQL Server 2017 RS, use Remove-SqlDscRSEncryptedInformation instead.
+#       See the SQL Server 2017 script below for the alternative workflow.
 # ============================================================================
 
 Write-Information -MessageData "`n[Step 4] Removing old encryption key..." -InformationAction 'Continue'
@@ -415,7 +489,10 @@ $configuration | Remove-SqlDscRSEncryptionKey -Force
 Write-Information -MessageData "Old encryption key removed" -InformationAction 'Continue'
 
 # ============================================================================
-# STEP 5: Create new encryption key
+# STEP 5: Restore encryption capability (version-specific)
+# ============================================================================
+# NOTE: For SQL Server 2017 RS, use Set-SqlDscRSDatabaseConnection instead.
+#       See the SQL Server 2017 script below for the alternative workflow.
 # ============================================================================
 
 Write-Information -MessageData "`n[Step 5] Creating new encryption key..." -InformationAction 'Continue'
@@ -477,20 +554,145 @@ Write-Information -MessageData "`n[Complete] Service account change finished suc
 The Report Server will be unavailable during this process. Plan to perform this
 change during a maintenance window when users do not need access to reports.
 
-### SQL Server 2017 Limitation
+### Complete SQL Server 2017 Script
 
-On SQL Server 2017 Reporting Services, the encryption key operations (Steps 4-5)
-may fail with the error:
+The following script is specifically for SQL Server 2017 RS, which uses
+`Remove-SqlDscRSEncryptedInformation` and `Set-SqlDscRSDatabaseConnection`
+instead of the encryption key commands used for SQL Server 2019/2022 RS and
+Power BI Report Server.
 
-```text
-The report server was unable to validate the integrity of encrypted data in the
-database. (rsCannotValidateEncryptedData); Keyset does not exist
-(Exception from HRESULT: 0x80090016)
+<!-- markdownlint-disable MD013 -->
+```powershell
+#Requires -Modules SqlServerDsc
+#Requires -RunAsAdministrator
+
+# ============================================================================
+# SQL SERVER 2017 REPORTING SERVICES - Service Account Change Script
+# ============================================================================
+# This script is specifically for SQL Server 2017 RS which requires a
+# different workflow than SQL Server 2019/2022 and Power BI Report Server.
+# ============================================================================
+
+# CONFIGURATION - Customize these values for your environment
+$instanceName = 'SSRS'
+$dbServerName = 'localhost'
+$dbInstanceName = 'RSDB'
+$databaseName = 'ReportServer'
+
+# Get credentials and current configuration
+$newCredential = Get-Credential -Message 'Enter the new service account credentials (DOMAIN\Username)'
+$configuration = Get-SqlDscRSConfiguration -InstanceName $instanceName
+
+Write-Information -MessageData "Current service account: $($configuration.WindowsServiceIdentityActual)" -InformationAction 'Continue'
+
+# STEP 1: Change the service account
+Write-Information -MessageData "`n[Step 1] Changing service account..." -InformationAction 'Continue'
+
+$setSqlDscRSServiceAccountParams = @{
+    Credential = $newCredential
+    RestartService = $true
+    SuppressUrlReservationWarning = $true
+    Force = $true
+}
+
+$configuration | Set-SqlDscRSServiceAccount @setSqlDscRSServiceAccountParams
+
+# STEP 2: Verify the change
+Write-Information -MessageData "`n[Step 2] Verifying service account change..." -InformationAction 'Continue'
+
+$configuration = Get-SqlDscRSConfiguration -InstanceName $instanceName
+$currentServiceAccount = $configuration | Get-SqlDscRSServiceAccount
+
+Write-Information -MessageData "Service account is now: $currentServiceAccount" -InformationAction 'Continue'
+
+# STEP 3: Grant database permissions
+Write-Information -MessageData "`n[Step 3] Granting database permissions..." -InformationAction 'Continue'
+
+$serverObject = Connect-SqlDscDatabaseEngine -ServerName $dbServerName -InstanceName $dbInstanceName
+New-SqlDscLogin -ServerObject $serverObject -Name $currentServiceAccount -WindowsUser -Force
+Disconnect-SqlDscDatabaseEngine -ServerObject $serverObject
+
+$requestSqlDscRSDatabaseRightsScriptParams = @{
+    DatabaseName = $databaseName
+    UserName = $currentServiceAccount
+}
+
+$databaseRightsScript = $configuration | Request-SqlDscRSDatabaseRightsScript @requestSqlDscRSDatabaseRightsScriptParams
+
+$invokeSqlDscQueryParams = @{
+    ServerName = $dbServerName
+    InstanceName = $dbInstanceName
+    DatabaseName = 'master'
+    Query = $databaseRightsScript
+    Force = $true
+}
+
+Invoke-SqlDscQuery @invokeSqlDscQueryParams
+
+$configuration | Restart-SqlDscRSService -Force
+
+Write-Information -MessageData "Database permissions granted" -InformationAction 'Continue'
+
+# STEP 4 (SQL 2017): Remove encrypted information
+# NOTE: Do NOT use Remove-SqlDscRSEncryptionKey on SQL Server 2017!
+Write-Information -MessageData "`n[Step 4] Removing encrypted information (SQL 2017 workaround)..." -InformationAction 'Continue'
+
+$configuration | Remove-SqlDscRSEncryptedInformation -Force
+
+Write-Information -MessageData "Encrypted information removed" -InformationAction 'Continue'
+
+# STEP 5 (SQL 2017): Re-establish database connection
+# NOTE: Do NOT use New-SqlDscRSEncryptionKey on SQL Server 2017!
+Write-Information -MessageData "`n[Step 5] Re-establishing database connection (SQL 2017 workaround)..." -InformationAction 'Continue'
+
+$setSqlDscRSDatabaseConnectionParams = @{
+    ServerName = $dbServerName
+    InstanceName = $dbInstanceName
+    DatabaseName = $databaseName
+    Force = $true
+}
+
+$configuration | Set-SqlDscRSDatabaseConnection @setSqlDscRSDatabaseConnectionParams
+
+Write-Information -MessageData "Database connection re-established" -InformationAction 'Continue'
+
+# STEP 6: Recreate URL reservations
+Write-Information -MessageData "`n[Step 6] Recreating URL reservations..." -InformationAction 'Continue'
+
+$configuration | Set-SqlDscRSUrlReservation -RecreateExisting -Force
+$configuration | Restart-SqlDscRSService -Force
+
+Write-Information -MessageData "URL reservations recreated" -InformationAction 'Continue'
+
+# STEP 7: Re-initialize Report Server
+Write-Information -MessageData "`n[Step 7] Re-initializing Report Server..." -InformationAction 'Continue'
+
+$configuration | Initialize-SqlDscRS -Force
+$configuration | Restart-SqlDscRSService -Force
+
+Write-Information -MessageData "Report Server re-initialized" -InformationAction 'Continue'
+
+# STEP 8: Validate accessibility
+Write-Information -MessageData "`n[Step 8] Validating accessibility..." -InformationAction 'Continue'
+
+$configuration = Get-SqlDscRSConfiguration -InstanceName $instanceName
+
+$finalServiceAccount = $configuration | Get-SqlDscRSServiceAccount
+$isInitialized = $configuration | Test-SqlDscRSInitialized
+$urlReservations = $configuration | Get-SqlDscRSUrlReservation
+
+Write-Information -MessageData "`nFinal Status:" -InformationAction 'Continue'
+Write-Information -MessageData "  Service Account: $finalServiceAccount" -InformationAction 'Continue'
+Write-Information -MessageData "  Is Initialized: $isInitialized" -InformationAction 'Continue'
+Write-Information -MessageData "  URL Reservations: $($urlReservations.Count)" -InformationAction 'Continue'
+
+Write-Information -MessageData "`nTesting HTTP accessibility..." -InformationAction 'Continue'
+$configuration | Test-SqlDscRSAccessible -Detailed -TimeoutSeconds 240 -RetryIntervalSeconds 10
+
+Write-Information -MessageData "`n[Complete] SQL Server 2017 service account change finished!" -InformationAction 'Continue'
+Write-Information -MessageData "`n[ACTION REQUIRED] Re-enter all stored credentials for data sources and subscriptions." -InformationAction 'Continue'
 ```
-
-This is a known limitation. The required steps to resolve this issue are unknown
-at this time. If you encounter this error, you may need to use the Report Server
-Configuration Manager to complete the encryption key steps manually.
+<!-- markdownlint-enable MD013 -->
 
 ### Test in Non-Production First
 
@@ -520,6 +722,9 @@ across your Report Server infrastructure.
 The key takeaways are:
 
 1. The process must be performed in order — each step depends on the previous
-1. Encryption key removal is destructive — there is no undo
+1. **SQL Server 2017 RS requires different commands for Steps 4-5** — use
+   `Remove-SqlDscRSEncryptedInformation` and `Set-SqlDscRSDatabaseConnection`
+   instead of the encryption key commands
+1. Encryption key/data removal is destructive — there is no undo
 1. Always validate accessibility after completing all steps
 1. Plan for service downtime during the change

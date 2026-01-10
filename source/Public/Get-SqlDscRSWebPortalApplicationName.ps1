@@ -13,7 +13,7 @@
         See more information at:
         https://docs.microsoft.com/en-us/sql/reporting-services/breaking-changes-in-sql-server-reporting-services-in-sql-server-2016
 
-    .PARAMETER Configuration
+    .PARAMETER SetupConfiguration
         Specifies the setup configuration object for the Reporting Services instance.
         This can be obtained using the `Get-SqlDscRSSetupConfiguration` command.
         This parameter accepts pipeline input.
@@ -44,14 +44,14 @@ function Get-SqlDscRSWebPortalApplicationName
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [System.Object]
-        $Configuration
+        $SetupConfiguration
     )
 
     process
     {
         Write-Debug -Message $script:localizedData.Get_SqlDscRSWebPortalApplicationName_GettingApplicationName
 
-        $sqlVersion = $Configuration | Get-SqlDscRSVersion
+        $sqlVersion = $SetupConfiguration | Get-SqlDscRSVersion
 
         if (-not $sqlVersion)
         {

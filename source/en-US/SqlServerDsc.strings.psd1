@@ -288,6 +288,14 @@ ConvertFrom-StringData @'
     Get_SqlDscRSSetupConfiguration_InstanceNotFound = Could not find a Microsoft SQL Server Reporting Services instance with the name '{0}'.
     Get_SqlDscRSSetupConfiguration_NoInstancesFound = No SQL Server Reporting Services instances were found.
 
+    ## Get-SqlDscRSUrl
+    Get_SqlDscRSUrl_GettingUrls = Getting Report Server URLs for Reporting Services instance '{0}'.
+    Get_SqlDscRSUrl_FoundUrl = Found URL for application '{0}': {1}
+    Get_SqlDscRSUrl_VersionNotFound = Could not determine the version for Reporting Services instance '{0}'. The CurrentVersion property is empty. (GSRSU0001)
+    Get_SqlDscRSUrl_FailedToGetInstance = Failed to get the MSReportServer_Instance CIM instance for Reporting Services instance '{0}': {1} (GSRSU0002)
+    Get_SqlDscRSUrl_InstanceNotFound = Could not find the MSReportServer_Instance CIM instance for Reporting Services instance '{0}'. (GSRSU0003)
+    Get_SqlDscRSUrl_FailedToGetUrls = Failed to get Report Server URLs for Reporting Services instance '{0}': {1} (GSRSU0004)
+
     ## Get-SqlDscRSConfiguration
     Get_SqlDscRSConfiguration_DetectingVersion = Detecting version for Reporting Services instance '{0}'.
     Get_SqlDscRSConfiguration_GettingConfiguration = Getting configuration CIM instance for Reporting Services instance '{0}' version '{1}'.
@@ -297,11 +305,19 @@ ConvertFrom-StringData @'
     Get_SqlDscRSConfiguration_ConfigurationNotFound = Could not find the configuration CIM instance for Reporting Services instance '{0}'. (GSRSCD0004)
 
     ## Get-SqlDscRSLogPath
-    # cSpell: ignore GSRSLP
     Get_SqlDscRSLogPath_GettingPath = Getting log file path for Reporting Services instance '{0}'.
     Get_SqlDscRSLogPath_FoundPath = Found log file path: '{0}'.
     Get_SqlDscRSLogPath_InstanceNotFound = Could not find a Reporting Services instance with the name '{0}'. (GSRSLP0001)
     Get_SqlDscRSLogPath_LogPathNotFound = Could not determine the log file path for Reporting Services instance '{0}'. The ErrorDumpDirectory registry value is empty. (GSRSLP0002)
+
+    ## Get-SqlDscRSConfigFile
+    Get_SqlDscRSConfigFile_GettingConfigFile = Getting configuration file for Reporting Services instance '{0}'.
+    Get_SqlDscRSConfigFile_ReadingFromPath = Reading configuration file from path '{0}'.
+    Get_SqlDscRSConfigFile_FoundConfigFile = Found configuration file at path: '{0}'.
+    Get_SqlDscRSConfigFile_InstanceNotFound = Could not find a Reporting Services instance with the name '{0}'. (GSRSCF0001)
+    Get_SqlDscRSConfigFile_ConfigFilePathNotFound = Could not determine the configuration file path for Reporting Services instance '{0}'. The ConfigFilePath registry value is empty. (GSRSCF0002)
+    Get_SqlDscRSConfigFile_FailedToReadConfigFile = Failed to read the configuration file '{0}': {1} (GSRSCF0003)
+    Get_SqlDscRSConfigFile_FileNotFound = Could not find the configuration file at path '{0}'. (GSRSCF0004)
 
     ## Get-SqlDscRSWebPortalApplicationName
     Get_SqlDscRSWebPortalApplicationName_GettingApplicationName = Getting web portal application name.
@@ -332,7 +348,6 @@ ConvertFrom-StringData @'
     Invoke_RsCimMethod_NoErrorDetails = No error details were returned by the method. See HRESULT code for more information. (IRCM0002)
 
     ## Get-HResultMessage
-    # cSpell: ignore GHRM
     HResult_AccessDenied = Access is denied. Verify that the current user has administrator rights on the Reporting Services instance. (GHRM0001)
     HResult_LogonTypeNotGranted = The account has not been granted the requested logon type at this computer. Verify that the Reporting Services service is running and that the service account has the required permissions to interact with the Reporting Services WMI provider. (GHRM0002)
     HResult_UnspecifiedFailure = An unspecified failure occurred. (GHRM0003)
@@ -827,7 +842,7 @@ ConvertFrom-StringData @'
     Remove_SqlDscRSEncryptionKey_ShouldProcessConfirmation = Are you sure you want to remove the encryption key from Reporting Services instance '{0}'? This is a destructive operation.
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Remove_SqlDscRSEncryptionKey_ShouldProcessCaption = Remove encryption key from Reporting Services instance
-    Remove_SqlDscRSEncryptionKey_FailedToRemove = Failed to remove encryption key from Reporting Services instance '{0}'. (RRSEK0001)
+    Remove_SqlDscRSEncryptionKey_FailedToRemove = Failed to remove encryption key from Reporting Services instance '{0}'. (RSREK0001)
 
     ## Remove-SqlDscRSEncryptedInformation
     Remove_SqlDscRSEncryptedInformation_Removing = Removing encrypted information from Reporting Services instance '{0}'.
@@ -835,7 +850,7 @@ ConvertFrom-StringData @'
     Remove_SqlDscRSEncryptedInformation_ShouldProcessConfirmation = Are you sure you want to remove all encrypted information from Reporting Services instance '{0}'? This is a destructive operation.
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Remove_SqlDscRSEncryptedInformation_ShouldProcessCaption = Remove encrypted information from Reporting Services instance
-    Remove_SqlDscRSEncryptedInformation_FailedToRemove = Failed to remove encrypted information from Reporting Services instance '{0}'. (RRSREI0001)
+    Remove_SqlDscRSEncryptedInformation_FailedToRemove = Failed to remove encrypted information from Reporting Services instance '{0}'. (RSRSEI0001)
 
     ## Get-SqlDscRSServiceAccount
     Get_SqlDscRSServiceAccount_Getting = Getting service account for Reporting Services instance '{0}'.
