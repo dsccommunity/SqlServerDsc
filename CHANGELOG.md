@@ -248,6 +248,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - SqlServerDsc
+  - Consolidated Reporting Services post-service-account-change integration tests
+    into three version-specific test files: `Post.ServiceAccountChange.SQL2017.RS`,
+    `Post.ServiceAccountChange.SQL2019-2022.RS`, and `Post.ServiceAccountChange.PowerBI.RS`.
+    SQL Server 2017 uses a workaround with `Remove-SqlDscRSEncryptedInformation`
+    and `Set-SqlDscRSDatabaseConnection` because the encryption key commands
+    fail with "Keyset does not exist" errors on SQL Server 2017.
   - Split the `Test_HQRM` pipeline job into two parallel jobs (`Test_QA` and
     `Test_HQRM`) to reduce overall pipeline execution time by approximately
     15 minutes.
