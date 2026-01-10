@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- SqlServerDsc
+  - Added class `ReportServerUri` to represent URLs returned by the
+    `GetReportServerUrls` CIM method on `MSReportServer_Instance`.
+- Added public command `Get-SqlDscRSUrl` to get the Report Server URLs for
+  SQL Server Reporting Services or Power BI Report Server. This command
+  invokes the `GetReportServerUrls` CIM method on `MSReportServer_Instance`
+  and returns an array of `ReportServerUri` objects containing the instance
+  name, application name, and URL for each configured URL.
+- Added public command `Get-SqlDscRSConfigFile` to get the RsReportServer.config
+  configuration file for SQL Server Reporting Services (SSRS) or Power BI
+  Report Server (PBIRS) as an XML document object. Supports three parameter
+  sets: `ByInstanceName` (looks up path via registry), `ByConfiguration`
+  (accepts pipeline input from `Get-SqlDscRSSetupConfiguration`), and `ByPath`
+  (reads from a direct file path). The returned XML object supports standard
+  XML navigation and XPath queries for accessing configuration settings.
 - Added public command `Get-SqlDscRSLogPath` to get the log file folder path
   for SQL Server Reporting Services or Power BI Report Server. Returns the
   ErrorDumpDirectory from the instance's setup configuration, which can be
@@ -223,6 +238,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added wiki article `Troubleshooting-Report-Server` documenting how to
   retrieve and analyze log files and Windows event logs for Power BI Report
   Server and SQL Server Reporting Services.
+- Updated wiki article `Change-Report-Server-Service-Account` with SQL Server
+  2017 specific workflow. SQL Server 2017 RS requires using
+  `Remove-SqlDscRSEncryptedInformation` and `Set-SqlDscRSDatabaseConnection`
+  instead of `Remove-SqlDscRSEncryptionKey` and `New-SqlDscRSEncryptionKey`
+  which fail with "rsCannotValidateEncryptedData" and "Keyset does not exist"
+  errors on SQL Server 2017.
 
 ### Changed
 

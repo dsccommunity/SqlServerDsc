@@ -40,8 +40,7 @@ BeforeAll {
         connection after Post.EncryptedInformation.RS.Integration.Tests.ps1 has
         removed encrypted information.
 
-        This test runs after Post.EncryptedInformation.RS.Integration.Tests.ps1 and
-        before Remove-SqlDscRSEncryptionKey.Integration.Tests.ps1.
+        This test runs after Post.EncryptedInformation.RS.Integration.Tests.ps1.
 #>
 Describe 'Post.DatabaseConnection.RS' {
     Context 'When re-establishing database connection for SQL Server Reporting Services on SQL Server 2017' -Tag @('Integration_SQL2017_RS') {

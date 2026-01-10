@@ -44,25 +44,6 @@ BeforeAll {
         Post.ServiceAccountChange.RS to ensure the instance is properly
         initialized before testing accessibility.
 #>
-
-<#
-    TODO: The following integration tests are skipped on SQL Server 2017 due to
-          encryption key validation failures. These tests are linked and all fail
-          with similar errors related to "rsCannotValidateEncryptedData" and
-          "Keyset does not exist".
-
-          Failing tests on SQL Server 2017:
-          - Remove-SqlDscRSEncryptionKey.Integration.Tests.ps1
-          - New-SqlDscRSEncryptionKey.Integration.Tests.ps1
-          - Post.Reinitialize.RS.Integration.Tests.ps1
-          - Post.ServiceAccountChange.RS.Integration.Tests.ps1
-
-          Error: "The report server was unable to validate the integrity of encrypted
-          data in the database. (rsCannotValidateEncryptedData);Keyset does not exist
-          (Exception from HRESULT: 0x80090016)"
-
-          Re-add tag 'Integration_SQL2017_RS' when fixed.
-#>
 Describe 'Post.Reinitialize.RS' -Tag @('Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS', 'Integration_PowerBI') {
     BeforeAll {
         if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_PowerBI')

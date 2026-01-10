@@ -48,7 +48,7 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-Configuration] <Object> [<CommonParameters>]'
+                ExpectedParameters = '[-SetupConfiguration] <Object> [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Get-SqlDscRSWebPortalApplicationName').ParameterSets |
@@ -73,11 +73,11 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
                 return [System.Version] '13.0.4001.0'
             }
 
-            $mockConfiguration = @{
+            $mockSetupConfiguration = @{
                 InstanceName = 'SSRS'
             }
 
-            $result = $mockConfiguration | Get-SqlDscRSWebPortalApplicationName
+            $result = $mockSetupConfiguration | Get-SqlDscRSWebPortalApplicationName
 
             $result | Should -Be 'ReportServerWebApp'
         }
@@ -87,11 +87,11 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
                 return [System.Version] '14.0.600.0'
             }
 
-            $mockConfiguration = @{
+            $mockSetupConfiguration = @{
                 InstanceName = 'SSRS'
             }
 
-            $result = $mockConfiguration | Get-SqlDscRSWebPortalApplicationName
+            $result = $mockSetupConfiguration | Get-SqlDscRSWebPortalApplicationName
 
             $result | Should -Be 'ReportServerWebApp'
         }
@@ -101,11 +101,11 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
                 return [System.Version] '15.0.1100.0'
             }
 
-            $mockConfiguration = @{
+            $mockSetupConfiguration = @{
                 InstanceName = 'SSRS'
             }
 
-            $result = $mockConfiguration | Get-SqlDscRSWebPortalApplicationName
+            $result = $mockSetupConfiguration | Get-SqlDscRSWebPortalApplicationName
 
             $result | Should -Be 'ReportServerWebApp'
         }
@@ -115,11 +115,11 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
                 return [System.Version] '16.0.1000.0'
             }
 
-            $mockConfiguration = @{
+            $mockSetupConfiguration = @{
                 InstanceName = 'SSRS'
             }
 
-            $result = $mockConfiguration | Get-SqlDscRSWebPortalApplicationName
+            $result = $mockSetupConfiguration | Get-SqlDscRSWebPortalApplicationName
 
             $result | Should -Be 'ReportServerWebApp'
         }
@@ -135,11 +135,11 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
                 return [System.Version] '12.0.4100.0'
             }
 
-            $mockConfiguration = @{
+            $mockSetupConfiguration = @{
                 InstanceName = 'SSRS'
             }
 
-            $result = $mockConfiguration | Get-SqlDscRSWebPortalApplicationName
+            $result = $mockSetupConfiguration | Get-SqlDscRSWebPortalApplicationName
 
             $result | Should -Be 'ReportManager'
         }
@@ -149,11 +149,11 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
                 return [System.Version] '11.0.5000.0'
             }
 
-            $mockConfiguration = @{
+            $mockSetupConfiguration = @{
                 InstanceName = 'SSRS'
             }
 
-            $result = $mockConfiguration | Get-SqlDscRSWebPortalApplicationName
+            $result = $mockSetupConfiguration | Get-SqlDscRSWebPortalApplicationName
 
             $result | Should -Be 'ReportManager'
         }
@@ -165,11 +165,11 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
         }
 
         It 'Should return null when Get-SqlDscRSVersion returns null' {
-            $mockConfiguration = @{
+            $mockSetupConfiguration = @{
                 InstanceName = 'SSRS'
             }
 
-            $result = $mockConfiguration | Get-SqlDscRSWebPortalApplicationName
+            $result = $mockSetupConfiguration | Get-SqlDscRSWebPortalApplicationName
 
             $result | Should -BeNullOrEmpty
         }
@@ -182,12 +182,12 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
             }
         }
 
-        It 'Should return the correct application name when Configuration is passed as parameter' {
-            $mockConfiguration = @{
+        It 'Should return the correct application name when SetupConfiguration is passed as parameter' {
+            $mockSetupConfiguration = @{
                 InstanceName = 'SSRS'
             }
 
-            $result = Get-SqlDscRSWebPortalApplicationName -Configuration $mockConfiguration
+            $result = Get-SqlDscRSWebPortalApplicationName -SetupConfiguration $mockSetupConfiguration
 
             $result | Should -Be 'ReportServerWebApp'
         }
