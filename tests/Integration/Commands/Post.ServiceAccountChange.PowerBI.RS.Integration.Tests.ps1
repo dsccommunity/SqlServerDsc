@@ -75,7 +75,7 @@ Describe 'Post.ServiceAccountChange.PowerBI.RS' -Tag @('Integration_PowerBI') {
     Context 'When granting database rights to the new service account' {
         BeforeAll {
             # Connect to the database engine for the RS database instance.
-            $script:serverObject = Connect-SqlDscDatabaseEngine -ServerName 'localhost' -InstanceName 'PBIRSDB' -ErrorAction 'Stop'
+            $script:serverObject = Connect-SqlDscDatabaseEngine -ServerName 'localhost' -InstanceName 'RSDB' -ErrorAction 'Stop'
         }
 
         AfterAll {
@@ -96,7 +96,7 @@ Describe 'Post.ServiceAccountChange.PowerBI.RS' -Tag @('Integration_PowerBI') {
         It 'Should execute the database rights script against the database' {
             $invokeSqlDscQueryParameters = @{
                 ServerName   = 'localhost'
-                InstanceName = 'PBIRSDB'
+                InstanceName = 'RSDB'
                 DatabaseName = 'master'
                 Query        = $script:databaseRightsScript
                 Force        = $true
