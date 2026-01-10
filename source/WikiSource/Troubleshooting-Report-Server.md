@@ -25,6 +25,8 @@ are useful for diagnosing issues.
 > For comprehensive information about all available Reporting Services log
 > files and sources (including execution logs, trace logs, HTTP logs, and
 > performance logs), see [Reporting Services log files and sources](https://learn.microsoft.com/en-us/sql/reporting-services/report-server/reporting-services-log-files-and-sources).
+> For detailed information about trace log configuration and content, see
+> [Report Server Service Trace Log](https://learn.microsoft.com/en-us/sql/reporting-services/report-server/report-server-service-trace-log).
 
 ### Getting the Log Path
 
