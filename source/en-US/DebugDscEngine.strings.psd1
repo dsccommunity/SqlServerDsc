@@ -1,0 +1,15 @@
+@{
+    Getting_CurrentState                    = "Getting current state for DebugDscEngine resource with KeyProperty '{0}'."
+    Debug_GetCurrentState_Called           = "GetCurrentState method called for KeyProperty '{0}' with properties: {1}."
+    Debug_GetCurrentState_Returning        = "GetCurrentState method returning properties: {0}."
+    Debug_Modify_Called                    = "Modify method called for KeyProperty '{0}' with properties to modify: {1}."
+    Debug_Modify_Property                  = "Modifying property '{0}' to value '{1}'."
+    Debug_Modify_Completed                 = "Modify method completed for KeyProperty '{0}'."
+    Debug_AssertProperties_Called          = "AssertProperties method called for KeyProperty '{0}' with properties: {1}."
+    Debug_AssertProperties_Completed       = "AssertProperties method completed for KeyProperty '{0}'."
+    Debug_NormalizeProperties_Called       = "NormalizeProperties method called for KeyProperty '{0}' with properties: {1}."
+    Debug_NormalizeProperties_Property     = "Normalized property '{0}' to value '{1}'."
+    Debug_NormalizeProperties_Completed    = "NormalizeProperties method completed for KeyProperty '{0}'."
+    KeyProperty_Invalid                    = "The parameter KeyProperty cannot be null or empty."
+    MandatoryProperty_Invalid              = "The parameter MandatoryProperty cannot be null or empty."
+}
