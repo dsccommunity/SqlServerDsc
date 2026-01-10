@@ -296,6 +296,13 @@ ConvertFrom-StringData @'
     Get_SqlDscRSConfiguration_FailedToGetConfiguration = Failed to get the configuration CIM instance for Reporting Services instance '{0}': {1} (GSRSCD0003)
     Get_SqlDscRSConfiguration_ConfigurationNotFound = Could not find the configuration CIM instance for Reporting Services instance '{0}'. (GSRSCD0004)
 
+    ## Get-SqlDscRSLogPath
+    # cSpell: ignore GSRSLP
+    Get_SqlDscRSLogPath_GettingPath = Getting log file path for Reporting Services instance '{0}'.
+    Get_SqlDscRSLogPath_FoundPath = Found log file path: '{0}'.
+    Get_SqlDscRSLogPath_InstanceNotFound = Could not find a Reporting Services instance with the name '{0}'. (GSRSLP0001)
+    Get_SqlDscRSLogPath_LogPathNotFound = Could not determine the log file path for Reporting Services instance '{0}'. The ErrorDumpDirectory registry value is empty. (GSRSLP0002)
+
     ## Get-SqlDscRSWebPortalApplicationName
     Get_SqlDscRSWebPortalApplicationName_GettingApplicationName = Getting web portal application name.
 
@@ -761,6 +768,12 @@ ConvertFrom-StringData @'
     Set_SqlDscRSUrlReservation_DesiredUrls = Desired URL reservations for application '{0}': {1}
     Set_SqlDscRSUrlReservation_RemovingUrl = Removing URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'.
     Set_SqlDscRSUrlReservation_AddingUrl = Adding URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'.
+    Set_SqlDscRSUrlReservation_RecreatingUrl = Recreating URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'. (SSRUR0001)
+    Set_SqlDscRSUrlReservation_Recreate_ShouldProcessVerboseDescription = Recreating all URL reservations on Reporting Services instance '{0}'.
+    Set_SqlDscRSUrlReservation_Recreate_ShouldProcessVerboseWarning = Are you sure you want to recreate all URL reservations on Reporting Services instance '{0}'? All existing reservations will be removed and re-added.
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Set_SqlDscRSUrlReservation_Recreate_ShouldProcessCaption = Recreate URL reservations for Reporting Services instance
+    Set_SqlDscRSUrlReservation_NoReservationsToRecreate = No URL reservations found to recreate on Reporting Services instance '{0}'.
 
     ## Set-SqlDscRSVirtualDirectory
     Set_SqlDscRSVirtualDirectory_Setting = Setting virtual directory '{0}' for application '{1}' on Reporting Services instance '{2}'.
@@ -778,6 +791,7 @@ ConvertFrom-StringData @'
     ## Request-SqlDscRSDatabaseRightsScript
     Request_SqlDscRSDatabaseRightsScript_Generating = Generating database rights script for database '{0}' and user '{1}' for Reporting Services instance '{2}'.
     Request_SqlDscRSDatabaseRightsScript_FailedToGenerate = Failed to generate database rights script for Reporting Services instance '{0}'. {1} (RSRDBRS0001)
+    Request_SqlDscRSDatabaseRightsScript_InvalidUserNameFormat = When using IsRemote with Windows authentication, the UserName must be in the format '<domain>\<username>'. The provided value '{0}' is not in the correct format.
 
     ## Set-SqlDscRSDatabaseConnection
     Set_SqlDscRSDatabaseConnection_Setting = Setting report server database connection to database '{0}' on server '{1}' for Reporting Services instance '{2}'.
@@ -797,6 +811,44 @@ ConvertFrom-StringData @'
     Restart_SqlDscRSService_ShouldProcessCaption = Restart Reporting Services service
     Restart_SqlDscRSService_WaitingBeforeStart = Waiting {0} seconds before starting service '{1}'.
     Restart_SqlDscRSService_StartingDependentService = Starting dependent service '{0}'.
+
+    ## New-SqlDscRSEncryptionKey
+    New_SqlDscRSEncryptionKey_Generating = Generating new encryption key for Reporting Services instance '{0}'.
+    New_SqlDscRSEncryptionKey_ShouldProcessDescription = Generating new encryption key for Reporting Services instance '{0}'. This will invalidate existing encryption key backups.
+    New_SqlDscRSEncryptionKey_ShouldProcessConfirmation = Are you sure you want to generate a new encryption key for Reporting Services instance '{0}'? This will invalidate existing backups.
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    New_SqlDscRSEncryptionKey_ShouldProcessCaption = Generate new encryption key for Reporting Services instance
+    New_SqlDscRSEncryptionKey_FailedToGenerate = Failed to generate new encryption key for Reporting Services instance '{0}'. {1} (NSRSEK0001)
+    New_SqlDscRSEncryptionKey_BackupReminder = A new encryption key has been generated. Previous encryption key backups are no longer valid. Back up the new encryption key immediately using Backup-SqlDscRSEncryptionKey.
+
+    ## Remove-SqlDscRSEncryptionKey
+    Remove_SqlDscRSEncryptionKey_Removing = Removing encryption key from Reporting Services instance '{0}'.
+    Remove_SqlDscRSEncryptionKey_ShouldProcessDescription = Removing encryption key from Reporting Services instance '{0}'. This is a destructive operation.
+    Remove_SqlDscRSEncryptionKey_ShouldProcessConfirmation = Are you sure you want to remove the encryption key from Reporting Services instance '{0}'? This is a destructive operation.
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Remove_SqlDscRSEncryptionKey_ShouldProcessCaption = Remove encryption key from Reporting Services instance
+    Remove_SqlDscRSEncryptionKey_FailedToRemove = Failed to remove encryption key from Reporting Services instance '{0}'. (RRSEK0001)
+
+    ## Remove-SqlDscRSEncryptedInformation
+    Remove_SqlDscRSEncryptedInformation_Removing = Removing encrypted information from Reporting Services instance '{0}'.
+    Remove_SqlDscRSEncryptedInformation_ShouldProcessDescription = Removing encrypted information from Reporting Services instance '{0}'. This is a destructive operation.
+    Remove_SqlDscRSEncryptedInformation_ShouldProcessConfirmation = Are you sure you want to remove all encrypted information from Reporting Services instance '{0}'? This is a destructive operation.
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Remove_SqlDscRSEncryptedInformation_ShouldProcessCaption = Remove encrypted information from Reporting Services instance
+    Remove_SqlDscRSEncryptedInformation_FailedToRemove = Failed to remove encrypted information from Reporting Services instance '{0}'. (RRSREI0001)
+
+    ## Get-SqlDscRSServiceAccount
+    Get_SqlDscRSServiceAccount_Getting = Getting service account for Reporting Services instance '{0}'.
+
+    ## Set-SqlDscRSServiceAccount
+    Set_SqlDscRSServiceAccount_Setting = Setting service account to '{0}' for Reporting Services instance '{1}'.
+    Set_SqlDscRSServiceAccount_ShouldProcessDescription = Setting service account to '{0}' for Reporting Services instance '{1}'.
+    Set_SqlDscRSServiceAccount_ShouldProcessConfirmation = Are you sure you want to set the service account to '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Set_SqlDscRSServiceAccount_ShouldProcessCaption = Set service account for Reporting Services instance
+    Set_SqlDscRSServiceAccount_FailedToSet = Failed to set service account for Reporting Services instance '{0}'. {1} (SSRSSA0001)
+    Set_SqlDscRSServiceAccount_RestartingService = Restarting Reporting Services service '{0}'.
+    Set_SqlDscRSServiceAccount_UrlReservationWarning = The service account has been changed from '{0}' to '{1}'. URL reservations are tied to the service account and must be recreated. To recreate URL reservations for the new service account, run: `Get-SqlDscRSConfiguration -InstanceName '<InstanceName>' | Set-SqlDscRSUrlReservation -RecreateExisting -Force` (SSRSSA0002)
 
     ## Test-SqlDscRSInitialized
     Test_SqlDscRSInitialized_Testing = Testing if Reporting Services instance '{0}' is initialized.

@@ -49,17 +49,34 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
             $command = Get-Command -Name 'Set-SqlDscRSUrlReservation'
         }
 
-        It 'Should have the correct parameters in parameter set __AllParameterSets' {
-            $ExpectedParameters = '[-Configuration] <Object> [-Application] <string> [-UrlString] <string[]> [[-Lcid] <int>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+        It 'Should have the correct parameters in parameter set Set' {
+            $expectedParameters = '-Configuration <Object> -Application <string> -UrlString <string[]> [-Lcid <int>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
 
             $result = $command.ParameterSets |
-                Where-Object -FilterScript { $_.Name -eq '__AllParameterSets' } |
+                Where-Object -FilterScript { $_.Name -eq 'Set' } |
                 Select-Object -Property @{
                     Name       = 'ParameterListAsString'
                     Expression = { $_.ToString() }
                 }
 
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterListAsString | Should -Be $expectedParameters
+        }
+
+        It 'Should have the correct parameters in parameter set Recreate' {
+            $expectedParameters = '-Configuration <Object> -RecreateExisting [-Lcid <int>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+
+            $result = $command.ParameterSets |
+                Where-Object -FilterScript { $_.Name -eq 'Recreate' } |
+                Select-Object -Property @{
+                    Name       = 'ParameterListAsString'
+                    Expression = { $_.ToString() }
+                }
+
+            $result.ParameterListAsString | Should -Be $expectedParameters
+        }
+
+        It 'Should have Set as the default parameter set' {
+            $command.DefaultParameterSet | Should -Be 'Set'
         }
     }
 
@@ -325,6 +342,205 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
             $mockCimInstance | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80' -Force
 
             Should -Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 1
+            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 0
+        }
+    }
+
+    Context 'When using RecreateExisting with multiple applications' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'SSRS'
+            }
+
+            Mock -CommandName Get-SqlDscRSUrlReservation -MockWith {
+                return [PSCustomObject] @{
+                    HRESULT     = 0
+                    Application = @('ReportServerWebService', 'ReportServerWebService', 'ReportServerWebApp', 'ReportServerWebApp')
+                    UrlString   = @('http://+:80', 'https://+:443', 'http://+:80', 'https://+:443')
+                    Account     = @('NT SERVICE\SSRS', 'NT SERVICE\SSRS', 'NT SERVICE\SSRS', 'NT SERVICE\SSRS')
+                }
+            }
+
+            Mock -CommandName Add-SqlDscRSUrlReservation
+            Mock -CommandName Remove-SqlDscRSUrlReservation
+        }
+
+        It 'Should remove and re-add all existing URL reservations' {
+            $mockCimInstance | Set-SqlDscRSUrlReservation -RecreateExisting -Force
+
+            Should -Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 4 -Scope It
+            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 4 -Scope It
+        }
+
+        It 'Should remove each URL reservation before re-adding' {
+            $mockCimInstance | Set-SqlDscRSUrlReservation -RecreateExisting -Force
+
+            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+                $Application -eq 'ReportServerWebService' -and $UrlString -eq 'http://+:80'
+            } -Exactly -Times 1 -Scope It
+
+            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+                $Application -eq 'ReportServerWebService' -and $UrlString -eq 'https://+:443'
+            } -Exactly -Times 1 -Scope It
+
+            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+                $Application -eq 'ReportServerWebApp' -and $UrlString -eq 'http://+:80'
+            } -Exactly -Times 1 -Scope It
+
+            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+                $Application -eq 'ReportServerWebApp' -and $UrlString -eq 'https://+:443'
+            } -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should re-add each URL reservation' {
+            $mockCimInstance | Set-SqlDscRSUrlReservation -RecreateExisting -Force
+
+            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                $Application -eq 'ReportServerWebService' -and $UrlString -eq 'http://+:80'
+            } -Exactly -Times 1 -Scope It
+
+            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                $Application -eq 'ReportServerWebService' -and $UrlString -eq 'https://+:443'
+            } -Exactly -Times 1 -Scope It
+
+            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                $Application -eq 'ReportServerWebApp' -and $UrlString -eq 'http://+:80'
+            } -Exactly -Times 1 -Scope It
+
+            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                $Application -eq 'ReportServerWebApp' -and $UrlString -eq 'https://+:443'
+            } -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When using RecreateExisting with custom Lcid' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'SSRS'
+            }
+
+            Mock -CommandName Get-SqlDscRSUrlReservation -MockWith {
+                return [PSCustomObject] @{
+                    HRESULT     = 0
+                    Application = @('ReportServerWebService')
+                    UrlString   = @('http://+:80')
+                    Account     = @('NT SERVICE\SSRS')
+                }
+            }
+
+            Mock -CommandName Add-SqlDscRSUrlReservation
+            Mock -CommandName Remove-SqlDscRSUrlReservation
+        }
+
+        It 'Should pass Lcid to Add-SqlDscRSUrlReservation' {
+            $mockCimInstance | Set-SqlDscRSUrlReservation -RecreateExisting -Lcid 1031 -Force
+
+            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                $Lcid -eq 1031
+            } -Exactly -Times 1
+        }
+    }
+
+    Context 'When using RecreateExisting with PassThru' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'SSRS'
+            }
+
+            Mock -CommandName Get-SqlDscRSUrlReservation -MockWith {
+                return [PSCustomObject] @{
+                    HRESULT     = 0
+                    Application = @('ReportServerWebService')
+                    UrlString   = @('http://+:80')
+                    Account     = @('NT SERVICE\SSRS')
+                }
+            }
+
+            Mock -CommandName Add-SqlDscRSUrlReservation
+            Mock -CommandName Remove-SqlDscRSUrlReservation
+        }
+
+        It 'Should return the configuration CIM instance' {
+            $result = $mockCimInstance | Set-SqlDscRSUrlReservation -RecreateExisting -Force -PassThru
+
+            $result | Should -Not -BeNullOrEmpty
+            $result.InstanceName | Should -Be 'SSRS'
+        }
+    }
+
+    Context 'When using RecreateExisting with no existing reservations' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'SSRS'
+            }
+
+            Mock -CommandName Get-SqlDscRSUrlReservation -MockWith {
+                return [PSCustomObject] @{
+                    HRESULT     = 0
+                    Application = @()
+                    UrlString   = @()
+                    Account     = @()
+                }
+            }
+
+            Mock -CommandName Add-SqlDscRSUrlReservation
+            Mock -CommandName Remove-SqlDscRSUrlReservation
+        }
+
+        It 'Should not call any modification commands' {
+            $mockCimInstance | Set-SqlDscRSUrlReservation -RecreateExisting -Force
+
+            Should -Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 1
+            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 0
+            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 0
+        }
+    }
+
+    Context 'When using RecreateExisting with WhatIf' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'SSRS'
+            }
+
+            Mock -CommandName Get-SqlDscRSUrlReservation
+            Mock -CommandName Add-SqlDscRSUrlReservation
+            Mock -CommandName Remove-SqlDscRSUrlReservation
+        }
+
+        It 'Should not call any modification commands' {
+            $mockCimInstance | Set-SqlDscRSUrlReservation -RecreateExisting -WhatIf
+
+            Should -Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 0
+            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 0
+            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 0
+        }
+    }
+
+    Context 'When using RecreateExisting with null reservations' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'SSRS'
+            }
+
+            Mock -CommandName Get-SqlDscRSUrlReservation -MockWith {
+                return [PSCustomObject] @{
+                    HRESULT     = 0
+                    Application = $null
+                    UrlString   = $null
+                    Account     = $null
+                }
+            }
+
+            Mock -CommandName Add-SqlDscRSUrlReservation
+            Mock -CommandName Remove-SqlDscRSUrlReservation
+        }
+
+        It 'Should not call any modification commands' {
+            $mockCimInstance | Set-SqlDscRSUrlReservation -RecreateExisting -Force
+
+            Should -Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 1
+            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 0
             Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 0
         }
     }

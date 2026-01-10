@@ -9,9 +9,12 @@
         Reporting Services configuration, such as `Enable-SqlDscRsSecureConnection`
         and `Disable-SqlDscRsSecureConnection`.
 
-        The configuration CIM instance provides access to properties like
-        `SecureConnectionLevel`, `DatabaseServerName`, `VirtualDirectoryReportServer`,
-        and methods for managing Reporting Services configuration.
+        The returned CIM instance provides access to properties documented in
+        [MSReportServer_ConfigurationSetting](https://learn.microsoft.com/en-us/sql/reporting-services/wmi-provider-library-reference/msreportserver-configurationsetting-properties),
+        such as `SecureConnectionLevel`, `DatabaseServerName`,
+        `VirtualDirectoryReportServer`, `WindowsServiceIdentityActual`,
+        'WindowsServiceIdentityConfigured' and methods for managing Reporting
+        Services configuration.
 
     .PARAMETER InstanceName
         Specifies the name of the Reporting Services instance. This is a

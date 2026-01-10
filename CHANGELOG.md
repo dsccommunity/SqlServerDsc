@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added public command `Get-SqlDscRSLogPath` to get the log file folder path
+  for SQL Server Reporting Services or Power BI Report Server. Returns the
+  ErrorDumpDirectory from the instance's setup configuration, which can be
+  used with `Get-ChildItem` and `Get-Content` to access service logs, portal
+  logs, and memory dumps.
 - Added public command `Test-SqlDscRSAccessible` to verify that SQL Server
   Reporting Services or Power BI Report Server web sites are accessible.
   Supports both CIM configuration input (with dynamic `-Site` parameter) and
@@ -189,6 +194,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   for SQL Server Reporting Services or Power BI Report Server. Supports waiting
   for dependent services, configurable wait time, and accepts pipeline input
   from `Get-SqlDscRSConfiguration`.
+- Added public commands `Get-SqlDscRSServiceAccount` and
+  `Set-SqlDscRSServiceAccount` to get and set the Windows service account for
+  SQL Server Reporting Services or Power BI Report Server. `Set-SqlDscRSServiceAccount`
+  wraps the `SetWindowsServiceIdentity` CIM method and supports updating encryption
+  key backups.
 - Added public command `Test-SqlDscRSInitialized` to test whether a Reporting
   Services instance is initialized by checking the `IsInitialized` property of
   the configuration CIM instance
@@ -200,9 +210,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added public command `Request-SqlDscRSDatabaseUpgradeScript` to generate a
   T-SQL script for upgrading the report server database schema. Wraps the
   `GenerateDatabaseUpgradeScript` CIM method.
+- Added wiki article `Troubleshooting-Report-Server` documenting how to
+  retrieve and analyze log files and Windows event logs for Power BI Report
+  Server and SQL Server Reporting Services.
 
 ### Changed
 
+- SqlServerDsc
+  - Split the `Test_HQRM` pipeline job into two parallel jobs (`Test_QA` and
+    `Test_HQRM`) to reduce overall pipeline execution time by approximately
+    15 minutes.
 - `Install-SqlDscServer`
   - **BREAKING CHANGE:** Removed `PrepareImage`, `Upgrade`, `EditionUpgrade`,
     `PrepareFailoverCluster`, and `InstallFailoverCluster` parameter sets. Use
@@ -254,6 +271,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     of the deprecated private function `Get-ProtocolNameProperties`
 - `Class-Based Dsc Resource Tests`
   - Updated tests for ResourceBase 2.0.
+- `Set-SqlDscRSUrlReservation`
+  - Added separate parameter set `Recreate` with the parameter `RecreateExisting`
+    to remove and re-add all existing URL reservations for all applications.
+    This is useful after changing the Windows service account, as URL reservations
+    are tied to a specific service account and must be recreated to use the new
+    account. The `Recreate` parameter set does not require `Application` or
+    `UrlString` parameters.
+- Prerequisites Integration Tests
+  - Added `svc-RS` local Windows user for Reporting Services service account
+    integration testing.
 
 ### Fixed
 

@@ -1,5 +1,5 @@
 ---
-Category: Usage
+Category: How-to
 ---
 
 # Setting up a SQL Server Failover Cluster
