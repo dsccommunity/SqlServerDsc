@@ -240,7 +240,7 @@ Describe 'Get-SqlDscRSConfigFile' {
             }
         }
 
-        It 'Should return the configuration file when piping SetupConfiguration' {
+        It 'Should return the configuration file for piped SetupConfiguration' {
             $result = $mockSetupConfiguration | Get-SqlDscRSConfigFile
 
             $result | Should -BeOfType 'System.Xml.XmlDocument'
