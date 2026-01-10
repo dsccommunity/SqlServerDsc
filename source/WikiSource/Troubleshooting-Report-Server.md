@@ -21,6 +21,11 @@ Report servers store log files in the `ErrorDumpDirectory` configured during
 setup. This folder contains service logs, portal logs, and memory dumps that
 are useful for diagnosing issues.
 
+> [!NOTE]
+> For comprehensive information about all available Reporting Services log
+> files and sources (including execution logs, trace logs, HTTP logs, and
+> performance logs), see [Reporting Services log files and sources](https://learn.microsoft.com/en-us/sql/reporting-services/report-server/reporting-services-log-files-and-sources).
+
 ### Getting the Log Path
 
 Use the `Get-SqlDscRSLogPath` command to retrieve the log folder path:
