@@ -48,7 +48,7 @@ Describe 'Get-SqlDscRSIPAddress' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-Configuration] <Object> [[-Lcid] <int>] [<CommonParameters>]'
+                ExpectedParameters = '[-Configuration] <Object> [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Get-SqlDscRSIPAddress').ParameterSets |
@@ -69,26 +69,28 @@ Describe 'Get-SqlDscRSIPAddress' {
                 InstanceName = 'SSRS'
             }
 
-            Mock -CommandName Get-OperatingSystem -MockWith {
-                return [PSCustomObject] @{
-                    OSLanguage = 1033
-                }
-            }
-
             Mock -CommandName Invoke-RsCimMethod -MockWith {
                 return @{
-                    IPAddress = @('0.0.0.0', '192.168.1.1', '::')
+                    IPAddress     = @('0.0.0.0', '192.168.1.1', '::')
+                    IPVersion     = @('V4', 'V4', 'V6')
+                    IsDhcpEnabled = @($false, $true, $false)
                 }
             }
         }
 
-        It 'Should return IP addresses' {
+        It 'Should return IP addresses as ReportServerIPAddress objects' {
             $result = $mockCimInstance | Get-SqlDscRSIPAddress
 
             $result | Should -HaveCount 3
-            $result | Should -Contain '0.0.0.0'
-            $result | Should -Contain '192.168.1.1'
-            $result | Should -Contain '::'
+            $result[0].IPAddress | Should -Be '0.0.0.0'
+            $result[0].IPVersion | Should -Be 'V4'
+            $result[0].IsDhcpEnabled | Should -BeFalse
+            $result[1].IPAddress | Should -Be '192.168.1.1'
+            $result[1].IPVersion | Should -Be 'V4'
+            $result[1].IsDhcpEnabled | Should -BeTrue
+            $result[2].IPAddress | Should -Be '::'
+            $result[2].IPVersion | Should -Be 'V6'
+            $result[2].IsDhcpEnabled | Should -BeFalse
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'ListIPAddresses'
@@ -102,15 +104,11 @@ Describe 'Get-SqlDscRSIPAddress' {
                 InstanceName = 'SSRS'
             }
 
-            Mock -CommandName Get-OperatingSystem -MockWith {
-                return [PSCustomObject] @{
-                    OSLanguage = 1033
-                }
-            }
-
             Mock -CommandName Invoke-RsCimMethod -MockWith {
                 return @{
-                    IPAddress = @()
+                    IPAddress     = @()
+                    IPVersion     = @()
+                    IsDhcpEnabled = @()
                 }
             }
         }
@@ -130,12 +128,6 @@ Describe 'Get-SqlDscRSIPAddress' {
                 InstanceName = 'SSRS'
             }
 
-            Mock -CommandName Get-OperatingSystem -MockWith {
-                return [PSCustomObject] @{
-                    OSLanguage = 1033
-                }
-            }
-
             Mock -CommandName Invoke-RsCimMethod -MockWith {
                 throw 'Method ListIPAddresses() failed with an error.'
             }
@@ -152,15 +144,11 @@ Describe 'Get-SqlDscRSIPAddress' {
                 InstanceName = 'SSRS'
             }
 
-            Mock -CommandName Get-OperatingSystem -MockWith {
-                return [PSCustomObject] @{
-                    OSLanguage = 1033
-                }
-            }
-
             Mock -CommandName Invoke-RsCimMethod -MockWith {
                 return @{
-                    IPAddress = @('0.0.0.0')
+                    IPAddress     = @('0.0.0.0')
+                    IPVersion     = @('V4')
+                    IsDhcpEnabled = @($false)
                 }
             }
         }
@@ -169,6 +157,9 @@ Describe 'Get-SqlDscRSIPAddress' {
             $result = Get-SqlDscRSIPAddress -Configuration $mockCimInstance
 
             $result | Should -HaveCount 1
+            $result[0].IPAddress | Should -Be '0.0.0.0'
+            $result[0].IPVersion | Should -Be 'V4'
+            $result[0].IsDhcpEnabled | Should -BeFalse
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }

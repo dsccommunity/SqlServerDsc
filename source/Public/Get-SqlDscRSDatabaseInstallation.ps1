@@ -43,7 +43,8 @@
         InstanceName, and IsInitialized.
 
     .NOTES
-        This command calls the WMI method `ListReportServersInDatabase`.
+        This command calls the CIM/WMI provider method `ListReportServersInDatabase`
+        using `Invoke-RsCimMethod`.
 
     .LINK
         https://docs.microsoft.com/en-us/sql/reporting-services/wmi-provider-library-reference/configurationsetting-method-listreportserversindatabase

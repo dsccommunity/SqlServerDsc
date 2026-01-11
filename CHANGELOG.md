@@ -28,10 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   used with `Get-ChildItem` and `Get-Content` to access service logs, portal
   logs, and memory dumps.
 - Added public command `Get-SqlDscRSExecutionLog` to query execution log entries
-  from the `ExecutionLog3` view in the report server database for SQL Server
-  Reporting Services or Power BI Report Server. Supports filtering by date
-  range, user name, report path, and maximum rows. Includes connection parameters
-  for authentication including Credential, LoginType, Encrypt, and StatementTimeout.
+  from the `ExecutionLog3` view in the report server database. Supports filtering
+  by date range, user name, report path, and maximum rows. Includes connection
+  parameters **Credential**, **LoginType**, **Encrypt**, and **StatementTimeout**.
 - Added public command `Test-SqlDscRSAccessible` to verify that SQL Server
   Reporting Services or Power BI Report Server web sites are accessible.
   Supports both CIM configuration input (with dynamic `-Site` parameter) and

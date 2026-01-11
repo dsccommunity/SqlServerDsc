@@ -39,7 +39,8 @@ Describe 'Get-SqlDscRSIPAddress' {
 
             $result | Should -Not -BeNullOrEmpty
             # Should at least contain the all-interfaces address
-            $result | Should -Contain '0.0.0.0'
+            $result.IPAddress | Should -Contain '0.0.0.0'
+            $result.IPVersion | Should -Contain 'V4'
         }
     }
 
@@ -49,7 +50,8 @@ Describe 'Get-SqlDscRSIPAddress' {
             $result = $configuration | Get-SqlDscRSIPAddress -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
-            $result | Should -Contain '0.0.0.0'
+            $result.IPAddress | Should -Contain '0.0.0.0'
+            $result.IPVersion | Should -Contain 'V4'
         }
     }
 
@@ -59,7 +61,8 @@ Describe 'Get-SqlDscRSIPAddress' {
             $result = $configuration | Get-SqlDscRSIPAddress -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
-            $result | Should -Contain '0.0.0.0'
+            $result.IPAddress | Should -Contain '0.0.0.0'
+            $result.IPVersion | Should -Contain 'V4'
         }
     }
 
@@ -69,7 +72,8 @@ Describe 'Get-SqlDscRSIPAddress' {
             $result = $configuration | Get-SqlDscRSIPAddress -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
-            $result | Should -Contain '0.0.0.0'
+            $result.IPAddress | Should -Contain '0.0.0.0'
+            $result.IPVersion | Should -Contain 'V4'
         }
     }
 }

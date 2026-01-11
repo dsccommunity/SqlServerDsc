@@ -9,7 +9,10 @@
         `MSReportServer_ConfigurationSetting` CIM instance.
 
         This command returns information about IP addresses that can be
-        used for URL reservations and SSL bindings.
+        used for URL reservations and SSL bindings. Each returned object
+        includes the IP address, IP version (V4 or V6), and whether DHCP
+        is enabled. If DHCP is enabled, the IP address is dynamic and should
+        not be used for TLS bindings.
 
         The configuration CIM instance can be obtained using the
         `Get-SqlDscRSConfiguration` command and passed via the pipeline.
@@ -20,11 +23,6 @@
         `Get-SqlDscRSConfiguration` command. This parameter accepts pipeline
         input.
 
-    .PARAMETER Lcid
-        Specifies the language code identifier (LCID) for the request.
-        If not specified, defaults to the operating system language. Common
-        values include 1033 for English (US).
-
     .EXAMPLE
         Get-SqlDscRSConfiguration -InstanceName 'SSRS' | Get-SqlDscRSIPAddress
 
@@ -32,9 +30,9 @@
 
     .EXAMPLE
         $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-        Get-SqlDscRSIPAddress -Configuration $config -Lcid 1033
+        Get-SqlDscRSIPAddress -Configuration $config | Where-Object -FilterScript { $_.IPVersion -eq 'V4' }
 
-        Gets available IP addresses with a specific LCID.
+        Gets available IPv4 addresses for the Reporting Services instance.
 
     .INPUTS
         `Microsoft.Management.Infrastructure.CimInstance`
@@ -42,9 +40,10 @@
         Accepts MSReportServer_ConfigurationSetting CIM instance via pipeline.
 
     .OUTPUTS
-        `System.String`
+        `[ReportServerIPAddress[]]`
 
-        Returns the IP addresses available on the machine.
+        Returns an array of ReportServerIPAddress objects containing the IP
+        address, IP version, and DHCP status.
 
     .NOTES
         This command calls the WMI method `ListIPAddresses`.
@@ -56,57 +55,52 @@ function Get-SqlDscRSIPAddress
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the examples use pipeline input the rule cannot validate.')]
     [CmdletBinding()]
-    [OutputType([System.String])]
+    [OutputType([ReportServerIPAddress[]])]
     param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [System.Object]
-        $Configuration,
-
-        [Parameter()]
-        [System.Int32]
-        $Lcid
+        $Configuration
     )
 
     process
     {
         $instanceName = $Configuration.InstanceName
 
-        if (-not $PSBoundParameters.ContainsKey('Lcid'))
-        {
-            $Lcid = (Get-OperatingSystem).OSLanguage
-        }
-
         Write-Verbose -Message ($script:localizedData.Get_SqlDscRSIPAddress_Getting -f $instanceName)
 
         $invokeRsCimMethodParameters = @{
             CimInstance = $Configuration
             MethodName  = 'ListIPAddresses'
-            Arguments   = @{
-                Lcid = $Lcid
-            }
         }
 
         try
         {
-            $result = Invoke-RsCimMethod @invokeRsCimMethodParameters -ErrorAction 'Stop'
+            $result = Invoke-RsCimMethod @invokeRsCimMethodParameters
 
-            # Return the IP addresses
-            if ($result.IPAddress)
+            # Return the IP addresses as ReportServerIPAddress objects
+            if ($result.IPAddress -and $result.IPAddress.Count -gt 0)
             {
-                return $result.IPAddress
+                $ipAddressObjects = for ($i = 0; $i -lt $result.IPAddress.Count; $i++)
+                {
+                    $ipAddressObject = [ReportServerIPAddress]::new()
+                    $ipAddressObject.IPAddress = $result.IPAddress[$i]
+                    $ipAddressObject.IPVersion = $result.IPVersion[$i]
+                    $ipAddressObject.IsDhcpEnabled = $result.IsDhcpEnabled[$i]
+
+                    $ipAddressObject
+                }
+
+                return $ipAddressObjects
             }
         }
         catch
         {
-            $PSCmdlet.ThrowTerminatingError(
-                [System.Management.Automation.ErrorRecord]::new(
-                    ($script:localizedData.Get_SqlDscRSIPAddress_FailedToGet -f $instanceName, $_.Exception.Message),
-                    'GSRSIP0001',
-                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                    $Configuration
-                )
-            )
+            $errorMessage = $script:localizedData.Get_SqlDscRSIPAddress_FailedToGet -f $instanceName, $_.Exception.Message
+
+            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GSRSIP0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+
+            $PSCmdlet.ThrowTerminatingError($errorRecord)
         }
     }
 }
