@@ -103,7 +103,7 @@ Describe 'Post.ServiceAccountChange.PowerBI.RS' -Tag @('Integration_PowerBI') {
                 ErrorAction  = 'Stop'
             }
 
-            Invoke-SqlDscQuery @invokeSqlDscQueryParameters
+            $null = Invoke-SqlDscQuery @invokeSqlDscQueryParameters
         }
 
         It 'Should restart the Reporting Services service after granting rights' {
@@ -141,7 +141,7 @@ Describe 'Post.ServiceAccountChange.PowerBI.RS' -Tag @('Integration_PowerBI') {
             # Refresh configuration
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName $script:instanceName -ErrorAction 'Stop'
 
-            $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
         }
 
         It 'Should have an initialized instance after re-initialization' {

@@ -280,7 +280,7 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
                     Should -Throw -ExpectedMessage '*TestMethod*HRESULT: 1*Extended error message*'
             }
 
-            # 1 initial + 3 retries = 4 attempts
+            # 1 initial + 2 retries = 3 attempts
             Should -Invoke -CommandName Invoke-CimMethod -Exactly -Times 3
             Should -Invoke -CommandName Start-Sleep -Exactly -Times 2
         }

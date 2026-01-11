@@ -106,7 +106,7 @@ Describe 'Post.ServiceAccountChange.SQL2017.RS' -Tag @('Integration_SQL2017_RS')
                 ErrorAction  = 'Stop'
             }
 
-            Invoke-SqlDscQuery @invokeSqlDscQueryParameters
+            $null = Invoke-SqlDscQuery @invokeSqlDscQueryParameters
         }
 
         It 'Should restart the Reporting Services service after granting rights' {
@@ -126,7 +126,7 @@ Describe 'Post.ServiceAccountChange.SQL2017.RS' -Tag @('Integration_SQL2017_RS')
             # Refresh configuration after removing encrypted information
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName $script:instanceName -ErrorAction 'Stop'
 
-            $script:configuration | Set-SqlDscRSDatabaseConnection -ServerName $script:computerName -InstanceName 'RSDB' -DatabaseName 'ReportServer' -Force -ErrorAction 'Stop'
+            $script:configuration | Set-SqlDscRSDatabaseConnection -ServerName $script:computerName -InstanceName 'RSDB' -DatabaseName $script:databaseName -Force -ErrorAction 'Stop'
         }
     }
 
@@ -144,7 +144,7 @@ Describe 'Post.ServiceAccountChange.SQL2017.RS' -Tag @('Integration_SQL2017_RS')
             # Refresh configuration
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName $script:instanceName -ErrorAction 'Stop'
 
-            $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
         }
 
         It 'Should have an initialized instance after re-initialization' {
