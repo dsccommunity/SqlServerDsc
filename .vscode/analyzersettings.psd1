@@ -66,7 +66,13 @@
         'AvoidProcessWithoutPipeline'
         'AvoidSmartQuotes'
         'AvoidThrowOutsideOfTry'
-        'AvoidWriteErrorStop'
+        <#
+            'AvoidWriteErrorStop' rule is disabled because it conflicts with
+            the use of 'Write-Error -ErrorAction Stop' pattern used in the module.
+            There are edge case issues with $PSCmdlet.ThrowTerminatingError that
+            being investigated in Pull Request https://github.com/dsccommunity/SqlServerDsc/pull/2364.
+        #>
+        #'AvoidWriteErrorStop'
         'AvoidWriteOutput'
         'UseSyntacticallyCorrectExamples'
     )
