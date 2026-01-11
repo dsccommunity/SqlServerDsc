@@ -27,6 +27,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ErrorDumpDirectory from the instance's setup configuration, which can be
   used with `Get-ChildItem` and `Get-Content` to access service logs, portal
   logs, and memory dumps.
+- Added public command `Get-SqlDscRSExecutionLog` to query execution log entries
+  from the `ExecutionLog3` view in the report server database for SQL Server
+  Reporting Services or Power BI Report Server. Supports filtering by date
+  range, user name, report path, and maximum rows. Includes connection parameters
+  for authentication including Credential, LoginType, Encrypt, and StatementTimeout.
 - Added public command `Test-SqlDscRSAccessible` to verify that SQL Server
   Reporting Services or Power BI Report Server web sites are accessible.
   Supports both CIM configuration input (with dynamic `-Site` parameter) and
@@ -233,6 +238,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   by calling the `InitializeReportServer` CIM method. Used to complete initial
   configuration after database and URL setup
   ([issue #2014](https://github.com/dsccommunity/SqlServerDsc/issues/2014)).
+- Added public command `Get-SqlDscRSIPAddress` to list IP addresses available
+  for URL reservations. Wraps the `ListIPAddresses` CIM method.
+- Added public command `Get-SqlDscRSDatabaseInstallation` to determine whether
+  a specific report server database is a Reporting Services database. Wraps
+  the `ListReportServersInDatabase` CIM method.
 - Added public command `Request-SqlDscRSDatabaseUpgradeScript` to generate a
   T-SQL script for upgrading the report server database schema. Wraps the
   `GenerateDatabaseUpgradeScript` CIM method.
