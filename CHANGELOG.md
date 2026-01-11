@@ -89,10 +89,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Services configuration instances with consistent error handling. This function
   is used by `Enable-SqlDscRsSecureConnection`, `Disable-SqlDscRsSecureConnection`,
   and the `SqlRS` resource.
-- Added private function `Get-HResultMessage` to translate common Windows HRESULT
-  error codes into human-readable messages. Used by `Invoke-RsCimMethod` to
-  provide actionable error messages when Reporting Services CIM methods fail
-  without detailed error information.
+  - Added parameters `RetryCount`, `RetryDelaySeconds`, and `SkipRetry` to provide
+    configurable retry behavior for transient CIM method failures. By default,
+    retries up to 3 times with 30-second delays. Handles both HRESULT failures
+    and exceptions from `Invoke-CimMethod`. Collects unique errors across retry
+    attempts with attempt number prefixes for comprehensive error reporting.
 - `Invoke-ReportServerSetupAction`
   - Now uses `Format-Path` with `-ExpandEnvironmentVariable` to expand environment
     variables in all path parameters (`MediaPath`, `LogPath`, `InstallFolder`)
@@ -248,6 +249,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - SqlServerDsc
+  - Consolidated Reporting Services post-service-account-change integration tests
+    into three version-specific test files: `Post.ServiceAccountChange.SQL2017.RS`,
+    `Post.ServiceAccountChange.SQL2019-2022.RS`, and `Post.ServiceAccountChange.PowerBI.RS`.
+    SQL Server 2017 uses a workaround with `Remove-SqlDscRSEncryptedInformation`
+    and `Set-SqlDscRSDatabaseConnection` because the encryption key commands
+    fail with "Keyset does not exist" errors on SQL Server 2017.
   - Split the `Test_HQRM` pipeline job into two parallel jobs (`Test_QA` and
     `Test_HQRM`) to reduce overall pipeline execution time by approximately
     15 minutes.
