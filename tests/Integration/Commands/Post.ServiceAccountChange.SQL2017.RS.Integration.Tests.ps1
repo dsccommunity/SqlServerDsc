@@ -126,7 +126,7 @@ Describe 'Post.ServiceAccountChange.SQL2017.RS' -Tag @('Integration_SQL2017_RS')
             # Refresh configuration after removing encrypted information
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName $script:instanceName -ErrorAction 'Stop'
 
-            $script:configuration | Set-SqlDscRSDatabaseConnection -ServerName $script:computerName -InstanceName 'RSDB' -DatabaseName $script:databaseName -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSDatabaseConnection -ServerName $script:computerName -InstanceName 'RSDB' -DatabaseName $script:databaseName -Force -ErrorAction 'Stop'
         }
     }
 
