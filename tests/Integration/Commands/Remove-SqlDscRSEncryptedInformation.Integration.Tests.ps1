@@ -41,8 +41,18 @@ BeforeAll {
 Describe 'Remove-SqlDscRSEncryptedInformation' {
     BeforeAll {
         <#
-            Wait for SQL Server Reporting Services to be fully started after we
+            Wait for SQL Server Reporting Services to be fully operational after we
             remove the encryption key in prior integration tests.
+
+            This is needed because the service seems to take some time to become fully
+            operational again, because this integration test fails intermittently.
+
+            There a no known wait mechanism available that we can use to detect when
+            the service is fully operational again, so we use a fixed wait time here.
+
+            TODO: Maybe it is possible to poll the file logs or Application event
+            log for an event in the command New-SqlDscRSEncryptionKey to determine
+            when the service is fully operational again and not return until it is.
         #>
         Start-Sleep -Seconds 300
     }
