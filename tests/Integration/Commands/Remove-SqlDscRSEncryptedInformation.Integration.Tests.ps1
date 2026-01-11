@@ -39,6 +39,10 @@ BeforeAll {
 #>
 
 Describe 'Remove-SqlDscRSEncryptedInformation' {
+    BeforeAll {
+        Start-Sleep -Seconds 300
+    }
+
     Context 'When removing encrypted information for SQL Server 2017 Reporting Services' -Tag @('Integration_SQL2017_RS') -Skip:$true {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
