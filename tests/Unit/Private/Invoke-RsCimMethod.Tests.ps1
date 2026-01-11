@@ -55,6 +55,9 @@ BeforeAll {
                 [System.Collections.Hashtable]
                 $Arguments,
 
+                [System.UInt32]
+                $OperationTimeoutSec,
+
                 [System.String]
                 $ErrorAction
             )
@@ -124,6 +127,41 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
             Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
                 $MethodName -eq 'SetSecureConnectionLevel' -and
                 $Arguments.Level -eq 1
+            } -Exactly -Times 1
+        }
+
+        It 'Should pass timeout to Invoke-CimMethod as OperationTimeoutSec' {
+            InModuleScope -ScriptBlock {
+                $mockCimInstance = [PSCustomObject] @{
+                    InstanceName = 'SSRS'
+                }
+
+                $result = Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'TestMethod' -Timeout 120
+
+                $result | Should -Not -BeNullOrEmpty
+            }
+
+            Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+                $MethodName -eq 'TestMethod' -and
+                $OperationTimeoutSec -eq 120
+            } -Exactly -Times 1
+        }
+
+        It 'Should pass both arguments and timeout to Invoke-CimMethod' {
+            InModuleScope -ScriptBlock {
+                $mockCimInstance = [PSCustomObject] @{
+                    InstanceName = 'SSRS'
+                }
+
+                $result = Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'GenerateScript' -Arguments @{ DatabaseName = 'ReportServer' } -Timeout 240
+
+                $result | Should -Not -BeNullOrEmpty
+            }
+
+            Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+                $MethodName -eq 'GenerateScript' -and
+                $Arguments.DatabaseName -eq 'ReportServer' -and
+                $OperationTimeoutSec -eq 240
             } -Exactly -Times 1
         }
     }

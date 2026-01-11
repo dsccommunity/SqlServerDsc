@@ -17,6 +17,10 @@
     .PARAMETER Arguments
         A hashtable of arguments to pass to the method.
 
+    .PARAMETER Timeout
+        Specifies the timeout in seconds for the CIM operation. If not specified,
+        the default timeout of the CIM session is used.
+
     .OUTPUTS
         Microsoft.Management.Infrastructure.CimMethodResult
 
@@ -33,6 +37,12 @@
         Invoke-RsCimMethod -CimInstance $config -MethodName 'SetSecureConnectionLevel' -Arguments @{ Level = 1 }
 
         Invokes the SetSecureConnectionLevel method with the Level argument.
+
+    .EXAMPLE
+        $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+        Invoke-RsCimMethod -CimInstance $config -MethodName 'GenerateDatabaseCreationScript' -Arguments @{ DatabaseName = 'ReportServer' } -Timeout 240
+
+        Invokes the GenerateDatabaseCreationScript method with a 240 second timeout.
 #>
 function Invoke-RsCimMethod
 {
@@ -51,7 +61,11 @@ function Invoke-RsCimMethod
 
         [Parameter()]
         [System.Collections.Hashtable]
-        $Arguments
+        $Arguments,
+
+        [Parameter()]
+        [System.UInt32]
+        $Timeout
     )
 
     $invokeCimMethodParameters = @{
@@ -62,6 +76,11 @@ function Invoke-RsCimMethod
     if ($PSBoundParameters.ContainsKey('Arguments'))
     {
         $invokeCimMethodParameters['Arguments'] = $Arguments
+    }
+
+    if ($PSBoundParameters.ContainsKey('Timeout'))
+    {
+        $invokeCimMethodParameters['OperationTimeoutSec'] = $Timeout
     }
 
     $invokeCimMethodResult = $CimInstance | Invoke-CimMethod @invokeCimMethodParameters
