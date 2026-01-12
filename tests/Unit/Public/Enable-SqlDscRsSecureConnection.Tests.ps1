@@ -44,41 +44,6 @@ AfterAll {
 }
 
 Describe 'Enable-SqlDscRsSecureConnection' {
-    BeforeAll {
-        InModuleScope -ScriptBlock {
-            function script:Invoke-CimMethod
-            {
-                param
-                (
-                    [Parameter(ValueFromPipeline = $true)]
-                    [System.Object]
-                    $InputObject,
-
-                    [System.String]
-                    $MethodName,
-
-                    [System.Collections.Hashtable]
-                    $Arguments
-                )
-
-                $PSCmdlet.ThrowTerminatingError(
-                    [System.Management.Automation.ErrorRecord]::new(
-                        'StubNotImplemented',
-                        'StubCalledError',
-                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                        $MyInvocation.MyCommand
-                    )
-                )
-            }
-        }
-    }
-
-    AfterAll {
-        InModuleScope -ScriptBlock {
-            Remove-Item -Path 'function:script:Invoke-CimMethod' -Force
-        }
-    }
-
     Context 'When validating parameter sets' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
@@ -105,7 +70,7 @@ Describe 'Enable-SqlDscRsSecureConnection' {
                 SecureConnectionLevel = 0
             }
 
-            Mock -CommandName Invoke-CimMethod -MockWith {
+            Mock -CommandName Invoke-RsCimMethod -MockWith {
                 return [PSCustomObject] @{
                     HRESULT = 0
                 }
@@ -115,7 +80,7 @@ Describe 'Enable-SqlDscRsSecureConnection' {
         It 'Should enable secure connection without errors' {
             { $mockCimInstance | Enable-SqlDscRsSecureConnection -Confirm:$false } | Should -Not -Throw
 
-            Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'SetSecureConnectionLevel' -and
                 $Arguments.Level -eq 1
             } -Exactly -Times 1
@@ -135,7 +100,7 @@ Describe 'Enable-SqlDscRsSecureConnection' {
                 SecureConnectionLevel = 0
             }
 
-            Mock -CommandName Invoke-CimMethod -MockWith {
+            Mock -CommandName Invoke-RsCimMethod -MockWith {
                 return [PSCustomObject] @{
                     HRESULT = 0
                 }
@@ -157,7 +122,7 @@ Describe 'Enable-SqlDscRsSecureConnection' {
                 SecureConnectionLevel = 0
             }
 
-            Mock -CommandName Invoke-CimMethod -MockWith {
+            Mock -CommandName Invoke-RsCimMethod -MockWith {
                 return [PSCustomObject] @{
                     HRESULT = 0
                 }
@@ -167,49 +132,7 @@ Describe 'Enable-SqlDscRsSecureConnection' {
         It 'Should enable secure connection without confirmation' {
             { $mockCimInstance | Enable-SqlDscRsSecureConnection -Force } | Should -Not -Throw
 
-            Should -Invoke -CommandName Invoke-CimMethod -Exactly -Times 1
-        }
-    }
-
-    Context 'When CIM method fails with ExtendedErrors' {
-        BeforeAll {
-            $mockCimInstance = [PSCustomObject] @{
-                InstanceName          = 'SSRS'
-                SecureConnectionLevel = 0
-            }
-
-            Mock -CommandName Invoke-CimMethod -MockWith {
-                $result = [PSCustomObject] @{
-                    HRESULT        = -2147024891
-                    ExtendedErrors = @('Access denied', 'Permission error')
-                }
-                $result | Add-Member -MemberType ScriptMethod -Name 'GetType' -Value { return [PSCustomObject] @{ Name = 'CimMethodResult' } } -Force
-                return $result
-            }
-        }
-
-        It 'Should throw a terminating error' {
-            { $mockCimInstance | Enable-SqlDscRsSecureConnection -Confirm:$false } | Should -Throw -ErrorId 'ESRSSC0001,Enable-SqlDscRsSecureConnection'
-        }
-    }
-
-    Context 'When CIM method fails with Error property' {
-        BeforeAll {
-            $mockCimInstance = [PSCustomObject] @{
-                InstanceName          = 'SSRS'
-                SecureConnectionLevel = 0
-            }
-
-            Mock -CommandName Invoke-CimMethod -MockWith {
-                return [PSCustomObject] @{
-                    HRESULT = -2147024891
-                    Error   = 'Access denied'
-                }
-            }
-        }
-
-        It 'Should throw a terminating error' {
-            { $mockCimInstance | Enable-SqlDscRsSecureConnection -Confirm:$false } | Should -Throw -ErrorId 'ESRSSC0001,Enable-SqlDscRsSecureConnection'
+            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -220,13 +143,13 @@ Describe 'Enable-SqlDscRsSecureConnection' {
                 SecureConnectionLevel = 0
             }
 
-            Mock -CommandName Invoke-CimMethod
+            Mock -CommandName Invoke-RsCimMethod
         }
 
-        It 'Should not call Invoke-CimMethod' {
+        It 'Should not call Invoke-RsCimMethod' {
             $mockCimInstance | Enable-SqlDscRsSecureConnection -WhatIf
 
-            Should -Invoke -CommandName Invoke-CimMethod -Exactly -Times 0
+            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
         }
     }
 
@@ -237,7 +160,7 @@ Describe 'Enable-SqlDscRsSecureConnection' {
                 SecureConnectionLevel = 0
             }
 
-            Mock -CommandName Invoke-CimMethod -MockWith {
+            Mock -CommandName Invoke-RsCimMethod -MockWith {
                 return [PSCustomObject] @{
                     HRESULT = 0
                 }
@@ -247,7 +170,7 @@ Describe 'Enable-SqlDscRsSecureConnection' {
         It 'Should enable secure connection' {
             { Enable-SqlDscRsSecureConnection -Configuration $mockCimInstance -Confirm:$false } | Should -Not -Throw
 
-            Should -Invoke -CommandName Invoke-CimMethod -Exactly -Times 1
+            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 }
