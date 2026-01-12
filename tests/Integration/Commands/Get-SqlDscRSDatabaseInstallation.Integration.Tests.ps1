@@ -36,7 +36,8 @@ Describe 'Get-SqlDscRSDatabaseInstallation' {
         BeforeAll {
             $script:expectedMachineName = Get-ComputerName
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-            $script:expectedInstallationID = $script:configuration.InstallationID
+            # Strip braces as Get-SqlDscRSDatabaseInstallation returns IDs without braces
+            $script:expectedInstallationID = $script:configuration.InstallationID -replace '[{}]'
         }
 
         It 'Should return database installation information' {
@@ -61,7 +62,8 @@ Describe 'Get-SqlDscRSDatabaseInstallation' {
         BeforeAll {
             $script:expectedMachineName = Get-ComputerName
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-            $script:expectedInstallationID = $script:configuration.InstallationID
+            # Strip braces as Get-SqlDscRSDatabaseInstallation returns IDs without braces
+            $script:expectedInstallationID = $script:configuration.InstallationID -replace '[{}]'
         }
 
         It 'Should return database installation information' {
@@ -86,7 +88,8 @@ Describe 'Get-SqlDscRSDatabaseInstallation' {
         BeforeAll {
             $script:expectedMachineName = Get-ComputerName
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-            $script:expectedInstallationID = $script:configuration.InstallationID
+            # Strip braces as Get-SqlDscRSDatabaseInstallation returns IDs without braces
+            $script:expectedInstallationID = $script:configuration.InstallationID -replace '[{}]'
         }
 
         It 'Should return database installation information' {
@@ -111,7 +114,8 @@ Describe 'Get-SqlDscRSDatabaseInstallation' {
         BeforeAll {
             $script:expectedMachineName = Get-ComputerName
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
-            $script:expectedInstallationID = $script:configuration.InstallationID
+            # Strip braces as Get-SqlDscRSDatabaseInstallation returns IDs without braces
+            $script:expectedInstallationID = $script:configuration.InstallationID -replace '[{}]'
         }
 
         It 'Should return database installation information' {
