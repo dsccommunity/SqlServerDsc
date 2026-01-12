@@ -30,6 +30,9 @@ BeforeAll {
 
     Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
+    # Loading mocked classes
+    Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../Stubs') -ChildPath 'SMO.cs')
+
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
@@ -44,72 +47,6 @@ AfterAll {
 }
 
 Describe 'Get-SqlDscRSExecutionLog' {
-    BeforeAll {
-        # Stub Invoke-SqlDscQuery since it has SMO types not available on macOS
-        InModuleScope -ScriptBlock {
-            function script:Invoke-SqlDscQuery
-            {
-                param
-                (
-                    [Parameter()]
-                    [System.String]
-                    $ServerName,
-
-                    [Parameter()]
-                    [System.String]
-                    $InstanceName,
-
-                    [Parameter()]
-                    [System.String]
-                    $DatabaseName,
-
-                    [Parameter()]
-                    [System.String]
-                    $Query,
-
-                    [Parameter()]
-                    [System.Management.Automation.SwitchParameter]
-                    $PassThru,
-
-                    [Parameter()]
-                    [System.Int32]
-                    $StatementTimeout,
-
-                    [Parameter()]
-                    [System.Management.Automation.PSCredential]
-                    $Credential,
-
-                    [Parameter()]
-                    [System.String]
-                    $LoginType,
-
-                    [Parameter()]
-                    [System.Management.Automation.SwitchParameter]
-                    $Encrypt,
-
-                    [Parameter()]
-                    [System.Management.Automation.SwitchParameter]
-                    $Force
-                )
-
-                $PSCmdlet.ThrowTerminatingError(
-                    [System.Management.Automation.ErrorRecord]::new(
-                        'StubNotImplemented',
-                        'StubCalledError',
-                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                        $MyInvocation.MyCommand
-                    )
-                )
-            }
-        }
-    }
-
-    AfterAll {
-        InModuleScope -ScriptBlock {
-            Remove-Item -Path 'function:script:Invoke-SqlDscQuery' -Force
-        }
-    }
-
     Context 'When parameter validation' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
