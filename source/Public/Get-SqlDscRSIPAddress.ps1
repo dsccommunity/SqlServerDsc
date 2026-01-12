@@ -1,55 +1,6 @@
 <#
     .SYNOPSIS
         Gets the available IP addresses for SQL Server Reporting Services.
-
-    .DESCRIPTION
-        Gets the IP addresses available on the machine for use with
-        SQL Server Reporting Services or Power BI Report Server by calling
-        the `ListIPAddresses` method on the
-        `MSReportServer_ConfigurationSetting` CIM instance.
-
-        This command returns information about IP addresses that can be
-        used for URL reservations and SSL bindings. Each returned object
-        includes the IP address, IP version (V4 or V6), and whether DHCP
-        is enabled. If DHCP is enabled, the IP address is dynamic and should
-        not be used for TLS bindings.
-
-        The configuration CIM instance can be obtained using the
-        `Get-SqlDscRSConfiguration` command and passed via the pipeline.
-
-    .PARAMETER Configuration
-        Specifies the `MSReportServer_ConfigurationSetting` CIM instance for
-        the Reporting Services instance. This can be obtained using the
-        `Get-SqlDscRSConfiguration` command. This parameter accepts pipeline
-        input.
-
-    .EXAMPLE
-        Get-SqlDscRSConfiguration -InstanceName 'SSRS' | Get-SqlDscRSIPAddress
-
-        Gets all available IP addresses for the Reporting Services instance.
-
-    .EXAMPLE
-        $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-        Get-SqlDscRSIPAddress -Configuration $config | Where-Object -FilterScript { $_.IPVersion -eq 'V4' }
-
-        Gets available IPv4 addresses for the Reporting Services instance.
-
-    .INPUTS
-        `Microsoft.Management.Infrastructure.CimInstance`
-
-        Accepts MSReportServer_ConfigurationSetting CIM instance via pipeline.
-
-    .OUTPUTS
-        `[ReportServerIPAddress[]]`
-
-        Returns an array of ReportServerIPAddress objects containing the IP
-        address, IP version, and DHCP status.
-
-    .NOTES
-        This command calls the WMI method `ListIPAddresses`.
-
-    .LINK
-        https://docs.microsoft.com/en-us/sql/reporting-services/wmi-provider-library-reference/configurationsetting-method-listipaddresses
 #>
 function Get-SqlDscRSIPAddress
 {
