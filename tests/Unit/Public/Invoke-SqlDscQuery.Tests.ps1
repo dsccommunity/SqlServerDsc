@@ -62,8 +62,6 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
             MockExpectedParameters = '-ServerObject <Server> -DatabaseName <string> -Query <string> [-PassThru] [-StatementTimeout <int>] [-RedactText <string[]>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
-        Get-Help 'Invoke-SqlDscQuery'
-
         $result = (Get-Command -Name 'Invoke-SqlDscQuery').ParameterSets |
             Where-Object -FilterScript {
                 $_.Name -eq $mockParameterSetName
