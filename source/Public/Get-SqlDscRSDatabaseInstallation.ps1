@@ -77,15 +77,16 @@ function Get-SqlDscRSDatabaseInstallation
             $result = Invoke-RsCimMethod @invokeRsCimMethodParameters -ErrorAction 'Stop'
 
             <#
-                The WMI method returns multiple parallel arrays:
+                The WMI method returns:
+                - Length: Number of entries in the arrays
                 - InstallationID: Array of installation IDs
                 - MachineName: Array of machine names
                 - InstanceName: Array of instance names
                 - IsInitialized: Array of initialization states
             #>
-            if ($result.InstallationID)
+            if ($result.Length -gt 0)
             {
-                for ($i = 0; $i -lt $result.InstallationID.Count; $i++)
+                for ($i = 0; $i -lt $result.Length; $i++)
                 {
                     [PSCustomObject] @{
                         InstallationID = $result.InstallationID[$i]
