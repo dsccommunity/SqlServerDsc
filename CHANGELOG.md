@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Dummy entry
 - SqlServerDsc
   - Added class `ReportServerUri` to represent URLs returned by the
     `GetReportServerUrls` CIM method on `MSReportServer_Instance`.
