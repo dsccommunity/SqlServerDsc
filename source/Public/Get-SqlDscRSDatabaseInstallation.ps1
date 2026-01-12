@@ -89,9 +89,9 @@ function Get-SqlDscRSDatabaseInstallation
                 for ($i = 0; $i -lt $result.Length; $i++)
                 {
                     [PSCustomObject] @{
-                        InstallationID = $result.InstallationID[$i]
-                        MachineName    = $result.MachineName[$i]
-                        InstanceName   = $result.InstanceName[$i]
+                        InstallationID = $result.InstallationIDs[$i]
+                        MachineName    = $result.MachineNames[$i]
+                        InstanceName   = $result.InstanceNames[$i]
                         IsInitialized  = $result.IsInitialized[$i]
                     }
                 }

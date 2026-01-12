@@ -72,10 +72,10 @@ Describe 'Get-SqlDscRSDatabaseInstallation' {
             Mock -CommandName Invoke-RsCimMethod -MockWith {
                 return @{
                     Length         = 2
-                    InstallationID = @('GUID1', 'GUID2')
-                    MachineName    = @('SERVER1', 'SERVER2')
-                    InstanceName   = @('SSRS', 'SSRS')
-                    IsInitialized  = @($true, $true)
+                    InstallationIDs = @('GUID1', 'GUID2')
+                    MachineNames    = @('SERVER1', 'SERVER2')
+                    InstanceNames   = @('SSRS', 'SSRS')
+                    IsInitialized   = @($true, $true)
                 }
             }
         }
@@ -104,11 +104,11 @@ Describe 'Get-SqlDscRSDatabaseInstallation' {
 
             Mock -CommandName Invoke-RsCimMethod -MockWith {
                 return @{
-                    Length         = 0
-                    InstallationID = @()
-                    MachineName    = @()
-                    InstanceName   = @()
-                    IsInitialized  = @()
+                    Length          = 0
+                    InstallationIDs = @()
+                    MachineNames    = @()
+                    InstanceNames   = @()
+                    IsInitialized   = @()
                 }
             }
         }
@@ -146,11 +146,11 @@ Describe 'Get-SqlDscRSDatabaseInstallation' {
 
             Mock -CommandName Invoke-RsCimMethod -MockWith {
                 return @{
-                    Length         = 1
-                    InstallationID = @('GUID1')
-                    MachineName    = @('SERVER1')
-                    InstanceName   = @('SSRS')
-                    IsInitialized  = @($true)
+                    Length          = 1
+                    InstallationIDs = @('GUID1')
+                    MachineNames    = @('SERVER1')
+                    InstanceNames   = @('SSRS')
+                    IsInitialized   = @($true)
                 }
             }
         }
