@@ -6,7 +6,7 @@ function Get-SqlDscRSIPAddress
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the examples use pipeline input the rule cannot validate.')]
     [CmdletBinding()]
-    [OutputType([ReportServerIPAddress[]])]
+    [OutputType([System.Object[]])]
     param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
