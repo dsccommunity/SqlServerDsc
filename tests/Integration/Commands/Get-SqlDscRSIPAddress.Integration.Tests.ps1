@@ -32,15 +32,27 @@ BeforeAll {
 }
 
 Describe 'Get-SqlDscRSIPAddress' {
+    <#
+        Note: CI environments contain dynamic IP addresses that change per run (e.g., 10.1.0.x, 172.x.x.x).
+        We validate the command returns expected addresses and structure without checking for specific
+        dynamic IPs. Loopback addresses (127.0.0.1) and IPv4/IPv6 support are consistent across runs.
+    #>
+
     Context 'When getting IP addresses for SQL Server Reporting Services' -Tag @('Integration_SQL2017_RS') {
         It 'Should return available IP addresses' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $result = $configuration | Get-SqlDscRSIPAddress -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
-            # Should at least contain the all-interfaces address
-            $result.IPAddress | Should -Contain '0.0.0.0'
+
+            # Should contain loopback addresses (stable across CI workers)
+            $result.IPAddress | Should -Contain '127.0.0.1'
+
+            # Should have IPv4 addresses
             $result.IPVersion | Should -Contain 'V4'
+
+            # Should have at least one additional IP besides loopback
+            $result.Count | Should -BeGreaterThan 1
         }
     }
 
@@ -50,8 +62,15 @@ Describe 'Get-SqlDscRSIPAddress' {
             $result = $configuration | Get-SqlDscRSIPAddress -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
-            $result.IPAddress | Should -Contain '0.0.0.0'
+
+            # Should contain loopback addresses (stable across CI workers)
+            $result.IPAddress | Should -Contain '127.0.0.1'
+
+            # Should have IPv4 addresses
             $result.IPVersion | Should -Contain 'V4'
+
+            # Should have at least one additional IP besides loopback
+            $result.Count | Should -BeGreaterThan 1
         }
     }
 
@@ -61,8 +80,15 @@ Describe 'Get-SqlDscRSIPAddress' {
             $result = $configuration | Get-SqlDscRSIPAddress -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
-            $result.IPAddress | Should -Contain '0.0.0.0'
+
+            # Should contain loopback addresses (stable across CI workers)
+            $result.IPAddress | Should -Contain '127.0.0.1'
+
+            # Should have IPv4 addresses
             $result.IPVersion | Should -Contain 'V4'
+
+            # Should have at least one additional IP besides loopback
+            $result.Count | Should -BeGreaterThan 1
         }
     }
 
@@ -72,8 +98,15 @@ Describe 'Get-SqlDscRSIPAddress' {
             $result = $configuration | Get-SqlDscRSIPAddress -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
-            $result.IPAddress | Should -Contain '0.0.0.0'
+
+            # Should contain loopback addresses (stable across CI workers)
+            $result.IPAddress | Should -Contain '127.0.0.1'
+
+            # Should have IPv4 addresses
             $result.IPVersion | Should -Contain 'V4'
+
+            # Should have at least one additional IP besides loopback
+            $result.Count | Should -BeGreaterThan 1
         }
     }
 }

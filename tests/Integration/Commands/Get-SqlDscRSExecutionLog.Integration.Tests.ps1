@@ -30,7 +30,7 @@ BeforeAll {
 }
 
 Describe 'Get-SqlDscRSExecutionLog' {
-    Context 'When querying execution log for SQL Server Reporting Services instance' -Tag @('Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
+    Context 'When querying execution log for SQL Server Reporting Services instance' -Tag @('Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
         It 'Should query the execution log without errors' {
             # Query may return empty results if no reports have been executed
             $result = Get-SqlDscRSExecutionLog -InstanceName 'SSRS' -MaxRows 10 -Force -ErrorAction 'Stop'
