@@ -50,7 +50,6 @@ BeforeAll {
         AlgorithmName      = 'RSA'
         SignatureAlgorithm = 'SHA256'
         StoreLocation      = 'LocalMachine'
-        StoreName          = 'My'
     }
 
     $script:testCertificate = New-SelfSignedCertificateEx @newSelfSignedCertificateExParameters
