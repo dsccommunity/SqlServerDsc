@@ -44,11 +44,19 @@ AfterAll {
 }
 
 Describe 'Remove-SqlDscRSSslCertificateBinding' {
+    BeforeAll {
+        Mock -CommandName Get-OperatingSystem -MockWith {
+            return [PSCustomObject] @{
+                OSLanguage = 1033
+            }
+        }
+    }
+
     Context 'When validating parameter sets' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-Configuration] <Object> [-CertificateHash] <string> [-Application] <string> [[-IPAddress] <string>] [[-Port] <int>] [[-Lcid] <int>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '[-Configuration] <Object> [-Application] <string> [-CertificateHash] <string> [[-IPAddress] <string>] [[-Port] <int>] [[-Lcid] <int>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Remove-SqlDscRSSslCertificateBinding').ParameterSets |
@@ -76,8 +84,8 @@ Describe 'Remove-SqlDscRSSslCertificateBinding' {
             { $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false } | Should -Not -Throw
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'RemoveSSLCertificateBinding' -and
-                $Arguments.CertificateHash -eq 'AABBCCDD' -and
+                $MethodName -eq 'RemoveSSLCertificateBindings' -and
+                $Arguments.CertificateHash -eq 'aabbccdd' -and
                 $Arguments.Application -eq 'ReportServerWebService' -and
                 $Arguments.IPAddress -eq '0.0.0.0' -and
                 $Arguments.Port -eq 443 -and
@@ -152,12 +160,12 @@ Describe 'Remove-SqlDscRSSslCertificateBinding' {
             }
 
             Mock -CommandName Invoke-RsCimMethod -MockWith {
-                throw 'Method RemoveSSLCertificateBinding() failed with an error.'
+                throw 'Method RemoveSSLCertificateBindings() failed with an error.'
             }
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false } | Should -Throw -ErrorId 'RSRSSB0001,Remove-SqlDscRSSslCertificateBinding'
+            { $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false } | Should -Throw -ErrorId 'RSRSSCB0001,Remove-SqlDscRSSslCertificateBinding'
         }
     }
 

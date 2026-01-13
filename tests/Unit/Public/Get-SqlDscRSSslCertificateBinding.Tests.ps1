@@ -44,11 +44,19 @@ AfterAll {
 }
 
 Describe 'Get-SqlDscRSSslCertificateBinding' {
+    BeforeAll {
+        Mock -CommandName Get-OperatingSystem -MockWith {
+            return [PSCustomObject] @{
+                OSLanguage = 1033
+            }
+        }
+    }
+
     Context 'When validating parameter sets' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-Configuration] <Object> [<CommonParameters>]'
+                ExpectedParameters = '[-Configuration] <Object> [[-Lcid] <int>] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Get-SqlDscRSSslCertificateBinding').ParameterSets |
@@ -134,7 +142,7 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Get-SqlDscRSSslCertificateBinding } | Should -Throw -ErrorId 'GSRSSB0001,Get-SqlDscRSSslCertificateBinding'
+            { $mockCimInstance | Get-SqlDscRSSslCertificateBinding } | Should -Throw -ErrorId 'GSRSSCB0001,Get-SqlDscRSSslCertificateBinding'
         }
     }
 

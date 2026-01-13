@@ -44,11 +44,19 @@ AfterAll {
 }
 
 Describe 'Add-SqlDscRSSslCertificateBinding' {
+    BeforeAll {
+        Mock -CommandName Get-OperatingSystem -MockWith {
+            return [PSCustomObject] @{
+                OSLanguage = 1033
+            }
+        }
+    }
+
     Context 'When validating parameter sets' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-Configuration] <Object> [-CertificateHash] <string> [-Application] <string> [[-IPAddress] <string>] [[-Port] <int>] [[-Lcid] <int>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '[-Configuration] <Object> [-Application] <string> [-CertificateHash] <string> [[-IPAddress] <string>] [[-Port] <int>] [[-Lcid] <int>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Add-SqlDscRSSslCertificateBinding').ParameterSets |
@@ -157,7 +165,7 @@ Describe 'Add-SqlDscRSSslCertificateBinding' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Add-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false } | Should -Throw -ErrorId 'ASRSSB0001,Add-SqlDscRSSslCertificateBinding'
+            { $mockCimInstance | Add-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false } | Should -Throw -ErrorId 'ASRSSCB0001,Add-SqlDscRSSslCertificateBinding'
         }
     }
 
