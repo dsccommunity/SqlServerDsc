@@ -43,15 +43,15 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'Enable-SqlDscRsSecureConnection' {
+Describe 'Get-SqlDscRSIPAddress' {
     Context 'When validating parameter sets' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-Configuration] <Object> [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '[-Configuration] <Object> [<CommonParameters>]'
             }
         ) {
-            $result = (Get-Command -Name 'Enable-SqlDscRsSecureConnection').ParameterSets |
+            $result = (Get-Command -Name 'Get-SqlDscRSIPAddress').ParameterSets |
                 Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
                 Select-Object -Property @(
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
@@ -63,112 +63,103 @@ Describe 'Enable-SqlDscRsSecureConnection' {
         }
     }
 
-    Context 'When enabling secure connection successfully' {
+    Context 'When getting IP addresses successfully' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
-                InstanceName          = 'SSRS'
-                SecureConnectionLevel = 0
+                InstanceName = 'SSRS'
             }
 
             Mock -CommandName Invoke-RsCimMethod -MockWith {
-                return [PSCustomObject] @{
-                    HRESULT = 0
+                return @{
+                    IPAddress     = @('0.0.0.0', '192.168.1.1', '::')
+                    IPVersion     = @('V4', 'V4', 'V6')
+                    IsDhcpEnabled = @($false, $true, $false)
                 }
             }
         }
 
-        It 'Should enable secure connection without errors' {
-            { $mockCimInstance | Enable-SqlDscRsSecureConnection -Confirm:$false } | Should -Not -Throw
+        It 'Should return IP addresses as ReportServerIPAddress objects' {
+            $result = $mockCimInstance | Get-SqlDscRSIPAddress
+
+            $result | Should -HaveCount 3
+            $result[0].IPAddress | Should -Be '0.0.0.0'
+            $result[0].IPVersion | Should -Be 'V4'
+            $result[0].IsDhcpEnabled | Should -BeFalse
+            $result[1].IPAddress | Should -Be '192.168.1.1'
+            $result[1].IPVersion | Should -Be 'V4'
+            $result[1].IsDhcpEnabled | Should -BeTrue
+            $result[2].IPAddress | Should -Be '::'
+            $result[2].IPVersion | Should -Be 'V6'
+            $result[2].IsDhcpEnabled | Should -BeFalse
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'SetSecureConnectionLevel' -and
-                $Arguments.Level -eq 1
+                $MethodName -eq 'ListIPAddresses'
             } -Exactly -Times 1
         }
+    }
 
-        It 'Should not return anything by default' {
-            $result = $mockCimInstance | Enable-SqlDscRsSecureConnection -Confirm:$false
+    Context 'When there are no IP addresses' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'SSRS'
+            }
+
+            Mock -CommandName Invoke-RsCimMethod -MockWith {
+                return @{
+                    IPAddress     = @()
+                    IPVersion     = @()
+                    IsDhcpEnabled = @()
+                }
+            }
+        }
+
+        It 'Should return an empty result' {
+            $result = $mockCimInstance | Get-SqlDscRSIPAddress
 
             $result | Should -BeNullOrEmpty
-        }
-    }
-
-    Context 'When enabling secure connection with PassThru' {
-        BeforeAll {
-            $mockCimInstance = [PSCustomObject] @{
-                InstanceName          = 'SSRS'
-                SecureConnectionLevel = 0
-            }
-
-            Mock -CommandName Invoke-RsCimMethod -MockWith {
-                return [PSCustomObject] @{
-                    HRESULT = 0
-                }
-            }
-        }
-
-        It 'Should return the configuration CIM instance' {
-            $result = $mockCimInstance | Enable-SqlDscRsSecureConnection -PassThru -Confirm:$false
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
-        }
-    }
-
-    Context 'When enabling secure connection with Force' {
-        BeforeAll {
-            $mockCimInstance = [PSCustomObject] @{
-                InstanceName          = 'SSRS'
-                SecureConnectionLevel = 0
-            }
-
-            Mock -CommandName Invoke-RsCimMethod -MockWith {
-                return [PSCustomObject] @{
-                    HRESULT = 0
-                }
-            }
-        }
-
-        It 'Should enable secure connection without confirmation' {
-            { $mockCimInstance | Enable-SqlDscRsSecureConnection -Force } | Should -Not -Throw
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
-    Context 'When using WhatIf' {
+    Context 'When CIM method fails' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
-                InstanceName          = 'SSRS'
-                SecureConnectionLevel = 0
+                InstanceName = 'SSRS'
             }
 
-            Mock -CommandName Invoke-RsCimMethod
+            Mock -CommandName Invoke-RsCimMethod -MockWith {
+                throw 'Method ListIPAddresses() failed with an error.'
+            }
         }
 
-        It 'Should not call Invoke-RsCimMethod' {
-            $mockCimInstance | Enable-SqlDscRsSecureConnection -WhatIf
-
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+        It 'Should throw a terminating error' {
+            { $mockCimInstance | Get-SqlDscRSIPAddress } | Should -Throw -ErrorId 'GSRSIP0001,Get-SqlDscRSIPAddress'
         }
     }
 
     Context 'When passing configuration as parameter' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
-                InstanceName          = 'SSRS'
-                SecureConnectionLevel = 0
+                InstanceName = 'SSRS'
             }
 
             Mock -CommandName Invoke-RsCimMethod -MockWith {
-                return [PSCustomObject] @{
-                    HRESULT = 0
+                return @{
+                    IPAddress     = @('0.0.0.0')
+                    IPVersion     = @('V4')
+                    IsDhcpEnabled = @($false)
                 }
             }
         }
 
-        It 'Should enable secure connection' {
-            { Enable-SqlDscRsSecureConnection -Configuration $mockCimInstance -Confirm:$false } | Should -Not -Throw
+        It 'Should get IP addresses' {
+            $result = Get-SqlDscRSIPAddress -Configuration $mockCimInstance
+
+            $result | Should -HaveCount 1
+            $result[0].IPAddress | Should -Be '0.0.0.0'
+            $result[0].IPVersion | Should -Be 'V4'
+            $result[0].IsDhcpEnabled | Should -BeFalse
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }

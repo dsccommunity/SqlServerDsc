@@ -586,6 +586,9 @@ stages:
                   # Group 5 - Post-initialization validation
                   'tests/Integration/Commands/Post.Initialization.RS.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSUrl.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscRSIPAddress.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscRSDatabaseInstallation.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscRSExecutionLog.Integration.Tests.ps1'
                   # Group 6 - Service account change
                   'tests/Integration/Commands/Set-SqlDscRSServiceAccount.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSServiceAccount.Integration.Tests.ps1'
@@ -683,6 +686,9 @@ stages:
                   # Group 5 - Post-initialization validation
                   'tests/Integration/Commands/Post.Initialization.RS.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSUrl.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscRSIPAddress.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscRSDatabaseInstallation.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscRSExecutionLog.Integration.Tests.ps1'
                   # Group 6 - Service account change
                   'tests/Integration/Commands/Set-SqlDscRSServiceAccount.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSServiceAccount.Integration.Tests.ps1'

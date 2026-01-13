@@ -43,15 +43,15 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'Enable-SqlDscRsSecureConnection' {
+Describe 'Get-SqlDscRSDatabaseInstallation' {
     Context 'When validating parameter sets' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-Configuration] <Object> [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '[-Configuration] <Object> [<CommonParameters>]'
             }
         ) {
-            $result = (Get-Command -Name 'Enable-SqlDscRsSecureConnection').ParameterSets |
+            $result = (Get-Command -Name 'Get-SqlDscRSDatabaseInstallation').ParameterSets |
                 Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
                 Select-Object -Property @(
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
@@ -63,112 +63,107 @@ Describe 'Enable-SqlDscRsSecureConnection' {
         }
     }
 
-    Context 'When enabling secure connection successfully' {
+    Context 'When getting report server installations' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
-                InstanceName          = 'SSRS'
-                SecureConnectionLevel = 0
+                InstanceName = 'SSRS'
             }
 
+            # The CIM method returns GUIDs without braces
             Mock -CommandName Invoke-RsCimMethod -MockWith {
-                return [PSCustomObject] @{
-                    HRESULT = 0
+                return @{
+                    Length          = 2
+                    InstallationIDs = @('c59fadae-f8ee-46ee-b063-f8d89872100c', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890')
+                    MachineNames    = @('SERVER1', 'SERVER2')
+                    InstanceNames   = @('SSRS', 'SSRS')
+                    IsInitialized   = @($true, $true)
                 }
             }
         }
 
-        It 'Should enable secure connection without errors' {
-            { $mockCimInstance | Enable-SqlDscRsSecureConnection -Confirm:$false } | Should -Not -Throw
-
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'SetSecureConnectionLevel' -and
-                $Arguments.Level -eq 1
-            } -Exactly -Times 1
-        }
-
-        It 'Should not return anything by default' {
-            $result = $mockCimInstance | Enable-SqlDscRsSecureConnection -Confirm:$false
-
-            $result | Should -BeNullOrEmpty
-        }
-    }
-
-    Context 'When enabling secure connection with PassThru' {
-        BeforeAll {
-            $mockCimInstance = [PSCustomObject] @{
-                InstanceName          = 'SSRS'
-                SecureConnectionLevel = 0
-            }
-
-            Mock -CommandName Invoke-RsCimMethod -MockWith {
-                return [PSCustomObject] @{
-                    HRESULT = 0
-                }
-            }
-        }
-
-        It 'Should return the configuration CIM instance' {
-            $result = $mockCimInstance | Enable-SqlDscRsSecureConnection -PassThru -Confirm:$false
+        It 'Should return installation objects with GUIDs without braces' {
+            $result = $mockCimInstance | Get-SqlDscRSDatabaseInstallation
 
             $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should -HaveCount 2
+            $result[0].InstallationID | Should -Be 'c59fadae-f8ee-46ee-b063-f8d89872100c'
+            $result[0].MachineName | Should -Be 'SERVER1'
+            $result[0].InstanceName | Should -Be 'SSRS'
+            $result[0].IsInitialized | Should -BeTrue
+            $result[1].InstallationID | Should -Be 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'
+
+            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                $MethodName -eq 'ListReportServersInDatabase'
+            } -Exactly -Times 1
         }
     }
 
-    Context 'When enabling secure connection with Force' {
+    Context 'When there are no installations' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
-                InstanceName          = 'SSRS'
-                SecureConnectionLevel = 0
+                InstanceName = 'SSRS'
             }
 
             Mock -CommandName Invoke-RsCimMethod -MockWith {
-                return [PSCustomObject] @{
-                    HRESULT = 0
+                return @{
+                    Length          = 0
+                    InstallationIDs = @()
+                    MachineNames    = @()
+                    InstanceNames   = @()
+                    IsInitialized   = @()
                 }
             }
         }
 
-        It 'Should enable secure connection without confirmation' {
-            { $mockCimInstance | Enable-SqlDscRsSecureConnection -Force } | Should -Not -Throw
+        It 'Should return an empty result' {
+            $result = $mockCimInstance | Get-SqlDscRSDatabaseInstallation
+
+            $result | Should -BeNullOrEmpty
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
-    Context 'When using WhatIf' {
+    Context 'When CIM method fails' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
-                InstanceName          = 'SSRS'
-                SecureConnectionLevel = 0
+                InstanceName = 'SSRS'
             }
 
-            Mock -CommandName Invoke-RsCimMethod
+            Mock -CommandName Invoke-RsCimMethod -MockWith {
+                throw 'Method ListReportServersInDatabase() failed with an error.'
+            }
         }
 
-        It 'Should not call Invoke-RsCimMethod' {
-            $mockCimInstance | Enable-SqlDscRsSecureConnection -WhatIf
-
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+        It 'Should throw a terminating error' {
+            { $mockCimInstance | Get-SqlDscRSDatabaseInstallation } | Should -Throw -ErrorId 'GSRSDI0001,Get-SqlDscRSDatabaseInstallation'
         }
     }
 
     Context 'When passing configuration as parameter' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
-                InstanceName          = 'SSRS'
-                SecureConnectionLevel = 0
+                InstanceName = 'SSRS'
             }
 
+            # The CIM method returns GUIDs without braces
             Mock -CommandName Invoke-RsCimMethod -MockWith {
-                return [PSCustomObject] @{
-                    HRESULT = 0
+                return @{
+                    Length          = 1
+                    InstallationIDs = @('d4e5f6a7-b8c9-0123-4567-890abcdef012')
+                    MachineNames    = @('SERVER1')
+                    InstanceNames   = @('SSRS')
+                    IsInitialized   = @($true)
                 }
             }
         }
 
-        It 'Should enable secure connection' {
-            { Enable-SqlDscRsSecureConnection -Configuration $mockCimInstance -Confirm:$false } | Should -Not -Throw
+        It 'Should get database installation information' {
+            $result = Get-SqlDscRSDatabaseInstallation -Configuration $mockCimInstance
+
+            $result | Should -Not -BeNullOrEmpty
+            $result | Should -HaveCount 1
+            $result.InstallationID | Should -Be 'd4e5f6a7-b8c9-0123-4567-890abcdef012'
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }

@@ -319,6 +319,16 @@ ConvertFrom-StringData @'
     Get_SqlDscRSConfigFile_FailedToReadConfigFile = Failed to read the configuration file '{0}': {1} (GSRSCF0003)
     Get_SqlDscRSConfigFile_FileNotFound = Could not find the configuration file at path '{0}'. (GSRSCF0004)
 
+    ## Get-SqlDscRSExecutionLog
+    Get_SqlDscRSExecutionLog_GettingConfiguration = Getting Reporting Services configuration for instance '{0}'.
+    Get_SqlDscRSExecutionLog_DatabaseInfo = Report server database '{0}' on server '{1}'.
+    Get_SqlDscRSExecutionLog_ExecutingQuery = Executing query against database '{0}'.
+    Get_SqlDscRSExecutionLog_ShouldProcessDescription = Querying execution log from database '{0}' on server '{1}'.
+    Get_SqlDscRSExecutionLog_ShouldProcessConfirmation = Are you sure you want to query the execution log from database '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Get_SqlDscRSExecutionLog_ShouldProcessCaption = Query Reporting Services execution log
+    Get_SqlDscRSExecutionLog_QueryFailed = Failed to query execution log for Reporting Services instance '{0}'. {1} (GSRSEL0001)
+
     ## Get-SqlDscRSWebPortalApplicationName
     Get_SqlDscRSWebPortalApplicationName_GettingApplicationName = Getting web portal application name.
 
@@ -870,6 +880,14 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Initialize_SqlDscRS_ShouldProcessCaption = Initialize Reporting Services instance
     Initialize_SqlDscRS_FailedToInitialize = Failed to initialize Reporting Services instance '{0}'. {1} (ISRS0001)
+
+    ## Get-SqlDscRSIPAddress
+    Get_SqlDscRSIPAddress_Getting = Getting available IP addresses for Reporting Services instance '{0}'.
+    Get_SqlDscRSIPAddress_FailedToGet = Failed to get available IP addresses for Reporting Services instance '{0}'. {1} (GSRSIP0001)
+
+    ## Get-SqlDscRSDatabaseInstallation
+    Get_SqlDscRSDatabaseInstallation_Getting = Getting report server installations registered in the database for Reporting Services instance '{0}'.
+    Get_SqlDscRSDatabaseInstallation_FailedToGet = Failed to get report server installations for Reporting Services instance '{0}'. {1} (GSRSDI0001)
 
     ## Request-SqlDscRSDatabaseUpgradeScript
     Request_SqlDscRSDatabaseUpgradeScript_Generating = Generating database upgrade script for Reporting Services instance '{0}'.
