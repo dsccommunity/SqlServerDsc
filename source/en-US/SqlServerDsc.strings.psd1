@@ -830,6 +830,35 @@ ConvertFrom-StringData @'
     Restart_SqlDscRSService_WaitingBeforeStart = Waiting {0} seconds before starting service '{1}'.
     Restart_SqlDscRSService_StartingDependentService = Starting dependent service '{0}'.
 
+    ## Get-SqlDscRSSslCertificateBinding
+    Get_SqlDscRSSslCertificateBinding_Getting = Getting SSL certificate bindings for Reporting Services instance '{0}'.
+    Get_SqlDscRSSslCertificateBinding_FailedToGet = Failed to get SSL certificate bindings for Reporting Services instance '{0}'. {1} (GSRSSCB0001)
+
+    ## Add-SqlDscRSSslCertificateBinding
+    Add_SqlDscRSSslCertificateBinding_Adding = Adding SSL certificate binding '{0}' for application '{1}' on Reporting Services instance '{2}'.
+    Add_SqlDscRSSslCertificateBinding_ShouldProcessDescription = Adding SSL certificate binding '{0}' for application '{1}' on Reporting Services instance '{2}'.
+    Add_SqlDscRSSslCertificateBinding_ShouldProcessConfirmation = Are you sure you want to add SSL certificate binding '{0}' for application '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Add_SqlDscRSSslCertificateBinding_ShouldProcessCaption = Add SSL certificate binding for Reporting Services instance
+    Add_SqlDscRSSslCertificateBinding_FailedToAdd = Failed to add SSL certificate binding for Reporting Services instance '{0}'. {1} (ASRSSCB0001)
+
+    ## Remove-SqlDscRSSslCertificateBinding
+    Remove_SqlDscRSSslCertificateBinding_Removing = Removing SSL certificate binding '{0}' for application '{1}' from Reporting Services instance '{2}'.
+    Remove_SqlDscRSSslCertificateBinding_ShouldProcessDescription = Removing SSL certificate binding '{0}' for application '{1}' from Reporting Services instance '{2}'.
+    Remove_SqlDscRSSslCertificateBinding_ShouldProcessConfirmation = Are you sure you want to remove SSL certificate binding '{0}' for application '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Remove_SqlDscRSSslCertificateBinding_ShouldProcessCaption = Remove SSL certificate binding from Reporting Services instance
+    Remove_SqlDscRSSslCertificateBinding_FailedToRemove = Failed to remove SSL certificate binding for Reporting Services instance '{0}'. {1} (RSRSSCB0001)
+
+    ## Set-SqlDscRSSslCertificateBinding
+    Set_SqlDscRSSslCertificateBinding_ShouldProcessDescription = Setting SSL certificate binding '{0}' for application '{1}' on Reporting Services instance '{2}'.
+    Set_SqlDscRSSslCertificateBinding_ShouldProcessConfirmation = Are you sure you want to set SSL certificate binding '{0}' for application '{1}'? Existing bindings will be removed.
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Set_SqlDscRSSslCertificateBinding_ShouldProcessCaption = Set SSL certificate binding for Reporting Services instance
+    Set_SqlDscRSSslCertificateBinding_RemovingExisting = Removing existing SSL certificate binding '{0}' for application '{1}' from Reporting Services instance '{2}'.
+    Set_SqlDscRSSslCertificateBinding_Adding = Adding SSL certificate binding '{0}' for application '{1}' on Reporting Services instance '{2}'.
+    Set_SqlDscRSSslCertificateBinding_AlreadyExists = SSL certificate binding '{0}' for application '{1}' already exists on Reporting Services instance '{2}'.
+
     ## New-SqlDscRSEncryptionKey
     New_SqlDscRSEncryptionKey_Generating = Generating new encryption key for Reporting Services instance '{0}'.
     New_SqlDscRSEncryptionKey_ShouldProcessDescription = Generating new encryption key for Reporting Services instance '{0}'. This will invalidate existing encryption key backups.
@@ -881,13 +910,17 @@ ConvertFrom-StringData @'
     Initialize_SqlDscRS_ShouldProcessCaption = Initialize Reporting Services instance
     Initialize_SqlDscRS_FailedToInitialize = Failed to initialize Reporting Services instance '{0}'. {1} (ISRS0001)
 
+    ## Get-SqlDscRSSslCertificate
+    Get_SqlDscRSSslCertificate_Getting = Getting available SSL certificates for Reporting Services instance '{0}'.
+    Get_SqlDscRSSslCertificate_FailedToGet = Failed to get available SSL certificates for Reporting Services instance '{0}'. {1} (GSRSSC0001)
+
     ## Get-SqlDscRSIPAddress
     Get_SqlDscRSIPAddress_Getting = Getting available IP addresses for Reporting Services instance '{0}'.
     Get_SqlDscRSIPAddress_FailedToGet = Failed to get available IP addresses for Reporting Services instance '{0}'. {1} (GSRSIP0001)
 
     ## Get-SqlDscRSDatabaseInstallation
     Get_SqlDscRSDatabaseInstallation_Getting = Getting report server installations registered in the database for Reporting Services instance '{0}'.
-    Get_SqlDscRSDatabaseInstallation_FailedToGet = Failed to get report server installations for Reporting Services instance '{0}'. {1} (GSRSDI0001)
+    Get_SqlDscRSDatabaseInstallation_FailedToGet = Failed to get report server installations for Reporting Services instance '{0}'. (GSRSDI0001)
 
     ## Request-SqlDscRSDatabaseUpgradeScript
     Request_SqlDscRSDatabaseUpgradeScript_Generating = Generating database upgrade script for Reporting Services instance '{0}'.

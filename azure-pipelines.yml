@@ -712,6 +712,83 @@ stages:
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration Commands ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
+  - stage: Integration_Test_Commands_BIReportServer_Secure
+    displayName: 'Integration Test Commands - BI Report Server SSL/TLS'
+    dependsOn: Build #Integration_Test_Commands_SqlServer
+    jobs:
+      - job: Test_Integration
+        displayName: 'Commands'
+        strategy:
+          matrix:
+            PowerBI_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_PowerBI'
+            PowerBI_WIN2025:
+              JOB_VMIMAGE: 'windows-2025'
+              TEST_CONFIGURATION: 'Integration_PowerBI'
+        pool:
+          vmImage: $(JOB_VMIMAGE)
+        timeoutInMinutes: '0'
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          - task: PowerShell@2
+            name: configureWinRM
+            displayName: 'Configure WinRM'
+            inputs:
+              targetType: 'inline'
+              script: 'winrm quickconfig -quiet'
+              pwsh: false
+          - powershell: |
+              Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
+              Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
+              Remove-Module -Name CommonTestHelper
+            name: cleanCIWorker
+            displayName: 'Clean CI worker'
+          - powershell: |
+              ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
+                  # Run the integration tests in a specific group order.
+                  # Group 0
+                  'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Prerequisites.RSDB.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Save-SqlDscSqlServerMediaFile.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Import-SqlDscPreferredModule.Integration.Tests.ps1'
+                  # Group 1
+                  'tests/Integration/Commands/Install-SqlDscPowerBIReportServer.Integration.Tests.ps1'
+                  # Group 2
+                  'tests/Integration/Commands/Request-SqlDscRSDatabaseScript.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Request-SqlDscRSDatabaseRightsScript.Integration.Tests.ps1'
+                  # Group 3
+                  'tests/Integration/Commands/Enable-SqlDscRsSecureConnection.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscRSVirtualDirectory.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Pre.Set-SqlDscRSUrlReservation.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Add-SqlDscRSSslCertificateBinding.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscRSDatabaseConnection.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Restart-SqlDscRSService.Integration.Tests.ps1'
+                  # Group 4
+                  'tests/Integration/Commands/Initialize-SqlDscRS.Integration.Tests.ps1'
+                  # Group 5 - Post-initialization validation
+                  'tests/Integration/Commands/Post.Certificate.RS.Integration.Tests.ps1'
+                  # Group 6
+                  'tests/Integration/Commands/Get-SqlDscRSSslCertificate.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscRSSslCertificateBinding.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Remove-SqlDscRSSslCertificateBinding.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscRSSslCertificateBinding.Integration.Tests.ps1'
+              )
+            name: test
+            displayName: 'Run Integration Test'
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'Integration Commands ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
+
   - stage: Integration_Test_Resources_SqlServer
     displayName: 'Integration Test Resources - SQL Server'
     dependsOn: Quality_Test_and_Unit_Test

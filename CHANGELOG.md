@@ -214,6 +214,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   for SQL Server Reporting Services or Power BI Report Server. Supports waiting
   for dependent services, configurable wait time, and accepts pipeline input
   from `Get-SqlDscRSConfiguration`.
+- Added public commands `Get-SqlDscRSSslCertificateBinding`,
+  `Add-SqlDscRSSslCertificateBinding`, `Remove-SqlDscRSSslCertificateBinding`,
+  and `Set-SqlDscRSSslCertificateBinding` to manage SSL certificate bindings
+  for SQL Server Reporting Services or Power BI Report Server. These commands
+  wrap the `ListSSLCertificateBindings`, `CreateSSLCertificateBinding`, and
+  `RemoveSSLCertificateBinding` CIM methods. The `Set-SqlDscRSSslCertificateBinding`
+  command provides a declarative approach to set SSL bindings to an exact list.
 - Added public command `New-SqlDscRSEncryptionKey` to delete and regenerate the
   Reporting Services encryption key. Wraps the `DeleteEncryptionKey` CIM method.
   Warning: This operation cannot be undone and renders all encrypted content
@@ -237,6 +244,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   by calling the `InitializeReportServer` CIM method. Used to complete initial
   configuration after database and URL setup
   ([issue #2014](https://github.com/dsccommunity/SqlServerDsc/issues/2014)).
+- Added public command `Get-SqlDscRSSslCertificate` to list available SSL
+  certificates that can be used for Reporting Services. Wraps the
+  `ListSSLCertificates` CIM method.
 - Added public command `Get-SqlDscRSIPAddress` to list IP addresses available
   for URL reservations. Wraps the `ListIPAddresses` CIM method.
 - Added public command `Get-SqlDscRSDatabaseInstallation` to determine whether
