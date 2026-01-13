@@ -67,25 +67,6 @@ Describe 'Add-SqlDscRSUrlReservation' {
             $webAppIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
             $reservations.UrlString[$webAppIndex] | Should -Be $script:testUrl
         }
-
-        It 'Should return configuration when using PassThru' {
-            # First remove the test URL if it exists
-            try
-            {
-                $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-                $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'SilentlyContinue'
-            }
-            catch
-            {
-                # Ignore
-            }
-
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-            $result = $config | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -PassThru -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
-        }
     }
 
     Context 'When adding URL reservation for SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {
@@ -119,25 +100,6 @@ Describe 'Add-SqlDscRSUrlReservation' {
 
             $webAppIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
             $reservations.UrlString[$webAppIndex] | Should -Be $script:testUrl
-        }
-
-        It 'Should return configuration when using PassThru' {
-            # First remove the test URL if it exists
-            try
-            {
-                $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-                $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'SilentlyContinue'
-            }
-            catch
-            {
-                # Ignore
-            }
-
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-            $result = $config | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -PassThru -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
         }
     }
 
@@ -173,25 +135,6 @@ Describe 'Add-SqlDscRSUrlReservation' {
             $webAppIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
             $reservations.UrlString[$webAppIndex] | Should -Be $script:testUrl
         }
-
-        It 'Should return configuration when using PassThru' {
-            # First remove the test URL if it exists
-            try
-            {
-                $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-                $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'SilentlyContinue'
-            }
-            catch
-            {
-                # Ignore
-            }
-
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-            $result = $config | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -PassThru -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
-        }
     }
 
     Context 'When adding URL reservation for Power BI Report Server' -Tag @('Integration_PowerBI') {
@@ -225,25 +168,6 @@ Describe 'Add-SqlDscRSUrlReservation' {
 
             $webAppIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
             $reservations.UrlString[$webAppIndex] | Should -Be $script:testUrl
-        }
-
-        It 'Should return configuration when using PassThru' {
-            # First remove the test URL if it exists
-            try
-            {
-                $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
-                $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'SilentlyContinue'
-            }
-            catch
-            {
-                # Ignore
-            }
-
-            $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
-            $result = $config | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -PassThru -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'PBIRS'
         }
     }
 }

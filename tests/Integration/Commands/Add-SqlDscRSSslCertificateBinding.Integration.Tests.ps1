@@ -67,7 +67,7 @@ BeforeAll {
 
     $script:testCertificateHash = $script:testCertificate.Thumbprint
     $script:testIPAddress = '0.0.0.0'
-    $script:testPort = 8443
+    $script:testPort = 443
 }
 
 <#
@@ -76,13 +76,27 @@ BeforeAll {
         The certificate is not removed after tests to allow inspection.
 #>
 Describe 'Add-SqlDscRSSslCertificateBinding' {
+    BeforeAll {
+        $script:addSslCertificateBindingParameters = @{
+            CertificateHash = $script:testCertificateHash
+            IPAddress       = $script:testIPAddress
+            Port            = $script:testPort
+            Force           = $true
+            ErrorAction     = 'Stop'
+        }
+    }
+
     Context 'When adding SSL certificate binding for SQL Server Reporting Services' -Tag @('Integration_SQL2017_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
         }
 
-        It 'Should add SSL certificate binding' {
-            { $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash $script:testCertificateHash -IPAddress $script:testIPAddress -Port $script:testPort -Force -ErrorAction 'Stop' } | Should -Not -Throw
+        It 'Should add SSL certificate binding for ReportServerWebService' {
+            { $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' @script:addSslCertificateBindingParameters } | Should -Not -Throw
+        }
+
+        It 'Should add SSL certificate binding for ReportServerWebApp' {
+            { $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebApp' @script:addSslCertificateBindingParameters } | Should -Not -Throw
         }
     }
 
@@ -91,8 +105,12 @@ Describe 'Add-SqlDscRSSslCertificateBinding' {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
         }
 
-        It 'Should add SSL certificate binding' {
-            { $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash $script:testCertificateHash -IPAddress $script:testIPAddress -Port $script:testPort -Force -ErrorAction 'Stop' } | Should -Not -Throw
+        It 'Should add SSL certificate binding for ReportServerWebService' {
+            { $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' @script:addSslCertificateBindingParameters } | Should -Not -Throw
+        }
+
+        It 'Should add SSL certificate binding for ReportServerWebApp' {
+            { $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebApp' @script:addSslCertificateBindingParameters } | Should -Not -Throw
         }
     }
 
@@ -101,8 +119,12 @@ Describe 'Add-SqlDscRSSslCertificateBinding' {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
         }
 
-        It 'Should add SSL certificate binding' {
-            { $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash $script:testCertificateHash -IPAddress $script:testIPAddress -Port $script:testPort -Force -ErrorAction 'Stop' } | Should -Not -Throw
+        It 'Should add SSL certificate binding for ReportServerWebService' {
+            { $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' @script:addSslCertificateBindingParameters } | Should -Not -Throw
+        }
+
+        It 'Should add SSL certificate binding for ReportServerWebApp' {
+            { $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebApp' @script:addSslCertificateBindingParameters } | Should -Not -Throw
         }
     }
 
@@ -111,8 +133,12 @@ Describe 'Add-SqlDscRSSslCertificateBinding' {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
         }
 
-        It 'Should add SSL certificate binding' {
-            { $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash $script:testCertificateHash -IPAddress $script:testIPAddress -Port $script:testPort -Force -ErrorAction 'Stop' } | Should -Not -Throw
+        It 'Should add SSL certificate binding for ReportServerWebService' {
+            { $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' @script:addSslCertificateBindingParameters } | Should -Not -Throw
+        }
+
+        It 'Should add SSL certificate binding for ReportServerWebApp' {
+            { $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebApp' @script:addSslCertificateBindingParameters } | Should -Not -Throw
         }
     }
 }
