@@ -72,11 +72,12 @@ Describe 'Post.Certificate.RS' {
 
             $results | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
 
-            $siteResult = $results | Where-Object -FilterScript { $_.Site -eq 'ReportServer' }
+            # When using Uri parameter set, the site name is 'ReportServerWebService'
+            $siteResult = $results | Where-Object -FilterScript { $_.Site -eq 'ReportServerWebService' }
 
-            $siteResult | Should -Not -BeNullOrEmpty -Because 'the ReportServer site should have a result'
-            $siteResult.Accessible | Should -BeTrue -Because 'the ReportServer site should be accessible over HTTPS'
-            $siteResult.StatusCode | Should -Be 200 -Because 'the ReportServer site should return HTTP 200'
+            $siteResult | Should -Not -BeNullOrEmpty -Because 'the ReportServerWebService site should have a result'
+            $siteResult.Accessible | Should -BeTrue -Because 'the ReportServerWebService site should be accessible over HTTPS'
+            $siteResult.StatusCode | Should -Be 200 -Because 'the ReportServerWebService site should return HTTP 200'
             $siteResult.Uri | Should -Match '^https://' -Because 'the URI should use HTTPS protocol'
             $siteResult.Uri | Should -Match ':443/' -Because 'the URI should use port 443'
         }
@@ -88,11 +89,12 @@ Describe 'Post.Certificate.RS' {
 
             $results | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
 
-            $siteResult = $results | Where-Object -FilterScript { $_.Site -eq 'Reports' }
+            # When using Uri parameter set, the site name is 'ReportServerWebApp'
+            $siteResult = $results | Where-Object -FilterScript { $_.Site -eq 'ReportServerWebApp' }
 
-            $siteResult | Should -Not -BeNullOrEmpty -Because 'the Reports site should have a result'
-            $siteResult.Accessible | Should -BeTrue -Because 'the Reports site should be accessible over HTTPS'
-            $siteResult.StatusCode | Should -Be 200 -Because 'the Reports site should return HTTP 200'
+            $siteResult | Should -Not -BeNullOrEmpty -Because 'the ReportServerWebApp site should have a result'
+            $siteResult.Accessible | Should -BeTrue -Because 'the ReportServerWebApp site should be accessible over HTTPS'
+            $siteResult.StatusCode | Should -Be 200 -Because 'the ReportServerWebApp site should return HTTP 200'
             $siteResult.Uri | Should -Match '^https://' -Because 'the URI should use HTTPS protocol'
             $siteResult.Uri | Should -Match ':443/' -Because 'the URI should use port 443'
         }
