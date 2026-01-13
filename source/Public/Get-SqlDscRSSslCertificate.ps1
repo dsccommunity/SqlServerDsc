@@ -20,21 +20,15 @@
         `Get-SqlDscRSConfiguration` command. This parameter accepts pipeline
         input.
 
-    .PARAMETER Lcid
-        Specifies the language code identifier (LCID) for the request.
-        If not specified, defaults to the operating system language. Common
-        values include 1033 for English (US).
-
     .EXAMPLE
         Get-SqlDscRSConfiguration -InstanceName 'SSRS' | Get-SqlDscRSSslCertificate
 
         Gets all available SSL certificates for the Reporting Services instance.
 
     .EXAMPLE
-        $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-        Get-SqlDscRSSslCertificate -Configuration $config -Lcid 1033
+        Get-SqlDscRSConfiguration -InstanceName 'PBIRS' | Get-SqlDscRSSslCertificate
 
-        Gets available SSL certificates with a specific LCID.
+        Gets all available SSL certificates for Power BI Report Server.
 
     .INPUTS
         `Microsoft.Management.Infrastructure.CimInstance`
@@ -44,11 +38,13 @@
     .OUTPUTS
         `System.Management.Automation.PSCustomObject`
 
-        Returns objects with properties: CertificateName, Subject, ExpirationDate,
+        Returns objects with properties: CertificateName, HostName,
         and CertificateHash.
 
     .NOTES
-        This command calls the WMI method `ListSSLCertificates`.
+        This command calls the WMI method `ListSSLCertificates`. This method
+        does not require an LCID parameter as it simply lists available
+        certificates on the machine.
 
     .LINK
         https://docs.microsoft.com/en-us/sql/reporting-services/wmi-provider-library-reference/configurationsetting-method-listsslcertificates
@@ -62,30 +58,18 @@ function Get-SqlDscRSSslCertificate
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [System.Object]
-        $Configuration,
-
-        [Parameter()]
-        [System.Int32]
-        $Lcid
+        $Configuration
     )
 
     process
     {
         $instanceName = $Configuration.InstanceName
 
-        if (-not $PSBoundParameters.ContainsKey('Lcid'))
-        {
-            $Lcid = (Get-OperatingSystem).OSLanguage
-        }
-
         Write-Verbose -Message ($script:localizedData.Get_SqlDscRSSslCertificate_Getting -f $instanceName)
 
         $invokeRsCimMethodParameters = @{
             CimInstance = $Configuration
             MethodName  = 'ListSSLCertificates'
-            Arguments   = @{
-                Lcid = $Lcid
-            }
         }
 
         try
@@ -95,18 +79,17 @@ function Get-SqlDscRSSslCertificate
             <#
                 The WMI method returns multiple parallel arrays:
                 - CertName: Array of certificate friendly names
-                - CertSubject: Array of certificate subjects
-                - CertExpiration: Array of expiration dates
+                - HostName: Array of host names for the certificates
                 - CertificateHash: Array of certificate thumbprints
+                - Length: The length of the arrays
             #>
-            if ($result.CertificateHash)
+            if ($result.Length -gt 0)
             {
-                for ($i = 0; $i -lt $result.CertificateHash.Count; $i++)
+                for ($i = 0; $i -lt $result.Length; $i++)
                 {
                     [PSCustomObject] @{
                         CertificateName = $result.CertName[$i]
-                        Subject         = $result.CertSubject[$i]
-                        ExpirationDate  = $result.CertExpiration[$i]
+                        HostName        = $result.HostName[$i]
                         CertificateHash = $result.CertificateHash[$i]
                     }
                 }

@@ -71,25 +71,28 @@ Describe 'Get-SqlDscRSSslCertificate' {
 
             Mock -CommandName Invoke-RsCimMethod -MockWith {
                 return @{
-                    CertName = @('Certificate1', 'Certificate2')
+                    CertName        = @('Certificate1', 'Certificate2')
+                    HostName        = @('server1.domain.com', 'server2.domain.com')
                     CertificateHash = @('AABBCCDD', 'EEFFAABB')
-                    StartDate = @((Get-Date), (Get-Date))
-                    ExpirationDate = @((Get-Date).AddYears(1), (Get-Date).AddYears(2))
+                    Length          = 2
                 }
             }
         }
 
-        It 'Should return SSL certificates' {
+        It 'Should return SSL certificates with correct properties' {
             $result = $mockCimInstance | Get-SqlDscRSSslCertificate
 
             $result | Should -HaveCount 2
-            $result[0].CertName | Should -Be 'Certificate1'
+            $result[0].CertificateName | Should -Be 'Certificate1'
+            $result[0].HostName | Should -Be 'server1.domain.com'
             $result[0].CertificateHash | Should -Be 'AABBCCDD'
-            $result[1].CertName | Should -Be 'Certificate2'
+            $result[1].CertificateName | Should -Be 'Certificate2'
+            $result[1].HostName | Should -Be 'server2.domain.com'
             $result[1].CertificateHash | Should -Be 'EEFFAABB'
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'ListSSLCertificates'
+                $MethodName -eq 'ListSSLCertificates' -and
+                $null -eq $Arguments
             } -Exactly -Times 1
         }
     }
@@ -102,10 +105,10 @@ Describe 'Get-SqlDscRSSslCertificate' {
 
             Mock -CommandName Invoke-RsCimMethod -MockWith {
                 return @{
-                    CertName = @()
+                    CertName        = @()
+                    HostName        = @()
                     CertificateHash = @()
-                    StartDate = @()
-                    ExpirationDate = @()
+                    Length          = 0
                 }
             }
         }
@@ -131,7 +134,7 @@ Describe 'Get-SqlDscRSSslCertificate' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Get-SqlDscRSSslCertificate } | Should -Throw -ErrorId 'GSRSC0001,Get-SqlDscRSSslCertificate'
+            { $mockCimInstance | Get-SqlDscRSSslCertificate } | Should -Throw -ErrorId 'GSRSSC0001,Get-SqlDscRSSslCertificate'
         }
     }
 
@@ -143,10 +146,10 @@ Describe 'Get-SqlDscRSSslCertificate' {
 
             Mock -CommandName Invoke-RsCimMethod -MockWith {
                 return @{
-                    CertName = @('Certificate1')
+                    CertName        = @('Certificate1')
+                    HostName        = @('server1.domain.com')
                     CertificateHash = @('AABBCCDD')
-                    StartDate = @((Get-Date))
-                    ExpirationDate = @((Get-Date).AddYears(1))
+                    Length          = 1
                 }
             }
         }
@@ -157,6 +160,37 @@ Describe 'Get-SqlDscRSSslCertificate' {
             $result | Should -HaveCount 1
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+        }
+    }
+
+    Context 'When getting SSL certificates for Power BI Report Server' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'PBIRS'
+            }
+
+            Mock -CommandName Invoke-RsCimMethod -MockWith {
+                return @{
+                    CertName        = @('PBIRS Certificate')
+                    HostName        = @('pbirs.domain.com')
+                    CertificateHash = @('11223344')
+                    Length          = 1
+                }
+            }
+        }
+
+        It 'Should return SSL certificates without passing Lcid argument' {
+            $result = $mockCimInstance | Get-SqlDscRSSslCertificate
+
+            $result | Should -HaveCount 1
+            $result[0].CertificateName | Should -Be 'PBIRS Certificate'
+            $result[0].HostName | Should -Be 'pbirs.domain.com'
+            $result[0].CertificateHash | Should -Be '11223344'
+
+            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                $MethodName -eq 'ListSSLCertificates' -and
+                $null -eq $Arguments
+            } -Exactly -Times 1
         }
     }
 }

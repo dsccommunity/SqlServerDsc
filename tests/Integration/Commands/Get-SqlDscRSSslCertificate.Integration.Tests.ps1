@@ -66,10 +66,30 @@ Describe 'Get-SqlDscRSSslCertificate' {
             $result | Should -Not -BeNullOrEmpty
         }
 
+        It 'Should return certificates with correct properties' {
+            $result = $script:configuration | Get-SqlDscRSSslCertificate -ErrorAction 'Stop'
+
+            $result[0].PSObject.Properties.Name | Should -Contain 'CertificateName'
+            $result[0].PSObject.Properties.Name | Should -Contain 'HostName'
+            $result[0].PSObject.Properties.Name | Should -Contain 'CertificateHash'
+        }
+
         It 'Should return the test certificate that was bound' {
             $result = $script:configuration | Get-SqlDscRSSslCertificate -ErrorAction 'Stop'
 
             $result.CertificateHash | Should -Contain $script:testCertificateHash
+        }
+
+        It 'Should return correct properties for the test certificate' {
+            $result = $script:configuration | Get-SqlDscRSSslCertificate -ErrorAction 'Stop'
+
+            $testCert = $result | Where-Object -FilterScript {
+                $_.CertificateHash -eq $script:testCertificateHash
+            }
+
+            $testCert | Should -Not -BeNullOrEmpty
+            $testCert.CertificateName | Should -Be $script:testCertificate.FriendlyName
+            $testCert.HostName | Should -Be $script:computerName
         }
     }
 
@@ -84,10 +104,30 @@ Describe 'Get-SqlDscRSSslCertificate' {
             $result | Should -Not -BeNullOrEmpty
         }
 
+        It 'Should return certificates with correct properties' {
+            $result = $script:configuration | Get-SqlDscRSSslCertificate -ErrorAction 'Stop'
+
+            $result[0].PSObject.Properties.Name | Should -Contain 'CertificateName'
+            $result[0].PSObject.Properties.Name | Should -Contain 'HostName'
+            $result[0].PSObject.Properties.Name | Should -Contain 'CertificateHash'
+        }
+
         It 'Should return the test certificate that was bound' {
             $result = $script:configuration | Get-SqlDscRSSslCertificate -ErrorAction 'Stop'
 
             $result.CertificateHash | Should -Contain $script:testCertificateHash
+        }
+
+        It 'Should return correct properties for the test certificate' {
+            $result = $script:configuration | Get-SqlDscRSSslCertificate -ErrorAction 'Stop'
+
+            $testCert = $result | Where-Object -FilterScript {
+                $_.CertificateHash -eq $script:testCertificateHash
+            }
+
+            $testCert | Should -Not -BeNullOrEmpty
+            $testCert.CertificateName | Should -Be $script:testCertificate.FriendlyName
+            $testCert.HostName | Should -Be $script:computerName
         }
     }
 
@@ -102,10 +142,30 @@ Describe 'Get-SqlDscRSSslCertificate' {
             $result | Should -Not -BeNullOrEmpty
         }
 
+        It 'Should return certificates with correct properties' {
+            $result = $script:configuration | Get-SqlDscRSSslCertificate -ErrorAction 'Stop'
+
+            $result[0].PSObject.Properties.Name | Should -Contain 'CertificateName'
+            $result[0].PSObject.Properties.Name | Should -Contain 'HostName'
+            $result[0].PSObject.Properties.Name | Should -Contain 'CertificateHash'
+        }
+
         It 'Should return the test certificate that was bound' {
             $result = $script:configuration | Get-SqlDscRSSslCertificate -ErrorAction 'Stop'
 
             $result.CertificateHash | Should -Contain $script:testCertificateHash
+        }
+
+        It 'Should return correct properties for the test certificate' {
+            $result = $script:configuration | Get-SqlDscRSSslCertificate -ErrorAction 'Stop'
+
+            $testCert = $result | Where-Object -FilterScript {
+                $_.CertificateHash -eq $script:testCertificateHash
+            }
+
+            $testCert | Should -Not -BeNullOrEmpty
+            $testCert.CertificateName | Should -Be $script:testCertificate.FriendlyName
+            $testCert.HostName | Should -Be $script:computerName
         }
     }
 
@@ -120,10 +180,30 @@ Describe 'Get-SqlDscRSSslCertificate' {
             $result | Should -Not -BeNullOrEmpty
         }
 
+        It 'Should return certificates with correct properties' {
+            $result = $script:configuration | Get-SqlDscRSSslCertificate -ErrorAction 'Stop'
+
+            $result[0].PSObject.Properties.Name | Should -Contain 'CertificateName'
+            $result[0].PSObject.Properties.Name | Should -Contain 'HostName'
+            $result[0].PSObject.Properties.Name | Should -Contain 'CertificateHash'
+        }
+
         It 'Should return the test certificate that was bound' {
             $result = $script:configuration | Get-SqlDscRSSslCertificate -ErrorAction 'Stop'
 
             $result.CertificateHash | Should -Contain $script:testCertificateHash
+        }
+
+        It 'Should return correct properties for the test certificate' {
+            $result = $script:configuration | Get-SqlDscRSSslCertificate -ErrorAction 'Stop'
+
+            $testCert = $result | Where-Object -FilterScript {
+                $_.CertificateHash -eq $script:testCertificateHash
+            }
+
+            $testCert | Should -Not -BeNullOrEmpty
+            $testCert.CertificateName | Should -Be $script:testCertificate.FriendlyName
+            $testCert.HostName | Should -Be $script:computerName
         }
     }
 }
