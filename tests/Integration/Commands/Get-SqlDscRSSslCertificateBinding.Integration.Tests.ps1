@@ -51,7 +51,7 @@ BeforeAll {
 
     $script:testCertificateHash = $script:testCertificate.Thumbprint
     $script:testIPAddress = '0.0.0.0'
-    $script:testPort = 8443
+    $script:testPort = 443
 
     Write-Verbose -Message ('Using self-signed certificate ''{0}'' with thumbprint ''{1}''.' -f $script:testCertificate.Subject, $script:testCertificateHash) -Verbose
 }
