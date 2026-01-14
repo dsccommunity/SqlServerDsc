@@ -46,19 +46,30 @@ BeforeAll {
         left removed after these tests complete.
 #>
 Describe 'Remove-SqlDscRSSslCertificateBinding' {
+    BeforeAll {
+        # Get the test certificate that was created by Add-SqlDscRSSslCertificateBinding tests
+        $script:testCertificate = Get-ChildItem -Path 'Cert:\LocalMachine\My' |
+            Where-Object -FilterScript { $_.FriendlyName -eq $script:testCertificateFriendlyName } |
+            Select-Object -First 1
+
+        if (-not $script:testCertificate)
+        {
+            throw 'Test certificate not found. Ensure Add-SqlDscRSSslCertificateBinding integration tests have run first to create the certificate.'
+        }
+
+        $script:testCertificateHash = $script:testCertificate.Thumbprint
+        $script:testIPAddress = '0.0.0.0'
+        $script:testPort = 443
+
+        Write-Verbose -Message ('Using self-signed certificate ''{0}'' with thumbprint ''{1}''.' -f $script:testCertificate.Subject, $script:testCertificateHash) -Verbose
+    }
+
     Context 'When removing SSL certificate binding for SQL Server Reporting Services' -Tag @('Integration_SQL2017_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-
-            # Get the test certificate that was created by Add-SqlDscRSSslCertificateBinding tests
-            $script:testCertificate = Get-ChildItem -Path 'Cert:\LocalMachine\My' |
-                Where-Object -FilterScript { $_.FriendlyName -eq $script:testCertificateFriendlyName } |
-                Select-Object -First 1
-
-            $script:testCertificateHash = $script:testCertificate.Thumbprint
         }
 
-        It 'Should remove SSL certificate binding' -Skip:(-not $script:testCertificateHash) {
+        It 'Should remove SSL certificate binding' {
             { $script:configuration | Remove-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash $script:testCertificateHash -IPAddress $script:testIPAddress -Port $script:testPort -Force -ErrorAction 'Stop' } | Should -Not -Throw
         }
     }
@@ -66,15 +77,9 @@ Describe 'Remove-SqlDscRSSslCertificateBinding' {
     Context 'When removing SSL certificate binding for SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-
-            $script:testCertificate = Get-ChildItem -Path 'Cert:\LocalMachine\My' |
-                Where-Object -FilterScript { $_.FriendlyName -eq $script:testCertificateFriendlyName } |
-                Select-Object -First 1
-
-            $script:testCertificateHash = $script:testCertificate.Thumbprint
         }
 
-        It 'Should remove SSL certificate binding' -Skip:(-not $script:testCertificateHash) {
+        It 'Should remove SSL certificate binding' {
             { $script:configuration | Remove-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash $script:testCertificateHash -IPAddress $script:testIPAddress -Port $script:testPort -Force -ErrorAction 'Stop' } | Should -Not -Throw
         }
     }
@@ -82,15 +87,9 @@ Describe 'Remove-SqlDscRSSslCertificateBinding' {
     Context 'When removing SSL certificate binding for SQL Server Reporting Services' -Tag @('Integration_SQL2022_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-
-            $script:testCertificate = Get-ChildItem -Path 'Cert:\LocalMachine\My' |
-                Where-Object -FilterScript { $_.FriendlyName -eq $script:testCertificateFriendlyName } |
-                Select-Object -First 1
-
-            $script:testCertificateHash = $script:testCertificate.Thumbprint
         }
 
-        It 'Should remove SSL certificate binding' -Skip:(-not $script:testCertificateHash) {
+        It 'Should remove SSL certificate binding' {
             { $script:configuration | Remove-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash $script:testCertificateHash -IPAddress $script:testIPAddress -Port $script:testPort -Force -ErrorAction 'Stop' } | Should -Not -Throw
         }
     }
@@ -98,15 +97,9 @@ Describe 'Remove-SqlDscRSSslCertificateBinding' {
     Context 'When removing SSL certificate binding for Power BI Report Server' -Tag @('Integration_PowerBI') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
-
-            $script:testCertificate = Get-ChildItem -Path 'Cert:\LocalMachine\My' |
-                Where-Object -FilterScript { $_.FriendlyName -eq $script:testCertificateFriendlyName } |
-                Select-Object -First 1
-
-            $script:testCertificateHash = $script:testCertificate.Thumbprint
         }
 
-        It 'Should remove SSL certificate binding' -Skip:(-not $script:testCertificateHash) {
+        It 'Should remove SSL certificate binding' {
             { $script:configuration | Remove-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash $script:testCertificateHash -IPAddress $script:testIPAddress -Port $script:testPort -Force -ErrorAction 'Stop' } | Should -Not -Throw
         }
     }
