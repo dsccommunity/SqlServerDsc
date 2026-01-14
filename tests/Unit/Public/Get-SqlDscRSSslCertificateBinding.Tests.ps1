@@ -171,4 +171,34 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
+
+    Context 'When specifying Lcid parameter explicitly' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'SSRS'
+            }
+
+            Mock -CommandName Invoke-RsCimMethod -MockWith {
+                return @{
+                    Application = @('ReportServerWebService')
+                    CertificateHash = @('AABBCCDD')
+                    IPAddress = @('0.0.0.0')
+                    Port = @(443)
+                    Lcid = @(1031)
+                }
+            }
+        }
+
+        It 'Should use the specified Lcid' {
+            $result = $mockCimInstance | Get-SqlDscRSSslCertificateBinding -Lcid 1031
+
+            $result.Lcid | Should -Be 1031
+
+            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                $Arguments.Lcid -eq 1031
+            } -Exactly -Times 1
+
+            Should -Invoke -CommandName Get-OperatingSystem -Exactly -Times 0
+        }
+    }
 }

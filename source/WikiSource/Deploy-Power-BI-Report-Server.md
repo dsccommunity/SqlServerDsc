@@ -42,6 +42,9 @@ Install-PSResource -Name 'SqlServerDsc' -Scope 'AllUsers' -TrustRepository
 
 # Install SqlServer module (required for SMO assemblies)
 Install-PSResource -Name 'SqlServer' -Version '22.2.0' -Scope 'AllUsers' -TrustRepository
+
+# Install PSPKI module (required for creating self-signed certificates)
+Install-PSResource -Name 'PSPKI' -Scope 'AllUsers' -TrustRepository
 ```
 <!-- markdownlint-enable MD013 -->
 
@@ -295,7 +298,108 @@ Write-Information -MessageData "Error Dump Directory: $($setupConfig.ErrorDumpDi
 ```
 <!-- markdownlint-enable MD013 -->
 
-## Phase 4: Configure Report Server Database
+## Phase 4: Create SSL Certificate
+
+Before configuring the report server, create an SSL/TLS certificate for
+secure HTTPS access. This guide uses a self-signed certificate for demonstration
+purposes.
+
+> [!IMPORTANT]
+> **Production Certificate Recommendations:**
+>
+> For production environments, use a certificate issued by a trusted Certificate
+> Authority (CA) instead of a self-signed certificate. Production certificates
+> should meet the following requirements:
+>
+> - **Subject Name (CN)** or **Subject Alternative Name (SAN)**: Must match the
+>   server's fully qualified domain name (FQDN) that clients will use to access
+>   the report server
+> - **Enhanced Key Usage (EKU)**: Must include "Server Authentication"
+>   (OID: 1.3.6.1.5.5.7.3.1)
+> - **Key Length**: Minimum 2048 bits for RSA keys
+> - **Validity Period**: Follow your organization's certificate lifecycle policy
+> - **Trusted CA**: Issued by a CA that is trusted by all client machines
+>
+> You can obtain production certificates from:
+>
+> - Your organization's internal PKI/Certificate Authority
+> - Public CAs such as DigiCert, Let's Encrypt, or GlobalSign
+> - Azure Key Vault (for Azure-integrated environments)
+
+### Create a Self-Signed Certificate
+
+For development and testing, create a self-signed certificate using the PSPKI
+module:
+
+<!-- markdownlint-disable MD013 -->
+```powershell
+# Import the PSPKI module for certificate creation
+Import-Module -Name 'PSPKI' -ErrorAction 'Stop'
+
+# Get the computer name for the certificate subject
+$computerName = [System.Net.Dns]::GetHostName()
+
+# Create a self-signed certificate for SSL/TLS
+$newCertificateParams = @{
+    Subject            = "CN=$computerName"
+    EKU                = 'Server Authentication'
+    KeyUsage           = 'DigitalSignature, KeyEncipherment, DataEncipherment'
+    SAN                = "dns:$computerName"
+    FriendlyName       = 'Power BI Report Server SSL Certificate'
+    Exportable         = $true
+    KeyLength          = 2048
+    ProviderName       = 'Microsoft Software Key Storage Provider'
+    AlgorithmName      = 'RSA'
+    SignatureAlgorithm = 'SHA256'
+    StoreLocation      = 'LocalMachine'
+}
+
+$sslCertificate = New-SelfSignedCertificateEx @newCertificateParams
+
+Write-Information -MessageData "Certificate created with thumbprint: $($sslCertificate.Thumbprint)" -InformationAction 'Continue'
+```
+<!-- markdownlint-enable MD013 -->
+
+### Add Certificate to Trusted Root (Self-Signed Only)
+
+For self-signed certificates, add the certificate to the Trusted Root
+Certification Authorities store to avoid browser trust warnings:
+
+<!-- markdownlint-disable MD013 -->
+```powershell
+# Export the certificate to a temporary file
+$certificatePath = Join-Path -Path $env:TEMP -ChildPath 'PBIRS_SSL_Certificate.cer'
+Export-Certificate -Cert $sslCertificate -FilePath $certificatePath -ErrorAction 'Stop'
+
+# Import into Trusted Root Certification Authorities
+$null = Import-Certificate -FilePath $certificatePath -CertStoreLocation 'Cert:\LocalMachine\Root' -ErrorAction 'Stop'
+
+# Clean up the temporary file
+Remove-Item -Path $certificatePath -Force
+
+Write-Information -MessageData 'Certificate added to Trusted Root Certification Authorities.' -InformationAction 'Continue'
+```
+<!-- markdownlint-enable MD013 -->
+
+> [!NOTE]
+> Adding a self-signed certificate to the Trusted Root store is only required
+> for local testing. In production, your CA-issued certificate should already
+> be trusted by client machines.
+
+### Store the Certificate Thumbprint
+
+Save the certificate thumbprint for use in later configuration steps:
+
+<!-- markdownlint-disable MD013 -->
+```powershell
+# Store the certificate thumbprint for later use
+$certificateThumbprint = $sslCertificate.Thumbprint
+
+Write-Information -MessageData "Certificate thumbprint: $certificateThumbprint" -InformationAction 'Continue'
+```
+<!-- markdownlint-enable MD013 -->
+
+## Phase 5: Configure Report Server Database
 
 After installation, configure Power BI Report Server to use the SQL Server
 instance for its database.
@@ -314,29 +418,21 @@ Write-Information -MessageData "Is Initialized: $($rsConfig.IsInitialized)" -Inf
 ```
 <!-- markdownlint-enable MD013 -->
 
-### Configure Secure Connection
+### Enable Secure Connection
 
-By default, Power BI Report Server can be configured with or without SSL/TLS.
-For this guide, we disable secure connection to use HTTP for simplicity:
+Enable SSL/TLS to require secure HTTPS connections to the report server:
 
 <!-- markdownlint-disable MD013 -->
 ```powershell
-# Disable secure connection (use HTTP)
-$rsConfig | Disable-SqlDscRsSecureConnection -Force -ErrorAction 'Stop'
+# Enable secure connection (require HTTPS)
+$rsConfig | Enable-SqlDscRsSecureConnection -Force -ErrorAction 'Stop'
 
-Write-Information -MessageData 'Secure connection disabled (using HTTP).' -InformationAction 'Continue'
+Write-Information -MessageData 'Secure connection enabled (using HTTPS).' -InformationAction 'Continue'
 ```
 <!-- markdownlint-enable MD013 -->
 
-> [!IMPORTANT]
-> For production environments, you should use `Enable-SqlDscRsSecureConnection`
-> instead to enable HTTPS. This requires:
->
-> - A valid SSL/TLS certificate installed on the server
-> - The certificate thumbprint to pass to the command
-> - Proper DNS configuration for the certificate's subject name
->
-> Example: `$rsConfig | Enable-SqlDscRsSecureConnection -Force`
+This sets the `SecureConnectionLevel` to 1 or higher, which requires all
+client connections to use SSL/TLS encryption.
 
 ### Set Virtual Directories
 
@@ -367,35 +463,68 @@ Write-Information -MessageData 'Virtual directory set for ReportServerWebApp (we
 
 ### Add URL Reservations
 
-After setting the virtual directories, add URL reservations to register the
-URLs. This allows the report server to listen on these URLs:
+After setting the virtual directories, add URL reservations for HTTPS on port
+443. This allows the report server to listen on secure URLs:
 
 > [!IMPORTANT]
 > URL reservations are registered for the service account. Changing the
 > service account requires updating all the URL reservations.
 
+<!-- markdownlint-disable MD013 -->
+```powershell
+# Add HTTPS URL reservation for the Report Server web service
+$rsConfig | Add-SqlDscRSUrlReservation `
+    -Application 'ReportServerWebService' `
+    -UrlString 'https://+:443' `
+    -Force `
+    -ErrorAction 'Stop'
+
+Write-Information -MessageData 'HTTPS URL reservation added for ReportServerWebService.' -InformationAction 'Continue'
+
+# Add HTTPS URL reservation for the web portal
+$rsConfig | Add-SqlDscRSUrlReservation `
+    -Application 'ReportServerWebApp' `
+    -UrlString 'https://+:443' `
+    -Force `
+    -ErrorAction 'Stop'
+
+Write-Information -MessageData 'HTTPS URL reservation added for ReportServerWebApp (web portal).' -InformationAction 'Continue'
+```
+<!-- markdownlint-enable MD013 -->
+
+### Add SSL Certificate Bindings
+
+Bind the SSL certificate to both report server applications. This associates
+the certificate with the HTTPS URL reservations:
 
 <!-- markdownlint-disable MD013 -->
 ```powershell
-# Add URL reservation for the Report Server web service
-$rsConfig | Add-SqlDscRSUrlReservation `
+# Add SSL certificate binding for the Report Server web service
+$rsConfig | Add-SqlDscRSSslCertificateBinding `
     -Application 'ReportServerWebService' `
-    -UrlString 'http://+:80' `
+    -CertificateHash $certificateThumbprint `
+    -IPAddress '0.0.0.0' `
+    -Port 443 `
     -Force `
     -ErrorAction 'Stop'
 
-Write-Information -MessageData 'URL reservation added for ReportServerWebService.' -InformationAction 'Continue'
+Write-Information -MessageData 'SSL certificate bound to ReportServerWebService.' -InformationAction 'Continue'
 
-# Add URL reservation for the web portal
-$rsConfig | Add-SqlDscRSUrlReservation `
+# Add SSL certificate binding for the web portal
+$rsConfig | Add-SqlDscRSSslCertificateBinding `
     -Application 'ReportServerWebApp' `
-    -UrlString 'http://+:80' `
+    -CertificateHash $certificateThumbprint `
+    -IPAddress '0.0.0.0' `
+    -Port 443 `
     -Force `
     -ErrorAction 'Stop'
 
-Write-Information -MessageData 'URL reservation added for ReportServerWebApp (web portal).' -InformationAction 'Continue'
+Write-Information -MessageData 'SSL certificate bound to ReportServerWebApp (web portal).' -InformationAction 'Continue'
 ```
 <!-- markdownlint-enable MD013 -->
+
+The `-IPAddress '0.0.0.0'` binds the certificate to all available IP addresses
+on the server.
 
 ### Generate Database Scripts
 
@@ -471,9 +600,10 @@ Write-Information -MessageData 'Database connection configured successfully.' -I
 ```
 <!-- markdownlint-enable MD013 -->
 
-## Phase 5: Initialize and Verify
+## Phase 6: Initialize and Verify
 
-Initialize the report server and verify that the web portal is accessible.
+Initialize the report server and verify that the web portal is accessible
+over HTTPS.
 
 ### Initialize the Report Server
 
@@ -552,7 +682,7 @@ foreach ($result in $accessResults)
 <!-- markdownlint-enable MD013 -->
 
 If everything is configured correctly, you should see both the Report Server
-web service and the web portal as accessible with HTTP status code 200.
+web service and the web portal as accessible with HTTPS status code 200.
 
 ### Access the Web Portal
 
@@ -560,15 +690,22 @@ Open the web portal in your browser:
 
 <!-- markdownlint-disable MD013 -->
 ```powershell
-# Open the web portal in the default browser
-Start-Process 'http://localhost/Reports'
+# Open the web portal in the default browser (using HTTPS)
+Start-Process 'https://localhost/Reports'
 ```
 <!-- markdownlint-enable MD013 -->
 
 The default URLs are:
 
-- **Web Portal**: `http://localhost/Reports`
-- **Web Service**: `http://localhost/ReportServer`
+- **Web Portal**: `https://localhost/Reports`
+- **Web Service**: `https://localhost/ReportServer`
+
+> [!NOTE]
+> If you used a self-signed certificate, your browser may display a certificate
+> warning on first access. This is expected because the certificate was not
+> issued by a publicly trusted Certificate Authority. You can proceed past the
+> warning for testing purposes. For production deployments, use a CA-issued
+> certificate to avoid these warnings.
 
 ## Cleanup
 
@@ -649,7 +786,7 @@ immediately after starting.
 
 ### Web Portal Not Accessible After Initialization
 
-**Symptoms**: `Test-SqlDscRSAccessible` returns `$false` or HTTP errors.
+**Symptoms**: `Test-SqlDscRSAccessible` returns `$false` or HTTPS errors.
 
 **Solutions**:
 
@@ -661,7 +798,18 @@ immediately after starting.
    ```
    <!-- markdownlint-enable MD013 -->
 
-1. Check Windows Firewall rules allow HTTP traffic on port 80.
+1. Check Windows Firewall rules allow HTTPS traffic on port 443:
+
+   <!-- markdownlint-disable MD013 -->
+   ```powershell
+   # Create a firewall rule to allow HTTPS traffic on port 443
+   New-NetFirewallRule -DisplayName 'Power BI Report Server HTTPS' `
+       -Direction Inbound `
+       -Protocol TCP `
+       -LocalPort 443 `
+       -Action Allow
+   ```
+   <!-- markdownlint-enable MD013 -->
 
 1. Verify URL reservations are configured correctly:
 
@@ -671,11 +819,19 @@ immediately after starting.
    ```
    <!-- markdownlint-enable MD013 -->
 
-1. Check if another application is using port 80:
+1. Check if another application is using port 443:
 
    <!-- markdownlint-disable MD013 -->
    ```powershell
-   netstat -ano | Select-String ':80 '
+   netstat -ano | Select-String ':443 '
+   ```
+   <!-- markdownlint-enable MD013 -->
+
+1. Verify SSL certificate bindings are configured:
+
+   <!-- markdownlint-disable MD013 -->
+   ```powershell
+   $rsConfig | Get-SqlDscRSSslCertificateBinding
    ```
    <!-- markdownlint-enable MD013 -->
 
@@ -683,10 +839,68 @@ immediately after starting.
 
 After deploying Power BI Report Server, you may want to:
 
-- Configure SSL/TLS certificates for HTTPS access
+- Replace the self-signed certificate with a CA-issued certificate for production
 - Set up email delivery for subscriptions
 - Configure authentication providers
 - Create and publish your first Power BI report
 - Set up backup and recovery procedures
 
 For more information, see the [Power BI Report Server documentation](https://learn.microsoft.com/power-bi/report-server/).
+
+---
+
+## Appendix: HTTP Configuration (Development Only)
+
+> [!WARNING]
+> The following configuration uses unencrypted HTTP connections and should
+> **only be used for local development or testing**. Never use HTTP in
+> production environments as it exposes sensitive data to network interception.
+
+If you need to configure Power BI Report Server with HTTP instead of HTTPS
+(for example, in an isolated development environment), follow these
+alternative steps in place of the secure configuration above:
+
+### Disable Secure Connection
+
+<!-- markdownlint-disable MD013 -->
+```powershell
+# Disable secure connection (use HTTP instead of HTTPS)
+$rsConfig | Disable-SqlDscRsSecureConnection -Force -ErrorAction 'Stop'
+
+Write-Information -MessageData 'Secure connection disabled (using HTTP).' -InformationAction 'Continue'
+```
+<!-- markdownlint-enable MD013 -->
+
+### Add HTTP URL Reservations
+
+<!-- markdownlint-disable MD013 -->
+```powershell
+# Add HTTP URL reservation for the Report Server web service (port 80)
+$rsConfig | Add-SqlDscRSUrlReservation `
+    -Application 'ReportServerWebService' `
+    -UrlString 'http://+:80' `
+    -Force `
+    -ErrorAction 'Stop'
+
+# Add HTTP URL reservation for the web portal (port 80)
+$rsConfig | Add-SqlDscRSUrlReservation `
+    -Application 'ReportServerWebApp' `
+    -UrlString 'http://+:80' `
+    -Force `
+    -ErrorAction 'Stop'
+
+Write-Information -MessageData 'HTTP URL reservations added.' -InformationAction 'Continue'
+```
+<!-- markdownlint-enable MD013 -->
+
+### Skip Certificate Binding
+
+When using HTTP, skip the SSL certificate creation and binding steps entirely.
+The report server will be accessible at:
+
+- **Web Portal**: `http://localhost/Reports`
+- **Web Service**: `http://localhost/ReportServer`
+
+> [!NOTE]
+> Ensure Windows Firewall allows inbound traffic on port 80 if accessing
+> from remote machines.

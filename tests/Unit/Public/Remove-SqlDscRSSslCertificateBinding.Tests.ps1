@@ -81,7 +81,7 @@ Describe 'Remove-SqlDscRSSslCertificateBinding' {
         }
 
         It 'Should remove SSL certificate binding without errors' {
-            { $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false } | Should -Not -Throw
+            $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'RemoveSSLCertificateBindings' -and

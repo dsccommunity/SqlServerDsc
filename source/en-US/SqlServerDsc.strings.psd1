@@ -910,6 +910,22 @@ ConvertFrom-StringData @'
     Initialize_SqlDscRS_ShouldProcessCaption = Initialize Reporting Services instance
     Initialize_SqlDscRS_FailedToInitialize = Failed to initialize Reporting Services instance '{0}'. {1} (ISRS0001)
 
+    ## Set-SqlDscRSUnattendedExecutionAccount
+    Set_SqlDscRSUnattendedExecutionAccount_Setting = Setting unattended execution account to '{0}' for Reporting Services instance '{1}'.
+    Set_SqlDscRSUnattendedExecutionAccount_ShouldProcessDescription = Setting unattended execution account to '{0}' for Reporting Services instance '{1}'.
+    Set_SqlDscRSUnattendedExecutionAccount_ShouldProcessConfirmation = Are you sure you want to set the unattended execution account to '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Set_SqlDscRSUnattendedExecutionAccount_ShouldProcessCaption = Set unattended execution account for Reporting Services instance
+    Set_SqlDscRSUnattendedExecutionAccount_FailedToSet = Failed to set unattended execution account for Reporting Services instance '{0}'. {1} (SSRSUEA0001)
+
+    ## Remove-SqlDscRSUnattendedExecutionAccount
+    Remove_SqlDscRSUnattendedExecutionAccount_Removing = Removing unattended execution account from Reporting Services instance '{0}'.
+    Remove_SqlDscRSUnattendedExecutionAccount_ShouldProcessDescription = Removing unattended execution account from Reporting Services instance '{0}'.
+    Remove_SqlDscRSUnattendedExecutionAccount_ShouldProcessConfirmation = Are you sure you want to remove the unattended execution account from Reporting Services instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Remove_SqlDscRSUnattendedExecutionAccount_ShouldProcessCaption = Remove unattended execution account from Reporting Services instance
+    Remove_SqlDscRSUnattendedExecutionAccount_FailedToRemove = Failed to remove unattended execution account from Reporting Services instance '{0}'. {1} (RSRSUEA0001)
+
     ## Get-SqlDscRSSslCertificate
     Get_SqlDscRSSslCertificate_Getting = Getting available SSL certificates for Reporting Services instance '{0}'.
     Get_SqlDscRSSslCertificate_FailedToGet = Failed to get available SSL certificates for Reporting Services instance '{0}'. {1} (GSRSSC0001)

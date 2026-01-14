@@ -171,14 +171,13 @@ function Add-SqlDscRSSslCertificateBinding
             }
             catch
             {
-                $PSCmdlet.ThrowTerminatingError(
-                    [System.Management.Automation.ErrorRecord]::new(
-                        ($script:localizedData.Add_SqlDscRSSslCertificateBinding_FailedToAdd -f $instanceName, $_.Exception.Message),
-                        'ASRSSCB0001',
-                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                        $Configuration
-                    )
-                )
+                $errorMessage = $script:localizedData.Add_SqlDscRSSslCertificateBinding_FailedToAdd -f $instanceName, $_.Exception.Message
+
+                $exception = New-InvalidOperationException -Message $errorMessage -ErrorRecord $_ -PassThru
+
+                $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'ASRSSCB0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+
+                $PSCmdlet.ThrowTerminatingError($errorRecord)
             }
         }
 
