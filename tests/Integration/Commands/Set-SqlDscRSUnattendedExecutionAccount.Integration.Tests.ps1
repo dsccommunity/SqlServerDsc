@@ -50,8 +50,8 @@ Describe 'Set-SqlDscRSUnattendedExecutionAccount' {
         }
 
         # Note: This test may fail if the account doesn't exist. This is expected behavior.
-        It 'Should set unattended execution account' -Skip {
-            { $script:configuration | Set-SqlDscRSUnattendedExecutionAccount -Credential $script:testCredential -Force -ErrorAction 'Stop' } | Should -Not -Throw
+        It 'Should set unattended execution account' {
+            $script:configuration | Set-SqlDscRSUnattendedExecutionAccount -Credential $script:testCredential -Force -ErrorAction 'Stop'
         }
     }
 
@@ -63,8 +63,8 @@ Describe 'Set-SqlDscRSUnattendedExecutionAccount' {
             $script:testCredential = [System.Management.Automation.PSCredential]::new($script:testUsername, $script:testPassword)
         }
 
-        It 'Should set unattended execution account' -Skip {
-            { $script:configuration | Set-SqlDscRSUnattendedExecutionAccount -Credential $script:testCredential -Force -ErrorAction 'Stop' } | Should -Not -Throw
+        It 'Should set unattended execution account' {
+            $script:configuration | Set-SqlDscRSUnattendedExecutionAccount -Credential $script:testCredential -Force -ErrorAction 'Stop'
         }
     }
 
@@ -76,8 +76,8 @@ Describe 'Set-SqlDscRSUnattendedExecutionAccount' {
             $script:testCredential = [System.Management.Automation.PSCredential]::new($script:testUsername, $script:testPassword)
         }
 
-        It 'Should set unattended execution account' -Skip {
-            { $script:configuration | Set-SqlDscRSUnattendedExecutionAccount -Credential $script:testCredential -Force -ErrorAction 'Stop' } | Should -Not -Throw
+        It 'Should set unattended execution account' {
+            $script:configuration | Set-SqlDscRSUnattendedExecutionAccount -Credential $script:testCredential -Force -ErrorAction 'Stop'
         }
     }
 
@@ -89,8 +89,8 @@ Describe 'Set-SqlDscRSUnattendedExecutionAccount' {
             $script:testCredential = [System.Management.Automation.PSCredential]::new($script:testUsername, $script:testPassword)
         }
 
-        It 'Should set unattended execution account' -Skip {
-            { $script:configuration | Set-SqlDscRSUnattendedExecutionAccount -Credential $script:testCredential -Force -ErrorAction 'Stop' } | Should -Not -Throw
+        It 'Should set unattended execution account' {
+            $script:configuration | Set-SqlDscRSUnattendedExecutionAccount -Credential $script:testCredential -Force -ErrorAction 'Stop'
         }
     }
 }
