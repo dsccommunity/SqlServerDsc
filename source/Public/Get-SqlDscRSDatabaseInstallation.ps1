@@ -99,14 +99,13 @@ function Get-SqlDscRSDatabaseInstallation
         }
         catch
         {
-            $PSCmdlet.ThrowTerminatingError(
-                [System.Management.Automation.ErrorRecord]::new(
-                    ($script:localizedData.Get_SqlDscRSDatabaseInstallation_FailedToGet -f $instanceName, $_.Exception.Message),
-                    'GSRSDI0001',
-                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                    $Configuration
-                )
-            )
+            $errorMessage = $script:localizedData.Get_SqlDscRSDatabaseInstallation_FailedToGet -f $instanceName
+
+            $exception = New-Exception -Message $errorMessage -ErrorRecord $_
+
+            $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'GSRSDI0001' -ErrorCategory ([System.Management.Automation.ErrorCategory]::InvalidOperation) -TargetObject $Configuration
+
+            $PSCmdlet.ThrowTerminatingError($errorRecord)
         }
     }
 }
