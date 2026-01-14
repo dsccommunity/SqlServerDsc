@@ -72,12 +72,27 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
             $result = $script:configuration | Get-SqlDscRSSslCertificateBinding -ErrorAction 'Stop'
 
             $binding = $result | Where-Object -FilterScript {
+                $_.Application -eq 'ReportServerWebService' -and
                 $_.CertificateHash -eq $script:testCertificateHash -and
                 $_.Port -eq $script:testPort
             }
 
             $binding | Should -Not -BeNullOrEmpty
             $binding.Application | Should -Be 'ReportServerWebService'
+            $binding.IPAddress | Should -Be $script:testIPAddress
+        }
+
+        It 'Should return the binding for ReportServerWebApp' {
+            $result = $script:configuration | Get-SqlDscRSSslCertificateBinding -ErrorAction 'Stop'
+
+            $binding = $result | Where-Object -FilterScript {
+                $_.Application -eq 'ReportServerWebApp' -and
+                $_.CertificateHash -eq $script:testCertificateHash -and
+                $_.Port -eq $script:testPort
+            }
+
+            $binding | Should -Not -BeNullOrEmpty
+            $binding.Application | Should -Be 'ReportServerWebApp'
             $binding.IPAddress | Should -Be $script:testIPAddress
         }
     }
@@ -97,12 +112,27 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
             $result = $script:configuration | Get-SqlDscRSSslCertificateBinding -ErrorAction 'Stop'
 
             $binding = $result | Where-Object -FilterScript {
+                $_.Application -eq 'ReportServerWebService' -and
                 $_.CertificateHash -eq $script:testCertificateHash -and
                 $_.Port -eq $script:testPort
             }
 
             $binding | Should -Not -BeNullOrEmpty
             $binding.Application | Should -Be 'ReportServerWebService'
+            $binding.IPAddress | Should -Be $script:testIPAddress
+        }
+
+        It 'Should return the binding for ReportServerWebApp' {
+            $result = $script:configuration | Get-SqlDscRSSslCertificateBinding -ErrorAction 'Stop'
+
+            $binding = $result | Where-Object -FilterScript {
+                $_.Application -eq 'ReportServerWebApp' -and
+                $_.CertificateHash -eq $script:testCertificateHash -and
+                $_.Port -eq $script:testPort
+            }
+
+            $binding | Should -Not -BeNullOrEmpty
+            $binding.Application | Should -Be 'ReportServerWebApp'
             $binding.IPAddress | Should -Be $script:testIPAddress
         }
     }
@@ -122,12 +152,27 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
             $result = $script:configuration | Get-SqlDscRSSslCertificateBinding -ErrorAction 'Stop'
 
             $binding = $result | Where-Object -FilterScript {
+                $_.Application -eq 'ReportServerWebService' -and
                 $_.CertificateHash -eq $script:testCertificateHash -and
                 $_.Port -eq $script:testPort
             }
 
             $binding | Should -Not -BeNullOrEmpty
             $binding.Application | Should -Be 'ReportServerWebService'
+            $binding.IPAddress | Should -Be $script:testIPAddress
+        }
+
+        It 'Should return the binding for ReportServerWebApp' {
+            $result = $script:configuration | Get-SqlDscRSSslCertificateBinding -ErrorAction 'Stop'
+
+            $binding = $result | Where-Object -FilterScript {
+                $_.Application -eq 'ReportServerWebApp' -and
+                $_.CertificateHash -eq $script:testCertificateHash -and
+                $_.Port -eq $script:testPort
+            }
+
+            $binding | Should -Not -BeNullOrEmpty
+            $binding.Application | Should -Be 'ReportServerWebApp'
             $binding.IPAddress | Should -Be $script:testIPAddress
         }
     }
@@ -147,12 +192,27 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
             $result = $script:configuration | Get-SqlDscRSSslCertificateBinding -ErrorAction 'Stop'
 
             $binding = $result | Where-Object -FilterScript {
+                $_.Application -eq 'ReportServerWebService' -and
                 $_.CertificateHash -eq $script:testCertificateHash -and
                 $_.Port -eq $script:testPort
             }
 
             $binding | Should -Not -BeNullOrEmpty
             $binding.Application | Should -Be 'ReportServerWebService'
+            $binding.IPAddress | Should -Be $script:testIPAddress
+        }
+
+        It 'Should return the binding for ReportServerWebApp' {
+            $result = $script:configuration | Get-SqlDscRSSslCertificateBinding -ErrorAction 'Stop'
+
+            $binding = $result | Where-Object -FilterScript {
+                $_.Application -eq 'ReportServerWebApp' -and
+                $_.CertificateHash -eq $script:testCertificateHash -and
+                $_.Port -eq $script:testPort
+            }
+
+            $binding | Should -Not -BeNullOrEmpty
+            $binding.Application | Should -Be 'ReportServerWebApp'
             $binding.IPAddress | Should -Be $script:testIPAddress
         }
     }
