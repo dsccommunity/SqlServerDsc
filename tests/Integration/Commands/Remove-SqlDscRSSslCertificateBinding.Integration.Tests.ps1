@@ -36,7 +36,7 @@ BeforeAll {
     #>
     $script:testCertificateFriendlyName = 'SqlServerDsc SSL Integration Test Certificate'
     $script:testIPAddress = '0.0.0.0'
-    $script:testPort = 8443
+    $script:testPort = 443
 }
 
 <#
