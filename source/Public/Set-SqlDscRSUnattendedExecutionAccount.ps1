@@ -80,7 +80,7 @@ function Set-SqlDscRSUnattendedExecutionAccount
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the examples use pipeline input the rule cannot validate.')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
-    [OutputType([System.Object])]
+    [OutputType([Microsoft.Management.Infrastructure.CimInstance])]
     param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]

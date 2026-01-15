@@ -31,33 +31,11 @@ BeforeAll {
     Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 }
 
-<#
-    .NOTES
-        These tests validate unattended execution account functionality.
-        Setting and removing the unattended execution account requires
-        valid credentials, so tests focus on the Set and Remove operations
-        with proper cleanup.
-#>
 Describe 'Set-SqlDscRSUnattendedExecutionAccount' {
-    Context 'When setting unattended execution account for SQL Server Reporting Services' -Tag @('Integration_SQL2017_RS') {
+    Context 'When setting unattended execution account for SQL Server Reporting Services 2017' -Tag @('Integration_SQL2017_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            # Create a test credential (this should be a valid Windows account in CI)
-            $script:testUsername = '{0}\TestUnattendedAccount' -f (Get-ComputerName)
-            $script:testPassword = ConvertTo-SecureString -String 'P@ssw0rd123!' -AsPlainText -Force
-            $script:testCredential = [System.Management.Automation.PSCredential]::new($script:testUsername, $script:testPassword)
-        }
-
-        # Note: This test may fail if the account doesn't exist. This is expected behavior.
-        It 'Should set unattended execution account' {
-            $script:configuration | Set-SqlDscRSUnattendedExecutionAccount -Credential $script:testCredential -Force -ErrorAction 'Stop'
-        }
-    }
-
-    Context 'When setting unattended execution account for SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {
-        BeforeAll {
-            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $script:testUsername = '{0}\TestUnattendedAccount' -f (Get-ComputerName)
             $script:testPassword = ConvertTo-SecureString -String 'P@ssw0rd123!' -AsPlainText -Force
             $script:testCredential = [System.Management.Automation.PSCredential]::new($script:testUsername, $script:testPassword)
@@ -68,9 +46,24 @@ Describe 'Set-SqlDscRSUnattendedExecutionAccount' {
         }
     }
 
-    Context 'When setting unattended execution account for SQL Server Reporting Services' -Tag @('Integration_SQL2022_RS') {
+    Context 'When setting unattended execution account for SQL Server Reporting Services 2019' -Tag @('Integration_SQL2019_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+
+            $script:testUsername = '{0}\TestUnattendedAccount' -f (Get-ComputerName)
+            $script:testPassword = ConvertTo-SecureString -String 'P@ssw0rd123!' -AsPlainText -Force
+            $script:testCredential = [System.Management.Automation.PSCredential]::new($script:testUsername, $script:testPassword)
+        }
+
+        It 'Should set unattended execution account' {
+            $script:configuration | Set-SqlDscRSUnattendedExecutionAccount -Credential $script:testCredential -Force -ErrorAction 'Stop'
+        }
+    }
+
+    Context 'When setting unattended execution account for SQL Server Reporting Services 2022' -Tag @('Integration_SQL2022_RS') {
+        BeforeAll {
+            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+
             $script:testUsername = '{0}\TestUnattendedAccount' -f (Get-ComputerName)
             $script:testPassword = ConvertTo-SecureString -String 'P@ssw0rd123!' -AsPlainText -Force
             $script:testCredential = [System.Management.Automation.PSCredential]::new($script:testUsername, $script:testPassword)
@@ -84,6 +77,7 @@ Describe 'Set-SqlDscRSUnattendedExecutionAccount' {
     Context 'When setting unattended execution account for Power BI Report Server' -Tag @('Integration_PowerBI') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
+
             $script:testUsername = '{0}\TestUnattendedAccount' -f (Get-ComputerName)
             $script:testPassword = ConvertTo-SecureString -String 'P@ssw0rd123!' -AsPlainText -Force
             $script:testCredential = [System.Management.Automation.PSCredential]::new($script:testUsername, $script:testPassword)

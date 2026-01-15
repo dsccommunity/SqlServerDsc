@@ -44,7 +44,7 @@ Describe 'Remove-SqlDscRSUnattendedExecutionAccount' {
         }
 
         It 'Should not throw when removing unattended execution account' {
-            { $script:configuration | Remove-SqlDscRSUnattendedExecutionAccount -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:configuration | Remove-SqlDscRSUnattendedExecutionAccount -Force -ErrorAction 'Stop'
         }
     }
 
@@ -54,7 +54,7 @@ Describe 'Remove-SqlDscRSUnattendedExecutionAccount' {
         }
 
         It 'Should not throw when removing unattended execution account' {
-            { $script:configuration | Remove-SqlDscRSUnattendedExecutionAccount -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:configuration | Remove-SqlDscRSUnattendedExecutionAccount -Force -ErrorAction 'Stop'
         }
     }
 
@@ -64,7 +64,7 @@ Describe 'Remove-SqlDscRSUnattendedExecutionAccount' {
         }
 
         It 'Should not throw when removing unattended execution account' {
-            { $script:configuration | Remove-SqlDscRSUnattendedExecutionAccount -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:configuration | Remove-SqlDscRSUnattendedExecutionAccount -Force -ErrorAction 'Stop'
         }
     }
 
@@ -74,7 +74,7 @@ Describe 'Remove-SqlDscRSUnattendedExecutionAccount' {
         }
 
         It 'Should not throw when removing unattended execution account' {
-            { $script:configuration | Remove-SqlDscRSUnattendedExecutionAccount -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:configuration | Remove-SqlDscRSUnattendedExecutionAccount -Force -ErrorAction 'Stop'
         }
     }
 }

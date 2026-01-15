@@ -73,7 +73,7 @@ Describe 'Remove-SqlDscRSUnattendedExecutionAccount' {
         }
 
         It 'Should remove unattended execution account without errors' {
-            { $mockCimInstance | Remove-SqlDscRSUnattendedExecutionAccount -Confirm:$false } | Should -Not -Throw
+            $mockCimInstance | Remove-SqlDscRSUnattendedExecutionAccount -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'RemoveUnattendedExecutionAccount'
@@ -114,7 +114,7 @@ Describe 'Remove-SqlDscRSUnattendedExecutionAccount' {
         }
 
         It 'Should remove unattended execution account without confirmation' {
-            { $mockCimInstance | Remove-SqlDscRSUnattendedExecutionAccount -Force } | Should -Not -Throw
+            $mockCimInstance | Remove-SqlDscRSUnattendedExecutionAccount -Force
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
@@ -162,7 +162,7 @@ Describe 'Remove-SqlDscRSUnattendedExecutionAccount' {
         }
 
         It 'Should remove unattended execution account' {
-            { Remove-SqlDscRSUnattendedExecutionAccount -Configuration $mockCimInstance -Confirm:$false } | Should -Not -Throw
+            Remove-SqlDscRSUnattendedExecutionAccount -Configuration $mockCimInstance -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
