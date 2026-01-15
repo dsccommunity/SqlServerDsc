@@ -917,7 +917,7 @@ ConvertFrom-StringData @'
     Set_SqlDscRSUnattendedExecutionAccount_ShouldProcessConfirmation = Are you sure you want to set the unattended execution account to '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Set_SqlDscRSUnattendedExecutionAccount_ShouldProcessCaption = Set unattended execution account for Reporting Services instance
-    Set_SqlDscRSUnattendedExecutionAccount_FailedToSet = Failed to set unattended execution account for Reporting Services instance '{0}'. {1} (SSRSUEA0001)
+    Set_SqlDscRSUnattendedExecutionAccount_FailedToSet = Failed to set unattended execution account for Reporting Services instance '{0}'. (RSSUEA0001)
 
     ## Remove-SqlDscRSUnattendedExecutionAccount
     Remove_SqlDscRSUnattendedExecutionAccount_Removing = Removing unattended execution account from Reporting Services instance '{0}'.
@@ -925,7 +925,7 @@ ConvertFrom-StringData @'
     Remove_SqlDscRSUnattendedExecutionAccount_ShouldProcessConfirmation = Are you sure you want to remove the unattended execution account from Reporting Services instance '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Remove_SqlDscRSUnattendedExecutionAccount_ShouldProcessCaption = Remove unattended execution account from Reporting Services instance
-    Remove_SqlDscRSUnattendedExecutionAccount_FailedToRemove = Failed to remove unattended execution account from Reporting Services instance '{0}'. {1} (RSRSUEA0001)
+    Remove_SqlDscRSUnattendedExecutionAccount_FailedToRemove = Failed to remove unattended execution account for Reporting Services instance '{0}'. (RSRSUEA0001)
 
     ## Get-SqlDscRSSslCertificate
     Get_SqlDscRSSslCertificate_Getting = Getting available SSL certificates for Reporting Services instance '{0}'.

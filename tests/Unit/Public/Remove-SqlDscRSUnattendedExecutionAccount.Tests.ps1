@@ -132,7 +132,7 @@ Describe 'Remove-SqlDscRSUnattendedExecutionAccount' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Remove-SqlDscRSUnattendedExecutionAccount -Confirm:$false } | Should -Throw -ErrorId 'RSRUEA0001,Remove-SqlDscRSUnattendedExecutionAccount'
+            { $mockCimInstance | Remove-SqlDscRSUnattendedExecutionAccount -Confirm:$false } | Should -Throw -ErrorId 'RSRSUEA0001,Remove-SqlDscRSUnattendedExecutionAccount'
         }
     }
 

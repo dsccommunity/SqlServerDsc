@@ -114,7 +114,7 @@ function Remove-SqlDscRSUnattendedExecutionAccount
             }
             catch
             {
-                $errorMessage = $script:localizedData.Remove_SqlDscRSUnattendedExecutionAccount_FailedToRemove -f $instanceName, $_.Exception.Message
+                $errorMessage = $script:localizedData.Remove_SqlDscRSUnattendedExecutionAccount_FailedToRemove -f $instanceName
 
                 $exception = New-Exception -Message $errorMessage -ErrorRecord $_
 

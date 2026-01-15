@@ -138,7 +138,7 @@ function Set-SqlDscRSUnattendedExecutionAccount
             }
             catch
             {
-                $errorMessage = $script:localizedData.Set_SqlDscRSUnattendedExecutionAccount_FailedToSet -f $instanceName, $_.Exception.Message
+                $errorMessage = $script:localizedData.Set_SqlDscRSUnattendedExecutionAccount_FailedToSet -f $instanceName
 
                 $exception = New-Exception -Message $errorMessage -ErrorRecord $_
 

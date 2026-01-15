@@ -153,7 +153,7 @@ Describe 'Set-SqlDscRSUnattendedExecutionAccount' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Set-SqlDscRSUnattendedExecutionAccount -Credential $mockCredential -Confirm:$false } | Should -Throw -ErrorId 'SSRUEA0001,Set-SqlDscRSUnattendedExecutionAccount'
+            { $mockCimInstance | Set-SqlDscRSUnattendedExecutionAccount -Credential $mockCredential -Confirm:$false } | Should -Throw -ErrorId 'SSRSUEA0001,Set-SqlDscRSUnattendedExecutionAccount'
         }
     }
 
