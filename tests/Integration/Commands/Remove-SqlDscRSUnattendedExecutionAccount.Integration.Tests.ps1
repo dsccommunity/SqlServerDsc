@@ -42,6 +42,10 @@ Describe 'Remove-SqlDscRSUnattendedExecutionAccount' {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
         }
+
+        It 'Should not throw when removing unattended execution account' {
+            { $script:configuration | Remove-SqlDscRSUnattendedExecutionAccount -Force -ErrorAction 'Stop' } | Should -Not -Throw
+        }
     }
 
     Context 'When removing unattended execution account for SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {

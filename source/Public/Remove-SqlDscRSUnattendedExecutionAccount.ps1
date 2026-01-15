@@ -114,14 +114,13 @@ function Remove-SqlDscRSUnattendedExecutionAccount
             }
             catch
             {
-                $PSCmdlet.ThrowTerminatingError(
-                    [System.Management.Automation.ErrorRecord]::new(
-                        ($script:localizedData.Remove_SqlDscRSUnattendedExecutionAccount_FailedToRemove -f $instanceName, $_.Exception.Message),
-                        'RSRUEA0001',
-                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                        $Configuration
-                    )
-                )
+                $errorMessage = $script:localizedData.Remove_SqlDscRSUnattendedExecutionAccount_FailedToRemove -f $instanceName, $_.Exception.Message
+
+                $exception = New-Exception -Message $errorMessage -ErrorRecord $_
+
+                $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'RSRSUEA0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+
+                $PSCmdlet.ThrowTerminatingError($errorRecord)
             }
         }
 
