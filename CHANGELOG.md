@@ -342,6 +342,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Prerequisites Integration Tests
   - Added `svc-RS` local Windows user for Reporting Services service account
     integration testing.
+- `Get-SqlDscRSConfiguration`
+  - Added retry logic with parameters `RetryCount`, `RetryDelaySeconds`, and
+    `SkipRetry` to handle intermittent CIM instance retrieval failures when
+    the Report Server service or WMI provider is not immediately ready.
 
 ### Fixed
 

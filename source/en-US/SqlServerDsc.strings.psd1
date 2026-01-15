@@ -303,6 +303,7 @@ ConvertFrom-StringData @'
     Get_SqlDscRSConfiguration_VersionNotFound = Could not determine the version for Reporting Services instance '{0}'. (GSRSCD0002)
     Get_SqlDscRSConfiguration_FailedToGetConfiguration = Failed to get the configuration CIM instance for Reporting Services instance '{0}': {1} (GSRSCD0003)
     Get_SqlDscRSConfiguration_ConfigurationNotFound = Could not find the configuration CIM instance for Reporting Services instance '{0}'. (GSRSCD0004)
+    Get_SqlDscRSConfiguration_RetryingAfterDelay = Configuration CIM instance not found for Reporting Services instance '{0}'. Attempt {1} of {2} failed. Retrying in {3} seconds. (GSRSCD0005)
 
     ## Get-SqlDscRSLogPath
     Get_SqlDscRSLogPath_GettingPath = Getting log file path for Reporting Services instance '{0}'.

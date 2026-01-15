@@ -16,6 +16,11 @@
         'WindowsServiceIdentityConfigured' and methods for managing Reporting
         Services configuration.
 
+        By default, if the CIM instance is not found on the first attempt, the
+        command will retry after a delay. This handles intermittent failures
+        when the Report Server service or WMI provider is not immediately ready.
+        Use `-SkipRetry` to disable retry behavior.
+
     .PARAMETER InstanceName
         Specifies the name of the Reporting Services instance. This is a
         mandatory parameter.
@@ -25,11 +30,23 @@
         If not specified, the version is automatically detected using
         `Get-SqlDscRSSetupConfiguration`.
 
+    .PARAMETER RetryCount
+        Specifies the number of retry attempts if the CIM instance is not found.
+        Default is 1 retry attempt.
+
+    .PARAMETER RetryDelaySeconds
+        Specifies the delay in seconds between retry attempts. Default is 30
+        seconds.
+
+    .PARAMETER SkipRetry
+        If specified, skips retry attempts and throws an error immediately if
+        the CIM instance is not found.
+
     .EXAMPLE
         Get-SqlDscRSConfiguration -InstanceName 'SSRS'
 
         Returns the configuration CIM instance for the SSRS instance. The version
-        is automatically detected.
+        is automatically detected. Retries once after 30 seconds if not found.
 
     .EXAMPLE
         Get-SqlDscRSConfiguration -InstanceName 'SSRS' -Version 15
@@ -42,6 +59,18 @@
 
         Gets the configuration CIM instance for the SSRS instance and enables
         secure connection using the pipeline.
+
+    .EXAMPLE
+        Get-SqlDscRSConfiguration -InstanceName 'SSRS' -RetryCount 3 -RetryDelaySeconds 10
+
+        Returns the configuration CIM instance for the SSRS instance, retrying
+        up to 3 times with a 10-second delay between attempts if not found.
+
+    .EXAMPLE
+        Get-SqlDscRSConfiguration -InstanceName 'SSRS' -SkipRetry
+
+        Returns the configuration CIM instance for the SSRS instance without
+        any retry attempts. Throws an error immediately if not found.
 
     .INPUTS
         None.
@@ -64,7 +93,21 @@ function Get-SqlDscRSConfiguration
 
         [Parameter()]
         [System.Int32]
-        $Version
+        $Version,
+
+        [Parameter()]
+        [ValidateRange(1, [System.Int32]::MaxValue)]
+        [System.Int32]
+        $RetryCount = 1,
+
+        [Parameter()]
+        [ValidateRange(1, [System.Int32]::MaxValue)]
+        [System.Int32]
+        $RetryDelaySeconds = 30,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $SkipRetry
     )
 
     if (-not $PSBoundParameters.ContainsKey('Version'))
@@ -102,24 +145,53 @@ function Get-SqlDscRSConfiguration
         ErrorAction = 'Stop'
     }
 
-    try
+    $maxAttempts = if ($SkipRetry.IsPresent)
     {
-        $reportingServicesConfiguration = Get-CimInstance @getCimInstanceParameters
+        1
     }
-    catch
+    else
     {
-        $errorMessage = $script:localizedData.Get_SqlDscRSConfiguration_FailedToGetConfiguration -f $InstanceName, $_.Exception.Message
-
-        $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -ErrorRecord $_ -PassThru) -ErrorId 'GSRSCD0003' -ErrorCategory 'InvalidOperation' -TargetObject $InstanceName
-
-        $PSCmdlet.ThrowTerminatingError($errorRecord)
+        1 + $RetryCount
     }
 
-    # Filter to ensure we get the correct instance if multiple are returned.
-    $reportingServicesConfiguration = $reportingServicesConfiguration |
-        Where-Object -FilterScript {
-            $_.InstanceName -eq $InstanceName
+    $attempt = 0
+    $reportingServicesConfiguration = $null
+
+    while ($attempt -lt $maxAttempts)
+    {
+        $attempt++
+
+        try
+        {
+            $reportingServicesConfiguration = Get-CimInstance @getCimInstanceParameters
         }
+        catch
+        {
+            $errorMessage = $script:localizedData.Get_SqlDscRSConfiguration_FailedToGetConfiguration -f $InstanceName, $_.Exception.Message
+
+            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -ErrorRecord $_ -PassThru) -ErrorId 'GSRSCD0003' -ErrorCategory 'InvalidOperation' -TargetObject $InstanceName
+
+            $PSCmdlet.ThrowTerminatingError($errorRecord)
+        }
+
+        # Filter to ensure we get the correct instance if multiple are returned.
+        $reportingServicesConfiguration = $reportingServicesConfiguration |
+            Where-Object -FilterScript {
+                $_.InstanceName -eq $InstanceName
+            }
+
+        if ($reportingServicesConfiguration)
+        {
+            break
+        }
+
+        if ($attempt -lt $maxAttempts)
+        {
+            Write-Debug -Message ($script:localizedData.Get_SqlDscRSConfiguration_RetryingAfterDelay -f $InstanceName, $attempt, $maxAttempts, $RetryDelaySeconds)
+
+            Start-Sleep -Seconds $RetryDelaySeconds
+        }
+    }
 
     if (-not $reportingServicesConfiguration)
     {

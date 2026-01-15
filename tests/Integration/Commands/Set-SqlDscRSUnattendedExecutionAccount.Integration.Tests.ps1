@@ -44,7 +44,7 @@ Describe 'Set-SqlDscRSUnattendedExecutionAccount' {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
             # Create a test credential (this should be a valid Windows account in CI)
-            $script:testUsername = 'TestUnattendedAccount'
+            $script:testUsername = '{0}\TestUnattendedAccount' -f (Get-ComputerName)
             $script:testPassword = ConvertTo-SecureString -String 'P@ssw0rd123!' -AsPlainText -Force
             $script:testCredential = [System.Management.Automation.PSCredential]::new($script:testUsername, $script:testPassword)
         }
@@ -58,7 +58,7 @@ Describe 'Set-SqlDscRSUnattendedExecutionAccount' {
     Context 'When setting unattended execution account for SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-            $script:testUsername = 'TestUnattendedAccount'
+            $script:testUsername = '{0}\TestUnattendedAccount' -f (Get-ComputerName)
             $script:testPassword = ConvertTo-SecureString -String 'P@ssw0rd123!' -AsPlainText -Force
             $script:testCredential = [System.Management.Automation.PSCredential]::new($script:testUsername, $script:testPassword)
         }
@@ -71,7 +71,7 @@ Describe 'Set-SqlDscRSUnattendedExecutionAccount' {
     Context 'When setting unattended execution account for SQL Server Reporting Services' -Tag @('Integration_SQL2022_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-            $script:testUsername = 'TestUnattendedAccount'
+            $script:testUsername = '{0}\TestUnattendedAccount' -f (Get-ComputerName)
             $script:testPassword = ConvertTo-SecureString -String 'P@ssw0rd123!' -AsPlainText -Force
             $script:testCredential = [System.Management.Automation.PSCredential]::new($script:testUsername, $script:testPassword)
         }
@@ -84,7 +84,7 @@ Describe 'Set-SqlDscRSUnattendedExecutionAccount' {
     Context 'When setting unattended execution account for Power BI Report Server' -Tag @('Integration_PowerBI') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
-            $script:testUsername = 'TestUnattendedAccount'
+            $script:testUsername = '{0}\TestUnattendedAccount' -f (Get-ComputerName)
             $script:testPassword = ConvertTo-SecureString -String 'P@ssw0rd123!' -AsPlainText -Force
             $script:testCredential = [System.Management.Automation.PSCredential]::new($script:testUsername, $script:testPassword)
         }
