@@ -94,7 +94,7 @@ function Set-SqlDscRSSslCertificateBinding
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the examples use pipeline input the rule cannot validate.')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
-    [OutputType([System.Object])]
+    [OutputType([Microsoft.Management.Infrastructure.CimInstance])]
     param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
@@ -165,7 +165,7 @@ function Set-SqlDscRSSslCertificateBinding
             # Remove bindings that don't match the desired configuration
             foreach ($binding in $applicationBindings)
             {
-                $shouldRemove = $binding.CertificateHash -ne $normalizedHash -or
+                $shouldRemove = $binding.CertificateHash.ToLower() -ne $normalizedHash -or
                     $binding.IPAddress -ne $IPAddress -or
                     $binding.Port -ne $Port
 
@@ -179,7 +179,7 @@ function Set-SqlDscRSSslCertificateBinding
 
             # Check if the desired binding already exists
             $bindingExists = $applicationBindings | Where-Object -FilterScript {
-                $_.CertificateHash -eq $normalizedHash -and
+                $_.CertificateHash.ToLower() -eq $normalizedHash -and
                 $_.IPAddress -eq $IPAddress -and
                 $_.Port -eq $Port
             }

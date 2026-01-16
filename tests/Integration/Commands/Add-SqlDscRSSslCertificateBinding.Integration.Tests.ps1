@@ -86,45 +86,45 @@ Describe 'Add-SqlDscRSSslCertificateBinding' {
         }
     }
 
-    Context 'When adding SSL certificate binding for SQL Server Reporting Services' -Tag @('Integration_SQL2017_RS') {
+    Context 'When adding SSL certificate binding for SQL Server 2017 Reporting Services' -Tag @('Integration_SQL2017_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
         }
 
         It 'Should add SSL certificate binding for ReportServerWebService' {
-            { $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' @script:addSslCertificateBindingParameters } | Should -Not -Throw
+            $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' @script:addSslCertificateBindingParameters
         }
 
         It 'Should add SSL certificate binding for ReportServerWebApp' {
-            { $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebApp' @script:addSslCertificateBindingParameters } | Should -Not -Throw
+            $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebApp' @script:addSslCertificateBindingParameters
         }
     }
 
-    Context 'When adding SSL certificate binding for SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {
+    Context 'When adding SSL certificate binding for SQL Server 2019 Reporting Services' -Tag @('Integration_SQL2019_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
         }
 
         It 'Should add SSL certificate binding for ReportServerWebService' {
-            { $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' @script:addSslCertificateBindingParameters } | Should -Not -Throw
+            $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' @script:addSslCertificateBindingParameters
         }
 
         It 'Should add SSL certificate binding for ReportServerWebApp' {
-            { $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebApp' @script:addSslCertificateBindingParameters } | Should -Not -Throw
+            $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebApp' @script:addSslCertificateBindingParameters
         }
     }
 
-    Context 'When adding SSL certificate binding for SQL Server Reporting Services' -Tag @('Integration_SQL2022_RS') {
+    Context 'When adding SSL certificate binding for SQL Server 2022 Reporting Services' -Tag @('Integration_SQL2022_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
         }
 
         It 'Should add SSL certificate binding for ReportServerWebService' {
-            { $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' @script:addSslCertificateBindingParameters } | Should -Not -Throw
+            $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' @script:addSslCertificateBindingParameters
         }
 
         It 'Should add SSL certificate binding for ReportServerWebApp' {
-            { $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebApp' @script:addSslCertificateBindingParameters } | Should -Not -Throw
+            $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebApp' @script:addSslCertificateBindingParameters
         }
     }
 
@@ -134,11 +134,11 @@ Describe 'Add-SqlDscRSSslCertificateBinding' {
         }
 
         It 'Should add SSL certificate binding for ReportServerWebService' {
-            { $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' @script:addSslCertificateBindingParameters } | Should -Not -Throw
+            $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' @script:addSslCertificateBindingParameters
         }
 
         It 'Should add SSL certificate binding for ReportServerWebApp' {
-            { $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebApp' @script:addSslCertificateBindingParameters } | Should -Not -Throw
+            $script:configuration | Add-SqlDscRSSslCertificateBinding -Application 'ReportServerWebApp' @script:addSslCertificateBindingParameters
         }
     }
 }

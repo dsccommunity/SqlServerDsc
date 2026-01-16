@@ -92,7 +92,7 @@ function Remove-SqlDscRSSslCertificateBinding
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the examples use pipeline input the rule cannot validate.')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
-    [OutputType([System.Object])]
+    [OutputType([Microsoft.Management.Infrastructure.CimInstance])]
     param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
@@ -169,14 +169,13 @@ function Remove-SqlDscRSSslCertificateBinding
             }
             catch
             {
-                $PSCmdlet.ThrowTerminatingError(
-                    [System.Management.Automation.ErrorRecord]::new(
-                        ($script:localizedData.Remove_SqlDscRSSslCertificateBinding_FailedToRemove -f $instanceName, $_.Exception.Message),
-                        'RSRSSCB0001',
-                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                        $Configuration
-                    )
-                )
+                $errorMessage = $script:localizedData.Remove_SqlDscRSSslCertificateBinding_FailedToRemove -f $instanceName, $_.Exception.Message
+
+                $exception = New-InvalidOperationException -Message $errorMessage -ErrorRecord $_ -PassThru
+
+                $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'RSRSSCB0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+
+                $PSCmdlet.ThrowTerminatingError($errorRecord)
             }
         }
 

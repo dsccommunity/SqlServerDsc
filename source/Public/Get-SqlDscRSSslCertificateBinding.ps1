@@ -115,14 +115,13 @@ function Get-SqlDscRSSslCertificateBinding
         }
         catch
         {
-            $PSCmdlet.ThrowTerminatingError(
-                [System.Management.Automation.ErrorRecord]::new(
-                    ($script:localizedData.Get_SqlDscRSSslCertificateBinding_FailedToGet -f $instanceName, $_.Exception.Message),
-                    'GSRSSCB0001',
-                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                    $Configuration
-                )
-            )
+            $errorMessage = $script:localizedData.Get_SqlDscRSSslCertificateBinding_FailedToGet -f $instanceName, $_.Exception.Message
+
+            $exception = New-InvalidOperationException -Message $errorMessage -ErrorRecord $_ -PassThru
+
+            $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'GSRSSCB0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+
+            $PSCmdlet.ThrowTerminatingError($errorRecord)
         }
     }
 }

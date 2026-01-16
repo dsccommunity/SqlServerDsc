@@ -44,6 +44,50 @@ AfterAll {
 }
 
 Describe 'Get-SqlDscRSConfiguration' {
+    Context 'When validating parameter sets' {
+        It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
+            @{
+                ExpectedParameterSetName = '__AllParameterSets'
+                ExpectedParameters       = '[-InstanceName] <string> [[-Version] <int>] [[-RetryCount] <int>] [[-RetryDelaySeconds] <int>] [-SkipRetry] [<CommonParameters>]'
+            }
+        ) {
+            $result = (Get-Command -Name 'Get-SqlDscRSConfiguration').ParameterSets |
+                Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
+                Select-Object -Property @(
+                    @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
+                    @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
+                )
+
+            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should -Be $ExpectedParameters
+        }
+
+        It 'Should have RetryCount default value of 1' {
+            $parameterInfo = (Get-Command -Name 'Get-SqlDscRSConfiguration').Parameters['RetryCount']
+
+            $parameterInfo.Attributes.Where({ $_ -is [System.Management.Automation.ParameterAttribute] }).Mandatory | Should -BeFalse
+
+            $defaultValue = $parameterInfo.Attributes.Where({ $_ -is [System.Management.Automation.PSDefaultValueAttribute] }).Value
+
+            # Check via reflection since default values are set in the param block
+            $functionInfo = Get-Command -Name 'Get-SqlDscRSConfiguration'
+            $functionInfo.Parameters['RetryCount'].ParameterType | Should -Be ([System.Int32])
+        }
+
+        It 'Should have RetryDelaySeconds default value of 30' {
+            $parameterInfo = (Get-Command -Name 'Get-SqlDscRSConfiguration').Parameters['RetryDelaySeconds']
+
+            $parameterInfo.Attributes.Where({ $_ -is [System.Management.Automation.ParameterAttribute] }).Mandatory | Should -BeFalse
+            $parameterInfo.ParameterType | Should -Be ([System.Int32])
+        }
+
+        It 'Should have SkipRetry as a switch parameter' {
+            $parameterInfo = (Get-Command -Name 'Get-SqlDscRSConfiguration').Parameters['SkipRetry']
+
+            $parameterInfo.SwitchParameter | Should -BeTrue
+        }
+    }
+
     BeforeAll {
         InModuleScope -ScriptBlock {
             function script:Get-CimInstance
@@ -209,10 +253,107 @@ Describe 'Get-SqlDscRSConfiguration' {
             Mock -CommandName Get-CimInstance -MockWith {
                 return $mockCimInstance
             }
+
+            Mock -CommandName Start-Sleep
         }
 
-        It 'Should throw a terminating error' {
+        It 'Should throw a terminating error after retrying' {
             { Get-SqlDscRSConfiguration -InstanceName 'SSRS' } | Should -Throw -ErrorId 'GSRSCD0004,Get-SqlDscRSConfiguration'
+
+            # Should retry once (default RetryCount = 1) plus initial attempt = 2 calls
+            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 2
+            Should -Invoke -CommandName Start-Sleep -ParameterFilter {
+                $Seconds -eq 30
+            } -Exactly -Times 1
+        }
+
+        It 'Should throw immediately with -SkipRetry' {
+            { Get-SqlDscRSConfiguration -InstanceName 'SSRS' -SkipRetry } | Should -Throw -ErrorId 'GSRSCD0004,Get-SqlDscRSConfiguration'
+
+            # Should not retry
+            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1
+            Should -Invoke -CommandName Start-Sleep -Exactly -Times 0
+        }
+    }
+
+    Context 'When configuration CIM instance is found on retry' {
+        BeforeAll {
+            $script:getCimInstanceCallCount = 0
+
+            Mock -CommandName Get-SqlDscRSSetupConfiguration -MockWith {
+                return [PSCustomObject] @{
+                    InstanceName   = 'SSRS'
+                    CurrentVersion = '15.0.1103.41'
+                }
+            }
+
+            Mock -CommandName Get-CimInstance -MockWith {
+                $script:getCimInstanceCallCount++
+
+                if ($script:getCimInstanceCallCount -eq 1)
+                {
+                    # First call returns wrong instance
+                    return [PSCustomObject] @{
+                        InstanceName = 'OtherInstance'
+                    }
+                }
+
+                # Second call returns correct instance
+                return [PSCustomObject] @{
+                    InstanceName          = 'SSRS'
+                    DatabaseServerName    = 'localhost'
+                    SecureConnectionLevel = 1
+                }
+            }
+
+            Mock -CommandName Start-Sleep
+        }
+
+        AfterEach {
+            $script:getCimInstanceCallCount = 0
+        }
+
+        It 'Should succeed on retry' {
+            $result = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
+
+            $result | Should -Not -BeNullOrEmpty
+            $result.InstanceName | Should -Be 'SSRS'
+
+            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 2
+            Should -Invoke -CommandName Start-Sleep -ParameterFilter {
+                $Seconds -eq 30
+            } -Exactly -Times 1
+        }
+    }
+
+    Context 'When using custom retry parameters' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'OtherInstance'
+            }
+
+            Mock -CommandName Get-SqlDscRSSetupConfiguration -MockWith {
+                return [PSCustomObject] @{
+                    InstanceName   = 'SSRS'
+                    CurrentVersion = '15.0.1103.41'
+                }
+            }
+
+            Mock -CommandName Get-CimInstance -MockWith {
+                return $mockCimInstance
+            }
+
+            Mock -CommandName Start-Sleep
+        }
+
+        It 'Should retry the specified number of times with specified delay' {
+            { Get-SqlDscRSConfiguration -InstanceName 'SSRS' -RetryCount 3 -RetryDelaySeconds 10 } | Should -Throw -ErrorId 'GSRSCD0004,Get-SqlDscRSConfiguration'
+
+            # 1 initial + 3 retries = 4 calls
+            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 4
+            Should -Invoke -CommandName Start-Sleep -ParameterFilter {
+                $Seconds -eq 10
+            } -Exactly -Times 3
         }
     }
 

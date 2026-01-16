@@ -594,6 +594,9 @@ stages:
                   'tests/Integration/Commands/Get-SqlDscRSServiceAccount.Integration.Tests.ps1'
                   'tests/Integration/Commands/Post.ServiceAccountChange.SQL2017.RS.Integration.Tests.ps1'
                   'tests/Integration/Commands/Post.ServiceAccountChange.SQL2019-2022.RS.Integration.Tests.ps1'
+                  # Group 7
+                  'tests/Integration/Commands/Set-SqlDscRSUnattendedExecutionAccount.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Remove-SqlDscRSUnattendedExecutionAccount.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscReportingService.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscRSUrlReservation.Integration.Tests.ps1'
@@ -693,6 +696,9 @@ stages:
                   'tests/Integration/Commands/Set-SqlDscRSServiceAccount.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSServiceAccount.Integration.Tests.ps1'
                   'tests/Integration/Commands/Post.ServiceAccountChange.PowerBI.RS.Integration.Tests.ps1'
+                  # Group 7
+                  'tests/Integration/Commands/Set-SqlDscRSUnattendedExecutionAccount.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Remove-SqlDscRSUnattendedExecutionAccount.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscPowerBIReportServer.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscRSUrlReservation.Integration.Tests.ps1'
@@ -778,6 +784,9 @@ stages:
                   'tests/Integration/Commands/Get-SqlDscRSSslCertificateBinding.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscRSSslCertificateBinding.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscRSSslCertificateBinding.Integration.Tests.ps1'
+                  # Group 7
+                  'tests/Integration/Commands/Set-SqlDscRSUnattendedExecutionAccount.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Remove-SqlDscRSUnattendedExecutionAccount.Integration.Tests.ps1'
               )
             name: test
             displayName: 'Run Integration Test'
@@ -1196,6 +1205,7 @@ stages:
     - Integration_Test_Commands_SqlServer_PreparedImage
     - Integration_Test_Commands_ReportingServices
     - Integration_Test_Commands_BIReportServer
+    - Integration_Test_Commands_BIReportServer_Secure
     - Integration_Test_Resources_SqlServer
     - Integration_Test_Resources_SqlServer_dbatools
     - Integration_Test_Resources_ReportingServices

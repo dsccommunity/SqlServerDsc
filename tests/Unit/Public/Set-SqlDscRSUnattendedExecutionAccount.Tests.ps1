@@ -43,23 +43,15 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'Remove-SqlDscRSSslCertificateBinding' {
-    BeforeAll {
-        Mock -CommandName Get-OperatingSystem -MockWith {
-            return [PSCustomObject] @{
-                OSLanguage = 1033
-            }
-        }
-    }
-
+Describe 'Set-SqlDscRSUnattendedExecutionAccount' {
     Context 'When validating parameter sets' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
                 ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-Configuration] <Object> [-Application] <string> [-CertificateHash] <string> [[-IPAddress] <string>] [[-Port] <int>] [[-Lcid] <int>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '[-Configuration] <Object> [-Credential] <pscredential> [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
-            $result = (Get-Command -Name 'Remove-SqlDscRSSslCertificateBinding').ParameterSets |
+            $result = (Get-Command -Name 'Set-SqlDscRSUnattendedExecutionAccount').ParameterSets |
                 Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
                 Select-Object -Property @(
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
@@ -71,83 +63,74 @@ Describe 'Remove-SqlDscRSSslCertificateBinding' {
         }
     }
 
-    Context 'When removing SSL certificate binding successfully' {
+    Context 'When setting unattended execution account successfully' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName = 'SSRS'
             }
 
+            $mockCredential = [System.Management.Automation.PSCredential]::new(
+                'DOMAIN\ExecutionAccount',
+                (ConvertTo-SecureString -String 'P@ssw0rd' -AsPlainText -Force)
+            )
+
             Mock -CommandName Invoke-RsCimMethod
         }
 
-        It 'Should remove SSL certificate binding without errors' {
-            $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false
+        It 'Should set unattended execution account without errors' {
+            $mockCimInstance | Set-SqlDscRSUnattendedExecutionAccount -Credential $mockCredential -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $MethodName -eq 'RemoveSSLCertificateBindings' -and
-                $Arguments.CertificateHash -eq 'aabbccdd' -and
-                $Arguments.Application -eq 'ReportServerWebService' -and
-                $Arguments.IPAddress -eq '0.0.0.0' -and
-                $Arguments.Port -eq 443 -and
-                $Arguments.Lcid -eq 1033
+                $MethodName -eq 'SetUnattendedExecutionAccount' -and
+                $Arguments.UserName -eq 'DOMAIN\ExecutionAccount'
             } -Exactly -Times 1
         }
 
         It 'Should not return anything by default' {
-            $result = $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false
+            $result = $mockCimInstance | Set-SqlDscRSUnattendedExecutionAccount -Credential $mockCredential -Confirm:$false
 
             $result | Should -BeNullOrEmpty
         }
     }
 
-    Context 'When removing SSL certificate binding with custom parameters' {
+    Context 'When setting unattended execution account with PassThru' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName = 'SSRS'
             }
 
-            Mock -CommandName Invoke-RsCimMethod
-        }
-
-        It 'Should use custom IP address and port' {
-            { $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -IPAddress '192.168.1.1' -Port 8443 -Lcid 1031 -Confirm:$false } | Should -Not -Throw
-
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                $Arguments.IPAddress -eq '192.168.1.1' -and
-                $Arguments.Port -eq 8443 -and
-                $Arguments.Lcid -eq 1031
-            } -Exactly -Times 1
-        }
-    }
-
-    Context 'When removing SSL certificate binding with PassThru' {
-        BeforeAll {
-            $mockCimInstance = [PSCustomObject] @{
-                InstanceName = 'SSRS'
-            }
+            $mockCredential = [System.Management.Automation.PSCredential]::new(
+                'DOMAIN\ExecutionAccount',
+                (ConvertTo-SecureString -String 'P@ssw0rd' -AsPlainText -Force)
+            )
 
             Mock -CommandName Invoke-RsCimMethod
         }
 
         It 'Should return the configuration CIM instance' {
-            $result = $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -PassThru -Confirm:$false
+            $result = $mockCimInstance | Set-SqlDscRSUnattendedExecutionAccount -Credential $mockCredential -PassThru -Confirm:$false
 
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'SSRS'
         }
     }
 
-    Context 'When removing SSL certificate binding with Force' {
+    Context 'When setting unattended execution account with Force' {
         BeforeAll {
             $mockCimInstance = [PSCustomObject] @{
                 InstanceName = 'SSRS'
             }
 
+            $mockCredential = [System.Management.Automation.PSCredential]::new(
+                'DOMAIN\ExecutionAccount',
+                (ConvertTo-SecureString -String 'P@ssw0rd' -AsPlainText -Force)
+            )
+
             Mock -CommandName Invoke-RsCimMethod
         }
 
-        It 'Should remove SSL certificate binding without confirmation' {
-            { $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Force } | Should -Not -Throw
+        It 'Should set unattended execution account without confirmation' {
+            $mockCimInstance | Set-SqlDscRSUnattendedExecutionAccount -Credential $mockCredential -Force
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
@@ -159,13 +142,18 @@ Describe 'Remove-SqlDscRSSslCertificateBinding' {
                 InstanceName = 'SSRS'
             }
 
+            $mockCredential = [System.Management.Automation.PSCredential]::new(
+                'DOMAIN\ExecutionAccount',
+                (ConvertTo-SecureString -String 'P@ssw0rd' -AsPlainText -Force)
+            )
+
             Mock -CommandName Invoke-RsCimMethod -MockWith {
-                throw 'Method RemoveSSLCertificateBindings() failed with an error.'
+                throw 'Method SetUnattendedExecutionAccount() failed with an error.'
             }
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false } | Should -Throw -ErrorId 'RSRSSCB0001,Remove-SqlDscRSSslCertificateBinding'
+            { $mockCimInstance | Set-SqlDscRSUnattendedExecutionAccount -Credential $mockCredential -Confirm:$false } | Should -Throw -ErrorId 'SSRSUEA0001,Set-SqlDscRSUnattendedExecutionAccount'
         }
     }
 
@@ -175,11 +163,16 @@ Describe 'Remove-SqlDscRSSslCertificateBinding' {
                 InstanceName = 'SSRS'
             }
 
+            $mockCredential = [System.Management.Automation.PSCredential]::new(
+                'DOMAIN\ExecutionAccount',
+                (ConvertTo-SecureString -String 'P@ssw0rd' -AsPlainText -Force)
+            )
+
             Mock -CommandName Invoke-RsCimMethod
         }
 
         It 'Should not call Invoke-RsCimMethod' {
-            $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -WhatIf
+            $mockCimInstance | Set-SqlDscRSUnattendedExecutionAccount -Credential $mockCredential -WhatIf
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
         }
@@ -191,11 +184,16 @@ Describe 'Remove-SqlDscRSSslCertificateBinding' {
                 InstanceName = 'SSRS'
             }
 
+            $mockCredential = [System.Management.Automation.PSCredential]::new(
+                'DOMAIN\ExecutionAccount',
+                (ConvertTo-SecureString -String 'P@ssw0rd' -AsPlainText -Force)
+            )
+
             Mock -CommandName Invoke-RsCimMethod
         }
 
-        It 'Should remove SSL certificate binding' {
-            { Remove-SqlDscRSSslCertificateBinding -Configuration $mockCimInstance -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false } | Should -Not -Throw
+        It 'Should set unattended execution account' {
+            Set-SqlDscRSUnattendedExecutionAccount -Configuration $mockCimInstance -Credential $mockCredential -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }

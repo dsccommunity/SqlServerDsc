@@ -110,7 +110,8 @@
         "checkpointing",
         "HRESULT",
         "RSDB",
-        "RSIP"
+        "RSIP",
+        "contoso"
     ],
     "cSpell.ignorePaths": [
         ".git"

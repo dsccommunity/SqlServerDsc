@@ -59,19 +59,17 @@ Describe 'Set-SqlDscRSSslCertificateBinding' {
         }
 
         $script:testCertificateHash = $script:testCertificate.Thumbprint
-        $script:testIPAddress = '0.0.0.0'
-        $script:testPort = 443
 
         Write-Verbose -Message ('Using self-signed certificate ''{0}'' with thumbprint ''{1}''.' -f $script:testCertificate.Subject, $script:testCertificateHash) -Verbose
     }
 
-    Context 'When setting SSL certificate binding for SQL Server Reporting Services' -Tag @('Integration_SQL2017_RS') {
+    Context 'When setting SSL certificate binding for SQL Server 2017 Reporting Services' -Tag @('Integration_SQL2017_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
         }
 
         It 'Should set SSL certificate binding' {
-            { $script:configuration | Set-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash $script:testCertificateHash -IPAddress $script:testIPAddress -Port $script:testPort -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:configuration | Set-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash $script:testCertificateHash -IPAddress $script:testIPAddress -Port $script:testPort -Force -ErrorAction 'Stop'
         }
 
         It 'Should return configuration when using PassThru' {
@@ -83,13 +81,13 @@ Describe 'Set-SqlDscRSSslCertificateBinding' {
         }
     }
 
-    Context 'When setting SSL certificate binding for SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {
+    Context 'When setting SSL certificate binding for SQL Server 2019 Reporting Services' -Tag @('Integration_SQL2019_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
         }
 
         It 'Should set SSL certificate binding' {
-            { $script:configuration | Set-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash $script:testCertificateHash -IPAddress $script:testIPAddress -Port $script:testPort -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:configuration | Set-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash $script:testCertificateHash -IPAddress $script:testIPAddress -Port $script:testPort -Force -ErrorAction 'Stop'
         }
 
         It 'Should return configuration when using PassThru' {
@@ -101,13 +99,13 @@ Describe 'Set-SqlDscRSSslCertificateBinding' {
         }
     }
 
-    Context 'When setting SSL certificate binding for SQL Server Reporting Services' -Tag @('Integration_SQL2022_RS') {
+    Context 'When setting SSL certificate binding for SQL Server 2022 Reporting Services' -Tag @('Integration_SQL2022_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
         }
 
         It 'Should set SSL certificate binding' {
-            { $script:configuration | Set-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash $script:testCertificateHash -IPAddress $script:testIPAddress -Port $script:testPort -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:configuration | Set-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash $script:testCertificateHash -IPAddress $script:testIPAddress -Port $script:testPort -Force -ErrorAction 'Stop'
         }
 
         It 'Should return configuration when using PassThru' {
@@ -125,7 +123,7 @@ Describe 'Set-SqlDscRSSslCertificateBinding' {
         }
 
         It 'Should set SSL certificate binding' {
-            { $script:configuration | Set-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash $script:testCertificateHash -IPAddress $script:testIPAddress -Port $script:testPort -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:configuration | Set-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash $script:testCertificateHash -IPAddress $script:testIPAddress -Port $script:testPort -Force -ErrorAction 'Stop'
         }
 
         It 'Should return configuration when using PassThru' {

@@ -303,6 +303,7 @@ ConvertFrom-StringData @'
     Get_SqlDscRSConfiguration_VersionNotFound = Could not determine the version for Reporting Services instance '{0}'. (GSRSCD0002)
     Get_SqlDscRSConfiguration_FailedToGetConfiguration = Failed to get the configuration CIM instance for Reporting Services instance '{0}': {1} (GSRSCD0003)
     Get_SqlDscRSConfiguration_ConfigurationNotFound = Could not find the configuration CIM instance for Reporting Services instance '{0}'. (GSRSCD0004)
+    Get_SqlDscRSConfiguration_RetryingAfterDelay = Configuration CIM instance not found for Reporting Services instance '{0}'. Attempt {1} of {2} failed. Retrying in {3} seconds. (GSRSCD0005)
 
     ## Get-SqlDscRSLogPath
     Get_SqlDscRSLogPath_GettingPath = Getting log file path for Reporting Services instance '{0}'.
@@ -909,6 +910,22 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Initialize_SqlDscRS_ShouldProcessCaption = Initialize Reporting Services instance
     Initialize_SqlDscRS_FailedToInitialize = Failed to initialize Reporting Services instance '{0}'. {1} (ISRS0001)
+
+    ## Set-SqlDscRSUnattendedExecutionAccount
+    Set_SqlDscRSUnattendedExecutionAccount_Setting = Setting unattended execution account to '{0}' for Reporting Services instance '{1}'.
+    Set_SqlDscRSUnattendedExecutionAccount_ShouldProcessDescription = Setting unattended execution account to '{0}' for Reporting Services instance '{1}'.
+    Set_SqlDscRSUnattendedExecutionAccount_ShouldProcessConfirmation = Are you sure you want to set the unattended execution account to '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Set_SqlDscRSUnattendedExecutionAccount_ShouldProcessCaption = Set unattended execution account for Reporting Services instance
+    Set_SqlDscRSUnattendedExecutionAccount_FailedToSet = Failed to set unattended execution account for Reporting Services instance '{0}'. (RSSUEA0001)
+
+    ## Remove-SqlDscRSUnattendedExecutionAccount
+    Remove_SqlDscRSUnattendedExecutionAccount_Removing = Removing unattended execution account from Reporting Services instance '{0}'.
+    Remove_SqlDscRSUnattendedExecutionAccount_ShouldProcessDescription = Removing unattended execution account from Reporting Services instance '{0}'.
+    Remove_SqlDscRSUnattendedExecutionAccount_ShouldProcessConfirmation = Are you sure you want to remove the unattended execution account from Reporting Services instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Remove_SqlDscRSUnattendedExecutionAccount_ShouldProcessCaption = Remove unattended execution account from Reporting Services instance
+    Remove_SqlDscRSUnattendedExecutionAccount_FailedToRemove = Failed to remove unattended execution account for Reporting Services instance '{0}'. (RSRSUEA0001)
 
     ## Get-SqlDscRSSslCertificate
     Get_SqlDscRSSslCertificate_Getting = Getting available SSL certificates for Reporting Services instance '{0}'.

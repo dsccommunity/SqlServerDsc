@@ -57,7 +57,7 @@ BeforeAll {
 }
 
 Describe 'Get-SqlDscRSSslCertificateBinding' {
-    Context 'When getting SSL certificate bindings for SQL Server Reporting Services' -Tag @('Integration_SQL2017_RS') {
+    Context 'When getting SSL certificate bindings for SQL Server 2017 Reporting Services' -Tag @('Integration_SQL2017_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
         }
@@ -97,7 +97,7 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
         }
     }
 
-    Context 'When getting SSL certificate bindings for SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {
+    Context 'When getting SSL certificate bindings for SQL Server 2019 Reporting Services' -Tag @('Integration_SQL2019_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
         }
@@ -137,7 +137,7 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
         }
     }
 
-    Context 'When getting SSL certificate bindings for SQL Server Reporting Services' -Tag @('Integration_SQL2022_RS') {
+    Context 'When getting SSL certificate bindings for SQL Server 2022 Reporting Services' -Tag @('Integration_SQL2022_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
         }

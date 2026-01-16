@@ -97,14 +97,13 @@ function Get-SqlDscRSSslCertificate
         }
         catch
         {
-            $PSCmdlet.ThrowTerminatingError(
-                [System.Management.Automation.ErrorRecord]::new(
-                    ($script:localizedData.Get_SqlDscRSSslCertificate_FailedToGet -f $instanceName, $_.Exception.Message),
-                    'GSRSSC0001',
-                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                    $Configuration
-                )
-            )
+            $errorMessage = $script:localizedData.Get_SqlDscRSSslCertificate_FailedToGet -f $instanceName, $_.Exception.Message
+
+            $exception = New-InvalidOperationException -Message $errorMessage -ErrorRecord $_ -PassThru
+
+            $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'GSRSSC0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+
+            $PSCmdlet.ThrowTerminatingError($errorRecord)
         }
     }
 }

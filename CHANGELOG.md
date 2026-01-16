@@ -244,6 +244,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   by calling the `InitializeReportServer` CIM method. Used to complete initial
   configuration after database and URL setup
   ([issue #2014](https://github.com/dsccommunity/SqlServerDsc/issues/2014)).
+- Added public commands `Set-SqlDscRSUnattendedExecutionAccount` and
+  `Remove-SqlDscRSUnattendedExecutionAccount` to manage the unattended execution
+  account for Reporting Services. These wrap the `SetUnattendedExecutionAccount`
+  CIM method.
 - Added public command `Get-SqlDscRSSslCertificate` to list available SSL
   certificates that can be used for Reporting Services. Wraps the
   `ListSSLCertificates` CIM method.
@@ -338,6 +342,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Prerequisites Integration Tests
   - Added `svc-RS` local Windows user for Reporting Services service account
     integration testing.
+- `Get-SqlDscRSConfiguration`
+  - Added retry logic with parameters `RetryCount`, `RetryDelaySeconds`, and
+    `SkipRetry` to handle intermittent CIM instance retrieval failures when
+    the Report Server service or WMI provider is not immediately ready.
 
 ### Fixed
 
