@@ -298,7 +298,7 @@ ORDER BY TimeStart DESC
         }
         catch
         {
-            $errorMessage = $script:localizedData.Get_SqlDscRSExecutionLog_QueryFailed -f $InstanceName, $_.Exception.Message
+            $errorMessage = $script:localizedData.Get_SqlDscRSExecutionLog_QueryFailed -f $InstanceName
 
             Write-Error -Message $errorMessage -Category 'InvalidOperation' -ErrorId 'GSRSEL0001' -TargetObject $InstanceName -Exception $_.Exception
 

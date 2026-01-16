@@ -194,14 +194,13 @@ function Set-SqlDscRSServiceAccount
             }
             catch
             {
-                $PSCmdlet.ThrowTerminatingError(
-                    [System.Management.Automation.ErrorRecord]::new(
-                        ($script:localizedData.Set_SqlDscRSServiceAccount_FailedToSet -f $instanceName, $_.Exception.Message),
-                        'SSRSSA0001',
-                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                        $Configuration
-                    )
-                )
+                $errorMessage = $script:localizedData.Set_SqlDscRSServiceAccount_FailedToSet -f $instanceName
+
+                $exception = New-Exception -Message $errorMessage -ErrorRecord $_
+
+                $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'SSRSSA0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+
+                $PSCmdlet.ThrowTerminatingError($errorRecord)
             }
         }
 

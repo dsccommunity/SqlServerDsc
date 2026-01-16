@@ -115,9 +115,9 @@ function Get-SqlDscRSSslCertificateBinding
         }
         catch
         {
-            $errorMessage = $script:localizedData.Get_SqlDscRSSslCertificateBinding_FailedToGet -f $instanceName, $_.Exception.Message
+            $errorMessage = $script:localizedData.Get_SqlDscRSSslCertificateBinding_FailedToGet -f $instanceName
 
-            $exception = New-InvalidOperationException -Message $errorMessage -ErrorRecord $_ -PassThru
+            $exception = New-Exception -Message $errorMessage -ErrorRecord $_
 
             $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'GSRSSCB0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
 

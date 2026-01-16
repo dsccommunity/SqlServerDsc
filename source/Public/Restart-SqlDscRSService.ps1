@@ -132,9 +132,9 @@ function Restart-SqlDscRSService
         }
         catch
         {
-            $errorMessage = $script:localizedData.Restart_SqlDscRSService_ServiceNotFound -f $targetServiceName, $_.Exception.Message
+            $errorMessage = $script:localizedData.Restart_SqlDscRSService_ServiceNotFound -f $targetServiceName
 
-            Write-Error -Message $errorMessage -Category ObjectNotFound -ErrorId 'RSRSRS0001' -TargetObject $targetServiceName
+            Write-Error -Message $errorMessage -Category ObjectNotFound -ErrorId 'RSRSRS0001' -TargetObject $targetServiceName -Exception $_.Exception
 
             return
         }

@@ -596,6 +596,7 @@ stages:
                   'tests/Integration/Commands/Post.ServiceAccountChange.SQL2019-2022.RS.Integration.Tests.ps1'
                   # Group 7
                   'tests/Integration/Commands/Set-SqlDscRSUnattendedExecutionAccount.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscRSSmtpConfiguration.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscRSUnattendedExecutionAccount.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscReportingService.Integration.Tests.ps1'
@@ -698,6 +699,7 @@ stages:
                   'tests/Integration/Commands/Post.ServiceAccountChange.PowerBI.RS.Integration.Tests.ps1'
                   # Group 7
                   'tests/Integration/Commands/Set-SqlDscRSUnattendedExecutionAccount.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscRSSmtpConfiguration.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscRSUnattendedExecutionAccount.Integration.Tests.ps1'
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscPowerBIReportServer.Integration.Tests.ps1'
@@ -786,6 +788,7 @@ stages:
                   'tests/Integration/Commands/Set-SqlDscRSSslCertificateBinding.Integration.Tests.ps1'
                   # Group 7
                   'tests/Integration/Commands/Set-SqlDscRSUnattendedExecutionAccount.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscRSSmtpConfiguration.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscRSUnattendedExecutionAccount.Integration.Tests.ps1'
               )
             name: test

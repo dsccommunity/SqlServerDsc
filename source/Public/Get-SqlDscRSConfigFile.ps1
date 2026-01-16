@@ -139,7 +139,9 @@ function Get-SqlDscRSConfigFile
                 {
                     $errorMessage = $script:localizedData.Get_SqlDscRSConfigFile_InstanceNotFound -f $InstanceName
 
-                    $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GSRSCF0001' -ErrorCategory 'ObjectNotFound' -TargetObject $InstanceName
+                    $exception = New-Exception -Message $errorMessage
+
+                    $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'GSRSCF0001' -ErrorCategory 'ObjectNotFound' -TargetObject $InstanceName
 
                     $PSCmdlet.ThrowTerminatingError($errorRecord)
                 }
@@ -148,7 +150,9 @@ function Get-SqlDscRSConfigFile
                 {
                     $errorMessage = $script:localizedData.Get_SqlDscRSConfigFile_ConfigFilePathNotFound -f $InstanceName
 
-                    $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GSRSCF0002' -ErrorCategory 'ObjectNotFound' -TargetObject $InstanceName
+                    $exception = New-Exception -Message $errorMessage
+
+                    $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'GSRSCF0002' -ErrorCategory 'ObjectNotFound' -TargetObject $InstanceName
 
                     $PSCmdlet.ThrowTerminatingError($errorRecord)
                 }
@@ -164,7 +168,9 @@ function Get-SqlDscRSConfigFile
                 {
                     $errorMessage = $script:localizedData.Get_SqlDscRSConfigFile_ConfigFilePathNotFound -f $SetupConfiguration.InstanceName
 
-                    $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GSRSCF0002' -ErrorCategory 'ObjectNotFound' -TargetObject $SetupConfiguration.InstanceName
+                    $exception = New-Exception -Message $errorMessage
+
+                    $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'GSRSCF0002' -ErrorCategory 'ObjectNotFound' -TargetObject $SetupConfiguration.InstanceName
 
                     $PSCmdlet.ThrowTerminatingError($errorRecord)
                 }
@@ -180,7 +186,9 @@ function Get-SqlDscRSConfigFile
                 {
                     $errorMessage = $script:localizedData.Get_SqlDscRSConfigFile_FileNotFound -f $Path
 
-                    $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GSRSCF0004' -ErrorCategory 'ObjectNotFound' -TargetObject $Path
+                    $exception = New-Exception -Message $errorMessage
+
+                    $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'GSRSCF0004' -ErrorCategory 'ObjectNotFound' -TargetObject $Path
 
                     $PSCmdlet.ThrowTerminatingError($errorRecord)
                 }
@@ -197,9 +205,11 @@ function Get-SqlDscRSConfigFile
         }
         catch
         {
-            $errorMessage = $script:localizedData.Get_SqlDscRSConfigFile_FailedToReadConfigFile -f $configFilePath, $_.Exception.Message
+            $errorMessage = $script:localizedData.Get_SqlDscRSConfigFile_FailedToReadConfigFile -f $configFilePath
 
-            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -ErrorRecord $_ -PassThru) -ErrorId 'GSRSCF0003' -ErrorCategory 'ReadError' -TargetObject $configFilePath
+            $exception = New-Exception -Message $errorMessage -ErrorRecord $_
+
+            $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'GSRSCF0003' -ErrorCategory 'ReadError' -TargetObject $configFilePath
 
             $PSCmdlet.ThrowTerminatingError($errorRecord)
         }

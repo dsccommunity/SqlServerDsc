@@ -120,9 +120,11 @@ function New-SqlDscRSEncryptionKey
             }
             catch
             {
-                $errorMessage = $script:localizedData.New_SqlDscRSEncryptionKey_FailedToGenerate -f $instanceName, $_.Exception.Message
+                $errorMessage = $script:localizedData.New_SqlDscRSEncryptionKey_FailedToGenerate -f $instanceName
 
-                $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -ErrorRecord $_ -PassThru) -ErrorId 'NSRSEK0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+                $exception = New-Exception -Message $errorMessage -ErrorRecord $_
+
+                $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'NSRSEK0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
 
                 $PSCmdlet.ThrowTerminatingError($errorRecord)
             }

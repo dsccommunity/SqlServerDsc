@@ -119,9 +119,11 @@ function Initialize-SqlDscRS
             }
             catch
             {
-                $errorMessage = $script:localizedData.Initialize_SqlDscRS_FailedToInitialize -f $instanceName, $_.Exception.Message
+                $errorMessage = $script:localizedData.Initialize_SqlDscRS_FailedToInitialize -f $instanceName
 
-                $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'ISRS0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+                $exception = New-Exception -Message $errorMessage -ErrorRecord $_
+
+                $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'ISRS0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
 
                 $PSCmdlet.ThrowTerminatingError($errorRecord)
             }

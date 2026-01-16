@@ -75,7 +75,9 @@ function Get-SqlDscRSUrl
         {
             $errorMessage = $script:localizedData.Get_SqlDscRSUrl_VersionNotFound -f $instanceName
 
-            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GSRSU0001' -ErrorCategory 'InvalidOperation' -TargetObject $SetupConfiguration
+            $exception = New-Exception -Message $errorMessage
+
+            $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'GSRSU0001' -ErrorCategory 'InvalidOperation' -TargetObject $SetupConfiguration
 
             $PSCmdlet.ThrowTerminatingError($errorRecord)
         }
@@ -98,9 +100,11 @@ function Get-SqlDscRSUrl
         }
         catch
         {
-            $errorMessage = $script:localizedData.Get_SqlDscRSUrl_FailedToGetInstance -f $instanceName, $_.Exception.Message
+            $errorMessage = $script:localizedData.Get_SqlDscRSUrl_FailedToGetInstance -f $instanceName
 
-            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GSRSU0002' -ErrorCategory 'InvalidOperation' -TargetObject $SetupConfiguration
+            $exception = New-Exception -Message $errorMessage -ErrorRecord $_
+
+            $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'GSRSU0002' -ErrorCategory 'InvalidOperation' -TargetObject $SetupConfiguration
 
             $PSCmdlet.ThrowTerminatingError($errorRecord)
         }
@@ -109,7 +113,9 @@ function Get-SqlDscRSUrl
         {
             $errorMessage = $script:localizedData.Get_SqlDscRSUrl_InstanceNotFound -f $instanceName
 
-            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GSRSU0003' -ErrorCategory 'InvalidOperation' -TargetObject $SetupConfiguration
+            $exception = New-Exception -Message $errorMessage
+
+            $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'GSRSU0003' -ErrorCategory 'InvalidOperation' -TargetObject $SetupConfiguration
 
             $PSCmdlet.ThrowTerminatingError($errorRecord)
         }
@@ -126,9 +132,11 @@ function Get-SqlDscRSUrl
         }
         catch
         {
-            $errorMessage = $script:localizedData.Get_SqlDscRSUrl_FailedToGetUrls -f $instanceName, $_.Exception.Message
+            $errorMessage = $script:localizedData.Get_SqlDscRSUrl_FailedToGetUrls -f $instanceName
 
-            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GSRSU0004' -ErrorCategory 'InvalidOperation' -TargetObject $SetupConfiguration
+            $exception = New-Exception -Message $errorMessage -ErrorRecord $_
+
+            $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'GSRSU0004' -ErrorCategory 'InvalidOperation' -TargetObject $SetupConfiguration
 
             $PSCmdlet.ThrowTerminatingError($errorRecord)
         }

@@ -292,16 +292,16 @@ ConvertFrom-StringData @'
     Get_SqlDscRSUrl_GettingUrls = Getting Report Server URLs for Reporting Services instance '{0}'.
     Get_SqlDscRSUrl_FoundUrl = Found URL for application '{0}': {1}
     Get_SqlDscRSUrl_VersionNotFound = Could not determine the version for Reporting Services instance '{0}'. The CurrentVersion property is empty. (GSRSU0001)
-    Get_SqlDscRSUrl_FailedToGetInstance = Failed to get the MSReportServer_Instance CIM instance for Reporting Services instance '{0}': {1} (GSRSU0002)
+    Get_SqlDscRSUrl_FailedToGetInstance = Failed to get the MSReportServer_Instance CIM instance for Reporting Services instance '{0}'. (GSRSU0002)
     Get_SqlDscRSUrl_InstanceNotFound = Could not find the MSReportServer_Instance CIM instance for Reporting Services instance '{0}'. (GSRSU0003)
-    Get_SqlDscRSUrl_FailedToGetUrls = Failed to get Report Server URLs for Reporting Services instance '{0}': {1} (GSRSU0004)
+    Get_SqlDscRSUrl_FailedToGetUrls = Failed to get Report Server URLs for Reporting Services instance '{0}'. (GSRSU0004)
 
     ## Get-SqlDscRSConfiguration
     Get_SqlDscRSConfiguration_DetectingVersion = Detecting version for Reporting Services instance '{0}'.
     Get_SqlDscRSConfiguration_GettingConfiguration = Getting configuration CIM instance for Reporting Services instance '{0}' version '{1}'.
     Get_SqlDscRSConfiguration_InstanceNotFound = Could not find a Reporting Services instance with the name '{0}'. (GSRSCD0001)
     Get_SqlDscRSConfiguration_VersionNotFound = Could not determine the version for Reporting Services instance '{0}'. (GSRSCD0002)
-    Get_SqlDscRSConfiguration_FailedToGetConfiguration = Failed to get the configuration CIM instance for Reporting Services instance '{0}': {1} (GSRSCD0003)
+    Get_SqlDscRSConfiguration_FailedToGetConfiguration = Failed to get the configuration CIM instance for Reporting Services instance '{0}'. (GSRSCD0003)
     Get_SqlDscRSConfiguration_ConfigurationNotFound = Could not find the configuration CIM instance for Reporting Services instance '{0}'. (GSRSCD0004)
     Get_SqlDscRSConfiguration_RetryingAfterDelay = Configuration CIM instance not found for Reporting Services instance '{0}'. Attempt {1} of {2} failed. Retrying in {3} seconds. (GSRSCD0005)
 
@@ -317,7 +317,7 @@ ConvertFrom-StringData @'
     Get_SqlDscRSConfigFile_FoundConfigFile = Found configuration file at path: '{0}'.
     Get_SqlDscRSConfigFile_InstanceNotFound = Could not find a Reporting Services instance with the name '{0}'. (GSRSCF0001)
     Get_SqlDscRSConfigFile_ConfigFilePathNotFound = Could not determine the configuration file path for Reporting Services instance '{0}'. The ConfigFilePath registry value is empty. (GSRSCF0002)
-    Get_SqlDscRSConfigFile_FailedToReadConfigFile = Failed to read the configuration file '{0}': {1} (GSRSCF0003)
+    Get_SqlDscRSConfigFile_FailedToReadConfigFile = Failed to read the configuration file '{0}'. (GSRSCF0003)
     Get_SqlDscRSConfigFile_FileNotFound = Could not find the configuration file at path '{0}'. (GSRSCF0004)
 
     ## Get-SqlDscRSExecutionLog
@@ -328,7 +328,7 @@ ConvertFrom-StringData @'
     Get_SqlDscRSExecutionLog_ShouldProcessConfirmation = Are you sure you want to query the execution log from database '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Get_SqlDscRSExecutionLog_ShouldProcessCaption = Query Reporting Services execution log
-    Get_SqlDscRSExecutionLog_QueryFailed = Failed to query execution log for Reporting Services instance '{0}'. {1} (GSRSEL0001)
+    Get_SqlDscRSExecutionLog_QueryFailed = Failed to query execution log for Reporting Services instance '{0}'. (GSRSEL0001)
 
     ## Get-SqlDscRSWebPortalApplicationName
     Get_SqlDscRSWebPortalApplicationName_GettingApplicationName = Getting web portal application name.
@@ -760,7 +760,7 @@ ConvertFrom-StringData @'
 
     ## Get-SqlDscRSUrlReservation
     Get_SqlDscRSUrlReservation_Getting = Getting URL reservations for Reporting Services instance '{0}'.
-    Get_SqlDscRSUrlReservation_FailedToGet = Failed to get URL reservations for Reporting Services instance '{0}'. {1} (GSRUR0001)
+    Get_SqlDscRSUrlReservation_FailedToGet = Failed to get URL reservations for Reporting Services instance '{0}'. (GSRUR0001)
 
     ## Add-SqlDscRSUrlReservation
     Add_SqlDscRSUrlReservation_Adding = Adding URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'.
@@ -768,7 +768,7 @@ ConvertFrom-StringData @'
     Add_SqlDscRSUrlReservation_ShouldProcessConfirmation = Are you sure you want to add URL reservation '{0}' for application '{1}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Add_SqlDscRSUrlReservation_ShouldProcessCaption = Add URL reservation for Reporting Services instance
-    Add_SqlDscRSUrlReservation_FailedToAdd = Failed to add URL reservation for Reporting Services instance '{0}'. {1} (ASRUR0001)
+    Add_SqlDscRSUrlReservation_FailedToAdd = Failed to add URL reservation for Reporting Services instance '{0}'. (ASRUR0001)
 
     ## Remove-SqlDscRSUrlReservation
     Remove_SqlDscRSUrlReservation_Removing = Removing URL reservation '{0}' for application '{1}' on Reporting Services instance '{2}'.
@@ -776,7 +776,7 @@ ConvertFrom-StringData @'
     Remove_SqlDscRSUrlReservation_ShouldProcessConfirmation = Are you sure you want to remove URL reservation '{0}' for application '{1}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Remove_SqlDscRSUrlReservation_ShouldProcessCaption = Remove URL reservation for Reporting Services instance
-    Remove_SqlDscRSUrlReservation_FailedToRemove = Failed to remove URL reservation for Reporting Services instance '{0}'. {1} (RSRUR0001)
+    Remove_SqlDscRSUrlReservation_FailedToRemove = Failed to remove URL reservation for Reporting Services instance '{0}'. (RSRUR0001)
 
     ## Set-SqlDscRSUrlReservation
     Set_SqlDscRSUrlReservation_ShouldProcessVerboseDescription = Setting URL reservations for application '{0}' on Reporting Services instance '{1}'.
@@ -800,16 +800,16 @@ ConvertFrom-StringData @'
     Set_SqlDscRSVirtualDirectory_ShouldProcessConfirmation = Are you sure you want to set virtual directory '{0}' for application '{1}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Set_SqlDscRSVirtualDirectory_ShouldProcessCaption = Set virtual directory for Reporting Services instance
-    Set_SqlDscRSVirtualDirectory_FailedToSet = Failed to set virtual directory for Reporting Services instance '{0}'. {1} (SSRSVD0001)
+    Set_SqlDscRSVirtualDirectory_FailedToSet = Failed to set virtual directory for Reporting Services instance '{0}'. (SSRSVD0001)
 
     ## Request-SqlDscRSDatabaseScript
     Request_SqlDscRSDatabaseScript_Generating = Generating database creation script for database '{0}' for Reporting Services instance '{1}'.
-    Request_SqlDscRSDatabaseScript_FailedToGenerate = Failed to generate database creation script for Reporting Services instance '{0}'. {1} (RSRDBS0001)
+    Request_SqlDscRSDatabaseScript_FailedToGenerate = Failed to generate database creation script for Reporting Services instance '{0}'. (RSRDBS0001)
     Request_SqlDscRSDatabaseScript_ServiceNotRunning = The Reporting Services service '{0}' for instance '{1}' is not running. Start the service before generating the database creation script. (RSRDBS0002)
 
     ## Request-SqlDscRSDatabaseRightsScript
     Request_SqlDscRSDatabaseRightsScript_Generating = Generating database rights script for database '{0}' and user '{1}' for Reporting Services instance '{2}'.
-    Request_SqlDscRSDatabaseRightsScript_FailedToGenerate = Failed to generate database rights script for Reporting Services instance '{0}'. {1} (RSRDBRS0001)
+    Request_SqlDscRSDatabaseRightsScript_FailedToGenerate = Failed to generate database rights script for Reporting Services instance '{0}'. (RSRDBRS0001)
     Request_SqlDscRSDatabaseRightsScript_InvalidUserNameFormat = When using IsRemote with Windows authentication, the UserName must be in the format '<domain>\<username>'. The provided value '{0}' is not in the correct format.
 
     ## Set-SqlDscRSDatabaseConnection
@@ -818,12 +818,12 @@ ConvertFrom-StringData @'
     Set_SqlDscRSDatabaseConnection_ShouldProcessConfirmation = Are you sure you want to set the report server database connection to database '{0}' on server '{1}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Set_SqlDscRSDatabaseConnection_ShouldProcessCaption = Set report server database connection for Reporting Services instance
-    Set_SqlDscRSDatabaseConnection_FailedToSet = Failed to set report server database connection for Reporting Services instance '{0}'. {1} (SSRSDC0001)
+    Set_SqlDscRSDatabaseConnection_FailedToSet = Failed to set report server database connection for Reporting Services instance '{0}'. (SSRSDC0001)
     Set_SqlDscRSDatabaseConnection_CredentialRequired = The Credential parameter is required when Type is '{0}'. (SSRSDC0002)
 
     ## Restart-SqlDscRSService
     Restart_SqlDscRSService_GettingService = Getting service information for '{0}'.
-    Restart_SqlDscRSService_ServiceNotFound = Failed to get service '{0}'. {1} (RSRSRS0001)
+    Restart_SqlDscRSService_ServiceNotFound = Failed to get service '{0}'. (RSRSRS0001)
     Restart_SqlDscRSService_ShouldProcessDescription = Restarting Reporting Services service '{0}'.
     Restart_SqlDscRSService_ShouldProcessConfirmation = Are you sure you want to restart the Reporting Services service '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
@@ -833,7 +833,7 @@ ConvertFrom-StringData @'
 
     ## Get-SqlDscRSSslCertificateBinding
     Get_SqlDscRSSslCertificateBinding_Getting = Getting SSL certificate bindings for Reporting Services instance '{0}'.
-    Get_SqlDscRSSslCertificateBinding_FailedToGet = Failed to get SSL certificate bindings for Reporting Services instance '{0}'. {1} (GSRSSCB0001)
+    Get_SqlDscRSSslCertificateBinding_FailedToGet = Failed to get SSL certificate bindings for Reporting Services instance '{0}'. (GSRSSCB0001)
 
     ## Add-SqlDscRSSslCertificateBinding
     Add_SqlDscRSSslCertificateBinding_Adding = Adding SSL certificate binding '{0}' for application '{1}' on Reporting Services instance '{2}'.
@@ -841,7 +841,7 @@ ConvertFrom-StringData @'
     Add_SqlDscRSSslCertificateBinding_ShouldProcessConfirmation = Are you sure you want to add SSL certificate binding '{0}' for application '{1}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Add_SqlDscRSSslCertificateBinding_ShouldProcessCaption = Add SSL certificate binding for Reporting Services instance
-    Add_SqlDscRSSslCertificateBinding_FailedToAdd = Failed to add SSL certificate binding for Reporting Services instance '{0}'. {1} (ASRSSCB0001)
+    Add_SqlDscRSSslCertificateBinding_FailedToAdd = Failed to add SSL certificate binding for Reporting Services instance '{0}'. (ASRSSCB0001)
 
     ## Remove-SqlDscRSSslCertificateBinding
     Remove_SqlDscRSSslCertificateBinding_Removing = Removing SSL certificate binding '{0}' for application '{1}' from Reporting Services instance '{2}'.
@@ -849,7 +849,7 @@ ConvertFrom-StringData @'
     Remove_SqlDscRSSslCertificateBinding_ShouldProcessConfirmation = Are you sure you want to remove SSL certificate binding '{0}' for application '{1}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Remove_SqlDscRSSslCertificateBinding_ShouldProcessCaption = Remove SSL certificate binding from Reporting Services instance
-    Remove_SqlDscRSSslCertificateBinding_FailedToRemove = Failed to remove SSL certificate binding for Reporting Services instance '{0}'. {1} (RSRSSCB0001)
+    Remove_SqlDscRSSslCertificateBinding_FailedToRemove = Failed to remove SSL certificate binding for Reporting Services instance '{0}'. (RSRSSCB0001)
 
     ## Set-SqlDscRSSslCertificateBinding
     Set_SqlDscRSSslCertificateBinding_ShouldProcessDescription = Setting SSL certificate binding '{0}' for application '{1}' on Reporting Services instance '{2}'.
@@ -866,7 +866,7 @@ ConvertFrom-StringData @'
     New_SqlDscRSEncryptionKey_ShouldProcessConfirmation = Are you sure you want to generate a new encryption key for Reporting Services instance '{0}'? This will invalidate existing backups.
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     New_SqlDscRSEncryptionKey_ShouldProcessCaption = Generate new encryption key for Reporting Services instance
-    New_SqlDscRSEncryptionKey_FailedToGenerate = Failed to generate new encryption key for Reporting Services instance '{0}'. {1} (NSRSEK0001)
+    New_SqlDscRSEncryptionKey_FailedToGenerate = Failed to generate encryption key for Reporting Services instance '{0}'. (NRSEK0001)
     New_SqlDscRSEncryptionKey_BackupReminder = A new encryption key has been generated. Previous encryption key backups are no longer valid. Back up the new encryption key immediately using Backup-SqlDscRSEncryptionKey.
 
     ## Remove-SqlDscRSEncryptionKey
@@ -894,7 +894,7 @@ ConvertFrom-StringData @'
     Set_SqlDscRSServiceAccount_ShouldProcessConfirmation = Are you sure you want to set the service account to '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Set_SqlDscRSServiceAccount_ShouldProcessCaption = Set service account for Reporting Services instance
-    Set_SqlDscRSServiceAccount_FailedToSet = Failed to set service account for Reporting Services instance '{0}'. {1} (SSRSSA0001)
+    Set_SqlDscRSServiceAccount_FailedToSet = Failed to set service account for Reporting Services instance '{0}'. (SSRSSA0001)
     Set_SqlDscRSServiceAccount_RestartingService = Restarting Reporting Services service '{0}'.
     Set_SqlDscRSServiceAccount_UrlReservationWarning = The service account has been changed from '{0}' to '{1}'. URL reservations are tied to the service account and must be recreated. To recreate URL reservations for the new service account, run: `Get-SqlDscRSConfiguration -InstanceName '<InstanceName>' | Set-SqlDscRSUrlReservation -RecreateExisting -Force` (SSRSSA0002)
 
@@ -909,7 +909,15 @@ ConvertFrom-StringData @'
     Initialize_SqlDscRS_ShouldProcessConfirmation = Are you sure you want to initialize Reporting Services instance '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Initialize_SqlDscRS_ShouldProcessCaption = Initialize Reporting Services instance
-    Initialize_SqlDscRS_FailedToInitialize = Failed to initialize Reporting Services instance '{0}'. {1} (ISRS0001)
+    Initialize_SqlDscRS_FailedToInitialize = Failed to initialize the Reporting Services instance '{0}'. (ISRS0001)
+
+    ## Set-SqlDscRSSmtpConfiguration
+    Set_SqlDscRSSmtpConfiguration_Setting = Setting SMTP configuration with SMTP server '{0}' for Reporting Services instance '{1}'.
+    Set_SqlDscRSSmtpConfiguration_ShouldProcessDescription = Setting SMTP configuration with SMTP server '{0}' and sender email address '{1}' for Reporting Services instance '{2}'.
+    Set_SqlDscRSSmtpConfiguration_ShouldProcessConfirmation = Are you sure you want to set the SMTP configuration with SMTP server '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Set_SqlDscRSSmtpConfiguration_ShouldProcessCaption = Set SMTP configuration for Reporting Services instance
+    Set_SqlDscRSSmtpConfiguration_FailedToSet = Failed to set SMTP configuration for Reporting Services instance '{0}'. (SSRSSC0001)
 
     ## Set-SqlDscRSUnattendedExecutionAccount
     Set_SqlDscRSUnattendedExecutionAccount_Setting = Setting unattended execution account to '{0}' for Reporting Services instance '{1}'.
@@ -917,7 +925,7 @@ ConvertFrom-StringData @'
     Set_SqlDscRSUnattendedExecutionAccount_ShouldProcessConfirmation = Are you sure you want to set the unattended execution account to '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Set_SqlDscRSUnattendedExecutionAccount_ShouldProcessCaption = Set unattended execution account for Reporting Services instance
-    Set_SqlDscRSUnattendedExecutionAccount_FailedToSet = Failed to set unattended execution account for Reporting Services instance '{0}'. (RSSUEA0001)
+    Set_SqlDscRSUnattendedExecutionAccount_FailedToSet = Failed to set unattended execution account for Reporting Services instance '{0}'. (SSRSUEA0001)
 
     ## Remove-SqlDscRSUnattendedExecutionAccount
     Remove_SqlDscRSUnattendedExecutionAccount_Removing = Removing unattended execution account from Reporting Services instance '{0}'.
@@ -929,11 +937,11 @@ ConvertFrom-StringData @'
 
     ## Get-SqlDscRSSslCertificate
     Get_SqlDscRSSslCertificate_Getting = Getting available SSL certificates for Reporting Services instance '{0}'.
-    Get_SqlDscRSSslCertificate_FailedToGet = Failed to get available SSL certificates for Reporting Services instance '{0}'. {1} (GSRSSC0001)
+    Get_SqlDscRSSslCertificate_FailedToGet = Failed to get available SSL certificates for Reporting Services instance '{0}'. (GSRSSC0001)
 
     ## Get-SqlDscRSIPAddress
     Get_SqlDscRSIPAddress_Getting = Getting available IP addresses for Reporting Services instance '{0}'.
-    Get_SqlDscRSIPAddress_FailedToGet = Failed to get available IP addresses for Reporting Services instance '{0}'. {1} (GSRSIP0001)
+    Get_SqlDscRSIPAddress_FailedToGet = Failed to get available IP addresses for Reporting Services instance '{0}'. (GSRSIP0001)
 
     ## Get-SqlDscRSDatabaseInstallation
     Get_SqlDscRSDatabaseInstallation_Getting = Getting report server installations registered in the database for Reporting Services instance '{0}'.
@@ -941,7 +949,7 @@ ConvertFrom-StringData @'
 
     ## Request-SqlDscRSDatabaseUpgradeScript
     Request_SqlDscRSDatabaseUpgradeScript_Generating = Generating database upgrade script for Reporting Services instance '{0}'.
-    Request_SqlDscRSDatabaseUpgradeScript_FailedToGenerate = Failed to generate database upgrade script for Reporting Services instance '{0}'. {1} (RSRSDBUS0001)
+    Request_SqlDscRSDatabaseUpgradeScript_FailedToGenerate = Failed to generate database upgrade script for Reporting Services instance '{0}'. (RSRDBUS0001)
 
     ## Test-SqlDscRSAccessible
     Test_SqlDscRSAccessible_Testing = Testing if Reporting Services instance '{0}' sites are accessible.
