@@ -354,6 +354,42 @@ ConvertFrom-StringData @'
     Disable_SqlDscRsSecureConnection_ShouldProcessCaption = Disable secure connection for Reporting Services instance
     Disable_SqlDscRsSecureConnection_FailedToDisable = Failed to disable secure connection for Reporting Services instance '{0}'. {1} (DSRSSC0001)
 
+    ## Get-RSServiceState
+    Get_RSServiceState_CurrentState = Current service state: IsWindowsServiceEnabled = {0}, IsWebServiceEnabled = {1}. (GRSSS0001)
+    Get_RSServiceState_NewState = New service state: EnableWindowsService = {0}, EnableWebService = {1}. (GRSSS0002)
+
+    ## Start-SqlDscRSWindowsService
+    Start_SqlDscRSWindowsService_Starting = Starting Windows service for Reporting Services instance '{0}'.
+    Start_SqlDscRSWindowsService_ShouldProcessDescription = Starting Windows service for the Reporting Services instance '{0}'.
+    Start_SqlDscRSWindowsService_ShouldProcessConfirmation = Are you sure you want to start the Windows service for the Reporting Services instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Start_SqlDscRSWindowsService_ShouldProcessCaption = Start Windows service for Reporting Services instance
+    Start_SqlDscRSWindowsService_FailedToStart = Failed to start Windows service for Reporting Services instance '{0}'. (SSRSWS0001)
+
+    ## Stop-SqlDscRSWindowsService
+    Stop_SqlDscRSWindowsService_Stopping = Stopping Windows service for Reporting Services instance '{0}'.
+    Stop_SqlDscRSWindowsService_ShouldProcessDescription = Stopping Windows service for the Reporting Services instance '{0}'.
+    Stop_SqlDscRSWindowsService_ShouldProcessConfirmation = Are you sure you want to stop the Windows service for the Reporting Services instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Stop_SqlDscRSWindowsService_ShouldProcessCaption = Stop Windows service for Reporting Services instance
+    Stop_SqlDscRSWindowsService_FailedToStop = Failed to stop Windows service for Reporting Services instance '{0}'. (SRSWS0001)
+
+    ## Start-SqlDscRSWebService
+    Start_SqlDscRSWebService_Starting = Starting web service for Reporting Services instance '{0}'.
+    Start_SqlDscRSWebService_ShouldProcessDescription = Starting web service for the Reporting Services instance '{0}'.
+    Start_SqlDscRSWebService_ShouldProcessConfirmation = Are you sure you want to start the web service for the Reporting Services instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Start_SqlDscRSWebService_ShouldProcessCaption = Start web service for Reporting Services instance
+    Start_SqlDscRSWebService_FailedToStart = Failed to start web service for Reporting Services instance '{0}'. (SSRSWBS0001)
+
+    ## Stop-SqlDscRSWebService
+    Stop_SqlDscRSWebService_Stopping = Stopping web service for Reporting Services instance '{0}'.
+    Stop_SqlDscRSWebService_ShouldProcessDescription = Stopping web service for the Reporting Services instance '{0}'.
+    Stop_SqlDscRSWebService_ShouldProcessConfirmation = Are you sure you want to stop the web service for the Reporting Services instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Stop_SqlDscRSWebService_ShouldProcessCaption = Stop web service for Reporting Services instance
+    Stop_SqlDscRSWebService_FailedToStop = Failed to stop web service for Reporting Services instance '{0}'. (SRSWBS0001)
+
     ## Invoke-RsCimMethod
     Invoke_RsCimMethod_FailedToInvokeMethod = Method {0}() failed after all attempts. Errors: {1} (IRCM0001)
     Invoke_RsCimMethod_NoErrorDetails = No error details were returned by the method. See HRESULT code for more information. (IRCM0002)

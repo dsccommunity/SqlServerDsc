@@ -605,6 +605,10 @@ stages:
                   'tests/Integration/Commands/New-SqlDscRSEncryptionKey.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscRSEncryptedInformation.Integration.Tests.ps1'
                   # Group 9
+                  'tests/Integration/Commands/Stop-SqlDscRSWindowsService.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Start-SqlDscRSWindowsService.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Stop-SqlDscRSWebService.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Start-SqlDscRSWebService.Integration.Tests.ps1'
                   'tests/Integration/Commands/Uninstall-SqlDscReportingService.Integration.Tests.ps1'
               )
             name: test
@@ -708,6 +712,10 @@ stages:
                   'tests/Integration/Commands/New-SqlDscRSEncryptionKey.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscRSEncryptedInformation.Integration.Tests.ps1'
                   # Group 9
+                  'tests/Integration/Commands/Stop-SqlDscRSWindowsService.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Start-SqlDscRSWindowsService.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Stop-SqlDscRSWebService.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Start-SqlDscRSWebService.Integration.Tests.ps1'
                   'tests/Integration/Commands/Uninstall-SqlDscPowerBIReportServer.Integration.Tests.ps1'
               )
             name: test
