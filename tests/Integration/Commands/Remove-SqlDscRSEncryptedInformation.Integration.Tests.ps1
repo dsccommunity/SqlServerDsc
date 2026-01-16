@@ -54,7 +54,8 @@ Describe 'Remove-SqlDscRSEncryptedInformation' {
             log for an event in the command New-SqlDscRSEncryptionKey to determine
             when the service is fully operational again and not return until it is.
         #>
-        Start-Sleep -Seconds 300
+        Write-Verbose -Message 'Workaround. Waiting 2 minutes for SQL Server Reporting Services to become fully operational...'
+        Start-Sleep -Seconds 120 #300
     }
 
     Context 'When removing encrypted information for SQL Server 2017 Reporting Services' -Tag @('Integration_SQL2017_RS') -Skip:$true {

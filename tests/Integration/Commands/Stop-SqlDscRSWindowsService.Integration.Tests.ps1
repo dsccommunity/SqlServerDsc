@@ -35,7 +35,7 @@ Describe 'Stop-SqlDscRSWindowsService' {
     Context 'When stopping Windows service for SQL Server Reporting Services' -Tag @('Integration_SQL2017_RS') {
         It 'Should stop Windows service using pipeline' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            { $config | Stop-SqlDscRSWindowsService -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $config | Stop-SqlDscRSWindowsService -Force -ErrorAction 'Stop'
 
             # Verify Windows service is stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
@@ -44,7 +44,7 @@ Describe 'Stop-SqlDscRSWindowsService' {
 
         It 'Should be idempotent when Windows service is already stopped' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            { $config | Stop-SqlDscRSWindowsService -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $config | Stop-SqlDscRSWindowsService -Force -ErrorAction 'Stop'
 
             # Verify Windows service is still stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
@@ -55,7 +55,7 @@ Describe 'Stop-SqlDscRSWindowsService' {
     Context 'When stopping Windows service for SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {
         It 'Should stop Windows service using pipeline' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            { $config | Stop-SqlDscRSWindowsService -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $config | Stop-SqlDscRSWindowsService -Force -ErrorAction 'Stop'
 
             # Verify Windows service is stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
@@ -64,7 +64,7 @@ Describe 'Stop-SqlDscRSWindowsService' {
 
         It 'Should be idempotent when Windows service is already stopped' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            { $config | Stop-SqlDscRSWindowsService -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $config | Stop-SqlDscRSWindowsService -Force -ErrorAction 'Stop'
 
             # Verify Windows service is still stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
@@ -75,7 +75,7 @@ Describe 'Stop-SqlDscRSWindowsService' {
     Context 'When stopping Windows service for SQL Server Reporting Services' -Tag @('Integration_SQL2022_RS') {
         It 'Should stop Windows service using pipeline' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            { $config | Stop-SqlDscRSWindowsService -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $config | Stop-SqlDscRSWindowsService -Force -ErrorAction 'Stop'
 
             # Verify Windows service is stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
@@ -84,7 +84,7 @@ Describe 'Stop-SqlDscRSWindowsService' {
 
         It 'Should be idempotent when Windows service is already stopped' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            { $config | Stop-SqlDscRSWindowsService -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $config | Stop-SqlDscRSWindowsService -Force -ErrorAction 'Stop'
 
             # Verify Windows service is still stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
@@ -95,7 +95,7 @@ Describe 'Stop-SqlDscRSWindowsService' {
     Context 'When stopping Windows service for Power BI Report Server' -Tag @('Integration_PowerBI') {
         It 'Should stop Windows service using pipeline' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
-            { $config | Stop-SqlDscRSWindowsService -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $config | Stop-SqlDscRSWindowsService -Force -ErrorAction 'Stop'
 
             # Verify Windows service is stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
@@ -104,7 +104,7 @@ Describe 'Stop-SqlDscRSWindowsService' {
 
         It 'Should be idempotent when Windows service is already stopped' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
-            { $config | Stop-SqlDscRSWindowsService -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $config | Stop-SqlDscRSWindowsService -Force -ErrorAction 'Stop'
 
             # Verify Windows service is still stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'

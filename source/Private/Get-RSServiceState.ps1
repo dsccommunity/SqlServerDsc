@@ -28,6 +28,9 @@
     .PARAMETER DisableWebService
         If specified, sets the `EnableWebService` argument to `$false`.
 
+    .INPUTS
+        None.
+
     .OUTPUTS
         System.Collections.Hashtable
 

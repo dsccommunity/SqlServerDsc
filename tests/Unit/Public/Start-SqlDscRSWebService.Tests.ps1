@@ -87,7 +87,7 @@ Describe 'Start-SqlDscRSWebService' {
         }
 
         It 'Should start web service without errors' {
-            { $mockCimInstance | Start-SqlDscRSWebService -Confirm:$false } | Should -Not -Throw
+            $null = $mockCimInstance | Start-SqlDscRSWebService -Confirm:$false
 
             Should -Invoke -CommandName Get-RSServiceState -ParameterFilter {
                 $EnableWebService -eq $true
@@ -130,7 +130,7 @@ Describe 'Start-SqlDscRSWebService' {
         }
 
         It 'Should start web service without confirmation' {
-            { $mockCimInstance | Start-SqlDscRSWebService -Force } | Should -Not -Throw
+            $null = $mockCimInstance | Start-SqlDscRSWebService -Force
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
@@ -180,9 +180,33 @@ Describe 'Start-SqlDscRSWebService' {
         }
 
         It 'Should start web service' {
-            { Start-SqlDscRSWebService -Configuration $mockCimInstance -Confirm:$false } | Should -Not -Throw
+            $null = Start-SqlDscRSWebService -Configuration $mockCimInstance -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+        }
+    }
+
+    Context 'When CIM method fails' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'SSRS'
+            }
+
+            Mock -CommandName Get-RSServiceState -MockWith {
+                return @{
+                    EnableWindowsService = $true
+                    EnableWebService     = $true
+                    EnableReportManager  = $true
+                }
+            }
+
+            Mock -CommandName Invoke-RsCimMethod -MockWith {
+                throw 'Method SetServiceState() failed with an error.'
+            }
+        }
+
+        It 'Should throw a terminating error' {
+            { $mockCimInstance | Start-SqlDscRSWebService -Confirm:$false } | Should -Throw -ErrorId 'SSRSWBS0001,Start-SqlDscRSWebService'
         }
     }
 }

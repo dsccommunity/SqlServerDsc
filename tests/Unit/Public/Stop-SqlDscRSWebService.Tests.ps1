@@ -87,7 +87,7 @@ Describe 'Stop-SqlDscRSWebService' {
         }
 
         It 'Should stop web service without errors' {
-            { $mockCimInstance | Stop-SqlDscRSWebService -Confirm:$false } | Should -Not -Throw
+            $mockCimInstance | Stop-SqlDscRSWebService -Confirm:$false
 
             Should -Invoke -CommandName Get-RSServiceState -ParameterFilter {
                 $DisableWebService -eq $true
@@ -130,7 +130,7 @@ Describe 'Stop-SqlDscRSWebService' {
         }
 
         It 'Should stop web service without confirmation' {
-            { $mockCimInstance | Stop-SqlDscRSWebService -Force } | Should -Not -Throw
+            $mockCimInstance | Stop-SqlDscRSWebService -Force
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
@@ -180,9 +180,33 @@ Describe 'Stop-SqlDscRSWebService' {
         }
 
         It 'Should stop web service' {
-            { Stop-SqlDscRSWebService -Configuration $mockCimInstance -Confirm:$false } | Should -Not -Throw
+            Stop-SqlDscRSWebService -Configuration $mockCimInstance -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+        }
+    }
+
+    Context 'When CIM method fails' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'SSRS'
+            }
+
+            Mock -CommandName Get-RSServiceState -MockWith {
+                return @{
+                    EnableWindowsService = $true
+                    EnableWebService     = $false
+                    EnableReportManager  = $false
+                }
+            }
+
+            Mock -CommandName Invoke-RsCimMethod -MockWith {
+                throw 'Method SetServiceState() failed with an error.'
+            }
+        }
+
+        It 'Should throw a terminating error' {
+            { $mockCimInstance | Stop-SqlDscRSWebService -Confirm:$false } | Should -Throw -ErrorId 'SRSWBS0001,Stop-SqlDscRSWebService'
         }
     }
 }

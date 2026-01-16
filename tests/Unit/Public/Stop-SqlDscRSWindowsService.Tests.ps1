@@ -185,4 +185,28 @@ Describe 'Stop-SqlDscRSWindowsService' {
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
+
+    Context 'When CIM method fails' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'SSRS'
+            }
+
+            Mock -CommandName Get-RSServiceState -MockWith {
+                return @{
+                    EnableWindowsService = $false
+                    EnableWebService     = $true
+                    EnableReportManager  = $true
+                }
+            }
+
+            Mock -CommandName Invoke-RsCimMethod -MockWith {
+                throw 'Method SetServiceState() failed with an error.'
+            }
+        }
+
+        It 'Should throw a terminating error' {
+            { $mockCimInstance | Stop-SqlDscRSWindowsService -Confirm:$false } | Should -Throw -ErrorId 'SRSWS0001,Stop-SqlDscRSWindowsService'
+        }
+    }
 }
