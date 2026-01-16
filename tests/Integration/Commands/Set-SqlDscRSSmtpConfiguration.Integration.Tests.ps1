@@ -40,7 +40,7 @@ Describe 'Set-SqlDscRSSmtpConfiguration' {
         It 'Should not throw when called with valid parameters' {
             # Test with minimal parameters that won't actually configure email
             # We use a test SMTP server that doesn't exist to avoid sending actual emails
-            $script:configuration | Set-SqlDscRSSmtpConfiguration -SmtpServer 'localhost' -SenderEmailAddress 'test@example.com' -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSSmtpConfiguration -SmtpServer 'localhost' -SenderEmailAddress 'test@example.com' -Force -ErrorAction 'Stop'
         }
     }
 
@@ -50,7 +50,7 @@ Describe 'Set-SqlDscRSSmtpConfiguration' {
         }
 
         It 'Should not throw when called with valid parameters' {
-            $script:configuration | Set-SqlDscRSSmtpConfiguration -SmtpServer 'localhost' -SenderEmailAddress 'test@example.com' -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSSmtpConfiguration -SmtpServer 'localhost' -SenderEmailAddress 'test@example.com' -Force -ErrorAction 'Stop'
         }
     }
 
@@ -60,7 +60,7 @@ Describe 'Set-SqlDscRSSmtpConfiguration' {
         }
 
         It 'Should not throw when called with valid parameters' {
-            $script:configuration | Set-SqlDscRSSmtpConfiguration -SmtpServer 'localhost' -SenderEmailAddress 'test@example.com' -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSSmtpConfiguration -SmtpServer 'localhost' -SenderEmailAddress 'test@example.com' -Force -ErrorAction 'Stop'
         }
     }
 
@@ -70,7 +70,7 @@ Describe 'Set-SqlDscRSSmtpConfiguration' {
         }
 
         It 'Should not throw when called with valid parameters' {
-            $script:configuration | Set-SqlDscRSSmtpConfiguration -SmtpServer 'localhost' -SenderEmailAddress 'test@example.com' -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSSmtpConfiguration -SmtpServer 'localhost' -SenderEmailAddress 'test@example.com' -Force -ErrorAction 'Stop'
         }
     }
 }
