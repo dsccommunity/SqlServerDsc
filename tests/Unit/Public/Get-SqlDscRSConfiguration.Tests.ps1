@@ -62,7 +62,7 @@ Describe 'Get-SqlDscRSConfiguration' {
             $result.ParameterListAsString | Should -Be $ExpectedParameters
         }
 
-        It 'Should have RetryCount default value of 1' {
+        It 'Should have RetryCount as a non-mandatory Int32 parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRSConfiguration').Parameters['RetryCount']
 
             $parameterInfo.Attributes.Where({ $_ -is [System.Management.Automation.ParameterAttribute] }).Mandatory | Should -BeFalse
@@ -74,7 +74,7 @@ Describe 'Get-SqlDscRSConfiguration' {
             $functionInfo.Parameters['RetryCount'].ParameterType | Should -Be ([System.Int32])
         }
 
-        It 'Should have RetryDelaySeconds default value of 30' {
+        It 'Should have RetryDelaySeconds as a non-mandatory Int32 parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRSConfiguration').Parameters['RetryDelaySeconds']
 
             $parameterInfo.Attributes.Where({ $_ -is [System.Management.Automation.ParameterAttribute] }).Mandatory | Should -BeFalse

@@ -155,9 +155,11 @@ function Add-SqlDscRSUrlReservation
             }
             catch
             {
-                $errorMessage = $script:localizedData.Add_SqlDscRSUrlReservation_FailedToAdd -f $instanceName, $_.Exception.Message
+                $errorMessage = $script:localizedData.Add_SqlDscRSUrlReservation_FailedToAdd -f $instanceName
 
-                $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'ASRUR0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+                $exception = New-Exception -Message $errorMessage -ErrorRecord $_
+
+                $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'ASRUR0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
 
                 $PSCmdlet.ThrowTerminatingError($errorRecord)
             }

@@ -578,6 +578,7 @@ stages:
                   'tests/Integration/Commands/Set-SqlDscRSDatabaseConnection.Integration.Tests.ps1'
                   'tests/Integration/Commands/Request-SqlDscRSDatabaseUpgradeScript.Integration.Tests.ps1'
                   'tests/Integration/Commands/Restart-SqlDscRSService.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscRSSmtpConfiguration.Integration.Tests.ps1'
                   'tests/Integration/Commands/Test-SqlDscRSInitialized.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSLogPath.Integration.Tests.ps1'
                   'tests/Integration/Commands/Get-SqlDscRSConfigFile.Integration.Tests.ps1'

@@ -77,7 +77,7 @@ function Get-SqlDscRSUrlReservation
         }
         catch
         {
-            $errorMessage = $script:localizedData.Get_SqlDscRSUrlReservation_FailedToGet -f $instanceName, $_.Exception.Message
+            $errorMessage = $script:localizedData.Get_SqlDscRSUrlReservation_FailedToGet -f $instanceName
 
             Write-Error -Message $errorMessage -Category 'InvalidOperation' -ErrorId 'GSRUR0001' -TargetObject $Configuration -Exception $_.Exception
 

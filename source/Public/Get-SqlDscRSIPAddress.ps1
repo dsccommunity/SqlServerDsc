@@ -96,9 +96,11 @@ function Get-SqlDscRSIPAddress
         }
         catch
         {
-            $errorMessage = $script:localizedData.Get_SqlDscRSIPAddress_FailedToGet -f $instanceName, $_.Exception.Message
+            $errorMessage = $script:localizedData.Get_SqlDscRSIPAddress_FailedToGet -f $instanceName
 
-            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GSRSIP0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+            $exception = New-Exception -Message $errorMessage -ErrorRecord $_
+
+            $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'GSRSIP0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
 
             $PSCmdlet.ThrowTerminatingError($errorRecord)
         }

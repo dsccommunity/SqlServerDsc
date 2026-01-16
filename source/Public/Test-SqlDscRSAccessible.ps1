@@ -205,7 +205,9 @@ function Test-SqlDscRSAccessible
             {
                 $errorMessage = $script:localizedData.Test_SqlDscRSAccessible_NoUrlReservations -f $instanceName
 
-                $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'TSRSA0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+                $exception = New-Exception -Message $errorMessage
+
+                $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'TSRSA0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
 
                 $PSCmdlet.ThrowTerminatingError($errorRecord)
             }
@@ -229,7 +231,9 @@ function Test-SqlDscRSAccessible
                 {
                     $errorMessage = $script:localizedData.Test_SqlDscRSAccessible_SiteNotConfigured -f $site, $instanceName
 
-                    $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'TSRSA0002' -ErrorCategory 'InvalidArgument' -TargetObject $site
+                    $exception = New-Exception -Message $errorMessage
+
+                    $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'TSRSA0002' -ErrorCategory 'InvalidArgument' -TargetObject $site
 
                     $PSCmdlet.ThrowTerminatingError($errorRecord)
                 }
@@ -297,7 +301,9 @@ function Test-SqlDscRSAccessible
             {
                 $errorMessage = $script:localizedData.Test_SqlDscRSAccessible_NoUrisSpecified
 
-                $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'TSRSA0003' -ErrorCategory 'InvalidArgument' -TargetObject $null
+                $exception = New-Exception -Message $errorMessage
+
+                $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'TSRSA0003' -ErrorCategory 'InvalidArgument' -TargetObject $null
 
                 $PSCmdlet.ThrowTerminatingError($errorRecord)
             }

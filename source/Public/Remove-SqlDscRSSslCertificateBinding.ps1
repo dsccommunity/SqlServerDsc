@@ -169,9 +169,9 @@ function Remove-SqlDscRSSslCertificateBinding
             }
             catch
             {
-                $errorMessage = $script:localizedData.Remove_SqlDscRSSslCertificateBinding_FailedToRemove -f $instanceName, $_.Exception.Message
+                $errorMessage = $script:localizedData.Remove_SqlDscRSSslCertificateBinding_FailedToRemove -f $instanceName
 
-                $exception = New-InvalidOperationException -Message $errorMessage -ErrorRecord $_ -PassThru
+                $exception = New-Exception -Message $errorMessage -ErrorRecord $_
 
                 $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'RSRSSCB0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
 

@@ -98,7 +98,9 @@ function Request-SqlDscRSDatabaseScript
         {
             $errorMessage = $script:localizedData.Request_SqlDscRSDatabaseScript_ServiceNotRunning -f $serviceName, $rsInstanceName
 
-            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'RSRDBS0002' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+            $exception = New-Exception -Message $errorMessage
+
+            $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'RSRDBS0002' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
 
             $PSCmdlet.ThrowTerminatingError($errorRecord)
         }
@@ -128,9 +130,11 @@ function Request-SqlDscRSDatabaseScript
         }
         catch
         {
-            $errorMessage = $script:localizedData.Request_SqlDscRSDatabaseScript_FailedToGenerate -f $rsInstanceName, $_.Exception.Message
+            $errorMessage = $script:localizedData.Request_SqlDscRSDatabaseScript_FailedToGenerate -f $rsInstanceName
 
-            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'RSRDBS0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+            $exception = New-Exception -Message $errorMessage -ErrorRecord $_
+
+            $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'RSRDBS0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
 
             $PSCmdlet.ThrowTerminatingError($errorRecord)
         }

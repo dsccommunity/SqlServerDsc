@@ -97,9 +97,9 @@ function Get-SqlDscRSSslCertificate
         }
         catch
         {
-            $errorMessage = $script:localizedData.Get_SqlDscRSSslCertificate_FailedToGet -f $instanceName, $_.Exception.Message
+            $errorMessage = $script:localizedData.Get_SqlDscRSSslCertificate_FailedToGet -f $instanceName
 
-            $exception = New-InvalidOperationException -Message $errorMessage -ErrorRecord $_ -PassThru
+            $exception = New-Exception -Message $errorMessage -ErrorRecord $_
 
             $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'GSRSSC0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
 

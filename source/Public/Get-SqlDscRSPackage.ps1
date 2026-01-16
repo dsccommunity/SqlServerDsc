@@ -74,14 +74,11 @@ function Get-SqlDscRSPackage
         {
             $errorMessage = $script:localizedData.Get_SqlDscRSPackage_InvalidProductName -f $versionInfo.ProductName, ($validProductNames -join "', '")
 
-            $PSCmdlet.ThrowTerminatingError(
-                [System.Management.Automation.ErrorRecord]::new(
-                    $errorMessage,
-                    'GSDRSP0002',
-                    [System.Management.Automation.ErrorCategory]::InvalidArgument,
-                    $FilePath
-                )
-            )
+            $exception = New-Exception -Message $errorMessage
+
+            $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'GSDRSP0002' -ErrorCategory 'InvalidArgument' -TargetObject $FilePath
+
+            $PSCmdlet.ThrowTerminatingError($errorRecord)
         }
     }
 

@@ -159,9 +159,11 @@ function Set-SqlDscRSVirtualDirectory
             }
             catch
             {
-                $errorMessage = $script:localizedData.Set_SqlDscRSVirtualDirectory_FailedToSet -f $instanceName, $_.Exception.Message
+                $errorMessage = $script:localizedData.Set_SqlDscRSVirtualDirectory_FailedToSet -f $instanceName
 
-                $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'SSRSVD0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+                $exception = New-Exception -Message $errorMessage -ErrorRecord $_
+
+                $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'SSRSVD0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
 
                 $PSCmdlet.ThrowTerminatingError($errorRecord)
             }

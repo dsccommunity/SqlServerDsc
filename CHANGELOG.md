@@ -244,6 +244,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   by calling the `InitializeReportServer` CIM method. Used to complete initial
   configuration after database and URL setup
   ([issue #2014](https://github.com/dsccommunity/SqlServerDsc/issues/2014)).
+- Added public command `Set-SqlDscRSSmtpConfiguration` to configure SMTP
+  settings for Reporting Services email delivery. Wraps the `SetEmailConfiguration`
+  CIM method.
 - Added public commands `Set-SqlDscRSUnattendedExecutionAccount` and
   `Remove-SqlDscRSUnattendedExecutionAccount` to manage the unattended execution
   account for Reporting Services. These wrap the `SetUnattendedExecutionAccount`

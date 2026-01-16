@@ -230,9 +230,11 @@ function Set-SqlDscRSDatabaseConnection
             }
             catch
             {
-                $errorMessage = $script:localizedData.Set_SqlDscRSDatabaseConnection_FailedToSet -f $rsInstanceName, $_.Exception.Message
+                $errorMessage = $script:localizedData.Set_SqlDscRSDatabaseConnection_FailedToSet -f $rsInstanceName
 
-                $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'SSRSDC0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+                $exception = New-Exception -Message $errorMessage -ErrorRecord $_
+
+                $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'SSRSDC0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
 
                 $PSCmdlet.ThrowTerminatingError($errorRecord)
             }

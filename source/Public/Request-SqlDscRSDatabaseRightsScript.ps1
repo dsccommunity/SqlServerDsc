@@ -148,9 +148,11 @@ function Request-SqlDscRSDatabaseRightsScript
         }
         catch
         {
-            $errorMessage = $script:localizedData.Request_SqlDscRSDatabaseRightsScript_FailedToGenerate -f $rsInstanceName, $_.Exception.Message
+            $errorMessage = $script:localizedData.Request_SqlDscRSDatabaseRightsScript_FailedToGenerate -f $rsInstanceName
 
-            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'RSRDBRS0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
+            $exception = New-Exception -Message $errorMessage -ErrorRecord $_
+
+            $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'RSRDBRS0001' -ErrorCategory 'InvalidOperation' -TargetObject $Configuration
 
             $PSCmdlet.ThrowTerminatingError($errorRecord)
         }

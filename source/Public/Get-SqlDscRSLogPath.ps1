@@ -102,7 +102,9 @@ function Get-SqlDscRSLogPath
         {
             $errorMessage = $script:localizedData.Get_SqlDscRSLogPath_InstanceNotFound -f $InstanceName
 
-            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GSRSLP0001' -ErrorCategory 'ObjectNotFound' -TargetObject $InstanceName
+            $exception = New-Exception -Message $errorMessage
+
+            $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'GSRSLP0001' -ErrorCategory 'ObjectNotFound' -TargetObject $InstanceName
 
             $PSCmdlet.ThrowTerminatingError($errorRecord)
         }
@@ -111,7 +113,9 @@ function Get-SqlDscRSLogPath
         {
             $errorMessage = $script:localizedData.Get_SqlDscRSLogPath_LogPathNotFound -f $InstanceName
 
-            $errorRecord = New-ErrorRecord -Exception (New-InvalidOperationException -Message $errorMessage -PassThru) -ErrorId 'GSRSLP0002' -ErrorCategory 'ObjectNotFound' -TargetObject $InstanceName
+            $exception = New-Exception -Message $errorMessage
+
+            $errorRecord = New-ErrorRecord -Exception $exception -ErrorId 'GSRSLP0002' -ErrorCategory 'ObjectNotFound' -TargetObject $InstanceName
 
             $PSCmdlet.ThrowTerminatingError($errorRecord)
         }
