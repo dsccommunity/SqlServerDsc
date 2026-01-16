@@ -175,11 +175,33 @@ Get-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequi
 Add-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Remove-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Set-SqlDscRSUrlReservation | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Get-SqlDscRSSslCertificateBinding | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Add-SqlDscRSSslCertificateBinding | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Remove-SqlDscRSSslCertificateBinding | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Set-SqlDscRSSslCertificateBinding | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Set-SqlDscRSServiceAccount | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | Changes service account to svc-RS
+Get-SqlDscRSServiceAccount | 4 | 3 (Set-SqlDscRSServiceAccount), 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Post.ServiceAccountChange.RS | 4 | 4 (Get-SqlDscRSServiceAccount), 3 (Set-SqlDscRSServiceAccount), 0 (Prerequisites) | SSRS | Validates sites accessible after service account change
+Post.UrlReservationRecreate.RS | 5 | 4 (Post.ServiceAccountChange.RS), 3 (Set-SqlDscRSServiceAccount), 0 (Prerequisites) | SSRS | Recreates URL reservations for new service account
 Restart-SqlDscRSService | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Get-SqlDscRSSslCertificate | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Get-SqlDscRSIPAddress | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Get-SqlDscRSDatabaseInstallation | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Request-SqlDscRSDatabaseUpgradeScript | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Set-SqlDscRSSmtpConfiguration | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Set-SqlDscRSUnattendedExecutionAccount | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Remove-SqlDscRSUnattendedExecutionAccount | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Test-SqlDscRSInitialized | 3 | 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Initialize-SqlDscRS | 4 | 3 (Set-SqlDscRSDatabaseConnection), 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Backup-SqlDscRSEncryptionKey | 5 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Restore-SqlDscRSEncryptionKey | 5 | 5 (Backup-SqlDscRSEncryptionKey), 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+New-SqlDscRSEncryptionKey | 7 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | Destroys encrypted content
+Remove-SqlDscRSEncryptionKey | 7 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | Removes encrypted content
 Set-SqlDscRSDatabaseConnection | 3 | 2 (Request-SqlDscRSDatabaseScript, Request-SqlDscRSDatabaseRightsScript), 1 (Install-SqlDscReportingService), 0 (Prerequisites, Prerequisites.RSDB) | SSRS, RSDB | ReportServer, ReportServerTempDB databases
+Post.Initialization.RS | 5 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Get-SqlDscRSUrl | 5 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Get-SqlDscRSLogPath | 5 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
+Get-SqlDscRSExecutionLog | 5 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Repair-SqlDscReportingService | 8 | 1 (Install-SqlDscReportingService) | SSRS | -
 Uninstall-SqlDscReportingService | 9 | 8 (Repair-SqlDscReportingService) | - | -
 <!-- markdownlint-enable MD013 -->
@@ -213,14 +235,16 @@ Get-SqlDscRSSslCertificateBinding | 3 | 1 (Install-SqlDscPowerBIReportServer), 0
 Add-SqlDscRSSslCertificateBinding | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Remove-SqlDscRSSslCertificateBinding | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Set-SqlDscRSSslCertificateBinding | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
-Get-SqlDscRSServiceAccount | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
-Set-SqlDscRSServiceAccount | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Set-SqlDscRSServiceAccount | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | Changes service account to svc-RS
+Get-SqlDscRSServiceAccount | 4 | 3 (Set-SqlDscRSServiceAccount), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Post.ServiceAccountChange.RS | 4 | 4 (Get-SqlDscRSServiceAccount), 3 (Set-SqlDscRSServiceAccount), 0 (Prerequisites) | PBIRS | Validates sites accessible after service account change
+Post.UrlReservationRecreate.RS | 5 | 4 (Post.ServiceAccountChange.RS), 3 (Set-SqlDscRSServiceAccount), 0 (Prerequisites) | PBIRS | Recreates URL reservations for new service account
 Restart-SqlDscRSService | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Get-SqlDscRSSslCertificate | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Get-SqlDscRSIPAddress | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Get-SqlDscRSDatabaseInstallation | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Request-SqlDscRSDatabaseUpgradeScript | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
-Set-SqlDscRSEmailConfiguration | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Set-SqlDscRSSmtpConfiguration | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Set-SqlDscRSUnattendedExecutionAccount | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Remove-SqlDscRSUnattendedExecutionAccount | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Test-SqlDscRSInitialized | 3 | 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
@@ -230,6 +254,10 @@ Restore-SqlDscRSEncryptionKey | 5 | 5 (Backup-SqlDscRSEncryptionKey), 1 (Install
 New-SqlDscRSEncryptionKey | 7 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | Destroys encrypted content
 Remove-SqlDscRSEncryptionKey | 7 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | Removes encrypted content
 Set-SqlDscRSDatabaseConnection | 3 | 2 (Request-SqlDscRSDatabaseScript, Request-SqlDscRSDatabaseRightsScript), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites, Prerequisites.RSDB) | PBIRS, RSDB | ReportServer, ReportServerTempDB databases
+Post.Initialization.RS | 5 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Get-SqlDscRSUrl | 5 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Get-SqlDscRSLogPath | 5 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
+Get-SqlDscRSExecutionLog | 5 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Repair-SqlDscPowerBIReportServer | 8 | 1 (Install-SqlDscPowerBIReportServer) | PBIRS | -
 Uninstall-SqlDscPowerBIReportServer | 9 | 8 (Repair-SqlDscPowerBIReportServer) | - | -
 <!-- markdownlint-enable MD013 -->
@@ -347,6 +375,7 @@ User | Password | Permission | Description
 .\svc-SqlAgentPri | yig-C^Equ3 | Local Windows user. | Runs the SQL Server Agent service.
 .\svc-SqlSecondary | yig-C^Equ3 | Local Windows user. | Runs the SQL Server service in multi node scenarios.
 .\svc-SqlAgentSec | yig-C^Equ3 | Local Windows user. | Runs the SQL Server Agent service in multi node scenarios.
+.\svc-RS | yig-C^Equ3 | Local Windows user. | Runs the Reporting Services service for integration testing.
 
 ### Groups
 
