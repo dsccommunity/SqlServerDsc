@@ -902,7 +902,7 @@ ConvertFrom-StringData @'
     Backup_SqlDscRSEncryptionKey_ShouldProcessConfirmation = Are you sure you want to back up the encryption key for Reporting Services instance '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Backup_SqlDscRSEncryptionKey_ShouldProcessCaption = Back up encryption key for Reporting Services instance
-    Backup_SqlDscRSEncryptionKey_FailedToBackup = Failed to backup encryption key for Reporting Services instance '{0}'. (BRSEK0001)
+    Backup_SqlDscRSEncryptionKey_FailedToBackup = Failed to backup encryption key for Reporting Services instance '{0}'. (BSRSEK0001)
 
     ## Restore-SqlDscRSEncryptionKey
     Restore_SqlDscRSEncryptionKey_Restoring = Restoring encryption key for Reporting Services instance '{0}' from '{1}'.

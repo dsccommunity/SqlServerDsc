@@ -189,7 +189,8 @@ Get-SqlDscRSDatabaseInstallation | 5 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDs
 Get-SqlDscRSExecutionLog | 5 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Set-SqlDscRSServiceAccount | 6 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | Changes service account to svc-RS
 Get-SqlDscRSServiceAccount | 6 | 6 (Set-SqlDscRSServiceAccount), 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
-Post.ServiceAccountChange.RS | 6 | 6 (Get-SqlDscRSServiceAccount), 6 (Set-SqlDscRSServiceAccount), 0 (Prerequisites) | SSRS | Validates sites accessible after service account change
+Post.ServiceAccountChange.SQL2017.RS | 6 | 6 (Get-SqlDscRSServiceAccount), 6 (Set-SqlDscRSServiceAccount), 0 (Prerequisites) | SSRS | Validates sites accessible after service account change (SQL2017)
+Post.ServiceAccountChange.SQL2019-2022.RS | 6 | 6 (Get-SqlDscRSServiceAccount), 6 (Set-SqlDscRSServiceAccount), 0 (Prerequisites) | SSRS | Validates sites accessible after service account change (SQL2019-2022)
 Set-SqlDscRSUnattendedExecutionAccount | 7 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Set-SqlDscRSSmtpConfiguration | 7 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
 Remove-SqlDscRSUnattendedExecutionAccount | 7 | 7 (Set-SqlDscRSUnattendedExecutionAccount), 1 (Install-SqlDscReportingService), 0 (Prerequisites) | SSRS | -
@@ -245,7 +246,7 @@ Get-SqlDscRSDatabaseInstallation | 5 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDs
 Get-SqlDscRSExecutionLog | 5 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Set-SqlDscRSServiceAccount | 6 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | Changes service account to svc-RS
 Get-SqlDscRSServiceAccount | 6 | 6 (Set-SqlDscRSServiceAccount), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
-Post.ServiceAccountChange.RS | 6 | 6 (Get-SqlDscRSServiceAccount), 6 (Set-SqlDscRSServiceAccount), 0 (Prerequisites) | PBIRS | Validates sites accessible after service account change
+Post.ServiceAccountChange.PowerBI.RS | 6 | 6 (Get-SqlDscRSServiceAccount), 6 (Set-SqlDscRSServiceAccount), 0 (Prerequisites) | PBIRS | Validates sites accessible after service account change
 Set-SqlDscRSUnattendedExecutionAccount | 7 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Set-SqlDscRSSmtpConfiguration | 7 | 4 (Initialize-SqlDscRS), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
 Remove-SqlDscRSUnattendedExecutionAccount | 7 | 7 (Set-SqlDscRSUnattendedExecutionAccount), 1 (Install-SqlDscPowerBIReportServer), 0 (Prerequisites) | PBIRS | -
