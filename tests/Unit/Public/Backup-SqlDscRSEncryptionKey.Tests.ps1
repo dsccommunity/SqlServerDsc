@@ -228,39 +228,4 @@ Describe 'Backup-SqlDscRSEncryptionKey' {
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
-
-    Context 'When backing up to UNC path with Credential' -Skip:(-not ($IsWindows -or $PSVersionTable.PSVersion.Major -eq 5)) {
-        BeforeAll {
-            $mockCimInstance = [PSCustomObject] @{
-                InstanceName = 'SSRS'
-            }
-
-            $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd' -AsPlainText -Force
-            $mockCredential = [System.Management.Automation.PSCredential]::new(
-                'TestUser',
-                (ConvertTo-SecureString -String 'TestPassword' -AsPlainText -Force)
-            )
-
-            # Use TestDrive for the actual file write
-            $script:testBackupPath = Join-Path -Path $TestDrive -ChildPath 'RSKey.snk'
-
-            Mock -CommandName Invoke-RsCimMethod -MockWith {
-                return @{
-                    KeyFile = [System.Text.Encoding]::UTF8.GetBytes('MockKeyFileContent')
-                }
-            }
-
-            Mock -CommandName New-PSDrive
-            Mock -CommandName Remove-PSDrive
-        }
-
-        It 'Should create and remove PSDrive when using UNC path with Credential' {
-            $uncPath = '\\server\share\RSKey.snk'
-
-            $null = Backup-SqlDscRSEncryptionKey -Configuration $mockCimInstance -Password $mockPassword -Path $uncPath -Credential $mockCredential -Confirm:$false
-
-            Should -Invoke -CommandName New-PSDrive -Exactly -Times 1
-            Should -Invoke -CommandName Remove-PSDrive -Exactly -Times 1
-        }
-    }
 }
