@@ -160,7 +160,7 @@ function Restore-SqlDscRSEncryptionKey
 
                         $psDriveCreated = $true
                         $fileName = Split-Path -Path $Path -Leaf
-                        $sourcePath = "${DriveName}:\$fileName"
+                        $sourcePath = (Resolve-Path -LiteralPath "${DriveName}:\$fileName").ProviderPath
                     }
                 }
 

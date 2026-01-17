@@ -175,7 +175,7 @@ function Backup-SqlDscRSEncryptionKey
 
                         $psDriveCreated = $true
                         $fileName = Split-Path -Path $Path -Leaf
-                        $targetPath = "${DriveName}:\$fileName"
+                        $targetPath = (Resolve-Path -LiteralPath "${DriveName}:\$fileName").ProviderPath
                     }
                 }
 

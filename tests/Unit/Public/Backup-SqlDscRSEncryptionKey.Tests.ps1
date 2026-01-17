@@ -61,6 +61,21 @@ Describe 'Backup-SqlDscRSEncryptionKey' {
             $result.ParameterSetName | Should -Be $ExpectedParameterSetName
             $result.ParameterListAsString | Should -Be $ExpectedParameters
         }
+
+        It 'Should have Configuration as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Backup-SqlDscRSEncryptionKey').Parameters['Configuration']
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        }
+
+        It 'Should have Path as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Backup-SqlDscRSEncryptionKey').Parameters['Path']
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        }
+
+        It 'Should have Password as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Backup-SqlDscRSEncryptionKey').Parameters['Password']
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        }
     }
 
     Context 'When backing up encryption key successfully' {

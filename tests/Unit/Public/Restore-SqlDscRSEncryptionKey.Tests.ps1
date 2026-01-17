@@ -61,6 +61,21 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
             $result.ParameterSetName | Should -Be $ExpectedParameterSetName
             $result.ParameterListAsString | Should -Be $ExpectedParameters
         }
+
+        It 'Should have Configuration as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Restore-SqlDscRSEncryptionKey').Parameters['Configuration']
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        }
+
+        It 'Should have Path as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Restore-SqlDscRSEncryptionKey').Parameters['Path']
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        }
+
+        It 'Should have Password as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Restore-SqlDscRSEncryptionKey').Parameters['Password']
+            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        }
     }
 
     Context 'When restoring encryption key successfully' {
@@ -201,6 +216,72 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
             Restore-SqlDscRSEncryptionKey -Configuration $mockCimInstance -Password $mockPassword -Path $script:testKeyFilePath -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+        }
+    }
+
+    Context 'When restoring encryption key using Credential parameter with UNC path' {
+        BeforeAll {
+            $mockCimInstance = [PSCustomObject] @{
+                InstanceName = 'SSRS'
+            }
+
+            $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd' -AsPlainText -Force
+            $mockCredential = [System.Management.Automation.PSCredential]::new('Domain\User', (ConvertTo-SecureString -String 'CredPass' -AsPlainText -Force))
+
+            # Create a test key file using TestDrive
+            $script:testKeyFilePath = Join-Path -Path $TestDrive -ChildPath 'RSKey.snk'
+            [System.IO.File]::WriteAllBytes($script:testKeyFilePath, [byte[]] @(1, 2, 3, 4))
+
+            Mock -CommandName Invoke-RsCimMethod
+            Mock -CommandName New-PSDrive -MockWith {
+                return [PSCustomObject] @{
+                    Name = 'RSKeyRestore'
+                    Root = '\\server\share'
+                }
+            }
+            Mock -CommandName Remove-PSDrive
+
+            <#
+                Mock Split-Path to simulate Windows behavior for UNC paths.
+                On macOS, Split-Path does not properly handle UNC paths.
+            #>
+            Mock -CommandName Split-Path -MockWith {
+                return '\\server\share'
+            } -ParameterFilter {
+                $Path -eq '\\server\share\RSKey.snk' -and $Parent -eq $true
+            }
+
+            Mock -CommandName Split-Path -MockWith {
+                return 'RSKey.snk'
+            } -ParameterFilter {
+                $Path -eq '\\server\share\RSKey.snk' -and $Leaf -eq $true
+            }
+
+            <#
+                Mock Resolve-Path to return the actual test file path when the
+                PSDrive path is resolved. This simulates the behavior of resolving
+                a PSDrive path to the underlying filesystem path.
+            #>
+            Mock -CommandName Resolve-Path -MockWith {
+                return [PSCustomObject] @{
+                    ProviderPath = $script:testKeyFilePath
+                }
+            } -ParameterFilter {
+                $LiteralPath -eq 'RSKeyRestore:\RSKey.snk'
+            }
+        }
+
+        It 'Should resolve PSDrive path and restore encryption key' {
+            $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path '\\server\share\RSKey.snk' -Credential $mockCredential -Confirm:$false
+
+            Should -Invoke -CommandName New-PSDrive -Exactly -Times 1
+            Should -Invoke -CommandName Resolve-Path -ParameterFilter {
+                $LiteralPath -eq 'RSKeyRestore:\RSKey.snk'
+            } -Exactly -Times 1
+            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                $MethodName -eq 'RestoreEncryptionKey'
+            } -Exactly -Times 1
+            Should -Invoke -CommandName Remove-PSDrive -Exactly -Times 1
         }
     }
 }
