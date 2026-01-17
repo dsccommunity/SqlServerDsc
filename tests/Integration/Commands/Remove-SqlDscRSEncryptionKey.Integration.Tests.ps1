@@ -55,44 +55,63 @@ BeforeAll {
           (Exception from HRESULT: 0x80090016)"
 #>
 Describe 'Remove-SqlDscRSEncryptionKey' {
+    BeforeAll {
+        <#
+            Wait for SQL Server Reporting Services to be fully operational after we
+            remove the encryption key in prior integration tests.
+
+            This is needed because the service seems to take some time to become fully
+            operational again, because this integration test fails intermittently.
+
+            There a no known wait mechanism available that we can use to detect when
+            the service is fully operational again, so we use a fixed wait time here.
+
+            TODO: Maybe it is possible to poll the file logs or Application event
+            log for an event in the command New-SqlDscRSEncryptionKey to determine
+            when the service is fully operational again and not return until it is.
+        #>
+        Write-Verbose -Message 'Workaround. Waiting 2 minutes for SQL Server Reporting Services to become fully operational...' -Verbose
+        Start-Sleep -Seconds 60 #300
+    }
+
     Context 'When removing encryption key for SQL Server Reporting Services' -Tag @('Integration_SQL2017_RS') -Skip:$true {
         BeforeAll {
-            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop' -Verbose
         }
 
         It 'Should remove the encryption key' {
             # Tried using -IncludeEncryptedInformation but it still fails on SQL Server 2017, see TODO above.
-            $null = $script:configuration | Remove-SqlDscRSEncryptionKey -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Remove-SqlDscRSEncryptionKey -Force -ErrorAction 'Stop' -Verbose
         }
     }
 
     Context 'When removing encryption key for SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {
         BeforeAll {
-            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop' -Verbose
         }
 
         It 'Should remove the encryption key' {
-            $null = $script:configuration | Remove-SqlDscRSEncryptionKey -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Remove-SqlDscRSEncryptionKey -Force -ErrorAction 'Stop' -Verbose
         }
     }
 
     Context 'When removing encryption key for SQL Server Reporting Services' -Tag @('Integration_SQL2022_RS') {
         BeforeAll {
-            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop' -Verbose
         }
 
         It 'Should remove the encryption key' {
-            $null = $script:configuration | Remove-SqlDscRSEncryptionKey -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Remove-SqlDscRSEncryptionKey -Force -ErrorAction 'Stop' -Verbose
         }
     }
 
     Context 'When removing encryption key for Power BI Report Server' -Tag @('Integration_PowerBI') {
         BeforeAll {
-            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
+            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop' -Verbose
         }
 
         It 'Should remove the encryption key' {
-            $null = $script:configuration | Remove-SqlDscRSEncryptionKey -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Remove-SqlDscRSEncryptionKey -Force -ErrorAction 'Stop' -Verbose
         }
     }
 }
