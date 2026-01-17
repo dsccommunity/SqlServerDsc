@@ -94,7 +94,7 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
         }
 
         It 'Should restore encryption key without errors' {
-            $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path $script:testKeyFilePath -Confirm:$false
+            $null = $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path $script:testKeyFilePath -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'RestoreEncryptionKey'
@@ -147,7 +147,7 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
         }
 
         It 'Should restore encryption key without confirmation' {
-            $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path $script:testKeyFilePath -Force
+            $null = $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path $script:testKeyFilePath -Force
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
@@ -191,7 +191,7 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
         }
 
         It 'Should not call Invoke-RsCimMethod' {
-            $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path $script:testKeyFilePath -WhatIf
+            $null = $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path $script:testKeyFilePath -WhatIf
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
         }
@@ -213,7 +213,7 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
         }
 
         It 'Should restore encryption key' {
-            Restore-SqlDscRSEncryptionKey -Configuration $mockCimInstance -Password $mockPassword -Path $script:testKeyFilePath -Confirm:$false
+            $null = Restore-SqlDscRSEncryptionKey -Configuration $mockCimInstance -Password $mockPassword -Path $script:testKeyFilePath -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
@@ -272,7 +272,7 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
         }
 
         It 'Should resolve PSDrive path and restore encryption key' {
-            $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path '\\server\share\RSKey.snk' -Credential $mockCredential -Confirm:$false
+            $null = $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path '\\server\share\RSKey.snk' -Credential $mockCredential -Confirm:$false
 
             Should -Invoke -CommandName New-PSDrive -Exactly -Times 1
             Should -Invoke -CommandName Resolve-Path -ParameterFilter {

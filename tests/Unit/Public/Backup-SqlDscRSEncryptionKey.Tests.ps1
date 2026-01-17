@@ -96,7 +96,7 @@ Describe 'Backup-SqlDscRSEncryptionKey' {
         It 'Should backup encryption key without errors' {
             $testPath = Join-Path -Path $TestDrive -ChildPath 'RSKey.snk'
 
-            $mockCimInstance | Backup-SqlDscRSEncryptionKey -Password $mockPassword -Path $testPath -Confirm:$false
+            $null = $mockCimInstance | Backup-SqlDscRSEncryptionKey -Password $mockPassword -Path $testPath -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'BackupEncryptionKey'
@@ -157,7 +157,7 @@ Describe 'Backup-SqlDscRSEncryptionKey' {
         It 'Should backup encryption key without confirmation' {
             $testPath = Join-Path -Path $TestDrive -ChildPath 'RSKey.snk'
 
-            $mockCimInstance | Backup-SqlDscRSEncryptionKey -Password $mockPassword -Path $testPath -Force
+            $null = $mockCimInstance | Backup-SqlDscRSEncryptionKey -Password $mockPassword -Path $testPath -Force
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
@@ -197,7 +197,7 @@ Describe 'Backup-SqlDscRSEncryptionKey' {
         It 'Should not call Invoke-RsCimMethod' {
             $testPath = Join-Path -Path $TestDrive -ChildPath 'RSKey.snk'
 
-            $mockCimInstance | Backup-SqlDscRSEncryptionKey -Password $mockPassword -Path $testPath -WhatIf
+            $null = $mockCimInstance | Backup-SqlDscRSEncryptionKey -Password $mockPassword -Path $testPath -WhatIf
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
 
@@ -223,7 +223,7 @@ Describe 'Backup-SqlDscRSEncryptionKey' {
         It 'Should backup encryption key' {
             $testPath = Join-Path -Path $TestDrive -ChildPath 'RSKey.snk'
 
-            Backup-SqlDscRSEncryptionKey -Configuration $mockCimInstance -Password $mockPassword -Path $testPath -Confirm:$false
+            $null = Backup-SqlDscRSEncryptionKey -Configuration $mockCimInstance -Password $mockPassword -Path $testPath -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
@@ -257,7 +257,7 @@ Describe 'Backup-SqlDscRSEncryptionKey' {
         It 'Should create and remove PSDrive when using UNC path with Credential' {
             $uncPath = '\\server\share\RSKey.snk'
 
-            Backup-SqlDscRSEncryptionKey -Configuration $mockCimInstance -Password $mockPassword -Path $uncPath -Credential $mockCredential -Confirm:$false
+            $null = Backup-SqlDscRSEncryptionKey -Configuration $mockCimInstance -Password $mockPassword -Path $uncPath -Credential $mockCredential -Confirm:$false
 
             Should -Invoke -CommandName New-PSDrive -Exactly -Times 1
             Should -Invoke -CommandName Remove-PSDrive -Exactly -Times 1
