@@ -266,13 +266,15 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'SetDatabaseLogonTimeout' -and
                 $Arguments.LogonTimeout -eq 30
-            } -Exactly -Times 1
+            } -Exactly -Times 1 -Scope It
         }
 
         It 'Should not call SetDatabaseQueryTimeout method' {
+            $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -Confirm:$false
+
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'SetDatabaseQueryTimeout'
-            } -Exactly -Times 0
+            } -Exactly -Times 0 -Scope It
         }
 
         It 'Should not return anything by default' {
@@ -297,13 +299,15 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'SetDatabaseQueryTimeout' -and
                 $Arguments.QueryTimeout -eq 120
-            } -Exactly -Times 1
+            } -Exactly -Times 1 -Scope It
         }
 
         It 'Should not call SetDatabaseLogonTimeout method' {
+            $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -QueryTimeout 120 -Confirm:$false
+
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'SetDatabaseLogonTimeout'
-            } -Exactly -Times 0
+            } -Exactly -Times 0 -Scope It
         }
 
         It 'Should not return anything by default' {
@@ -328,12 +332,12 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'SetDatabaseLogonTimeout' -and
                 $Arguments.LogonTimeout -eq 30
-            } -Exactly -Times 1
+            } -Exactly -Times 1 -Scope It
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'SetDatabaseQueryTimeout' -and
                 $Arguments.QueryTimeout -eq 120
-            } -Exactly -Times 1
+            } -Exactly -Times 1 -Scope It
         }
 
         It 'Should not return anything by default' {
@@ -358,7 +362,7 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'SetDatabaseLogonTimeout' -and
                 $Arguments.LogonTimeout -eq 0
-            } -Exactly -Times 1
+            } -Exactly -Times 1 -Scope It
         }
 
         It 'Should accept QueryTimeout value of 0' {
@@ -367,7 +371,7 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'SetDatabaseQueryTimeout' -and
                 $Arguments.QueryTimeout -eq 0
-            } -Exactly -Times 1
+            } -Exactly -Times 1 -Scope It
         }
     }
 
@@ -414,19 +418,19 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         It 'Should set LogonTimeout without confirmation' {
             $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -Force
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1 -Scope It
         }
 
         It 'Should set QueryTimeout without confirmation' {
             $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -QueryTimeout 120 -Force
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1 -Scope It
         }
 
         It 'Should set both timeouts without confirmation' {
             $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -QueryTimeout 120 -Force
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 2
+            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 2 -Scope It
         }
     }
 
@@ -474,19 +478,19 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         It 'Should not call Invoke-RsCimMethod when setting LogonTimeout' {
             $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0 -Scope It
         }
 
         It 'Should not call Invoke-RsCimMethod when setting QueryTimeout' {
             $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -QueryTimeout 120 -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0 -Scope It
         }
 
         It 'Should not call Invoke-RsCimMethod when setting both timeouts' {
             $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -QueryTimeout 120 -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0 -Scope It
         }
     }
 
@@ -504,7 +508,7 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'SetDatabaseLogonTimeout'
-            } -Exactly -Times 1
+            } -Exactly -Times 1 -Scope It
         }
 
         It 'Should set QueryTimeout using Configuration parameter' {
@@ -512,7 +516,7 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'SetDatabaseQueryTimeout'
-            } -Exactly -Times 1
+            } -Exactly -Times 1 -Scope It
         }
     }
 }

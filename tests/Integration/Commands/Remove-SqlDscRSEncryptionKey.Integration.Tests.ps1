@@ -70,7 +70,7 @@ Describe 'Remove-SqlDscRSEncryptionKey' {
             log for an event in the command New-SqlDscRSEncryptionKey to determine
             when the service is fully operational again and not return until it is.
         #>
-        Write-Verbose -Message 'Workaround. Waiting 2 minutes for SQL Server Reporting Services to become fully operational...' -Verbose
+        Write-Verbose -Message 'Workaround. Waiting 1 minutes for SQL Server Reporting Services to become fully operational...' -Verbose
         Start-Sleep -Seconds 60 #300
     }
 

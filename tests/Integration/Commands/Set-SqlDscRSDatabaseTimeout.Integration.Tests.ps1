@@ -35,10 +35,14 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
     Context 'When setting database timeout for SQL Server Reporting Services' -Tag @('Integration_SQL2017_RS') {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+
+            # Verbose output the timeouts before changing them
+            Write-Verbose "Current DatabaseLogonTimeout: $($script:configuration.DatabaseLogonTimeout)" -Verbose
+            Write-Verbose "Current DatabaseQueryTimeout: $($script:configuration.DatabaseQueryTimeout)" -Verbose
         }
 
         It 'Should not throw when setting LogonTimeout' {
-            $null = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 120 -Force -ErrorAction 'Stop'
         }
 
         It 'Should not throw when setting QueryTimeout' {
@@ -46,11 +50,11 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         }
 
         It 'Should not throw when setting both LogonTimeout and QueryTimeout' {
-            $null = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -QueryTimeout 120 -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 120 -QueryTimeout 120 -Force -ErrorAction 'Stop'
         }
 
         It 'Should return the configuration when using PassThru' {
-            $result = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -PassThru -Force -ErrorAction 'Stop'
+            $result = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 120 -PassThru -Force -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'SSRS'
@@ -63,7 +67,7 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         }
 
         It 'Should not throw when setting LogonTimeout' {
-            $null = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 120 -Force -ErrorAction 'Stop'
         }
 
         It 'Should not throw when setting QueryTimeout' {
@@ -71,11 +75,11 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         }
 
         It 'Should not throw when setting both LogonTimeout and QueryTimeout' {
-            $null = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -QueryTimeout 120 -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 120 -QueryTimeout 120 -Force -ErrorAction 'Stop'
         }
 
         It 'Should return the configuration when using PassThru' {
-            $result = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -PassThru -Force -ErrorAction 'Stop'
+            $result = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 120 -PassThru -Force -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'SSRS'
@@ -88,7 +92,7 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         }
 
         It 'Should not throw when setting LogonTimeout' {
-            $null = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 120 -Force -ErrorAction 'Stop'
         }
 
         It 'Should not throw when setting QueryTimeout' {
@@ -96,11 +100,11 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         }
 
         It 'Should not throw when setting both LogonTimeout and QueryTimeout' {
-            $null = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -QueryTimeout 120 -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 120 -QueryTimeout 120 -Force -ErrorAction 'Stop'
         }
 
         It 'Should return the configuration when using PassThru' {
-            $result = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -PassThru -Force -ErrorAction 'Stop'
+            $result = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 120 -PassThru -Force -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'SSRS'
@@ -113,7 +117,7 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         }
 
         It 'Should not throw when setting LogonTimeout' {
-            $null = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 120 -Force -ErrorAction 'Stop'
         }
 
         It 'Should not throw when setting QueryTimeout' {
@@ -121,11 +125,11 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         }
 
         It 'Should not throw when setting both LogonTimeout and QueryTimeout' {
-            $null = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -QueryTimeout 120 -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 120 -QueryTimeout 120 -Force -ErrorAction 'Stop'
         }
 
         It 'Should return the configuration when using PassThru' {
-            $result = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -PassThru -Force -ErrorAction 'Stop'
+            $result = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 120 -PassThru -Force -ErrorAction 'Stop'
 
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'PBIRS'
