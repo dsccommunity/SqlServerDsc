@@ -10,9 +10,9 @@ PowerShell commands. Changing the service account is a multi-step process that
 requires careful handling of encryption keys, database permissions, and URL
 reservations.
 
-This guide applies to **SQL Server 2019 Reporting Services**, **SQL Server
-2022 Reporting Services**, and **Power BI Report Server**. SQL Server 2017
-Reporting Services is no longer supported as mainstream support has ended.
+This guide applies to _SQL Server 2019 Reporting Services_, _SQL Server
+2022 Reporting Services_, and _Power BI Report Server_. _SQL Server 2017
+Reporting Services_ is no longer supported as mainstream support has ended.
 
 > [!NOTE]
 > The examples in this guide use the instance name `'SSRS'` for _SQL Server
