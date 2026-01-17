@@ -1014,4 +1014,18 @@ ConvertFrom-StringData @'
     Test_SqlDscRSAccessible_NoUrlReservations = No URL reservations found for Reporting Services instance '{0}'. (TSRSA0001)
     Test_SqlDscRSAccessible_SiteNotConfigured = The site '{0}' is not configured for Reporting Services instance '{1}'. (TSRSA0002)
     Test_SqlDscRSAccessible_NoUrisSpecified = No URIs specified. At least one of ReportServerUri or ReportsUri must be provided. (TSRSA0003)
+
+    ## Set-SqlDscRSDatabaseTimeout
+    Set_SqlDscRSDatabaseTimeout_SettingLogon = Setting database logon timeout to '{0}' seconds for Reporting Services instance '{1}'.
+    Set_SqlDscRSDatabaseTimeout_SettingQuery = Setting database query timeout to '{0}' seconds for Reporting Services instance '{1}'.
+    Set_SqlDscRSDatabaseTimeout_ShouldProcessDescription_LogonTimeout = Setting database logon timeout to '{0}' seconds for Reporting Services instance '{1}'.
+    Set_SqlDscRSDatabaseTimeout_ShouldProcessDescription_QueryTimeout = Setting database query timeout to '{0}' seconds for Reporting Services instance '{1}'.
+    Set_SqlDscRSDatabaseTimeout_ShouldProcessDescription_BothTimeouts = Setting database logon timeout to '{0}' seconds and query timeout to '{1}' seconds for Reporting Services instance '{2}'.
+    Set_SqlDscRSDatabaseTimeout_ShouldProcessConfirmation_LogonTimeout = Are you sure you want to set the database logon timeout to '{0}' seconds?
+    Set_SqlDscRSDatabaseTimeout_ShouldProcessConfirmation_QueryTimeout = Are you sure you want to set the database query timeout to '{0}' seconds?
+    Set_SqlDscRSDatabaseTimeout_ShouldProcessConfirmation_BothTimeouts = Are you sure you want to set the database logon timeout to '{0}' seconds and query timeout to '{1}' seconds?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Set_SqlDscRSDatabaseTimeout_ShouldProcessCaption = Set database timeout for Reporting Services instance
+    Set_SqlDscRSDatabaseTimeout_FailedToSetLogon = Failed to set database logon timeout for Reporting Services instance '{0}'. (SSRSDT0001)
+    Set_SqlDscRSDatabaseTimeout_FailedToSetQuery = Failed to set database query timeout for Reporting Services instance '{0}'. (SSRSDT0002)
 '@

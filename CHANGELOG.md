@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added public command `Set-SqlDscRSDatabaseTimeout` to set the database logon
+  timeout and/or query timeout for SQL Server Reporting Services or Power BI
+  Report Server. Supports setting `LogonTimeout`, `QueryTimeout`, or both via
+  parameter sets. Uses the `SetDatabaseLogonTimeout` and `SetDatabaseQueryTimeout`
+  WMI methods.
 - Added public commands `Start-SqlDscRSWindowsService`, `Stop-SqlDscRSWindowsService`,
   `Start-SqlDscRSWebService`, and `Stop-SqlDscRSWebService` to manage Reporting
   Services Windows and web services using the `SetServiceState` WMI method.

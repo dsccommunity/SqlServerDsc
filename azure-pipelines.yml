@@ -609,6 +609,7 @@ stages:
                   'tests/Integration/Commands/Start-SqlDscRSWindowsService.Integration.Tests.ps1'
                   'tests/Integration/Commands/Stop-SqlDscRSWebService.Integration.Tests.ps1'
                   'tests/Integration/Commands/Start-SqlDscRSWebService.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscRSDatabaseTimeout.Integration.Tests.ps1'
                   'tests/Integration/Commands/Uninstall-SqlDscReportingService.Integration.Tests.ps1'
               )
             name: test
@@ -716,6 +717,7 @@ stages:
                   'tests/Integration/Commands/Start-SqlDscRSWindowsService.Integration.Tests.ps1'
                   'tests/Integration/Commands/Stop-SqlDscRSWebService.Integration.Tests.ps1'
                   'tests/Integration/Commands/Start-SqlDscRSWebService.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscRSDatabaseTimeout.Integration.Tests.ps1'
                   'tests/Integration/Commands/Uninstall-SqlDscPowerBIReportServer.Integration.Tests.ps1'
               )
             name: test
