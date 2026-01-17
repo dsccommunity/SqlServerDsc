@@ -65,7 +65,9 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
         }
 
         It 'Should restore the encryption key from the persistent backup location' {
-            { $script:configuration | Restore-SqlDscRSEncryptionKey -Password $script:securePassword -Path $script:backupPath -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $result = $script:configuration | Restore-SqlDscRSEncryptionKey -Password $script:securePassword -Path $script:backupPath -Force -PassThru -ErrorAction 'Stop'
+
+            $result | Should -Not -BeNullOrEmpty -Because 'the restore should return the configuration object when using PassThru'
         }
     }
 }

@@ -33,6 +33,11 @@
         Specifies the credentials to use when accessing a UNC path. Use this
         parameter when the Path is a network share that requires authentication.
 
+    .PARAMETER DriveName
+        Specifies the name of the temporary PSDrive to create when accessing
+        a UNC path with credentials. Defaults to 'RSKeyBackup'. This parameter
+        can only be used together with the Credential parameter.
+
     .PARAMETER PassThru
         If specified, returns the configuration CIM instance after backing
         up the encryption key.
@@ -101,9 +106,14 @@ function Backup-SqlDscRSEncryptionKey
         [System.Security.SecureString]
         $Password,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'ByCredential')]
         [System.Management.Automation.PSCredential]
         $Credential,
+
+        [Parameter(ParameterSetName = 'ByCredential')]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $DriveName = 'RSKeyBackup',
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -161,13 +171,11 @@ function Backup-SqlDscRSEncryptionKey
 
                     if ($parentPath -match '^\\\\')
                     {
-                        $driveName = 'RSKeyBackup'
-
-                        New-PSDrive -Name $driveName -PSProvider 'FileSystem' -Root $parentPath -Credential $Credential -ErrorAction 'Stop' | Out-Null
+                        New-PSDrive -Name $DriveName -PSProvider 'FileSystem' -Root $parentPath -Credential $Credential -ErrorAction 'Stop' | Out-Null
 
                         $psDriveCreated = $true
                         $fileName = Split-Path -Path $Path -Leaf
-                        $targetPath = "${driveName}:\$fileName"
+                        $targetPath = "${DriveName}:\$fileName"
                     }
                 }
 
@@ -180,7 +188,7 @@ function Backup-SqlDscRSEncryptionKey
                 {
                     if ($psDriveCreated)
                     {
-                        Remove-PSDrive -Name $driveName -Force -ErrorAction 'SilentlyContinue'
+                        Remove-PSDrive -Name $DriveName -Force -ErrorAction 'SilentlyContinue'
                     }
                 }
             }

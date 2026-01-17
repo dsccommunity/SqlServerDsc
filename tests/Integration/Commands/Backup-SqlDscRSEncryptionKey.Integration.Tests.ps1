@@ -68,7 +68,8 @@ Describe 'Backup-SqlDscRSEncryptionKey' {
                 Remove-Item -Path $script:backupPath -Force -ErrorAction 'SilentlyContinue'
             }
 
-            { $script:configuration | Backup-SqlDscRSEncryptionKey -Password $script:securePassword -Path $script:backupPath -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $script:configuration | Backup-SqlDscRSEncryptionKey -Password $script:securePassword -Path $script:backupPath -Force -ErrorAction 'Stop'
+
             Test-Path -Path $script:backupPath | Should -BeTrue -Because 'the encryption key backup file should be created at the persistent location'
         }
 

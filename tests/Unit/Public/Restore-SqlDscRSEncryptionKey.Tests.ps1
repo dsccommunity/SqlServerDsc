@@ -47,8 +47,8 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
     Context 'When validating parameter sets' {
         It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
             @{
-                ExpectedParameterSetName = '__AllParameterSets'
-                ExpectedParameters = '[-Configuration] <Object> [-Password] <securestring> [-Path] <string> [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameterSetName = 'ByCredential'
+                ExpectedParameters = '-Configuration <Object> -Path <string> -Password <securestring> [-Credential <pscredential>] [-DriveName <string>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Restore-SqlDscRSEncryptionKey').ParameterSets |
@@ -71,20 +71,15 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
 
             $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd' -AsPlainText -Force
 
-            Mock -CommandName Get-Content -MockWith {
-                return [byte[]] @(1, 2, 3, 4)
-            }
+            # Create a test key file using TestDrive
+            $script:testKeyFilePath = Join-Path -Path $TestDrive -ChildPath 'RSKey.snk'
+            [System.IO.File]::WriteAllBytes($script:testKeyFilePath, [byte[]] @(1, 2, 3, 4))
 
             Mock -CommandName Invoke-RsCimMethod
         }
 
         It 'Should restore encryption key without errors' {
-            { $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path 'C:\Backup\RSKey.snk' -Confirm:$false } | Should -Not -Throw
-
-            Should -Invoke -CommandName Get-Content -ParameterFilter {
-                $Path -eq 'C:\Backup\RSKey.snk' -and
-                $Encoding -eq 'Byte'
-            } -Exactly -Times 1
+            $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path $script:testKeyFilePath -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'RestoreEncryptionKey'
@@ -92,7 +87,7 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
         }
 
         It 'Should not return anything by default' {
-            $result = $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path 'C:\Backup\RSKey.snk' -Confirm:$false
+            $result = $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path $script:testKeyFilePath -Confirm:$false
 
             $result | Should -BeNullOrEmpty
         }
@@ -106,15 +101,15 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
 
             $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd' -AsPlainText -Force
 
-            Mock -CommandName Get-Content -MockWith {
-                return [byte[]] @(1, 2, 3, 4)
-            }
+            # Create a test key file using TestDrive
+            $script:testKeyFilePath = Join-Path -Path $TestDrive -ChildPath 'RSKey.snk'
+            [System.IO.File]::WriteAllBytes($script:testKeyFilePath, [byte[]] @(1, 2, 3, 4))
 
             Mock -CommandName Invoke-RsCimMethod
         }
 
         It 'Should return the configuration CIM instance' {
-            $result = $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path 'C:\Backup\RSKey.snk' -PassThru -Confirm:$false
+            $result = $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path $script:testKeyFilePath -PassThru -Confirm:$false
 
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'SSRS'
@@ -129,15 +124,15 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
 
             $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd' -AsPlainText -Force
 
-            Mock -CommandName Get-Content -MockWith {
-                return [byte[]] @(1, 2, 3, 4)
-            }
+            # Create a test key file using TestDrive
+            $script:testKeyFilePath = Join-Path -Path $TestDrive -ChildPath 'RSKey.snk'
+            [System.IO.File]::WriteAllBytes($script:testKeyFilePath, [byte[]] @(1, 2, 3, 4))
 
             Mock -CommandName Invoke-RsCimMethod
         }
 
         It 'Should restore encryption key without confirmation' {
-            { $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path 'C:\Backup\RSKey.snk' -Force } | Should -Not -Throw
+            $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path $script:testKeyFilePath -Force
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
@@ -151,9 +146,9 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
 
             $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd' -AsPlainText -Force
 
-            Mock -CommandName Get-Content -MockWith {
-                return [byte[]] @(1, 2, 3, 4)
-            }
+            # Create a test key file using TestDrive
+            $script:testKeyFilePath = Join-Path -Path $TestDrive -ChildPath 'RSKey.snk'
+            [System.IO.File]::WriteAllBytes($script:testKeyFilePath, [byte[]] @(1, 2, 3, 4))
 
             Mock -CommandName Invoke-RsCimMethod -MockWith {
                 throw 'Method RestoreEncryptionKey() failed with an error.'
@@ -161,7 +156,7 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path 'C:\Backup\RSKey.snk' -Confirm:$false } | Should -Throw -ErrorId 'RSRSEK0001,Restore-SqlDscRSEncryptionKey'
+            { $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path $script:testKeyFilePath -Confirm:$false } | Should -Throw -ErrorId 'RSRSEK0001,Restore-SqlDscRSEncryptionKey'
         }
     }
 
@@ -173,12 +168,15 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
 
             $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd' -AsPlainText -Force
 
-            Mock -CommandName Get-Content
+            # Create a test key file using TestDrive
+            $script:testKeyFilePath = Join-Path -Path $TestDrive -ChildPath 'RSKey.snk'
+            [System.IO.File]::WriteAllBytes($script:testKeyFilePath, [byte[]] @(1, 2, 3, 4))
+
             Mock -CommandName Invoke-RsCimMethod
         }
 
         It 'Should not call Invoke-RsCimMethod' {
-            $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path 'C:\Backup\RSKey.snk' -WhatIf
+            $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path $script:testKeyFilePath -WhatIf
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
         }
@@ -192,15 +190,15 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
 
             $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd' -AsPlainText -Force
 
-            Mock -CommandName Get-Content -MockWith {
-                return [byte[]] @(1, 2, 3, 4)
-            }
+            # Create a test key file using TestDrive
+            $script:testKeyFilePath = Join-Path -Path $TestDrive -ChildPath 'RSKey.snk'
+            [System.IO.File]::WriteAllBytes($script:testKeyFilePath, [byte[]] @(1, 2, 3, 4))
 
             Mock -CommandName Invoke-RsCimMethod
         }
 
         It 'Should restore encryption key' {
-            { Restore-SqlDscRSEncryptionKey -Configuration $mockCimInstance -Password $mockPassword -Path 'C:\Backup\RSKey.snk' -Confirm:$false } | Should -Not -Throw
+            Restore-SqlDscRSEncryptionKey -Configuration $mockCimInstance -Password $mockPassword -Path $script:testKeyFilePath -Confirm:$false
 
             Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
