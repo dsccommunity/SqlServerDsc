@@ -798,6 +798,13 @@ stages:
                   'tests/Integration/Commands/Set-SqlDscRSUnattendedExecutionAccount.Integration.Tests.ps1'
                   'tests/Integration/Commands/Set-SqlDscRSSmtpConfiguration.Integration.Tests.ps1'
                   'tests/Integration/Commands/Remove-SqlDscRSUnattendedExecutionAccount.Integration.Tests.ps1'
+                  # Group 8 - Service account change with encryption key backup/restore
+                  'tests/Integration/Commands/Pre.ServiceAccountChange.Secure.RS.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Backup-SqlDscRSEncryptionKey.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Set-SqlDscRSServiceAccount.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Mid.ServiceAccountChange.Secure.RS.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Restore-SqlDscRSEncryptionKey.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Post.ServiceAccountChange.Secure.RS.Integration.Tests.ps1'
               )
             name: test
             displayName: 'Run Integration Test'

@@ -896,6 +896,22 @@ ConvertFrom-StringData @'
     Set_SqlDscRSSslCertificateBinding_Adding = Adding SSL certificate binding '{0}' for application '{1}' on Reporting Services instance '{2}'.
     Set_SqlDscRSSslCertificateBinding_AlreadyExists = SSL certificate binding '{0}' for application '{1}' already exists on Reporting Services instance '{2}'.
 
+    ## Backup-SqlDscRSEncryptionKey
+    Backup_SqlDscRSEncryptionKey_BackingUp = Backing up encryption key for Reporting Services instance '{0}' to '{1}'.
+    Backup_SqlDscRSEncryptionKey_ShouldProcessDescription = Backing up encryption key for Reporting Services instance '{0}' to '{1}'.
+    Backup_SqlDscRSEncryptionKey_ShouldProcessConfirmation = Are you sure you want to back up the encryption key for Reporting Services instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Backup_SqlDscRSEncryptionKey_ShouldProcessCaption = Back up encryption key for Reporting Services instance
+    Backup_SqlDscRSEncryptionKey_FailedToBackup = Failed to backup encryption key for Reporting Services instance '{0}'. (BSRSEK0001)
+
+    ## Restore-SqlDscRSEncryptionKey
+    Restore_SqlDscRSEncryptionKey_Restoring = Restoring encryption key for Reporting Services instance '{0}' from '{1}'.
+    Restore_SqlDscRSEncryptionKey_ShouldProcessDescription = Restoring encryption key for Reporting Services instance '{0}' from '{1}'.
+    Restore_SqlDscRSEncryptionKey_ShouldProcessConfirmation = Are you sure you want to restore the encryption key for Reporting Services instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Restore_SqlDscRSEncryptionKey_ShouldProcessCaption = Restore encryption key for Reporting Services instance
+    Restore_SqlDscRSEncryptionKey_FailedToRestore = Failed to restore encryption key for Reporting Services instance '{0}'. (RSRSEK0001)
+
     ## New-SqlDscRSEncryptionKey
     New_SqlDscRSEncryptionKey_Generating = Generating new encryption key for Reporting Services instance '{0}'.
     New_SqlDscRSEncryptionKey_ShouldProcessDescription = Generating new encryption key for Reporting Services instance '{0}'. This will invalidate existing encryption key backups.

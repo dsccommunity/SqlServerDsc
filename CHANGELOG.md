@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added public commands `Start-SqlDscRSWindowsService`, `Stop-SqlDscRSWindowsService`, `Start-SqlDscRSWebService`, and `Stop-SqlDscRSWebService` to manage Reporting Services Windows and web services using the `SetServiceState` WMI method.
+- Added public commands `Start-SqlDscRSWindowsService`, `Stop-SqlDscRSWindowsService`,
+  `Start-SqlDscRSWebService`, and `Stop-SqlDscRSWebService` to manage Reporting
+  Services Windows and web services using the `SetServiceState` WMI method.
 - SqlServerDsc
   - Added class `ReportServerUri` to represent URLs returned by the
     `GetReportServerUrls` CIM method on `MSReportServer_Instance`.
@@ -222,6 +224,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   wrap the `ListSSLCertificateBindings`, `CreateSSLCertificateBinding`, and
   `RemoveSSLCertificateBinding` CIM methods. The `Set-SqlDscRSSslCertificateBinding`
   command provides a declarative approach to set SSL bindings to an exact list.
+- Added public commands `Backup-SqlDscRSEncryptionKey` and
+  `Restore-SqlDscRSEncryptionKey` to backup and restore Reporting Services
+  encryption keys. These commands wrap the `BackupEncryptionKey` and
+  `RestoreEncryptionKey` CIM methods and require a password to secure the key.
 - Added public command `New-SqlDscRSEncryptionKey` to delete and regenerate the
   Reporting Services encryption key. Wraps the `DeleteEncryptionKey` CIM method.
   Warning: This operation cannot be undone and renders all encrypted content
