@@ -189,4 +189,82 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
             $result.actualState.Ensure | Should -Be 'Absent'
         }
     }
+
+    Context 'When testing the model database with a different recovery model' {
+        It 'Should return false when recovery model is not in desired state' {
+            $desiredParameters = @{
+                InstanceName  = $script:instanceName
+                ServerName    = $script:serverName
+                Name          = 'model'
+                RecoveryModel = 'Simple'
+                Ensure        = 'Present'
+                Credential    = $script:sqlAdminCredential
+            }
+
+            $result = dsc --trace-level trace resource test --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+
+            $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
+
+            if ($dscExitCode -ne 0)
+            {
+                throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
+            }
+
+            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json -Depth 5 | Out-String)" -Verbose
+
+            $result.inDesiredState | Should -BeFalse
+        }
+    }
+
+    Context 'When setting the model database recovery model to Simple' {
+        It 'Should successfully set the recovery model' {
+            $desiredParameters = @{
+                InstanceName  = $script:instanceName
+                ServerName    = $script:serverName
+                Name          = 'model'
+                RecoveryModel = 'Simple'
+                Ensure        = 'Present'
+                Credential    = $script:sqlAdminCredential
+            }
+
+            $result = dsc --trace-level trace resource set --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+
+            $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
+
+            if ($dscExitCode -ne 0)
+            {
+                throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
+            }
+
+            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json -Depth 5 | Out-String)" -Verbose
+
+            $result.afterState.RecoveryModel | Should -Be 'Simple'
+        }
+    }
+
+    Context 'When testing the model database after setting recovery model to Simple' {
+        It 'Should return true when recovery model is in desired state' {
+            $desiredParameters = @{
+                InstanceName  = $script:instanceName
+                ServerName    = $script:serverName
+                Name          = 'model'
+                RecoveryModel = 'Simple'
+                Ensure        = 'Present'
+                Credential    = $script:sqlAdminCredential
+            }
+
+            $result = dsc --trace-level trace resource test --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+
+            $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
+
+            if ($dscExitCode -ne 0)
+            {
+                throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
+            }
+
+            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json -Depth 5 | Out-String)" -Verbose
+
+            $result.inDesiredState | Should -BeTrue
+        }
+    }
 }
