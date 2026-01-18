@@ -49,6 +49,16 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
 
         $script:serverName = Get-ComputerName
         $script:instanceName = 'DSCSQLTEST'
+
+        <#
+            Credential object for DSCv3. Using lowercase 'username' and 'password'
+            as required by DSCv3 psDscAdapter for PSCredential conversion.
+            See PowerShell/DSC PR #1308 for details on credential handling in DSCv3.
+        #>
+        $script:sqlAdminCredential = @{
+            username = "$env:COMPUTERNAME\SqlAdmin"
+            password = 'P@ssw0rd1'
+        }
     }
 
     Context 'When getting the current state of the model database' {
@@ -59,6 +69,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 Name          = 'model'
                 RecoveryModel = 'Simple'
                 Ensure        = 'Present'
+                Credential    = $script:sqlAdminCredential
             }
 
             $result = dsc --trace-level trace resource get --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
@@ -84,6 +95,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 ServerName   = $script:serverName
                 Name         = 'master'
                 Ensure       = 'Present'
+                Credential   = $script:sqlAdminCredential
             }
 
             $result = dsc --trace-level trace resource get --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
@@ -110,6 +122,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 ServerName   = $script:serverName
                 Name         = 'model'
                 Ensure       = 'Present'
+                Credential   = $script:sqlAdminCredential
             }
 
             $result = dsc --trace-level trace resource test --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
@@ -133,6 +146,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 ServerName   = $script:serverName
                 Name         = 'NonExistentDatabase_DSCv3Test'
                 Ensure       = 'Present'
+                Credential   = $script:sqlAdminCredential
             }
 
             $result = dsc --trace-level trace resource test --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
@@ -157,6 +171,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 ServerName   = $script:serverName
                 Name         = 'NonExistentDatabase_DSCv3Test'
                 Ensure       = 'Present'
+                Credential   = $script:sqlAdminCredential
             }
 
             $result = dsc --trace-level trace resource get --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json

@@ -80,4 +80,101 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
             Write-Verbose -Message "Result:`n$($result | ConvertTo-Json | Out-String)" -Verbose
         }
     }
+
+    Context 'When testing the current state of the resource' {
+        BeforeAll {
+            $tempFolder = Get-TemporaryFolder
+        }
+
+        It 'Should return false when the resource is not in the desired state' {
+            $desiredParameters = @{
+                InstanceName         = 'PBIRS'
+                AcceptLicensingTerms = $true
+                Action               = 'Install'
+                MediaPath            = Join-Path -Path $tempFolder -ChildPath 'PowerBIReportServer.exe'
+                InstallFolder        = Join-Path -Path $env:ProgramFiles -ChildPath 'Microsoft Power BI Report Server'
+                Edition              = 'Developer'
+                SuppressRestart      = $true
+                LogPath              = Join-Path -Path $tempFolder -ChildPath 'PBIRS.log'
+                VersionUpgrade       = $true
+            }
+
+            $result = dsc --trace-level trace resource test --resource SqlServerDsc/SqlRSSetup --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+
+            $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
+
+            if ($dscExitCode -ne 0)
+            {
+                throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
+            }
+
+            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json | Out-String)" -Verbose
+
+            $result.inDesiredState | Should -BeFalse
+        }
+    }
+
+    Context 'When setting the current state of the resource' {
+        BeforeAll {
+            $tempFolder = Get-TemporaryFolder
+        }
+
+        It 'Should set the resource to the desired state' {
+            $desiredParameters = @{
+                InstanceName         = 'PBIRS'
+                AcceptLicensingTerms = $true
+                Action               = 'Install'
+                MediaPath            = Join-Path -Path $tempFolder -ChildPath 'PowerBIReportServer.exe'
+                InstallFolder        = Join-Path -Path $env:ProgramFiles -ChildPath 'Microsoft Power BI Report Server'
+                Edition              = 'Developer'
+                SuppressRestart      = $true
+                LogPath              = Join-Path -Path $tempFolder -ChildPath 'PBIRS.log'
+                VersionUpgrade       = $true
+            }
+
+            $result = dsc --trace-level trace resource set --resource SqlServerDsc/SqlRSSetup --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+
+            $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
+
+            if ($dscExitCode -ne 0)
+            {
+                throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
+            }
+
+            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json | Out-String)" -Verbose
+        }
+    }
+
+    Context 'When testing the current state of the resource after set' {
+        BeforeAll {
+            $tempFolder = Get-TemporaryFolder
+        }
+
+        It 'Should return true when the resource is in the desired state' {
+            $desiredParameters = @{
+                InstanceName         = 'PBIRS'
+                AcceptLicensingTerms = $true
+                Action               = 'Install'
+                MediaPath            = Join-Path -Path $tempFolder -ChildPath 'PowerBIReportServer.exe'
+                InstallFolder        = Join-Path -Path $env:ProgramFiles -ChildPath 'Microsoft Power BI Report Server'
+                Edition              = 'Developer'
+                SuppressRestart      = $true
+                LogPath              = Join-Path -Path $tempFolder -ChildPath 'PBIRS.log'
+                VersionUpgrade       = $true
+            }
+
+            $result = dsc --trace-level trace resource test --resource SqlServerDsc/SqlRSSetup --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+
+            $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
+
+            if ($dscExitCode -ne 0)
+            {
+                throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
+            }
+
+            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json | Out-String)" -Verbose
+
+            $result.inDesiredState | Should -BeTrue
+        }
+    }
 }
