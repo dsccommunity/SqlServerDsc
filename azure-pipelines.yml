@@ -1304,9 +1304,8 @@ stages:
               ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
                   # Run the integration tests in a specific group order.
                   # Prerequisites
-                  'tests/Integration/Resources/DSCv3_DebugDscEngine.Integration.Tests.ps1'
-                  # Group 1
                   'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
+                  # Group 1
                   'tests/Integration/Commands/Install-SqlDscServer.Integration.Tests.ps1'
                   # Group 2
                   'tests/Integration/Resources/DSCv3_SqlDatabase.Integration.Tests.ps1'
