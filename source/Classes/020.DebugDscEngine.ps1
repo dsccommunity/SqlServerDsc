@@ -149,7 +149,7 @@ class DebugDscEngine : ResourceBase
         )
 
         $currentState = @{
-            KeyProperty       = $properties.KeyProperty
+            KeyProperty       = $properties.KeyProperty.ToUpper()
             MandatoryProperty = 'CurrentMandatoryStateValue'
             WriteProperty     = 'CurrentStateValue'
             ReadProperty      = 'ReadOnlyValue_' + (Get-Date -Format 'yyyyMMdd_HHmmss')
