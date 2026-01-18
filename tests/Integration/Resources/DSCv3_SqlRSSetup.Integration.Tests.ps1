@@ -68,7 +68,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
             }
 
             # Capture DSC output so it can be inspected later in the test
-            $result = dsc --trace-level trace resource get --resource SqlServerDsc/SqlRSSetup --output-format pretty-json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+            $result = dsc --trace-level info resource get --resource SqlServerDsc/SqlRSSetup --output-format pretty-json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
 
             $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
@@ -99,7 +99,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 VersionUpgrade       = $true
             }
 
-            $result = dsc --trace-level trace resource test --resource SqlServerDsc/SqlRSSetup --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+            $result = dsc --trace-level info resource test --resource SqlServerDsc/SqlRSSetup --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
 
             $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
@@ -132,7 +132,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 VersionUpgrade       = $true
             }
 
-            $result = dsc --trace-level trace resource set --resource SqlServerDsc/SqlRSSetup --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+            $result = dsc --trace-level info resource set --resource SqlServerDsc/SqlRSSetup --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
 
             $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
@@ -163,7 +163,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 VersionUpgrade       = $true
             }
 
-            $result = dsc --trace-level trace resource test --resource SqlServerDsc/SqlRSSetup --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+            $result = dsc --trace-level info resource test --resource SqlServerDsc/SqlRSSetup --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
 
             $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 

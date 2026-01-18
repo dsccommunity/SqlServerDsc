@@ -72,7 +72,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 Credential    = $script:sqlAdminCredential
             }
 
-            $result = dsc --trace-level trace resource get --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+            $result = dsc --trace-level info resource get --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
 
             $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
@@ -98,7 +98,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 Credential   = $script:sqlAdminCredential
             }
 
-            $result = dsc --trace-level trace resource get --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+            $result = dsc --trace-level info resource get --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
 
             $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
@@ -125,7 +125,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 Credential   = $script:sqlAdminCredential
             }
 
-            $result = dsc --trace-level trace resource test --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+            $result = dsc --trace-level info resource test --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
 
             $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
@@ -149,7 +149,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 Credential   = $script:sqlAdminCredential
             }
 
-            $result = dsc --trace-level trace resource test --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+            $result = dsc --trace-level info resource test --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
 
             $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
@@ -174,7 +174,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 Credential   = $script:sqlAdminCredential
             }
 
-            $result = dsc --trace-level trace resource get --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+            $result = dsc --trace-level info resource get --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
 
             $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
@@ -201,7 +201,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 Credential    = $script:sqlAdminCredential
             }
 
-            $result = dsc --trace-level trace resource test --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+            $result = dsc --trace-level info resource test --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
 
             $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
@@ -227,7 +227,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 Credential    = $script:sqlAdminCredential
             }
 
-            $result = dsc --trace-level trace resource set --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+            $result = dsc --trace-level info resource set --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
 
             $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
@@ -253,7 +253,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 Credential    = $script:sqlAdminCredential
             }
 
-            $result = dsc --trace-level trace resource test --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+            $result = dsc --trace-level info resource test --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
 
             $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
