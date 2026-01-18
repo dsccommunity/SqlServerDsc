@@ -111,7 +111,8 @@
         "HRESULT",
         "RSDB",
         "RSIP",
-        "contoso"
+        "contoso",
+        "PSDSC"
     ],
     "cSpell.ignorePaths": [
         ".git"
