@@ -48,7 +48,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
             See PowerShell/DSC PR #1308 for details on credential handling in DSCv3.
         #>
         $script:sqlAdminCredential = @{
-            username = '{0}\SqlAdmin' -f Get-ComputerName
+            username = '{0}\SqlAdmin' -f (Get-ComputerName)
             password = 'P@ssw0rd1'
         }
     }
