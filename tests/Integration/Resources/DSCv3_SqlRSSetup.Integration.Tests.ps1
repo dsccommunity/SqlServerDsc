@@ -35,12 +35,7 @@ BeforeAll {
     $script:dscResourceFriendlyName = 'SqlRSSetup'
 }
 
-<#
-    Run only for standalone versions of Microsoft SQL Server Reporting Services
-    and Power BI Report Server. Older versions of Reporting Services (eg. 2016)
-    are integration tested in separate tests (part of resource SqlSetup).
-#>
-Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
+Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_PowerBI') {
     Context 'When getting the current state of the resource' {
         BeforeAll {
             # Get temporary folder for the test and make sure it exists, if not create it

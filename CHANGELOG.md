@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- SqlDatabase
-  - Added DSCv3 integration tests for the `SqlDatabase` and `SqlRSSetup`
-    class-based resource to verify compatibility with DSCv3 ([issue #2403](https://github.com/dsccommunity/SqlServerDsc/issues/2403)).
+- SqlRSSetup
+  - Added DSCv3 integration tests to verify compatibility with DSCv3
+    ([issue #2403](https://github.com/dsccommunity/SqlServerDsc/issues/2403)).
 - Added public command `Set-SqlDscRSDatabaseTimeout` to set the database logon
   timeout and/or query timeout for SQL Server Reporting Services or Power BI
   Report Server. Supports setting `LogonTimeout`, `QueryTimeout`, or both via
@@ -134,6 +134,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     SQL Server instance. Supports a comprehensive set of database properties
     that can be configured with `Set-SqlDscDatabaseProperty`
     ([issue #2174](https://github.com/dsccommunity/SqlServerDsc/issues/2174)).
+  - Added DSCv3 integration tests to verify compatibility with DSCv3
+    ([issue #2403](https://github.com/dsccommunity/SqlServerDsc/issues/2403)).
 - `Install-SqlDscServer`
   - Added parameter `AllowDqRemoval` to the `Upgrade` parameter set
     ([issue #2155](https://github.com/dsccommunity/SqlServerDsc/issues/2155)).

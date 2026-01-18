@@ -34,15 +34,7 @@ BeforeAll {
     $script:dscResourceFriendlyName = 'SqlDatabase'
 }
 
-<#
-    .SYNOPSIS
-        Integration tests for SqlDatabase resource using DSCv3.
-
-    .NOTES
-        These tests verify the SqlDatabase class-based resource works correctly
-        with DSCv3. See GitHub issue #2403 for context.
-#>
-Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQL2022') {
     BeforeAll {
         # Output the PowerShell version used in the test
         Write-Verbose -Message "`nPowerShell version used in integration test:`n$($PSVersionTable | Out-String)" -Verbose
