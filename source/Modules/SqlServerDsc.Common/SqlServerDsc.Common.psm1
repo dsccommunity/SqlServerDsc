@@ -444,7 +444,7 @@ function Connect-SQL
 
         Write-Verbose -Message (
             $script:localizedData.ConnectingUsingIntegrated -f $connectUsername
-        ) -Verbose
+        )
     }
     else
     {
@@ -452,7 +452,7 @@ function Connect-SQL
 
         Write-Verbose -Message (
             $script:localizedData.ConnectingUsingImpersonation -f $connectUsername, $LoginType
-        ) -Verbose
+        )
 
         if ($LoginType -eq 'SqlLogin')
         {
@@ -513,7 +513,7 @@ function Connect-SQL
         {
             Write-Verbose -Message (
                 $script:localizedData.ConnectedToDatabaseEngineInstance -f $databaseEngineInstance
-            ) -Verbose
+            )
 
             return $sqlServerObject
         }
