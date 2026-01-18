@@ -76,6 +76,14 @@ class DebugDscEngine : ResourceBase
     [System.String]
     $WriteProperty
 
+    [DscProperty()]
+    [System.Int32]
+    $ModifyDelayMilliseconds
+
+    [DscProperty()]
+    [System.Boolean]
+    $EnableDebugOutput
+
     [DscProperty(NotConfigurable)]
     [System.String]
     $ReadProperty
@@ -85,14 +93,25 @@ class DebugDscEngine : ResourceBase
         # These properties will not be enforced.
         $this.ExcludeDscProperties = @(
             'MandatoryProperty'
+            'ModifyDelayMilliseconds'
+            'EnableDebugOutput'
         )
+
+        # Default simulated modification delay in milliseconds. Can be overridden by the user.
+        $this.ModifyDelayMilliseconds = 100
+
+        # Debug output disabled by default. Set to $true to enable verbose environment dump and warnings.
+        $this.EnableDebugOutput = $false
     }
 
     [DebugDscEngine] Get()
     {
         # Output all environment variables to verify the environment
-        #Write-Verbose -Message "`nEnvironment Variables from inside DSC resource:`n$([System.Environment]::GetEnvironmentVariables().GetEnumerator() | Sort-Object Key | ForEach-Object { "$($_.Key) = $($_.Value)" } | Out-String)" -Verbose
-        #Write-Warning -Message 'Mocked warning message for testing purposes.'
+        if ($this.EnableDebugOutput)
+        {
+            Write-Verbose -Message ("`nEnvironment Variables from inside DSC resource:`n$([System.Environment]::GetEnvironmentVariables().GetEnumerator() | Sort-Object Key | ForEach-Object { "$( $_.Key ) = $( $_.Value )" } | Out-String)")
+            Write-Warning -Message 'Mocked warning message for testing purposes.'
+        }
 
         # Call the base method to return the properties.
         return ([ResourceBase] $this).Get()
@@ -171,8 +190,8 @@ class DebugDscEngine : ResourceBase
                 )
             )
 
-            # Simulate setting the property
-            Start-Sleep -Milliseconds 100
+            # Simulate setting the property using configurable delay
+            Start-Sleep -Milliseconds $this.ModifyDelayMilliseconds
         }
 
         Write-Verbose -Message (

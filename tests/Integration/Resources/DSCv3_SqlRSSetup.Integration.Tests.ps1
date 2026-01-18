@@ -9,8 +9,8 @@ BeforeDiscovery {
             # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
-                # Redirect all streams to $null, except the error stream (stream 2)
-                & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+                # Redirect all streams to $null, except the error stream (stream 3) to match other tests
+                & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
             # If the dependencies has not been resolved, this will throw an error.
@@ -67,7 +67,8 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 VersionUpgrade = $true
             }
 
-            dsc --trace-level trace resource get --resource SqlServerDsc/SqlRSSetup --output-format pretty-json --input ($desiredParameters | ConvertTo-Json -Compress)
+            # Capture DSC output so it can be inspected later in the test
+            $result = dsc --trace-level trace resource get --resource SqlServerDsc/SqlRSSetup --output-format pretty-json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
 
             $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 

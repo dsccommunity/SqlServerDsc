@@ -269,14 +269,27 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
         }
 
         It 'Should work with PSDscRunAsCredential specified' {
+            # Convert SecureString to a serializable string so the credential
+            # can be passed via JSON for DSCv3. The receiving side should
+            # reconstruct the SecureString from `PasswordPlain` (or accept
+            # `EncryptedPassword` when implemented).
+            $ptr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($testPassword)
+            try {
+                $passwordPlain = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr)
+            }
+            finally {
+                [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($ptr)
+            }
+
             $desiredParameters = @{
                 KeyProperty       = 'TEST_KEY_008'
                 MandatoryProperty = 'TestMandatoryValue'
                 WriteProperty     = 'NoRunAsCredential'
-                # TODO: PSDscRunAsCredential should be passed
+                # PSDscRunAsCredential is represented as a hashtable that is JSON-serializable.
+                # Use `PasswordPlain` here for simplicity; in production prefer an encrypted form.
                 PSDscRunAsCredential = @{
-                   UserName = $testUserName
-                   Password = $testPassword
+                   UserName      = $testUserName
+                   PasswordPlain = $passwordPlain
                 }
             }
 

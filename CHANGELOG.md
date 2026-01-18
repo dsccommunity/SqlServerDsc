@@ -1202,7 +1202,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added new instructions for GitHub Copilot that might assist when developing
   command and private functions in the module. More instructions should be
   added as needed to help generated code and tests.
-- Add integration test in DSCv3.
+- Add integration tests for DSCv3.
 
 ### Changed
 
