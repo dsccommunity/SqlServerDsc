@@ -32,15 +32,15 @@ BeforeAll {
 }
 
 Describe 'Set-SqlDscRSDatabaseTimeout' {
-    BeforeAll {
-        $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-
-        # Verbose output the timeouts before changing them
-        Write-Verbose "Current DatabaseLogonTimeout: $($script:configuration.DatabaseLogonTimeout)" -Verbose
-        Write-Verbose "Current DatabaseQueryTimeout: $($script:configuration.DatabaseQueryTimeout)" -Verbose
-    }
-
     Context 'When setting database timeout for SQL Server Reporting Services' -Tag @('Integration_SQL2017_RS') {
+        BeforeAll {
+            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+
+            # Verbose output the timeouts before changing them
+            Write-Verbose "Current DatabaseLogonTimeout: $($script:configuration.DatabaseLogonTimeout)" -Verbose
+            Write-Verbose "Current DatabaseQueryTimeout: $($script:configuration.DatabaseQueryTimeout)" -Verbose
+        }
+
         It 'Should not throw when setting LogonTimeout' {
             $null = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 120 -Force -ErrorAction 'Stop'
         }
@@ -62,6 +62,14 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
     }
 
     Context 'When setting database timeout for SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {
+        BeforeAll {
+            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+
+            # Verbose output the timeouts before changing them
+            Write-Verbose "Current DatabaseLogonTimeout: $($script:configuration.DatabaseLogonTimeout)" -Verbose
+            Write-Verbose "Current DatabaseQueryTimeout: $($script:configuration.DatabaseQueryTimeout)" -Verbose
+        }
+
         It 'Should not throw when setting LogonTimeout' {
             $null = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 120 -Force -ErrorAction 'Stop'
         }
@@ -83,6 +91,14 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
     }
 
     Context 'When setting database timeout for SQL Server Reporting Services' -Tag @('Integration_SQL2022_RS') {
+        BeforeAll {
+            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+
+            # Verbose output the timeouts before changing them
+            Write-Verbose "Current DatabaseLogonTimeout: $($script:configuration.DatabaseLogonTimeout)" -Verbose
+            Write-Verbose "Current DatabaseQueryTimeout: $($script:configuration.DatabaseQueryTimeout)" -Verbose
+        }
+
         It 'Should not throw when setting LogonTimeout' {
             $null = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 120 -Force -ErrorAction 'Stop'
         }
@@ -104,6 +120,14 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
     }
 
     Context 'When setting database timeout for Power BI Report Server' -Tag @('Integration_PowerBI') {
+        BeforeAll {
+            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
+
+            # Verbose output the timeouts before changing them
+            Write-Verbose "Current DatabaseLogonTimeout: $($script:configuration.DatabaseLogonTimeout)" -Verbose
+            Write-Verbose "Current DatabaseQueryTimeout: $($script:configuration.DatabaseQueryTimeout)" -Verbose
+        }
+
         It 'Should not throw when setting LogonTimeout' {
             $null = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 120 -Force -ErrorAction 'Stop'
         }
