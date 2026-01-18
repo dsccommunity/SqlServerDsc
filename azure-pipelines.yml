@@ -1247,6 +1247,82 @@ stages:
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration RS ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
+  - stage: Integration_Test_DSCv3_Resources_SqlServer
+    displayName: 'Integration Test DSCv3 Resources - SQL Server'
+    dependsOn: Build
+    jobs:
+      - job: Test_Integration
+        displayName: 'Integration'
+        strategy:
+          matrix:
+            SQL2022_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2022'
+        pool:
+          vmImage: $(JOB_VMIMAGE)
+        timeoutInMinutes: 0
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          - task: PowerShell@2
+            name: configureWinRM
+            displayName: 'Configure WinRM'
+            inputs:
+              targetType: 'inline'
+              script: 'winrm quickconfig -quiet'
+              pwsh: false
+          - powershell: |
+              Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
+              Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
+              Remove-Module -Name CommonTestHelper
+            name: cleanCIWorker
+            displayName: 'Clean CI worker'
+          - pwsh: |
+              Install-PSResource -Name 'PSDSC' -Repository 'PSGallery' -TrustRepository -Quiet -Confirm:$false
+              Install-DscExe -IncludePrerelease -Force -Verbose
+            name: installDSCv3
+            displayName: 'Install DSCv3'
+          - pwsh: |
+              # Install-DscExe installs in the path $env:LOCALAPPDATA\dsc
+              $env:PATH += '{0}{1}' -f [System.IO.Path]::PathSeparator, (Join-Path -Path $env:LOCALAPPDATA -ChildPath 'dsc')
+              # Make the built module available to the current session.
+              ./build.ps1 -Tasks noop
+              Get-Module -Name SqlServerDsc -ListAvailable
+              # Output DSCv3 version
+              dsc --version
+              # Get the list of available resources.
+              'Native resources:'
+              dsc resource list
+              'Resources using adapter Microsoft.Windows/WindowsPowerShell:'
+              dsc resource list --adapter Microsoft.Windows/WindowsPowerShell
+            name: getDSCv3AvailableResources
+            displayName: 'Get DSCv3 Available Resources'
+          - pwsh: |
+              # Install-DscExe installed in the path $env:LOCALAPPDATA\dsc
+              $env:PATH += '{0}{1}' -f [System.IO.Path]::PathSeparator, (Join-Path -Path $env:LOCALAPPDATA -ChildPath 'dsc')
+              ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
+                  # Run the integration tests in a specific group order.
+                  # Prerequisites
+                  'tests/Integration/Resources/DSCv3_DebugDscEngine.Integration.Tests.ps1'
+                  # Group 1
+                  'tests/Integration/Resources/DSC_SqlSetup.Integration.Tests.ps1'
+                  # Group 2
+                  'tests/Integration/Resources/DSCv3_SqlDatabase.Integration.Tests.ps1'
+              )
+            name: test
+            displayName: 'Run DSCv3 SQL Server Integration Test'
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'Integration DSCv3 SQL Server ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
+
   - stage: Integration_Test_Resources_ReportingServices_dbatools
     displayName: 'Integration Test Resources - Reporting Services (dbatools)'
     dependsOn: Integration_Test_Resources_SqlServer

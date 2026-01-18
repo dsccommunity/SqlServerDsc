@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- SqlDatabase
+  - Added DSCv3 integration tests for the `SqlDatabase` class-based resource to
+    verify compatibility with DSCv3 (`dsc resource get` and `dsc resource test`
+    methods) ([issue #2403](https://github.com/dsccommunity/SqlServerDsc/issues/2403)).
 - Added public command `Set-SqlDscRSDatabaseTimeout` to set the database logon
   timeout and/or query timeout for SQL Server Reporting Services or Power BI
   Report Server. Supports setting `LogonTimeout`, `QueryTimeout`, or both via
