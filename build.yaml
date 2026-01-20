@@ -69,7 +69,6 @@ BuildWorkflow:
 CopyPaths:
   - DSCResources
   - en-US
-  - Modules
 Prefix: prefix.ps1
 Suffix: suffix.ps1
 Encoding: UTF8
@@ -112,6 +111,13 @@ NestedModule:
     Path: ./output/RequiredModules/DscResource.Base
     AddToManifest: false
     Exclude: PSGetModuleInfo.xml
+
+  SqlServerDsc.Common:
+    Prefix: prefix.ps1
+    VersionedOutputDirectory: false
+    CopyPaths:
+      - en-US
+    Encoding: UTF8
 
 ####################################################
 #          Pester Configuration (Sampler)          #
