@@ -34,7 +34,7 @@ BeforeDiscovery {
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
-                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
+                & "$PSScriptRoot/../../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
             # If the dependencies have not been resolved, this will throw an error.
@@ -63,7 +63,7 @@ BeforeAll {
     # Loading SMO stubs.
     if (-not ('Microsoft.SqlServer.Management.Smo.Server' -as [Type]))
     {
-        Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
+        Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '..\..\Stubs') -ChildPath 'SMO.cs')
     }
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:subModuleName
