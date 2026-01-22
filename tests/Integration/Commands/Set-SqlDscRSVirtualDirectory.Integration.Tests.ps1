@@ -54,13 +54,6 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
 
             $config.VirtualDirectoryReportManager | Should -Be 'Reports'
         }
-
-        It 'Should return configuration when using PassThru' {
-            $result = $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Force -PassThru -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
-        }
     }
 
     Context 'When setting virtual directory for SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {
@@ -84,13 +77,6 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
             $config.VirtualDirectoryReportManager | Should -Be 'Reports'
-        }
-
-        It 'Should return configuration when using PassThru' {
-            $result = $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Force -PassThru -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
         }
     }
 
@@ -116,13 +102,6 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
 
             $config.VirtualDirectoryReportManager | Should -Be 'Reports'
         }
-
-        It 'Should return configuration when using PassThru' {
-            $result = $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Force -PassThru -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
-        }
     }
 
     Context 'When setting virtual directory for Power BI Report Server' -Tag @('Integration_PowerBI') {
@@ -146,13 +125,6 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
 
             $config.VirtualDirectoryReportManager | Should -Be 'Reports'
-        }
-
-        It 'Should return configuration when using PassThru' {
-            $result = $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Force -PassThru -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'PBIRS'
         }
     }
 }

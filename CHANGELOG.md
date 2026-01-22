@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- SqlServerDsc
+  - Refactor integration tests for SQL Server Reporting Services and Power BI Report
+    Server ([issue #2431](https://github.com/dsccommunity/SqlServerDsc/issues/2431)).
+
 ## [17.4.0] - 2026-01-19
 
 ### Added

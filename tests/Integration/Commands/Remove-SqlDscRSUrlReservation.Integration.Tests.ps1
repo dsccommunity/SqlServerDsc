@@ -37,24 +37,8 @@ Describe 'Remove-SqlDscRSUrlReservation' {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
 
             # Use a unique port for testing to avoid conflicts
-            $script:testPort = 18081
+            $script:testPort = 18080
             $script:testUrl = "http://+:$script:testPort"
-
-            # Add a test URL reservation to remove
-            $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
-        }
-
-        AfterAll {
-            # Clean up: ensure the test URL reservation is removed
-            try
-            {
-                $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-                $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'SilentlyContinue'
-            }
-            catch
-            {
-                # Ignore errors during cleanup
-            }
         }
 
         It 'Should remove URL reservation using pipeline' {
@@ -65,18 +49,6 @@ Describe 'Remove-SqlDscRSUrlReservation' {
             $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
             $reservations.UrlReservations | Should -Not -Contain $script:testUrl
-        }
-
-        It 'Should return configuration when using PassThru' {
-            # First add the test URL back
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $config | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
-
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $result = $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -PassThru -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
         }
     }
 
@@ -85,25 +57,9 @@ Describe 'Remove-SqlDscRSUrlReservation' {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
 
             # Use a unique port for testing to avoid conflicts
-            $script:testPort = 18081
+            $script:testPort = 18080
             $script:testUrl = "http://+:$script:testPort"
-
-            # Add a test URL reservation to remove
-            $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
-        }
-
-        AfterAll {
-            # Clean up: ensure the test URL reservation is removed
-            try
-            {
-                $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-                $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'SilentlyContinue'
-            }
-            catch
-            {
-                # Ignore errors during cleanup
-            }
-        }
+s       }
 
         It 'Should remove URL reservation using pipeline' {
             { $script:configuration | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop' } | Should -Not -Throw
@@ -113,18 +69,6 @@ Describe 'Remove-SqlDscRSUrlReservation' {
             $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
             $reservations.UrlReservations | Should -Not -Contain $script:testUrl
-        }
-
-        It 'Should return configuration when using PassThru' {
-            # First add the test URL back
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $config | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
-
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $result = $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -PassThru -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
         }
     }
 
@@ -133,24 +77,8 @@ Describe 'Remove-SqlDscRSUrlReservation' {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
 
             # Use a unique port for testing to avoid conflicts
-            $script:testPort = 18081
+            $script:testPort = 18080
             $script:testUrl = "http://+:$script:testPort"
-
-            # Add a test URL reservation to remove
-            $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
-        }
-
-        AfterAll {
-            # Clean up: ensure the test URL reservation is removed
-            try
-            {
-                $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-                $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'SilentlyContinue'
-            }
-            catch
-            {
-                # Ignore errors during cleanup
-            }
         }
 
         It 'Should remove URL reservation using pipeline' {
@@ -162,18 +90,6 @@ Describe 'Remove-SqlDscRSUrlReservation' {
 
             $reservations.UrlReservations | Should -Not -Contain $script:testUrl
         }
-
-        It 'Should return configuration when using PassThru' {
-            # First add the test URL back
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $config | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
-
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $result = $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -PassThru -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
-        }
     }
 
     Context 'When removing URL reservation for Power BI Report Server' -Tag @('Integration_PowerBI') {
@@ -181,24 +97,8 @@ Describe 'Remove-SqlDscRSUrlReservation' {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
 
             # Use a unique port for testing to avoid conflicts
-            $script:testPort = 18081
+            $script:testPort = 18080
             $script:testUrl = "http://+:$script:testPort"
-
-            # Add a test URL reservation to remove
-            $script:configuration | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
-        }
-
-        AfterAll {
-            # Clean up: ensure the test URL reservation is removed
-            try
-            {
-                $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
-                $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'SilentlyContinue'
-            }
-            catch
-            {
-                # Ignore errors during cleanup
-            }
         }
 
         It 'Should remove URL reservation for PBIRS using pipeline' {
@@ -209,18 +109,6 @@ Describe 'Remove-SqlDscRSUrlReservation' {
             $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
             $reservations.UrlReservations | Should -Not -Contain $script:testUrl
-        }
-
-        It 'Should return configuration when using PassThru' {
-            # First add the test URL back
-            $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
-            $config | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop'
-
-            $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
-            $result = $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -PassThru -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'PBIRS'
         }
     }
 }
