@@ -41,7 +41,7 @@ Describe 'Set-SqlDscRSUrlReservation' {
         }
 
         It 'Should add multiple URLs and remove existing ones' {
-            $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1, $script:testUrl2 -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1, $script:testUrl2 -Force -ErrorAction 'Stop'
 
             # Verify both URLs are set
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
@@ -63,7 +63,7 @@ Describe 'Set-SqlDscRSUrlReservation' {
         }
 
         It 'Should set URL reservations using pipeline' {
-            $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -ErrorAction 'Stop'
 
             # Verify the URLs are set correctly
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
@@ -93,7 +93,7 @@ Describe 'Set-SqlDscRSUrlReservation' {
         }
 
         It 'Should add multiple URLs and remove existing ones' {
-            $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1, $script:testUrl2 -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1, $script:testUrl2 -Force -ErrorAction 'Stop'
 
             # Verify both URLs are set
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
@@ -115,7 +115,7 @@ Describe 'Set-SqlDscRSUrlReservation' {
         }
 
         It 'Should set URL reservations using pipeline' {
-            $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -ErrorAction 'Stop'
 
             # Verify the URLs are set correctly
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
@@ -145,7 +145,7 @@ Describe 'Set-SqlDscRSUrlReservation' {
         }
 
         It 'Should add multiple URLs and remove existing ones' {
-            $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1, $script:testUrl2 -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1, $script:testUrl2 -Force -ErrorAction 'Stop'
 
             # Verify both URLs are set
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
@@ -167,7 +167,7 @@ Describe 'Set-SqlDscRSUrlReservation' {
         }
 
         It 'Should set URL reservations using pipeline' {
-            $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -ErrorAction 'Stop'
 
             # Verify the URLs are set correctly
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
@@ -198,7 +198,7 @@ Describe 'Set-SqlDscRSUrlReservation' {
         }
 
         It 'Should add multiple URLs and remove existing ones' {
-            $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1, $script:testUrl2 -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1, $script:testUrl2 -Force -ErrorAction 'Stop'
 
             # Verify both URLs are set
             $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
@@ -220,7 +220,7 @@ Describe 'Set-SqlDscRSUrlReservation' {
         }
 
         It 'Should set URL reservations using pipeline' {
-            $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -ErrorAction 'Stop'
 
             # Verify the URLs are set correctly
             $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
