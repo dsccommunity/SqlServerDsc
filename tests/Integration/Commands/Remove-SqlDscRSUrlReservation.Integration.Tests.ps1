@@ -59,7 +59,7 @@ Describe 'Remove-SqlDscRSUrlReservation' {
             # Use a unique port for testing to avoid conflicts
             $script:testPort = 18080
             $script:testUrl = "http://+:$script:testPort"
-s       }
+        }
 
         It 'Should remove URL reservation using pipeline' {
             { $script:configuration | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop' } | Should -Not -Throw
