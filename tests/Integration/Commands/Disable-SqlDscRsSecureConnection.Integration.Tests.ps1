@@ -46,9 +46,6 @@ Describe 'Disable-SqlDscRsSecureConnection' {
 
     Context 'When disabling secure connection for SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {
         It 'Should disable secure connection using pipeline' {
-            # First ensure secure connection is enabled
-            $script:configuration | Enable-SqlDscRsSecureConnection -Force
-
             # Disable secure connection
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
             $config | Disable-SqlDscRsSecureConnection -Force
@@ -61,9 +58,6 @@ Describe 'Disable-SqlDscRsSecureConnection' {
 
     Context 'When disabling secure connection for SQL Server Reporting Services' -Tag @('Integration_SQL2022_RS') {
         It 'Should disable secure connection using pipeline' {
-            # First ensure secure connection is enabled
-            $script:configuration | Enable-SqlDscRsSecureConnection -Force
-
             # Disable secure connection
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
             $config | Disable-SqlDscRsSecureConnection -Force
@@ -75,10 +69,8 @@ Describe 'Disable-SqlDscRsSecureConnection' {
     }
 
     Context 'When disabling secure connection for Power BI Report Server' -Tag @('Integration_PowerBI') {
+        BeforeA
         It 'Should disable secure connection for PBIRS using pipeline' {
-            # First ensure secure connection is enabled
-            $script:configuration | Enable-SqlDscRsSecureConnection -Force
-
             # Disable secure connection
             $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
             $config | Disable-SqlDscRsSecureConnection -Force
