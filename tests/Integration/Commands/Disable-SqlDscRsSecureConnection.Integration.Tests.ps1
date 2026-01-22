@@ -69,7 +69,6 @@ Describe 'Disable-SqlDscRsSecureConnection' {
     }
 
     Context 'When disabling secure connection for Power BI Report Server' -Tag @('Integration_PowerBI') {
-        BeforeA
         It 'Should disable secure connection for PBIRS using pipeline' {
             # Disable secure connection
             $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
