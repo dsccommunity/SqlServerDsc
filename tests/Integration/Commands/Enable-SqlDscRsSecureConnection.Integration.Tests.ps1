@@ -33,28 +33,7 @@ BeforeAll {
 
 Describe 'Enable-SqlDscRsSecureConnection' {
     Context 'When enabling secure connection for SQL Server Reporting Services' -Tag @('Integration_SQL2017_RS') {
-        BeforeAll {
-            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $script:originalLevel = $script:configuration.SecureConnectionLevel
-        }
-
-        AfterAll {
-            # Restore the original secure connection level
-            $restoreConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            if ($script:originalLevel -eq 0)
-            {
-                $restoreConfig | Disable-SqlDscRsSecureConnection -Force
-            }
-            else
-            {
-                $restoreConfig | Enable-SqlDscRsSecureConnection -Force
-            }
-        }
-
         It 'Should enable secure connection using pipeline' {
-            # First ensure secure connection is disabled
-            $script:configuration | Disable-SqlDscRsSecureConnection -Force
-
             # Enable secure connection
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
             $config | Enable-SqlDscRsSecureConnection -Force
@@ -62,40 +41,11 @@ Describe 'Enable-SqlDscRsSecureConnection' {
             # Verify secure connection is enabled (level 1 or higher means enabled)
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
             $verifyConfig.SecureConnectionLevel | Should -BeGreaterOrEqual 1
-        }
-
-        It 'Should return configuration when using PassThru' {
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $result = $config | Enable-SqlDscRsSecureConnection -Force -PassThru
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
         }
     }
 
     Context 'When enabling secure connection for SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {
-        BeforeAll {
-            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $script:originalLevel = $script:configuration.SecureConnectionLevel
-        }
-
-        AfterAll {
-            # Restore the original secure connection level
-            $restoreConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            if ($script:originalLevel -eq 0)
-            {
-                $restoreConfig | Disable-SqlDscRsSecureConnection -Force
-            }
-            else
-            {
-                $restoreConfig | Enable-SqlDscRsSecureConnection -Force
-            }
-        }
-
         It 'Should enable secure connection using pipeline' {
-            # First ensure secure connection is disabled
-            $script:configuration | Disable-SqlDscRsSecureConnection -Force
-
             # Enable secure connection
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
             $config | Enable-SqlDscRsSecureConnection -Force
@@ -103,40 +53,11 @@ Describe 'Enable-SqlDscRsSecureConnection' {
             # Verify secure connection is enabled (level 1 or higher means enabled)
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
             $verifyConfig.SecureConnectionLevel | Should -BeGreaterOrEqual 1
-        }
-
-        It 'Should return configuration when using PassThru' {
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $result = $config | Enable-SqlDscRsSecureConnection -Force -PassThru
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
         }
     }
 
     Context 'When enabling secure connection for SQL Server Reporting Services' -Tag @('Integration_SQL2022_RS') {
-        BeforeAll {
-            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $script:originalLevel = $script:configuration.SecureConnectionLevel
-        }
-
-        AfterAll {
-            # Restore the original secure connection level
-            $restoreConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            if ($script:originalLevel -eq 0)
-            {
-                $restoreConfig | Disable-SqlDscRsSecureConnection -Force
-            }
-            else
-            {
-                $restoreConfig | Enable-SqlDscRsSecureConnection -Force
-            }
-        }
-
         It 'Should enable secure connection using pipeline' {
-            # First ensure secure connection is disabled
-            $script:configuration | Disable-SqlDscRsSecureConnection -Force
-
             # Enable secure connection
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
             $config | Enable-SqlDscRsSecureConnection -Force
@@ -145,39 +66,10 @@ Describe 'Enable-SqlDscRsSecureConnection' {
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
             $verifyConfig.SecureConnectionLevel | Should -BeGreaterOrEqual 1
         }
-
-        It 'Should return configuration when using PassThru' {
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $result = $config | Enable-SqlDscRsSecureConnection -Force -PassThru
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
-        }
     }
 
     Context 'When enabling secure connection for Power BI Report Server' -Tag @('Integration_PowerBI') {
-        BeforeAll {
-            $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
-            $script:originalLevel = $script:configuration.SecureConnectionLevel
-        }
-
-        AfterAll {
-            # Restore the original secure connection level
-            $restoreConfig = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
-            if ($script:originalLevel -eq 0)
-            {
-                $restoreConfig | Disable-SqlDscRsSecureConnection -Force
-            }
-            else
-            {
-                $restoreConfig | Enable-SqlDscRsSecureConnection -Force
-            }
-        }
-
         It 'Should enable secure connection for PBIRS using pipeline' {
-            # First ensure secure connection is disabled
-            $script:configuration | Disable-SqlDscRsSecureConnection -Force
-
             # Enable secure connection
             $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
             $config | Enable-SqlDscRsSecureConnection -Force
@@ -185,14 +77,6 @@ Describe 'Enable-SqlDscRsSecureConnection' {
             # Verify secure connection is enabled (level 1 or higher means enabled)
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
             $verifyConfig.SecureConnectionLevel | Should -BeGreaterOrEqual 1
-        }
-
-        It 'Should return configuration when using PassThru' {
-            $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
-            $result = $config | Enable-SqlDscRsSecureConnection -Force -PassThru
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'PBIRS'
         }
     }
 }

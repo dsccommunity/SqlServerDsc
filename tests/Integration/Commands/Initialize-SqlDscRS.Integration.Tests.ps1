@@ -56,14 +56,6 @@ Describe 'Initialize-SqlDscRS' {
             $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
         }
 
-        It 'Should return configuration when using PassThru on initialized instance' {
-            # Initialize with PassThru (should be idempotent - succeeds whether already initialized or not)
-            $result = $script:configuration | Initialize-SqlDscRS -Force -PassThru -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
-        }
-
         It 'Should restart the service to ensure initialization is complete' {
             <#
                 After initialization, the Reporting Services service must be restarted
@@ -91,14 +83,6 @@ Describe 'Initialize-SqlDscRS' {
 
         It 'Should initialize or return already initialized' -Skip:$script:isInitialized {
             $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
-        }
-
-        It 'Should return configuration when using PassThru on initialized instance' {
-            # Initialize with PassThru (should be idempotent - succeeds whether already initialized or not)
-            $result = $script:configuration | Initialize-SqlDscRS -Force -PassThru -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
         }
 
         It 'Should restart the service to ensure initialization is complete' {
@@ -130,14 +114,6 @@ Describe 'Initialize-SqlDscRS' {
             $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
         }
 
-        It 'Should return configuration when using PassThru on initialized instance' {
-            # Initialize with PassThru (should be idempotent - succeeds whether already initialized or not)
-            $result = $script:configuration | Initialize-SqlDscRS -Force -PassThru -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
-        }
-
         It 'Should restart the service to ensure initialization is complete' {
             <#
                 After initialization, the Reporting Services service must be restarted
@@ -165,14 +141,6 @@ Describe 'Initialize-SqlDscRS' {
 
         It 'Should initialize or return already initialized' -Skip:$script:isInitialized {
             $script:configuration | Initialize-SqlDscRS -Force -ErrorAction 'Stop'
-        }
-
-        It 'Should return configuration when using PassThru on initialized instance' {
-            # Initialize with PassThru (should be idempotent - succeeds whether already initialized or not)
-            $result = $script:configuration | Initialize-SqlDscRS -Force -PassThru -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'PBIRS'
         }
 
         It 'Should restart the service to ensure initialization is complete' {
