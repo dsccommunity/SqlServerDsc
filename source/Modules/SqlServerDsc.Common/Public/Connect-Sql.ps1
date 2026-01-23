@@ -48,6 +48,7 @@
 function Connect-Sql
 {
     [CmdletBinding(DefaultParameterSetName = 'SqlServer')]
+    [OutputType([Microsoft.SqlServer.Management.Smo.Server])]
     param
     (
         [Parameter(ParameterSetName = 'SqlServer')]
