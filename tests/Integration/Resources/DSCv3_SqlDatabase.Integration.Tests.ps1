@@ -267,7 +267,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 ServerName           = $script:serverName
                 Name                 = 'model'
                 Ensure               = 'Present'
-                PsDscRunAsCredential = $script:sqlAdminCredential
+                RunAsCredential = $script:sqlAdminCredential
             }
 
             $result = dsc --trace-level info resource get --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
@@ -294,7 +294,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 Name                 = 'model'
                 RecoveryModel        = 'Simple'
                 Ensure               = 'Present'
-                PsDscRunAsCredential = $script:sqlAdminCredential
+                RunAsCredential = $script:sqlAdminCredential
             }
 
             $result = dsc --trace-level info resource test --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
@@ -338,7 +338,7 @@ resources:
         ServerName: $($script:serverName)
         Name: model
         Ensure: Present
-        PsDscRunAsCredential:
+        RunAsCredential:
           Username: "[parameters('sqlCred').Username]"
           Password: "[parameters('sqlCred').Password]"
 "@
