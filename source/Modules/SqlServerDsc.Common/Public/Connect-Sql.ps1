@@ -127,8 +127,7 @@ function Connect-Sql
         $databaseEngineInstance = '{0}:{1}' -f $Protocol, $databaseEngineInstance
     }
 
-    $sqlServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-    $sqlConnectionContext = $sqlServerObject.ConnectionContext
+    $sqlConnectionContext = [Microsoft.SqlServer.Management.Common.ServerConnection]::new()
     $sqlConnectionContext.ServerInstance = $databaseEngineInstance
     $sqlConnectionContext.StatementTimeout = $StatementTimeout
     $sqlConnectionContext.ConnectTimeout = $StatementTimeout
@@ -179,14 +178,16 @@ function Connect-Sql
     {
         $onlineStatus = 'Online'
         $connectTimer = [System.Diagnostics.StopWatch]::StartNew()
-        $sqlConnectionContext.Connect()
+        $sqlServerObject = [Microsoft.SqlServer.Management.Smo.Server]::new($sqlConnectionContext)
 
         <#
-            The addition of the ConnectTimeout property to the ConnectionContext will force the
-            Connect() method to block until successful.  THe SMO object's Status property may not
-            report 'Online' immediately even though the Connect() was successful.  The loop is to
-            ensure the SMO's Status property was been updated.
+        The addition of the ConnectTimeout property to the ConnectionContext will force the
+        Connect() method to block until successful.  The SMO object's Status property may not
+        report 'Online' immediately even though the Connect() was successful.  The loop is to
+        ensure the SMO's Status property was been updated.
         #>
+        $sqlServerObject.ConnectionContext.Connect()
+
         $sleepInSeconds = 2
         do
         {
@@ -270,12 +271,12 @@ function Connect-Sql
     {
         $connectTimer.Stop()
         <#
-            Connect will ensure we actually can connect, but we need to disconnect
+            Connect() will ensure we actually can connect, but we need to disconnect
             from the session so we don't have anything hanging. If we need run a
             method on the returned $sqlServerObject it will automatically open a
             new session and then close, therefore we don't need to keep this
             session open.
         #>
-        $sqlConnectionContext.Disconnect()
+        $sqlServerObject.ConnectionContext.Disconnect()
     }
 }
