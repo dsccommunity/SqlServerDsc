@@ -65,14 +65,5 @@ Describe 'Install-SqlDscPowerBIReportServer' -Tag @('Integration_PowerBI') {
             $reportServerService | Should -Not -BeNullOrEmpty
             $reportServerService.Status | Should -Be 'Running'
         }
-
-        It 'Should stop the Power BI Report Server service' {
-            # Stop the Power BI Report Server service to save memory on the build worker
-            $stopServiceResult = Stop-Service -Name 'PowerBIReportServer' -Force -PassThru -Verbose -ErrorAction 'Stop'
-
-            write-verbose -Message ($stopServiceResult | Out-String) -Verbose
-
-            $stopServiceResult.Status | Should -Be 'Stopped'
-        }
     }
 }

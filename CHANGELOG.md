@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc.Common
   - Moved functions into individual files and use ModuleBuilder to assemble.
 
+- SqlServerDsc
+  - Refactor integration tests for _SQL Server Reporting Services_ and _Power BI_
+    _Report Server_ ([issue #2431](https://github.com/dsccommunity/SqlServerDsc/issues/2431)).
+
 ## [17.4.0] - 2026-01-19
 
 ### Added
