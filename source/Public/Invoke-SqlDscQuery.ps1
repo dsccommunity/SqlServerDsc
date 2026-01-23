@@ -270,8 +270,4 @@ function Invoke-SqlDscQuery
             }
         }
     }
-
-    end
-    {
-    }
 }

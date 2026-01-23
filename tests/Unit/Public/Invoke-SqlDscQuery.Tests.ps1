@@ -186,7 +186,6 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                 $mockSqlCredentialSecurePassword = ConvertTo-SecureString -String $mockSqlCredentialPassword -AsPlainText -Force
                 $mockSqlCredential = [System.Management.Automation.PSCredential]::new($mockSqlCredentialUserName, $mockSqlCredentialSecurePassword)
 
-                Mock -CommandName Disconnect-SqlDscDatabaseEngine
                 Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
                     return $mockServerObject
                 }
@@ -200,7 +199,6 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                 $mockMethodExecuteNonQueryCallCount | Should -Be 1
 
                 Should -Invoke -CommandName Connect-SqlDscDatabaseEngine -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Disconnect-SqlDscDatabaseEngine -Exactly -Times 1 -Scope It
             }
 
             Context 'When calling the command with optional parameter Encrypt' {
@@ -212,7 +210,6 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                     $mockMethodExecuteNonQueryCallCount | Should -Be 1
 
                     Should -Invoke -CommandName Connect-SqlDscDatabaseEngine -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Disconnect-SqlDscDatabaseEngine -Exactly -Times 1 -Scope It
                 }
             }
         }
