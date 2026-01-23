@@ -259,4 +259,145 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
             $result.inDesiredState | Should -BeTrue
         }
     }
+
+    Context 'When using PsDscRunAsCredential instead of Credential' {
+        It 'Should return the expected current state for the model database' {
+            $desiredParameters = @{
+                InstanceName         = $script:instanceName
+                ServerName           = $script:serverName
+                Name                 = 'model'
+                Ensure               = 'Present'
+                PsDscRunAsCredential = $script:sqlAdminCredential
+            }
+
+            $result = dsc --trace-level info resource get --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+
+            $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
+
+            if ($dscExitCode -ne 0)
+            {
+                throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
+            }
+
+            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json -Depth 5 | Out-String)" -Verbose
+
+            $result.actualState.Name | Should -Be 'model'
+            $result.actualState.InstanceName | Should -Be $script:instanceName
+            $result.actualState.Ensure | Should -Be 'Present'
+            $result.actualState.RecoveryModel | Should -BeIn @('Full', 'Simple', 'BulkLogged')
+        }
+
+        It 'Should return true when the database is in the desired state' {
+            $desiredParameters = @{
+                InstanceName         = $script:instanceName
+                ServerName           = $script:serverName
+                Name                 = 'model'
+                RecoveryModel        = 'Simple'
+                Ensure               = 'Present'
+                PsDscRunAsCredential = $script:sqlAdminCredential
+            }
+
+            $result = dsc --trace-level info resource test --resource SqlServerDsc/SqlDatabase --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+
+            $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
+
+            if ($dscExitCode -ne 0)
+            {
+                throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
+            }
+
+            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json -Depth 5 | Out-String)" -Verbose
+
+            $result.inDesiredState | Should -BeTrue
+        }
+    }
+
+    Context 'When using dsc config with PsDscRunAsCredential in a separate parameters file' {
+        BeforeAll {
+            $script:configFilePath = Join-Path -Path $TestDrive -ChildPath 'SqlDatabase.dsc.yaml'
+            $script:paramsFilePath = Join-Path -Path $TestDrive -ChildPath 'params.json'
+
+            # Create the DSC configuration file
+            $configContent = @"
+`$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+metadata:
+  Microsoft.DSC:
+    securityContext: elevated
+parameters:
+  sqlCred:
+    type: secureObject
+resources:
+- name: Test SqlDatabase
+  type: Microsoft.Windows/WindowsPowerShell
+  properties:
+    resources:
+    - name: Model database check
+      type: SqlServerDsc/SqlDatabase
+      properties:
+        InstanceName: $($script:instanceName)
+        ServerName: $($script:serverName)
+        Name: model
+        Ensure: Present
+        PsDscRunAsCredential:
+          Username: "[parameters('sqlCred').Username]"
+          Password: "[parameters('sqlCred').Password]"
+"@
+
+            Set-Content -Path $script:configFilePath -Value $configContent -Encoding utf8
+
+            # Create the parameters file with secure credentials
+            $paramsContent = @{
+                parameters = @{
+                    sqlCred = @{
+                        Username = $script:sqlAdminCredential.username
+                        Password = $script:sqlAdminCredential.password
+                    }
+                }
+            } | ConvertTo-Json -Depth 5
+
+            Set-Content -Path $script:paramsFilePath -Value $paramsContent -Encoding utf8
+        }
+
+        It 'Should return the expected state using dsc config get' {
+            $result = dsc --trace-level info config get --parameters-file $script:paramsFilePath --file $script:configFilePath --output-format json | ConvertFrom-Json
+
+            $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
+
+            if ($dscExitCode -ne 0)
+            {
+                throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
+            }
+
+            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json -Depth 10 | Out-String)" -Verbose
+
+            $result.hadErrors | Should -BeFalse
+
+            $resourceResult = $result.results | Where-Object -FilterScript {
+                $_.name -eq 'Test SqlDatabase'
+            }
+
+            $resourceResult | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Should return true using dsc config test when the database is in the desired state' {
+            $result = dsc --trace-level info config test --parameters-file $script:paramsFilePath --file $script:configFilePath --output-format json | ConvertFrom-Json
+
+            $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
+
+            if ($dscExitCode -ne 0)
+            {
+                throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
+            }
+
+            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json -Depth 10 | Out-String)" -Verbose
+
+            $result.hadErrors | Should -BeFalse
+
+            $resourceResult = $result.results | Where-Object -FilterScript {
+                $_.name -eq 'Test SqlDatabase'
+            }
+
+            $resourceResult | Should -Not -BeNullOrEmpty
+        }
+    }
 }
