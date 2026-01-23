@@ -359,7 +359,7 @@ resources:
         }
 
         It 'Should return the expected state using dsc config get' {
-            $result = dsc --trace-level info config get --parameters-file $script:paramsFilePath --file $script:configFilePath --output-format json | ConvertFrom-Json
+            $result = dsc --trace-level info config --parameters-file $script:paramsFilePath get --file $script:configFilePath --output-format json | ConvertFrom-Json
 
             $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
@@ -380,7 +380,7 @@ resources:
         }
 
         It 'Should return true using dsc config test when the database is in the desired state' {
-            $result = dsc --trace-level info config test --parameters-file $script:paramsFilePath --file $script:configFilePath --output-format json | ConvertFrom-Json
+            $result = dsc --trace-level info config --parameters-file $script:paramsFilePath test --file $script:configFilePath --output-format json | ConvertFrom-Json
 
             $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
