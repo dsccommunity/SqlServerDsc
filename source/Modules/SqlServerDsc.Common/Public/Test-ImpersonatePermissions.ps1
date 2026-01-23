@@ -34,7 +34,7 @@ function Test-ImpersonatePermissions
 
     if ($impersonatePermissionsPresent)
     {
-        Write-Verbose -Message ( 'The login "{0}" has impersonate any login permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.ServerName, $testLoginEffectivePermissionsParams.SInstanceName ) -Verbose
+        Write-Verbose -Message ( 'The login "{0}" has impersonate any login permissions on the instance "{1}\{2}".' -f $testLoginEffectivePermissionsParams.LoginName, $testLoginEffectivePermissionsParams.ServerName, $testLoginEffectivePermissionsParams.InstanceName ) -Verbose
         return $impersonatePermissionsPresent
     }
     else

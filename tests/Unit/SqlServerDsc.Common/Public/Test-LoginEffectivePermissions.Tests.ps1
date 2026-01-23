@@ -120,14 +120,14 @@ Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEff
         $testLoginEffectiveServerPermissionsParams = @{
             ServerName   = 'Server1'
             InstanceName = 'MSSQLSERVER'
-            Login        = 'NT SERVICE\ClusSvc'
+            LoginName        = 'NT SERVICE\ClusSvc'
             Permissions  = @()
         }
 
         $testLoginEffectiveLoginPermissionsParams = @{
             ServerName     = 'Server1'
             InstanceName   = 'MSSQLSERVER'
-            Login          = 'NT SERVICE\ClusSvc'
+            LoginName          = 'NT SERVICE\ClusSvc'
             Permissions    = @()
             SecurableClass = 'LOGIN'
             SecurableName  = 'Login1'
