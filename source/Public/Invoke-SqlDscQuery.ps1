@@ -272,5 +272,6 @@ function Invoke-SqlDscQuery
     }
 
     end
-    {}
+    {
+    }
 }
