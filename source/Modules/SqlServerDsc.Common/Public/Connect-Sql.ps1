@@ -128,7 +128,7 @@ function Connect-Sql
         $databaseEngineInstance = '{0}:{1}' -f $Protocol, $databaseEngineInstance
     }
 
-    $sqlConnectionContext = [Microsoft.SqlServer.Management.Common.ServerConnection]::new()
+    $sqlConnectionContext = [Microsoft.SqlServer.Management.Smo.ServerConnection]::new()
     $sqlConnectionContext.ServerInstance = $databaseEngineInstance
     $sqlConnectionContext.StatementTimeout = $StatementTimeout
     $sqlConnectionContext.ConnectTimeout = $StatementTimeout
