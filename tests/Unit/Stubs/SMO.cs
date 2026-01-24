@@ -487,7 +487,7 @@ namespace Microsoft.SqlServer.Management.Smo
     public class Server
     {
         public AvailabilityGroupCollection AvailabilityGroups = new AvailabilityGroupCollection();
-        public ServerConnection ConnectionContext;
+        public Microsoft.SqlServer.Management.Common.ServerConnection ConnectionContext;
         public string ComputerNamePhysicalNetBIOS;
         public DatabaseCollection Databases = new DatabaseCollection();
         public string DisplayName;
@@ -1360,26 +1360,6 @@ namespace Microsoft.SqlServer.Management.Smo
 
         public void Create()
         {}
-    }
-
-    // TypeName: Microsoft.SqlServer.Management.Common.ServerConnection
-    // Used by:
-    //  SqlAGDatabase
-    //  Invoke-SqlDscScalarQuery
-    public class ServerConnection
-    {
-        public string TrueLogin;
-        public int StatementTimeout;
-
-        public void Create()
-        {}
-
-        // Method: ExecuteScalar
-        // Used for testing scalar query execution in Invoke-SqlDscScalarQuery
-        public object ExecuteScalar(string query)
-        {
-            return null;
-        }
     }
 
     // TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityDatabase
@@ -2796,4 +2776,41 @@ namespace Microsoft.SqlServer.Management.Common
     }
 
     #endregion
+
+    // TypeName: Microsoft.SqlServer.Management.Common.ServerConnection
+    // Used by:
+    //  SqlAGDatabase
+    //  Invoke-SqlDscScalarQuery
+    public class ServerConnection
+    {
+        public string ApplicationName;
+        public string ConnectTimeout;
+        public bool ConnectAsUser;
+        public string ConnectAsUserName;
+        public string ConnectAsUserPassword;
+        public bool EncryptConnection;
+        public string Login;
+        public bool LoginSecure;
+        public System.Security.SecureString SecurePassword;
+        public string ServerInstance;
+        public int StatementTimeout;
+        public string TrueLogin;
+
+        public ServerConnection(){}
+
+        public ServerConnection(string serverInstance)
+        {
+            this.ServerInstance = serverInstance;
+        }
+
+        public void Connect() {}
+        public void Disconnect() {}
+
+        // Method: ExecuteScalar
+        // Used for testing scalar query execution in Invoke-SqlDscScalarQuery
+        public object ExecuteScalar(string query)
+        {
+            return null;
+        }
+    }
 }
