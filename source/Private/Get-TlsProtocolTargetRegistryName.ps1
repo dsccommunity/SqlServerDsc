@@ -12,6 +12,16 @@
 
     .OUTPUTS
         System.String
+
+    .EXAMPLE
+        Get-TlsProtocolTargetRegistryName
+
+        Returns the string 'Server'.
+
+    .EXAMPLE
+        Get-TlsProtocolTargetRegistryName -Client
+
+        Returns the string 'Client'.
 #>
 function Get-TlsProtocolTargetRegistryName
 {

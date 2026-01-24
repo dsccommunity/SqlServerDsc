@@ -17,10 +17,23 @@
 
     .OUTPUTS
         System.String
+
+    .EXAMPLE
+        Get-TlsProtocolRegistryPath -Protocol Tls12
+
+        Returns the string:
+        'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server'.
+
+    .EXAMPLE
+        Get-TlsProtocolRegistryPath -Protocol Tls13 -Client
+
+        Returns the string:
+        'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.3\Client'.
 #>
 function Get-TlsProtocolRegistryPath
 {
     [CmdletBinding()]
+    [OutputType([System.String])]
     param
     (
         [Parameter(Mandatory = $true)]
