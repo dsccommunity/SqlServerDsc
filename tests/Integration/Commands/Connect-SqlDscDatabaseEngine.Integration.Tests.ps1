@@ -32,7 +32,7 @@ BeforeAll {
 }
 
 # cSpell: ignore DSCSQLTEST
-Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025') {
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
 

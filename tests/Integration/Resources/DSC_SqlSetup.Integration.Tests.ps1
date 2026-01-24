@@ -88,7 +88,12 @@ BeforeAll {
 
         The actual download URL can easiest be found in the browser download history.
     #>
-    if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2022', 'Integration_PowerBI')
+    if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2025')
+    {
+        $script:sqlVersion = '170'
+        $script:mockSourceDownloadExeUrl = 'https://download.microsoft.com/download/35b49aff-d8bb-43ba-8b3b-4ae1ae6963f3/SQL2025-SSEI-Eval.exe'
+    }
+    elseif (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2022', 'Integration_PowerBI')
     {
         $script:sqlVersion = '160'
         $script:mockSourceDownloadExeUrl = 'https://download.microsoft.com/download/c/c/9/cc9c6797-383c-4b24-8920-dc057c1de9d3/SQL2022-SSEI-Dev.exe'
@@ -174,7 +179,7 @@ AfterAll {
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
-Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
+Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025', 'Integration_PowerBI') {
     BeforeAll {
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }
@@ -291,6 +296,32 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
             $null = Start-DscConfiguration @startDscConfigurationParameters
         } -ErrorVariable itBlockError
+
+        It 'Should install named instance on SQL Server 2025' -Tag @('Integration_SQL2025') {
+            if (-not (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2025'))
+            {
+                Skip -Reason 'Not running in SQL2025 integration job'
+            }
+
+            $configurationParameters = @{
+                OutputPath        = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData = $ConfigurationData
+            }
+
+            $null = & $configurationName @configurationParameters
+
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
+
+            $null = Start-DscConfiguration @startDscConfigurationParameters
+        }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
             $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
@@ -637,7 +668,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.FailoverClusterIPAddress   | Should -BeNullOrEmpty
             $resourceCurrentState.FailoverClusterNetworkName | Should -BeNullOrEmpty
 
-            if ($script:sqlVersion -in (160))
+            if ($script:sqlVersion -in @('160','170'))
             {
                 <#
                     The features CONN, BC, SDK is no longer supported after SQL Server 2019.
@@ -797,7 +828,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.FailoverClusterIPAddress   | Should -BeNullOrEmpty
             $resourceCurrentState.FailoverClusterNetworkName | Should -BeNullOrEmpty
 
-            if ($script:sqlVersion -in (160))
+            if ($script:sqlVersion -in @('160','170'))
             {
                 <#
                     The features CONN, BC, SDK is no longer supported after SQL Server 2019.

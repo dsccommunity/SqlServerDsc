@@ -9,12 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlServerDsc.Common
   - Moved functions into individual files and use ModuleBuilder to assemble.
-
 - SqlServerDsc
   - Refactor integration tests for _SQL Server Reporting Services_ and _Power BI_
     _Report Server_ ([issue #2431](https://github.com/dsccommunity/SqlServerDsc/issues/2431)).
   - `Connect-Sql` create connection and server objects as per documentation.
   - `Invoke-SqlDscQuery` remove disconnect as there is not an explicit connect.
+  - Add SQL Server 2025 to integration tests ([issue #2427](https://github.com/dsccommunity/SqlServerDsc/issues/2427)).
 
 ## [17.4.0] - 2026-01-19
 

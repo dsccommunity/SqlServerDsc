@@ -39,7 +39,7 @@ BeforeAll {
     SQL Server setup/repair process itself (might also be related to CI environmental
     factors, like too few resources).
 #>
-Describe 'Repair-SqlDscServer' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') -Skip {
+Describe 'Repair-SqlDscServer' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025') -Skip {
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
 

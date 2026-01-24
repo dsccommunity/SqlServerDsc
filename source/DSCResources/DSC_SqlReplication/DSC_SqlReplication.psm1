@@ -437,7 +437,7 @@ function New-ServerConnection
         $SqlServerName
     )
 
-    if ($SqlMajorVersion -eq 16)
+    if ($SqlMajorVersion -in @(16, 17))
     {
         <#
             For SQL Server 2022 the object must be created with New-Object and

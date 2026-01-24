@@ -30,7 +30,7 @@ BeforeAll {
 }
 
 # cSpell: ignore DSCSQLTEST
-Describe 'Get-SqlDscCompatibilityLevel' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'Get-SqlDscCompatibilityLevel' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025') {
     BeforeAll {
         $script:mockInstanceName = 'DSCSQLTEST'
         $script:mockComputerName = Get-ComputerName
@@ -63,6 +63,10 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag @('Integration_SQL2017', 'Integrati
                 16 # SQL Server 2022
                 {
                     $script:expectedLevels = @('Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150', 'Version160')
+                }
+                17 # SQL Server 2025
+                {
+                    $script:expectedLevels = @('Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150', 'Version160', 'Version170')
                 }
                 default
                 {

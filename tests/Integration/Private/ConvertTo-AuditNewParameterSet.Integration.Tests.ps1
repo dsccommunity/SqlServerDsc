@@ -37,7 +37,7 @@ AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
 }
 
-Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025') {
     BeforeAll {
         $script:mockInstanceName = 'DSCSQLTEST'
         $script:mockComputerName = Get-ComputerName

@@ -37,7 +37,7 @@ AfterAll {
     $PSDefaultParameterValues.Remove('Should:ModuleName')
 }
 
-Describe 'Install-SqlDscFailoverCluster Integration Tests' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'Install-SqlDscFailoverCluster Integration Tests' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025') {
     <#
         Integration tests require a Windows Failover Cluster environment
         which is not available in the CI pipeline. Remove -Skip from the

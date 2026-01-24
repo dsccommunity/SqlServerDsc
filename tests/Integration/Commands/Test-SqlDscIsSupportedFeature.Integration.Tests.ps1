@@ -31,10 +31,10 @@ BeforeAll {
     Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 }
 
-Describe 'Test-SqlDscIsSupportedFeature' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'Test-SqlDscIsSupportedFeature' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025') {
     Context 'When testing supported features for different SQL Server versions' {
         It 'Should return $true for SQLENGINE feature across all major versions' {
-            $testVersions = @('10', '11', '12', '13', '14', '15', '16')
+            $testVersions = @('10', '11', '12', '13', '14', '15', '16', '17')
 
             foreach ($version in $testVersions) {
                 $result = Test-SqlDscIsSupportedFeature -Feature 'SQLENGINE' -ProductVersion $version -ErrorAction 'Stop'
@@ -121,6 +121,15 @@ Describe 'Test-SqlDscIsSupportedFeature' -Tag @('Integration_SQL2016', 'Integrat
             $resultLower | Should -Be $resultUpper
             $resultUpper | Should -Be $resultMixed
             $resultLower | Should -BeTrue
+        }
+
+        It 'Should return $false for discontinued features DQ/DQC/MDS in SQL Server 2025 (version 17)' {
+            $discontinuedFeatures = @('DQ', 'DQC', 'MDS')
+
+            foreach ($feature in $discontinuedFeatures) {
+                $result = Test-SqlDscIsSupportedFeature -Feature $feature -ProductVersion '17' -ErrorAction 'Stop'
+                $result | Should -BeFalse -Because "$feature is discontinued in SQL Server 2025"
+            }
         }
 
         It 'Should handle very high version numbers' {
