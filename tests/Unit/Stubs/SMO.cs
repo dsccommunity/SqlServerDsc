@@ -515,6 +515,12 @@ namespace Microsoft.SqlServer.Management.Smo
             this.Name = name;
         }
 
+        public Server(Microsoft.SqlServer.Management.Common.ServerConnection serverConnection)
+        {
+            this.ConnectionContext = serverConnection;
+            this.Name = serverConnection.ServerInstance;
+        }
+
         public Server Clone()
         {
             return new Server()
@@ -2783,18 +2789,18 @@ namespace Microsoft.SqlServer.Management.Common
     //  Invoke-SqlDscScalarQuery
     public class ServerConnection
     {
-        public string ApplicationName;
-        public string ConnectTimeout;
-        public bool ConnectAsUser;
-        public string ConnectAsUserName;
-        public string ConnectAsUserPassword;
-        public bool EncryptConnection;
-        public string Login;
-        public bool LoginSecure;
-        public System.Security.SecureString SecurePassword;
-        public string ServerInstance;
-        public int StatementTimeout;
-        public string TrueLogin;
+        public string ApplicationName { get; set; }
+        public bool ConnectAsUser { get; set; }
+        public string ConnectAsUserName { get; set; }
+        public string ConnectAsUserPassword { get; set; }
+        public int ConnectTimeout { get; set; }
+        public bool EncryptConnection { get; set; }
+        public string Login { get; set; }
+        public bool LoginSecure { get; set; }
+        public System.Security.SecureString SecurePassword { get; set; }
+        public string ServerInstance { get; set; }
+        public int StatementTimeout { get; set; }
+        public string TrueLogin { get; }
 
         public ServerConnection(){}
 
@@ -2805,6 +2811,7 @@ namespace Microsoft.SqlServer.Management.Common
 
         public void Connect() {}
         public void Disconnect() {}
+        public void Refresh() {}
 
         // Method: ExecuteScalar
         // Used for testing scalar query execution in Invoke-SqlDscScalarQuery
