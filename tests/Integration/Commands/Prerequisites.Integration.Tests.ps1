@@ -254,6 +254,17 @@ Describe 'Prerequisites' {
         }
     }
 
+    Context 'Ensure TLS 1.2 is enabled' -Tag @('Integration_SQL2025') {
+        # SQL Server 2025 installation can fail when TLS 1.2 is disabled:
+        # https://learn.microsoft.com/en-us/sql/sql-server/sql-server-2025-known-issues?view=sql-server-ver17#sql-server-2025-installation-fails-when-tls-12-is-disabled
+        It 'Should have TLS 1.2 enabled on the node' -Tag @('Integration_SQL2025') {
+            # Test-TlsProtocol returns $true when the protocol is enabled.
+            # Assert for both Server and Client registry keys.
+            (Test-TlsProtocol -Protocol 'Tls12') | Should -BeTrue
+            (Test-TlsProtocol -Protocol 'Tls12' -Client) | Should -BeTrue
+        }
+    }
+
     Context 'Download correct SQL Server 2017 Reporting Services installation executable' {
         It 'Should download SQL Server 2017 Reporting Services installation executable' -Tag @('Integration_SQL2017_RS') {
             # Microsoft SQL Server 2017 Reporting Services (14.0.601.20 - 2023-02-14) - https://www.microsoft.com/en-us/download/details.aspx?id=55252
