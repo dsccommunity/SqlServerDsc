@@ -228,7 +228,7 @@ Describe 'Prerequisites' {
             $module.Version -eq '21.1.18256' | Should -BeTrue
         }
 
-        It 'Should install SqlServer module version 22.2.0' -Tag @('Integration_SQL2022', 'Integration_SQL2025', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
+        It 'Should install SqlServer module version 22.2.0' -Tag @('Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
             #Install-Module -Name 'SqlServer' -RequiredVersion '22.2.0' -Force -ErrorAction 'Stop'
             $module = Install-PSResource -Name 'SqlServer' -Version '22.2.0' -Scope 'AllUsers' -TrustRepository -ErrorAction 'Stop' -Confirm:$false -PassThru
 
@@ -236,11 +236,26 @@ Describe 'Prerequisites' {
             $module.Version -eq '22.2.0' | Should -BeTrue
         }
 
-        It 'Should have SqlServer module version 22.2.0 available' -Tag @('Integration_SQL2022', 'Integration_SQL2025', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
+        It 'Should have SqlServer module version 22.2.0 available' -Tag @('Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
             $module = Get-Module -Name 'SqlServer' -ListAvailable
 
             $module | Should -HaveCount 1
             $module.Version -eq '22.2.0' | Should -BeTrue
+        }
+
+        It 'Should install SqlServer module version 22.4.5.1' -Tag @('Integration_SQL2025') {
+            #Install-Module -Name 'SqlServer' -RequiredVersion '22.4.5.1' -Force -ErrorAction 'Stop'
+            $module = Install-PSResource -Name 'SqlServer' -Version '22.4.5.1' -Scope 'AllUsers' -TrustRepository -ErrorAction 'Stop' -Confirm:$false -PassThru
+
+            $module | Should -HaveCount 1
+            $module.Version -eq '22.4.5.1' | Should -BeTrue
+        }
+
+        It 'Should have SqlServer module version 22.4.5.1 available' -Tag @('Integration_SQL2025') {
+            $module = Get-Module -Name 'SqlServer' -ListAvailable
+
+            $module | Should -HaveCount 1
+            $module.Version -eq '22.4.5.1' | Should -BeTrue
         }
     }
 
