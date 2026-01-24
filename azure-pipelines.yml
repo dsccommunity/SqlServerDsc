@@ -1268,7 +1268,7 @@ stages:
               TEST_CONFIGURATION: 'Integration_SQL2022'
             SQL2025_WIN2025:
               JOB_VMIMAGE: 'windows-2025'
-              TEST_CONFIGURATION: 'Integration_SQL2025
+              TEST_CONFIGURATION: 'Integration_SQL2025'
         pool:
           vmImage: $(JOB_VMIMAGE)
         timeoutInMinutes: 0
