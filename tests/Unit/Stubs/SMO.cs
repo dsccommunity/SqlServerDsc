@@ -2802,7 +2802,7 @@ namespace Microsoft.SqlServer.Management.Common
         public System.Security.SecureString SecurePassword { get; set; }
         public string ServerInstance { get; set; }
         public int StatementTimeout { get; set; }
-        public string TrueLogin { get; }
+        public string TrueLogin { get; set; }
 
         public ServerConnection(){}
 
