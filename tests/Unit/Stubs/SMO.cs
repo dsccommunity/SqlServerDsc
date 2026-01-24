@@ -546,6 +546,8 @@ namespace Microsoft.SqlServer.Management.Smo
             };
         }
 
+        public void Refresh() {}
+
         public Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[] EnumServerPermissions( string principal, Microsoft.SqlServer.Management.Smo.ServerPermissionSet permissionSetQuery )
         {
             Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[] permissionInfo = null;
@@ -2811,7 +2813,6 @@ namespace Microsoft.SqlServer.Management.Common
 
         public void Connect() {}
         public void Disconnect() {}
-        public void Refresh() {}
 
         // Method: ExecuteScalar
         // Used for testing scalar query execution in Invoke-SqlDscScalarQuery
