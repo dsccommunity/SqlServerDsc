@@ -308,32 +308,6 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $null = Start-DscConfiguration @startDscConfigurationParameters
         } -ErrorVariable itBlockError
 
-        It 'Should install named instance on SQL Server 2025' -Tag @('Integration_SQL2025') {
-            if (-not (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2025'))
-            {
-                Skip -Reason 'Not running in SQL2025 integration job'
-            }
-
-            $configurationParameters = @{
-                OutputPath        = $TestDrive
-                # The variable $ConfigurationData was dot-sourced above.
-                ConfigurationData = $ConfigurationData
-            }
-
-            $null = & $configurationName @configurationParameters
-
-            $startDscConfigurationParameters = @{
-                Path         = $TestDrive
-                ComputerName = 'localhost'
-                Wait         = $true
-                Verbose      = $true
-                Force        = $true
-                ErrorAction  = 'Stop'
-            }
-
-            $null = Start-DscConfiguration @startDscConfigurationParameters
-        }
-
         It 'Should be able to call Get-DscConfiguration without throwing' {
             $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
         }
