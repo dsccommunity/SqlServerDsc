@@ -128,7 +128,7 @@ function Connect-Sql
         $databaseEngineInstance = '{0}:{1}' -f $Protocol, $databaseEngineInstance
     }
 
-    $sqlConnectionContext = [Microsoft.SqlServer.Management.Common.ServerConnection]::new()
+    $sqlConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Common.ServerConnection
     $sqlConnectionContext.ServerInstance = $databaseEngineInstance
     $sqlConnectionContext.StatementTimeout = $StatementTimeout
     $sqlConnectionContext.ConnectTimeout = $StatementTimeout
@@ -179,7 +179,7 @@ function Connect-Sql
     {
         $onlineStatus = 'Online'
         $connectTimer = [System.Diagnostics.StopWatch]::StartNew()
-        $sqlServerObject = [Microsoft.SqlServer.Management.Smo.Server]::new($sqlConnectionContext)
+        $sqlServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server -ArgumentList $sqlConnectionContext
 
         <#
         The addition of the ConnectTimeout property to the ConnectionContext will force the

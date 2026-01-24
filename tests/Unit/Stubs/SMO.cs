@@ -2812,6 +2812,7 @@ namespace Microsoft.SqlServer.Management.Common
         }
 
         public void Connect() {}
+
         public void Disconnect() {}
 
         // Method: ExecuteScalar
