@@ -34,7 +34,7 @@ BeforeAll {
     $script:dscResourceFriendlyName = 'SqlDatabase'
 }
 
-Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQL2022') {
+Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQL2022', 'Integration_SQL2025') {
     BeforeAll {
         # Output the PowerShell version used in the test
         Write-Verbose -Message "`nPowerShell version used in integration test:`n$($PSVersionTable | Out-String)" -Verbose
