@@ -52,7 +52,7 @@ AfterAll {
 Describe 'Disconnect-SqlDscDatabaseEngine' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
-            MockParameterSetName = '__AllParameterSets'
+            MockParameterSetName   = '__AllParameterSets'
             # cSpell: disable-next
             MockExpectedParameters = '[-ServerObject] <Server> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
@@ -63,11 +63,11 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag 'Public' {
             } |
             Select-Object -Property @(
                 @{
-                    Name = 'ParameterSetName'
+                    Name       = 'ParameterSetName'
                     Expression = { $_.Name }
                 },
                 @{
-                    Name = 'ParameterListAsString'
+                    Name       = 'ParameterListAsString'
                     Expression = { $_.ToString() }
                 }
             )
@@ -81,7 +81,7 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag 'Public' {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'MockInstance'
 
-            $mockConnectionContext = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerConnection' |
+            $mockConnectionContext = New-Object -TypeName 'Microsoft.SqlServer.Management.Common.ServerConnection' |
                 Add-Member -MemberType 'ScriptMethod' -Name 'Disconnect' -Value {
                     $script:mockMethodDisconnectCallCount += 1
                 } -PassThru -Force

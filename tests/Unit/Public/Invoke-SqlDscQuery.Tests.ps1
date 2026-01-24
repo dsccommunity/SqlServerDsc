@@ -103,7 +103,7 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                     'MockDatabase' = $databaseObject
                 } -PassThru -Force
 
-            $mockConnectionContext = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerConnection' |
+            $mockConnectionContext = New-Object -TypeName 'Microsoft.SqlServer.Management.Common.ServerConnection' |
                 Add-Member -MemberType 'NoteProperty' -Name 'StatementTimeout' -Value 100 -PassThru -Force
 
             $mockServerObject.ConnectionContext = $mockConnectionContext
@@ -237,7 +237,7 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                     'MockDatabase' = $databaseObject
                 } -PassThru -Force
 
-            $mockConnectionContext = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerConnection' |
+            $mockConnectionContext = New-Object -TypeName 'Microsoft.SqlServer.Management.Common.ServerConnection' |
                 Add-Member -MemberType 'NoteProperty' -Name 'StatementTimeout' -Value 100 -PassThru -Force
 
             $mockServerObject.ConnectionContext = $mockConnectionContext
@@ -310,7 +310,7 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                     'MockDatabase' = $databaseObject
                 } -PassThru -Force
 
-            $mockConnectionContext = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerConnection' |
+            $mockConnectionContext = New-Object -TypeName 'Microsoft.SqlServer.Management.Common.ServerConnection' |
                 Add-Member -MemberType 'NoteProperty' -Name 'StatementTimeout' -Value 100 -PassThru -Force
 
             $mockServerObject.ConnectionContext = $mockConnectionContext
