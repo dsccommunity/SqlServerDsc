@@ -11,6 +11,11 @@
 
     .OUTPUTS
         System.String
+
+    .EXAMPLE
+        ConvertTo-TlsProtocolRegistryKeyName -Protocol Tls12
+
+        Returns the string 'TLS 1.2'.
 #>
 function ConvertTo-TlsProtocolRegistryKeyName
 {
