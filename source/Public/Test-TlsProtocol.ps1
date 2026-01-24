@@ -20,6 +20,16 @@
 
     .OUTPUTS
         System.Boolean
+
+    .EXAMPLE
+        Test-TlsProtocol -Protocol Tls12
+
+        Tests if TLS 1.2 is enabled for server-side connections.
+
+    .EXAMPLE
+        Test-TlsProtocol -Protocol Tls13 -Client
+
+        Tests if TLS 1.3 is enabled for client-side connections.
 #>
 function Test-TlsProtocol
 {
@@ -27,6 +37,7 @@ function Test-TlsProtocol
     [OutputType([System.Boolean])]
     param
     (
+        # TODO: Should use enum [System.Security.Authentication.SslProtocols]
         [Parameter(Mandatory = $true)]
         [ValidateSet('Ssl2', 'Ssl3', 'Tls', 'Tls11', 'Tls12', 'Tls13', IgnoreCase = $true)]
         [System.String[]]
@@ -43,11 +54,7 @@ function Test-TlsProtocol
 
     foreach ($p in $Protocol)
     {
-        $protocolTarget = if ($Client.IsPresent) { 'Client' } else { 'Server' }
-
-        $protocolKeyName = ConvertTo-TlsProtocolRegistryKeyName -Protocol $p
-
-        $regPath = "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\SCHANNEL\\Protocols\\$protocolKeyName\\$protocolTarget"
+        $regPath = Get-TlsProtocolRegistryPath -Protocol $p -Client:$Client
 
         $protocolEnabled = Get-RegistryPropertyValue -Path $regPath -Name 'Enabled' -ErrorAction SilentlyContinue
         $protocolDisabled = Get-RegistryPropertyValue -Path $regPath -Name 'DisabledByDefault' -ErrorAction SilentlyContinue
