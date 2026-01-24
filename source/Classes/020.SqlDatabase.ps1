@@ -337,7 +337,7 @@ class SqlDatabase : SqlResourceBase
     $Collation
 
     [DscProperty()]
-    [ValidateSet('Version80', 'Version90', 'Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150', 'Version160')]
+    [ValidateSet('Version80', 'Version90', 'Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150', 'Version160', 'Version170')]
     [System.String]
     $CompatibilityLevel
 

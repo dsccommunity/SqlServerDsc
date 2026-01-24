@@ -128,6 +128,41 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
             $result.IsLedger | Should -BeTrue
         }
 
+        It 'Should create a ledger database on SQL Server 2025 (version 17) with IsLedger set to true' {
+            # Create a mock server for SQL Server 2025 (version 17) which should also support IsLedger
+            $mockServerObject2025 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject2025 | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance2025' -Force
+            $mockServerObject2025 | Add-Member -MemberType 'NoteProperty' -Name 'VersionMajor' -Value 17 -Force
+            $mockServerObject2025 | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                return @{} | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                    # Mock implementation
+                } -PassThru -Force
+            } -Force
+
+            $result = New-SqlDscDatabase -ServerObject $mockServerObject2025 -Name 'LedgerDatabase2025' -IsLedger -Force
+
+            $result | Should -Not -BeNullOrEmpty
+            $result.Name | Should -Be 'LedgerDatabase2025'
+            $result.IsLedger | Should -BeTrue
+        }
+
+        It 'Should accept CompatibilityLevel Version170 on SQL Server 2025' {
+            # Mock a SQL Server 2025 server object
+            $mockServerObject2025 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject2025 | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance2025' -Force
+            $mockServerObject2025 | Add-Member -MemberType 'NoteProperty' -Name 'VersionMajor' -Value 17 -Force
+            $mockServerObject2025 | Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                return @{} | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                    # Mock implementation
+                } -PassThru -Force
+            } -Force
+
+            $result = New-SqlDscDatabase -ServerObject $mockServerObject2025 -Name 'TestDatabase170' -CompatibilityLevel 'Version170' -Force
+
+            $result | Should -Not -BeNullOrEmpty
+            $result.CompatibilityLevel | Should -Be 'Version170'
+        }
+
         It 'Should create a database with additional boolean properties set' {
             $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabaseWithProps' -AutoClose -AutoShrink -Force
 

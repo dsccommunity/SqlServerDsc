@@ -31,7 +31,7 @@ BeforeAll {
     Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 }
 
-Describe 'Get-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'Get-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025') {
     Context 'When using default parameters' {
         It 'Should return a module object when preferred modules are available' {
             $result = Get-SqlDscPreferredModule -ErrorAction 'Stop'

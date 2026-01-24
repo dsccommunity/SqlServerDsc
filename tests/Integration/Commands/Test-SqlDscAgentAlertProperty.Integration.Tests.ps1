@@ -31,7 +31,7 @@ BeforeAll {
     Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 }
 
-Describe 'Test-SqlDscAgentAlertProperty' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022'){
+Describe 'Test-SqlDscAgentAlertProperty' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025'){
     BeforeAll {
         # Integration tests are run on the DSCSQLTEST instance
         $script:sqlServerInstance = 'DSCSQLTEST'

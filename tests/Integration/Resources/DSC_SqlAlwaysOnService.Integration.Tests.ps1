@@ -70,7 +70,7 @@ AfterAll {
     TODO: This has temporarily been disabled as the test is not passing.
           Tags should be changed to @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022')
 #>
-Describe "$($script:dscResourceName)_Integration" -Tag 'Skip'  {
+Describe "$($script:dscResourceName)_Integration" -Skip  {
     BeforeAll {
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }

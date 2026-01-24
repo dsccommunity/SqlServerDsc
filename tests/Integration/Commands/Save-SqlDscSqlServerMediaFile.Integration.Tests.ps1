@@ -31,7 +31,7 @@ BeforeAll {
     Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 }
 
-Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025') {
     BeforeAll {
         # Create a temporary directory for testing downloads
         $script:testDownloadPath = Join-Path -Path $env:TEMP -ChildPath "SqlDscTestDownloads_$(Get-Random)"

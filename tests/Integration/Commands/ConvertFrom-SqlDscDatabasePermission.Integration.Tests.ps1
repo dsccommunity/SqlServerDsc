@@ -31,7 +31,7 @@ BeforeAll {
     Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 }
 
-Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025') {
     Context 'When converting DatabasePermission objects' {
         Context 'When converting a single permission Grant state' {
             It 'Should return a DatabasePermissionSet with correct permissions set' {

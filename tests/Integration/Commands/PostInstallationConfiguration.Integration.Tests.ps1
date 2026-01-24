@@ -32,7 +32,7 @@ BeforeAll {
 }
 
 # cSpell: ignore DSCSQLTEST
-Describe 'PostInstallationConfiguration' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'PostInstallationConfiguration' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025') {
     Context 'When configuring SSL certificate for encryption support on DSCSQLTEST instance' {
         BeforeAll {
             $script:instanceName = 'DSCSQLTEST'
