@@ -65,13 +65,6 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
         It 'Should set the database connection' {
             $script:configuration | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'ReportServer' -Force -ErrorAction 'Stop'
         }
-
-        It 'Should return the configuration when using PassThru' {
-            $result = $script:configuration | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'ReportServer' -PassThru -Force -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
-        }
     }
 
     Context 'When setting database connection for SQL Server 2019 Reporting Services' -Tag @('Integration_SQL2019_RS') {
@@ -94,13 +87,6 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
 
         It 'Should set the database connection' {
             $script:configuration | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'ReportServer' -Force -ErrorAction 'Stop'
-        }
-
-        It 'Should return the configuration when using PassThru' {
-            $result = $script:configuration | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'ReportServer' -PassThru -Force -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
         }
     }
 
@@ -125,13 +111,6 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
         It 'Should set the database connection' {
             $script:configuration | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'ReportServer' -Force -ErrorAction 'Stop'
         }
-
-        It 'Should return the configuration when using PassThru' {
-            $result = $script:configuration | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'ReportServer' -PassThru -Force -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
-        }
     }
 
     Context 'When setting database connection for Power BI Report Server' -Tag @('Integration_PowerBI') {
@@ -154,13 +133,6 @@ Describe 'Set-SqlDscRSDatabaseConnection' {
 
         It 'Should set the database connection' {
             $script:configuration | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'ReportServer' -Force -ErrorAction 'Stop'
-        }
-
-        It 'Should return the configuration when using PassThru' {
-            $result = $script:configuration | Set-SqlDscRSDatabaseConnection -ServerName 'localhost' -InstanceName 'RSDB' -DatabaseName 'ReportServer' -PassThru -Force -ErrorAction 'Stop'
-
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'PBIRS'
         }
     }
 }

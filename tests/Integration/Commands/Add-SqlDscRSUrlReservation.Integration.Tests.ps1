@@ -36,9 +36,6 @@ Describe 'Add-SqlDscRSUrlReservation' {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            # Store original URL reservations to restore later
-            $script:originalReservations = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
-
             # Use a unique port for testing to avoid conflicts
             $script:testPort = 18080
             $script:testUrl = "http://+:$script:testPort"

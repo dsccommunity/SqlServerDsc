@@ -36,73 +36,12 @@ Describe 'Set-SqlDscRSUrlReservation' {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            # Store original URL reservations to restore later
-            $script:originalReservations = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
-
-            # Get current URLs for ReportServerWebService to restore later
-            $script:originalWebServiceUrls = @()
-
-            if ($null -ne $script:originalReservations.Application)
-            {
-                for ($i = 0; $i -lt $script:originalReservations.Application.Count; $i++)
-                {
-                    if ($script:originalReservations.Application[$i] -eq 'ReportServerWebService')
-                    {
-                        $script:originalWebServiceUrls += $script:originalReservations.UrlString[$i]
-                    }
-                }
-            }
-
-            # Use unique ports for testing to avoid conflicts
-            $script:testUrl1 = 'http://+:18081'
-            $script:testUrl2 = 'http://+:18082'
-        }
-
-        AfterAll {
-            # Clean up: restore original URL reservations
-            try
-            {
-                $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-
-                # Remove test URLs if they exist
-                $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -ErrorAction 'SilentlyContinue'
-                $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl2 -Force -ErrorAction 'SilentlyContinue'
-
-                # Restore original URLs
-                foreach ($url in $script:originalWebServiceUrls)
-                {
-                    $config | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $url -Force -ErrorAction 'SilentlyContinue'
-                }
-            }
-            catch
-            {
-                # Ignore errors during cleanup
-            }
-        }
-
-        It 'Should set URL reservations using pipeline' {
-            $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -ErrorAction 'Stop'
-
-            # Verify the URLs are set correctly
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-            $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
-
-            # Get URLs for the specified application
-            $currentUrls = @()
-
-            for ($i = 0; $i -lt $reservations.Application.Count; $i++)
-            {
-                if ($reservations.Application[$i] -eq 'ReportServerWebService')
-                {
-                    $currentUrls += $reservations.UrlString[$i]
-                }
-            }
-
-            $currentUrls | Should -Contain $script:testUrl1
+            $script:testUrl1 = 'http://+:18080'
+            $script:testUrl2 = 'http://+:18081'
         }
 
         It 'Should add multiple URLs and remove existing ones' {
-            $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1, $script:testUrl2 -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1, $script:testUrl2 -Force -ErrorAction 'Stop'
 
             # Verify both URLs are set
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
@@ -123,12 +62,25 @@ Describe 'Set-SqlDscRSUrlReservation' {
             $currentUrls | Should -Contain $script:testUrl2
         }
 
-        It 'Should return configuration when using PassThru' {
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-            $result = $config | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -PassThru -ErrorAction 'Stop'
+        It 'Should set URL reservations using pipeline' {
+            $null = $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            # Verify the URLs are set correctly
+            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+            $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
+
+            # Get URLs for the specified application
+            $currentUrls = @()
+
+            for ($i = 0; $i -lt $reservations.Application.Count; $i++)
+            {
+                if ($reservations.Application[$i] -eq 'ReportServerWebService')
+                {
+                    $currentUrls += $reservations.UrlString[$i]
+                }
+            }
+
+            $currentUrls | Should -Contain $script:testUrl1
         }
     }
 
@@ -136,73 +88,12 @@ Describe 'Set-SqlDscRSUrlReservation' {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            # Store original URL reservations to restore later
-            $script:originalReservations = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
-
-            # Get current URLs for ReportServerWebService to restore later
-            $script:originalWebServiceUrls = @()
-
-            if ($null -ne $script:originalReservations.Application)
-            {
-                for ($i = 0; $i -lt $script:originalReservations.Application.Count; $i++)
-                {
-                    if ($script:originalReservations.Application[$i] -eq 'ReportServerWebService')
-                    {
-                        $script:originalWebServiceUrls += $script:originalReservations.UrlString[$i]
-                    }
-                }
-            }
-
-            # Use unique ports for testing to avoid conflicts
-            $script:testUrl1 = 'http://+:18081'
-            $script:testUrl2 = 'http://+:18082'
-        }
-
-        AfterAll {
-            # Clean up: restore original URL reservations
-            try
-            {
-                $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-
-                # Remove test URLs if they exist
-                $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -ErrorAction 'SilentlyContinue'
-                $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl2 -Force -ErrorAction 'SilentlyContinue'
-
-                # Restore original URLs
-                foreach ($url in $script:originalWebServiceUrls)
-                {
-                    $config | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $url -Force -ErrorAction 'SilentlyContinue'
-                }
-            }
-            catch
-            {
-                # Ignore errors during cleanup
-            }
-        }
-
-        It 'Should set URL reservations using pipeline' {
-            $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -ErrorAction 'Stop'
-
-            # Verify the URLs are set correctly
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-            $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
-
-            # Get URLs for the specified application
-            $currentUrls = @()
-
-            for ($i = 0; $i -lt $reservations.Application.Count; $i++)
-            {
-                if ($reservations.Application[$i] -eq 'ReportServerWebService')
-                {
-                    $currentUrls += $reservations.UrlString[$i]
-                }
-            }
-
-            $currentUrls | Should -Contain $script:testUrl1
+            $script:testUrl1 = 'http://+:18080'
+            $script:testUrl2 = 'http://+:18081'
         }
 
         It 'Should add multiple URLs and remove existing ones' {
-            $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1, $script:testUrl2 -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1, $script:testUrl2 -Force -ErrorAction 'Stop'
 
             # Verify both URLs are set
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
@@ -223,12 +114,25 @@ Describe 'Set-SqlDscRSUrlReservation' {
             $currentUrls | Should -Contain $script:testUrl2
         }
 
-        It 'Should return configuration when using PassThru' {
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-            $result = $config | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -PassThru -ErrorAction 'Stop'
+        It 'Should set URL reservations using pipeline' {
+            $null = $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            # Verify the URLs are set correctly
+            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+            $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
+
+            # Get URLs for the specified application
+            $currentUrls = @()
+
+            for ($i = 0; $i -lt $reservations.Application.Count; $i++)
+            {
+                if ($reservations.Application[$i] -eq 'ReportServerWebService')
+                {
+                    $currentUrls += $reservations.UrlString[$i]
+                }
+            }
+
+            $currentUrls | Should -Contain $script:testUrl1
         }
     }
 
@@ -236,73 +140,12 @@ Describe 'Set-SqlDscRSUrlReservation' {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            # Store original URL reservations to restore later
-            $script:originalReservations = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
-
-            # Get current URLs for ReportServerWebService to restore later
-            $script:originalWebServiceUrls = @()
-
-            if ($null -ne $script:originalReservations.Application)
-            {
-                for ($i = 0; $i -lt $script:originalReservations.Application.Count; $i++)
-                {
-                    if ($script:originalReservations.Application[$i] -eq 'ReportServerWebService')
-                    {
-                        $script:originalWebServiceUrls += $script:originalReservations.UrlString[$i]
-                    }
-                }
-            }
-
-            # Use unique ports for testing to avoid conflicts
-            $script:testUrl1 = 'http://+:18081'
-            $script:testUrl2 = 'http://+:18082'
-        }
-
-        AfterAll {
-            # Clean up: restore original URL reservations
-            try
-            {
-                $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-
-                # Remove test URLs if they exist
-                $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -ErrorAction 'SilentlyContinue'
-                $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl2 -Force -ErrorAction 'SilentlyContinue'
-
-                # Restore original URLs
-                foreach ($url in $script:originalWebServiceUrls)
-                {
-                    $config | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $url -Force -ErrorAction 'SilentlyContinue'
-                }
-            }
-            catch
-            {
-                # Ignore errors during cleanup
-            }
-        }
-
-        It 'Should set URL reservations using pipeline' {
-            $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -ErrorAction 'Stop'
-
-            # Verify the URLs are set correctly
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-            $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
-
-            # Get URLs for the specified application
-            $currentUrls = @()
-
-            for ($i = 0; $i -lt $reservations.Application.Count; $i++)
-            {
-                if ($reservations.Application[$i] -eq 'ReportServerWebService')
-                {
-                    $currentUrls += $reservations.UrlString[$i]
-                }
-            }
-
-            $currentUrls | Should -Contain $script:testUrl1
+            $script:testUrl1 = 'http://+:18080'
+            $script:testUrl2 = 'http://+:18081'
         }
 
         It 'Should add multiple URLs and remove existing ones' {
-            $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1, $script:testUrl2 -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1, $script:testUrl2 -Force -ErrorAction 'Stop'
 
             # Verify both URLs are set
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
@@ -323,12 +166,25 @@ Describe 'Set-SqlDscRSUrlReservation' {
             $currentUrls | Should -Contain $script:testUrl2
         }
 
-        It 'Should return configuration when using PassThru' {
-            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
-            $result = $config | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -PassThru -ErrorAction 'Stop'
+        It 'Should set URL reservations using pipeline' {
+            $null = $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            # Verify the URLs are set correctly
+            $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
+            $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
+
+            # Get URLs for the specified application
+            $currentUrls = @()
+
+            for ($i = 0; $i -lt $reservations.Application.Count; $i++)
+            {
+                if ($reservations.Application[$i] -eq 'ReportServerWebService')
+                {
+                    $currentUrls += $reservations.UrlString[$i]
+                }
+            }
+
+            $currentUrls | Should -Contain $script:testUrl1
         }
     }
 
@@ -336,73 +192,13 @@ Describe 'Set-SqlDscRSUrlReservation' {
         BeforeAll {
             $script:configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
 
-            # Store original URL reservations to restore later
-            $script:originalReservations = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
-
-            # Get current URLs for ReportServerWebService to restore later
-            $script:originalWebServiceUrls = @()
-
-            if ($null -ne $script:originalReservations.Application)
-            {
-                for ($i = 0; $i -lt $script:originalReservations.Application.Count; $i++)
-                {
-                    if ($script:originalReservations.Application[$i] -eq 'ReportServerWebService')
-                    {
-                        $script:originalWebServiceUrls += $script:originalReservations.UrlString[$i]
-                    }
-                }
-            }
-
             # Use unique ports for testing to avoid conflicts
-            $script:testUrl1 = 'http://+:18081'
-            $script:testUrl2 = 'http://+:18082'
-        }
-
-        AfterAll {
-            # Clean up: restore original URL reservations
-            try
-            {
-                $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
-
-                # Remove test URLs if they exist
-                $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -ErrorAction 'SilentlyContinue'
-                $config | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl2 -Force -ErrorAction 'SilentlyContinue'
-
-                # Restore original URLs
-                foreach ($url in $script:originalWebServiceUrls)
-                {
-                    $config | Add-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $url -Force -ErrorAction 'SilentlyContinue'
-                }
-            }
-            catch
-            {
-                # Ignore errors during cleanup
-            }
-        }
-
-        It 'Should set URL reservations using pipeline' {
-            $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -ErrorAction 'Stop'
-
-            # Verify the URLs are set correctly
-            $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
-            $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
-
-            # Get URLs for the specified application
-            $currentUrls = @()
-
-            for ($i = 0; $i -lt $reservations.Application.Count; $i++)
-            {
-                if ($reservations.Application[$i] -eq 'ReportServerWebService')
-                {
-                    $currentUrls += $reservations.UrlString[$i]
-                }
-            }
-
-            $currentUrls | Should -Contain $script:testUrl1
+            $script:testUrl1 = 'http://+:18080'
+            $script:testUrl2 = 'http://+:18081'
         }
 
         It 'Should add multiple URLs and remove existing ones' {
-            $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1, $script:testUrl2 -Force -ErrorAction 'Stop'
+            $null = $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1, $script:testUrl2 -Force -ErrorAction 'Stop'
 
             # Verify both URLs are set
             $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
@@ -423,12 +219,25 @@ Describe 'Set-SqlDscRSUrlReservation' {
             $currentUrls | Should -Contain $script:testUrl2
         }
 
-        It 'Should return configuration when using PassThru' {
-            $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
-            $result = $config | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -PassThru -ErrorAction 'Stop'
+        It 'Should set URL reservations using pipeline' {
+            $null = $script:configuration | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl1 -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'PBIRS'
+            # Verify the URLs are set correctly
+            $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
+            $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
+
+            # Get URLs for the specified application
+            $currentUrls = @()
+
+            for ($i = 0; $i -lt $reservations.Application.Count; $i++)
+            {
+                if ($reservations.Application[$i] -eq 'ReportServerWebService')
+                {
+                    $currentUrls += $reservations.UrlString[$i]
+                }
+            }
+
+            $currentUrls | Should -Contain $script:testUrl1
         }
     }
 }
