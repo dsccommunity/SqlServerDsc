@@ -255,6 +255,17 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
     }
 
+    Context 'Ensure TLS 1.2 is enabled' -Tag @('Integration_SQL2025') {
+        # SQL Server 2025 installation can fail when TLS 1.2 is disabled:
+        # https://learn.microsoft.com/en-us/sql/sql-server/sql-server-2025-known-issues?view=sql-server-ver17#sql-server-2025-installation-fails-when-tls-12-is-disabled
+        It 'Should have TLS 1.2 enabled on the node' -Tag @('Integration_SQL2025') {
+            # Test-TlsProtocol returns $true when the protocol is enabled.
+            # Assert for both Server and Client registry keys.
+            (Test-TlsProtocol -Protocol 'Tls12') | Should -BeTrue
+            (Test-TlsProtocol -Protocol 'Tls12' -Client) | Should -BeTrue
+        }
+    }
+
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_InstallDatabaseEngineNamedInstanceAsSystem_Config"
     ) -Skip:$(if ($env:SKIP_DATABASE_ENGINE_INSTANCE) { $true } else { $false }) {
