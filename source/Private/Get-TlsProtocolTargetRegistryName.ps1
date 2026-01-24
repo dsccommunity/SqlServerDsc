@@ -26,6 +26,7 @@
 function Get-TlsProtocolTargetRegistryName
 {
     [CmdletBinding()]
+    [OutputType([System.String])]
     param
     (
         [Parameter()]
