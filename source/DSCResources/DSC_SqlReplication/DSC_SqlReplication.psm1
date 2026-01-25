@@ -621,9 +621,9 @@ function Install-RemoteDistributor
         $script:localizedData.InstallRemoteDistributor -f $RemoteDistributor
     )
 
-    $instance = $ReplicationServer.Name
+    $serverObject = Connect-SqlDscDatabaseEngine -InstanceName $ReplicationServer.Name -ErrorAction 'Stop'
 
-    $sqlMajorVersion = Get-SqlInstanceMajorVersion -InstanceName $instance
+    $sqlMajorVersion = $serverObject.VersionMajor
 
     if ($sqlMajorVersion -eq 17)
     {
@@ -640,7 +640,7 @@ function Install-RemoteDistributor
         $query = "EXECUTE sys.sp_adddistributor @distributor = N'$RemoteDistributor', @password = N'$clearTextPassword', @encrypt_distributor_connection = 'optional', @trust_distributor_certificate = 'yes';"
 
         # TODO: This need to pass a credential in the future, now connects using the one resource is run as.
-        Invoke-SqlDscQuery -InstanceName $instance -DatabaseName 'master' -Query $query -RedactText $clearTextPassword -Force -ErrorAction 'Stop'
+        Invoke-SqlDscQuery -ServerObject $serverObject -DatabaseName 'master' -Query $query -RedactText $clearTextPassword -Force -ErrorAction 'Stop'
     }
     else
     {
