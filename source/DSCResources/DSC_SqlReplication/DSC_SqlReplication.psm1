@@ -287,7 +287,8 @@ function Set-TargetResource
             Install-RemoteDistributor `
                 -ReplicationServer $localReplicationServer `
                 -RemoteDistributor $RemoteDistributor `
-                -AdminLinkCredentials $AdminLinkCredentials
+                -AdminLinkCredentials $AdminLinkCredentials `
+                -InstanceName $InstanceName
         }
     }
     else #'Absent'
@@ -598,6 +599,9 @@ function New-DistributionPublisher
     .PARAMETER AdminLinkCredentials
         AdminLink password to be used when setting up publisher distributor
         relationship.
+
+    .PARAMETER InstanceName
+        SQL Server instance name where replication distribution will be configured.
 #>
 function Install-RemoteDistributor
 {
@@ -614,14 +618,18 @@ function Install-RemoteDistributor
 
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        $AdminLinkCredentials
+        $AdminLinkCredentials,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName
     )
 
     Write-Verbose -Message (
         $script:localizedData.InstallRemoteDistributor -f $RemoteDistributor
     )
 
-    $serverObject = Connect-SqlDscDatabaseEngine -InstanceName $ReplicationServer.Name -ErrorAction 'Stop'
+    $serverObject = Connect-SqlDscDatabaseEngine -InstanceName $InstanceName -ErrorAction 'Stop'
 
     $sqlMajorVersion = $serverObject.VersionMajor
 
