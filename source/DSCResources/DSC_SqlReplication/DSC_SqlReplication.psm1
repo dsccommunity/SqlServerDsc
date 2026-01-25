@@ -621,15 +621,39 @@ function Install-RemoteDistributor
         $script:localizedData.InstallRemoteDistributor -f $RemoteDistributor
     )
 
-    try
-    {
-        $ReplicationServer.InstallDistributor($RemoteDistributor, $AdminLinkCredentials.Password)
-    }
-    catch
-    {
-        $errorMessage = $script:localizedData.FailedInFunction -f 'Install-RemoteDistributor'
+    $instance = $ReplicationServer.Name
 
-        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+    $sqlMajorVersion = Get-SqlInstanceMajorVersion -InstanceName $instance
+
+    if ($sqlMajorVersion -eq 17)
+    {
+        $clearTextPassword = $AdminLinkCredentials.GetNetworkCredential().Password
+
+        <#
+            Need to execute stored procedure sp_adddistributor for SQL Server 2025.
+            Workaround for issue: https://github.com/dsccommunity/SqlServerDsc/pull/2435#issuecomment-3796616952
+
+            TODO: Should support encrypted connection in the future, then we could
+                  probably go back to using InstallDistributor(), another option is
+                  to move to stored procedures for all of the Replication logic.
+        #>
+        $query = "EXECUTE sys.sp_adddistributor @distributor = N'$RemoteDistributor', @password = N'$clearTextPassword', @encrypt_distributor_connection = 'optional', @trust_distributor_certificate = 'yes';"
+
+        # TODO: This need to pass a credential in the future, now connects using the one resource is run as.
+        Invoke-SqlDscQuery -InstanceName $instance -DatabaseName 'master' -Query $query -RedactText $clearTextPassword -Force -ErrorAction 'Stop'
+    }
+    else
+    {
+        try
+        {
+            $ReplicationServer.InstallDistributor($RemoteDistributor, $AdminLinkCredentials.Password)
+        }
+        catch
+        {
+            $errorMessage = $script:localizedData.FailedInFunction -f 'Install-RemoteDistributor'
+
+            New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+        }
     }
 }
 
