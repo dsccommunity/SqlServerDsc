@@ -93,7 +93,7 @@ function Connect-Sql
         $Encrypt
     )
 
-    [System.AppDomain]::CurrentDomain.GetAssemblies() | Where-Object { $_.Location -like '*SqlServer*' } | ForEach-Object { Write-Verbose ("GAC:{0}`t`tVersion:{1}`t`tLocation:{2}" -f $_.GlobalAssemblyCache,$_.ImageRuntimeVersion,$_.Location) -Verbose }
+    [System.AppDomain]::CurrentDomain.GetAssemblies() | Where-Object { $_.Location -like '*SqlServer*' } | ForEach-Object { Write-Verbose ("GAC:{0}`t`tVersion:{1}`t`tLocation:{2}" -f $_.GlobalAssemblyCache, $_.ImageRuntimeVersion, $_.Location) -Verbose }
 
     Import-SqlDscPreferredModule
 
