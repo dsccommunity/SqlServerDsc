@@ -676,9 +676,7 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
             It 'Should not throw an exception' {
                 $null = Connect-SQL -ServerName 'localhost' -SetupCredential $mockSqlCredential -LoginType 'SqlLogin' -ErrorAction 'SilentlyContinue'
 
-                Should -Invoke -CommandName New-Object -ParameterFilter {
-                    $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Server'
-                } -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName New-Object -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter -Exactly -Times 1 -Scope It
             }
         }
     }
