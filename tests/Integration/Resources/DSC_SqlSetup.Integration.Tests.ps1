@@ -91,7 +91,7 @@ BeforeAll {
     if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2025')
     {
         $script:sqlVersion = '170'
-        $script:mockSourceDownloadExeUrl = 'https://download.microsoft.com/download/35b49aff-d8bb-43ba-8b3b-4ae1ae6963f3/SQL2025-SSEI-Eval.exe'
+        $script:mockSourceDownloadExeUrl = 'https://download.microsoft.com/download/4ba126fc-a6a0-4810-80e9-c0182d3e1f62/SQL2025-SSEI-EntDev.exe'
     }
     elseif (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2022', 'Integration_PowerBI')
     {

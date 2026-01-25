@@ -31,7 +31,7 @@ else
 
                 # Additional variables required as ISO is downloaded via additional EXE
                 DownloadExeName                 = 'SQL2025_Download.exe'
-                DownloadIsoName                 = 'SQLServer2025-x64-ENU-Eval.iso'
+                DownloadIsoName                 = 'SQLServer2025-x64-ENU-EntDev.iso'
 
                 # Features CONN, BC, SDK, SNAC_SDK, DREPLAY_CLT, DREPLAY_CTLR are no longer supported in 2025.
                 SupportedFeatures               = 'SQLENGINE,REPLICATION'
