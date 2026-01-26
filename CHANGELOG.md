@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Connect-Sql` create connection and server objects as per documentation.
   - `Invoke-SqlDscQuery` remove disconnect as there is not an explicit connect.
 
+### Fixed
+
+- SqlServerDsc
+  - Fixed PowerShell Gallery badge URL in `README.md` to correctly show
+    prereleases ([issue `#2437`](https://github.com/dsccommunity/SqlServerDsc/issues/2437)).
+
 ## [17.4.0] - 2026-01-19
 
 ### Added
