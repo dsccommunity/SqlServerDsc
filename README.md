@@ -7,7 +7,7 @@ configuration of Microsoft SQL Server.
 ![Azure DevOps coverage (branch)](https://img.shields.io/azure-devops/coverage/dsccommunity/SqlServerDsc/11/main)
 [![codecov](https://codecov.io/gh/dsccommunity/SqlServerDsc/branch/main/graph/badge.svg)](https://codecov.io/gh/dsccommunity/SqlServerDsc)
 [![Azure DevOps tests](https://img.shields.io/azure-devops/tests/dsccommunity/SqlServerDsc/11/main)](https://dsccommunity.visualstudio.com/SqlServerDsc/_test/analytics?definitionId=11&contextType=build)
-[![PowerShell Gallery (with prereleases)](https://img.shields.io/powershellgallery/vpre/SqlServerDsc?label=SqlServerDsc%20Preview)](https://www.powershellgallery.com/packages/SqlServerDsc/)
+[![PowerShell Gallery (with prereleases)](https://img.shields.io/powershellgallery/v/SqlServerDsc?label=SqlServerDsc%20Preview&include_prereleases)](https://www.powershellgallery.com/packages/SqlServerDsc/) 
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/SqlServerDsc?label=SqlServerDsc)](https://www.powershellgallery.com/packages/SqlServerDsc/)
 
 ## Code of Conduct
