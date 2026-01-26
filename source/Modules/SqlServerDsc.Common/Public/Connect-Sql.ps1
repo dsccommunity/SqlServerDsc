@@ -48,7 +48,7 @@
 function Connect-Sql
 {
     [CmdletBinding(DefaultParameterSetName = 'SqlServer')]
-    [OutputType([Microsoft.SqlServer.Management.Smo.Server])]
+    [OutputType([System.Object])]
     param
     (
         [Parameter(ParameterSetName = 'SqlServer')]
@@ -93,11 +93,7 @@ function Connect-Sql
         $Encrypt
     )
 
-    Write-Verbose -Message (Get-Module -Name *sql*  -ListAvailable | Out-String) -Verbose
-
     Import-SqlDscPreferredModule
-
-    [System.AppDomain]::CurrentDomain.GetAssemblies() | Where-Object { $_.Location -like '*SqlServer*' } | ForEach-Object { Write-Verbose ("GAC:{0}`t`tVersion:{1}`t`tLocation:{2}" -f $_.GlobalAssemblyCache, $_.ImageRuntimeVersion, $_.Location) -Verbose }
 
     <#
         Build the connection string in the format: [protocol:]hostname[\instance][,port]
