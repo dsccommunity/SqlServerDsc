@@ -35,7 +35,6 @@ ConvertFrom-StringData @'
     ClusterLoginMissingRecommendedPermissions = The recommended account '{0}' is missing one or more of the following permissions: {1} (SQLCOMMON0052)
     ClusterLoginPermissionsPresent = The cluster login '{0}' has the required permissions. (SQLCOMMON0053)
     ConnectingUsingIntegrated = Connecting as current user '{0}' using integrated security. (SQLCOMMON0054)
-    IgnoreServerCertificateTrust = Ignoring server certificate trust; server certificate trust is not enforced when connecting. (SQLCOMMON0055)
     ConnectingUsingImpersonation = Impersonate credential '{0}' with login type '{1}'. (SQLCOMMON0056)
     ClusterResourceNotFoundOrOffline = The SQL Server cluster resource '{0}' was not found or the resource has been taken offline. (SQLCOMMON0066)
     NotOwnerOfClusterResource = The node '{0}' is not the owner of the cluster resource '{1}'. The owner is '{2}' so no restart is needed. (SQLCOMMON0067)
