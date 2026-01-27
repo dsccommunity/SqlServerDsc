@@ -745,7 +745,21 @@ class SqlDatabase : SqlResourceBase
             # Only set CompatibilityLevel if it's a valid non-zero value
             if ($databaseObject.CompatibilityLevel -gt 0)
             {
-                $currentState.CompatibilityLevel = $databaseObject.CompatibilityLevel.ToString()
+                $compatValue = $databaseObject.CompatibilityLevel.ToString()
+
+                <#
+                    SMO may return numeric values (e.g. 170 for SQL Server 2025).
+                    Convert purely-numeric values to the 'Version' prefixed form
+                    so they match the ValidateSet values (Version80..Version170).
+                #>
+                if ($compatValue -match '^[0-9]+$')
+                {
+                    $currentState.CompatibilityLevel = 'Version{0}' -f $compatValue
+                }
+                else
+                {
+                    $currentState.CompatibilityLevel = $compatValue
+                }
             }
 
             $currentState.RecoveryModel = $databaseObject.RecoveryModel.ToString()
