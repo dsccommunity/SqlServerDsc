@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Invoke-SqlDscQuery` remove disconnect as there is not an explicit connect.
   - Add SQL Server 2025 to integration tests ([issue #2427](https://github.com/dsccommunity/SqlServerDsc/issues/2427)).
 
+### Fixed
+
+- SqlServerDsc
+  - Fixed PowerShell Gallery badge URL in `README.md` to correctly show
+    prereleases ([issue `#2437`](https://github.com/dsccommunity/SqlServerDsc/issues/2437)).
+
 ## [17.4.0] - 2026-01-19
 
 ### Added
