@@ -138,26 +138,6 @@ function Connect-Sql
     {
         $sqlConnectionContext.EncryptConnection = $true
     }
-    else
-    {
-        # SQL Server 2025 defaults to having encryption enabled.
-        $sqlConnectionContext.EncryptConnection = $false
-
-        <#
-            SQL Server 2025 defaults to trust server certificate.
-
-            TODO: We need a new parameter to control this behavior. Integration tests
-                DSC_SqlSecureConnection_AddSecureConnection_Config fails unless this is set.
-        #>
-        if ($sqlConnectionContext.PSObject.Properties.Name -contains 'TrustServerCertificate')
-        {
-            Write-Verbose -Message (
-                $script:localizedData.IgnoreServerCertificateTrust
-            )
-
-            $sqlConnectionContext.TrustServerCertificate = $false
-        }
-    }
 
     if ($PSCmdlet.ParameterSetName -eq 'SqlServer')
     {
