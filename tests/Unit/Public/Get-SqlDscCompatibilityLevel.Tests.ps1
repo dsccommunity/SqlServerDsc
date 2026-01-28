@@ -96,6 +96,27 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag 'Public' {
             }
         }
 
+        Context 'When SQL Server version is 17 (SQL Server 2025)' {
+            BeforeAll {
+                $mockServerObject.VersionMajor = 17
+            }
+
+            It 'Should return all supported compatibility levels from 100 to 170' {
+                $result = Get-SqlDscCompatibilityLevel -ServerObject $mockServerObject
+
+                $result | Should -Contain 'Version100'
+                $result | Should -Contain 'Version110'
+                $result | Should -Contain 'Version120'
+                $result | Should -Contain 'Version130'
+                $result | Should -Contain 'Version140'
+                $result | Should -Contain 'Version150'
+                $result | Should -Contain 'Version160'
+                $result | Should -Contain 'Version170'
+                $result | Should -Not -Contain 'Version90'
+                $result | Should -Not -Contain 'Version80'
+            }
+        }
+
         Context 'When SQL Server version is 15 (SQL Server 2019)' {
             BeforeAll {
                 $mockServerObject.VersionMajor = 15
@@ -180,6 +201,22 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag 'Public' {
                 $result | Should -Contain 'Version140'
                 $result | Should -Contain 'Version150'
                 $result | Should -Contain 'Version160'
+                $result | Should -Not -Contain 'Version90'
+            }
+        }
+
+        Context 'When version is 17.0.1000.0 (SQL Server 2025)' {
+            It 'Should return all supported compatibility levels from 100 to 170' {
+                $result = Get-SqlDscCompatibilityLevel -Version '17.0.1000.0'
+
+                $result | Should -Contain 'Version100'
+                $result | Should -Contain 'Version110'
+                $result | Should -Contain 'Version120'
+                $result | Should -Contain 'Version130'
+                $result | Should -Contain 'Version140'
+                $result | Should -Contain 'Version150'
+                $result | Should -Contain 'Version160'
+                $result | Should -Contain 'Version170'
                 $result | Should -Not -Contain 'Version90'
             }
         }

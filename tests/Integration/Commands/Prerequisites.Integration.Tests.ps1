@@ -33,7 +33,7 @@ BeforeAll {
 
 # CSpell: ignore Remoting
 Describe 'Prerequisites' {
-    Context 'Create required local Windows users' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
+    Context 'Create required local Windows users' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
         BeforeAll {
             $password = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
         }
@@ -60,7 +60,7 @@ Describe 'Prerequisites' {
         }
     }
 
-    Context 'Should create required local Windows service accounts' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
+    Context 'Should create required local Windows service accounts' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
         BeforeAll {
             $password = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
         }
@@ -101,7 +101,7 @@ Describe 'Prerequisites' {
         }
     }
 
-    Context 'Create required local Windows groups' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
+    Context 'Create required local Windows groups' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
         It 'Should create SqlIntegrationTestGroup group' {
             $group = New-LocalGroup -Name 'SqlIntegrationTestGroup' -Description 'Local Windows group for SQL integration testing.'
 
@@ -110,7 +110,7 @@ Describe 'Prerequisites' {
         }
     }
 
-    Context 'Add local Windows users to local groups' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
+    Context 'Add local Windows users to local groups' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025', 'Integration_PowerBI') {
         It 'Should add SqlInstall to local administrator group' {
             # Add user to local administrator group
             Add-LocalGroupMember -Group 'Administrators' -Member 'SqlInstall'
@@ -164,9 +164,17 @@ Describe 'Prerequisites' {
 
             $mediaFile.Name | Should -Be 'media.iso'
         }
+
+        It 'Should download SQL Server 2025 media' -Tag @('Integration_SQL2025') {
+            $url = 'https://download.microsoft.com/download/4ba126fc-a6a0-4810-80e9-c0182d3e1f62/SQL2025-SSEI-EntDev.exe'
+
+            $script:mediaFile = Save-SqlDscSqlServerMediaFile -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
+
+            $mediaFile.Name | Should -Be 'media.iso'
+        }
     }
 
-    Context 'Mount SQL Server media' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
+    Context 'Mount SQL Server media' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
         It 'Should mount the media to a drive letter' {
             $mountedImage = Mount-DiskImage -ImagePath $script:mediaFile
             $mountedImage | Should -BeOfType 'Microsoft.Management.Infrastructure.CimInstance'
@@ -191,14 +199,14 @@ Describe 'Prerequisites' {
     }
 
     Context 'Install correct version of module SqlServer' {
-        It 'Should have the minimum required version of Microsoft.PowerShell.PSResourceGet' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
+        It 'Should have the minimum required version of Microsoft.PowerShell.PSResourceGet' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
             $module = Get-Module -Name 'Microsoft.PowerShell.PSResourceGet' -ListAvailable
 
             $module.Count | Should -BeGreaterOrEqual 1
             #$module.Version -ge '1.0.4.1' | Should -BeTrue
         }
 
-        It 'Should have a resource repository PSGallery with correct URI' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
+        It 'Should have a resource repository PSGallery with correct URI' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
             $resourceRepository = Get-PSResourceRepository -Name 'PSGallery'
 
             $resourceRepository | Should -HaveCount 1
@@ -234,15 +242,41 @@ Describe 'Prerequisites' {
             $module | Should -HaveCount 1
             $module.Version -eq '22.2.0' | Should -BeTrue
         }
+
+        It 'Should install SqlServer module version 22.4.5.1' -Tag @('Integration_SQL2025') {
+            #Install-Module -Name 'SqlServer' -RequiredVersion '22.4.5.1' -Force -ErrorAction 'Stop'
+            $module = Install-PSResource -Name 'SqlServer' -Version '22.4.5.1' -Scope 'AllUsers' -TrustRepository -ErrorAction 'Stop' -Confirm:$false -PassThru
+
+            $module | Should -HaveCount 1
+            $module.Version -eq '22.4.5.1' | Should -BeTrue
+        }
+
+        It 'Should have SqlServer module version 22.4.5.1 available' -Tag @('Integration_SQL2025') {
+            $module = Get-Module -Name 'SqlServer' -ListAvailable
+
+            $module | Should -HaveCount 1
+            $module.Version -eq '22.4.5.1' | Should -BeTrue
+        }
     }
 
-    Context 'Test PS Remoting to localhost' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
+    Context 'Test PS Remoting to localhost' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
         It 'Should successfully run a command on localhost using PS Remoting' {
             # This is a simple test to verify that PS Remoting is working.
             # TODO: This fails on Appveyor, but works locally when debugging on AppVeyor. Investigate why.
             $result = Invoke-Command -ComputerName 'localhost' -ScriptBlock { 1 } -ErrorAction 'Stop'
 
             $result | Should -Be 1
+        }
+    }
+
+    Context 'Ensure TLS 1.2 is enabled' -Tag @('Integration_SQL2025') -Skip {
+        # SQL Server 2025 installation can fail when TLS 1.2 is disabled:
+        # https://learn.microsoft.com/en-us/sql/sql-server/sql-server-2025-known-issues?view=sql-server-ver17#sql-server-2025-installation-fails-when-tls-12-is-disabled
+        It 'Should have TLS 1.2 enabled on the node' -Tag @('Integration_SQL2025') {
+            # Test-TlsProtocol returns $true when the protocol is enabled.
+            # Assert for both Server and Client registry keys.
+            (Test-TlsProtocol -Protocol 'Tls12') | Should -BeTrue
+            (Test-TlsProtocol -Protocol 'Tls12' -Client) | Should -BeTrue
         }
     }
 

@@ -1119,7 +1119,7 @@ function Set-TargetResource
     # If SQL shared components already installed, clear InstallShared*Dir variables
     switch ($SqlVersion)
     {
-        { $_ -in ('10', '11', '12', '13', '14', '15', '16') }
+        { $_ -in ('10', '11', '12', '13', '14', '15', '16', '17') }
         {
             if ((Get-Variable -Name 'InstallSharedDir' -ErrorAction SilentlyContinue) -and (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\FEE2E540D20152D4597229B6CFBC0A69' -ErrorAction SilentlyContinue))
             {
@@ -3387,7 +3387,7 @@ function Get-SqlSharedPaths
 
     switch ($SqlServerMajorVersion)
     {
-        { $_ -in ('10', '11', '12', '13', '14', '15', '16') }
+        { $_ -in ('10', '11', '12', '13', '14', '15', '16', '17') }
         {
             $registryKeySharedDir = 'FEE2E540D20152D4597229B6CFBC0A69'
             $registryKeySharedWOWDir = 'A79497A344129F64CA7D69C56F5DD8B4'

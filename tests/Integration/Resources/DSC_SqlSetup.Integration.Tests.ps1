@@ -88,7 +88,12 @@ BeforeAll {
 
         The actual download URL can easiest be found in the browser download history.
     #>
-    if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2022', 'Integration_PowerBI')
+    if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2025')
+    {
+        $script:sqlVersion = '170'
+        $script:mockSourceDownloadExeUrl = 'https://download.microsoft.com/download/4ba126fc-a6a0-4810-80e9-c0182d3e1f62/SQL2025-SSEI-EntDev.exe'
+    }
+    elseif (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2022', 'Integration_PowerBI')
     {
         $script:sqlVersion = '160'
         $script:mockSourceDownloadExeUrl = 'https://download.microsoft.com/download/c/c/9/cc9c6797-383c-4b24-8920-dc057c1de9d3/SQL2022-SSEI-Dev.exe'
@@ -174,7 +179,7 @@ AfterAll {
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
-Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
+Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025', 'Integration_PowerBI') {
     BeforeAll {
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }
@@ -247,6 +252,17 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         # Make sure the module was installed.
         It 'Should return $true when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+        }
+    }
+
+    Context 'Ensure TLS 1.2 is enabled' -Tag @('Integration_SQL2025') -Skip {
+        # SQL Server 2025 installation can fail when TLS 1.2 is disabled:
+        # https://learn.microsoft.com/en-us/sql/sql-server/sql-server-2025-known-issues?view=sql-server-ver17#sql-server-2025-installation-fails-when-tls-12-is-disabled
+        It 'Should have TLS 1.2 enabled on the node' -Tag @('Integration_SQL2025') {
+            # Test-TlsProtocol returns $true when the protocol is enabled.
+            # Assert for both Server and Client registry keys.
+            (Test-TlsProtocol -Protocol 'Tls12') | Should -BeTrue
+            (Test-TlsProtocol -Protocol 'Tls12' -Client) | Should -BeTrue
         }
     }
 
@@ -637,7 +653,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.FailoverClusterIPAddress   | Should -BeNullOrEmpty
             $resourceCurrentState.FailoverClusterNetworkName | Should -BeNullOrEmpty
 
-            if ($script:sqlVersion -in (160))
+            if ($script:sqlVersion -in @('160','170'))
             {
                 <#
                     The features CONN, BC, SDK is no longer supported after SQL Server 2019.
@@ -797,7 +813,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.FailoverClusterIPAddress   | Should -BeNullOrEmpty
             $resourceCurrentState.FailoverClusterNetworkName | Should -BeNullOrEmpty
 
-            if ($script:sqlVersion -in (160))
+            if ($script:sqlVersion -in @('160','170'))
             {
                 <#
                     The features CONN, BC, SDK is no longer supported after SQL Server 2019.

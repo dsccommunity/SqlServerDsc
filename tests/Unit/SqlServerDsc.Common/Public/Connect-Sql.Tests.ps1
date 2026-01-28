@@ -613,6 +613,7 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
                                 Add-Member -MemberType NoteProperty -Name ConnectAsUser -Value $false -PassThru |
                                 Add-Member -MemberType NoteProperty -Name ConnectAsUserPassword -Value '' -PassThru |
                                 Add-Member -MemberType NoteProperty -Name ConnectAsUserName -Value '' -PassThru |
+                                Add-Member -MemberType NoteProperty -Name EncryptConnection -Value $false -PassThru |
                                 Add-Member -MemberType NoteProperty -Name StatementTimeout -Value 600 -PassThru |
                                 Add-Member -MemberType NoteProperty -Name ConnectTimeout -Value 600 -PassThru |
                                 Add-Member -MemberType NoteProperty -Name ApplicationName -Value 'SqlServerDsc' -PassThru |
@@ -660,6 +661,7 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
                                 Add-Member -MemberType NoteProperty -Name ConnectAsUser -Value $false -PassThru |
                                 Add-Member -MemberType NoteProperty -Name ConnectAsUserPassword -Value '' -PassThru |
                                 Add-Member -MemberType NoteProperty -Name ConnectAsUserName -Value '' -PassThru |
+                                Add-Member -MemberType NoteProperty -Name EncryptConnection -Value $false -PassThru |
                                 Add-Member -MemberType NoteProperty -Name StatementTimeout -Value 600 -PassThru |
                                 Add-Member -MemberType NoteProperty -Name ConnectTimeout -Value 600 -PassThru |
                                 Add-Member -MemberType NoteProperty -Name ApplicationName -Value 'SqlServerDsc' -PassThru |
