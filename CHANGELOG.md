@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- SqlServerDsc
+  - Updated Pester test guidance in AI instructions in community style guidelines.
+
 ## [17.5.0] - 2026-01-30
 
 ### Changed
