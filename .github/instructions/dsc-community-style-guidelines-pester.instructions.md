@@ -39,7 +39,7 @@ applyTo: "**/*.[Tt]ests.ps1"
 
 ## Syntax Rules
 - PascalCase: `Describe`, `Context`, `It`, `Should`, `BeforeAll`, `BeforeEach`, `AfterAll`, `AfterEach`
-- Use `-BeTrue`/`-BeFalse` never `-Be $true`/`-Be $false`
+- Use `-BeTrue`/`-BeFalse` never `-Be $true`/`-Be $false`/`-Contain $true`/`-Contain $false`
 - Never use `Assert-MockCalled`, use `Should -Invoke` instead
 - No `Should -Not -Throw` - invoke commands directly
 - Never add an empty `-MockWith` block
@@ -48,6 +48,9 @@ applyTo: "**/*.[Tt]ests.ps1"
 - Omit `-ModuleName` parameter on Pester commands
 - Never use `Mock` inside `InModuleScope`-block
 - Never use `param()` inside `-MockWith` scriptblocks, parameters are auto-bound
+- In `InModuleScope` tests, add `Set-StrictMode -Version 1.0` immediately before invoking the tested function
+- Use `Should -Invoke -Exactly -Times <n> -Scope It` for call-count assertions
+  - Assert <n> calls inside the `It` block; do not assert call counts across an entire `Describe` or `Context`
 
 ## File Organization
 - Class resources: `tests/Unit/Classes/{Name}.Tests.ps1`
@@ -55,7 +58,7 @@ applyTo: "**/*.[Tt]ests.ps1"
 - Private functions: `tests/Unit/Private/{Name}.Tests.ps1`
 
 ## Data-Driven Tests (Test Cases)
-- Define `-ForEach` variables in `BeforeDiscovery` (close to usage)
+- Define `-ForEach` variables in separate `BeforeDiscovery` (close to usage)
 - `-ForEach` allowed on `Context` and `It` blocks
 - Never add `param()` inside Pester blocks when using `-ForEach`
 - Access test case properties directly: `$PropertyName`
