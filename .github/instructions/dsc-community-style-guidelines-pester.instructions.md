@@ -47,7 +47,7 @@ applyTo: "**/*.[Tt]ests.ps1"
 - Set `$PSDefaultParameterValues` for `Mock:ModuleName`, `Should:ModuleName`, `InModuleScope:ModuleName`
 - Omit `-ModuleName` parameter on Pester commands
 - Never use `Mock` inside `InModuleScope`-block
-- Never use `param()` inside `-MockWith` scriptblocks, parameters are auto-bound
+- Never use `param()`-block inside `-MockWith` scriptblocks, parameters are auto-bound
 - In `InModuleScope` tests, add `Set-StrictMode -Version 1.0` immediately before invoking the tested function
 - Use `Should -Invoke -Exactly -Times <n> -Scope It` for call-count assertions
   - Assert <n> calls inside the `It` block; do not assert call counts across an entire `Describe` or `Context`
