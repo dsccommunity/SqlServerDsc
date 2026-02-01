@@ -5,6 +5,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- SqlServerDsc
+  - Added private function `ConvertTo-SqlString` that escapes a string for use
+    in T-SQL string literals by doubling single quotes
+    ([issue #2442](https://github.com/dsccommunity/SqlServerDsc/issues/2442)).
+  - Added private function `ConvertTo-EscapedQueryString` that safely escapes
+    single quotes in T-SQL query arguments to prevent SQL injection vulnerabilities
+    ([issue #2442](https://github.com/dsccommunity/SqlServerDsc/issues/2442)).
+- SqlReplication
+  - Updated `Install-RemoteDistributor` to escape T-SQL arguments when building
+    the T-SQL query for SQL Server 2025 containing special characters
+    ([issue #2442](https://github.com/dsccommunity/SqlServerDsc/issues/2442)).
+
 ### Changed
 
 - SqlServerDsc
