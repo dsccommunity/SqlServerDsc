@@ -36,7 +36,7 @@
         None.
 
     .OUTPUTS
-        System.String
+        `System.String`
 
         Returns the formatted query string with escaped values.
 
@@ -63,9 +63,9 @@ function ConvertTo-EscapedQueryString
 
     $escapedArguments = @()
 
-    foreach ($arg in $Argument)
+    foreach ($currentArgument in $Argument)
     {
-        $escapedArguments += ConvertTo-SqlString -Text $arg
+        $escapedArguments += ConvertTo-SqlString -Text $currentArgument
     }
 
     $result = $Query -f $escapedArguments
