@@ -5,6 +5,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- SqlServerDsc
+  - Added private functions `ConvertTo-SqlString` and `ConvertTo-EscapedQueryString`
+    to safely escape T-SQL string literals and query arguments
+    ([issue #2442](https://github.com/dsccommunity/SqlServerDsc/issues/2442)).
+- DSC_SqlReplication
+  - Updated `Install-RemoteDistributor` to escape T-SQL arguments for SQL Server
+    2025 to prevent SQL injection and ensure proper password redaction
+    ([issue #2442](https://github.com/dsccommunity/SqlServerDsc/issues/2442)).
+
 ### Changed
 
 - SqlServerDsc
