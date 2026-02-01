@@ -633,22 +633,46 @@ function Install-RemoteDistributor
 
     $sqlMajorVersion = $serverObject.VersionMajor
 
+    # cSpell:ignore sp_adddistributor
     if ($sqlMajorVersion -eq 17)
     {
         $clearTextPassword = $AdminLinkCredentials.GetNetworkCredential().Password
+
+        <#
+            Escape single quotes by doubling them for T-SQL string literals.
+            This prevents SQL injection and ensures the escaped value matches
+            what appears in the final query for proper redaction.
+
+            TODO: When this resource is converted to a class-based resource
+                  we need to convert to escaped string for the redaction as well,
+                  replace this inline logic with the private function:
+                  $escapedPassword = ConvertTo-SqlString -Text $clearTextPassword
+        #>
+        $escapedPassword = $clearTextPassword -replace "'", "''"
 
         <#
             Need to execute stored procedure sp_adddistributor for SQL Server 2025.
             Workaround for issue: https://github.com/dsccommunity/SqlServerDsc/pull/2435#issuecomment-3796616952
 
             TODO: Should support encrypted connection in the future, then we could
-                  probably go back to using InstallDistributor(), another option is
-                  to move to stored procedures for all of the Replication logic.
+                  probably go back to using InstallDistributor() instead of calling
+                  the stored procedure, another option is to move to stored procedures
+                  for all of the Replication logic, for all SQL Server versions.
         #>
-        $query = "EXECUTE sys.sp_adddistributor @distributor = N'$RemoteDistributor', @password = N'$clearTextPassword', @encrypt_distributor_connection = 'optional', @trust_distributor_certificate = 'yes';"
+
+        <#
+            Escape arguments for the T-SQL query to prevent SQL injection.
+
+            TODO: When this resource is converted to a class-based resource,
+                  replace this inline logic with the private function:
+                  $unescapedQuery = "EXECUTE sys.sp_adddistributor @distributor = N'${0}', @password = N'${1}', @encrypt_distributor_connection = 'optional', @trust_distributor_certificate = 'yes';"
+                  $query = ConvertTo-EscapedQueryString -Query $unescapedQuery -Argument $RemoteDistributor, $clearTextPassword
+        #>
+        $escapedRemoteDistributor = $RemoteDistributor -replace "'", "''"
+        $query = "EXECUTE sys.sp_adddistributor @distributor = N'$escapedRemoteDistributor', @password = N'$escapedPassword', @encrypt_distributor_connection = 'optional', @trust_distributor_certificate = 'yes';"
 
         # TODO: This need to pass a credential in the future, now connects using the one resource is run as.
-        Invoke-SqlDscQuery -ServerObject $serverObject -DatabaseName 'master' -Query $query -RedactText $clearTextPassword -Force -ErrorAction 'Stop'
+        Invoke-SqlDscQuery -ServerObject $serverObject -DatabaseName 'master' -Query $query -RedactText $escapedPassword -Force -ErrorAction 'Stop'
     }
     else
     {
