@@ -255,7 +255,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
     }
 
-    Context 'Ensure TLS 1.2 is enabled' -Tag @('Integration_SQL2025') -Skip {
+    Context 'Ensure TLS 1.2 is enabled' -Tag @('Integration_SQL2025') {
         # SQL Server 2025 installation can fail when TLS 1.2 is disabled:
         # https://learn.microsoft.com/en-us/sql/sql-server/sql-server-2025-known-issues?view=sql-server-ver17#sql-server-2025-installation-fails-when-tls-12-is-disabled
         It 'Should have TLS 1.2 enabled on the node' -Tag @('Integration_SQL2025') {

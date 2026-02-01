@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlServerDsc
   - Updated Pester test guidance in AI instructions in community style guidelines.
+  - Added SChannelDsc as a required module for integration tests and enabled the
+    prerequisites tests `Ensure TLS 1.2 is enabled`  ([issue #2441](https://github.com/dsccommunity/SqlServerDsc/issues/2441)).
 
 ## [17.5.0] - 2026-01-30
 
