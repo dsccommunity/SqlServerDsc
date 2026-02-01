@@ -36,7 +36,7 @@
         None.
 
     .OUTPUTS
-        System.String
+        `System.String`
 
         Returns the escaped string with single quotes doubled.
 
