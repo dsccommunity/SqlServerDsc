@@ -425,6 +425,9 @@ function Set-TargetResource
 
     .PARAMETER DefaultDatabase
         Specifies the default database for the login.
+
+    .PARAMETER Language
+        Specifies the default language for the login.
 #>
 function Test-TargetResource
 {
