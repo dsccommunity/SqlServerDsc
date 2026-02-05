@@ -778,6 +778,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
 
                     Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
                     Mock -CommandName New-SQLServerLogin
+                    Mock -CommandName Update-SQLServerLogin
                 }
 
                 It 'Should not throw and call the correct mocks' {
@@ -793,6 +794,8 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
 
                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                        $Login.Name -eq 'Windows\Login1' } -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Update-SQLServerLogin -ParameterFilter {
                         $Login.Name -eq 'Windows\Login1' -and $Login.Language -eq 'Français'
                     } -Exactly -Times 1 -Scope It
                 }
