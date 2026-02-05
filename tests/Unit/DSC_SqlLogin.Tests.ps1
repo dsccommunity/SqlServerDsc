@@ -116,6 +116,7 @@ Describe 'SqlLogin\Get-TargetResource' -Tag 'Get' {
                                     Add-Member -MemberType NoteProperty -Name 'Name' -Value $MockLoginName -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'LoginType' -Value $MockLoginType -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'DefaultDatabase' -Value 'master' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'Language' -Value 'us_english' -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'IsDisabled' -Value $true -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'MustChangePassword' -Value $true -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'PasswordExpirationEnabled' -Value $true -PassThru |
@@ -145,6 +146,7 @@ Describe 'SqlLogin\Get-TargetResource' -Tag 'Get' {
                         $result.LoginType | Should -Be $MockLoginType
                         $result.Disabled | Should -BeTrue
                         $result.DefaultDatabase | Should -Be 'master'
+                        $result.Language | Should -Be 'us_english'
 
                         if ($MockLoginType -eq 'SqlLogin')
                         {
@@ -197,6 +199,7 @@ Describe 'SqlLogin\Get-TargetResource' -Tag 'Get' {
                                     Add-Member -MemberType NoteProperty -Name 'Name' -Value 'Login1' -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'LoginType' -Value 'SqlLogin' -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'DefaultDatabase' -Value 'master' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'Language' -Value 'us_english' -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'IsDisabled' -Value $true -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'MustChangePassword' -Value $true -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'PasswordExpirationEnabled' -Value $true -PassThru |
@@ -226,6 +229,7 @@ Describe 'SqlLogin\Get-TargetResource' -Tag 'Get' {
                         $result.LoginType | Should -BeNullOrEmpty
                         $result.Disabled | Should -BeFalse
                         $result.DefaultDatabase | Should -BeNullOrEmpty
+                        $result.Language | Should -BeNullOrEmpty
 
                         if ($MockLoginType -eq 'SqlLogin')
                         {
@@ -456,12 +460,17 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
                 MockPropertyName = 'DefaultDatabase'
                 MockPropertyValue = 'database1'
             }
+            @{
+                MockPropertyName = 'Language'
+                MockPropertyValue = 'Français'
+            }
         ) {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
                         Ensure = 'Present'
                         DefaultDatabase = 'master'
+                        Language = 'us_english'
                         <#
                             Switch the value of the property to the opposite of what
                             will be specified in the call to Test-TargetResource.
@@ -756,6 +765,39 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                 }
             }
 
+            Context 'When creating a new login of type WindowsUser and specifying a language' {
+                BeforeAll {
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'NoteProperty' -Name 'LoginMode' -Value 'Integrated' -PassThru |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
+                                # Mocks no existing logins.
+                                return @{}
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+                    Mock -CommandName New-SQLServerLogin
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters.Name = 'Windows\Login1'
+                        $mockSetTargetResourceParameters.LoginType = 'WindowsUser'
+                        $mockSetTargetResourceParameters.Language = 'Français'
+
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                        $Login.Name -eq 'Windows\Login1' -and $Login.Language -eq 'Français'
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
             Context 'When creating a new login of type WindowsUser and specifying that it should be disabled' {
                 BeforeAll {
                     $mockConnectSQL = {
@@ -937,6 +979,42 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
                         $Login.Name -eq 'SqlLogin1' -and $Login.DefaultDatabase -eq 'NewDatabase'
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When creating a new login of type SqlLogin and specifying a language' {
+                BeforeAll {
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'NoteProperty' -Name 'LoginMode' -Value 'Mixed' -PassThru |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
+                                # Mocks no existing logins.
+                                return @{}
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+                    Mock -CommandName New-SQLServerLogin
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd-12P@ssw0rd-12' -AsPlainText -Force
+
+                        $mockSetTargetResourceParameters.Name = 'SqlLogin1'
+                        $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
+                        $mockSetTargetResourceParameters.Language = 'Français'
+                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                        $Login.Name -eq 'SqlLogin1' -and $Login.Language -eq 'Français'
                     } -Exactly -Times 1 -Scope It
                 }
             }
@@ -1226,6 +1304,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                                 # Using the stub class Login from the SMO.cs file.
                                 $mockLoginObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList ($null, 'Windows\Login1')
                                 $mockLoginObject.DefaultDatabase = 'master'
+                                $mockLoginObject.Language = 'us_english'
 
                                 return @{
                                     'Windows\Login1' = $mockLoginObject
@@ -1283,6 +1362,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                                 $mockLoginObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList ($null, 'SqlLogin1')
                                 $mockLoginObject.LoginType = 'SqlLogin'
                                 $mockLoginObject.DefaultDatabase = 'master'
+                                $mockLoginObject.Language = 'us_english'
                                 # Switch the mock value to the opposite of what should be the desired state.
                                 $mockLoginObject.PasswordPolicyEnforced = -not $MockPropertyValue
                                 $mockLoginObject.PasswordExpirationEnabled = -not $MockPropertyValue
@@ -1386,6 +1466,10 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                     MockPropertyName = 'DefaultDatabase'
                     MockPropertyValue = 'Database1'
                 }
+                @{
+                    MockPropertyName = 'Language'
+                    MockPropertyValue = 'Français'
+                }
             ) {
                 BeforeAll {
                     $mockConnectSQL = {
@@ -1395,6 +1479,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                                 $mockLoginObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList ($null, 'SqlLogin1')
                                 $mockLoginObject.LoginType = 'SqlLogin'
                                 $mockLoginObject.DefaultDatabase = 'master'
+                                $mockLoginObject.Language = 'us_english'
 
                                 return @{
                                     'SqlLogin1' = $mockLoginObject

@@ -71,6 +71,7 @@ function Get-TargetResource
         InstanceName    = $InstanceName
         Disabled        = $login.IsDisabled
         DefaultDatabase = $login.DefaultDatabase
+        Language        = $login.Language
     }
 
     if ($login.LoginType -eq 'SqlLogin')
@@ -120,6 +121,9 @@ function Get-TargetResource
 
     .PARAMETER DefaultDatabase
         Specifies the default database for the login.
+
+    .PARAMETER Language
+        Specifies the default language for the login.
 #>
 function Set-TargetResource
 {
@@ -179,7 +183,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        $DefaultDatabase
+        $DefaultDatabase,
+
+        [Parameter()]
+        [System.String]
+        $Language
     )
 
     $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
@@ -263,9 +271,18 @@ function Set-TargetResource
                     }
                 }
 
-                if ( $PSBoundParameters.ContainsKey('DefaultDatabase') -and ($login.DefaultDatabase -ne $DefaultDatabase) )
+                if ( ( $PSBoundParameters.ContainsKey('DefaultDatabase') -and ($login.DefaultDatabase -ne $DefaultDatabase) ) -or
+                     ( $PSBoundParameters.ContainsKey('Language') -and $login.Language -ne $Language ) )
                 {
-                    $login.DefaultDatabase = $DefaultDatabase
+                    if ( $PSBoundParameters.ContainsKey('DefaultDatabase') )
+                    {
+                        $login.DefaultDatabase = $DefaultDatabase
+                    }
+
+                    if ( $PSBoundParameters.ContainsKey('Language') )
+                    {
+                        $login.Language = $Language
+                    }
                     Update-SQLServerLogin -Login $login
                 }
             }
@@ -338,10 +355,20 @@ function Set-TargetResource
                     $login.Disable()
                 }
 
-                # Set the default database if specified
-                if ( $PSBoundParameters.ContainsKey('DefaultDatabase') )
+                if ( ( $PSBoundParameters.ContainsKey('DefaultDatabase') -and ($login.DefaultDatabase -ne $DefaultDatabase) ) -or
+                     ( $PSBoundParameters.ContainsKey('Language') -and $login.Language -ne $Language ) )
                 {
-                    $login.DefaultDatabase = $DefaultDatabase
+                    # Set the default database if specified
+                    if ( $PSBoundParameters.ContainsKey('DefaultDatabase') )
+                    {
+                        $login.DefaultDatabase = $DefaultDatabase
+                    }
+
+                    # Set the language if specified
+                    if ( $PSBoundParameters.ContainsKey('Language') )
+                    {
+                        $login.Language = $Language
+                    }
                     Update-SQLServerLogin -Login $login
                 }
             }
@@ -457,7 +484,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        $DefaultDatabase
+        $DefaultDatabase,
+
+        [Parameter()]
+        [System.String]
+        $Language
     )
 
     Write-Verbose -Message (
@@ -517,6 +548,15 @@ function Test-TargetResource
         {
             Write-Verbose -Message (
                 $script:localizedData.WrongDefaultDatabase -f $Name, $loginInfo.DefaultDatabase, $DefaultDatabase
+            )
+
+            $testPassed = $false
+        }
+
+        if ( $PSBoundParameters.ContainsKey('Language') -and ($loginInfo.Language -ne $Language) )
+        {
+            Write-Verbose -Message (
+                $script:localizedData.WrongLanguage -f $Name, $loginInfo.Language, $Language
             )
 
             $testPassed = $false
