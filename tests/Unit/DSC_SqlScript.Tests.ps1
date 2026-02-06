@@ -98,7 +98,6 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
     Context 'When Get-TargetResource returns script results successfully' {
         BeforeAll {
             Mock -CommandName Test-Path -MockWith { return $true }
-
             Mock -CommandName Invoke-SqlScript -MockWith {
                 return ''
             }
@@ -123,7 +122,6 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
     Context 'When Get-TargetResource returns script results successfully with query timeout' {
         BeforeAll {
             Mock -CommandName Test-Path -MockWith { return $true }
-
             Mock -CommandName Invoke-SqlScript -MockWith {
                 return ''
             }
@@ -150,7 +148,6 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
     Context 'When Get-TargetResource throws an error when running the script in the GetFilePath parameter' {
         BeforeAll {
             Mock -CommandName Test-Path -MockWith { return $true }
-
             Mock -CommandName Invoke-SqlScript -MockWith {
                 throw 'Failed to run SQL Script'
             }
@@ -208,6 +205,7 @@ Describe 'SqlScript\Set-TargetResource' -Tag 'Set' {
 
     Context 'When Set-TargetResource runs script without issue' {
         BeforeAll {
+            Mock -CommandName Test-Path -MockWith { return $true }
             Mock -CommandName Invoke-SqlScript -MockWith {
                 return ''
             }
@@ -224,6 +222,7 @@ Describe 'SqlScript\Set-TargetResource' -Tag 'Set' {
 
     Context 'When Set-TargetResource runs script without issue using timeout' {
         BeforeAll {
+            Mock -CommandName Test-Path -MockWith { return $true }
             Mock -CommandName Invoke-SqlScript -MockWith {
                 return ''
             }
@@ -242,6 +241,7 @@ Describe 'SqlScript\Set-TargetResource' -Tag 'Set' {
 
     Context 'When Set-TargetResource throws an error when running the script in the SetFilePath parameter' {
         BeforeAll {
+            Mock -CommandName Test-Path -MockWith { return $true }
             Mock -CommandName Invoke-SqlScript -MockWith {
                 throw 'Failed to run SQL Script'
             }
@@ -255,6 +255,22 @@ Describe 'SqlScript\Set-TargetResource' -Tag 'Set' {
                 $mockErrorMessage = 'Failed to run SQL Script'
 
                 { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+            }
+        }
+    }
+
+    Context 'When the SetFilePath file is missing' {
+        BeforeAll {
+            Mock -CommandName Test-Path -MockWith { return $false }
+        }
+
+        It 'Should throw the localized file not found exception' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $expectedError = $script:localizedData.SetScriptFileNotFound -f $script:mockSetTargetResourceParameters.SetFilePath
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage $expectedError
             }
         }
     }
@@ -285,6 +301,7 @@ Describe 'SqlScript\Test-TargetResource' {
     Context 'When the system is in the desired state' {
         Context 'When Test-TargetResource runs script without issue' {
             BeforeAll {
+                Mock -CommandName Test-Path -MockWith { return $true }
                 Mock -CommandName Invoke-SqlScript
             }
 
@@ -301,6 +318,7 @@ Describe 'SqlScript\Test-TargetResource' {
 
         Context 'When Test-TargetResource runs script without issue with timeout' {
             BeforeAll {
+                Mock -CommandName Test-Path -MockWith { return $true }
                 Mock -CommandName Invoke-SqlScript
             }
 
@@ -321,6 +339,7 @@ Describe 'SqlScript\Test-TargetResource' {
     Context 'When the system is not in the desired state' {
         Context 'When Invoke-SqlScript returns an SQL error code from the script that was ran' {
             BeforeAll {
+                Mock -CommandName Test-Path -MockWith { return $true }
                 Mock -CommandName Invoke-SqlScript -MockWith {
                     return 1
                 }
@@ -341,6 +360,7 @@ Describe 'SqlScript\Test-TargetResource' {
 
         Context 'When Test-TargetResource throws the exception SqlPowerShellSqlExecutionException when running the script in the TestFilePath parameter' {
             BeforeAll {
+                Mock -CommandName Test-Path -MockWith { return $true }
                 Mock -CommandName Invoke-SqlScript -MockWith {
                     throw New-Object -TypeName Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException
                 }
@@ -359,6 +379,7 @@ Describe 'SqlScript\Test-TargetResource' {
 
         Context 'When Test-TargetResource throws an unexpected error when running the script in the TestFilePath parameter' {
             BeforeAll {
+                Mock -CommandName Test-Path -MockWith { return $true }
                 Mock -CommandName Invoke-SqlScript -MockWith {
                     throw 'Failed to run SQL Script'
                 }
@@ -372,6 +393,34 @@ Describe 'SqlScript\Test-TargetResource' {
 
                     { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
                 }
+            }
+        }
+    }
+
+    Context 'When the TestFilePath file is missing' {
+        BeforeAll {
+            Mock -CommandName Test-Path -MockWith { return $false }
+        }
+
+        It 'Should return false' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                $result | Should -BeFalse
+            }
+        }
+
+        It 'Should write the verbose message' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $expectedMessage = $script:localizedData.TestScriptFileNotFound -f $script:mockTestTargetResourceParameters.TestFilePath
+
+                $verbosePreference = 'Continue'
+
+                { Test-TargetResource @mockTestTargetResourceParameters } | Should -WriteVerbose -ExpectedMessage $expectedMessage
             }
         }
     }
