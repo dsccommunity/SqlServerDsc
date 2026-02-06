@@ -123,8 +123,9 @@ function Get-TargetResource
 
     if (-not (Test-Path -Path $GetFilePath -PathType Leaf))
     {
-        $errorMessage = "The file specified in GetFilePath ('$GetFilePath') does not exist or is not accessible. Cannot determine resource state."
-        Throw $errorMessage
+        $errorMessage = $script:localizedData.GetFilePath_FileNotFound -f $GetFilePath
+
+        New-ObjectNotFoundException -Message $errorMessage
     }
 
     $invokeParameters = @{
@@ -286,8 +287,9 @@ function Set-TargetResource
 
     if (-not (Test-Path -Path $SetFilePath -PathType Leaf))
     {
-        $errorMessage = "The file specified in FilePath ('$SetFilePath') does not exist or is not accessible. Cannot determine resource state."
-        Throw $errorMessage
+        $errorMessage = $script:localizedData.SetFilePath_FileNotFound -f $SetFilePath
+
+        New-ObjectNotFoundException -Message $errorMessage
     }
 
     Write-Verbose -Message (
@@ -431,7 +433,7 @@ function Test-TargetResource
         $script:localizedData.TestingConfiguration
     )
 
-if (-not (Test-Path -Path $TestFilePath -PathType Leaf))
+    if (-not (Test-Path -Path $TestFilePath -PathType Leaf))
     {
         Write-Verbose -Message "Test script file '$TestFilePath' not found. Assuming resource is not in desired state."
 
