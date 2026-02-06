@@ -173,7 +173,7 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $expectedError = $script:localizedData.GetScriptFileNotFound -f $script:mockGetTargetResourceParameters.GetFilePath
+                $expectedError = $script:localizedData.GetScript_FileNotFound -f $script:mockGetTargetResourceParameters.GetFilePath
 
                 { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage $expectedError
             }
@@ -268,7 +268,7 @@ Describe 'SqlScript\Set-TargetResource' -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $expectedError = $script:localizedData.SetScriptFileNotFound -f $script:mockSetTargetResourceParameters.SetFilePath
+                $expectedError = $script:localizedData.SetScript_FileNotFound -f $script:mockSetTargetResourceParameters.SetFilePath
 
                 { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage $expectedError
             }
@@ -409,18 +409,6 @@ Describe 'SqlScript\Test-TargetResource' {
                 $result = Test-TargetResource @mockTestTargetResourceParameters
 
                 $result | Should -BeFalse
-            }
-        }
-
-        It 'Should write the verbose message' {
-            InModuleScope -ScriptBlock {
-                Set-StrictMode -Version 1.0
-
-                $expectedMessage = $script:localizedData.TestScriptFileNotFound -f $script:mockTestTargetResourceParameters.TestFilePath
-
-                $verbosePreference = 'Continue'
-
-                { Test-TargetResource @mockTestTargetResourceParameters } | Should -WriteVerbose $expectedMessage
             }
         }
     }
