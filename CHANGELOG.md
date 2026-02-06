@@ -5,6 +5,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- SqlScript
+  - Fixed logic in `Get-TargetResource` and `Set-TargetResource` to throw an error
+    when the SQL script file is missing, instead of incorrectly reporting success
+    or using a null variable.
+  - Fixed `Test-TargetResource` to return `$false` (instead of throwing) when
+    the SQL script file is missing, enabling `DependsOn` scenarios where the file
+    is created at runtime.
+
 ## [17.5.1] - 2026-02-05
 
 ### Added
@@ -24,16 +34,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated Pester test guidance in AI instructions in community style guidelines.
   - Added SChannelDsc as a required module for integration tests and enabled the
     prerequisites tests `Ensure TLS 1.2 is enabled`  ([issue #2441](https://github.com/dsccommunity/SqlServerDsc/issues/2441)).
-
-### Fixed
-
-- SqlScript
-  - Fixed logic in `Get-TargetResource` and `Set-TargetResource` to throw an error
-    when the SQL script file is missing, instead of incorrectly reporting success
-    or using a null variable.
-  - Fixed `Test-TargetResource` to return `$false` (instead of throwing) when
-    the SQL script file is missing, enabling `DependsOn` scenarios where the file
-    is created at runtime.
 
 ## [17.5.0] - 2026-01-30
 
