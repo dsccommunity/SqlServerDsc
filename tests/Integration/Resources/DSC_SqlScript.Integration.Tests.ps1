@@ -335,6 +335,132 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
     }
 
     Context ('When using configuration <_>') -ForEach @(
+        "$($script:dscResourceName)_RunSqlScriptAsWindowsUserWithDependencies_Config"
+    ) {
+        BeforeAll {
+            $configurationName = $_
+        }
+
+        AfterEach {
+            Wait-ForIdleLcm
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            $configurationParameters = @{
+                OutputPath        = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData = $ConfigurationData
+            }
+
+            $null = & $configurationName @configurationParameters
+
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
+
+            $null = Start-DscConfiguration @startDscConfigurationParameters
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
+        }
+
+        It 'Should have set the resource and all the parameters should match' {
+            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                $_.ConfigurationName -eq $configurationName `
+                -and $_.ResourceId -eq $resourceId
+            }
+
+            <#
+                This returns an array of string containing the result of the
+                get scripts JSON output. The output looks like the below.
+
+                ```
+                JSON_F52E2B61-18A1-11d1-B105-00805F49916B
+                -----------------------------------------
+                [{"Name":"ScriptDatabase4"}]
+                ```
+
+                This could have been easier by just having this test
+                $resourceCurrentState.GetResult | Should -Match 'ScriptDatabase4'
+                but for making sure the returned data is actually usable, this
+                parses the returned data to an object.
+            #>
+            $regularExpression = [regex] '\[.*\]'
+            if ($regularExpression.IsMatch($resourceCurrentState.GetResult))
+            {
+                $regularExpressionMatch = $regularExpression.Match($resourceCurrentState.GetResult).Value
+            }
+            else
+            {
+                Write-Verbose -Message ('Unexpected output from Get-TargetResource: {0}' -f $resourceCurrentState.GetResult) -Verbose
+                $regularExpressionMatch = '[{"Name":""}]'
+            }
+
+            try
+            {
+                $resultObject = $regularExpressionMatch | ConvertFrom-Json
+            }
+            catch
+            {
+                Write-Verbose -Message ('Output from Get-TargetResource: {0}' -f $resourceCurrentState.GetResult) -Verbose
+                Write-Verbose -Message ('Result from regular expression match: {0}' -f $regularExpressionMatch) -Verbose
+                throw $_
+            }
+
+            $resultObject.Name | Should -Be $ConfigurationData.AllNodes.Database4Name
+
+            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.GetFilePath | Should -Be $ConfigurationData.AllNodes.GetSqlScriptPath
+            $resourceCurrentState.TestFilePath | Should -Be $ConfigurationData.AllNodes.TestSqlScriptPath
+            $resourceCurrentState.SetFilePath | Should -Be $ConfigurationData.AllNodes.SetSqlScriptPath
+        }
+
+        It 'Should return $true when Test-DscConfiguration is run' {
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+        }
+    }
+
+    Context ('When using configuration <_>') -ForEach @(
+        "$($script:dscResourceName)_RemoveDatabase4_Config"
+    ) {
+        BeforeAll {
+            $configurationName = $_
+        }
+
+        AfterEach {
+            Wait-ForIdleLcm
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            $configurationParameters = @{
+                OutputPath        = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData = $ConfigurationData
+            }
+
+            $null = & $configurationName @configurationParameters
+
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
+
+            $null = Start-DscConfiguration @startDscConfigurationParameters
+        }
+    }
+
+    Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_RemoveDatabase3_Config"
     ) {
         BeforeAll {
