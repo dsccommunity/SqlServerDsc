@@ -97,6 +97,8 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
 
     Context 'When Get-TargetResource returns script results successfully' {
         BeforeAll {
+            Mock -CommandName Test-Path -MockWith { return $true }
+
             Mock -CommandName Invoke-SqlScript -MockWith {
                 return ''
             }
@@ -120,6 +122,8 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
 
     Context 'When Get-TargetResource returns script results successfully with query timeout' {
         BeforeAll {
+            Mock -CommandName Test-Path -MockWith { return $true }
+
             Mock -CommandName Invoke-SqlScript -MockWith {
                 return ''
             }
@@ -145,6 +149,8 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
 
     Context 'When Get-TargetResource throws an error when running the script in the GetFilePath parameter' {
         BeforeAll {
+            Mock -CommandName Test-Path -MockWith { return $true }
+
             Mock -CommandName Invoke-SqlScript -MockWith {
                 throw 'Failed to run SQL Script'
             }
@@ -157,6 +163,22 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
                 $mockErrorMessage = 'Failed to run SQL Script'
 
                 { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+            }
+        }
+    }
+
+    Context 'When the GetFilePath file is missing' {
+        BeforeAll {
+            Mock -CommandName Test-Path -MockWith { return $false }
+        }
+
+        It 'Should throw the localized file not found exception' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $expectedError = $script:localizedData.GetScriptFileNotFound -f $script:mockGetTargetResourceParameters.GetFilePath
+
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage $expectedError
             }
         }
     }
