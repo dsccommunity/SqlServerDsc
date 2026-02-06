@@ -121,6 +121,12 @@ function Get-TargetResource
 
     $serverInstance = ConvertTo-ServerInstanceName -InstanceName $InstanceName -ServerName $ServerName
 
+    if (-not (Test-Path -Path $GetFilePath -PathType Leaf))
+    {
+        $errorMessage = "The file specified in GetFilePath ('$GetFilePath') does not exist or is not accessible. Cannot determine resource state."
+        Throw $errorMessage
+    }
+
     $invokeParameters = @{
         ServerInstance   = $serverInstance
         InputFile        = $GetFilePath
@@ -278,6 +284,12 @@ function Set-TargetResource
 
     $serverInstance = ConvertTo-ServerInstanceName -InstanceName $InstanceName -ServerName $ServerName
 
+    if (-not (Test-Path -Path $SetFilePath -PathType Leaf))
+    {
+        $errorMessage = "The file specified in SetFilePath ('$SetFilePath') does not exist or is not accessible. Cannot determine resource state."
+        Throw $errorMessage
+    }
+
     Write-Verbose -Message (
         $script:localizedData.ExecutingSetScript -f $SetFilePath, $InstanceName, $ServerName
     )
@@ -418,6 +430,15 @@ function Test-TargetResource
     Write-Verbose -Message (
         $script:localizedData.TestingConfiguration
     )
+
+    if (-not (Test-Path -Path $TestFilePath -PathType Leaf))
+    {
+        Write-Verbose -Message (
+            $script:localizedData.TestScriptFileNotFound -f $TestFilePath
+        )
+
+        return $false
+    }
 
     $serverInstance = ConvertTo-ServerInstanceName -InstanceName $InstanceName -ServerName $ServerName
 
