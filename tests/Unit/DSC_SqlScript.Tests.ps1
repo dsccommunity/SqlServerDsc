@@ -420,7 +420,7 @@ Describe 'SqlScript\Test-TargetResource' {
 
                 $verbosePreference = 'Continue'
 
-                { Test-TargetResource @mockTestTargetResourceParameters } | Should -WriteVerbose -ExpectedMessage $expectedMessage
+                { Test-TargetResource @mockTestTargetResourceParameters } | Should -WriteVerbose $expectedMessage
             }
         }
     }
