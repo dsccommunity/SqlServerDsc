@@ -35,6 +35,10 @@ else
                 SetSqlScriptPath  = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
                 TestSqlScriptPath = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
 
+                GetSqlScriptPath2  = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
+                SetSqlScriptPath2  = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
+                TestSqlScriptPath2 = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
+
                 GetSqlScript      = @'
 SELECT Name FROM sys.databases WHERE Name = '$(DatabaseName)' FOR JSON AUTO
 '@
@@ -310,7 +314,7 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUserWithDependencies_Config
         xScript 'CreateFile_GetSqlScript'
         {
             SetScript  = {
-                $Using:Node.GetSqlScript | Out-File -FilePath $Using:Node.GetSqlScriptPath -Encoding ascii -NoClobber -Force
+                $Using:Node.GetSqlScript | Out-File -FilePath $Using:Node.GetSqlScriptPath2 -Encoding ascii -NoClobber -Force
             }
 
             TestScript = {
@@ -322,9 +326,9 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUserWithDependencies_Config
             GetScript  = {
                 $fileContent = $null
 
-                if (Test-Path -Path $Using:Node.GetSqlScriptPath)
+                if (Test-Path -Path $Using:Node.GetSqlScriptPath2)
                 {
-                    $fileContent = Get-Content -Path $Using:Node.GetSqlScriptPath -Raw
+                    $fileContent = Get-Content -Path $Using:Node.GetSqlScriptPath2 -Raw
                 }
 
                 return @{
@@ -336,7 +340,7 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUserWithDependencies_Config
         xScript 'CreateFile_TestSqlScript'
         {
             SetScript  = {
-                $Using:Node.TestSqlScript | Out-File -FilePath $Using:Node.TestSqlScriptPath -Encoding ascii -NoClobber -Force
+                $Using:Node.TestSqlScript | Out-File -FilePath $Using:Node.TestSqlScriptPath2 -Encoding ascii -NoClobber -Force
             }
 
             TestScript = {
@@ -348,9 +352,9 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUserWithDependencies_Config
             GetScript  = {
                 $fileContent = $null
 
-                if (Test-Path -Path $Using:Node.TestSqlScriptPath)
+                if (Test-Path -Path $Using:Node.TestSqlScriptPath2)
                 {
-                    $fileContent = Get-Content -Path $Using:Node.TestSqlScriptPath -Raw
+                    $fileContent = Get-Content -Path $Using:Node.TestSqlScriptPath2 -Raw
                 }
 
                 return @{
@@ -362,7 +366,7 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUserWithDependencies_Config
         xScript 'CreateFile_SetSqlScript'
         {
             SetScript  = {
-                $Using:Node.SetSqlScript | Out-File -FilePath $Using:Node.SetSqlScriptPath -Encoding ascii -NoClobber -Force
+                $Using:Node.SetSqlScript | Out-File -FilePath $Using:Node.SetSqlScriptPath2 -Encoding ascii -NoClobber -Force
             }
 
             TestScript = {
@@ -374,9 +378,9 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUserWithDependencies_Config
             GetScript  = {
                 $fileContent = $null
 
-                if (Test-Path -Path $Using:Node.SetSqlScriptPath)
+                if (Test-Path -Path $Using:Node.SetSqlScriptPath2)
                 {
-                    $fileContent = Get-Content -Path $Using:Node.SetSqlScriptPath -Raw
+                    $fileContent = Get-Content -Path $Using:Node.SetSqlScriptPath2 -Raw
                 }
 
                 return @{
@@ -391,9 +395,9 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUserWithDependencies_Config
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
 
-            GetFilePath          = $Node.GetSqlScriptPath
-            TestFilePath         = $Node.TestSqlScriptPath
-            SetFilePath          = $Node.SetSqlScriptPath
+            GetFilePath          = $Node.GetSqlScriptPath2
+            TestFilePath         = $Node.TestSqlScriptPath2
+            SetFilePath          = $Node.SetSqlScriptPath2
             Variable             = @(
                 ('DatabaseName={0}' -f $Node.Database4Name)
             )

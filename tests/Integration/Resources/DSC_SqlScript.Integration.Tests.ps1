@@ -417,9 +417,9 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
             $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.GetFilePath | Should -Be $ConfigurationData.AllNodes.GetSqlScriptPath
-            $resourceCurrentState.TestFilePath | Should -Be $ConfigurationData.AllNodes.TestSqlScriptPath
-            $resourceCurrentState.SetFilePath | Should -Be $ConfigurationData.AllNodes.SetSqlScriptPath
+            $resourceCurrentState.GetFilePath | Should -Be $ConfigurationData.AllNodes.GetSqlScriptPath2
+            $resourceCurrentState.TestFilePath | Should -Be $ConfigurationData.AllNodes.TestSqlScriptPath2
+            $resourceCurrentState.SetFilePath | Should -Be $ConfigurationData.AllNodes.SetSqlScriptPath2
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
