@@ -435,7 +435,9 @@ function Test-TargetResource
 
     if (-not (Test-Path -Path $TestFilePath -PathType Leaf))
     {
-        Write-Verbose -Message "Test script file '$TestFilePath' not found. Assuming resource is not in desired state."
+
+        $errorMessage = $script:localizedData.TestFilePath_FileNotFound -f $TestFilePath
+        Write-Verbose -Message $errorMessage
 
         return $false
     }

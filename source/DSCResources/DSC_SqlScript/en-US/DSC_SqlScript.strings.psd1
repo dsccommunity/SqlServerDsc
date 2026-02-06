@@ -7,4 +7,5 @@ ConvertFrom-StringData @'
     NotInDesiredState = The configuration is not in desired state.
     GetFilePath_FileNotFound = The file specified in GetFilePath ('{0}') does not exist or is not accessible. Cannot determine resource state.
     SetFilePath_FileNotFound = The file specified in SetFilePath ('{0}') does not exist or is not accessible. Cannot apply desired state.
+    TestFilePath_FileNotFound = Test script file '{0}' not found. Assuming resource is not in desired state.
 '@
