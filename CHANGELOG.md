@@ -5,6 +5,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- SqlScript
+  - Fixed logic in `Get-TargetResource` and `Set-TargetResource` to throw an error
+    when the SQL script file is missing, instead of incorrectly reporting success
+    or using a null variable.
+  - Fixed `Test-TargetResource` to return `$false` (instead of throwing) when
+    the SQL script file is missing, enabling `DependsOn` scenarios where the file
+    is created at runtime.
+
 ### Changed
 
 - SqlScript

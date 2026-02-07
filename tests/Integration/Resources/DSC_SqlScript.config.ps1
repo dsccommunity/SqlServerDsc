@@ -91,7 +91,12 @@ Configuration DSC_SqlScript_CreateDependencies_Config
                 #>
                 $getScriptResult = & ([ScriptBlock]::Create($GetScript))
 
-                return $getScriptResult.Result -eq $Using:Node.GetSqlScript
+                if ([System.String]::IsNullOrEmpty($getScriptResult.Result))
+                {
+                    return $false
+                }
+
+                return $true
             }
 
             GetScript  = {
@@ -102,9 +107,11 @@ Configuration DSC_SqlScript_CreateDependencies_Config
                     $fileContent = Get-Content -Path $Using:Node.GetSqlScriptPath -Raw
                 }
 
-                return @{
+                $returnValue = @{
                     Result = $fileContent
                 }
+
+                return $returnValue
             }
         }
 
@@ -117,7 +124,12 @@ Configuration DSC_SqlScript_CreateDependencies_Config
             TestScript = {
                 $getScriptResult = & ([ScriptBlock]::Create($GetScript))
 
-                return $getScriptResult.Result -eq $Using:Node.TestSqlScript
+                if ([System.String]::IsNullOrEmpty($getScriptResult.Result))
+                {
+                    return $false
+                }
+
+                return $true
             }
 
             GetScript  = {
@@ -128,9 +140,11 @@ Configuration DSC_SqlScript_CreateDependencies_Config
                     $fileContent = Get-Content -Path $Using:Node.TestSqlScriptPath -Raw
                 }
 
-                return @{
+                $returnValue = @{
                     Result = $fileContent
                 }
+
+                return $returnValue
             }
         }
 
@@ -143,7 +157,12 @@ Configuration DSC_SqlScript_CreateDependencies_Config
             TestScript = {
                 $getScriptResult = & ([ScriptBlock]::Create($GetScript))
 
-                return $getScriptResult.Result -eq $Using:Node.SetSqlScript
+                if ([System.String]::IsNullOrEmpty($getScriptResult.Result))
+                {
+                    return $false
+                }
+
+                return $true
             }
 
             GetScript  = {
@@ -154,9 +173,11 @@ Configuration DSC_SqlScript_CreateDependencies_Config
                     $fileContent = Get-Content -Path $Using:Node.SetSqlScriptPath -Raw
                 }
 
-                return @{
+                $returnValue = @{
                     Result = $fileContent
                 }
+
+                return $returnValue
             }
         }
 
@@ -320,7 +341,12 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUserWithDependencies_Config
             TestScript = {
                 $getScriptResult = & ([ScriptBlock]::Create($GetScript))
 
-                return $getScriptResult.Result -eq $Using:Node.GetSqlScript
+                if ([System.String]::IsNullOrEmpty($getScriptResult.Result))
+                {
+                    return $false
+                }
+
+                return $true
             }
 
             GetScript  = {
@@ -331,9 +357,11 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUserWithDependencies_Config
                     $fileContent = Get-Content -Path $Using:Node.GetSqlScriptPath2 -Raw
                 }
 
-                return @{
+                $returnValue = @{
                     Result = $fileContent
                 }
+
+                return $returnValue
             }
         }
 
@@ -346,7 +374,12 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUserWithDependencies_Config
             TestScript = {
                 $getScriptResult = & ([ScriptBlock]::Create($GetScript))
 
-                return $getScriptResult.Result -eq $Using:Node.TestSqlScript
+                if ([System.String]::IsNullOrEmpty($getScriptResult.Result))
+                {
+                    return $false
+                }
+
+                return $true
             }
 
             GetScript  = {
@@ -357,9 +390,11 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUserWithDependencies_Config
                     $fileContent = Get-Content -Path $Using:Node.TestSqlScriptPath2 -Raw
                 }
 
-                return @{
+                $returnValue = @{
                     Result = $fileContent
                 }
+
+                return $returnValue
             }
         }
 
@@ -372,7 +407,12 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUserWithDependencies_Config
             TestScript = {
                 $getScriptResult = & ([ScriptBlock]::Create($GetScript))
 
-                return $getScriptResult.Result -eq $Using:Node.SetSqlScript
+                if ([System.String]::IsNullOrEmpty($getScriptResult.Result))
+                {
+                    return $false
+                }
+
+                return $true
             }
 
             GetScript  = {
@@ -383,9 +423,11 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUserWithDependencies_Config
                     $fileContent = Get-Content -Path $Using:Node.SetSqlScriptPath2 -Raw
                 }
 
-                return @{
+                $returnValue = @{
                     Result = $fileContent
                 }
+
+                return $returnValue
             }
         }
 

@@ -121,6 +121,13 @@ function Get-TargetResource
 
     $serverInstance = ConvertTo-ServerInstanceName -InstanceName $InstanceName -ServerName $ServerName
 
+    if (-not (Test-Path -Path $GetFilePath -PathType Leaf))
+    {
+        $errorMessage = $script:localizedData.GetFilePath_FileNotFound -f $GetFilePath
+
+        New-ObjectNotFoundException -Message $errorMessage
+    }
+
     $invokeParameters = @{
         ServerInstance   = $serverInstance
         InputFile        = $GetFilePath
@@ -278,6 +285,13 @@ function Set-TargetResource
 
     $serverInstance = ConvertTo-ServerInstanceName -InstanceName $InstanceName -ServerName $ServerName
 
+    if (-not (Test-Path -Path $SetFilePath -PathType Leaf))
+    {
+        $errorMessage = $script:localizedData.SetFilePath_FileNotFound -f $SetFilePath
+
+        New-ObjectNotFoundException -Message $errorMessage
+    }
+
     Write-Verbose -Message (
         $script:localizedData.ExecutingSetScript -f $SetFilePath, $InstanceName, $ServerName
     )
@@ -418,6 +432,14 @@ function Test-TargetResource
     Write-Verbose -Message (
         $script:localizedData.TestingConfiguration
     )
+
+    if (-not (Test-Path -Path $TestFilePath -PathType Leaf))
+    {
+        $errorMessage = $script:localizedData.TestFilePath_FileNotFound -f $TestFilePath
+        Write-Verbose -Message $errorMessage
+
+        return $false
+    }
 
     $serverInstance = ConvertTo-ServerInstanceName -InstanceName $InstanceName -ServerName $ServerName
 
