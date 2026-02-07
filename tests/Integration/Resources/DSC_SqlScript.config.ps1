@@ -80,16 +80,10 @@ Configuration DSC_SqlScript_CreateDependencies_Config
         xScript 'CreateFile_GetSqlScript'
         {
             SetScript  = {
-                Write-Verbose -Message ('Creating Get SQL script file at path: {0}' -f $Using:Node.GetSqlScriptPath) -Verbose
-
                 $Using:Node.GetSqlScript | Out-File -FilePath $Using:Node.GetSqlScriptPath -Encoding ascii -NoClobber -Force
-
-                Write-Verbose -Message 'Get SQL script file created successfully' -Verbose
             }
 
             TestScript = {
-                Write-Verbose -Message 'Testing if Get SQL script file exists and matches expected content' -Verbose
-
                 <#
                     This takes the string of the $GetScript parameter and creates
                     a new script block (during runtime in the resource) and then
@@ -97,16 +91,15 @@ Configuration DSC_SqlScript_CreateDependencies_Config
                 #>
                 $getScriptResult = & ([ScriptBlock]::Create($GetScript))
 
-                $testResult = $getScriptResult.Result -eq $Using:Node.GetSqlScript
+                if ([System.String]::IsNullOrEmpty($getScriptResult.Result))
+                {
+                    return $false
+                }
 
-                Write-Verbose -Message ('Completed testing Get SQL script file. Returning: {0}' -f $testResult) -Verbose
-
-                return $testResult
+                return $true
             }
 
             GetScript  = {
-                Write-Verbose -Message ('Reading Get SQL script file content from path: {0}' -f $Using:Node.GetSqlScriptPath) -Verbose
-
                 $fileContent = $null
 
                 if (Test-Path -Path $Using:Node.GetSqlScriptPath)
@@ -118,8 +111,6 @@ Configuration DSC_SqlScript_CreateDependencies_Config
                     Result = $fileContent
                 }
 
-                Write-Verbose -Message ('Completed reading Get SQL script file content. Returning: {0}' -f ($returnValue | Out-String)) -Verbose
-
                 return $returnValue
             }
         }
@@ -127,28 +118,21 @@ Configuration DSC_SqlScript_CreateDependencies_Config
         xScript 'CreateFile_TestSqlScript'
         {
             SetScript  = {
-                Write-Verbose -Message ('Creating Test SQL script file at path: {0}' -f $Using:Node.TestSqlScriptPath) -Verbose
-
                 $Using:Node.TestSqlScript | Out-File -FilePath $Using:Node.TestSqlScriptPath -Encoding ascii -NoClobber -Force
-
-                Write-Verbose -Message 'Test SQL script file created successfully' -Verbose
             }
 
             TestScript = {
-                Write-Verbose -Message 'Testing if Test SQL script file exists and matches expected content' -Verbose
-
                 $getScriptResult = & ([ScriptBlock]::Create($GetScript))
 
-                $testResult = $getScriptResult.Result -eq $Using:Node.TestSqlScript
+                if ([System.String]::IsNullOrEmpty($getScriptResult.Result))
+                {
+                    return $false
+                }
 
-                Write-Verbose -Message ('Completed testing Test SQL script file. Returning: {0}' -f $testResult) -Verbose
-
-                return $testResult
+                return $true
             }
 
             GetScript  = {
-                Write-Verbose -Message ('Reading Test SQL script file content from path: {0}' -f $Using:Node.TestSqlScriptPath) -Verbose
-
                 $fileContent = $null
 
                 if (Test-Path -Path $Using:Node.TestSqlScriptPath)
@@ -160,8 +144,6 @@ Configuration DSC_SqlScript_CreateDependencies_Config
                     Result = $fileContent
                 }
 
-                Write-Verbose -Message ('Completed reading Test SQL script file content. Returning: {0}' -f ($returnValue | Out-String)) -Verbose
-
                 return $returnValue
             }
         }
@@ -169,28 +151,21 @@ Configuration DSC_SqlScript_CreateDependencies_Config
         xScript 'CreateFile_SetSqlScript'
         {
             SetScript  = {
-                Write-Verbose -Message ('Creating Set SQL script file at path: {0}' -f $Using:Node.SetSqlScriptPath) -Verbose
-
                 $Using:Node.SetSqlScript | Out-File -FilePath $Using:Node.SetSqlScriptPath -Encoding ascii -NoClobber -Force
-
-                Write-Verbose -Message 'Set SQL script file created successfully' -Verbose
             }
 
             TestScript = {
-                Write-Verbose -Message 'Testing if Set SQL script file exists and matches expected content' -Verbose
-
                 $getScriptResult = & ([ScriptBlock]::Create($GetScript))
 
-                $testResult = $getScriptResult.Result -eq $Using:Node.SetSqlScript
+                if ([System.String]::IsNullOrEmpty($getScriptResult.Result))
+                {
+                    return $false
+                }
 
-                Write-Verbose -Message ('Completed testing Set SQL script file. Returning: {0}' -f $testResult) -Verbose
-
-                return $testResult
+                return $true
             }
 
             GetScript  = {
-                Write-Verbose -Message ('Reading Set SQL script file content from path: {0}' -f $Using:Node.SetSqlScriptPath) -Verbose
-
                 $fileContent = $null
 
                 if (Test-Path -Path $Using:Node.SetSqlScriptPath)
@@ -201,8 +176,6 @@ Configuration DSC_SqlScript_CreateDependencies_Config
                 $returnValue = @{
                     Result = $fileContent
                 }
-
-                Write-Verbose -Message ('Completed reading Set SQL script file content. Returning: {0}' -f ($returnValue | Out-String)) -Verbose
 
                 return $returnValue
             }
@@ -362,28 +335,21 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUserWithDependencies_Config
         xScript 'CreateFile_GetSqlScript'
         {
             SetScript  = {
-                Write-Verbose -Message ('Creating Get SQL script file at path: {0}' -f $Using:Node.GetSqlScriptPath2) -Verbose
-
                 $Using:Node.GetSqlScript | Out-File -FilePath $Using:Node.GetSqlScriptPath2 -Encoding ascii -NoClobber -Force
-
-                Write-Verbose -Message 'Get SQL script file created successfully' -Verbose
             }
 
             TestScript = {
-                Write-Verbose -Message 'Testing if Get SQL script file exists and matches expected content' -Verbose
-
                 $getScriptResult = & ([ScriptBlock]::Create($GetScript))
 
-                $testResult = $getScriptResult.Result -eq $Using:Node.GetSqlScript
+                if ([System.String]::IsNullOrEmpty($getScriptResult.Result))
+                {
+                    return $false
+                }
 
-                Write-Verbose -Message ('Completed testing Get SQL script file. Returning: {0}' -f $testResult) -Verbose
-
-                return $testResult
+                return $true
             }
 
             GetScript  = {
-                Write-Verbose -Message ('Reading Get SQL script file content from path: {0}' -f $Using:Node.GetSqlScriptPath2) -Verbose
-
                 $fileContent = $null
 
                 if (Test-Path -Path $Using:Node.GetSqlScriptPath2)
@@ -395,8 +361,6 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUserWithDependencies_Config
                     Result = $fileContent
                 }
 
-                Write-Verbose -Message ('Completed reading Get SQL script file content. Returning: {0}' -f ($returnValue | Out-String)) -Verbose
-
                 return $returnValue
             }
         }
@@ -404,28 +368,21 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUserWithDependencies_Config
         xScript 'CreateFile_TestSqlScript'
         {
             SetScript  = {
-                Write-Verbose -Message ('Creating Test SQL script file at path: {0}' -f $Using:Node.TestSqlScriptPath2) -Verbose
-
                 $Using:Node.TestSqlScript | Out-File -FilePath $Using:Node.TestSqlScriptPath2 -Encoding ascii -NoClobber -Force
-
-                Write-Verbose -Message 'Test SQL script file created successfully' -Verbose
             }
 
             TestScript = {
-                Write-Verbose -Message 'Testing if Test SQL script file exists and matches expected content' -Verbose
-
                 $getScriptResult = & ([ScriptBlock]::Create($GetScript))
 
-                $testResult = $getScriptResult.Result -eq $Using:Node.TestSqlScript
+                if ([System.String]::IsNullOrEmpty($getScriptResult.Result))
+                {
+                    return $false
+                }
 
-                Write-Verbose -Message ('Completed testing Test SQL script file. Returning: {0}' -f $testResult) -Verbose
-
-                return $testResult
+                return $true
             }
 
             GetScript  = {
-                Write-Verbose -Message ('Reading Test SQL script file content from path: {0}' -f $Using:Node.TestSqlScriptPath2) -Verbose
-
                 $fileContent = $null
 
                 if (Test-Path -Path $Using:Node.TestSqlScriptPath2)
@@ -437,8 +394,6 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUserWithDependencies_Config
                     Result = $fileContent
                 }
 
-                Write-Verbose -Message ('Completed reading Test SQL script file content. Returning: {0}' -f ($returnValue | Out-String)) -Verbose
-
                 return $returnValue
             }
         }
@@ -446,28 +401,21 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUserWithDependencies_Config
         xScript 'CreateFile_SetSqlScript'
         {
             SetScript  = {
-                Write-Verbose -Message ('Creating Set SQL script file at path: {0}' -f $Using:Node.SetSqlScriptPath2) -Verbose
-
                 $Using:Node.SetSqlScript | Out-File -FilePath $Using:Node.SetSqlScriptPath2 -Encoding ascii -NoClobber -Force
-
-                Write-Verbose -Message 'Set SQL script file created successfully' -Verbose
             }
 
             TestScript = {
-                Write-Verbose -Message 'Testing if Set SQL script file exists and matches expected content' -Verbose
-
                 $getScriptResult = & ([ScriptBlock]::Create($GetScript))
 
-                $testResult = $getScriptResult.Result -eq $Using:Node.SetSqlScript
+                if ([System.String]::IsNullOrEmpty($getScriptResult.Result))
+                {
+                    return $false
+                }
 
-                Write-Verbose -Message ('Completed testing Set SQL script file. Returning: {0}' -f $testResult) -Verbose
-
-                return $testResult
+                return $true
             }
 
             GetScript  = {
-                Write-Verbose -Message ('Reading Set SQL script file content from path: {0}' -f $Using:Node.SetSqlScriptPath2) -Verbose
-
                 $fileContent = $null
 
                 if (Test-Path -Path $Using:Node.SetSqlScriptPath2)
@@ -478,8 +426,6 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUserWithDependencies_Config
                 $returnValue = @{
                     Result = $fileContent
                 }
-
-                Write-Verbose -Message ('Completed reading Set SQL script file content. Returning: {0}' -f ($returnValue | Out-String)) -Verbose
 
                 return $returnValue
             }
