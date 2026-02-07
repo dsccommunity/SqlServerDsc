@@ -29,10 +29,15 @@ else
                 Database1Name     = 'ScriptDatabase1'
                 Database2Name     = 'ScriptDatabase2'
                 Database3Name     = '$(DatabaseName)'
+                Database4Name     = 'ScriptDatabase4'
 
                 GetSqlScriptPath  = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
                 SetSqlScriptPath  = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
                 TestSqlScriptPath = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
+
+                GetSqlScriptPath2  = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
+                SetSqlScriptPath2  = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
+                TestSqlScriptPath2 = Join-Path -Path $env:SystemDrive -ChildPath ([System.IO.Path]::GetRandomFileName())
 
                 GetSqlScript      = @'
 SELECT Name FROM sys.databases WHERE Name = '$(DatabaseName)' FOR JSON AUTO
@@ -86,7 +91,12 @@ Configuration DSC_SqlScript_CreateDependencies_Config
                 #>
                 $getScriptResult = & ([ScriptBlock]::Create($GetScript))
 
-                return $getScriptResult.Result -eq $Using:Node.GetSqlScript
+                if ([System.String]::IsNullOrEmpty($getScriptResult.Result))
+                {
+                    return $false
+                }
+
+                return $true
             }
 
             GetScript  = {
@@ -97,9 +107,11 @@ Configuration DSC_SqlScript_CreateDependencies_Config
                     $fileContent = Get-Content -Path $Using:Node.GetSqlScriptPath -Raw
                 }
 
-                return @{
+                $returnValue = @{
                     Result = $fileContent
                 }
+
+                return $returnValue
             }
         }
 
@@ -112,7 +124,12 @@ Configuration DSC_SqlScript_CreateDependencies_Config
             TestScript = {
                 $getScriptResult = & ([ScriptBlock]::Create($GetScript))
 
-                return $getScriptResult.Result -eq $Using:Node.TestSqlScript
+                if ([System.String]::IsNullOrEmpty($getScriptResult.Result))
+                {
+                    return $false
+                }
+
+                return $true
             }
 
             GetScript  = {
@@ -123,9 +140,11 @@ Configuration DSC_SqlScript_CreateDependencies_Config
                     $fileContent = Get-Content -Path $Using:Node.TestSqlScriptPath -Raw
                 }
 
-                return @{
+                $returnValue = @{
                     Result = $fileContent
                 }
+
+                return $returnValue
             }
         }
 
@@ -138,7 +157,12 @@ Configuration DSC_SqlScript_CreateDependencies_Config
             TestScript = {
                 $getScriptResult = & ([ScriptBlock]::Create($GetScript))
 
-                return $getScriptResult.Result -eq $Using:Node.SetSqlScript
+                if ([System.String]::IsNullOrEmpty($getScriptResult.Result))
+                {
+                    return $false
+                }
+
+                return $true
             }
 
             GetScript  = {
@@ -149,9 +173,11 @@ Configuration DSC_SqlScript_CreateDependencies_Config
                     $fileContent = Get-Content -Path $Using:Node.SetSqlScriptPath -Raw
                 }
 
-                return @{
+                $returnValue = @{
                     Result = $fileContent
                 }
+
+                return $returnValue
             }
         }
 
@@ -290,6 +316,169 @@ Configuration DSC_SqlScript_RunSqlScriptWithVariablesDisabled_Config
             Credential        = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.SqlLogin_UserName, (ConvertTo-SecureString -String $Node.SqlLogin_Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Creates the script files and runs the SQL script as a Windows User
+        in the same configuration using DependsOn.
+#>
+Configuration DSC_SqlScript_RunSqlScriptAsWindowsUserWithDependencies_Config
+{
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        xScript 'CreateFile_GetSqlScript'
+        {
+            SetScript  = {
+                $Using:Node.GetSqlScript | Out-File -FilePath $Using:Node.GetSqlScriptPath2 -Encoding ascii -NoClobber -Force
+            }
+
+            TestScript = {
+                $getScriptResult = & ([ScriptBlock]::Create($GetScript))
+
+                if ([System.String]::IsNullOrEmpty($getScriptResult.Result))
+                {
+                    return $false
+                }
+
+                return $true
+            }
+
+            GetScript  = {
+                $fileContent = $null
+
+                if (Test-Path -Path $Using:Node.GetSqlScriptPath2)
+                {
+                    $fileContent = Get-Content -Path $Using:Node.GetSqlScriptPath2 -Raw
+                }
+
+                $returnValue = @{
+                    Result = $fileContent
+                }
+
+                return $returnValue
+            }
+        }
+
+        xScript 'CreateFile_TestSqlScript'
+        {
+            SetScript  = {
+                $Using:Node.TestSqlScript | Out-File -FilePath $Using:Node.TestSqlScriptPath2 -Encoding ascii -NoClobber -Force
+            }
+
+            TestScript = {
+                $getScriptResult = & ([ScriptBlock]::Create($GetScript))
+
+                if ([System.String]::IsNullOrEmpty($getScriptResult.Result))
+                {
+                    return $false
+                }
+
+                return $true
+            }
+
+            GetScript  = {
+                $fileContent = $null
+
+                if (Test-Path -Path $Using:Node.TestSqlScriptPath2)
+                {
+                    $fileContent = Get-Content -Path $Using:Node.TestSqlScriptPath2 -Raw
+                }
+
+                $returnValue = @{
+                    Result = $fileContent
+                }
+
+                return $returnValue
+            }
+        }
+
+        xScript 'CreateFile_SetSqlScript'
+        {
+            SetScript  = {
+                $Using:Node.SetSqlScript | Out-File -FilePath $Using:Node.SetSqlScriptPath2 -Encoding ascii -NoClobber -Force
+            }
+
+            TestScript = {
+                $getScriptResult = & ([ScriptBlock]::Create($GetScript))
+
+                if ([System.String]::IsNullOrEmpty($getScriptResult.Result))
+                {
+                    return $false
+                }
+
+                return $true
+            }
+
+            GetScript  = {
+                $fileContent = $null
+
+                if (Test-Path -Path $Using:Node.SetSqlScriptPath2)
+                {
+                    $fileContent = Get-Content -Path $Using:Node.SetSqlScriptPath2 -Raw
+                }
+
+                $returnValue = @{
+                    Result = $fileContent
+                }
+
+                return $returnValue
+            }
+        }
+
+        SqlScript 'Integration_Test'
+        {
+            Id                   = 'Integration_Test'
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+
+            GetFilePath          = $Node.GetSqlScriptPath2
+            TestFilePath         = $Node.TestSqlScriptPath2
+            SetFilePath          = $Node.SetSqlScriptPath2
+            Variable             = @(
+                ('DatabaseName={0}' -f $Node.Database4Name)
+            )
+            QueryTimeout         = 30
+            Encrypt              = 'Optional'
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
+
+            DependsOn            = @(
+                '[xScript]CreateFile_GetSqlScript'
+                '[xScript]CreateFile_TestSqlScript'
+                '[xScript]CreateFile_SetSqlScript'
+            )
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Remove the database created from the combined configuration test.
+#>
+Configuration DSC_SqlScript_RemoveDatabase4_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlDatabase 'RemoveDatabase4'
+        {
+            Ensure               = 'Absent'
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+            Name                 = $Node.Database4Name
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
     }
 }
