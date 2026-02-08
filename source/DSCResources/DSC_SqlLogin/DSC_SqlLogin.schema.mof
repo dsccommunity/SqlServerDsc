@@ -14,4 +14,5 @@ class DSC_SqlLogin : OMI_BaseResource
     [Write, Description("Specifies if the login password is required to conform to the password policy specified in the system security policy. Only applies to _SQL Logins_.")] Boolean LoginPasswordPolicyEnforced;
     [Write, Description("Specifies if the login is disabled. Default value is `$false`.")] Boolean Disabled;
     [Write, Description("Specifies the default database name.")] String DefaultDatabase;
+    [Write, Description("Specifies the default language.")] String Language;
 };
