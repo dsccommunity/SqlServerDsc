@@ -9,4 +9,5 @@ ConvertFrom-StringData @'
     NotInDesiredState = Configuration option '{0}' is not in desired state. Expected '{1}', but was '{2}'.
     InDesiredState = Configuration option '{0}' is in desired state.
     NoRestartNeeded = The option was changed without the need to restart the SQL Server instance.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
 '@

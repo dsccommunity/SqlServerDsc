@@ -250,25 +250,38 @@ function Test-TargetResource
         $RestartTimeout = 120
     )
 
-    # Get the current value of the configuration option.
-    $getTargetResourceResult = Get-TargetResource @PSBoundParameters
+    $result = $false
 
-    if ($getTargetResourceResult.OptionValue -eq $OptionValue)
+    try
     {
-        Write-Verbose -Message (
-            $script:localizedData.InDesiredState `
-                -f $OptionName
-        )
+        # Get the current value of the configuration option.
+        $getTargetResourceResult = Get-TargetResource @PSBoundParameters
 
-        $result = $true
+        if ($getTargetResourceResult.OptionValue -eq $OptionValue)
+        {
+            Write-Verbose -Message (
+                $script:localizedData.InDesiredState `
+                    -f $OptionName
+            )
+
+            $result = $true
+        }
+        else
+        {
+            Write-Verbose -Message (
+                $script:localizedData.NotInDesiredState `
+                    -f $OptionName, $OptionValue, $getTargetResourceResult.OptionValue
+            )
+
+            $result = $false
+        }
     }
-    else
+    catch
     {
         Write-Verbose -Message (
-            $script:localizedData.NotInDesiredState `
-                -f $OptionName, $OptionValue, $getTargetResourceResult.OptionValue
+            $script:localizedData.SQLInstanceNotReachable `
+                -f $_
         )
-
         $result = $false
     }
 
