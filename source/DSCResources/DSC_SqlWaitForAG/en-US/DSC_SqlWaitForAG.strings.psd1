@@ -1,5 +1,6 @@
 ConvertFrom-StringData @'
     GetCurrentState = Get the current state of the Always On Availability Group with the cluster group name '{0}'.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     FoundClusterGroup = Found the cluster group '{0}'.
     MissingClusterGroup = Did not find the cluster group '{0}'.
     WaitingClusterGroup = Waiting for the Always On Availability Group with the cluster group name '{0}'. Will make {1} attempts during a total of {2} seconds.

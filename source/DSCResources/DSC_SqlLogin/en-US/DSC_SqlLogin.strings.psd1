@@ -2,6 +2,7 @@
 
 ConvertFrom-StringData @'
     GetLogin = Getting the login '{0}' from the instance '{1}\\{2}'.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     LoginCurrentState = The login '{0}' is {1} at the instance '{2}\\{3}'.
     SetPasswordExpirationEnabled = Setting password expiration enabled to '{0}' for the login '{1}' on the instance '{2}\\{3}'.
     SetPasswordPolicyEnforced = Setting password policy enforced to '{0}' for the login '{1}' on the instance '{2}\\{3}'.

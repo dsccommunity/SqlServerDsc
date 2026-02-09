@@ -788,7 +788,18 @@ function Test-TargetResource
         AvailabilityGroupName = $AvailabilityGroupName
         BackupPath            = $BackupPath
     }
-    $currentConfiguration = Get-TargetResource @getTargetResourceParameters
+    try
+    {
+        $currentConfiguration = Get-TargetResource @getTargetResourceParameters
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable `
+                -f $_
+        )
+        return $false
+    }
 
     <#
         If this is supposed to process only the active node, and this is not the

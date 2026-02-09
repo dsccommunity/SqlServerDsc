@@ -6,7 +6,7 @@ ConvertFrom-StringData @'
     RemoveClientAlias64Bit = Removing the SQL Server Client Alias '{0}' (64-bit).
     RemoveClientAlias32Bit = Removing the SQL Server Client Alias '{0}' (32-bit).
     TestingConfiguration = Determines if the SQL Server Client Alias is in desired state.
-    ClientAliasMissing = The SQL Server Client Alias '{0}' does not exist.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     ClientAliasPresent = The SQL Server Client Alias '{0}' exist, verifying values.
     InDesiredState = The SQL Server Client Alias '{0}' is in desired state.
     NotInDesiredState = The SQL Server Client Alias '{0}' is not in desired state.

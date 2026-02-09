@@ -2,6 +2,7 @@
 
 ConvertFrom-StringData @'
     GetProperties = Getting properties of the SQL Server role '{0}'.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     SetProperties = Setting properties of the SQL Server role '{0}'.
     TestProperties = Testing properties of the SQL Server role '{0}'.
     EnumMemberNamesServerRoleGetError = Failed to enumerate members of the server role named '{2}' on '{0}\\{1}'.

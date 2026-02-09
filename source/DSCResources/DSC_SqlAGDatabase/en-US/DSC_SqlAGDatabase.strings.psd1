@@ -4,6 +4,7 @@ ConvertFrom-StringData @'
     AddingDatabasesToAvailabilityGroup = Adding the following databases to the '{0}' availability group: {1}.
     AlterAvailabilityGroupDatabaseMembershipFailure = {0}.
     AvailabilityGroupDoesNotExist = The availability group '{0}' does not exist.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     DatabaseShouldBeMember = The following databases should be a member of the availability group '{0}': {1}.
     DatabaseShouldNotBeMember = The following databases should not be a member of the availability group '{0}': {1}.
     DatabasesNotFound = The following databases were not found in the instance: {0}.

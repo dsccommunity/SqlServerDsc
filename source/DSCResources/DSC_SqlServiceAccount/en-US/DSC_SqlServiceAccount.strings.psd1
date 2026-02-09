@@ -12,4 +12,5 @@ ConvertFrom-StringData @'
     NotInstanceAware = Service type '{0}' is not instance aware.
     MissingParameter = Missing parameter detected for '{0}'!
     GetConfiguration = Get the current service account for the service '{0}'.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
 '@

@@ -2,6 +2,7 @@
 
 ConvertFrom-StringData @'
     UsingPath = Using path '{0}'.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     EvaluateReplicationFeature = Detecting replication feature.
     ReplicationFeatureFound = Replication feature detected.
     ReplicationFeatureNotFound = Replication feature not detected.

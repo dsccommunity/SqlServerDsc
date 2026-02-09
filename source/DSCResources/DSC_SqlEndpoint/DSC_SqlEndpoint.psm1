@@ -222,7 +222,18 @@ function Set-TargetResource
         InstanceName = $InstanceName
     }
 
-    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+    try
+    {
+        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable `
+                -f $_
+        )
+        return $false
+    }
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
@@ -549,7 +560,18 @@ function Test-TargetResource
         InstanceName = $InstanceName
     }
 
-    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+    try
+    {
+        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable `
+                -f $_
+        )
+        return $false
+    }
 
     if ($getTargetResourceResult.Ensure -eq $Ensure)
     {

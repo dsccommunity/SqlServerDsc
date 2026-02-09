@@ -1,5 +1,6 @@
 ConvertFrom-StringData @'
     AddDatabaseRoleMember = Adding member '{0}' to role '{1}' in database '{2}'.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     AddDatabaseRoleMemberError = Failed to add member '{0}' to role '{1}' in database '{2}'.
     CreateDatabaseRole = Creating role '{0}' in database '{1}'.
     CreateDatabaseRoleError = Failed to create role '{0}' in database '{1}'.

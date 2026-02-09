@@ -770,7 +770,18 @@ function Test-TargetResource
         $getTargetResourceParameters.Encrypt = $Encrypt
     }
 
-    $currentConfig = Get-TargetResource @getTargetResourceParameters
+    try
+    {
+        $currentConfig = Get-TargetResource @getTargetResourceParameters
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable `
+                -f $_
+        )
+        return $false
+    }
 
     if (-not $currentConfig.IsInitialized)
     {

@@ -399,7 +399,18 @@ function Test-TargetResource
     )
 
     $result = $false
-    $state = Get-TargetResource @PSBoundParameters
+    try
+    {
+        $state = Get-TargetResource @PSBoundParameters
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable `
+                -f $_
+        )
+        return $false
+    }
 
     if ($Ensure -eq 'Absent' -and $state.Ensure -eq 'Absent')
     {

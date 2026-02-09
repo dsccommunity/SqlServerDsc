@@ -1,5 +1,6 @@
 ConvertFrom-StringData @'
     GetAvailabilityGroup = Get the current configuration for the availability group '{0}' on the instance '{1}'.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     RemoveAvailabilityGroup = Removing the availability group '{0}' on the instance '{1}'.
     HadrNotEnabled = Always On Availability Groups is not enabled.
     FailedRemoveAvailabilityGroup = Failed to remove the availability group '{0}' from the instance '{1}'.

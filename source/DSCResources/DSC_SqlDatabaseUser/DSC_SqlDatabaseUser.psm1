@@ -217,7 +217,18 @@ function Set-TargetResource
     }
 
     # Get-TargetResource will also help us to test if the database exist.
-    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+    try
+    {
+        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable `
+                -f $_
+        )
+        return $false
+    }
 
     # Default parameters for the cmdlet Invoke-SqlDscQuery used throughout.
     $invokeSqlDscQueryParameters = @{

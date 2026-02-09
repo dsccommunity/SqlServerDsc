@@ -697,7 +697,18 @@ function Test-TargetResource
     # Assume this will pass. We will determine otherwise later
     $result = $true
 
-    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+    try
+    {
+        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable `
+                -f $_
+        )
+        return $false
+    }
 
     <#
         If this is supposed to process only the active node, and this is not the

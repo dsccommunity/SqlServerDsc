@@ -261,7 +261,18 @@ function Test-TargetResource
         ServerName   = $ServerName
     }
 
-    $getTargetResourceResult = Get-TargetResource @parameters
+    try
+    {
+        $getTargetResourceResult = Get-TargetResource @parameters
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable `
+                -f $_
+        )
+        return $false
+    }
 
     $getMaxDop = $getTargetResourceResult.MaxDop
     $isMaxDopInDesiredState = $true

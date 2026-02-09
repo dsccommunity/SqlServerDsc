@@ -427,7 +427,18 @@ function Set-TargetResource
 
     $browserServiceName = 'SQLBrowser'
 
-    $getTargetResourceResult = Get-TargetResource -SourcePath $SourcePath -Features $Features -InstanceName $InstanceName
+    try
+    {
+        $getTargetResourceResult = Get-TargetResource -SourcePath $SourcePath -Features $Features -InstanceName $InstanceName
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable `
+                -f $_
+        )
+        return $false
+    }
 
     foreach ($currentFeature in $getTargetResourceResult.Features.Split(','))
     {

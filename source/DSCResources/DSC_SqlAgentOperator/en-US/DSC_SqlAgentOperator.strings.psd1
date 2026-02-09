@@ -15,4 +15,5 @@ ConvertFrom-StringData @'
     SqlAgentOperatorDoesNotExistButShould  = SQL Agent Operator does not exist but Ensure is set to Present. The SQL Agent Operator '{0}' should be created.
     SqlAgentOperatorExistsButEmailWrong  = SQL Agent Operator '{0}' exists but has the wrong email address. Email address is currently '{1}' and should be updated to '{2}'.
     ConnectServerFailed = Unable to connect to {0}\\{1}.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
 '@

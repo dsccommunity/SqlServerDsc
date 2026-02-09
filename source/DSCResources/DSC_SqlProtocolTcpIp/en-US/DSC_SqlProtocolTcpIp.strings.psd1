@@ -1,5 +1,6 @@
 ConvertFrom-StringData @'
     GetCurrentState = Getting the current state of the TCP/IP address group '{0}' for the instance '{1}' on the server '{2}'. (SSPTI0001)
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     GetMissingIpAddressGroup = The specified IP address group '{0}' does not not exist, cannot determine current state. (SSPTI0002)
     TestDesiredState = Determining the current state of the TCP/IP address group '{0}' for the instance '{1}' on the server '{2}'. (SSPTI0003)
     NotInDesiredState = The TCP/IP address group '{0}' for the instance '{1}' is not in desired state. (SSPTI0004)

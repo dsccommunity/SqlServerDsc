@@ -365,6 +365,17 @@ function Test-TargetResource
             $script:localizedData.NotInDesiredState -f $Name
         )
     }
-
+    try
+    {
+        $currentValues = Get-TargetResource @parameters
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable `
+                -f $_
+        )
+        return $false
+    }
     return $result
 }

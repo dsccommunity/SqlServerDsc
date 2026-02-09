@@ -2,6 +2,7 @@
 
 ConvertFrom-StringData @'
     GetCurrentPath = Getting default path for '{0}' for instance '{1}'.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     SettingDefaultPath = Setting the default path for the '{0}' files.
     DefaultPathChanged = The default path for '{0}' has been changed from '{1}' to '{2}'.
     RestartSqlServer = Restarting Sql Server: {0}\\{1}.

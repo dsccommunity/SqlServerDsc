@@ -4,6 +4,7 @@ ConvertFrom-StringData @'
     AvailabilityGroupListenerIsNotPresent = The Availability Group listener '{0}' does not exist.
     AvailabilityGroupListenerNotFound = Trying to make a change to the listener '{0}' that does not exist in the availability group '{1}'.
     CreateAvailabilityGroupListener = Create Availability Group listener '{0}' for the Availability Group '{1}' on the instance '{2}'.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     SetAvailabilityGroupListenerPort = Availability Group listener port is set to '{0}'.
     SetAvailabilityGroupListenerDhcp = Availability Group listener is using DHCP with the subnet '{0}'.
     SetAvailabilityGroupListenerDhcpDefaultSubnet = Availability Group listener is using DHCP with the server default subnet.

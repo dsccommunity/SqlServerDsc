@@ -1,5 +1,6 @@
 ConvertFrom-StringData @'
     RetrievingDatabaseUser = Retrieving information about the database user '{0}' from the database '{1}'. (SDU0001)
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     DatabaseNotFound = The database '{0}' does not exist. (SDU0002)
     EvaluateDatabaseUser = Determining if the database user '{0}' in the database '{1}' is in the desired state. (SDU0003)
     DatabaseUserExist = The database user '{0}' exist in the database '{1}'. (SDU0004)
