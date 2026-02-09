@@ -580,7 +580,17 @@ function Test-TargetResource
         )
     )
 
-    $propertyState = Compare-TargetResourceState @PSBoundParameters
+    try
+    {
+        $propertyState = Compare-TargetResourceState @PSBoundParameters
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable -f $_
+        )
+        return $false
+    }
 
     if ($false -in $propertyState.InDesiredState)
     {
@@ -716,18 +726,7 @@ function Compare-TargetResourceState
         }
     }
 
-    try
-    {
-        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-    }
-    catch
-    {
-        Write-Verbose -Message (
-            $script:localizedData.SQLInstanceNotReachable `
-                -f $_
-        )
-        return $false
-    }
+    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
     $compareTargetResourceStateParameters = @{
         CurrentValues            = $getTargetResourceResult

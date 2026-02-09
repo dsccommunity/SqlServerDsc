@@ -391,8 +391,7 @@ function Test-TargetResource
     }
 
     Write-Verbose -Message (
-        $script:localizedData.TestingConfiguration `
-            -f $InstanceName
+        $script:localizedData.TestingConfiguration -f $InstanceName
     )
 
     try

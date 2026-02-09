@@ -1030,18 +1030,7 @@ function Set-TargetResource
         $getTargetResourceParameters.ServerName = $ServerName
     }
 
-    try
-    {
-        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-    }
-    catch
-    {
-        Write-Verbose -Message (
-            $script:localizedData.SQLInstanceNotReachable `
-                -f $_
-        )
-        return $false
-    }
+    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
     $InstanceName = $InstanceName.ToUpper()
 

@@ -222,18 +222,7 @@ function Set-TargetResource
         InstanceName = $InstanceName
     }
 
-    try
-    {
-        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-    }
-    catch
-    {
-        Write-Verbose -Message (
-            $script:localizedData.SQLInstanceNotReachable `
-                -f $_
-        )
-        return $false
-    }
+    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
