@@ -62,23 +62,23 @@ BeforeAll {
 
     $mockConnectSQL = {
         $mockServerObjectHashtable = @{
-            InstanceName = 'MSSQLSERVER'
+            InstanceName                = 'MSSQLSERVER'
             ComputerNamePhysicalNetBIOS = 'localhost'
-            Name = 'localhost\MSSQLSERVER'
+            Name                        = 'localhost\MSSQLSERVER'
         }
 
         if ($mockPrincipalsAsArrays)
         {
             $mockServerObjectHashtable += @{
                 Logins = @()
-                Roles = @()
+                Roles  = @()
             }
         }
         else
         {
             $mockServerObjectHashtable += @{
                 Logins = @{}
-                Roles = @{}
+                Roles  = @{}
             }
         }
 
@@ -103,56 +103,56 @@ BeforeAll {
                     $mockEnumMemberNames
                 }
             } -PassThru |
-            Add-Member -MemberType ScriptMethod -Name Drop -Value {
-                if ($mockInvalidOperationForDropMethod)
-                {
-                    throw 'Mock Drop Method was called with invalid operation'
-                }
+                Add-Member -MemberType ScriptMethod -Name Drop -Value {
+                    if ($mockInvalidOperationForDropMethod)
+                    {
+                        throw 'Mock Drop Method was called with invalid operation'
+                    }
 
-                if ( $this.Name -ne 'ServerRoleToDrop' )
-                {
-                    throw "Called mocked drop() method without dropping the right server role. Expected '{0}'. But was '{1}'." `
-                        -f 'ServerRoleToDrop', $this.Name
-                }
-            } -PassThru |
-            Add-Member -MemberType ScriptMethod -Name AddMember -Value {
-                param
-                (
-                    [Parameter(Mandatory = $true)]
-                    [String]
-                    $memberName
-                )
+                    if ( $this.Name -ne 'ServerRoleToDrop' )
+                    {
+                        throw "Called mocked drop() method without dropping the right server role. Expected '{0}'. But was '{1}'." `
+                            -f 'ServerRoleToDrop', $this.Name
+                    }
+                } -PassThru |
+                Add-Member -MemberType ScriptMethod -Name AddMember -Value {
+                    param
+                    (
+                        [Parameter(Mandatory = $true)]
+                        [String]
+                        $memberName
+                    )
 
-                if ($mockInvalidOperationForAddMemberMethod)
-                {
-                    throw 'Mock AddMember Method was called with invalid operation'
-                }
+                    if ($mockInvalidOperationForAddMemberMethod)
+                    {
+                        throw 'Mock AddMember Method was called with invalid operation'
+                    }
 
-                if ($mockExpectedMemberToAdd -ne $memberName)
-                {
-                    throw "Called mocked AddMember() method without adding the right login. Expected '{0}'. But was '{1}'." `
-                        -f $mockExpectedMemberToAdd, $memberName
-                }
-            } -PassThru |
-            Add-Member -MemberType ScriptMethod -Name DropMember -Value {
-                param
-                (
-                    [Parameter(Mandatory = $true)]
-                    [String]
-                    $memberName
-                )
+                    if ($mockExpectedMemberToAdd -ne $memberName)
+                    {
+                        throw "Called mocked AddMember() method without adding the right login. Expected '{0}'. But was '{1}'." `
+                            -f $mockExpectedMemberToAdd, $memberName
+                    }
+                } -PassThru |
+                Add-Member -MemberType ScriptMethod -Name DropMember -Value {
+                    param
+                    (
+                        [Parameter(Mandatory = $true)]
+                        [String]
+                        $memberName
+                    )
 
-                if ($mockInvalidOperationForDropMemberMethod)
-                {
-                    throw 'Mock DropMember Method was called with invalid operation'
-                }
+                    if ($mockInvalidOperationForDropMemberMethod)
+                    {
+                        throw 'Mock DropMember Method was called with invalid operation'
+                    }
 
-                if ($mockExpectedMemberToDrop -ne $memberName)
-                {
-                    throw "Called mocked DropMember() method without removing the right login. Expected '{0}'. But was '{1}'." `
-                        -f $mockExpectedMemberToDrop, $memberName
+                    if ($mockExpectedMemberToDrop -ne $memberName)
+                    {
+                        throw "Called mocked DropMember() method without removing the right login. Expected '{0}'. But was '{1}'." `
+                            -f $mockExpectedMemberToDrop, $memberName
+                    }
                 }
-            }
 
             # Add the mock role to the roles collection
             if ($mockServerObject.Roles -is [array])
@@ -169,7 +169,7 @@ BeforeAll {
         foreach ($mockLoginName in @('CONTOSO\John', 'CONTOSO\Kelly', 'CONTOSO\Lucy', 'CONTOSO\Steve'))
         {
             $mockLoginObject = [PSCustomObject] @{
-                Name = $mockLoginName
+                Name      = $mockLoginName
                 LoginType = 'WindowsUser'
             }
 
@@ -206,7 +206,7 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe "DSC_SqlRole\Get-TargetResource" -Tag 'Get' {
+Describe 'DSC_SqlRole\Get-TargetResource' -Tag 'Get' {
     BeforeAll {
         Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
 
@@ -333,7 +333,7 @@ Describe "DSC_SqlRole\Get-TargetResource" -Tag 'Get' {
     }
 }
 
-Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
+Describe 'DSC_SqlRole\Test-TargetResource' -Tag 'Test' {
     BeforeAll {
         Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
 
@@ -359,7 +359,7 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure         = 'Absent'
+                $mockTestParameters.Ensure = 'Absent'
                 $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
 
                 $script:result = Test-TargetResource @mockTestParameters
@@ -382,7 +382,7 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure         = 'Absent'
+                $mockTestParameters.Ensure = 'Absent'
                 $mockTestParameters.ServerRoleName = 'newServerRole'
 
                 $script:result = Test-TargetResource @mockTestParameters
@@ -405,7 +405,7 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure         = 'Present'
+                $mockTestParameters.Ensure = 'Present'
                 $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
 
                 $script:result = Test-TargetResource @mockTestParameters
@@ -428,7 +428,7 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure         = 'Present'
+                $mockTestParameters.Ensure = 'Present'
                 $mockTestParameters.ServerRoleName = 'newServerRole'
 
                 $script:result = Test-TargetResource @mockTestParameters
@@ -451,9 +451,9 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure         = 'Present'
+                $mockTestParameters.Ensure = 'Present'
                 $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
-                $mockTestParameters.Members        = @('CONTOSO\Lucy', 'CONTOSO\Steve')
+                $mockTestParameters.Members = @('CONTOSO\Lucy', 'CONTOSO\Steve')
 
                 $script:result = Test-TargetResource @mockTestParameters
             }
@@ -475,9 +475,9 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure           = 'Present'
-                $mockTestParameters.ServerRoleName   = 'AdminSqlForBI'
-                $mockTestParameters.Members          = @('CONTOSO\John', 'CONTOSO\Kelly')
+                $mockTestParameters.Ensure = 'Present'
+                $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
+                $mockTestParameters.Members = @('CONTOSO\John', 'CONTOSO\Kelly')
                 $mockTestParameters.MembersToInclude = 'CONTOSO\Lucy'
 
                 $mockErrorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
@@ -496,8 +496,8 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure           = 'Present'
-                $mockTestParameters.ServerRoleName   = 'AdminSqlForBI'
+                $mockTestParameters.Ensure = 'Present'
+                $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
                 $mockTestParameters.MembersToInclude = 'CONTOSO\Kelly'
 
                 $script:result = Test-TargetResource @mockTestParameters
@@ -520,8 +520,8 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure           = 'Present'
-                $mockTestParameters.ServerRoleName   = 'RoleNotExist'
+                $mockTestParameters.Ensure = 'Present'
+                $mockTestParameters.ServerRoleName = 'RoleNotExist'
                 $mockTestParameters.MembersToInclude = 'CONTOSO\Lucy'
 
                 $script:result = Test-TargetResource @mockTestParameters
@@ -545,19 +545,19 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
                 return @{
                     MembersToExclude = $null
                     MembersToInclude = $null
-                    Ensure = 'Present'
-                    InstanceName = 'MSSQLSERVER'
-                    ServerRoleName = 'RoleNotExist'
-                    Members = @('CONTOSO\Lucy')
-                    ServerName = 'localhost'
+                    Ensure           = 'Present'
+                    InstanceName     = 'MSSQLSERVER'
+                    ServerRoleName   = 'RoleNotExist'
+                    Members          = @('CONTOSO\Lucy')
+                    ServerName       = 'localhost'
                 }
             }
 
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure           = 'Present'
-                $mockTestParameters.ServerRoleName   = 'RoleNotExist'
+                $mockTestParameters.Ensure = 'Present'
+                $mockTestParameters.ServerRoleName = 'RoleNotExist'
                 $mockTestParameters.MembersToInclude = @('CONTOSO\Lucy', 'CONTOSO\NewUser')
 
                 $script:result = Test-TargetResource @mockTestParameters
@@ -580,9 +580,9 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure           = 'Present'
-                $mockTestParameters.ServerRoleName   = 'AdminSqlForBI'
-                $mockTestParameters.Members          = @('CONTOSO\John', 'CONTOSO\Kelly')
+                $mockTestParameters.Ensure = 'Present'
+                $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
+                $mockTestParameters.Members = @('CONTOSO\John', 'CONTOSO\Kelly')
                 $mockTestParameters.MembersToExclude = 'CONTOSO\Kelly'
 
                 $mockErrorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
@@ -601,8 +601,8 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure           = 'Present'
-                $mockTestParameters.ServerRoleName   = 'AdminSqlForBI'
+                $mockTestParameters.Ensure = 'Present'
+                $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
                 $mockTestParameters.MembersToExclude = 'CONTOSO\Lucy'
 
                 $script:result = Test-TargetResource @mockTestParameters
@@ -625,8 +625,8 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure           = 'Present'
-                $mockTestParameters.ServerRoleName   = 'AdminSqlForBI'
+                $mockTestParameters.Ensure = 'Present'
+                $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
                 $mockTestParameters.MembersToExclude = 'CONTOSO\Kelly'
 
                 $script:result = Test-TargetResource @mockTestParameters
@@ -655,7 +655,7 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $result = Test-TargetResource @mockTestTargetResourceParameters
+                $result = Test-TargetResource @mockTestParameters
 
                 $result | Should -BeFalse
             }
@@ -663,7 +663,7 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
     }
 }
 
-Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
+Describe 'DSC_SqlRole\Set-TargetResource' -Tag 'Set' {
     BeforeAll {
         Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
 
@@ -748,7 +748,7 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
 
                 $mockInvalidOperationForDropMethod = $true
 
-                $mockTestParameters.Ensure         = 'Absent'
+                $mockTestParameters.Ensure = 'Absent'
                 $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
 
 
@@ -770,7 +770,7 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                 $mockSqlServerRoleAdd = 'ServerRoleToAdd'
                 $mockExpectedServerRoleToCreate = 'ServerRoleToAdd'
 
-                $mockTestParameters.Ensure         = 'Present'
+                $mockTestParameters.Ensure = 'Present'
                 $mockTestParameters.ServerRoleName = $mockSqlServerRoleAdd
 
                 $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
@@ -798,7 +798,7 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                 $mockSqlServerRoleAdd = 'ServerRoleToAdd'
                 $mockExpectedServerRoleToCreate = 'ServerRoleToAdd'
 
-                $mockTestParameters.Ensure         = 'Present'
+                $mockTestParameters.Ensure = 'Present'
                 $mockTestParameters.ServerRoleName = $mockSqlServerRoleAdd
 
                 $mockErrorMessage = $script:localizedData.CreateServerRoleSetError `
@@ -822,9 +822,9 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure          = 'Present'
-                $mockTestParameters.ServerRoleName   = 'AdminSqlForBI'
-                $mockTestParameters.Members          = @('CONTOSO\John', 'CONTOSO\Kelly')
+                $mockTestParameters.Ensure = 'Present'
+                $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
+                $mockTestParameters.Members = @('CONTOSO\John', 'CONTOSO\Kelly')
                 $mockTestParameters.MembersToInclude = 'CONTOSO\Lucy'
 
                 { Set-TargetResource @mockTestParameters } | Should -Throw -ExpectedMessage '*(DRC0010)*'
@@ -841,9 +841,9 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure           = 'Present'
-                $mockTestParameters.ServerRoleName   = 'AdminSqlForBI'
-                $mockTestParameters.Members          = @('CONTOSO\John', 'CONTOSO\Kelly')
+                $mockTestParameters.Ensure = 'Present'
+                $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
+                $mockTestParameters.Members = @('CONTOSO\John', 'CONTOSO\Kelly')
                 $mockTestParameters.MembersToExclude = 'CONTOSO\Kelly'
 
                 $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
@@ -864,8 +864,8 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure           = 'Present'
-                $mockTestParameters.ServerRoleName   = 'AdminSqlForBI'
+                $mockTestParameters.Ensure = 'Present'
+                $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
                 $mockTestParameters.MembersToInclude = 'CONTOSO\Lucy'
 
                 $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
@@ -885,8 +885,8 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure           = 'Present'
-                $mockTestParameters.ServerRoleName   = 'AdminSqlForBI'
+                $mockTestParameters.Ensure = 'Present'
+                $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
                 $mockTestParameters.MembersToInclude = 'CONTOSO\Lucy'
 
                 $mockErrorMessage = $script:localizedData.AddMemberServerRoleSetError `
@@ -908,8 +908,8 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure           = 'Present'
-                $mockTestParameters.ServerRoleName   = 'AdminSqlForBI'
+                $mockTestParameters.Ensure = 'Present'
+                $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
                 $mockTestParameters.MembersToInclude = 'KingJulian'
 
                 $mockErrorMessage = $script:localizedData.AddMemberServerRoleSetError -f (
@@ -937,8 +937,8 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
 
                 $mockExpectedMemberToDrop = 'CONTOSO\Kelly'
 
-                $mockTestParameters.Ensure           = 'Present'
-                $mockTestParameters.ServerRoleName   = 'AdminSqlForBI'
+                $mockTestParameters.Ensure = 'Present'
+                $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
                 $mockTestParameters.MembersToExclude = 'CONTOSO\Kelly'
 
                 $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
@@ -958,8 +958,8 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure           = 'Present'
-                $mockTestParameters.ServerRoleName   = 'AdminSqlForBI'
+                $mockTestParameters.Ensure = 'Present'
+                $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
                 $mockTestParameters.MembersToExclude = 'CONTOSO\Kelly'
 
                 $mockErrorMessage = $script:localizedData.DropMemberServerRoleSetError `
@@ -982,8 +982,8 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure           = 'Present'
-                $mockTestParameters.ServerRoleName   = 'AdminSqlForBI'
+                $mockTestParameters.Ensure = 'Present'
+                $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
                 $mockTestParameters.MembersToExclude = 'KingJulian'
 
                 $mockErrorMessage = $script:localizedData.DropMemberServerRoleSetError -f (
@@ -1009,9 +1009,9 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure         = 'Present'
+                $mockTestParameters.Ensure = 'Present'
                 $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
-                $mockTestParameters.Members        = @('KingJulian', 'CONTOSO\John', 'CONTOSO\Lucy')
+                $mockTestParameters.Members = @('KingJulian', 'CONTOSO\John', 'CONTOSO\Lucy')
 
                 $mockErrorMessage = $script:localizedData.AddMemberServerRoleSetError -f (
                     'localhost',
@@ -1037,9 +1037,9 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParameters.Ensure         = 'Present'
+                $mockTestParameters.Ensure = 'Present'
                 $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
-                $mockTestParameters.Members        = @('CONTOSO\John', 'CONTOSO\Lucy')
+                $mockTestParameters.Members = @('CONTOSO\John', 'CONTOSO\Lucy')
 
                 $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
             }
@@ -1204,7 +1204,7 @@ Describe 'DSC_SqlRole\Test-SqlSecurityPrincipal' -Tag 'Helper' {
                 $mockSecurityPrincipal = 'Nabrond'
 
                 $mockTestParameters = @{
-                    SqlServerObject = $testSqlServerObject
+                    SqlServerObject   = $testSqlServerObject
                     SecurityPrincipal = $mockSecurityPrincipal
                 }
 
@@ -1224,7 +1224,7 @@ Describe 'DSC_SqlRole\Test-SqlSecurityPrincipal' -Tag 'Helper' {
                 Set-StrictMode -Version 1.0
 
                 $mockTestParameters = @{
-                    SqlServerObject = $testSqlServerObject
+                    SqlServerObject   = $testSqlServerObject
                     SecurityPrincipal = 'CONTOSO\John'
                 }
 
@@ -1237,7 +1237,7 @@ Describe 'DSC_SqlRole\Test-SqlSecurityPrincipal' -Tag 'Helper' {
                 Set-StrictMode -Version 1.0
 
                 $mockTestParameters = @{
-                    SqlServerObject = $testSqlServerObject
+                    SqlServerObject   = $testSqlServerObject
                     SecurityPrincipal = 'CONTOSO\John'.ToUpper()
                 }
 
@@ -1250,7 +1250,7 @@ Describe 'DSC_SqlRole\Test-SqlSecurityPrincipal' -Tag 'Helper' {
                 Set-StrictMode -Version 1.0
 
                 $mockTestParameters = @{
-                    SqlServerObject = $testSqlServerObject
+                    SqlServerObject   = $testSqlServerObject
                     SecurityPrincipal = 'AdminSqlForBI'
                 }
 
@@ -1263,7 +1263,7 @@ Describe 'DSC_SqlRole\Test-SqlSecurityPrincipal' -Tag 'Helper' {
                 Set-StrictMode -Version 1.0
 
                 $mockTestParameters = @{
-                    SqlServerObject = $testSqlServerObject
+                    SqlServerObject   = $testSqlServerObject
                     SecurityPrincipal = 'AdminSqlForBI'.ToUpper()
                 }
 
@@ -1280,8 +1280,8 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
                 Set-StrictMode -Version 1.0
 
                 $mockTestParameters = @{
-                    ServerRoleName   = 'AdminSqlForBI'
-                    Members          = @(
+                    ServerRoleName = 'AdminSqlForBI'
+                    Members        = @(
                         'CONTOSO\John',
                         'CONTOSO\Kelly'
                     )
@@ -1320,8 +1320,8 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
                 Set-StrictMode -Version 1.0
 
                 $mockTestParameters = @{
-                    ServerRoleName   = 'sysadmin'
-                    Members          = @(
+                    ServerRoleName = 'sysadmin'
+                    Members        = @(
                         'CONTOSO\John',
                         'CONTOSO\Kelly',
                         'SA'
@@ -1362,8 +1362,8 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
                 Set-StrictMode -Version 1.0
 
                 $mockTestParameters = @{
-                    ServerRoleName   = 'sysadmin'
-                    Members          = @(
+                    ServerRoleName = 'sysadmin'
+                    Members        = @(
                         'CONTOSO\John',
                         'CONTOSO\Kelly'
                     )

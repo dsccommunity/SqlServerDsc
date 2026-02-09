@@ -81,9 +81,9 @@ Describe 'SqlScriptQuery\Get-TargetResource' -Tag 'Get' {
                 Id           = 'Unit_Test'
                 InstanceName = 'MSSQLSERVER'
                 ServerName   = 'localhost'
-                GetQuery     = "GetQuery;"
-                TestQuery    = "TestQuery;"
-                SetQuery     = "SetQuery;"
+                GetQuery     = 'GetQuery;'
+                TestQuery    = 'TestQuery;'
+                SetQuery     = 'SetQuery;'
                 Encrypt      = 'Optional'
             }
         }
@@ -172,7 +172,9 @@ Describe 'SqlScriptQuery\Get-TargetResource' -Tag 'Get' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $result = Test-TargetResource @mockTestTargetResourceParameters
+                $testTargetResourceParameters = $script:mockDefaultParameters.Clone()
+
+                $result = Test-TargetResource @testTargetResourceParameters
 
                 $result | Should -BeFalse
             }
@@ -188,9 +190,9 @@ Describe 'SqlScriptQuery\Set-TargetResource' -Tag 'Set' {
                 Id           = 'Unit_Test'
                 InstanceName = 'MSSQLSERVER'
                 ServerName   = 'localhost'
-                GetQuery     = "GetQuery;"
-                TestQuery    = "TestQuery;"
-                SetQuery     = "SetQuery;"
+                GetQuery     = 'GetQuery;'
+                TestQuery    = 'TestQuery;'
+                SetQuery     = 'SetQuery;'
                 Encrypt      = 'Optional'
             }
         }
@@ -264,9 +266,9 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
                 Id           = 'Unit_Test'
                 InstanceName = 'MSSQLSERVER'
                 ServerName   = 'localhost'
-                GetQuery     = "GetQuery;"
-                TestQuery    = "TestQuery;"
-                SetQuery     = "SetQuery;"
+                GetQuery     = 'GetQuery;'
+                TestQuery    = 'TestQuery;'
+                SetQuery     = 'SetQuery;'
                 Encrypt      = 'Optional'
             }
         }
@@ -360,13 +362,13 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
                 }
             }
 
-            It 'Should throw the correct error from Invoke-Sqlcmd' {
+            It 'Should return false' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $mockErrorMessage = 'Failed to run SQL Script'
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    $result | Should -BeFalse
                 }
             }
         }

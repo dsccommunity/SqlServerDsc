@@ -364,6 +364,11 @@ Describe 'SqlProtocol\Test-TargetResource' -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
+                $testTargetResourceParameters = @{
+                    InstanceName = 'DSCTEST'
+                    ProtocolName = 'SharedMemory'
+                }
+
                 $result = Test-TargetResource @testTargetResourceParameters
 
                 $result | Should -BeFalse
@@ -837,16 +842,16 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                                 return @{
                                     ListenOnAllIPs = New-Object -TypeName PSObject |
                                         Add-Member -MemberType NoteProperty -Name 'Value' -Value $false -PassThru -Force
-                                    KeepAlive  = New-Object -TypeName PSObject |
-                                        Add-Member -MemberType NoteProperty -Name 'Value' -Value 30000 -PassThru -Force
-                                }
-                            } -PassThru |
-                            Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
-                                # This is used to verify so that method Alter() is actually called or not.
-                                InModuleScope -ScriptBlock {
-                                    $script:wasMethodAlterCalled = $true
-                                }
-                            } -PassThru -Force
+                                        KeepAlive  = New-Object -TypeName PSObject |
+                                            Add-Member -MemberType NoteProperty -Name 'Value' -Value 30000 -PassThru -Force
+                                        }
+                                    } -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
+                                        # This is used to verify so that method Alter() is actually called or not.
+                                        InModuleScope -ScriptBlock {
+                                            $script:wasMethodAlterCalled = $true
+                                        }
+                                    } -PassThru -Force
                     }
                 }
 
@@ -898,16 +903,16 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                                 return @{
                                     ListenOnAllIPs = New-Object -TypeName PSObject |
                                         Add-Member -MemberType NoteProperty -Name 'Value' -Value $false -PassThru -Force
-                                    KeepAlive  = New-Object -TypeName PSObject |
-                                        Add-Member -MemberType NoteProperty -Name 'Value' -Value 30000 -PassThru -Force
-                                }
-                            } -PassThru |
-                            Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
-                                # This is used to verify so that method Alter() is actually called or not.
-                                InModuleScope -ScriptBlock {
-                                    $script:wasMethodAlterCalled = $true
-                                }
-                            } -PassThru -Force
+                                        KeepAlive  = New-Object -TypeName PSObject |
+                                            Add-Member -MemberType NoteProperty -Name 'Value' -Value 30000 -PassThru -Force
+                                        }
+                                    } -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
+                                        # This is used to verify so that method Alter() is actually called or not.
+                                        InModuleScope -ScriptBlock {
+                                            $script:wasMethodAlterCalled = $true
+                                        }
+                                    } -PassThru -Force
                     }
                 }
 
@@ -957,16 +962,16 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                                 return @{
                                     ListenOnAllIPs = New-Object -TypeName PSObject |
                                         Add-Member -MemberType NoteProperty -Name 'Value' -Value $false -PassThru -Force
-                                    KeepAlive = New-Object -TypeName PSObject |
-                                        Add-Member -MemberType NoteProperty -Name 'Value' -Value 30000 -PassThru -Force
-                                }
-                            } -PassThru |
-                            Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
-                                # This is used to verify so that method Alter() is actually called or not.
-                                InModuleScope -ScriptBlock {
-                                    $script:wasMethodAlterCalled = $true
-                                }
-                            } -PassThru -Force
+                                        KeepAlive  = New-Object -TypeName PSObject |
+                                            Add-Member -MemberType NoteProperty -Name 'Value' -Value 30000 -PassThru -Force
+                                        }
+                                    } -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
+                                        # This is used to verify so that method Alter() is actually called or not.
+                                        InModuleScope -ScriptBlock {
+                                            $script:wasMethodAlterCalled = $true
+                                        }
+                                    } -PassThru -Force
                     }
                 }
 
@@ -1022,16 +1027,16 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                                 return @{
                                     ListenOnAllIPs = New-Object -TypeName PSObject |
                                         Add-Member -MemberType NoteProperty -Name 'Value' -Value $false -PassThru -Force
-                                    KeepAlive  = New-Object -TypeName PSObject |
-                                        Add-Member -MemberType NoteProperty -Name 'Value' -Value 30000 -PassThru -Force
-                                }
-                            } -PassThru |
-                            Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
-                                # This is used to verify so that method Alter() is actually called or not.
-                                InModuleScope -ScriptBlock {
-                                    $script:wasMethodAlterCalled = $true
-                                }
-                            } -PassThru -Force
+                                        KeepAlive  = New-Object -TypeName PSObject |
+                                            Add-Member -MemberType NoteProperty -Name 'Value' -Value 30000 -PassThru -Force
+                                        }
+                                    } -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
+                                        # This is used to verify so that method Alter() is actually called or not.
+                                        InModuleScope -ScriptBlock {
+                                            $script:wasMethodAlterCalled = $true
+                                        }
+                                    } -PassThru -Force
                     }
                 }
 
@@ -1083,16 +1088,16 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                                 return @{
                                     ListenOnAllIPs = New-Object -TypeName PSObject |
                                         Add-Member -MemberType NoteProperty -Name 'Value' -Value $false -PassThru -Force
-                                    KeepAlive  = New-Object -TypeName PSObject |
-                                        Add-Member -MemberType NoteProperty -Name 'Value' -Value 30000 -PassThru -Force
-                                }
-                            } -PassThru |
-                            Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
-                                # This is used to verify so that method Alter() is actually called or not.
-                                InModuleScope -ScriptBlock {
-                                    $script:wasMethodAlterCalled = $true
-                                }
-                            } -PassThru -Force
+                                        KeepAlive  = New-Object -TypeName PSObject |
+                                            Add-Member -MemberType NoteProperty -Name 'Value' -Value 30000 -PassThru -Force
+                                        }
+                                    } -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
+                                        # This is used to verify so that method Alter() is actually called or not.
+                                        InModuleScope -ScriptBlock {
+                                            $script:wasMethodAlterCalled = $true
+                                        }
+                                    } -PassThru -Force
                     }
                 }
 
