@@ -103,16 +103,16 @@ Describe 'SqlMaxDop\Get-TargetResource' -Tag 'Get' {
                                     return @(
                                         (New-Object -TypeName 'Object' |
                                             Add-Member -MemberType 'ScriptProperty' -Name 'MaxDegreeOfParallelism' -Value {
-                                            return @(
-                                                (New-Object -TypeName Object |
-                                                    Add-Member -MemberType 'NoteProperty' -Name 'DisplayName' -Value 'max degree of parallelism' -PassThru |
-                                                    Add-Member -MemberType 'NoteProperty' -Name 'Description' -Value 'maximum degree of parallelism' -PassThru |
-                                                    Add-Member -MemberType 'NoteProperty' -Name 'RunValue' -Value 4 -PassThru |
-                                                    Add-Member -MemberType 'NoteProperty' -Name 'ConfigValue' -Value 4 -PassThru -Force)
-                                                )
-                                            } -PassThru -Force)
-                                    )
-                                } -PassThru -Force
+                                                return @(
+                                                    (New-Object -TypeName Object |
+                                                        Add-Member -MemberType 'NoteProperty' -Name 'DisplayName' -Value 'max degree of parallelism' -PassThru |
+                                                        Add-Member -MemberType 'NoteProperty' -Name 'Description' -Value 'maximum degree of parallelism' -PassThru |
+                                                        Add-Member -MemberType 'NoteProperty' -Name 'RunValue' -Value 4 -PassThru |
+                                                        Add-Member -MemberType 'NoteProperty' -Name 'ConfigValue' -Value 4 -PassThru -Force)
+                                                    )
+                                                } -PassThru -Force)
+                                            )
+                                        } -PassThru -Force
                         )
                     )
                 }
@@ -192,8 +192,8 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        MaxDop                  = 0
-                        IsActiveNode            = $null
+                        MaxDop       = 0
+                        IsActiveNode = $null
                     }
                 }
             }
@@ -215,8 +215,8 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        MaxDop                  = 4
-                        IsActiveNode            = $null
+                        MaxDop       = 4
+                        IsActiveNode = $null
                     }
                 }
             }
@@ -242,8 +242,8 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        MaxDop                  = 4
-                        IsActiveNode            = $null
+                        MaxDop       = 4
+                        IsActiveNode = $null
                     }
                 }
             }
@@ -252,7 +252,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $mockTestTargetResourceParameters.DynamicAlloc =  $true
+                    $mockTestTargetResourceParameters.DynamicAlloc = $true
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
@@ -265,7 +265,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        MaxDop                  = 4
+                        MaxDop = 4
                     }
                 }
             }
@@ -275,7 +275,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
                     Set-StrictMode -Version 1.0
 
                     $mockTestTargetResourceParameters.MaxDop = 4
-                    $mockTestTargetResourceParameters.DynamicAlloc =  $true
+                    $mockTestTargetResourceParameters.DynamicAlloc = $true
 
                     $mockErrorMessage = '{0} (Parameter ''MaxDop'')' -f $script:localizedData.MaxDopParamMustBeNull
 
@@ -290,8 +290,8 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        MaxDop                  = 0
-                        IsActiveNode            = $false
+                        MaxDop       = 0
+                        IsActiveNode = $false
                     }
                 }
             }
@@ -314,8 +314,8 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        MaxDop                  = 0
-                        IsActiveNode            = $null
+                        MaxDop       = 0
+                        IsActiveNode = $null
                     }
                 }
             }
@@ -341,8 +341,8 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        MaxDop                  = 0
-                        IsActiveNode            = $null
+                        MaxDop       = 0
+                        IsActiveNode = $null
                     }
                 }
             }
@@ -364,8 +364,8 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        MaxDop                  = 4
-                        IsActiveNode            = $null
+                        MaxDop       = 4
+                        IsActiveNode = $null
                     }
                 }
             }
@@ -435,7 +435,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                 Set-StrictMode -Version 1.0
 
                 $mockSetTargetResourceParameters.MaxDop = 4
-                $mockSetTargetResourceParameters.DynamicAlloc =  $true
+                $mockSetTargetResourceParameters.DynamicAlloc = $true
 
                 $mockErrorMessage = '{0} (Parameter ''MaxDop'')' -f $script:localizedData.MaxDopParamMustBeNull
 
@@ -671,7 +671,8 @@ Describe 'Get-SqlDscDynamicMaxDop' -Tag 'Helper' {
     BeforeAll {
         # Inject a stub in the module scope to support testing cross-plattform
         InModuleScope -ScriptBlock {
-            function script:Get-CimInstance {
+            function script:Get-CimInstance
+            {
                 param
                 (
                     $ClassName
