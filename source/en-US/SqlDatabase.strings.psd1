@@ -26,4 +26,5 @@ ConvertFrom-StringData @'
     IsLedgerCannotBeChanged = The property IsLedger cannot be changed after the database is created. (SD0015)
     FailedToEnableSnapshotIsolation = Failed to enable snapshot isolation for the database '{0}'. (SD0016)
     FailedToDisableSnapshotIsolation = Failed to disable snapshot isolation for the database '{0}'. (SD0017)
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0} (SD0018)
 '@

@@ -31,4 +31,5 @@ ConvertFrom-StringData @'
     CannotDetermineProductVersion = Could not determine the product version for the installed instance '{0}'. Run the command `Get-SqlDscRSSetupConfiguration -InstanceName '{0}'` to get the configuration for the instance and verify that it returns a valid product version. (SRSS0020)
     CannotDetermineEdition = Could not determine the edition for the installed instance '{0}'. Run the command `Get-SqlDscRSSetupConfiguration -InstanceName '{0}'` to get the configuration for the instance and verify that it returns a valid edition. (SRSS0021)
     NotDesiredEdition = The edition '{0}' is not the desired for the instance '{1}'. Desired edition in executable: '{2}'. (SRSS0022)
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0} (SRSS0023)
 '@
