@@ -2926,13 +2926,11 @@ REVERT'
                 }
 
                 It 'Should return $false' {
-                    InModuleScope -ScriptBlock {
-                        Set-StrictMode -Version 1.0
+                    Set-StrictMode -Version 1.0
 
-                        $result = Test-TargetResource @mockTestTargetResourceParameters
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
-                    }
+                    $result | Should -BeFalse
                 }
             }
         }

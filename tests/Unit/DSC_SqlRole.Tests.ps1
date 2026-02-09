@@ -119,7 +119,7 @@ BeforeAll {
                     param
                     (
                         [Parameter(Mandatory = $true)]
-                        [String]
+                        [System.String]
                         $memberName
                     )
 
@@ -138,7 +138,7 @@ BeforeAll {
                     param
                     (
                         [Parameter(Mandatory = $true)]
-                        [String]
+                        [System.String]
                         $memberName
                     )
 
@@ -654,6 +654,9 @@ Describe 'DSC_SqlRole\Test-TargetResource' -Tag 'Test' {
         It 'Should return $false' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
+
+                $mockTestParameters.ServerRoleName = 'TestRole'
+                $mockTestParameters.Ensure = 'Present'
 
                 $result = Test-TargetResource @mockTestParameters
 

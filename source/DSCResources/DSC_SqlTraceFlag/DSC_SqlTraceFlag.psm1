@@ -223,18 +223,7 @@ function Set-TargetResource
     }
     elseif ($PSBoundParameters.ContainsKey('TraceFlagsToInclude') -or $PSBoundParameters.ContainsKey('TraceFlagsToExclude'))
     {
-        try
-        {
-            $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-        }
-        catch
-        {
-            Write-Verbose -Message (
-                $script:localizedData.SQLInstanceNotReachable `
-                    -f $_
-            )
-            return $false
-        }
+        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
         if ($null -ne $getTargetResourceResult.TraceFlags)
         {

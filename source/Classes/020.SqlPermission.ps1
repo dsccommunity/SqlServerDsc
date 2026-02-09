@@ -178,15 +178,15 @@ class SqlPermission : SqlResourceBase
 
     [System.Boolean] Test()
     {
-            try
-            {
-                return ([ResourceBase] $this).Test()
-            }
-            catch
-            {
-                Write-Verbose -Message ($this.localizedData.SQLInstanceNotReachable -f $_)
-                return $false
-            }
+        try
+        {
+            return ([ResourceBase] $this).Test()
+        }
+        catch
+        {
+            Write-Verbose -Message ($this.localizedData.SQLInstanceNotReachable -f $_)
+            return $false
+        }
     }
 
     [void] Set()

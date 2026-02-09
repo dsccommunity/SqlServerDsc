@@ -401,8 +401,7 @@ function Test-TargetResource
     catch
     {
         Write-Verbose -Message (
-            $script:localizedData.SQLInstanceNotReachable `
-                -f $_
+            $script:localizedData.SQLInstanceNotReachable -f $_
         )
         return $false
     }
