@@ -377,6 +377,24 @@ Describe 'SqlWaitForAG\Test-TargetResource' -Tag 'Test' {
             Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
         }
     }
+
+    Context 'When Get-TargetResource throws an exception' {
+        BeforeAll {
+            Mock -CommandName Get-TargetResource -MockWith {
+                throw 'Unable to connect to SQL instance'
+            }
+        }
+
+        It 'Should return $false' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                $result | Should -BeFalse
+            }
+        }
+    }
 }
 
 Describe 'SqlWaitForAG\Set-TargetResource' -Tag 'Set' {
