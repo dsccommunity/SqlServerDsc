@@ -2730,7 +2730,9 @@ REVERT'
                 Mock -CommandName Test-ActiveNode -MockWith {
                     return -not $mockProcessOnlyOnActiveNode
                 } -Verifiable
-
+                Mock -CommandName Get-TargetResource -MockWith {
+                    throw 'Unable to connect to SQL instance'
+                } -ModuleName $script:dscResourceName
 
             }
 
@@ -2919,12 +2921,6 @@ REVERT'
             }
 
             Context 'When Get-TargetResource throws an exception' {
-                BeforeAll {
-                    Mock -CommandName Get-TargetResource -MockWith {
-                        throw 'Unable to connect to SQL instance'
-                    }
-                }
-
                 It 'Should return $false' {
                     Set-StrictMode -Version 1.0
 
