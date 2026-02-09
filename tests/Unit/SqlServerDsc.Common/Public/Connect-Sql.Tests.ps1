@@ -85,7 +85,7 @@ AfterAll {
 
 Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
     BeforeEach {
-        $mockNewObject_MicrosoftDatabaseEngine = {
+        $mockNewObject_MicrosoftServerConnection = {
             <#
                 $ArgumentList[0] will contain the ServiceInstance when calling mock New-Object.
                 But since the mock New-Object will also be called without arguments, we first
@@ -96,6 +96,44 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
                 $serverInstance = $ArgumentList[0]
             }
 
+            return New-Object -TypeName Object |
+                Add-Member -MemberType NoteProperty -Name ServerInstance -Value $serverInstance -PassThru |
+                Add-Member -MemberType NoteProperty -Name LoginSecure -Value $true -PassThru |
+                Add-Member -MemberType NoteProperty -Name Login -Value '' -PassThru |
+                Add-Member -MemberType NoteProperty -Name SecurePassword -Value $null -PassThru |
+                Add-Member -MemberType NoteProperty -Name ConnectAsUser -Value $false -PassThru |
+                Add-Member -MemberType NoteProperty -Name ConnectAsUserPassword -Value '' -PassThru |
+                Add-Member -MemberType NoteProperty -Name ConnectAsUserName -Value '' -PassThru |
+                Add-Member -MemberType NoteProperty -Name StatementTimeout -Value 600 -PassThru |
+                Add-Member -MemberType NoteProperty -Name ConnectTimeout -Value 600 -PassThru |
+                Add-Member -MemberType NoteProperty -Name EncryptConnection -Value $false -PassThru |
+                Add-Member -MemberType NoteProperty -Name ApplicationName -Value 'SqlServerDsc' -PassThru |
+                Add-Member -MemberType ScriptMethod -Name Disconnect -Value {
+                    return $true
+                } -PassThru |
+                Add-Member -MemberType ScriptMethod -Name Connect -Value {
+                    if ($mockExpectedDatabaseEngineInstance -eq 'MSSQLSERVER')
+                    {
+                        $mockExpectedServiceInstance = $mockExpectedDatabaseEngineServer
+                    }
+                    else
+                    {
+                        $mockExpectedServiceInstance = "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
+                    }
+
+                    if ($this.ServerInstance -ne $mockExpectedServiceInstance)
+                    {
+                        throw ("Mock method Connect() was expecting ServerInstance to be '{0}', but was '{1}'." -f $mockExpectedServiceInstance, $this.serverInstance )
+                    }
+
+                    if ($mockThrowInvalidOperation)
+                    {
+                        throw 'Unable to connect.'
+                    }
+                } -PassThru -Force
+        }
+
+        $mockNewObject_MicrosoftDatabaseEngine = {
             return New-Object -TypeName Object |
                 Add-Member -MemberType ScriptProperty -Name Status -Value {
                     if ($mockExpectedDatabaseEngineInstance -eq 'MSSQLSERVER')
@@ -116,47 +154,15 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
                         return $null
                     }
                 } -PassThru |
-                Add-Member -MemberType NoteProperty -Name ConnectionContext -Value (
-                    New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name ServerInstance -Value $serverInstance -PassThru |
-                        Add-Member -MemberType NoteProperty -Name LoginSecure -Value $true -PassThru |
-                        Add-Member -MemberType NoteProperty -Name Login -Value '' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name SecurePassword -Value $null -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ConnectAsUser -Value $false -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ConnectAsUserPassword -Value '' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ConnectAsUserName -Value '' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name StatementTimeout -Value 600 -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ConnectTimeout -Value 600 -PassThru |
-                        Add-Member -MemberType NoteProperty -Name EncryptConnection -Value $false -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ApplicationName -Value 'SqlServerDsc' -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name Disconnect -Value {
-                            return $true
-                        } -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name Connect -Value {
-                            if ($mockExpectedDatabaseEngineInstance -eq 'MSSQLSERVER')
-                            {
-                                $mockExpectedServiceInstance = $mockExpectedDatabaseEngineServer
-                            }
-                            else
-                            {
-                                $mockExpectedServiceInstance = "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
-                            }
-
-                            if ($this.serverInstance -ne $mockExpectedServiceInstance)
-                            {
-                                throw ("Mock method Connect() was expecting ServerInstance to be '{0}', but was '{1}'." -f $mockExpectedServiceInstance, $this.serverInstance )
-                            }
-
-                            if ($mockThrowInvalidOperation)
-                            {
-                                throw 'Unable to connect.'
-                            }
-                        } -PassThru -Force
-                    ) -PassThru -Force
+                Add-Member -MemberType NoteProperty -Name ConnectionContext -Value $ArgumentList[0] -PassThru -Force
         }
 
         $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter = {
             $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Server'
+        }
+
+        $mockNewObject_MicrosoftServerConnection_ParameterFilter = {
+            $TypeName -eq 'Microsoft.SqlServer.Management.Common.ServerConnection'
         }
 
         $mockSqlCredentialUserName = 'TestUserName12345'
@@ -186,6 +192,9 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                 -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+
+            Mock -CommandName New-Object -MockWith $mockNewObject_MicrosoftServerConnection `
+                -ParameterFilter $mockNewObject_MicrosoftServerConnection_ParameterFilter
         }
 
         It 'Should return the correct service instance' {
@@ -206,6 +215,9 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                 -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+
+            Mock -CommandName New-Object -MockWith $mockNewObject_MicrosoftServerConnection `
+                -ParameterFilter $mockNewObject_MicrosoftServerConnection_ParameterFilter
         }
 
         It 'Should return the correct service instance' {
@@ -229,6 +241,9 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                 -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+
+            Mock -CommandName New-Object -MockWith $mockNewObject_MicrosoftServerConnection `
+                -ParameterFilter $mockNewObject_MicrosoftServerConnection_ParameterFilter
         }
 
         It 'Should return the correct service instance' {
@@ -249,6 +264,9 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                 -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+
+            Mock -CommandName New-Object -MockWith $mockNewObject_MicrosoftServerConnection `
+                -ParameterFilter $mockNewObject_MicrosoftServerConnection_ParameterFilter
         }
 
         It 'Should return the correct service instance' {
@@ -272,6 +290,9 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                 -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+
+            Mock -CommandName New-Object -MockWith $mockNewObject_MicrosoftServerConnection `
+                -ParameterFilter $mockNewObject_MicrosoftServerConnection_ParameterFilter
         }
 
         It 'Should return the correct service instance' {
@@ -291,6 +312,9 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                 -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+
+            Mock -CommandName New-Object -MockWith $mockNewObject_MicrosoftServerConnection `
+                -ParameterFilter $mockNewObject_MicrosoftServerConnection_ParameterFilter
         }
 
         Context 'When using the default login type' {
@@ -375,6 +399,9 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                 -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+
+            Mock -CommandName New-Object -MockWith $mockNewObject_MicrosoftServerConnection `
+                -ParameterFilter $mockNewObject_MicrosoftServerConnection_ParameterFilter
         }
 
         # Skipping on Linux and macOS because they do not support Windows Authentication.
@@ -398,17 +425,40 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
                     Add-Member -MemberType ScriptProperty -Name Status -Value {
                         return 'Online'
                     } -PassThru |
-                    Add-Member -MemberType NoteProperty -Name ConnectionContext -Value (
-                        New-Object -TypeName Object |
-                            Add-Member -MemberType NoteProperty -Name ServerInstance -Value '' -PassThru |
-                            Add-Member -MemberType NoteProperty -Name LoginSecure -Value $true -PassThru |
-                            Add-Member -MemberType NoteProperty -Name StatementTimeout -Value 600 -PassThru |
-                            Add-Member -MemberType NoteProperty -Name ConnectTimeout -Value 600 -PassThru |
-                            Add-Member -MemberType NoteProperty -Name ApplicationName -Value 'SqlServerDsc' -PassThru |
-                            Add-Member -MemberType ScriptMethod -Name Disconnect -Value { return $true } -PassThru |
-                            Add-Member -MemberType ScriptMethod -Name Connect -Value { } -PassThru -Force
-                        ) -PassThru -Force
+                    Add-Member -MemberType NoteProperty -Name ConnectionContext -Value $ArgumentList[0] -PassThru -Force
             }
+
+            $mockNewObject_MicrosoftServerConnection = {
+                <#
+                $ArgumentList[0] will contain the ServiceInstance when calling mock New-Object.
+                But since the mock New-Object will also be called without arguments, we first
+                have to evaluate if $ArgumentList contains values.
+            #>
+                if ( $ArgumentList.Count -gt 0)
+                {
+                    $serverInstance = $ArgumentList[0]
+                }
+
+                return New-Object -TypeName Object |
+                    Add-Member -MemberType NoteProperty -Name ServerInstance -Value $serverInstance -PassThru |
+                    Add-Member -MemberType NoteProperty -Name LoginSecure -Value $true -PassThru |
+                    Add-Member -MemberType NoteProperty -Name Login -Value '' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name SecurePassword -Value $null -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ConnectAsUser -Value $false -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ConnectAsUserPassword -Value '' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ConnectAsUserName -Value '' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name StatementTimeout -Value 600 -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ConnectTimeout -Value 600 -PassThru |
+                    Add-Member -MemberType NoteProperty -Name EncryptConnection -Value $false -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ApplicationName -Value 'SqlServerDsc' -PassThru |
+                    Add-Member -MemberType ScriptMethod -Name Disconnect -Value {
+                        return $true
+                    } -PassThru |
+                    Add-Member -MemberType ScriptMethod -Name Connect -Value {} -PassThru -Force
+            }
+
+            Mock -CommandName New-Object -MockWith $mockNewObject_MicrosoftServerConnection `
+                -ParameterFilter $mockNewObject_MicrosoftServerConnection_ParameterFilter
         }
 
         # Skipping on Linux and macOS because they do not support Windows Authentication.
@@ -435,17 +485,40 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
                     Add-Member -MemberType ScriptProperty -Name Status -Value {
                         return 'Online'
                     } -PassThru |
-                    Add-Member -MemberType NoteProperty -Name ConnectionContext -Value (
-                        New-Object -TypeName Object |
-                            Add-Member -MemberType NoteProperty -Name ServerInstance -Value '' -PassThru |
-                            Add-Member -MemberType NoteProperty -Name LoginSecure -Value $true -PassThru |
-                            Add-Member -MemberType NoteProperty -Name StatementTimeout -Value 600 -PassThru |
-                            Add-Member -MemberType NoteProperty -Name ConnectTimeout -Value 600 -PassThru |
-                            Add-Member -MemberType NoteProperty -Name ApplicationName -Value 'SqlServerDsc' -PassThru |
-                            Add-Member -MemberType ScriptMethod -Name Disconnect -Value { return $true } -PassThru |
-                            Add-Member -MemberType ScriptMethod -Name Connect -Value { } -PassThru -Force
-                        ) -PassThru -Force
+                    Add-Member -MemberType NoteProperty -Name ConnectionContext -Value $ArgumentList[0] -PassThru -Force
             }
+
+            $mockNewObject_MicrosoftServerConnection = {
+                <#
+                $ArgumentList[0] will contain the ServiceInstance when calling mock New-Object.
+                But since the mock New-Object will also be called without arguments, we first
+                have to evaluate if $ArgumentList contains values.
+            #>
+                if ( $ArgumentList.Count -gt 0)
+                {
+                    $serverInstance = $ArgumentList[0]
+                }
+
+                return New-Object -TypeName Object |
+                    Add-Member -MemberType NoteProperty -Name ServerInstance -Value $serverInstance -PassThru |
+                    Add-Member -MemberType NoteProperty -Name LoginSecure -Value $true -PassThru |
+                    Add-Member -MemberType NoteProperty -Name Login -Value '' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name SecurePassword -Value $null -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ConnectAsUser -Value $false -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ConnectAsUserPassword -Value '' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ConnectAsUserName -Value '' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name StatementTimeout -Value 600 -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ConnectTimeout -Value 600 -PassThru |
+                    Add-Member -MemberType NoteProperty -Name EncryptConnection -Value $false -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ApplicationName -Value 'SqlServerDsc' -PassThru |
+                    Add-Member -MemberType ScriptMethod -Name Disconnect -Value {
+                        return $true
+                    } -PassThru |
+                    Add-Member -MemberType ScriptMethod -Name Connect -Value {} -PassThru -Force
+            }
+
+            Mock -CommandName New-Object -MockWith $mockNewObject_MicrosoftServerConnection `
+                -ParameterFilter $mockNewObject_MicrosoftServerConnection_ParameterFilter
         }
 
         # Skipping on Linux and macOS because they do not support Windows Authentication.
@@ -472,17 +545,40 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
                     Add-Member -MemberType ScriptProperty -Name Status -Value {
                         return 'Online'
                     } -PassThru |
-                    Add-Member -MemberType NoteProperty -Name ConnectionContext -Value (
-                        New-Object -TypeName Object |
-                            Add-Member -MemberType NoteProperty -Name ServerInstance -Value '' -PassThru |
-                            Add-Member -MemberType NoteProperty -Name LoginSecure -Value $true -PassThru |
-                            Add-Member -MemberType NoteProperty -Name StatementTimeout -Value 600 -PassThru |
-                            Add-Member -MemberType NoteProperty -Name ConnectTimeout -Value 600 -PassThru |
-                            Add-Member -MemberType NoteProperty -Name ApplicationName -Value 'SqlServerDsc' -PassThru |
-                            Add-Member -MemberType ScriptMethod -Name Disconnect -Value { return $true } -PassThru |
-                            Add-Member -MemberType ScriptMethod -Name Connect -Value { } -PassThru -Force
-                        ) -PassThru -Force
+                    Add-Member -MemberType NoteProperty -Name ConnectionContext -Value $ArgumentList[0] -PassThru -Force
             }
+
+            $mockNewObject_MicrosoftServerConnection = {
+                <#
+                $ArgumentList[0] will contain the ServiceInstance when calling mock New-Object.
+                But since the mock New-Object will also be called without arguments, we first
+                have to evaluate if $ArgumentList contains values.
+            #>
+                if ( $ArgumentList.Count -gt 0)
+                {
+                    $serverInstance = $ArgumentList[0]
+                }
+
+                return New-Object -TypeName Object |
+                    Add-Member -MemberType NoteProperty -Name ServerInstance -Value $serverInstance -PassThru |
+                    Add-Member -MemberType NoteProperty -Name LoginSecure -Value $true -PassThru |
+                    Add-Member -MemberType NoteProperty -Name Login -Value '' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name SecurePassword -Value $null -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ConnectAsUser -Value $false -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ConnectAsUserPassword -Value '' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ConnectAsUserName -Value '' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name StatementTimeout -Value 600 -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ConnectTimeout -Value 600 -PassThru |
+                    Add-Member -MemberType NoteProperty -Name EncryptConnection -Value $false -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ApplicationName -Value 'SqlServerDsc' -PassThru |
+                    Add-Member -MemberType ScriptMethod -Name Disconnect -Value {
+                        return $true
+                    } -PassThru |
+                    Add-Member -MemberType ScriptMethod -Name Connect -Value {} -PassThru -Force
+            }
+
+            Mock -CommandName New-Object -MockWith $mockNewObject_MicrosoftServerConnection `
+                -ParameterFilter $mockNewObject_MicrosoftServerConnection_ParameterFilter
         }
 
         # Skipping on Linux and macOS because they do not support Windows Authentication.
@@ -517,6 +613,7 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
                                 Add-Member -MemberType NoteProperty -Name ConnectAsUser -Value $false -PassThru |
                                 Add-Member -MemberType NoteProperty -Name ConnectAsUserPassword -Value '' -PassThru |
                                 Add-Member -MemberType NoteProperty -Name ConnectAsUserName -Value '' -PassThru |
+                                Add-Member -MemberType NoteProperty -Name EncryptConnection -Value $false -PassThru |
                                 Add-Member -MemberType NoteProperty -Name StatementTimeout -Value 600 -PassThru |
                                 Add-Member -MemberType NoteProperty -Name ConnectTimeout -Value 600 -PassThru |
                                 Add-Member -MemberType NoteProperty -Name ApplicationName -Value 'SqlServerDsc' -PassThru |
@@ -564,6 +661,7 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
                                 Add-Member -MemberType NoteProperty -Name ConnectAsUser -Value $false -PassThru |
                                 Add-Member -MemberType NoteProperty -Name ConnectAsUserPassword -Value '' -PassThru |
                                 Add-Member -MemberType NoteProperty -Name ConnectAsUserName -Value '' -PassThru |
+                                Add-Member -MemberType NoteProperty -Name EncryptConnection -Value $false -PassThru |
                                 Add-Member -MemberType NoteProperty -Name StatementTimeout -Value 600 -PassThru |
                                 Add-Member -MemberType NoteProperty -Name ConnectTimeout -Value 600 -PassThru |
                                 Add-Member -MemberType NoteProperty -Name ApplicationName -Value 'SqlServerDsc' -PassThru |
@@ -580,9 +678,7 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
             It 'Should not throw an exception' {
                 $null = Connect-SQL -ServerName 'localhost' -SetupCredential $mockSqlCredential -LoginType 'SqlLogin' -ErrorAction 'SilentlyContinue'
 
-                Should -Invoke -CommandName New-Object -ParameterFilter {
-                    $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Server'
-                } -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName New-Object -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter -Exactly -Times 1 -Scope It
             }
         }
     }

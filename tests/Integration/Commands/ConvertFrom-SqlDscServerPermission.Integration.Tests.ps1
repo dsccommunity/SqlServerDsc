@@ -35,7 +35,7 @@ BeforeAll {
 # in a realistic environment. Since this is a conversion utility that doesn't directly interact
 # with SQL Server, it tests the command's functionality with real ServerPermission objects
 # rather than requiring SQL Server connectivity.
-Describe 'ConvertFrom-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'ConvertFrom-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025') {
     Context 'When converting ServerPermission objects in integration environment' {
         It 'Should convert single permission correctly' {
             # Use the module scope to create ServerPermission object properly

@@ -31,7 +31,7 @@ BeforeAll {
     Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 }
 
-Describe 'Get-SqlDscSetupLog' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'Get-SqlDscSetupLog' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025') {
     Context 'When retrieving SQL Server setup log' {
         It 'Should retrieve the setup log from the most recent installation' {
             # This test verifies that Get-SqlDscSetupLog can successfully retrieve the

@@ -5,14 +5,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- SqlScript
+  - Fixed logic in `Get-TargetResource` and `Set-TargetResource` to throw an error
+    when the SQL script file is missing, instead of incorrectly reporting success
+    or using a null variable.
+  - Fixed `Test-TargetResource` to return `$false` (instead of throwing) when
+    the SQL script file is missing, enabling `DependsOn` scenarios where the file
+    is created at runtime.
+
+### Changed
+
+- SqlScript
+  - Added integration test configuration that creates script files and executes
+    the resource in a single configuration using `DependsOn`.
+
+## [17.5.1] - 2026-02-05
+
+### Added
+
+- SqlServerDsc
+  - Added private functions `ConvertTo-SqlString` and `ConvertTo-EscapedQueryString`
+    to safely escape T-SQL string literals and query arguments
+    ([issue #2442](https://github.com/dsccommunity/SqlServerDsc/issues/2442)).
+- DSC_SqlReplication
+  - Updated `Install-RemoteDistributor` to escape T-SQL arguments for SQL Server
+    2025 to prevent SQL injection and ensure proper password redaction
+    ([issue #2442](https://github.com/dsccommunity/SqlServerDsc/issues/2442)).
+
+### Changed
+
+- SqlServerDsc
+  - Updated Pester test guidance in AI instructions in community style guidelines.
+  - Added SChannelDsc as a required module for integration tests and enabled the
+    prerequisites tests `Ensure TLS 1.2 is enabled`  ([issue #2441](https://github.com/dsccommunity/SqlServerDsc/issues/2441)).
+- `SqlLogin`
+  - Added parameter `Language` to allow setting the default language used by the login.
+
+## [17.5.0] - 2026-01-30
+
 ### Changed
 
 - SqlServerDsc.Common
   - Moved functions into individual files and use ModuleBuilder to assemble.
-
 - SqlServerDsc
   - Refactor integration tests for _SQL Server Reporting Services_ and _Power BI_
     _Report Server_ ([issue #2431](https://github.com/dsccommunity/SqlServerDsc/issues/2431)).
+  - `Connect-Sql` create connection and server objects as per documentation.
+  - `Invoke-SqlDscQuery` remove disconnect as there is not an explicit connect.
+  - Add SQL Server 2025 to integration tests ([issue #2427](https://github.com/dsccommunity/SqlServerDsc/issues/2427)).
+
+### Fixed
+
+- SqlServerDsc
+  - Fixed PowerShell Gallery badge URL in `README.md` to correctly show
+    prereleases ([issue `#2437`](https://github.com/dsccommunity/SqlServerDsc/issues/2437)).
 
 ## [17.4.0] - 2026-01-19
 

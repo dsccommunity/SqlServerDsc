@@ -92,7 +92,7 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag 'Public' {
 
     Context 'When executing a scalar query' {
         BeforeAll {
-            $mockConnectionContext = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerConnection'
+            $mockConnectionContext = New-Object -TypeName 'Microsoft.SqlServer.Management.Common.ServerConnection'
             $mockConnectionContext.StatementTimeout = 100
             $mockConnectionContext | Add-Member -MemberType 'ScriptMethod' -Name 'ExecuteScalar' -Value {
                 param
@@ -192,7 +192,7 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag 'Public' {
 
     Context 'When an exception is thrown' {
         BeforeAll {
-            $mockConnectionContext = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerConnection'
+            $mockConnectionContext = New-Object -TypeName 'Microsoft.SqlServer.Management.Common.ServerConnection'
             $mockConnectionContext.StatementTimeout = 100
             $mockConnectionContext | Add-Member -MemberType 'ScriptMethod' -Name 'ExecuteScalar' -Value {
                 $script:mockMethodExecuteScalarCallCount += 1

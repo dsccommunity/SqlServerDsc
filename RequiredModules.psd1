@@ -56,6 +56,12 @@
     StorageDsc                     = '5.1.0'
     NetworkingDsc                  = '9.0.0'
     WSManDsc                       = '3.1.1'
+    SChannelDsc                    = @{
+        Version    = 'latest'
+        Parameters = @{
+            AllowPrerelease = $true
+        }
+    }
 
     # Prerequisite modules for documentation.
     #'DscResource.DocGenerator'     = 'latest'

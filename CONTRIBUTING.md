@@ -282,8 +282,7 @@ To make sure a integration tests is run in the correct order the integration
 tests are grouped in the file `azure-pipelines.yml` in the integration tests
 jobs.
 
-There are three, separate, integration tests jobs that each, independently, test
-SQL Server 2016, SQL Server 2017 and SQL Server 2019.
+There are multiple, separate integration test jobs that independently test SQL Server 2017, SQL Server 2019, SQL Server 2022 and SQL Server 2025.
 
 ### Testing of examples files
 

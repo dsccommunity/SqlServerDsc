@@ -83,7 +83,7 @@ try
                 #region Availability Replica Mocks
 
                 $mockAvailabilityReplicaObjects = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplicaCollection
-                foreach ( $mockAvailabilityReplicaName in @('Server1','Server2') )
+                foreach ( $mockAvailabilityReplicaName in @('Server1', 'Server2') )
                 {
                     $newAvailabilityReplicaObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
                     $newAvailabilityReplicaObject.Name = $mockAvailabilityReplicaName
@@ -246,7 +246,7 @@ try
                 $mockMasterDatabaseObject1.ID = 1
                 $mockMasterDatabaseObject1.Certificates = @($mockCertificateObject1)
                 $mockMasterDatabaseObject1.FileGroups = @{
-                    Name = 'PRIMARY'
+                    Name  = 'PRIMARY'
                     Files = @{
                         FileName = ( [IO.Path]::Combine( $mockDataFilePath, "$($mockMasterDatabaseName).mdf" ) )
                     }
@@ -261,7 +261,7 @@ try
                     $newDatabaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                     $newDatabaseObject.Name = $mockPresentDatabaseName
                     $newDatabaseObject.FileGroups = @{
-                        Name = 'PRIMARY'
+                        Name  = 'PRIMARY'
                         Files = @{
                             FileName = ( [IO.Path]::Combine( $mockDataFilePath, "$($mockPresentDatabaseName).mdf" ) )
                         }
@@ -282,7 +282,7 @@ try
                     $newDatabaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                     $newDatabaseObject.Name = $mockPresentDatabaseName
                     $newDatabaseObject.FileGroups = @{
-                        Name = 'PRIMARY'
+                        Name  = 'PRIMARY'
                         Files = @{
                             FileName = ( [IO.Path]::Combine( $mockDataFilePathIncorrect, "$($mockPresentDatabaseName).mdf" ) )
                         }
@@ -307,7 +307,7 @@ try
                 $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupWithoutDatabasesObject.Clone())
                 $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Clone())
                 $mockServerObject.ComputerNamePhysicalNetBIOS = $mockServerObjectDomainInstanceName
-                $mockServerObject.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerConnection
+                $mockServerObject.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Common.ServerConnection
                 $mockServerObject.ConnectionContext.TrueLogin = $mockTrueLogin
                 $mockServerObject.Databases = $mockDatabaseObjects
                 $mockServerObject.DomainInstanceName = $mockServerObjectDomainInstanceName
@@ -323,7 +323,7 @@ try
                 $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupWithoutDatabasesObject.Clone())
                 $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Clone())
                 $mockServer2Object.ComputerNamePhysicalNetBIOS = $mockPrimaryServerObjectDomainInstanceName
-                $mockServer2Object.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerConnection
+                $mockServer2Object.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Common.ServerConnection
                 $mockServer2Object.ConnectionContext.TrueLogin = $mockTrueLogin
                 $mockServer2Object.Databases = $mockDatabaseObjects
                 $mockServer2Object.DomainInstanceName = $mockPrimaryServerObjectDomainInstanceName
@@ -380,11 +380,11 @@ REVERT'
 
             BeforeEach {
                 $getTargetResourceParameters = @{
-                    DatabaseName = $mockDatabaseNameParameter.Clone()
-                    ServerName = 'Server1'
-                    InstanceName = 'MSSQLSERVER'
+                    DatabaseName          = $mockDatabaseNameParameter.Clone()
+                    ServerName            = 'Server1'
+                    InstanceName          = 'MSSQLSERVER'
                     AvailabilityGroupName = 'AvailabilityGroup1'
-                    BackupPath = $($mockBackupPath)
+                    BackupPath            = $($mockBackupPath)
                 }
             }
 
@@ -479,7 +479,7 @@ REVERT'
                     #region Availability Replica Mocks
 
                     $mockAvailabilityReplicaObjects = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplicaCollection
-                    foreach ( $mockAvailabilityReplicaName in @('Server1','Server2') )
+                    foreach ( $mockAvailabilityReplicaName in @('Server1', 'Server2') )
                     {
                         $newAvailabilityReplicaObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
                         $newAvailabilityReplicaObject.Name = $mockAvailabilityReplicaName
@@ -642,7 +642,7 @@ REVERT'
                     $mockMasterDatabaseObject1.ID = 1
                     $mockMasterDatabaseObject1.Certificates = @($mockCertificateObject1)
                     $mockMasterDatabaseObject1.FileGroups = @{
-                        Name = 'PRIMARY'
+                        Name  = 'PRIMARY'
                         Files = @{
                             FileName = ( [IO.Path]::Combine( $mockDataFilePath, "$($mockMasterDatabaseName).mdf" ) )
                         }
@@ -657,7 +657,7 @@ REVERT'
                         $newDatabaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                         $newDatabaseObject.Name = $mockPresentDatabaseName
                         $newDatabaseObject.FileGroups = @{
-                            Name = 'PRIMARY'
+                            Name  = 'PRIMARY'
                             Files = @{
                                 FileName = ( [IO.Path]::Combine( $mockDataFilePath, "$($mockPresentDatabaseName).mdf" ) )
                             }
@@ -678,7 +678,7 @@ REVERT'
                         $newDatabaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                         $newDatabaseObject.Name = $mockPresentDatabaseName
                         $newDatabaseObject.FileGroups = @{
-                            Name = 'PRIMARY'
+                            Name  = 'PRIMARY'
                             Files = @{
                                 FileName = ( [IO.Path]::Combine( $mockDataFilePathIncorrect, "$($mockPresentDatabaseName).mdf" ) )
                             }
@@ -703,7 +703,7 @@ REVERT'
                     $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupWithoutDatabasesObject.Clone())
                     $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Clone())
                     $mockServerObject.ComputerNamePhysicalNetBIOS = $mockServerObjectDomainInstanceName
-                    $mockServerObject.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerConnection
+                    $mockServerObject.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Common.ServerConnection
                     $mockServerObject.ConnectionContext.TrueLogin = $mockTrueLogin
                     $mockServerObject.Databases = $mockDatabaseObjects
                     $mockServerObject.DomainInstanceName = $mockServerObjectDomainInstanceName
@@ -719,7 +719,7 @@ REVERT'
                     $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupWithoutDatabasesObject.Clone())
                     $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Clone())
                     $mockServer2Object.ComputerNamePhysicalNetBIOS = $mockPrimaryServerObjectDomainInstanceName
-                    $mockServer2Object.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerConnection
+                    $mockServer2Object.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Common.ServerConnection
                     $mockServer2Object.ConnectionContext.TrueLogin = $mockTrueLogin
                     $mockServer2Object.Databases = $mockDatabaseObjects
                     $mockServer2Object.DomainInstanceName = $mockPrimaryServerObjectDomainInstanceName
@@ -775,22 +775,22 @@ REVERT'
                     Mock -CommandName Import-SqlDscPreferredModule -Verifiable
                     Mock -CommandName Invoke-SqlDscQuery -Verifiable -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
                     Mock -CommandName invokeSqlDscQueryParameters -Verifiable -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                    Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Full_$(Get-Date -Format 'yyyyMMddhhmmss').bak") } -Verifiable -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                    Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Log_$(Get-Date -Format 'yyyyMMddhhmmss').trn") } -Verifiable -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                    Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath, "$($database.Name)_Full_$(Get-Date -Format 'yyyyMMddhhmmss').bak") } -Verifiable -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                    Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath, "$($database.Name)_Log_$(Get-Date -Format 'yyyyMMddhhmmss').trn") } -Verifiable -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                     Mock -CommandName Remove-Item -Verifiable
                 }
 
                 BeforeEach {
                     $mockSetTargetResourceParameters = @{
-                        DatabaseName = $($mockDatabaseNameParameter)
-                        ServerName = $($mockServerObject.DomainInstanceName)
-                        InstanceName = $('MSSQLSERVER')
+                        DatabaseName          = $($mockDatabaseNameParameter)
+                        ServerName            = $($mockServerObject.DomainInstanceName)
+                        InstanceName          = $('MSSQLSERVER')
                         AvailabilityGroupName = $($mockAvailabilityGroupObjectName)
-                        BackupPath = $($mockBackupPath)
-                        Ensure = 'Present'
-                        Force = $false
-                        MatchDatabaseOwner = $true
-                        ReplaceExisting = $false
+                        BackupPath            = $($mockBackupPath)
+                        Ensure                = 'Present'
+                        Force                 = $false
+                        MatchDatabaseOwner    = $true
+                        ReplaceExisting       = $false
                     }
 
                     Mock -CommandName Add-SqlAvailabilityDatabase -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
@@ -798,7 +798,7 @@ REVERT'
                     Mock -CommandName Add-SqlAvailabilityDatabase -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
                     Mock -CommandName Add-SqlAvailabilityDatabase -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
                     Mock -CommandName Backup-SqlDatabase -Verifiable -ParameterFilter { $BackupAction -eq 'Database' }
-                    Mock -CommandName Backup-SqlDatabase -Verifiable -ParameterFilter { $BackupAction -eq 'Log'}
+                    Mock -CommandName Backup-SqlDatabase -Verifiable -ParameterFilter { $BackupAction -eq 'Log' }
                     Mock -CommandName Connect-SQL -MockWith { return $mockServerObject } -Verifiable -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
                     Mock -CommandName Connect-SQL -MockWith { return $mockServerObject } -Verifiable -ParameterFilter { $ServerName -eq 'Server1' }
                     Mock -CommandName Connect-SQL -MockWith { return $mockServer2Object } -Verifiable -ParameterFilter { $ServerName -eq 'Server2' }
@@ -970,12 +970,12 @@ REVERT'
                     }
 
                     $prerequisiteChecks = @{
-                        RecoveryModel = 'Full'
-                        ReadOnly = $false
-                        UserAccess = 'Multiple'
-                        AutoClose = $false
+                        RecoveryModel         = 'Full'
+                        ReadOnly              = $false
+                        UserAccess            = 'Multiple'
+                        AutoClose             = $false
                         AvailabilityGroupName = ''
-                        IsMirroringEnabled = $false
+                        IsMirroringEnabled    = $false
                     }
 
                     foreach ( $prerequisiteCheck in $prerequisiteChecks.GetEnumerator() )
@@ -1017,7 +1017,7 @@ REVERT'
                             Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                             Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                             Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                                Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                            Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
 
                             $mockServerObject.Databases['DB1'].($prerequisiteCheck.Key) = $originalValue
                         }
@@ -1051,8 +1051,8 @@ REVERT'
                     }
 
                     $filestreamProperties = @{
-                        DefaultFileStreamFileGroup = ''
-                        FilestreamDirectoryName = ''
+                        DefaultFileStreamFileGroup    = ''
+                        FilestreamDirectoryName       = ''
                         FilestreamNonTransactedAccess = 'Off'
                     }
 
@@ -1083,7 +1083,7 @@ REVERT'
                             Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                             Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                             Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                                Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                            Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
 
                             $mockServerObject.Databases['DB1'].($filestreamProperty.Key) = $originalValue
                         }
@@ -1122,7 +1122,7 @@ REVERT'
                     It 'Should throw the correct error when the database file path does not exist on the secondary replica' {
                         Mock -CommandName Invoke-SqlDscQuery -MockWith $mockResultInvokeQueryFileNotExist -Verifiable -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
                         $originalValue = $mockServer2Object.Databases['DB1'].FileGroups.Files.FileName
-                        $mockServer2Object.Databases['DB1'].FileGroups.Files.FileName = ( [IO.Path]::Combine( 'X:\', "DB1.mdf" ) )
+                        $mockServer2Object.Databases['DB1'].FileGroups.Files.FileName = ( [IO.Path]::Combine( 'X:\', 'DB1.mdf' ) )
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "The operation on the database 'DB1' failed with the following errors: The following prerequisite checks failed: The instance 'Server2' is missing the following directories: X:\, F:\SqlLog"
 
@@ -1153,7 +1153,7 @@ REVERT'
                     It 'Should throw the correct error when the log file path does not exist on the secondary replica' {
                         Mock -CommandName Invoke-SqlDscQuery -MockWith $mockResultInvokeQueryFileNotExist -Verifiable -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
                         $originalValue = $mockServer2Object.Databases['DB1'].LogFiles.FileName
-                        $mockServer2Object.Databases['DB1'].LogFiles.FileName = ( [IO.Path]::Combine( 'Y:\', "DB1.ldf" ) )
+                        $mockServer2Object.Databases['DB1'].LogFiles.FileName = ( [IO.Path]::Combine( 'Y:\', 'DB1.ldf' ) )
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw 'The operation on the database ''DB1'' failed with the following errors: The following prerequisite checks failed: The instance ''Server2'' is missing the following directories: E:\SqlData, Y:\'
 
@@ -1424,7 +1424,7 @@ REVERT'
                     $mockServerObject_Set.AvailabilityGroups = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.AvailabilityGroupCollection'
                     $mockServerObject_Set.AvailabilityGroups.Add($mockAvailabilityGroupObject_Set.Clone())
                     $mockServerObject_Set.ComputerNamePhysicalNetBIOS = 'Server1'
-                    $mockServerObject_Set.ConnectionContext = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerConnection'
+                    $mockServerObject_Set.ConnectionContext = New-Object -TypeName 'Microsoft.SqlServer.Management.Common.ServerConnection'
                     $mockServerObject_Set.ConnectionContext.TrueLogin = 'Login1'
                     $mockServerObject_Set.DomainInstanceName = 'Server1'
                     $mockServerObject_Set.NetName = 'Server1'
@@ -1453,14 +1453,14 @@ REVERT'
                     }
 
                     $mockSetTargetResourceParameters = @{
-                        DatabaseName = @('DB2')
-                        ServerName = 'Server1'
-                        InstanceName = 'MSSQLSERVER'
+                        DatabaseName          = @('DB2')
+                        ServerName            = 'Server1'
+                        InstanceName          = 'MSSQLSERVER'
                         AvailabilityGroupName = 'AvailabilityGroup1'
-                        BackupPath = 'X:\Backup'
-                        Ensure = 'Absent'
-                        Force = $false
-                        Verbose = $true
+                        BackupPath            = 'X:\Backup'
+                        Ensure                = 'Absent'
+                        Force                 = $false
+                        Verbose               = $true
                     }
                 }
 
@@ -1500,9 +1500,9 @@ REVERT'
                     }
                 }
             }
-#        }
+            #        }
 
-#        Describe 'SqlAGDatabase\Set-TargetResource' -Tag 'Set Automatic' {
+            #        Describe 'SqlAGDatabase\Set-TargetResource' -Tag 'Set Automatic' {
             Context 'Tests that was moved into its own context block to prevent intermittent fails (see issue #1532) - workaround until proper refactor with seeding on automatic' {
                 BeforeAll {
                     #region Parameter Mocks
@@ -1541,7 +1541,7 @@ REVERT'
                     #region Availability Replica Mocks
 
                     $mockAvailabilityReplicaObjects = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplicaCollection
-                    foreach ( $mockAvailabilityReplicaName in @('Server1','Server2') )
+                    foreach ( $mockAvailabilityReplicaName in @('Server1', 'Server2') )
                     {
                         $newAvailabilityReplicaObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
                         $newAvailabilityReplicaObject.Name = $mockAvailabilityReplicaName
@@ -1703,7 +1703,7 @@ REVERT'
                     $mockMasterDatabaseObject1.ID = 1
                     $mockMasterDatabaseObject1.Certificates = @($mockCertificateObject1)
                     $mockMasterDatabaseObject1.FileGroups = @{
-                        Name = 'PRIMARY'
+                        Name  = 'PRIMARY'
                         Files = @{
                             FileName = ( [IO.Path]::Combine( $mockDataFilePath, "$($mockMasterDatabaseName).mdf" ) )
                         }
@@ -1718,7 +1718,7 @@ REVERT'
                         $newDatabaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                         $newDatabaseObject.Name = $mockPresentDatabaseName
                         $newDatabaseObject.FileGroups = @{
-                            Name = 'PRIMARY'
+                            Name  = 'PRIMARY'
                             Files = @{
                                 FileName = ( [IO.Path]::Combine( $mockDataFilePath, "$($mockPresentDatabaseName).mdf" ) )
                             }
@@ -1739,7 +1739,7 @@ REVERT'
                         $newDatabaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                         $newDatabaseObject.Name = $mockPresentDatabaseName
                         $newDatabaseObject.FileGroups = @{
-                            Name = 'PRIMARY'
+                            Name  = 'PRIMARY'
                             Files = @{
                                 FileName = ( [IO.Path]::Combine( $mockDataFilePathIncorrect, "$($mockPresentDatabaseName).mdf" ) )
                             }
@@ -1764,7 +1764,7 @@ REVERT'
                     $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupWithoutDatabasesObject.Clone())
                     $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Clone())
                     $mockServerObject.ComputerNamePhysicalNetBIOS = $mockServerObjectDomainInstanceName
-                    $mockServerObject.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerConnection
+                    $mockServerObject.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Common.ServerConnection
                     $mockServerObject.ConnectionContext.TrueLogin = $mockTrueLogin
                     $mockServerObject.Databases = $mockDatabaseObjects
                     $mockServerObject.DomainInstanceName = $mockServerObjectDomainInstanceName
@@ -1780,7 +1780,7 @@ REVERT'
                     $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupWithoutDatabasesObject.Clone())
                     $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Clone())
                     $mockServer2Object.ComputerNamePhysicalNetBIOS = $mockPrimaryServerObjectDomainInstanceName
-                    $mockServer2Object.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerConnection
+                    $mockServer2Object.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Common.ServerConnection
                     $mockServer2Object.ConnectionContext.TrueLogin = $mockTrueLogin
                     $mockServer2Object.Databases = $mockDatabaseObjects
                     $mockServer2Object.DomainInstanceName = $mockPrimaryServerObjectDomainInstanceName
@@ -1835,22 +1835,22 @@ REVERT'
                     Mock -CommandName Import-SqlDscPreferredModule -Verifiable
                     Mock -CommandName Invoke-SqlDscQuery -Verifiable -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
                     Mock -CommandName Invoke-SqlDscQuery -Verifiable -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                    Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Full_$(Get-Date -Format 'yyyyMMddhhmmss').bak") } -Verifiable -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                    Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Log_$(Get-Date -Format 'yyyyMMddhhmmss').trn") } -Verifiable -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                    Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath, "$($database.Name)_Full_$(Get-Date -Format 'yyyyMMddhhmmss').bak") } -Verifiable -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                    Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath, "$($database.Name)_Log_$(Get-Date -Format 'yyyyMMddhhmmss').trn") } -Verifiable -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                     Mock -CommandName Remove-Item -Verifiable
                 }
 
                 BeforeEach {
                     $mockSetTargetResourceParameters = @{
-                        DatabaseName = $($mockDatabaseNameParameter)
-                        ServerName = $($mockServerObject.DomainInstanceName)
-                        InstanceName = $('MSSQLSERVER')
+                        DatabaseName          = $($mockDatabaseNameParameter)
+                        ServerName            = $($mockServerObject.DomainInstanceName)
+                        InstanceName          = $('MSSQLSERVER')
                         AvailabilityGroupName = $($mockAvailabilityGroupObjectName)
-                        BackupPath = $($mockBackupPath)
-                        Ensure = 'Present'
-                        Force = $false
-                        MatchDatabaseOwner = $true
-                        ReplaceExisting = $false
+                        BackupPath            = $($mockBackupPath)
+                        Ensure                = 'Present'
+                        Force                 = $false
+                        MatchDatabaseOwner    = $true
+                        ReplaceExisting       = $false
                     }
 
                     Mock -CommandName Add-SqlAvailabilityDatabase -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
@@ -1858,7 +1858,7 @@ REVERT'
                     Mock -CommandName Add-SqlAvailabilityDatabase -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
                     Mock -CommandName Add-SqlAvailabilityDatabase -Verifiable -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
                     Mock -CommandName Backup-SqlDatabase -Verifiable -ParameterFilter { $BackupAction -eq 'Database' }
-                    Mock -CommandName Backup-SqlDatabase -Verifiable -ParameterFilter { $BackupAction -eq 'Log'}
+                    Mock -CommandName Backup-SqlDatabase -Verifiable -ParameterFilter { $BackupAction -eq 'Log' }
                     Mock -CommandName Connect-SQL -MockWith { return $mockServerObject } -Verifiable -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
                     Mock -CommandName Connect-SQL -MockWith { return $mockServerObject } -Verifiable -ParameterFilter { $ServerName -eq 'Server1' }
                     Mock -CommandName Connect-SQL -MockWith { return $mockServer2Object } -Verifiable -ParameterFilter { $ServerName -eq 'Server2' }
@@ -1868,7 +1868,7 @@ REVERT'
                 }
 
                 Context 'When Ensure is Present' {
-                     It 'Should add the specified databases to the availability group.' {
+                    It 'Should add the specified databases to the availability group.' {
                         $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
@@ -2030,12 +2030,12 @@ REVERT'
                     }
 
                     $prerequisiteChecks = @{
-                        RecoveryModel = 'Full'
-                        ReadOnly = $false
-                        UserAccess = 'Multiple'
-                        AutoClose = $false
+                        RecoveryModel         = 'Full'
+                        ReadOnly              = $false
+                        UserAccess            = 'Multiple'
+                        AutoClose             = $false
                         AvailabilityGroupName = ''
-                        IsMirroringEnabled = $false
+                        IsMirroringEnabled    = $false
                     }
 
                     foreach ( $prerequisiteCheck in $prerequisiteChecks.GetEnumerator() )
@@ -2077,7 +2077,7 @@ REVERT'
                             Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                             Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                             Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                                Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                            Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
 
                             $mockServerObject.Databases['DB1'].($prerequisiteCheck.Key) = $originalValue
                         }
@@ -2111,8 +2111,8 @@ REVERT'
                     }
 
                     $filestreamProperties = @{
-                        DefaultFileStreamFileGroup = ''
-                        FilestreamDirectoryName = ''
+                        DefaultFileStreamFileGroup    = ''
+                        FilestreamDirectoryName       = ''
                         FilestreamNonTransactedAccess = 'Off'
                     }
 
@@ -2143,7 +2143,7 @@ REVERT'
                             Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                             Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                             Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                                Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                            Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
 
                             $mockServerObject.Databases['DB1'].($filestreamProperty.Key) = $originalValue
                         }
@@ -2182,7 +2182,7 @@ REVERT'
                     It 'Should throw the correct error when the database file path does not exist on the secondary replica' {
                         Mock -CommandName Invoke-SqlDscQuery -MockWith $mockResultInvokeQueryFileNotExist -Verifiable -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
                         $originalValue = $mockServer2Object.Databases['DB1'].FileGroups.Files.FileName
-                        $mockServer2Object.Databases['DB1'].FileGroups.Files.FileName = ( [IO.Path]::Combine( 'X:\', "DB1.mdf" ) )
+                        $mockServer2Object.Databases['DB1'].FileGroups.Files.FileName = ( [IO.Path]::Combine( 'X:\', 'DB1.mdf' ) )
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "The operation on the database 'DB1' failed with the following errors: The following prerequisite checks failed: The instance 'Server2' is missing the following directories: X:\, F:\SqlLog"
 
@@ -2213,7 +2213,7 @@ REVERT'
                     It 'Should throw the correct error when the log file path does not exist on the secondary replica' {
                         Mock -CommandName Invoke-SqlDscQuery -MockWith $mockResultInvokeQueryFileNotExist -Verifiable -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
                         $originalValue = $mockServer2Object.Databases['DB1'].LogFiles.FileName
-                        $mockServer2Object.Databases['DB1'].LogFiles.FileName = ( [IO.Path]::Combine( 'Y:\', "DB1.ldf" ) )
+                        $mockServer2Object.Databases['DB1'].LogFiles.FileName = ( [IO.Path]::Combine( 'Y:\', 'DB1.ldf' ) )
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw 'The operation on the database ''DB1'' failed with the following errors: The following prerequisite checks failed: The instance ''Server2'' is missing the following directories: E:\SqlData, Y:\'
 
@@ -2433,7 +2433,7 @@ REVERT'
                 #region Availability Replica Mocks
 
                 $mockAvailabilityReplicaObjects = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplicaCollection
-                foreach ( $mockAvailabilityReplicaName in @('Server1','Server2') )
+                foreach ( $mockAvailabilityReplicaName in @('Server1', 'Server2') )
                 {
                     $newAvailabilityReplicaObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
                     $newAvailabilityReplicaObject.Name = $mockAvailabilityReplicaName
@@ -2596,7 +2596,7 @@ REVERT'
                 $mockMasterDatabaseObject1.ID = 1
                 $mockMasterDatabaseObject1.Certificates = @($mockCertificateObject1)
                 $mockMasterDatabaseObject1.FileGroups = @{
-                    Name = 'PRIMARY'
+                    Name  = 'PRIMARY'
                     Files = @{
                         FileName = ( [IO.Path]::Combine( $mockDataFilePath, "$($mockMasterDatabaseName).mdf" ) )
                     }
@@ -2611,7 +2611,7 @@ REVERT'
                     $newDatabaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                     $newDatabaseObject.Name = $mockPresentDatabaseName
                     $newDatabaseObject.FileGroups = @{
-                        Name = 'PRIMARY'
+                        Name  = 'PRIMARY'
                         Files = @{
                             FileName = ( [IO.Path]::Combine( $mockDataFilePath, "$($mockPresentDatabaseName).mdf" ) )
                         }
@@ -2632,7 +2632,7 @@ REVERT'
                     $newDatabaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                     $newDatabaseObject.Name = $mockPresentDatabaseName
                     $newDatabaseObject.FileGroups = @{
-                        Name = 'PRIMARY'
+                        Name  = 'PRIMARY'
                         Files = @{
                             FileName = ( [IO.Path]::Combine( $mockDataFilePathIncorrect, "$($mockPresentDatabaseName).mdf" ) )
                         }
@@ -2657,7 +2657,7 @@ REVERT'
                 $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupWithoutDatabasesObject.Clone())
                 $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Clone())
                 $mockServerObject.ComputerNamePhysicalNetBIOS = $mockServerObjectDomainInstanceName
-                $mockServerObject.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerConnection
+                $mockServerObject.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Common.ServerConnection
                 $mockServerObject.ConnectionContext.TrueLogin = $mockTrueLogin
                 $mockServerObject.Databases = $mockDatabaseObjects
                 $mockServerObject.DomainInstanceName = $mockServerObjectDomainInstanceName
@@ -2673,7 +2673,7 @@ REVERT'
                 $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupWithoutDatabasesObject.Clone())
                 $mockServer2Object.AvailabilityGroups.Add($mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Clone())
                 $mockServer2Object.ComputerNamePhysicalNetBIOS = $mockPrimaryServerObjectDomainInstanceName
-                $mockServer2Object.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerConnection
+                $mockServer2Object.ConnectionContext = New-Object -TypeName Microsoft.SqlServer.Management.Common.ServerConnection
                 $mockServer2Object.ConnectionContext.TrueLogin = $mockTrueLogin
                 $mockServer2Object.Databases = $mockDatabaseObjects
                 $mockServer2Object.DomainInstanceName = $mockPrimaryServerObjectDomainInstanceName
@@ -2736,14 +2736,14 @@ REVERT'
 
             BeforeEach {
                 $mockTestTargetResourceParameters = @{
-                    DatabaseName = $mockDatabaseNameParameter.Clone()
-                    ServerName = $mockServerObject.DomainInstanceName
-                    InstanceName = 'MSSQLSERVER'
-                    AvailabilityGroupName = $mockAvailabilityGroupObject.Name
-                    BackupPath = $($mockBackupPath)
-                    Ensure = 'Present'
-                    Force = $false
-                    MatchDatabaseOwner = $false
+                    DatabaseName            = $mockDatabaseNameParameter.Clone()
+                    ServerName              = $mockServerObject.DomainInstanceName
+                    InstanceName            = 'MSSQLSERVER'
+                    AvailabilityGroupName   = $mockAvailabilityGroupObject.Name
+                    BackupPath              = $($mockBackupPath)
+                    Ensure                  = 'Present'
+                    Force                   = $false
+                    MatchDatabaseOwner      = $false
                     ProcessOnlyOnActiveNode = $false
                 }
 
@@ -2922,9 +2922,9 @@ REVERT'
         Describe 'SqlAGDatabase\Get-DatabasesToAddToAvailabilityGroup' {
             BeforeEach {
                 $getDatabasesToAddToAvailabilityGroup = @{
-                    DatabaseName = $mockDatabaseNameParameter.Clone()
-                    Ensure = 'Present'
-                    ServerObject = $mockServerObject
+                    DatabaseName      = $mockDatabaseNameParameter.Clone()
+                    Ensure            = 'Present'
+                    ServerObject      = $mockServerObject
                     AvailabilityGroup = $mockAvailabilityGroupObject
                 }
             }
@@ -2961,10 +2961,10 @@ REVERT'
         Describe 'SqlAGDatabase\Get-DatabasesToRemoveFromAvailabilityGroup' {
             BeforeEach {
                 $getDatabasesToRemoveFromAvailabilityGroupParameters = @{
-                    DatabaseName = $mockDatabaseNameParameter.Clone()
-                    Ensure = 'Present'
-                    Force = $false
-                    ServerObject = $mockServerObject
+                    DatabaseName      = $mockDatabaseNameParameter.Clone()
+                    Ensure            = 'Present'
+                    Force             = $false
+                    ServerObject      = $mockServerObject
                     AvailabilityGroup = $mockAvailabilityGroupObject
                 }
             }
@@ -3051,18 +3051,18 @@ REVERT'
                 }
 
                 It 'Should return an empty object when no matching databases are found' {
-                     $getMatchingDatabaseNamesParameters.DatabaseName = @('DatabaseNotHere')
+                    $getMatchingDatabaseNamesParameters.DatabaseName = @('DatabaseNotHere')
 
-                     Get-MatchingDatabaseNames @getMatchingDatabaseNamesParameters | Should -BeNullOrEmpty
+                    Get-MatchingDatabaseNames @getMatchingDatabaseNamesParameters | Should -BeNullOrEmpty
                 }
 
                 It 'Should return an array of database names that match the defined databases' {
-                     $results = Get-MatchingDatabaseNames @getMatchingDatabaseNamesParameters
+                    $results = Get-MatchingDatabaseNames @getMatchingDatabaseNamesParameters
 
-                     foreach ( $result in $results )
-                     {
-                         $mockPresentDatabaseNames -contains $result | Should -BeTrue
-                     }
+                    foreach ( $result in $results )
+                    {
+                        $mockPresentDatabaseNames -contains $result | Should -BeTrue
+                    }
                 }
 
                 It 'Should return an array of database names that match the defined databases when the case does not match' {
@@ -3074,7 +3074,7 @@ REVERT'
                     {
                         $mockPresentDatabaseNames -contains $result | Should -BeTrue
                     }
-               }
+                }
             }
         }
 
@@ -3090,7 +3090,7 @@ REVERT'
 
                 BeforeEach {
                     $getDatabaseNamesNotFoundOnTheInstanceParameters = @{
-                        DatabaseName = $mockDatabaseNameParameter.Clone()
+                        DatabaseName          = $mockDatabaseNameParameter.Clone()
                         MatchingDatabaseNames = @()
                     }
                 }

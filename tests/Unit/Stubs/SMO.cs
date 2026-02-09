@@ -487,7 +487,7 @@ namespace Microsoft.SqlServer.Management.Smo
     public class Server
     {
         public AvailabilityGroupCollection AvailabilityGroups = new AvailabilityGroupCollection();
-        public ServerConnection ConnectionContext;
+        public Microsoft.SqlServer.Management.Common.ServerConnection ConnectionContext;
         public string ComputerNamePhysicalNetBIOS;
         public DatabaseCollection Databases = new DatabaseCollection();
         public string DisplayName;
@@ -515,6 +515,12 @@ namespace Microsoft.SqlServer.Management.Smo
             this.Name = name;
         }
 
+        public Server(Microsoft.SqlServer.Management.Common.ServerConnection serverConnection)
+        {
+            this.ConnectionContext = serverConnection;
+            this.Name = serverConnection.ServerInstance;
+        }
+
         public Server Clone()
         {
             return new Server()
@@ -539,6 +545,8 @@ namespace Microsoft.SqlServer.Management.Smo
                 VersionMajor = this.VersionMajor
             };
         }
+
+        public void Refresh() {}
 
         public Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[] EnumServerPermissions( string principal, Microsoft.SqlServer.Management.Smo.ServerPermissionSet permissionSetQuery )
         {
@@ -1360,26 +1368,6 @@ namespace Microsoft.SqlServer.Management.Smo
 
         public void Create()
         {}
-    }
-
-    // TypeName: Microsoft.SqlServer.Management.Common.ServerConnection
-    // Used by:
-    //  SqlAGDatabase
-    //  Invoke-SqlDscScalarQuery
-    public class ServerConnection
-    {
-        public string TrueLogin;
-        public int StatementTimeout;
-
-        public void Create()
-        {}
-
-        // Method: ExecuteScalar
-        // Used for testing scalar query execution in Invoke-SqlDscScalarQuery
-        public object ExecuteScalar(string query)
-        {
-            return null;
-        }
     }
 
     // TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityDatabase
@@ -2796,4 +2784,42 @@ namespace Microsoft.SqlServer.Management.Common
     }
 
     #endregion
+
+    // TypeName: Microsoft.SqlServer.Management.Common.ServerConnection
+    // Used by:
+    //  SqlAGDatabase
+    //  Invoke-SqlDscScalarQuery
+    public class ServerConnection
+    {
+        public string ApplicationName { get; set; }
+        public bool ConnectAsUser { get; set; }
+        public string ConnectAsUserName { get; set; }
+        public string ConnectAsUserPassword { get; set; }
+        public int ConnectTimeout { get; set; }
+        public bool EncryptConnection { get; set; }
+        public string Login { get; set; }
+        public bool LoginSecure { get; set; }
+        public System.Security.SecureString SecurePassword { get; set; }
+        public string ServerInstance { get; set; }
+        public int StatementTimeout { get; set; }
+        public string TrueLogin { get; set; }
+
+        public ServerConnection(){}
+
+        public ServerConnection(string serverInstance)
+        {
+            this.ServerInstance = serverInstance;
+        }
+
+        public void Connect() {}
+
+        public void Disconnect() {}
+
+        // Method: ExecuteScalar
+        // Used for testing scalar query execution in Invoke-SqlDscScalarQuery
+        public object ExecuteScalar(string query)
+        {
+            return null;
+        }
+    }
 }

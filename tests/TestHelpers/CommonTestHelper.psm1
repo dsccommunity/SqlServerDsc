@@ -323,6 +323,17 @@ function New-SQLSelfSignedCertificate
     $env:SqlCertificateThumbprint = $certificate.Thumbprint
     Write-Verbose -Message ('Session environment variable $env:SqlCertificateThumbprint set to ''{0}''' -f $env:SqlCertificateThumbprint)
 
+    # Import the created certificate into the Local Machine Trusted Root store
+    try
+    {
+        Import-PfxCertificate -FilePath $sqlPrivateCertificatePath -Password $sqlPrivateKeyPassword -CertStoreLocation 'Cert:\LocalMachine\Root' -ErrorAction Stop | Out-Null
+        Write-Verbose -Message ('Imported certificate into Cert:\\LocalMachine\\Root with thumbprint ''{0}''.' -f $certificate.Thumbprint)
+    }
+    catch
+    {
+        Write-Warning -Message ('Failed to import certificate into trusted root store: {0}' -f $_.Exception.Message)
+    }
+
     return $certificate
 }
 

@@ -368,7 +368,7 @@ function New-SqlDscDatabase
         $CatalogCollation,
 
         [Parameter(ParameterSetName = 'Database')]
-        [ValidateSet('Version80', 'Version90', 'Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150', 'Version160')]
+        [ValidateSet('Version80', 'Version90', 'Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150', 'Version160', 'Version170')]
         [System.String]
         $CompatibilityLevel,
 
@@ -738,6 +738,7 @@ function New-SqlDscDatabase
                 14 = @('Version100', 'Version110', 'Version120', 'Version130', 'Version140')
                 15 = @('Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150')
                 16 = @('Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150', 'Version160')
+                17 = @('Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150', 'Version160', 'Version170')
             }
 
             if ($CompatibilityLevel -notin $supportedCompatibilityLevels.$($ServerObject.VersionMajor))

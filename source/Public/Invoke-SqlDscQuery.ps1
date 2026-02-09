@@ -270,12 +270,4 @@ function Invoke-SqlDscQuery
             }
         }
     }
-
-    end
-    {
-        if ($PSCmdlet.ParameterSetName -eq 'ByServerName')
-        {
-            $ServerObject | Disconnect-SqlDscDatabaseEngine -Force -Verbose:$VerbosePreference
-        }
-    }
 }

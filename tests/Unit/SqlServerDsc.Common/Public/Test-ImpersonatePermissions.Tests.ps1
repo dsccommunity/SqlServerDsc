@@ -101,7 +101,7 @@ Describe 'SqlServerDsc.Common\Test-ImpersonatePermissions' -Tag 'TestImpersonate
             $Permissions -eq @('CONTROL')
         }
 
-        $mockConnectionContextObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.ServerConnection
+        $mockConnectionContextObject = New-Object -TypeName Microsoft.SqlServer.Management.Common.ServerConnection
         $mockConnectionContextObject.TrueLogin = 'Login1'
 
         $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
