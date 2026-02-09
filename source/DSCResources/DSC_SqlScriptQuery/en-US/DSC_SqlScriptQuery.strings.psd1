@@ -5,4 +5,5 @@ ConvertFrom-StringData @'
     TestingConfiguration = Determines if the configuration in the Set query is in desired state.
     InDesiredState = The configuration is in desired state.
     NotInDesiredState = The configuration is not in desired state.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
 '@
