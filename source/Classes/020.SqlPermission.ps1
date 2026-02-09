@@ -178,8 +178,15 @@ class SqlPermission : SqlResourceBase
 
     [System.Boolean] Test()
     {
-        # Call the base method to test all of the properties that should be enforced.
-        return ([ResourceBase] $this).Test()
+            try
+            {
+                return ([ResourceBase] $this).Test()
+            }
+            catch
+            {
+                Write-Verbose -Message ($this.localizedData.SQLInstanceNotReachable -f $_)
+                return $false
+            }
     }
 
     [void] Set()
@@ -221,7 +228,19 @@ class SqlPermission : SqlResourceBase
             )
         )
 
-        $serverObject = $this.GetServerObject()
+        $serverObject = $null
+        try
+        {
+            $serverObject = $this.GetServerObject()
+        }
+        catch
+        {
+            Write-Verbose -Message ($this.localizedData.SQLInstanceNotReachable -f $_.Exception.Message)
+            # Returning an empty hashtable will cause Test() to see all properties
+            # as being different from the desired state, which will result in
+            # Test() returning $false and triggering Set().
+            return @{}
+        }
 
         $serverPermissionInfo = $serverObject |
             Get-SqlDscServerPermission -Name $this.Name -ErrorAction 'SilentlyContinue'

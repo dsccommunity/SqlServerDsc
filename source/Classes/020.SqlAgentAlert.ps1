@@ -155,7 +155,15 @@ class SqlAgentAlert : SqlResourceBase
     [System.Boolean] Test()
     {
         # Call base implementation to test current state
-        return ([ResourceBase] $this).Test()
+        try
+        {
+            return ([ResourceBase] $this).Test()
+        }
+        catch
+        {
+            Write-Verbose -Message ($this.localizedData.SQLInstanceNotReachable -f $_)
+            return $false
+        }
     }
 
     [void] Set()
@@ -179,10 +187,10 @@ class SqlAgentAlert : SqlResourceBase
 
         # Validate that both Severity and MessageId are not specified
         $assertMutuallyExclusiveParams = @{
-            BoundParameterList       = $properties
-            MutuallyExclusiveList1   = @('Severity')
-            MutuallyExclusiveList2   = @('MessageId')
-            IfEqualParameterList     = @{
+            BoundParameterList     = $properties
+            MutuallyExclusiveList1 = @('Severity')
+            MutuallyExclusiveList2 = @('MessageId')
+            IfEqualParameterList   = @{
                 Ensure = 'Present'
             }
         }
