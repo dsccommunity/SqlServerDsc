@@ -427,18 +427,7 @@ function Set-TargetResource
 
     $browserServiceName = 'SQLBrowser'
 
-    try
-    {
-        $getTargetResourceResult = Get-TargetResource -SourcePath $SourcePath -Features $Features -InstanceName $InstanceName
-    }
-    catch
-    {
-        Write-Verbose -Message (
-            $script:localizedData.SQLInstanceNotReachable `
-                -f $_
-        )
-        return $false
-    }
+    $getTargetResourceResult = Get-TargetResource -SourcePath $SourcePath -Features $Features -InstanceName $InstanceName
 
     foreach ($currentFeature in $getTargetResourceResult.Features.Split(','))
     {
@@ -658,7 +647,18 @@ function Test-TargetResource
         $script:localizedData.EvaluatingFirewallRules -f $InstanceName
     )
 
-    $getTargetResourceResult = Get-TargetResource -SourcePath $SourcePath -Features $Features -InstanceName $InstanceName
+    try
+    {
+        $getTargetResourceResult = Get-TargetResource -SourcePath $SourcePath -Features $Features -InstanceName $InstanceName
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable `
+                -f $_
+        )
+        return $false
+    }
 
     $isInDesiredState = $getTargetResourceResult.Ensure -eq $Ensure
 

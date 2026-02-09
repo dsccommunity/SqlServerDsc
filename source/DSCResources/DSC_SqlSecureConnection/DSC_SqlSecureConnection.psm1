@@ -262,18 +262,7 @@ function Set-TargetResource
         ServiceAccount  = $ServiceAccount
     }
 
-    try
-    {
-        $encryptionState = Get-TargetResource @parameters
-    }
-    catch
-    {
-        Write-Verbose -Message (
-            $script:localizedData.SQLInstanceNotReachable `
-                -f $_
-        )
-        return $false
-    }
+    $encryptionState = Get-TargetResource @parameters
 
     if ($Ensure -eq 'Present')
     {
@@ -406,7 +395,18 @@ function Test-TargetResource
             -f $InstanceName
     )
 
-    $encryptionState = Get-TargetResource @parameters
+    try
+    {
+        $encryptionState = Get-TargetResource @parameters
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable `
+                -f $_
+        )
+        return $false
+    }
 
     return $Ensure -eq $encryptionState.Ensure
 }

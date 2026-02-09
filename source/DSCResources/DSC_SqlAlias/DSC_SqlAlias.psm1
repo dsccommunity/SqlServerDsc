@@ -309,7 +309,18 @@ function Test-TargetResource
         Name = $PSBoundParameters.Name
     }
 
-    $currentValues = Get-TargetResource @parameters
+    try
+    {
+        $currentValues = Get-TargetResource @parameters
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable `
+                -f $_
+        )
+        return $false
+    }
 
     if ($Ensure -eq $currentValues.Ensure)
     {
@@ -364,18 +375,6 @@ function Test-TargetResource
         Write-Verbose -Message (
             $script:localizedData.NotInDesiredState -f $Name
         )
-    }
-    try
-    {
-        $currentValues = Get-TargetResource @parameters
-    }
-    catch
-    {
-        Write-Verbose -Message (
-            $script:localizedData.SQLInstanceNotReachable `
-                -f $_
-        )
-        return $false
     }
     return $result
 }
