@@ -189,18 +189,7 @@ function Set-TargetResource
 
     for ($forLoopCount = 0; $forLoopCount -lt $RetryCount; $forLoopCount++)
     {
-        try
-        {
-            $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-        }
-        catch
-        {
-            Write-Verbose -Message (
-                $script:localizedData.SQLInstanceNotReachable `
-                    -f $_
-            )
-            return $false
-        }
+        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
         $clusterGroupFound = $getTargetResourceResult.GroupExist
         if ($clusterGroupFound)

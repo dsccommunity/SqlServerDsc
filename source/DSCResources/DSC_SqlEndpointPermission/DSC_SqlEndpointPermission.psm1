@@ -162,18 +162,8 @@ function Set-TargetResource
         Principal    = [System.String] $Principal
     }
 
-    try
-    {
-        $getTargetResourceResult = Get-TargetResource @parameters
-    }
-    catch
-    {
-        Write-Verbose -Message (
-            $script:localizedData.SQLInstanceNotReachable `
-                -f $_
-        )
-        return $false
-    }
+    $getTargetResourceResult = Get-TargetResource @parameters
+
     if ($getTargetResourceResult.Ensure -ne $Ensure)
     {
         Write-Verbose -Message (
