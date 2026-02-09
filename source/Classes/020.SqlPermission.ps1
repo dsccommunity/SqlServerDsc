@@ -228,19 +228,7 @@ class SqlPermission : SqlResourceBase
             )
         )
 
-        $serverObject = $null
-        try
-        {
-            $serverObject = $this.GetServerObject()
-        }
-        catch
-        {
-            Write-Verbose -Message ($this.localizedData.SQLInstanceNotReachable -f $_.Exception.Message)
-            # Returning an empty hashtable will cause Test() to see all properties
-            # as being different from the desired state, which will result in
-            # Test() returning $false and triggering Set().
-            return @{}
-        }
+        $serverObject = $this.GetServerObject()
 
         $serverPermissionInfo = $serverObject |
             Get-SqlDscServerPermission -Name $this.Name -ErrorAction 'SilentlyContinue'
