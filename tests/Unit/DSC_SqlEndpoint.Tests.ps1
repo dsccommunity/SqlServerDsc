@@ -1001,6 +1001,13 @@ Describe 'DSC_SqlEndpoint\Test-TargetResource' -Tag 'Test' {
             }
         }
 
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockTestTargetResourceParameters.EndpointName = 'DefaultEndpointMirror'
+                $mockTestTargetResourceParameters.EndpointType = 'DatabaseMirroring'
+            }
+        }
+
         It 'Should return $false' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0

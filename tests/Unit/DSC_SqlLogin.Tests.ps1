@@ -670,6 +670,12 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
             }
         }
 
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockTestTargetResourceParameters.Name = 'Windows\Login1'
+            }
+        }
+
         It 'Should return $false' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
