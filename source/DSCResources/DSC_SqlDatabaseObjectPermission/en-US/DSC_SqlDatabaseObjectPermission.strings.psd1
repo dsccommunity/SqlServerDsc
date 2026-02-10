@@ -1,5 +1,6 @@
 ConvertFrom-StringData @'
     GetObjectPermission = Getting the current state of the permissions for the database object '{0}' of type '{1}' in the database '{2}' for the instance '{3}' on the server '{4}'. (SDOP0001)
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     TestDesiredState = Determining the current state of the permissions for the database object '{0}' of type '{1}' in the database '{2}' for the instance '{3}' on the server '{4}'. (SDOP0002)
     NotInDesiredState = The permissions for the database object '{0}' is not in desired state. (SDOP0003)
     InDesiredState = The permissions for the database object '{0}' is in desired state. (SDOP0004)

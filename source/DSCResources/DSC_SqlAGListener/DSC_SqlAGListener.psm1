@@ -492,7 +492,17 @@ function Test-TargetResource
         $script:localizedData.TestingConfiguration -f $Name, $AvailabilityGroup, $InstanceName
     )
 
-    $availabilityGroupListenerState = Get-TargetResource @parameters
+    try
+    {
+        $availabilityGroupListenerState = Get-TargetResource @parameters
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable -f $_
+        )
+        return $false
+    }
 
     [System.Boolean] $result = $false
 

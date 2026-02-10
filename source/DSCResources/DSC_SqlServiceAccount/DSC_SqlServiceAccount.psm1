@@ -170,7 +170,18 @@ function Test-TargetResource
     }
 
     # Get the current state
-    $currentState = Get-TargetResource -ServerName $ServerName -InstanceName $InstanceName -ServiceType $ServiceType -ServiceAccount $ServiceAccount -VersionNumber $VersionNumber
+    try
+    {
+        $currentState = Get-TargetResource -ServerName $ServerName -InstanceName $InstanceName -ServiceType $ServiceType -ServiceAccount $ServiceAccount -VersionNumber $VersionNumber
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable `
+                -f $_
+        )
+        return $false
+    }
     Write-Verbose -Message ($script:localizedData.CurrentServiceAccount -f $currentState.ServiceAccountName, $ServerName, $InstanceName)
 
     return ($currentState.ServiceAccountName -ieq $ServiceAccount.UserName)

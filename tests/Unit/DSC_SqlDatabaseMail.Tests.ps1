@@ -260,15 +260,15 @@ Describe 'DSC_SqlDatabaseMail\Get-TargetResource' -Tag 'Get' {
 
             It 'Should return the correct values for the rest of the properties' {
                 $inModuleScopeParameters = @{
-                    MockAccountName       = $mockAccountName
-                    MockEmailAddress      = $mockEmailAddress
-                    MockMailServerName    = $mockMailServerName
-                    MockProfileName       = $mockProfileName
-                    MockLoggingLevel      = $mockLoggingLevelNormal
-                    MockDisplayName       = $mockDisplayName
-                    MockReplyToAddress    = $mockReplyToAddress
-                    MockDescription       = $mockDescription
-                    MockTcpPort           = $mockTcpPort
+                    MockAccountName           = $mockAccountName
+                    MockEmailAddress          = $mockEmailAddress
+                    MockMailServerName        = $mockMailServerName
+                    MockProfileName           = $mockProfileName
+                    MockLoggingLevel          = $mockLoggingLevelNormal
+                    MockDisplayName           = $mockDisplayName
+                    MockReplyToAddress        = $mockReplyToAddress
+                    MockDescription           = $mockDescription
+                    MockTcpPort               = $mockTcpPort
                     MockUseDefaultCredentials = $mockUseDefaultCredentials
                 }
 
@@ -631,6 +631,26 @@ Describe 'DSC_SqlDatabaseMail\Test-TargetResource' -Tag 'Test' {
             }
         }
     }
+
+    Context 'When Get-TargetResource throws an exception' {
+        BeforeAll {
+            Mock -CommandName Get-TargetResource -MockWith {
+                throw 'Unable to connect to SQL instance'
+            }
+        }
+
+        It 'Should return $false' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $testTargetResourceParameters = $script:mockDefaultParameters.Clone()
+
+                $result = Test-TargetResource @testTargetResourceParameters
+
+                $result | Should -BeFalse
+            }
+        }
+    }
 }
 
 Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
@@ -681,38 +701,38 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                 Add-Member -MemberType NoteProperty -Name 'ReplyToAddress' -Value $mockReplyToAddress -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'Description' -Value $mockDynamicDescription -PassThru |
                 Add-Member -MemberType ScriptProperty -Name 'MailServers' -Value {
-                return @(
-                    New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockMailServerName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'Port' -Value $mockTcpPort -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'UseDefaultCredentials' -Value $mockUseDefaultCredentials -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name 'Rename' -Value {
-                            InModuleScope -ScriptBlock {
-                                $script:MailServerRenameMethodCallCount += 1
-                            }
+                    return @(
+                        New-Object -TypeName Object |
+                            Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockMailServerName -PassThru |
+                            Add-Member -MemberType NoteProperty -Name 'Port' -Value $mockTcpPort -PassThru |
+                            Add-Member -MemberType NoteProperty -Name 'UseDefaultCredentials' -Value $mockUseDefaultCredentials -PassThru |
+                            Add-Member -MemberType ScriptMethod -Name 'Rename' -Value {
+                                InModuleScope -ScriptBlock {
+                                    $script:MailServerRenameMethodCallCount += 1
+                                }
+                            } -PassThru |
+                            Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
+                                InModuleScope -ScriptBlock {
+                                    $script:MailServerAlterMethodCallCount += 1
+                                }
+                            } -PassThru -Force
+                        )
                     } -PassThru |
-                        Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
-                            InModuleScope -ScriptBlock {
-                                $script:MailServerAlterMethodCallCount += 1
-                            }
+                    Add-Member -MemberType ScriptMethod -Name 'Create' -Value {
+                        InModuleScope -ScriptBlock {
+                            $script:MailAccountCreateMethodCallCount += 1
+                        }
+                    } -PassThru |
+                    Add-Member -MemberType ScriptMethod -Name 'Drop' -Value {
+                        InModuleScope -ScriptBlock {
+                            $script:MailAccountDropMethodCallCount += 1
+                        }
+                    } -PassThru |
+                    Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
+                        InModuleScope -ScriptBlock {
+                            $script:MailAccountAlterMethodCallCount += 1
+                        }
                     } -PassThru -Force
-                )
-            } -PassThru |
-                Add-Member -MemberType ScriptMethod -Name 'Create' -Value {
-                    InModuleScope -ScriptBlock {
-                        $script:MailAccountCreateMethodCallCount += 1
-                    }
-            } -PassThru |
-                Add-Member -MemberType ScriptMethod -Name 'Drop' -Value {
-                    InModuleScope -ScriptBlock {
-                        $script:MailAccountDropMethodCallCount += 1
-                    }
-            } -PassThru |
-                Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
-                    InModuleScope -ScriptBlock {
-                        $script:MailAccountAlterMethodCallCount += 1
-                    }
-                } -PassThru -Force
         }
 
         $mockNewObject_MailAccount = {
@@ -729,12 +749,12 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             $script:MailProfileCreateMethodCallCount += 1
                         }
-                } -PassThru |
+                    } -PassThru |
                     Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
                         InModuleScope -ScriptBlock {
                             $script:MailProfileAlterMethodCallCount += 1
                         }
-                } -PassThru |
+                    } -PassThru |
                     Add-Member -MemberType ScriptMethod -Name 'Drop' -Value {
                         InModuleScope -ScriptBlock {
                             $script:MailProfileDropMethodCallCount += 1
@@ -744,12 +764,12 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             $script:MailProfileAddPrincipalMethodCallCount += 1
                         }
-                } -PassThru |
+                    } -PassThru |
                     Add-Member -MemberType ScriptMethod -Name 'AddAccount' -Value {
                         InModuleScope -ScriptBlock {
                             $script:MailProfileAddAccountMethodCallCount += 1
                         }
-                } -PassThru -Force
+                    } -PassThru -Force
             )
         }
 
@@ -761,44 +781,44 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
         $mockConnectSQL = {
             return New-Object -TypeName Object |
                 Add-Member -MemberType ScriptProperty -Name 'Configuration' -Value {
-                return New-Object -TypeName Object |
-                    Add-Member -MemberType ScriptProperty -Name 'DatabaseMailEnabled' -Value {
                     return New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name 'RunValue' -Value $mockDynamicDatabaseMailEnabledRunValue -PassThru -Force
-                } -PassThru -Force
-            } -PassThru |
-                Add-Member -MemberType ScriptProperty -Name 'Mail' -Value {
-                return New-Object -TypeName Object |
-                    Add-Member -MemberType ScriptProperty -Name 'Accounts' -Value {
-                    # This executes the variable that contains the mock
-                    return @( & $mailAccountObject )
-                } -PassThru |
-                    Add-Member -MemberType ScriptProperty -Name 'ConfigurationValues' -Value {
-                    return @{
-                        'LoggingLevel' = New-Object -TypeName Object |
-                            Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockDynamicLoggingLevelValue -PassThru |
-                            Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
-                                InModuleScope -ScriptBlock {
-                                    $script:LoggingLevelAlterMethodCallCount += 1
-                                }
-                        } -PassThru -Force
-                    }
-                } -PassThru |
-                    Add-Member -MemberType ScriptProperty -Name 'Profiles' -Value {
-                    # This executes the variable that contains the mock
-                    return @( & $mailProfileObject )
-                } -PassThru -Force
-            } -PassThru |
-                Add-Member -MemberType ScriptProperty -Name 'JobServer' -Value {
-                return New-Object -TypeName Object |
-                    Add-Member -MemberType NoteProperty -Name 'AgentMailType' -Value $mockDynamicAgentMailType -PassThru |
-                    Add-Member -MemberType NoteProperty -Name 'DatabaseMailProfile' -Value $mockDynamicDatabaseMailProfile -PassThru |
-                    Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
-                        InModuleScope -ScriptBlock {
-                            $script:JobServerAlterMethodCallCount += 1
-                        }
-                } -PassThru -Force
-            } -PassThru -Force
+                        Add-Member -MemberType ScriptProperty -Name 'DatabaseMailEnabled' -Value {
+                            return New-Object -TypeName Object |
+                                Add-Member -MemberType NoteProperty -Name 'RunValue' -Value $mockDynamicDatabaseMailEnabledRunValue -PassThru -Force
+                            } -PassThru -Force
+                        } -PassThru |
+                        Add-Member -MemberType ScriptProperty -Name 'Mail' -Value {
+                            return New-Object -TypeName Object |
+                                Add-Member -MemberType ScriptProperty -Name 'Accounts' -Value {
+                                    # This executes the variable that contains the mock
+                                    return @( & $mailAccountObject )
+                                } -PassThru |
+                                Add-Member -MemberType ScriptProperty -Name 'ConfigurationValues' -Value {
+                                    return @{
+                                        'LoggingLevel' = New-Object -TypeName Object |
+                                            Add-Member -MemberType NoteProperty -Name 'Value' -Value $mockDynamicLoggingLevelValue -PassThru |
+                                            Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
+                                                InModuleScope -ScriptBlock {
+                                                    $script:LoggingLevelAlterMethodCallCount += 1
+                                                }
+                                            } -PassThru -Force
+                                        }
+                                    } -PassThru |
+                                    Add-Member -MemberType ScriptProperty -Name 'Profiles' -Value {
+                                        # This executes the variable that contains the mock
+                                        return @( & $mailProfileObject )
+                                    } -PassThru -Force
+                                } -PassThru |
+                                Add-Member -MemberType ScriptProperty -Name 'JobServer' -Value {
+                                    return New-Object -TypeName Object |
+                                        Add-Member -MemberType NoteProperty -Name 'AgentMailType' -Value $mockDynamicAgentMailType -PassThru |
+                                        Add-Member -MemberType NoteProperty -Name 'DatabaseMailProfile' -Value $mockDynamicDatabaseMailProfile -PassThru |
+                                        Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
+                                            InModuleScope -ScriptBlock {
+                                                $script:JobServerAlterMethodCallCount += 1
+                                            }
+                                        } -PassThru -Force
+                                    } -PassThru -Force
         }
 
         $mockDynamicDatabaseMailEnabledRunValue = $mockDatabaseMailEnabledConfigValue
@@ -810,8 +830,8 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
         InModuleScope -ScriptBlock {
             # Default parameters that are used for the It-blocks.
             $script:mockDefaultParameters = @{
-                InstanceName = 'MSSQLSERVER'
-                ServerName   = 'localhost'
+                InstanceName   = 'MSSQLSERVER'
+                ServerName     = 'localhost'
                 AccountName    = 'MyMail'
                 EmailAddress   = 'NoReply@company.local'
                 MailServerName = 'mail.company.local'

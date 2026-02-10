@@ -13,4 +13,5 @@ ConvertFrom-StringData @'
     SqlAgentAlert_UpdatingAlert = Updating SQL Agent Alert '{0}'. (SAAA0006)
     SqlAgentAlert_RemovingAlert = Removing SQL Agent Alert '{0}'. (SAAA0007)
     SqlAgentAlert_NoChangesNeeded = No changes needed for SQL Agent Alert '{0}'. (SAAA0009)
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0} (SAAA0010)
 '@

@@ -2,6 +2,7 @@
 
 ConvertFrom-StringData @'
     UsingPath = Använder sökväg '{0}'.
+    SQLInstanceNotReachable = Kan inte ansluta till SQL-instansen eller hämta alternativet. Antar att resursen inte är i önskat tillstånd. Fel: {0}
     EvaluateReplicationFeature = Letar efter funktionen Replication.
     ReplicationFeatureFound = Replication funktionen hittad.
     ReplicationFeatureNotFound = Replication funktionen hittades inte.

@@ -1,5 +1,6 @@
 ConvertFrom-StringData @'
     GetCurrentState = Getting the current state of the protocol '{0}' for the instance '{1}' on the server '{2}'. (SSP0001)
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     SetDesiredState = Setting the desired state for the protocol '{0}' on the instance '{1}' on the server '{2}'. (SSP0002)
     ProtocolIsInDesiredState = The protocol '{0}' on the instance '{1}' is already in desired state. (SSP0002)
     ProtocolHasBeenEnabled = The protocol '{0}' has been enabled on the SQL Server instance '{1}'. (SSP0003)

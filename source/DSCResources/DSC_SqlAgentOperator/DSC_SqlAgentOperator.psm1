@@ -299,7 +299,18 @@ function Test-TargetResource
         InstanceName = $InstanceName
     }
 
-    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+    try
+    {
+        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable `
+                -f $_
+        )
+        return $false
+    }
 
     $isOperatorInDesiredState = $true
 

@@ -243,7 +243,15 @@ class SqlRSSetup : ResourceBase
     [System.Boolean] Test()
     {
         # Call the base method to test all of the properties that should be enforced.
-        $baseTestResult = ([ResourceBase] $this).Test()
+        try
+        {
+            $baseTestResult = ([ResourceBase] $this).Test()
+        }
+        catch
+        {
+            Write-Verbose -Message ($this.localizedData.SQLInstanceNotReachable -f $_)
+            $baseTestResult = $false
+        }
 
         # If $baseTestResult -eq $true, then the InstanceName exists.
         # If $baseTestResult -eq $false, then the InstanceName does not exist.

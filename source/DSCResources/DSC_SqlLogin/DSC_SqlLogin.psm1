@@ -212,7 +212,7 @@ function Set-TargetResource
                     # Update SQL login data if either `PasswordPolicyEnforced or `PasswordExpirationEnabled` is specified and not in desired state.
                     # Avoids executing `Update-SQLServerLogin` twice if both are not in desired state.
                     if ( ( $PSBoundParameters.ContainsKey('LoginPasswordPolicyEnforced') -and $login.PasswordPolicyEnforced -ne $LoginPasswordPolicyEnforced ) -or
-                         ( $PSBoundParameters.ContainsKey('LoginPasswordExpirationEnabled') -and $login.PasswordExpirationEnabled -ne $LoginPasswordExpirationEnabled ) )
+                        ( $PSBoundParameters.ContainsKey('LoginPasswordExpirationEnabled') -and $login.PasswordExpirationEnabled -ne $LoginPasswordExpirationEnabled ) )
                     {
                         <#
                             PasswordExpirationEnabled can only be set to $true if PasswordPolicyEnforced
@@ -272,7 +272,7 @@ function Set-TargetResource
                 }
 
                 if ( ( $PSBoundParameters.ContainsKey('DefaultDatabase') -and ($login.DefaultDatabase -ne $DefaultDatabase) ) -or
-                     ( $PSBoundParameters.ContainsKey('Language') -and $login.Language -ne $Language ) )
+                    ( $PSBoundParameters.ContainsKey('Language') -and $login.Language -ne $Language ) )
                 {
                     if ( $PSBoundParameters.ContainsKey('DefaultDatabase') )
                     {
@@ -356,7 +356,7 @@ function Set-TargetResource
                 }
 
                 if ( ( $PSBoundParameters.ContainsKey('DefaultDatabase') -and ($login.DefaultDatabase -ne $DefaultDatabase) ) -or
-                     ( $PSBoundParameters.ContainsKey('Language') -and $login.Language -ne $Language ) )
+                    ( $PSBoundParameters.ContainsKey('Language') -and $login.Language -ne $Language ) )
                 {
                     # Set the default database if specified
                     if ( $PSBoundParameters.ContainsKey('DefaultDatabase') )
@@ -507,7 +507,18 @@ function Test-TargetResource
         InstanceName = $InstanceName
     }
 
-    $loginInfo = Get-TargetResource @getParams
+    try
+    {
+        $loginInfo = Get-TargetResource @getParams
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable `
+                -f $_
+        )
+        return $false
+    }
 
     if ( $Ensure -ne $loginInfo.Ensure )
     {

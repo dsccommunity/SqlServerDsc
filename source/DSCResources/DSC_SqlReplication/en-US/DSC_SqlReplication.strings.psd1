@@ -1,5 +1,6 @@
 ConvertFrom-StringData @'
     GetCurrentState = Get the current state of the server replication configuration for the instance '{0}'.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     DistributorMode = The distributor mode is currently '{0}' for the instance '{1}'.
     NoDistributorMode = There are currently no distributor mode set for the instance '{0}'.
     NoRemoteDistributor = The parameter RemoteDistributor cannot be empty when DistributorMode is set to 'Remote'.

@@ -163,6 +163,7 @@ function Set-TargetResource
     }
 
     $getTargetResourceResult = Get-TargetResource @parameters
+
     if ($getTargetResourceResult.Ensure -ne $Ensure)
     {
         Write-Verbose -Message (
@@ -278,7 +279,18 @@ function Test-TargetResource
         $script:localizedData.TestingConfiguration -f $Name, $InstanceName
     )
 
-    $getTargetResourceResult = Get-TargetResource @parameters
+    try
+    {
+        $getTargetResourceResult = Get-TargetResource @parameters
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable `
+                -f $_
+        )
+        return $false
+    }
 
     $isInDesiredState = $getTargetResourceResult.Ensure -eq $Ensure
 

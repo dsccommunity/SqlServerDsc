@@ -391,11 +391,20 @@ function Test-TargetResource
     }
 
     Write-Verbose -Message (
-        $script:localizedData.TestingConfiguration `
-            -f $InstanceName
+        $script:localizedData.TestingConfiguration -f $InstanceName
     )
 
-    $encryptionState = Get-TargetResource @parameters
+    try
+    {
+        $encryptionState = Get-TargetResource @parameters
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable -f $_
+        )
+        return $false
+    }
 
     return $Ensure -eq $encryptionState.Ensure
 }

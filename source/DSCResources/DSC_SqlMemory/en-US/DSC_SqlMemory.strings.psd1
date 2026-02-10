@@ -1,5 +1,6 @@
 ConvertFrom-StringData @'
     GetMemoryValues = Getting the current values for minimum and maximum SQL server memory for instance '{0}'.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     SetNewValues = Setting the minimum and maximum memory that will be used by the instance '{0}'.
     MaxMemoryParamMustBeNull = The parameter MaxMemory must be null when the parameter DynamicAlloc is set to true or MaxMemoryPercent has a value.
     MaxMemoryPercentParamMustBeNull = The parameter MaxMemoryPercent must be null when the parameter DynamicAlloc is set to true or MaxMemory has a value.

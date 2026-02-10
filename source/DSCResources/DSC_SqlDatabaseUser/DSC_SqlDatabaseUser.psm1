@@ -528,7 +528,17 @@ function Test-TargetResource
         Name         = $Name
     }
 
-    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+    try
+    {
+        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+    }
+    catch
+    {
+        Write-Verbose -Message (
+            $script:localizedData.SQLInstanceNotReachable -f $_
+        )
+        return $false
+    }
 
     if ( $false -eq $getTargetResourceResult.DatabaseIsUpdateable )
     {

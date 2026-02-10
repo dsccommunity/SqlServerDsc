@@ -1,5 +1,6 @@
 ConvertFrom-StringData @'
     EnumeratingFirewallRules = Enumerating firewall rules for instance '{0}'.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     ConnectUsingCredential = Connecting to the path '{0}' using the credential '{1}' through SMB.
     UsingPath = Using the executable at '{0}' to determine the SQL Server major version.
     MajorVersion = The SQL Server major version is '{0}'.

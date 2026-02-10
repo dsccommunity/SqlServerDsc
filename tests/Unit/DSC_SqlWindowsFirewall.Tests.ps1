@@ -1852,6 +1852,24 @@ Describe 'SqlWindowsFirewall\Test-TargetResource' -Tag 'Test' {
             }
         }
     }
+
+    Context 'When Get-TargetResource throws an exception' {
+        BeforeAll {
+            Mock -CommandName Get-TargetResource -MockWith {
+                throw 'Unable to connect to SQL instance'
+            }
+        }
+
+        It 'Should return $false' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                $result | Should -BeFalse
+            }
+        }
+    }
 }
 
 Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {

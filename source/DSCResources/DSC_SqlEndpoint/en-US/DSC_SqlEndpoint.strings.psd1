@@ -1,5 +1,6 @@
 ConvertFrom-StringData @'
     GetEndpoint = Getting the current values of the endpoint with the name '{0}' for the instance '{1}'.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     EndpointFoundButWrongType = The endpoint '{0}' is of type '{1}', but expected it to be of type '{2}'.
     ConnectedToInstance = Connect to the instance '{0}\\{1}'.
     NotConnectedToInstance = Was unable to connect to the instance '{0}\\{1}'.

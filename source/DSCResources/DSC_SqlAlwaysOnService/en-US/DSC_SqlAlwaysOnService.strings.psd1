@@ -1,5 +1,6 @@
 ConvertFrom-StringData @'
     GetAlwaysOnServiceState = Always On Availability Groups is {0} on the instance '{1}\\{2}'.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     DisableAlwaysOnAvailabilityGroup = Disabling Always On Availability Groups for the instance '{0}\\{1}'.
     EnableAlwaysOnAvailabilityGroup = Enabling Always On Availability Groups for the instance '{0}\\{1}'.
     RestartingService = Always On Availability Groups has been {0} on the instance '{1}\\{2}'. Restarting the service.

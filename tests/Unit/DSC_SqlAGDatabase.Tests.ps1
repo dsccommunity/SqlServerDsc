@@ -2730,7 +2730,9 @@ REVERT'
                 Mock -CommandName Test-ActiveNode -MockWith {
                     return -not $mockProcessOnlyOnActiveNode
                 } -Verifiable
-
+                Mock -CommandName Get-TargetResource -MockWith {
+                    throw 'Unable to connect to SQL instance'
+                } -ModuleName $script:dscResourceName
 
             }
 
@@ -2915,6 +2917,16 @@ REVERT'
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
                     Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                }
+            }
+
+            Context 'When Get-TargetResource throws an exception' {
+                It 'Should return $false' {
+                    Set-StrictMode -Version 1.0
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeFalse
                 }
             }
         }

@@ -31,4 +31,5 @@ ConvertFrom-StringData @'
     RemovingSqlAgentConfiguration = Configure the SQL Agent to not use Database Mail (changing it back to SQL Agent Mail).
     RemovingMailProfile = Removing the public default profile '{0}'.
     RemovingMailAccount = Removing the mail account '{0}'.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
 '@

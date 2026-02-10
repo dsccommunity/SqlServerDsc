@@ -1,5 +1,6 @@
 ConvertFrom-StringData @'
     GetEndpointPermission = Enumerating the current permissions for the endpoint with the name '{0}' for the instance '{1}'.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     EndpointNotFound = The endpoint with the name '{0}' does not exist.
     UnexpectedErrorFromGet = Got unexpected result from Get-TargetResource. No change is made.
     SetEndpointPermission = Changing the permissions of the endpoint with the name '{0}' for the instance '{1}'.

@@ -1,5 +1,6 @@
 ConvertFrom-StringData @'
     GetConfiguration = Getting the current state for the instance {0}.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     SetConfiguration = Setting the desired state for the instance {0}.
     TestConfiguration = Determining the current state for the instance '{0}'.
     NotConnectedToComputerManagement = Was unable to connect to ComputerManagement '{0}'.

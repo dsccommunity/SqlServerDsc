@@ -2,6 +2,7 @@ ConvertFrom-StringData @'
     GetAvailabilityGroup = Get the current configuration for the availability group replica '{0}' in the availability group '{1}' on the instance '{2}'.
     HadrNotEnabled = Always On Availability Groups is not enabled.
     FailedRemoveAvailabilityGroupReplica = Failed to remove the availability group replica '{0}' from the availability group '{1}' on the instance '{2}'.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     DatabaseMirroringEndpointNotFound = No database mirroring endpoint was found on '{0}'.
     ReplicaNotFound = Unable to find the availability group replica '{0}' in the availability group '{1}' on the instance '{2}'.
     FailedCreateAvailabilityGroupReplica = Failed to creating the availability group replica '{0}' for the availability group '{1}' on the instance '{2}'.

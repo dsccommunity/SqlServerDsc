@@ -9,5 +9,6 @@ ConvertFrom-StringData @'
     UpdateFailsafeOperatorError = Unable to update Sql Agent Failsafe Operator '{0}' on {1}\\{2}.
     RemoveFailsafeOperator = Removing Sql Agent Failsafe Operator.
     ConnectServerFailed = Unable to connect to {0}\\{1}.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     TestingConfiguration = Determines if the SQL Agent Failsafe Operator is in the desired state.
 '@

@@ -1,5 +1,6 @@
 ConvertFrom-StringData @'
     GetConfiguration = Getting the max degree of parallelism server configuration option for instance '{0}'.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     SetConfiguration = Setting the max degree of parallelism server configuration option for instance '{0}'.
     DynamicMaxDop = The dynamically calculated value for max degree of parallelism is '{0}'.
     MaxDopParamMustBeNull = The parameter max degree of parallelism must be set to $null or not assigned if the parameter DynamicAlloc is set to $true.

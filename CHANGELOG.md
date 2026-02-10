@@ -14,6 +14,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed `Test-TargetResource` to return `$false` (instead of throwing) when
     the SQL script file is missing, enabling `DependsOn` scenarios where the file
     is created at runtime.
+- SqlAgentAlert, SqlAudit, SqlDatabase, SqlDatabasePermission, SqlPermission,
+  SqlRSSetup
+  - Fixed `Test()` method to return `$false` (instead of throwing) when the
+    SQL Server instance is not reachable or an error occurs, enabling
+    graceful handling and better support for `DependsOn` scenarios.
+- SqlAG, SqlAGDatabase, SqlAGListener, SqlAGReplica, SqlAgentFailsafe,
+  SqlAgentOperator, SqlAlias, SqlAlwaysOnService, SqlConfiguration,
+  SqlDatabaseDefaultLocation, SqlDatabaseMail, SqlDatabaseObjectPermission,
+  SqlDatabaseRole, SqlDatabaseUser, SqlEndpoint, SqlEndpointPermission,
+  SqlLogin, SqlMaxDop, SqlMemory, SqlProtocol, SqlProtocolTcpIp, SqlRS,
+  SqlReplication, SqlRole, SqlScript, SqlScriptQuery, SqlSecureConnection,
+  SqlServiceAccount, SqlSetup, SqlTraceFlag, SqlWaitForAG, SqlWindowsFirewall
+  - Fixed `Test-TargetResource` to return `$false` (instead of throwing)
+    when the SQL Server instance is not reachable or an error occurs during
+    `Get-TargetResource`, enabling graceful handling and better support for
+    `DependsOn` scenarios.
 
 ### Changed
 

@@ -298,6 +298,26 @@ Describe 'SqlScript\Test-TargetResource' {
         }
     }
 
+    Context 'When Get-TargetResource throws an exception' {
+        BeforeAll {
+            Mock -CommandName Get-TargetResource -MockWith {
+                throw 'Unable to connect to SQL instance'
+            }
+        }
+
+        It 'Should return $false' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $testTargetResourceParameters = $script:mockDefaultParameters.Clone()
+
+                $result = Test-TargetResource @testTargetResourceParameters
+
+                $result | Should -BeFalse
+            }
+        }
+    }
+
     Context 'When the system is in the desired state' {
         Context 'When Test-TargetResource runs script without issue' {
             BeforeAll {
@@ -385,13 +405,13 @@ Describe 'SqlScript\Test-TargetResource' {
                 }
             }
 
-            It 'Should throw the correct error from Invoke-Sqlcmd' {
+            It 'Should return false' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $mockErrorMessage = 'Failed to run SQL Script'
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    $result | Should -BeFalse
                 }
             }
         }

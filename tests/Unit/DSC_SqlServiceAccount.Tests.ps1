@@ -460,6 +460,31 @@ Describe 'SqlServerServiceAccount\Test-TargetResource' -Tag 'Test' {
             }
         }
     }
+
+    Context 'When Get-TargetResource throws an exception' {
+        BeforeAll {
+            Mock -CommandName Get-TargetResource -MockWith {
+                throw 'Unable to connect to SQL instance'
+            }
+        }
+
+        It 'Should return $false' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $testTargetResourceParameters = @{
+                    ServerName     = 'TestServer'
+                    InstanceName   = 'TestInstance'
+                    ServiceType    = 'DatabaseEngine'
+                    ServiceAccount = (New-Object -TypeName System.Management.Automation.PSCredential 'CONTOSO\sql.service', (New-Object -TypeName System.Security.SecureString))
+                }
+
+                $result = Test-TargetResource @testTargetResourceParameters
+
+                $result | Should -BeFalse
+            }
+        }
+    }
 }
 
 Describe 'SqlServerServiceAccount\Set-TargetResource' -Tag 'Set' {

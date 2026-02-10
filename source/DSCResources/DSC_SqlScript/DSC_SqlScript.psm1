@@ -469,9 +469,9 @@ function Test-TargetResource
 
         $result = Invoke-SqlScript @invokeParameters
     }
-    catch [Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException]
+    catch
     {
-        Write-Verbose $_
+        Write-Verbose -Message ($script:localizedData.SQLInstanceNotReachable -f $_)
         return $false
     }
 

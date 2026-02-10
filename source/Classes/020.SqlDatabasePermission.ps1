@@ -179,7 +179,15 @@ class SqlDatabasePermission : SqlResourceBase
     [System.Boolean] Test()
     {
         # Call the base method to test all of the properties that should be enforced.
-        return ([ResourceBase] $this).Test()
+        try
+        {
+            return ([ResourceBase] $this).Test()
+        }
+        catch
+        {
+            Write-Verbose -Message ($this.localizedData.SQLInstanceNotReachable -f $_)
+            return $false
+        }
     }
 
     [void] Set()

@@ -78,7 +78,7 @@ Describe 'SqlSecureConnection\Get-TargetResource' -Tag 'Get' {
         InModuleScope -ScriptBlock {
             # Default parameters that are used for the It-blocks.
             $script:mockDefaultParameters = @{
-                InstanceName = 'INSTANCE'
+                InstanceName    = 'INSTANCE'
                 Thumbprint      = '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'
                 ServiceAccount  = 'SqlSvc'
                 ForceEncryption = $true
@@ -347,7 +347,7 @@ Describe 'SqlSecureConnection\Set-TargetResource' -Tag 'Set' {
         InModuleScope -ScriptBlock {
             # Default parameters that are used for the It-blocks.
             $script:mockDefaultParameters = @{
-                InstanceName = 'INSTANCE'
+                InstanceName    = 'INSTANCE'
                 Thumbprint      = '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'
                 ServiceAccount  = 'SqlSvc'
                 ForceEncryption = $true
@@ -374,8 +374,8 @@ Describe 'SqlSecureConnection\Set-TargetResource' -Tag 'Set' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        InstanceName    = 'INSTANCE'
-                        Thumbprint      = '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'.ToUpper()
+                        InstanceName = 'INSTANCE'
+                        Thumbprint   = '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'.ToUpper()
                     }
                 }
             }
@@ -399,8 +399,8 @@ Describe 'SqlSecureConnection\Set-TargetResource' -Tag 'Set' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        InstanceName    = 'INSTANCE'
-                        Thumbprint      = '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'.ToUpper()
+                        InstanceName = 'INSTANCE'
+                        Thumbprint   = '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'.ToUpper()
                     }
                 }
             }
@@ -551,7 +551,7 @@ Describe 'SqlSecureConnection\Test-TargetResource' -Tag 'Test' {
         InModuleScope -ScriptBlock {
             # Default parameters that are used for the It-blocks.
             $script:mockDefaultParameters = @{
-                InstanceName = 'INSTANCE'
+                InstanceName    = 'INSTANCE'
                 Thumbprint      = '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'
                 ServiceAccount  = 'SqlSvc'
                 ForceEncryption = $true
@@ -564,6 +564,26 @@ Describe 'SqlSecureConnection\Test-TargetResource' -Tag 'Test' {
     BeforeEach {
         InModuleScope -ScriptBlock {
             $script:mockTestTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
+
+    Context 'When Get-TargetResource throws an exception' {
+        BeforeAll {
+            Mock -CommandName Get-TargetResource -MockWith {
+                throw 'Unable to connect to SQL instance'
+            }
+        }
+
+        It 'Should return $false' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $testTargetResourceParameters = $script:mockDefaultParameters.Clone()
+
+                $result = Test-TargetResource @testTargetResourceParameters
+
+                $result | Should -BeFalse
+            }
         }
     }
 

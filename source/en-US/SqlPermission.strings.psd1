@@ -20,4 +20,5 @@ ConvertFrom-StringData @'
     MustAssignOnePermissionProperty = At least one of the properties 'Permission', 'PermissionToInclude', or 'PermissionToExclude' must be specified. (SP0009)
     DuplicatePermissionBetweenState = One or more permission state specifies the same permission. It is only allowed to specify a specific permission in one permission state. (SP0010)
     MustHaveMinimumOnePermissionInState = At least one state does not specify a permission in the property '{0}'. (SP0011)
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0} (SP0012)
 '@

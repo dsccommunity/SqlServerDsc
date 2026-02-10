@@ -4,6 +4,7 @@
 
 ConvertFrom-StringData @'
     GetEncryptionSettings = Getting encryption settings for instance '{0}'.
+    SQLInstanceNotReachable = Unable to connect to SQL instance or retrieve option. Assuming resource is not in desired state. Error: {0}
     CertificateSettings = Certificate permissions are {0}.
     EncryptedSettings = Found thumbprint of '{0}', with Force Encryption set to '{1}'.
     SetEncryptionSetting = Securing instance '{0}' with Thumbprint: '{1}' and Force Encryption: '{2}'.

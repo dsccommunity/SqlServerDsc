@@ -78,8 +78,8 @@ Describe 'DSC_SqlTraceFlag\Get-TargetResource' -Tag 'Get' {
             $mockServerInstances.Add('INST00') | Out-Null
 
             $mockServerObjectHashtable = @{
-                State = 'Existing'
-                Name = 'TestServer'
+                State           = 'Existing'
+                Name            = 'TestServer'
                 ServerInstances = $mockServerInstances
             }
 
@@ -253,7 +253,7 @@ Describe 'DSC_SqlTraceFlag\Get-TargetResource' -Tag 'Get' {
                 $mockErrorMessage = $script:localizedData.NotConnectedToComputerManagement -f 'FakeServer'
 
                 { Get-TargetResource @mockGetTargetResourceParameters } |
-                    Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)            }
+                    Should -Throw -ExpectedMessage ('*' + $mockErrorMessage) }
         }
     }
 }
@@ -280,9 +280,9 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        ServerName          = 'TestServer'
-                        InstanceName        = 'MSSQLSERVER'
-                        TraceFlags          = @()
+                        ServerName   = 'TestServer'
+                        InstanceName = 'MSSQLSERVER'
+                        TraceFlags   = @()
                     }
                 }
             }
@@ -308,9 +308,9 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        ServerName          = 'TestServer'
-                        InstanceName        = 'MSSQLSERVER'
-                        TraceFlags          = @('1802', '3226')
+                        ServerName   = 'TestServer'
+                        InstanceName = 'MSSQLSERVER'
+                        TraceFlags   = @('1802', '3226')
                     }
                 }
             }
@@ -340,9 +340,9 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        ServerName          = 'TestServer'
-                        InstanceName        = 'MSSQLSERVER'
-                        TraceFlags          = @('1802', '3226')
+                        ServerName   = 'TestServer'
+                        InstanceName = 'MSSQLSERVER'
+                        TraceFlags   = @('1802', '3226')
                     }
                 }
             }
@@ -368,9 +368,9 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        ServerName          = 'TestServer'
-                        InstanceName        = 'MSSQLSERVER'
-                        TraceFlags          = @('1802', '3226')
+                        ServerName   = 'TestServer'
+                        InstanceName = 'MSSQLSERVER'
+                        TraceFlags   = @('1802', '3226')
                     }
                 }
             }
@@ -396,9 +396,9 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        ServerName          = 'TestServer'
-                        InstanceName        = 'MSSQLSERVER'
-                        TraceFlags          = @()
+                        ServerName   = 'TestServer'
+                        InstanceName = 'MSSQLSERVER'
+                        TraceFlags   = @()
                     }
                 }
             }
@@ -424,9 +424,9 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        ServerName          = 'TestServer'
-                        InstanceName        = 'MSSQLSERVER'
-                        TraceFlags          = @('1802', '3226')
+                        ServerName   = 'TestServer'
+                        InstanceName = 'MSSQLSERVER'
+                        TraceFlags   = @('1802', '3226')
                     }
                 }
             }
@@ -455,9 +455,9 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        ServerName          = 'TestServer'
-                        InstanceName        = 'MSSQLSERVER'
-                        TraceFlags          = @('1802', '3226')
+                        ServerName   = 'TestServer'
+                        InstanceName = 'MSSQLSERVER'
+                        TraceFlags   = @('1802', '3226')
                     }
                 }
             }
@@ -483,9 +483,9 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        ServerName          = 'TestServer'
-                        InstanceName        = 'MSSQLSERVER'
-                        TraceFlags          = @('1802', '3226')
+                        ServerName   = 'TestServer'
+                        InstanceName = 'MSSQLSERVER'
+                        TraceFlags   = @('1802', '3226')
                     }
                 }
             }
@@ -511,9 +511,9 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        ServerName          = 'TestServer'
-                        InstanceName        = 'MSSQLSERVER'
-                        TraceFlags          = @('1802', '3226')
+                        ServerName   = 'TestServer'
+                        InstanceName = 'MSSQLSERVER'
+                        TraceFlags   = @('1802', '3226')
                     }
                 }
             }
@@ -539,9 +539,9 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        ServerName          = 'TestServer'
-                        InstanceName        = 'MSSQLSERVER'
-                        TraceFlags          = @('1802', '3226')
+                        ServerName   = 'TestServer'
+                        InstanceName = 'MSSQLSERVER'
+                        TraceFlags   = @('1802', '3226')
                     }
                 }
             }
@@ -567,9 +567,9 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        ServerName          = 'TestServer'
-                        InstanceName        = 'MSSQLSERVER'
-                        TraceFlags          = @()
+                        ServerName   = 'TestServer'
+                        InstanceName = 'MSSQLSERVER'
+                        TraceFlags   = @()
                     }
                 }
             }
@@ -595,9 +595,9 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        ServerName          = 'TestServer'
-                        InstanceName        = 'MSSQLSERVER'
-                        TraceFlags          = @('1802', '3226')
+                        ServerName   = 'TestServer'
+                        InstanceName = 'MSSQLSERVER'
+                        TraceFlags   = @('1802', '3226')
                     }
                 }
             }
@@ -623,9 +623,9 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        ServerName          = 'TestServer'
-                        InstanceName        = 'MSSQLSERVER'
-                        TraceFlags          = @()
+                        ServerName   = 'TestServer'
+                        InstanceName = 'MSSQLSERVER'
+                        TraceFlags   = @()
                     }
                 }
             }
@@ -651,9 +651,9 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        ServerName          = 'TestServer'
-                        InstanceName        = 'MSSQLSERVER'
-                        TraceFlags          = @('1802', '3226')
+                        ServerName   = 'TestServer'
+                        InstanceName = 'MSSQLSERVER'
+                        TraceFlags   = @('1802', '3226')
                     }
                 }
             }
@@ -679,9 +679,9 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        ServerName          = 'TestServer'
-                        InstanceName        = 'MSSQLSERVER'
-                        TraceFlags          = @('1802', '3226')
+                        ServerName   = 'TestServer'
+                        InstanceName = 'MSSQLSERVER'
+                        TraceFlags   = @('1802', '3226')
                     }
                 }
             }
@@ -730,6 +730,26 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
             }
         }
     }
+
+    Context 'When Get-TargetResource throws an exception' {
+        BeforeAll {
+            Mock -CommandName Get-TargetResource -MockWith {
+                throw 'Unable to connect to SQL instance'
+            }
+        }
+
+        It 'Should return $false' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockTestTargetResourceParameters.TraceFlags = @('3226')
+
+                $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                $result | Should -BeFalse
+            }
+        }
+    }
 }
 
 Describe 'DSC_SqlTraceFlag\Set-TargetResource' -Tag 'Set' {
@@ -740,8 +760,8 @@ Describe 'DSC_SqlTraceFlag\Set-TargetResource' -Tag 'Set' {
             $mockServerInstances.Add('INST00') | Out-Null
 
             $mockServerObjectHashtable = @{
-                State = 'Existing'
-                Name = 'TestServer'
+                State           = 'Existing'
+                Name            = 'TestServer'
                 ServerInstances = $mockServerInstances
             }
 
@@ -758,11 +778,11 @@ Describe 'DSC_SqlTraceFlag\Set-TargetResource' -Tag 'Set' {
             $service1.Name = 'MSSQLSERVER'
             $service1.ServiceState = 'Running'
 
-            $service1.StartupParameters = @"
+            $service1.StartupParameters = @'
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802
-"@
+'@
 
             $Services.Add($service1) | Out-Null
 
@@ -777,11 +797,11 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802
             $service3.Name = 'MSSQL$INST00'
             $service3.ServiceState = 'Running'
 
-            $service3.StartupParameters = @"
+            $service3.StartupParameters = @'
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
-"@
+'@
 
             $Services.Add($service3) | Out-Null
 
@@ -866,11 +886,11 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 
                     $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
 
-                    $script:mockMethodAlterValue | Should -Be @"
+                    $script:mockMethodAlterValue | Should -Be @'
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
-"@ -Because 'Alter must change the value correct'
+'@ -Because 'Alter must change the value correct'
                 }
 
                 Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
@@ -888,11 +908,11 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 
                     $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
 
-                    $script:mockMethodAlterValue | Should -Be @"
+                    $script:mockMethodAlterValue | Should -Be @'
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
-"@ -Because 'Alter must change the value correct'
+'@ -Because 'Alter must change the value correct'
                 }
 
                 Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
@@ -911,11 +931,11 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
 
                     $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
 
-                    $script:mockMethodAlterValue | Should -Be @"
+                    $script:mockMethodAlterValue | Should -Be @'
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
-"@
+'@
                 }
 
                 # New-Object is also called in Get-TargetResource since there is no mock for Get-TargetResource.
@@ -934,11 +954,11 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
 
                     $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
 
-                    $script:mockMethodAlterValue | Should -Be @"
+                    $script:mockMethodAlterValue | Should -Be @'
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802;-T3228
-"@
+'@
                 }
 
                 # New-Object is also called in Get-TargetResource since there is no mock for Get-TargetResource.
@@ -957,11 +977,11 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802;-T3228
 
                     $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
 
-                    $script:mockMethodAlterValue | Should -Be @"
+                    $script:mockMethodAlterValue | Should -Be @'
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226
-"@
+'@
                 }
 
                 # New-Object is also called in Get-TargetResource since there is no mock for Get-TargetResource.
@@ -980,11 +1000,11 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226
 
                     $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
 
-                    $script:mockMethodAlterValue | Should -Be @"
+                    $script:mockMethodAlterValue | Should -Be @'
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
-"@
+'@
                 }
 
                 # New-Object is also called in Get-TargetResource since there is no mock for Get-TargetResource.
@@ -1004,11 +1024,11 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 
                     $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
 
-                    $script:mockMethodAlterValue | Should -Be @"
+                    $script:mockMethodAlterValue | Should -Be @'
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T4199
-"@
+'@
                 }
 
                 # New-Object is also called in Get-TargetResource since there is no mock for Get-TargetResource.
@@ -1053,16 +1073,15 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T4199
     }
 
     Context 'For a nonexistent instance' {
-        It 'Should throw for incorrect parameters' {
+        It 'Should return $false for incorrect parameters' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
                 $mockSetTargetResourceParameters.InstanceName = 'INST01'
 
-                $mockErrorMessage = $script:localizedData.NotConnectedToWMI -f 'INST01', 'TestServer'
+                $result = Test-TargetResource @mockSetTargetResourceParameters
 
-                { Test-TargetResource @mockSetTargetResourceParameters } |
-                    Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                $result | Should -BeFalse
             }
         }
     }
@@ -1076,17 +1095,17 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T4199
             }
         }
 
-        It 'Should throw for incorrect parameters' {
+        It 'Should return $false for incorrect parameters' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
                 $mockSetTargetResourceParameters.ServerName = 'FakeServer'
                 $mockSetTargetResourceParameters.InstanceName = 'INST00' # Instance exist
 
-                $mockErrorMessage = $script:localizedData.NotConnectedToComputerManagement -f 'FakeServer'
+                $result = Test-TargetResource @mockSetTargetResourceParameters
 
-                { Test-TargetResource @mockSetTargetResourceParameters } |
-                    Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)            }
+                $result | Should -BeFalse
+            }
         }
     }
 }

@@ -662,6 +662,30 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
             }
         }
     }
+
+    Context 'When Get-TargetResource throws an exception' {
+        BeforeAll {
+            Mock -CommandName Get-TargetResource -MockWith {
+                throw 'Unable to connect to SQL instance'
+            }
+        }
+
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockTestTargetResourceParameters.Name = 'Windows\Login1'
+            }
+        }
+
+        It 'Should return $false' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                $result | Should -BeFalse
+            }
+        }
+    }
 }
 
 Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
