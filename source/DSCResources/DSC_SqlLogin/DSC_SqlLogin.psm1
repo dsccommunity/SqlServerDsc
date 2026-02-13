@@ -347,7 +347,7 @@ function Set-TargetResource
 
                         if ( $PSBoundParameters.ContainsKey('Sid') )
                         {
-                            $login.Sid = ([byte[]] -split ( $Sid -replace '^0x','' -replace '..', '0x$& '))
+                            $login.Sid = ([byte[]] -split ( $Sid -replace '^0x', '' -replace '..', '0x$& '))
                         }
 
                         New-SQLServerLogin -Login $login -LoginCreateOptions $LoginCreateOptions -SecureString $LoginCredential.Password -ErrorAction 'Stop'
@@ -586,11 +586,11 @@ function Test-TargetResource
 
         if ( $PSBoundParameters.ContainsKey('Sid') )
         {
-            $InfoSid = '0x' + [System.BitConverter]::ToString($loginInfo.Sid).Replace('-', '')
-            if ( $InfoSid -ne $Sid )
+            $infoSid = '0x' + [System.BitConverter]::ToString($loginInfo.Sid).Replace('-', '')
+            if ( $infoSid -ne $Sid )
             {
                 Write-Verbose -Message (
-                    $script:localizedData.WrongSid -f $Name, $InfoSid, $Sid
+                    $script:localizedData.WrongSid -f $Name, $infoSid, $Sid
                 )
                 $testPassed = $false
             }
