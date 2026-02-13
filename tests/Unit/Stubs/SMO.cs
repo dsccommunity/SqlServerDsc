@@ -774,6 +774,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public string Certificate;
         public string AsymmetricKey;
         public string Language;
+        public byte[] Sid;
 
         public void Drop()
         {

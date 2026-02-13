@@ -117,6 +117,7 @@ Describe 'SqlLogin\Get-TargetResource' -Tag 'Get' {
                                     Add-Member -MemberType NoteProperty -Name 'LoginType' -Value $MockLoginType -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'DefaultDatabase' -Value 'master' -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'Language' -Value 'us_english' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'Sid' -Value ([byte[]] -split ('0xB76150A66B38F64FAE9470091789AA66' -replace '^0x','' -replace '..', '0x$& ')) -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'IsDisabled' -Value $true -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'MustChangePassword' -Value $true -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'PasswordExpirationEnabled' -Value $true -PassThru |
@@ -147,6 +148,7 @@ Describe 'SqlLogin\Get-TargetResource' -Tag 'Get' {
                         $result.Disabled | Should -BeTrue
                         $result.DefaultDatabase | Should -Be 'master'
                         $result.Language | Should -Be 'us_english'
+                        $result.Sid | Should -Be ([byte[]] -split ('0xB76150A66B38F64FAE9470091789AA66' -replace '^0x','' -replace '..', '0x$& '))
 
                         if ($MockLoginType -eq 'SqlLogin')
                         {
@@ -200,6 +202,7 @@ Describe 'SqlLogin\Get-TargetResource' -Tag 'Get' {
                                     Add-Member -MemberType NoteProperty -Name 'LoginType' -Value 'SqlLogin' -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'DefaultDatabase' -Value 'master' -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'Language' -Value 'us_english' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'Sid' -Value ([byte[]] -split ('0xB76150A66B38F64FAE9470091789AA66' -replace '^0x','' -replace '..', '0x$& ')) -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'IsDisabled' -Value $true -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'MustChangePassword' -Value $true -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'PasswordExpirationEnabled' -Value $true -PassThru |
@@ -230,6 +233,7 @@ Describe 'SqlLogin\Get-TargetResource' -Tag 'Get' {
                         $result.Disabled | Should -BeFalse
                         $result.DefaultDatabase | Should -BeNullOrEmpty
                         $result.Language | Should -BeNullOrEmpty
+                        $result.Sid | Should -BeNullOrEmpty
 
                         if ($MockLoginType -eq 'SqlLogin')
                         {
@@ -548,7 +552,7 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
         }
 
         Context 'When evaluating the login credentials for a SQL login' {
-            Context 'When the parmeter Disabled is set to True for a SQL login (if login fails the login credentials are not in desired state)' {
+            Context 'When the parameter Disabled is set to True for a SQL login (if login fails the login credentials are not in desired state)' {
                 BeforeAll {
                     Mock -CommandName Connect-SQL -MockWith {
                         $mockLoginFailedException = New-Object System.Exception 'Login failed'
@@ -586,7 +590,7 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
                 }
             }
 
-            Context 'When the parmeter Disabled is set to False for a SQL login (if login fails the login credentials are not in desired state)' {
+            Context 'When the parameter Disabled is set to False for a SQL login (if login fails the login credentials are not in desired state)' {
                 BeforeAll {
                     Mock -CommandName Connect-SQL -MockWith {
                         $mockLoginFailedException = New-Object System.Exception 'Login failed'
@@ -623,7 +627,7 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
                 }
             }
 
-            Context 'When the parmeter Disabled is set to True for a SQL login (and an unexpected exception is thrown)' {
+            Context 'When the parameter Disabled is set to True for a SQL login (and an unexpected exception is thrown)' {
                 BeforeAll {
                     Mock -CommandName Connect-SQL -MockWith {
                         $mockException = New-Object System.Exception 'Something went wrong'
@@ -1018,6 +1022,42 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
                         $Login.Name -eq 'SqlLogin1' -and $Login.Language -eq 'Français'
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When creating a new login of type SqlLogin and specifying a Sid' {
+                BeforeAll {
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'NoteProperty' -Name 'LoginMode' -Value 'Mixed' -PassThru |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
+                                # Mocks no existing logins.
+                                return @{}
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+                    Mock -CommandName New-SQLServerLogin
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd-12P@ssw0rd-12' -AsPlainText -Force
+
+                        $mockSetTargetResourceParameters.Name = 'SqlLogin1'
+                        $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
+                        $mockSetTargetResourceParameters.Sid = '0x17442048803848B58686603376A84216'
+                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+
+                        $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                        $Login.Name -eq 'SqlLogin1' -and @(Compare-Object $login.Sid ([byte[]] -split ( '0x17442048803848B58686603376A84216' -replace '^0x','' -replace '..', '0x$& ')) -SyncWindow 0).Length -eq 0
                     } -Exactly -Times 1 -Scope It
                 }
             }

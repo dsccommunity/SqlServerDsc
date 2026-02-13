@@ -15,4 +15,5 @@ class DSC_SqlLogin : OMI_BaseResource
     [Write, Description("Specifies if the login is disabled. Default value is `$false`.")] Boolean Disabled;
     [Write, Description("Specifies the default database name.")] String DefaultDatabase;
     [Write, Description("Specifies the default language.")] String Language;
+    [Write, Description("Specifies the security identifier (SID) for the login. Only applies to _SQL Logins_. The value should be a hexadecimal string (e.g. `'0x1234...'`).")] String Sid;
 };
