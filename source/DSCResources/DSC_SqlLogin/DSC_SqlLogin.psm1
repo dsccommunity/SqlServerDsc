@@ -72,6 +72,7 @@ function Get-TargetResource
         Disabled        = $login.IsDisabled
         DefaultDatabase = $login.DefaultDatabase
         Language        = $login.Language
+        Sid             = $login.Sid
     }
 
     if ($login.LoginType -eq 'SqlLogin')
@@ -124,6 +125,9 @@ function Get-TargetResource
 
     .PARAMETER Language
         Specifies the default language for the login.
+
+    .PARAMETER Sid
+        Specifies the login Sid.
 #>
 function Set-TargetResource
 {
@@ -187,7 +191,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        $Language
+        $Language,
+
+        [Parameter()]
+        [System.String]
+        $Sid
     )
 
     $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
@@ -272,7 +280,8 @@ function Set-TargetResource
                 }
 
                 if ( ( $PSBoundParameters.ContainsKey('DefaultDatabase') -and ($login.DefaultDatabase -ne $DefaultDatabase) ) -or
-                     ( $PSBoundParameters.ContainsKey('Language') -and $login.Language -ne $Language ) )
+                     ( $PSBoundParameters.ContainsKey('Language') -and ($login.Language -ne $Language) )
+                   )
                 {
                     if ( $PSBoundParameters.ContainsKey('DefaultDatabase') )
                     {
@@ -336,6 +345,11 @@ function Set-TargetResource
                             $LoginCreateOptions = [Microsoft.SqlServer.Management.Smo.LoginCreateOptions]::None
                         }
 
+                        if ( $PSBoundParameters.ContainsKey('Sid') )
+                        {
+                            $login.Sid = ([byte[]] -split ( $Sid -replace '^0x','' -replace '..', '0x$& '))
+                        }
+
                         New-SQLServerLogin -Login $login -LoginCreateOptions $LoginCreateOptions -SecureString $LoginCredential.Password -ErrorAction 'Stop'
                     }
 
@@ -356,7 +370,8 @@ function Set-TargetResource
                 }
 
                 if ( ( $PSBoundParameters.ContainsKey('DefaultDatabase') -and ($login.DefaultDatabase -ne $DefaultDatabase) ) -or
-                     ( $PSBoundParameters.ContainsKey('Language') -and $login.Language -ne $Language ) )
+                     ( $PSBoundParameters.ContainsKey('Language') -and ($login.Language -ne $Language) )
+                   )
                 {
                     # Set the default database if specified
                     if ( $PSBoundParameters.ContainsKey('DefaultDatabase') )
@@ -491,7 +506,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        $Language
+        $Language,
+
+        [Parameter()]
+        [System.String]
+        $Sid
     )
 
     Write-Verbose -Message (
@@ -563,6 +582,18 @@ function Test-TargetResource
             )
 
             $testPassed = $false
+        }
+
+        if ( $PSBoundParameters.ContainsKey('Sid') )
+        {
+            $InfoSid = '0x' + [System.BitConverter]::ToString($loginInfo.Sid).Replace('-', '')
+            if ( $InfoSid -ne $Sid )
+            {
+                Write-Verbose -Message (
+                    $script:localizedData.WrongSid -f $Name, $InfoSid, $Sid
+                )
+                $testPassed = $false
+            }
         }
 
         if ( $LoginType -eq 'SqlLogin' )
