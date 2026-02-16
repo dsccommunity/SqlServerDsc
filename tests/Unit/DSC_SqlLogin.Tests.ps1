@@ -543,6 +543,7 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
                         {
                             [byte[]] -split ('5283175DBF354E508FB7582940E87500' -replace '..', '0x$& ')
                         }
+                    }
                 }
             }
 
