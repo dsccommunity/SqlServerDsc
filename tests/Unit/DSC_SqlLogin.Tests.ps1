@@ -519,6 +519,10 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
                 MockPropertyName = 'LoginPasswordPolicyEnforced'
                 MockPropertyValue = $false
             }
+            @{
+                MockPropertyName = 'Sid'
+                MockPropertyValue = '0x5283175DBF354E508FB7582940E87500'
+            }
         ) {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
