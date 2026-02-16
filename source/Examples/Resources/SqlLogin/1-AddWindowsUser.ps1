@@ -1,7 +1,8 @@
 <#
     .DESCRIPTION
         This example shows how to ensure that the Windows user 'CONTOSO\WindowsUser',
-        Windows group 'CONTOSO\WindowsGroup', and the SQL Login 'SqlLogin' exists.
+        'CONTOSO\WindowsUser2', 'CONTOSO\WindowsUser3',
+        and Windows group 'CONTOSO\WindowsGroup' exists.
 #>
 
 Configuration Example
@@ -61,20 +62,6 @@ Configuration Example
             ServerName           = 'TestServer.company.local'
             InstanceName         = 'DSC'
             PsDscRunAsCredential = $SqlAdministratorCredential
-        }
-
-        SqlLogin 'Add_SqlLogin'
-        {
-            Ensure                         = 'Present'
-            Name                           = 'SqlLogin'
-            LoginType                      = 'SqlLogin'
-            ServerName                     = 'TestServer.company.local'
-            InstanceName                   = 'DSC'
-            LoginCredential                = $LoginCredential
-            LoginMustChangePassword        = $false
-            LoginPasswordExpirationEnabled = $true
-            LoginPasswordPolicyEnforced    = $true
-            PsDscRunAsCredential           = $SqlAdministratorCredential
         }
     }
 }

@@ -1,7 +1,7 @@
 <#
     .DESCRIPTION
-        This example shows how to ensure that the Windows user 'CONTOSO\WindowsUser',
-        Windows group 'CONTOSO\WindowsGroup', and the SQL Login 'SqlLogin' exists.
+        This example shows how to ensure that the SQL logins 'SqlLogin' and
+       'SqlLogin2' exist, where 'SqlLogin2' is created with an explicit SID.
 #>
 
 Configuration Example
