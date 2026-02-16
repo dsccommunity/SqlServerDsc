@@ -117,7 +117,7 @@ Describe 'SqlLogin\Get-TargetResource' -Tag 'Get' {
                                     Add-Member -MemberType NoteProperty -Name 'LoginType' -Value $MockLoginType -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'DefaultDatabase' -Value 'master' -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'Language' -Value 'us_english' -PassThru |
-                                    Add-Member -MemberType NoteProperty -Name 'Sid' -Value ([byte[]] -split ('0xB76150A66B38F64FAE9470091789AA66' -replace '^0x','' -replace '..', '0x$& ')) -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'Sid' -Value ([byte[]] -split ('B76150A66B38F64FAE9470091789AA66' -replace '..', '0x$& ')) -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'IsDisabled' -Value $true -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'MustChangePassword' -Value $true -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'PasswordExpirationEnabled' -Value $true -PassThru |
@@ -148,7 +148,7 @@ Describe 'SqlLogin\Get-TargetResource' -Tag 'Get' {
                         $result.Disabled | Should -BeTrue
                         $result.DefaultDatabase | Should -Be 'master'
                         $result.Language | Should -Be 'us_english'
-                        $result.Sid | Should -Be ([byte[]] -split ('0xB76150A66B38F64FAE9470091789AA66' -replace '^0x','' -replace '..', '0x$& '))
+                        $result.Sid | Should -Be ([byte[]] -split ('B76150A66B38F64FAE9470091789AA66' -replace '..', '0x$& '))
 
                         if ($MockLoginType -eq 'SqlLogin')
                         {
@@ -886,7 +886,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.Name = 'SqlLogin1'
                         $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
                         $mockSetTargetResourceParameters.LoginMustChangePassword = $true
-                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockSetTargetResourceParameters.Name, $mockPassword)
 
                         $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
@@ -934,7 +934,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.Name = 'SqlLogin1'
                         $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
                         $mockSetTargetResourceParameters.LoginMustChangePassword = $false
-                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockSetTargetResourceParameters.Name, $mockPassword)
 
                         $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
@@ -978,7 +978,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.Name = 'SqlLogin1'
                         $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
                         $mockSetTargetResourceParameters.DefaultDatabase = 'NewDatabase'
-                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockSetTargetResourceParameters.Name, $mockPassword)
 
                         $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
@@ -1014,7 +1014,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.Name = 'SqlLogin1'
                         $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
                         $mockSetTargetResourceParameters.Language = 'Français'
-                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockSetTargetResourceParameters.Name, $mockPassword)
 
                         $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
@@ -1050,7 +1050,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.Name = 'SqlLogin1'
                         $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
                         $mockSetTargetResourceParameters.Sid = '0x17442048803848B58686603376A84216'
-                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockSetTargetResourceParameters.Name, $mockPassword)
 
                         $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }
@@ -1107,7 +1107,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.Name = 'SqlLogin1'
                         $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
                         $mockSetTargetResourceParameters.Disabled = $true
-                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockSetTargetResourceParameters.Name, $mockPassword)
 
                         $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
@@ -1144,7 +1144,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
 
                         $mockSetTargetResourceParameters.Name = 'SqlLogin1'
                         $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
-                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockSetTargetResourceParameters.Name, $mockPassword)
 
                         $mockErrorMessage = $script:localizedData.IncorrectLoginMode -f 'localhost', 'MSSQLSERVER', 'Integrated'
 
@@ -1615,7 +1615,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
 
                         $mockSetTargetResourceParameters.Name = 'SqlLogin1'
                         $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
-                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockSetTargetResourceParameters.Name, $mockPassword)
 
                         $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
                     }

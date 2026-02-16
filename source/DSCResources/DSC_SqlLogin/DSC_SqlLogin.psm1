@@ -586,13 +586,19 @@ function Test-TargetResource
 
         if ( $PSBoundParameters.ContainsKey('Sid') )
         {
-            $infoSid = '0x' + [System.BitConverter]::ToString($loginInfo.Sid).Replace('-', '')
-            if ( $infoSid -ne $Sid )
+            if ($null -eq $loginInfo.Sid)
             {
-                Write-Verbose -Message (
-                    $script:localizedData.WrongSid -f $Name, $infoSid, $Sid
-                )
                 $testPassed = $false
+            }
+            else {
+                $infoSid = '0x' + [System.BitConverter]::ToString($loginInfo.Sid).Replace('-', '')
+                if ( $infoSid -ne $Sid )
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.WrongSid -f $Name, $infoSid, $Sid
+                    )
+                    $testPassed = $false
+                }
             }
         }
 
