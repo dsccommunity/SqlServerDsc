@@ -443,6 +443,9 @@ function Set-TargetResource
 
     .PARAMETER Language
         Specifies the default language for the login.
+
+    .PARAMETER Sid
+        Specifies the login Sid.
 #>
 function Test-TargetResource
 {
@@ -590,7 +593,8 @@ function Test-TargetResource
             {
                 $testPassed = $false
             }
-            else {
+            else
+            {
                 $infoSid = '0x' + [System.BitConverter]::ToString($loginInfo.Sid).Replace('-', '')
                 if ( $infoSid -ne $Sid )
                 {

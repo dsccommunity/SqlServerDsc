@@ -202,7 +202,7 @@ Describe 'SqlLogin\Get-TargetResource' -Tag 'Get' {
                                     Add-Member -MemberType NoteProperty -Name 'LoginType' -Value 'SqlLogin' -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'DefaultDatabase' -Value 'master' -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'Language' -Value 'us_english' -PassThru |
-                                    Add-Member -MemberType NoteProperty -Name 'Sid' -Value ([byte[]] -split ('0xB76150A66B38F64FAE9470091789AA66' -replace '^0x','' -replace '..', '0x$& ')) -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'Sid' -Value ([byte[]] -split ('B76150A66B38F64FAE9470091789AA66' -replace '..', '0x$& ')) -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'IsDisabled' -Value $true -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'MustChangePassword' -Value $true -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'PasswordExpirationEnabled' -Value $true -PassThru |
@@ -534,7 +534,15 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
                         #>
                         LoginPasswordPolicyEnforced = -not $MockPropertyValue
                         LoginPasswordExpirationEnabled = -not $MockPropertyValue
-                    }
+                        Sid = if ($MockPropertyName -eq 'Sid')
+                        {
+                            # Switch the value of the Sid property to be different than the one specified in the call to Test-TargetResource.
+                            [byte[]] -split ('B76150A66B38F64FAE9470091789AA66' -replace '..', '0x$& ')
+                        }
+                        else
+                        {
+                            [byte[]] -split ('5283175DBF354E508FB7582940E87500' -replace '..', '0x$& ')
+                        }
                 }
             }
 
@@ -1061,7 +1069,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
 
                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                     Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
-                        $Login.Name -eq 'SqlLogin1' -and @(Compare-Object $login.Sid ([byte[]] -split ( '0x17442048803848B58686603376A84216' -replace '^0x','' -replace '..', '0x$& ')) -SyncWindow 0).Length -eq 0
+                        $Login.Name -eq 'SqlLogin1' -and @(Compare-Object $login.Sid ([byte[]] -split ( '17442048803848B58686603376A84216' -replace '..', '0x$& ')) -SyncWindow 0).Length -eq 0
                     } -Exactly -Times 1 -Scope It
                 }
             }
