@@ -11,11 +11,7 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        $SqlAdministratorCredential,
-
-        [Parameter(Mandatory = $true)]
-        [System.Management.Automation.PSCredential]
-        $LoginCredential
+        $SqlAdministratorCredential
     )
 
     Import-DscResource -ModuleName 'SqlServerDsc'

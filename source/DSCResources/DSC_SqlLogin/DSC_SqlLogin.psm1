@@ -127,7 +127,7 @@ function Get-TargetResource
         Specifies the default language for the login.
 
     .PARAMETER Sid
-        Specifies the login Sid.
+        Specifies the security identifier (SID) for the login. Only applies to SQL Logins. The value should be a hexadecimal string (e.g. '0x1234...').
 #>
 function Set-TargetResource
 {
@@ -194,6 +194,7 @@ function Set-TargetResource
         $Language,
 
         [Parameter()]
+        [ValidatePattern('^0x([0-9A-Fa-f]{2})+$')]
         [System.String]
         $Sid
     )
@@ -445,7 +446,7 @@ function Set-TargetResource
         Specifies the default language for the login.
 
     .PARAMETER Sid
-        Specifies the login Sid.
+        Specifies the security identifier (SID) for the login. Only applies to SQL Logins. The value should be a hexadecimal string (e.g. '0x1234...').
 #>
 function Test-TargetResource
 {
@@ -512,6 +513,7 @@ function Test-TargetResource
         $Language,
 
         [Parameter()]
+        [ValidatePattern('^0x([0-9A-Fa-f]{2})+$')]
         [System.String]
         $Sid
     )
@@ -591,6 +593,9 @@ function Test-TargetResource
         {
             if ($null -eq $loginInfo.Sid)
             {
+                Write-Verbose -Message (
+                    $script:localizedData.WrongSid -f $Name, $null, $Sid
+                )
                 $testPassed = $false
             }
             else
