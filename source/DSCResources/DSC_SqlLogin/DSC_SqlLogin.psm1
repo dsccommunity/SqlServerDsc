@@ -589,28 +589,6 @@ function Test-TargetResource
             $testPassed = $false
         }
 
-        if ( $PSBoundParameters.ContainsKey('Sid') )
-        {
-            if ($null -eq $loginInfo.Sid)
-            {
-                Write-Verbose -Message (
-                    $script:localizedData.WrongSid -f $Name, $null, $Sid
-                )
-                $testPassed = $false
-            }
-            else
-            {
-                $infoSid = '0x' + [System.BitConverter]::ToString($loginInfo.Sid).Replace('-', '')
-                if ( $infoSid -ne $Sid )
-                {
-                    Write-Verbose -Message (
-                        $script:localizedData.WrongSid -f $Name, $infoSid, $Sid
-                    )
-                    $testPassed = $false
-                }
-            }
-        }
-
         if ( $LoginType -eq 'SqlLogin' )
         {
             if ( $PSBoundParameters.ContainsKey('LoginPasswordExpirationEnabled') -and $LoginPasswordExpirationEnabled -ne $loginInfo.LoginPasswordExpirationEnabled )

@@ -20,7 +20,6 @@ ConvertFrom-StringData @'
     ExpectedEnabled = Expected the login '{0}' to be enabled, but it is disabled.
     WrongDefaultDatabase = The login '{0}' has the default database '{1}', but expected it to have the default database '{2}'.
     WrongLanguage = The login '{0}' has the default language '{1}', but expected it to have the default language '{2}'.
-    WrongSid = The login '{0}' has the Sid '{1}', but expected it to have the Sid '{2}'.
     ExpectedLoginPasswordExpirationDisabled = The login '{0}' has the password expiration enabled, but expected it to be disabled.
     ExpectedLoginPasswordExpirationEnabled = The login '{0}' has the password expiration disabled, but expected it to be enabled.
     ExpectedLoginPasswordPolicyEnforcedDisabled = The login '{0}' has the password policy enforced enabled, but expected it to be disabled.
