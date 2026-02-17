@@ -534,15 +534,45 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
                         #>
                         LoginPasswordPolicyEnforced = -not $MockPropertyValue
                         LoginPasswordExpirationEnabled = -not $MockPropertyValue
-                        Sid = if ($MockPropertyName -eq 'Sid')
-                        {
-                            # Switch the value of the Sid property to be different than the one specified in the call to Test-TargetResource.
-                            [byte[]] -split ('B76150A66B38F64FAE9470091789AA66' -replace '..', '0x$& ')
-                        }
-                        else
-                        {
-                            [byte[]] -split ('5283175DBF354E508FB7582940E87500' -replace '..', '0x$& ')
-                        }
+                        Sid = [byte[]] -split ('B76150A66B38F64FAE9470091789AA66' -replace '..', '0x$& ')
+                    }
+                }
+            }
+
+            It 'Should return $false' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.Name = 'Login1'
+                    $mockTestTargetResourceParameters.LoginType = 'SqlLogin'
+                    $mockTestTargetResourceParameters.$MockPropertyName = $MockPropertyValue
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeFalse
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When the property Sid is set for a SQL login is not in desired state' -ForEach @(
+            @{
+                MockPropertyName = 'Sid'
+                MockPropertyValue = '0x5283175DBF354E508FB7582940E87500'
+            }
+        ) {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                        <#
+                            Switch the value of the property to the opposite of what
+                            will be specified in the call to Test-TargetResource.
+                        #>
+                        LoginPasswordPolicyEnforced = -not $MockPropertyValue
+                        LoginPasswordExpirationEnabled = -not $MockPropertyValue
+                        Sid = $null
                     }
                 }
             }
