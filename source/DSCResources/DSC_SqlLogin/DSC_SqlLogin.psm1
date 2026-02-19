@@ -72,6 +72,7 @@ function Get-TargetResource
         Disabled        = $login.IsDisabled
         DefaultDatabase = $login.DefaultDatabase
         Language        = $login.Language
+        Sid             = $login.Sid
     }
 
     if ($login.LoginType -eq 'SqlLogin')
@@ -124,6 +125,9 @@ function Get-TargetResource
 
     .PARAMETER Language
         Specifies the default language for the login.
+
+    .PARAMETER Sid
+        Specifies the security identifier (SID) for the login. Only applies to SQL Logins. The value should be a hexadecimal string (e.g. '0x1234...').
 #>
 function Set-TargetResource
 {
@@ -187,7 +191,12 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        $Language
+        $Language,
+
+        [Parameter()]
+        [ValidatePattern('^0x([0-9A-Fa-f]{2})+$')]
+        [System.String]
+        $Sid
     )
 
     $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
@@ -272,7 +281,8 @@ function Set-TargetResource
                 }
 
                 if ( ( $PSBoundParameters.ContainsKey('DefaultDatabase') -and ($login.DefaultDatabase -ne $DefaultDatabase) ) -or
-                     ( $PSBoundParameters.ContainsKey('Language') -and $login.Language -ne $Language ) )
+                     ( $PSBoundParameters.ContainsKey('Language') -and ($login.Language -ne $Language) )
+                   )
                 {
                     if ( $PSBoundParameters.ContainsKey('DefaultDatabase') )
                     {
@@ -336,6 +346,11 @@ function Set-TargetResource
                             $LoginCreateOptions = [Microsoft.SqlServer.Management.Smo.LoginCreateOptions]::None
                         }
 
+                        if ( $PSBoundParameters.ContainsKey('Sid') )
+                        {
+                            $login.Sid = ([byte[]] -split ( $Sid -replace '^0x', '' -replace '..', '0x$& '))
+                        }
+
                         New-SQLServerLogin -Login $login -LoginCreateOptions $LoginCreateOptions -SecureString $LoginCredential.Password -ErrorAction 'Stop'
                     }
 
@@ -356,7 +371,8 @@ function Set-TargetResource
                 }
 
                 if ( ( $PSBoundParameters.ContainsKey('DefaultDatabase') -and ($login.DefaultDatabase -ne $DefaultDatabase) ) -or
-                     ( $PSBoundParameters.ContainsKey('Language') -and $login.Language -ne $Language ) )
+                     ( $PSBoundParameters.ContainsKey('Language') -and ($login.Language -ne $Language) )
+                   )
                 {
                     # Set the default database if specified
                     if ( $PSBoundParameters.ContainsKey('DefaultDatabase') )
@@ -428,6 +444,11 @@ function Set-TargetResource
 
     .PARAMETER Language
         Specifies the default language for the login.
+
+    .PARAMETER Sid
+        Specifies the security identifier (SID) for the login. Only applies to SQL Logins. The value should be a hexadecimal string (e.g. '0x1234...').
+
+        Not currently used in Test-TargetResource to enforce Sid.
 #>
 function Test-TargetResource
 {
@@ -491,7 +512,12 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        $Language
+        $Language,
+
+        [Parameter()]
+        [ValidatePattern('^0x([0-9A-Fa-f]{2})+$')]
+        [System.String]
+        $Sid
     )
 
     Write-Verbose -Message (

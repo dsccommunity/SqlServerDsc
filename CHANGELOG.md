@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlScript
   - Added integration test configuration that creates script files and executes
     the resource in a single configuration using `DependsOn`.
+- SqlLogin
+  - Added parameter `Sid` to allow setting the sid of the new login. ([issue #1470](https://github.com/dsccommunity/SqlServerDsc/issues/1470))
 
 ## [17.5.1] - 2026-02-05
 
