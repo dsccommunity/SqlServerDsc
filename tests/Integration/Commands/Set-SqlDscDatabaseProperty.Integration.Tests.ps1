@@ -193,7 +193,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
             $updatedDb.RecoveryModel | Should -Be 'BulkLogged'
         }
 
-        It 'Should set compatibility level successfully when passing database object down pipeline' {
+        It 'Should set compatibility level successfully using pipeline database object' {
             # Use Version140 which is supported on all tested versions (SQL 2017+)
             $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
             $databaseObject | Set-SqlDscDatabaseProperty -CompatibilityLevel 'Version140' -Force -ErrorAction 'Stop'
@@ -203,7 +203,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
             $updatedDb140.CompatibilityLevel | Should -Be 'Version140'
         }
 
-        It 'Should change compatibility level successfully when passing database object down pipeline' {
+        It 'Should change compatibility level successfully using pipeline database object' {
             $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
             $databaseObject | Set-SqlDscDatabaseProperty -CompatibilityLevel 'Version130' -Force -ErrorAction 'Stop'
 
