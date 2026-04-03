@@ -192,6 +192,30 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
             $updatedDb.RecoveryModel | Should -Be 'BulkLogged'
         }
+
+        It 'Should set compatibility level successfully when passing database object down pipeline' {
+            # Use Version140 which is supported on all tested versions (SQL 2017+)
+            $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
+            $databaseObject | Set-SqlDscDatabaseProperty -CompatibilityLevel 'Version140' -Force -ErrorAction 'Stop'
+
+            # Verify the change
+            $updatedDb140 = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
+            $updatedDb140.CompatibilityLevel | Should -Be 'Version140'
+        }
+
+        It 'Should change compatibility level successfully when passing database object down pipeline' {
+            $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
+            $databaseObject | Set-SqlDscDatabaseProperty -CompatibilityLevel 'Version130' -Force -ErrorAction 'Stop'
+
+            # Verify Version130 is set
+            $updatedDb140 = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
+            $updatedDb140.CompatibilityLevel | Should -Be 'Version130'
+
+            # Change to Version140 which is supported on all tested versions (SQL 2017+)
+            $databaseObject | Set-SqlDscDatabaseProperty -CompatibilityLevel 'Version140' -Force -ErrorAction 'Stop'
+            $updatedDb160 = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
+            $updatedDb160.CompatibilityLevel | Should -Be 'Version140'
+        }
     }
 
     Context 'When using the Refresh parameter' {

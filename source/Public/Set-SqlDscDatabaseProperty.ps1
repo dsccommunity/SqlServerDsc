@@ -676,15 +676,36 @@ function Set-SqlDscDatabaseProperty
         {
             $ConfirmPreference = 'None'
         }
+    }
 
-        # Get the server object based on parameter set
-        $serverInstance = if ($PSCmdlet.ParameterSetName -eq 'DatabaseObjectSet')
+    process
+    {
+        # Get the database object based on the parameter set
+        switch ($PSCmdlet.ParameterSetName)
         {
-            $DatabaseObject.Parent
-        }
-        else
-        {
-            $ServerObject
+            'ServerObjectSet'
+            {
+                Write-Verbose -Message ($script:localizedData.Database_Set -f $Name, $ServerObject.InstanceName)
+
+                $previousErrorActionPreference = $ErrorActionPreference
+                $ErrorActionPreference = 'Stop'
+
+                $serverInstance = $ServerObject
+
+                $sqlDatabaseObject = $ServerObject |
+                    Get-SqlDscDatabase -Name $Name -Refresh:$Refresh -ErrorAction 'Stop'
+
+                $ErrorActionPreference = $previousErrorActionPreference
+            }
+
+            'DatabaseObjectSet'
+            {
+                Write-Verbose -Message ($script:localizedData.Database_Set -f $DatabaseObject.Name, $DatabaseObject.Parent.InstanceName)
+
+                $serverInstance = $DatabaseObject.Parent
+
+                $sqlDatabaseObject = $DatabaseObject
+            }
         }
 
         # Validate compatibility level if specified
@@ -722,33 +743,6 @@ function Set-SqlDscDatabaseProperty
                         $Collation
                     )
                 )
-            }
-        }
-    }
-
-    process
-    {
-        # Get the database object based on the parameter set
-        switch ($PSCmdlet.ParameterSetName)
-        {
-            'ServerObjectSet'
-            {
-                Write-Verbose -Message ($script:localizedData.Database_Set -f $Name, $ServerObject.InstanceName)
-
-                $previousErrorActionPreference = $ErrorActionPreference
-                $ErrorActionPreference = 'Stop'
-
-                $sqlDatabaseObject = $ServerObject |
-                    Get-SqlDscDatabase -Name $Name -Refresh:$Refresh -ErrorAction 'Stop'
-
-                $ErrorActionPreference = $previousErrorActionPreference
-            }
-
-            'DatabaseObjectSet'
-            {
-                Write-Verbose -Message ($script:localizedData.Database_Set -f $DatabaseObject.Name, $DatabaseObject.Parent.InstanceName)
-
-                $sqlDatabaseObject = $DatabaseObject
             }
         }
 

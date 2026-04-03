@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed `Test-TargetResource` to return `$false` (instead of throwing) when
     the SQL script file is missing, enabling `DependsOn` scenarios where the file
     is created at runtime.
+- SqlDatabase
+  - Fixed logic in `Set-SqlDscDatabaseProperty` so pipeline input is properly
+    handled in the cmdlet's `Process` block. ([issue #2456](https://github.com/dsccommunity/SqlServerDsc/issues/2456))
 
 ### Changed
 
