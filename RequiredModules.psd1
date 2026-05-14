@@ -75,4 +75,12 @@
 
     # For development
     'Viscalyx.Common'              = 'latest' # Invoke-PesterJob to run tests
+
+    # For producing Microsoft DSC resource manifests
+    'DscResource.Authoring' = @{
+        Version    = 'latest'
+        Parameters = @{
+            AllowPrerelease = $true
+        }
+    }
 }
