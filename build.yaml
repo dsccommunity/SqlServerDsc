@@ -12,6 +12,7 @@ BuildWorkflow:
     - Build_Module_ModuleBuilder
     - Build_NestedModules_ModuleBuilder
     - Create_Changelog_Release_Output
+    - Create_DscResourceManifestsList
 
   docs:
     - Clean_WikiContent_Folder
@@ -84,6 +85,8 @@ ModuleBuildTasks:
     - 'Task.*'
   DscResource.Test:
     - 'Task.*'
+  DscResource.Authoring:
+    - '*.ib.tasks'
 
 TaskHeader: |
   param($Path)
