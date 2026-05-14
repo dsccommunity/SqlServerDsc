@@ -12,7 +12,7 @@ BuildWorkflow:
     - Build_Module_ModuleBuilder
     - Build_NestedModules_ModuleBuilder
     - Create_Changelog_Release_Output
-    - Create_DscResourceManifestsList
+    - Create_DscAdaptedResourceManifests
 
   docs:
     - Clean_WikiContent_Folder
