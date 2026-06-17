@@ -86,7 +86,7 @@ ModuleBuildTasks:
   DscResource.Test:
     - 'Task.*'
   DscResource.Authoring:
-    - '*.ib.tasks'
+    - 'Task.*'
 
 TaskHeader: |
   param($Path)
