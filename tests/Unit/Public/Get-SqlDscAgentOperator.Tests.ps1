@@ -154,7 +154,7 @@ Describe 'Get-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should return null when operator does not exist' {
             $result = Get-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'NonExistentOperator'
 
-            $result | Should -BeNull
+            $result | Should -BeNullOrEmpty
         }
     }
 

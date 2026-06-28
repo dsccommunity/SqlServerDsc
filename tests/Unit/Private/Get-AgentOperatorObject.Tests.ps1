@@ -93,7 +93,7 @@ Describe 'Get-AgentOperatorObject' -Tag 'Private' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'NonExistentOperator' -ErrorAction 'SilentlyContinue'
-                $result | Should -BeNull
+                $result | Should -BeNullOrEmpty
             }
         }
 

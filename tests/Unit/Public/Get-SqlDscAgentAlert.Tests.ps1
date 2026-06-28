@@ -148,7 +148,7 @@ Describe 'Get-SqlDscAgentAlert' -Tag 'Public' {
         It 'Should return null when alert does not exist' {
             $result = Get-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'NonExistentAlert'
 
-            $result | Should -BeNull
+            $result | Should -BeNullOrEmpty
         }
     }
 

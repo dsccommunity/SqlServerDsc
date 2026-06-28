@@ -94,7 +94,7 @@ END
     It 'Should return null for non-existent alert' {
         $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'NonExistentAlert'
 
-        $alert | Should -BeNull
+        $alert | Should -BeNullOrEmpty
     }
 
     It 'Should get alert with message ID' {

@@ -82,7 +82,7 @@ Describe 'Get-AgentAlertObject' -Tag 'Private' {
             InModuleScope -ScriptBlock {
                 $result = Get-AgentAlertObject -ServerObject $script:mockServerObject -Name 'NonExistentAlert'
 
-                $result | Should -BeNull
+                $result | Should -BeNullOrEmpty
             }
         }
     }
@@ -107,7 +107,7 @@ Describe 'Get-AgentAlertObject' -Tag 'Private' {
             InModuleScope -ScriptBlock {
                 $result = Get-AgentAlertObject -ServerObject $script:mockEmptyServerObject -Name 'TestAlert'
 
-                $result | Should -BeNull
+                $result | Should -BeNullOrEmpty
             }
         }
     }
