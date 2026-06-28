@@ -36,12 +36,14 @@ BeforeAll {
     Add-Type -Path "$PSScriptRoot/../Stubs/SMO.cs"
 
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:dscModuleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'Env:\SqlServerDscCI' -ErrorAction 'SilentlyContinue'
 }
@@ -317,7 +319,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
             # This should not throw, but should generate an error record via Write-Error
             Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 4 -Confirm:$false -ErrorAction SilentlyContinue
 
-            # Should -Invoke doesn't always work with Write-Error, so check error was generated another way
+            # Should-Invoke doesn't always work with Write-Error, so check error was generated another way
             Should-Invoke -CommandName Write-Error -Exactly -Times 1
         }
 

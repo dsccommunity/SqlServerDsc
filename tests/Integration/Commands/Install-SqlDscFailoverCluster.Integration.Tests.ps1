@@ -30,11 +30,13 @@ BeforeAll {
     # PowerShell class types to get new identities, breaking type comparisons.
     Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:dscModuleName
 }
 
 AfterAll {
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 }
 
 Describe 'Install-SqlDscFailoverCluster Integration Tests' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025') {

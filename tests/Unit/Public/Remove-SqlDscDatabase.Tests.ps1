@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:dscModuleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -147,7 +149,7 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
                 $mockParent | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
                 return $mockParent
             } -Force
-            
+
             $script:alterCalled = $false
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
                 $script:alterCalled = $true
@@ -155,7 +157,7 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
                     throw 'UserAccess should be set to Single before calling Alter'
                 }
             } -Force
-            
+
             $mockDatabaseObject | Add-Member -MemberType 'ScriptMethod' -Name 'Drop' -Value {
                 if (-not $script:alterCalled) {
                     throw 'Alter should be called before Drop when DropConnections is specified'
@@ -176,9 +178,9 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
         It 'Should drop all active connections before removing database with ServerObject' {
             $script:alterCalled = $false
             $mockDatabaseObject.UserAccess = 'Multiple'
-            
+
             $null = Remove-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -DropConnections -Force
-            
+
             $script:alterCalled | Should-BeTrue
             $mockDatabaseObject.UserAccess | Should-Be 'Single'
         }
@@ -186,9 +188,9 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
         It 'Should drop all active connections before removing database with DatabaseObject' {
             $script:alterCalled = $false
             $mockDatabaseObject.UserAccess = 'Multiple'
-            
+
             $null = Remove-SqlDscDatabase -DatabaseObject $mockDatabaseObject -DropConnections -Force
-            
+
             $script:alterCalled | Should-BeTrue
             $mockDatabaseObject.UserAccess | Should-Be 'Single'
         }

@@ -35,7 +35,8 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:dscModuleName
 
     # Set the environment variable for CI to suppress SMO warnings
     $env:SqlServerDscCI = $true
@@ -44,7 +45,8 @@ BeforeAll {
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     # Remove the environment variable for CI
     Remove-Item -Path 'env:SqlServerDscCI' -ErrorAction 'SilentlyContinue'
