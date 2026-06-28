@@ -207,10 +207,9 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
 
         It 'Should return the correct service instance' {
             $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -ErrorAction 'Stop'
-            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly $mockExpectedDatabaseEngineServer
+            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should-BeString -CaseSensitive $mockExpectedDatabaseEngineServer
 
-            Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
-                -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+            Should-Invoke -CommandName New-Object -Exactly -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter -Scope It -Times 1
         }
     }
 
@@ -230,13 +229,12 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
 
         It 'Should return the correct service instance' {
             $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -SetupCredential $mockSqlCredential -LoginType 'SqlLogin' -ErrorAction 'Stop'
-            $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -BeFalse
-            $databaseEngineServerObject.ConnectionContext.Login | Should -Be $mockSqlCredentialUserName
-            $databaseEngineServerObject.ConnectionContext.SecurePassword | Should -Be $mockSqlCredentialSecurePassword
-            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly $mockExpectedDatabaseEngineServer
+            $databaseEngineServerObject.ConnectionContext.LoginSecure | Should-BeFalse
+            $databaseEngineServerObject.ConnectionContext.Login | Should-Be $mockSqlCredentialUserName
+            $databaseEngineServerObject.ConnectionContext.SecurePassword | Should-Be $mockSqlCredentialSecurePassword
+            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should-BeString -CaseSensitive $mockExpectedDatabaseEngineServer
 
-            Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
-                -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+            Should-Invoke -CommandName New-Object -Exactly -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter -Scope It -Times 1
         }
     }
 
@@ -256,10 +254,9 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
 
         It 'Should return the correct service instance' {
             $databaseEngineServerObject = Connect-SQL -InstanceName $mockExpectedDatabaseEngineInstance -ErrorAction 'Stop'
-            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
+            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should-BeString -CaseSensitive "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
 
-            Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
-                -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+            Should-Invoke -CommandName New-Object -Exactly -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter -Scope It -Times 1
         }
     }
 
@@ -279,13 +276,12 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
 
         It 'Should return the correct service instance' {
             $databaseEngineServerObject = Connect-SQL -InstanceName $mockExpectedDatabaseEngineInstance -SetupCredential $mockSqlCredential -LoginType 'SqlLogin' -ErrorAction 'Stop'
-            $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -BeFalse
-            $databaseEngineServerObject.ConnectionContext.Login | Should -Be $mockSqlCredentialUserName
-            $databaseEngineServerObject.ConnectionContext.SecurePassword | Should -Be $mockSqlCredentialSecurePassword
-            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
+            $databaseEngineServerObject.ConnectionContext.LoginSecure | Should-BeFalse
+            $databaseEngineServerObject.ConnectionContext.Login | Should-Be $mockSqlCredentialUserName
+            $databaseEngineServerObject.ConnectionContext.SecurePassword | Should-Be $mockSqlCredentialSecurePassword
+            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should-BeString -CaseSensitive "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
 
-            Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
-                -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+            Should-Invoke -CommandName New-Object -Exactly -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter -Scope It -Times 1
         }
     }
 
@@ -305,10 +301,9 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
 
         It 'Should return the correct service instance' {
             $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -InstanceName $mockExpectedDatabaseEngineInstance -ErrorAction 'Stop'
-            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
+            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should-BeString -CaseSensitive "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
 
-            Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
-                -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+            Should-Invoke -CommandName New-Object -Exactly -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter -Scope It -Times 1
         }
     }
 
@@ -336,15 +331,14 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
 
             It 'Should return the correct service instance' {
                 $databaseEngineServerObject = Connect-SQL @testParameters -ErrorAction 'Stop'
-                $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
-                $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -BeTrue
-                $databaseEngineServerObject.ConnectionContext.ConnectAsUserPassword | Should -BeExactly $mockWinCredential.GetNetworkCredential().Password
-                $databaseEngineServerObject.ConnectionContext.ConnectAsUserName | Should -BeExactly $mockWinCredential.UserName
-                $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -BeTrue
-                $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -BeTrue
+                $databaseEngineServerObject.ConnectionContext.ServerInstance | Should-BeString -CaseSensitive "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
+                $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should-BeTrue
+                $databaseEngineServerObject.ConnectionContext.ConnectAsUserPassword | Should-BeString -CaseSensitive $mockWinCredential.GetNetworkCredential().Password
+                $databaseEngineServerObject.ConnectionContext.ConnectAsUserName | Should-BeString -CaseSensitive $mockWinCredential.UserName
+                $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should-BeTrue
+                $databaseEngineServerObject.ConnectionContext.LoginSecure | Should-BeTrue
 
-                Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
-                    -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+                Should-Invoke -CommandName New-Object -Exactly -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter -Scope It -Times 1
             }
         }
 
@@ -361,15 +355,14 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
 
                 It 'Should return the correct service instance' {
                     $databaseEngineServerObject = Connect-SQL @testParameters -ErrorAction 'Stop'
-                    $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
-                    $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -BeTrue
-                    $databaseEngineServerObject.ConnectionContext.ConnectAsUserPassword | Should -BeExactly $mockWinCredential.GetNetworkCredential().Password
-                    $databaseEngineServerObject.ConnectionContext.ConnectAsUserName | Should -BeExactly $mockWinCredential.UserName
-                    $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -BeTrue
-                    $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -BeTrue
+                    $databaseEngineServerObject.ConnectionContext.ServerInstance | Should-BeString -CaseSensitive "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
+                    $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should-BeTrue
+                    $databaseEngineServerObject.ConnectionContext.ConnectAsUserPassword | Should-BeString -CaseSensitive $mockWinCredential.GetNetworkCredential().Password
+                    $databaseEngineServerObject.ConnectionContext.ConnectAsUserName | Should-BeString -CaseSensitive $mockWinCredential.UserName
+                    $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should-BeTrue
+                    $databaseEngineServerObject.ConnectionContext.LoginSecure | Should-BeTrue
 
-                    Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
-                        -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+                    Should-Invoke -CommandName New-Object -Exactly -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter -Scope It -Times 1
                 }
             }
 
@@ -385,15 +378,14 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
 
                 It 'Should return the correct service instance' {
                     $databaseEngineServerObject = Connect-SQL @testParameters -ErrorAction 'Stop'
-                    $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
-                    $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -BeTrue
-                    $databaseEngineServerObject.ConnectionContext.ConnectAsUserPassword | Should -BeExactly $mockWinFqdnCredential.GetNetworkCredential().Password
-                    $databaseEngineServerObject.ConnectionContext.ConnectAsUserName | Should -BeExactly $mockWinFqdnCredential.UserName
-                    $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -BeTrue
-                    $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -BeTrue
+                    $databaseEngineServerObject.ConnectionContext.ServerInstance | Should-BeString -CaseSensitive "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
+                    $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should-BeTrue
+                    $databaseEngineServerObject.ConnectionContext.ConnectAsUserPassword | Should-BeString -CaseSensitive $mockWinFqdnCredential.GetNetworkCredential().Password
+                    $databaseEngineServerObject.ConnectionContext.ConnectAsUserName | Should-BeString -CaseSensitive $mockWinFqdnCredential.UserName
+                    $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should-BeTrue
+                    $databaseEngineServerObject.ConnectionContext.LoginSecure | Should-BeTrue
 
-                    Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
-                        -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+                    Should-Invoke -CommandName New-Object -Exactly -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter -Scope It -Times 1
                 }
             }
         }
@@ -415,10 +407,9 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
         # Skipping on Linux and macOS because they do not support Windows Authentication.
         It 'Should return the correct service instance' -Skip:($IsLinux -or $IsMacOS) {
             $databaseEngineServerObject = Connect-SQL -Encrypt -ServerName $mockExpectedDatabaseEngineServer -InstanceName $mockExpectedDatabaseEngineInstance -ErrorAction 'Stop'
-            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
+            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should-BeString -CaseSensitive "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
 
-            Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
-                -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+            Should-Invoke -CommandName New-Object -Exactly -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter -Scope It -Times 1
         }
     }
 
@@ -472,13 +463,13 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
         # Skipping on Linux and macOS because they do not support Windows Authentication.
         It 'Should format the connection string with tcp protocol prefix for default instance' -Skip:($IsLinux -or $IsMacOS) {
             $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -Protocol 'tcp' -ErrorAction 'Stop'
-            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "tcp:$mockExpectedDatabaseEngineServer"
+            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should-BeString -CaseSensitive "tcp:$mockExpectedDatabaseEngineServer"
         }
 
         # Skipping on Linux and macOS because they do not support Windows Authentication.
         It 'Should format the connection string with tcp protocol prefix for named instance' -Skip:($IsLinux -or $IsMacOS) {
             $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -InstanceName 'MyInstance' -Protocol 'tcp' -ErrorAction 'Stop'
-            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "tcp:$mockExpectedDatabaseEngineServer\MyInstance"
+            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should-BeString -CaseSensitive "tcp:$mockExpectedDatabaseEngineServer\MyInstance"
         }
     }
 
@@ -532,13 +523,13 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
         # Skipping on Linux and macOS because they do not support Windows Authentication.
         It 'Should format the connection string with port for default instance' -Skip:($IsLinux -or $IsMacOS) {
             $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -Port 1433 -ErrorAction 'Stop'
-            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer,1433"
+            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should-BeString -CaseSensitive "$mockExpectedDatabaseEngineServer,1433"
         }
 
         # Skipping on Linux and macOS because they do not support Windows Authentication.
         It 'Should format the connection string with port for named instance' -Skip:($IsLinux -or $IsMacOS) {
             $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -InstanceName 'MyInstance' -Port 50200 -ErrorAction 'Stop'
-            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\MyInstance,50200"
+            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should-BeString -CaseSensitive "$mockExpectedDatabaseEngineServer\MyInstance,50200"
         }
     }
 
@@ -592,13 +583,13 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
         # Skipping on Linux and macOS because they do not support Windows Authentication.
         It 'Should format the connection string with protocol and port for default instance' -Skip:($IsLinux -or $IsMacOS) {
             $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -Protocol 'tcp' -Port 1433 -ErrorAction 'Stop'
-            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "tcp:$mockExpectedDatabaseEngineServer,1433"
+            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should-BeString -CaseSensitive "tcp:$mockExpectedDatabaseEngineServer,1433"
         }
 
         # Skipping on Linux and macOS because they do not support Windows Authentication.
         It 'Should format the connection string with protocol and port for named instance' -Skip:($IsLinux -or $IsMacOS) {
             $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -InstanceName 'MyInstance' -Protocol 'tcp' -Port 50200 -ErrorAction 'Stop'
-            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "tcp:$mockExpectedDatabaseEngineServer\MyInstance,50200"
+            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should-BeString -CaseSensitive "tcp:$mockExpectedDatabaseEngineServer\MyInstance,50200"
         }
     }
 
@@ -643,11 +634,11 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
                 $mockErrorMessage = $mockLocalizedString -f 'localhost'
 
                 { Connect-SQL -ServerName 'localhost' -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage $mockErrorMessage
+                    Should-Throw -ExceptionMessage $mockErrorMessage
 
-                Should -Invoke -CommandName New-Object -ParameterFilter {
+                Should-Invoke -CommandName New-Object -Exactly -ParameterFilter {
                     $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Server'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -686,7 +677,7 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
             It 'Should not throw an exception' {
                 $null = Connect-SQL -ServerName 'localhost' -SetupCredential $mockSqlCredential -LoginType 'SqlLogin' -ErrorAction 'SilentlyContinue'
 
-                Should -Invoke -CommandName New-Object -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName New-Object -Exactly -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter -Scope It -Times 1
             }
         }
     }

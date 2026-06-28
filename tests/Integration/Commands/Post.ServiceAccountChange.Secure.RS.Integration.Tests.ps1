@@ -93,7 +93,7 @@ Describe 'Post.ServiceAccountChange.Secure.RS' -Tag @('Integration_PowerBI') {
 
             $isInitialized = $configuration | Test-SqlDscRSInitialized -ErrorAction 'Stop'
 
-            $isInitialized | Should -BeTrue -Because 'the instance should be initialized after re-initialization'
+            $isInitialized | Should-BeTrue -Because 'the instance should be initialized after re-initialization'
         }
 
         It 'Should restart the Reporting Services service' {
@@ -109,13 +109,13 @@ Describe 'Post.ServiceAccountChange.Secure.RS' -Tag @('Integration_PowerBI') {
 
             $currentServiceAccount = $script:configuration | Get-SqlDscRSServiceAccount -ErrorAction 'Stop'
 
-            $currentServiceAccount | Should -BeExactly $script:expectedServiceAccount -Because 'the service account should have been changed'
+            $currentServiceAccount | Should-BeString -CaseSensitive $script:expectedServiceAccount -Because 'the service account should have been changed'
         }
 
         It 'Should have an initialized instance' {
             $isInitialized = $script:configuration | Test-SqlDscRSInitialized -ErrorAction 'Stop'
 
-            $isInitialized | Should -BeTrue -Because 'the instance should remain initialized after service account change'
+            $isInitialized | Should-BeTrue -Because 'the instance should remain initialized after service account change'
         }
 
         It 'Should have all configured sites accessible after service account change' {
@@ -126,15 +126,15 @@ Describe 'Post.ServiceAccountChange.Secure.RS' -Tag @('Integration_PowerBI') {
             $urlReservations = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
             $expectedApplications = $urlReservations.Application | Select-Object -Unique
 
-            $results | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
+            $results | Should-BeTruthy -Because 'the command should return site accessibility results'
 
             foreach ($application in $expectedApplications)
             {
                 $siteResult = $results | Where-Object -FilterScript { $_.Site -eq $application }
 
-                $siteResult | Should -Not -BeNullOrEmpty -Because "the '$application' site should have a result"
-                $siteResult.Accessible | Should -BeTrue -Because "the '$application' site should be accessible after service account change"
-                $siteResult.StatusCode | Should -Be 200 -Because "the '$application' site should return HTTP 200 after service account change"
+                $siteResult | Should-BeTruthy -Because "the '$application' site should have a result"
+                $siteResult.Accessible | Should-BeTrue -Because "the '$application' site should be accessible after service account change"
+                $siteResult.StatusCode | Should-Be 200 -Because "the '$application' site should return HTTP 200 after service account change"
             }
         }
     }

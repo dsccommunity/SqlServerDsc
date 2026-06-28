@@ -61,10 +61,10 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag 'Public' {
 
             $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
-            $result.Name | Should -Be 'TestFile'
-            $result.FileName | Should -Be 'C:\SQLData\TestFile.mdf'
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.DataFile'
+            $result.Name | Should-Be 'TestFile'
+            $result.FileName | Should-Be 'C:\SQLData\TestFile.mdf'
         }
 
         It 'Should convert a file spec with all optional properties set' {
@@ -73,14 +73,14 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag 'Public' {
 
             $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestFile'
-            $result.FileName | Should -Be 'C:\SQLData\TestFile.mdf'
-            $result.Size | Should -Be 102400
-            $result.MaxSize | Should -Be 512000
-            $result.Growth | Should -Be 10240
-            $result.GrowthType | Should -Be 'KB'
-            $result.IsPrimaryFile | Should -Be $true
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestFile'
+            $result.FileName | Should-Be 'C:\SQLData\TestFile.mdf'
+            $result.Size | Should-Be 102400
+            $result.MaxSize | Should-Be 512000
+            $result.Growth | Should-Be 10240
+            $result.GrowthType | Should-Be 'KB'
+            $result.IsPrimaryFile | Should-Be $true
         }
 
         It 'Should convert a file spec with Size property' {
@@ -88,7 +88,7 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag 'Public' {
 
             $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
 
-            $result.Size | Should -Be 204800
+            $result.Size | Should-Be 204800
         }
 
         It 'Should convert a file spec with MaxSize property' {
@@ -96,7 +96,7 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag 'Public' {
 
             $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
 
-            $result.MaxSize | Should -Be 1024000
+            $result.MaxSize | Should-Be 1024000
         }
 
         It 'Should convert a file spec with Growth property' {
@@ -104,7 +104,7 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag 'Public' {
 
             $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
 
-            $result.Growth | Should -Be 20480
+            $result.Growth | Should-Be 20480
         }
 
         It 'Should convert a file spec with GrowthType property set to Percent' {
@@ -112,7 +112,7 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag 'Public' {
 
             $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
 
-            $result.GrowthType | Should -Be 'Percent'
+            $result.GrowthType | Should-Be 'Percent'
         }
 
         It 'Should convert a file spec with IsPrimaryFile property' {
@@ -120,7 +120,7 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag 'Public' {
 
             $result = ConvertTo-SqlDscDataFile -FileGroupObject $mockFileGroup -DataFileSpec $fileSpec
 
-            $result.IsPrimaryFile | Should -Be $true
+            $result.IsPrimaryFile | Should-Be $true
         }
     }
 
@@ -131,16 +131,16 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag 'Public' {
 
         It 'Should have FileGroupObject as a mandatory parameter' {
             $parameterInfo = $commandInfo.Parameters['FileGroupObject']
-            $parameterInfo.Attributes.Mandatory | Should -Contain $true
+            $parameterInfo.Attributes.Mandatory | Should-ContainCollection $true
         }
 
         It 'Should have DataFileSpec as a mandatory parameter' {
             $parameterInfo = $commandInfo.Parameters['DataFileSpec']
-            $parameterInfo.Attributes.Mandatory | Should -Contain $true
+            $parameterInfo.Attributes.Mandatory | Should-ContainCollection $true
         }
 
         It 'Should have OutputType set to Microsoft.SqlServer.Management.Smo.DataFile' {
-            $commandInfo.OutputType.Name | Should -Contain 'Microsoft.SqlServer.Management.Smo.DataFile'
+            $commandInfo.OutputType.Name | Should-ContainCollection 'Microsoft.SqlServer.Management.Smo.DataFile'
         }
     }
 }

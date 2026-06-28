@@ -106,10 +106,10 @@ END
             # Verify the permission was granted
             $permissions = Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $script:testLoginName -ErrorAction 'Stop'
 
-            $permissions | Should -Not -BeNullOrEmpty
+            $permissions | Should-BeTruthy
             $grantedPermission = $permissions | Where-Object { $_.PermissionState -eq 'Grant' -and $_.PermissionType.Connect -eq $true }
-            $grantedPermission | Should -Not -BeNullOrEmpty
-            $grantedPermission.PermissionType.Connect | Should -BeTrue
+            $grantedPermission | Should-BeTruthy
+            $grantedPermission.PermissionType.Connect | Should-BeTrue
         }
 
         It 'Should grant multiple permissions successfully' {
@@ -123,15 +123,15 @@ END
             # Verify the permissions were granted
             $permissions = Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $script:testLoginName -ErrorAction 'Stop'
 
-            $permissions | Should -Not -BeNullOrEmpty
+            $permissions | Should-BeTruthy
 
             $connectPermission = $permissions | Where-Object { $_.PermissionState -eq 'Grant' -and $_.PermissionType.Connect -eq $true }
-            $connectPermission | Should -Not -BeNullOrEmpty
-            $connectPermission.PermissionType.Connect | Should -BeTrue
+            $connectPermission | Should-BeTruthy
+            $connectPermission.PermissionType.Connect | Should-BeTrue
 
             $selectPermission = $permissions | Where-Object { $_.PermissionState -eq 'Grant' -and $_.PermissionType.Select -eq $true }
-            $selectPermission | Should -Not -BeNullOrEmpty
-            $selectPermission.PermissionType.Select | Should -BeTrue
+            $selectPermission | Should-BeTruthy
+            $selectPermission.PermissionType.Select | Should-BeTrue
         }
 
         It 'Should grant permissions with WithGrant option' {
@@ -144,10 +144,10 @@ END
             # Verify the permission was granted with grant option
             $permissions = Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $script:testLoginName -ErrorAction 'Stop'
 
-            $permissions | Should -Not -BeNullOrEmpty
+            $permissions | Should-BeTruthy
             $grantedPermission = $permissions | Where-Object { $_.PermissionState -eq 'GrantWithGrant' -and $_.PermissionType.Select -eq $true }
-            $grantedPermission | Should -Not -BeNullOrEmpty
-            $grantedPermission.PermissionType.Select | Should -BeTrue
+            $grantedPermission | Should-BeTruthy
+            $grantedPermission.PermissionType.Select | Should-BeTrue
         }
     }
 
@@ -170,10 +170,10 @@ END
             # Verify the permission was denied
             $permissions = Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $script:testLoginName -ErrorAction 'Stop'
 
-            $permissions | Should -Not -BeNullOrEmpty
+            $permissions | Should-BeTruthy
             $deniedPermission = $permissions | Where-Object { $_.PermissionState -eq 'Deny' -and $_.PermissionType.Update -eq $true }
-            $deniedPermission | Should -Not -BeNullOrEmpty
-            $deniedPermission.PermissionType.Update | Should -BeTrue
+            $deniedPermission | Should-BeTruthy
+            $deniedPermission.PermissionType.Update | Should-BeTrue
         }
     }
 
@@ -199,7 +199,7 @@ END
             if ($permissions)
             {
                 $insertPermission = $permissions | Where-Object { $_.PermissionType.Insert -eq $true }
-                $insertPermission | Should -BeNullOrEmpty
+                $insertPermission | Should-BeFalsy
             }
         }
 
@@ -219,7 +219,7 @@ END
             if ($permissions)
             {
                 $deletePermission = $permissions | Where-Object { $_.PermissionType.Delete -eq $true }
-                $deletePermission | Should -BeNullOrEmpty
+                $deletePermission | Should-BeFalsy
             }
         }
     }
@@ -243,10 +243,10 @@ END
             # Verify the permission was granted
             $permissions = Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $script:testLoginName -ErrorAction 'Stop'
 
-            $permissions | Should -Not -BeNullOrEmpty
+            $permissions | Should-BeTruthy
             $grantedPermission = $permissions | Where-Object { $_.PermissionState -eq 'Grant' -and $_.PermissionType.Execute -eq $true }
-            $grantedPermission | Should -Not -BeNullOrEmpty
-            $grantedPermission.PermissionType.Execute | Should -BeTrue
+            $grantedPermission | Should-BeTruthy
+            $grantedPermission.PermissionType.Execute | Should-BeTrue
         }
     }
 
@@ -256,7 +256,7 @@ END
                 Connect = $true
             }
 
-            { Set-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName 'NonExistentDatabase' -Name $script:testLoginName -State 'Grant' -Permission $permissionSet -Force -ErrorAction 'Stop' } | Should -Throw -ExpectedMessage '*database*'
+            { Set-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName 'NonExistentDatabase' -Name $script:testLoginName -State 'Grant' -Permission $permissionSet -Force -ErrorAction 'Stop' } | Should-Throw -ExceptionMessage '*database*'
         }
 
         It 'Should throw an error when database principal does not exist' {
@@ -264,7 +264,7 @@ END
                 Connect = $true
             }
 
-            { Set-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name 'NonExistentPrincipal' -State 'Grant' -Permission $permissionSet -Force -ErrorAction 'Stop' } | Should -Throw -ExpectedMessage '*principal*'
+            { Set-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name 'NonExistentPrincipal' -State 'Grant' -Permission $permissionSet -Force -ErrorAction 'Stop' } | Should-Throw -ExceptionMessage '*principal*'
         }
     }
 }

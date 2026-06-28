@@ -103,10 +103,10 @@ Describe 'SqlServerDsc.Common\Update-AvailabilityGroupReplica' -Tag 'UpdateAvail
                 $mockLocalizedString -f $availabilityReplica.Name
             )
 
-            $mockErrorRecord.Exception.Message | Should -Not -BeNullOrEmpty
+            $mockErrorRecord.Exception.Message | Should-BeTruthy
 
             { Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityReplica } |
-                Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
+                Should-Throw -ExceptionMessage ($mockErrorRecord.Exception.Message + '*')
         }
     }
 }

@@ -45,15 +45,15 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag @('Integration_SQL2017', 'Inte
             It 'Should return the correct server instance' {
                 $result = Get-SqlDscManagedComputerInstance -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be $script:mockInstanceName
-                $result.Parent.Name | Should -Be $script:mockServerName
+                $result | Should-BeTruthy
+                $result.Name | Should-Be $script:mockInstanceName
+                $result.Parent.Name | Should-Be $script:mockServerName
             }
 
             It 'Should throw when the instance does not exist' {
                 {
                     Get-SqlDscManagedComputerInstance -ServerName $script:mockServerName -InstanceName 'NonExistentInstance' -ErrorAction 'Stop'
-                } | Should -Throw -ErrorId 'SqlServerInstanceNotFound,Get-SqlDscManagedComputerInstance'
+                } | Should-Throw -FullyQualifiedErrorId 'SqlServerInstanceNotFound,Get-SqlDscManagedComputerInstance'
             }
         }
 
@@ -61,13 +61,13 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag @('Integration_SQL2017', 'Inte
             It 'Should return all available instances' {
                 $result = Get-SqlDscManagedComputerInstance -ServerName $script:mockServerName -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance])
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance])
 
                 # Should contain the test instance
                 $testInstance = $result | Where-Object -FilterScript { $_.Name -eq $script:mockInstanceName }
-                $testInstance | Should -Not -BeNullOrEmpty
-                $testInstance.Name | Should -Be $script:mockInstanceName
+                $testInstance | Should-BeTruthy
+                $testInstance.Name | Should-Be $script:mockInstanceName
             }
         }
 
@@ -75,9 +75,9 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag @('Integration_SQL2017', 'Inte
             It 'Should use the local computer name when ServerName is not specified' {
                 $result = Get-SqlDscManagedComputerInstance -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be $script:mockInstanceName
-                $result.Parent.Name | Should -Be $script:mockServerName
+                $result | Should-BeTruthy
+                $result.Name | Should-Be $script:mockInstanceName
+                $result.Parent.Name | Should-Be $script:mockServerName
             }
         }
     }
@@ -91,15 +91,15 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag @('Integration_SQL2017', 'Inte
             It 'Should return the correct server instance' {
                 $result = $script:managedComputerObject | Get-SqlDscManagedComputerInstance -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be $script:mockInstanceName
-                $result.Parent.Name | Should -Be $script:mockServerName
+                $result | Should-BeTruthy
+                $result.Name | Should-Be $script:mockInstanceName
+                $result.Parent.Name | Should-Be $script:mockServerName
             }
 
             It 'Should throw when the instance does not exist' {
                 {
                     $script:managedComputerObject | Get-SqlDscManagedComputerInstance -InstanceName 'NonExistentInstance' -ErrorAction 'Stop'
-                } | Should -Throw -ErrorId 'SqlServerInstanceNotFound,Get-SqlDscManagedComputerInstance'
+                } | Should-Throw -FullyQualifiedErrorId 'SqlServerInstanceNotFound,Get-SqlDscManagedComputerInstance'
             }
         }
 
@@ -107,13 +107,13 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag @('Integration_SQL2017', 'Inte
             It 'Should return all available instances' {
                 $result = $script:managedComputerObject | Get-SqlDscManagedComputerInstance -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance])
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance])
 
                 # Should contain the test instance
                 $testInstance = $result | Where-Object -FilterScript { $_.Name -eq $script:mockInstanceName }
-                $testInstance | Should -Not -BeNullOrEmpty
-                $testInstance.Name | Should -Be $script:mockInstanceName
+                $testInstance | Should-BeTruthy
+                $testInstance.Name | Should-Be $script:mockInstanceName
             }
         }
     }
@@ -123,16 +123,16 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag @('Integration_SQL2017', 'Inte
             $result = Get-SqlDscManagedComputerInstance -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
 
             # Verify it's a proper SMO ServerInstance object
-            $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance])
+            $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance])
 
             # Verify key properties exist
-            $result.Name | Should -Not -BeNullOrEmpty
-            $result.Parent | Should -Not -BeNullOrEmpty
-            $result.Parent.Name | Should -Be $script:mockServerName
+            $result.Name | Should-BeTruthy
+            $result.Parent | Should-BeTruthy
+            $result.Parent.Name | Should-Be $script:mockServerName
 
             # Verify ServerProtocols collection is accessible
-            $result.ServerProtocols | Should -Not -BeNullOrEmpty
-            $result.ServerProtocols.Count | Should -BeGreaterThan 0
+            $result.ServerProtocols | Should-BeTruthy
+            $result.ServerProtocols.Count | Should-BeGreaterThan 0
         }
     }
 }

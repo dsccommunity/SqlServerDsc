@@ -118,7 +118,7 @@ Describe 'DSC_SqlAgentFailsafe\Get-TargetResource' -Tag 'Get' {
                 )
 
                 { Get-TargetResource @mockTestParameters } |
-                    Should -Throw -ExpectedMessage $mockErrorRecord.Exception.Message
+                    Should-Throw -ExceptionMessage $mockErrorRecord.Exception.Message
             }
         }
     }
@@ -139,7 +139,7 @@ Describe 'DSC_SqlAgentFailsafe\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockTestParameters
 
-                $result.Ensure | Should -Be 'Absent'
+                $result.Ensure | Should-Be 'Absent'
             }
         }
 
@@ -149,8 +149,8 @@ Describe 'DSC_SqlAgentFailsafe\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockTestParameters
 
-                $result.ServerName | Should -Be $mockTestParameters.ServerName
-                $result.InstanceName | Should -Be $mockTestParameters.InstanceName
+                $result.ServerName | Should-Be $mockTestParameters.ServerName
+                $result.InstanceName | Should-Be $mockTestParameters.InstanceName
             }
         }
 
@@ -160,12 +160,8 @@ Describe 'DSC_SqlAgentFailsafe\Get-TargetResource' -Tag 'Get' {
 
                 $null = Get-TargetResource @mockTestParameters -ErrorAction 'Stop'
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
-        }
-
-        It 'Should call all verifiable mocks' {
-            Should -InvokeVerifiable
         }
     }
 
@@ -186,7 +182,7 @@ Describe 'DSC_SqlAgentFailsafe\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockTestParameters
 
-                $result.Ensure | Should -Be 'Present'
+                $result.Ensure | Should-Be 'Present'
             }
         }
 
@@ -196,10 +192,10 @@ Describe 'DSC_SqlAgentFailsafe\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockTestParameters
 
-                $result.ServerName | Should -Be $mockTestParameters.ServerName
-                $result.InstanceName | Should -Be $mockTestParameters.InstanceName
-                $result.Name | Should -Be $mockTestParameters.Name
-                $result.NotificationMethod | Should -Be 'NotifyEmail'
+                $result.ServerName | Should-Be $mockTestParameters.ServerName
+                $result.InstanceName | Should-Be $mockTestParameters.InstanceName
+                $result.Name | Should-Be $mockTestParameters.Name
+                $result.NotificationMethod | Should-Be 'NotifyEmail'
             }
         }
 
@@ -209,12 +205,8 @@ Describe 'DSC_SqlAgentFailsafe\Get-TargetResource' -Tag 'Get' {
 
                 $null = Get-TargetResource @mockTestParameters -ErrorAction 'Stop'
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
-        }
-
-        It 'Should call all verifiable mocks' {
-            Should -InvokeVerifiable
         }
     }
 }
@@ -258,10 +250,10 @@ Describe 'DSC_SqlAgentFailsafe\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -289,10 +281,10 @@ Describe 'DSC_SqlAgentFailsafe\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -319,10 +311,10 @@ Describe 'DSC_SqlAgentFailsafe\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -351,10 +343,10 @@ Describe 'DSC_SqlAgentFailsafe\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -382,10 +374,10 @@ Describe 'DSC_SqlAgentFailsafe\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -412,10 +404,10 @@ Describe 'DSC_SqlAgentFailsafe\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -487,7 +479,7 @@ Describe 'DSC_SqlAgentFailsafe\Set-TargetResource' -Tag 'Set' {
                 )
 
                 { Set-TargetResource @mockTestParameters } |
-                    Should -Throw -ExpectedMessage $mockErrorRecord.Exception.Message
+                    Should-Throw -ExceptionMessage $mockErrorRecord.Exception.Message
             }
         }
     }
@@ -515,7 +507,7 @@ Describe 'DSC_SqlAgentFailsafe\Set-TargetResource' -Tag 'Set' {
                 $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should not throw when changing the severity' {
@@ -533,7 +525,7 @@ Describe 'DSC_SqlAgentFailsafe\Set-TargetResource' -Tag 'Set' {
                 $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should throw when notification method is not valid' {
@@ -548,10 +540,10 @@ Describe 'DSC_SqlAgentFailsafe\Set-TargetResource' -Tag 'Set' {
                     NotificationMethod  = 'Letter'
                 }
 
-                { Set-TargetResource @mockTestParameters } | Should -Throw
+                { Set-TargetResource @mockTestParameters } | Should-Throw
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 0
         }
 
         It 'Should throw the correct error when Alter() method was called with invalid operation' {
@@ -572,14 +564,10 @@ Describe 'DSC_SqlAgentFailsafe\Set-TargetResource' -Tag 'Set' {
                 )
 
                 { Set-TargetResource @mockTestParameters } |
-                    Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
+                    Should-Throw -ExceptionMessage ($mockErrorRecord.Exception.Message + '*')
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-        }
-
-        It 'Should call all verifiable mocks' {
-            Should -InvokeVerifiable
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -606,7 +594,7 @@ Describe 'DSC_SqlAgentFailsafe\Set-TargetResource' -Tag 'Set' {
                 $null = Set-TargetResource @mockTestParameters -ErrorAction 'Stop'
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should throw the correct error when Alter() method was called with invalid operation' {
@@ -627,14 +615,10 @@ Describe 'DSC_SqlAgentFailsafe\Set-TargetResource' -Tag 'Set' {
                 )
 
                 { Set-TargetResource @mockTestParameters } |
-                    Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
+                    Should-Throw -ExceptionMessage ($mockErrorRecord.Exception.Message + '*')
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-        }
-
-        It 'Should call all verifiable mocks' {
-            Should -InvokeVerifiable
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 }

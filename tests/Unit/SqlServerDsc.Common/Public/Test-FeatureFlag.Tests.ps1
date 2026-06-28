@@ -86,19 +86,19 @@ AfterAll {
 Describe 'Test-FeatureFlag' -Tag 'TestFeatureFlag' {
     Context 'When no feature flags was provided' {
         It 'Should return $false' {
-            Test-FeatureFlag -FeatureFlag $null -TestFlag 'MyFlag' | Should -BeFalse
+            Test-FeatureFlag -FeatureFlag $null -TestFlag 'MyFlag' | Should-BeFalse
         }
     }
 
     Context 'When feature flags was provided' {
         It 'Should return $true' {
-            Test-FeatureFlag -FeatureFlag @('FirstFlag', 'SecondFlag') -TestFlag 'SecondFlag' | Should -BeTrue
+            Test-FeatureFlag -FeatureFlag @('FirstFlag', 'SecondFlag') -TestFlag 'SecondFlag' | Should-BeTrue
         }
     }
 
     Context 'When feature flags was provided, but missing' {
         It 'Should return $false' {
-            Test-FeatureFlag -FeatureFlag @('MyFlag2') -TestFlag 'MyFlag' | Should -BeFalse
+            Test-FeatureFlag -FeatureFlag @('MyFlag2') -TestFlag 'MyFlag' | Should-BeFalse
         }
     }
 }

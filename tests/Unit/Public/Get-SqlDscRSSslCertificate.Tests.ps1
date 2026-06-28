@@ -58,8 +58,8 @@ Describe 'Get-SqlDscRSSslCertificate' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -82,18 +82,18 @@ Describe 'Get-SqlDscRSSslCertificate' {
         It 'Should return SSL certificates with correct properties' {
             $result = $mockCimInstance | Get-SqlDscRSSslCertificate
 
-            $result | Should -HaveCount 2
-            $result[0].CertificateName | Should -Be 'Certificate1'
-            $result[0].HostName | Should -Be 'server1.domain.com'
-            $result[0].CertificateHash | Should -Be 'AABBCCDD'
-            $result[1].CertificateName | Should -Be 'Certificate2'
-            $result[1].HostName | Should -Be 'server2.domain.com'
-            $result[1].CertificateHash | Should -Be 'EEFFAABB'
+            $result | Should-BeCollection -Count 2
+            $result[0].CertificateName | Should-Be 'Certificate1'
+            $result[0].HostName | Should-Be 'server1.domain.com'
+            $result[0].CertificateHash | Should-Be 'AABBCCDD'
+            $result[1].CertificateName | Should-Be 'Certificate2'
+            $result[1].HostName | Should-Be 'server2.domain.com'
+            $result[1].CertificateHash | Should-Be 'EEFFAABB'
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'ListSSLCertificates' -and
                 $null -eq $Arguments
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -116,9 +116,9 @@ Describe 'Get-SqlDscRSSslCertificate' {
         It 'Should return an empty result' {
             $result = $mockCimInstance | Get-SqlDscRSSslCertificate
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -134,7 +134,7 @@ Describe 'Get-SqlDscRSSslCertificate' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Get-SqlDscRSSslCertificate } | Should -Throw -ErrorId 'GSRSSC0001,Get-SqlDscRSSslCertificate'
+            { $mockCimInstance | Get-SqlDscRSSslCertificate } | Should-Throw -FullyQualifiedErrorId 'GSRSSC0001,Get-SqlDscRSSslCertificate'
         }
     }
 
@@ -157,9 +157,9 @@ Describe 'Get-SqlDscRSSslCertificate' {
         It 'Should get SSL certificates' {
             $result = Get-SqlDscRSSslCertificate -Configuration $mockCimInstance
 
-            $result | Should -HaveCount 1
+            $result | Should-BeCollection -Count 1
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -182,15 +182,15 @@ Describe 'Get-SqlDscRSSslCertificate' {
         It 'Should return SSL certificates without passing Lcid argument' {
             $result = $mockCimInstance | Get-SqlDscRSSslCertificate
 
-            $result | Should -HaveCount 1
-            $result[0].CertificateName | Should -Be 'PBIRS Certificate'
-            $result[0].HostName | Should -Be 'pbirs.domain.com'
-            $result[0].CertificateHash | Should -Be '11223344'
+            $result | Should-BeCollection -Count 1
+            $result[0].CertificateName | Should-Be 'PBIRS Certificate'
+            $result[0].HostName | Should-Be 'pbirs.domain.com'
+            $result[0].CertificateHash | Should-Be '11223344'
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'ListSSLCertificates' -and
                 $null -eq $Arguments
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 }

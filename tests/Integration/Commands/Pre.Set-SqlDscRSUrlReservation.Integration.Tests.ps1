@@ -58,7 +58,7 @@ Describe 'Pre.Set-SqlDscRSUrlReservation' {
                 }
             }
 
-            $currentUrls | Should -Contain $script:testUrl1
+            $currentUrls | Should-ContainCollection $script:testUrl1
         }
 
         It 'Should set HTTPS URL reservation on port 443 for ReportServerWebApp' {
@@ -79,7 +79,7 @@ Describe 'Pre.Set-SqlDscRSUrlReservation' {
                 }
             }
 
-            $currentUrls | Should -Contain $script:testUrl1
+            $currentUrls | Should-ContainCollection $script:testUrl1
         }
     }
 }

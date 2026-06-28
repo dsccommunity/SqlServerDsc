@@ -40,15 +40,15 @@ Describe 'Get-SqlDscSetupLog' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             $setupLog = Get-SqlDscSetupLog -ErrorAction 'Stop'
 
             # The log should not be null if SQL Server is installed
-            $setupLog | Should -Not -BeNullOrEmpty
+            $setupLog | Should-BeTruthy
 
             # Each line in the log should be a string
-            $setupLog | Should -BeOfType ([System.String])
+            $setupLog | Should-HaveType ([System.String])
 
             # The log content should contain typical SQL Server setup log information
             # We check for common patterns that appear in Summary.txt
             $logContent = $setupLog -join "`n"
-            $logContent | Should -Match '(Setup completed|Installation|SQL Server|Feature)'
+            $logContent | Should-MatchString '(Setup completed|Installation|SQL Server|Feature)'
 
             Write-Verbose -Message "Retrieved setup log with $($setupLog.Count) lines" -Verbose
         }
@@ -58,7 +58,7 @@ Describe 'Get-SqlDscSetupLog' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             # when using ErrorAction Stop
             {
                 Get-SqlDscSetupLog -Path 'C:\NonExistentPath' -ErrorAction 'Stop'
-            } | Should -Throw
+            } | Should-Throw
         }
 
         It 'Should support custom Path parameter' {
@@ -67,7 +67,7 @@ Describe 'Get-SqlDscSetupLog' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             $result = Get-SqlDscSetupLog -Path 'C:\Program Files\Microsoft SQL Server' -ErrorAction 'Stop'
 
             # Using the standard path should return results
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
         }
 
         It 'Should include header and footer in the output' {
@@ -76,17 +76,17 @@ Describe 'Get-SqlDscSetupLog' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             # Using ErrorAction Stop to ensure the command does not throw on valid path
             $setupLog = Get-SqlDscSetupLog -ErrorAction 'Stop'
 
-            $setupLog | Should -Not -BeNullOrEmpty
+            $setupLog | Should-BeTruthy
 
             # The command adds a header line and footer line to the output
             # Verify the output contains multiple lines (header + content + footer)
-            $setupLog.Count | Should -BeGreaterThan 2
+            $setupLog.Count | Should-BeGreaterThan 2
 
             # The first line should be a header containing "Summary.txt"
-            $setupLog[0] | Should -Match 'Summary\.txt'
+            $setupLog[0] | Should-MatchString 'Summary\.txt'
 
             # The last line should be a footer
-            $setupLog[-1] | Should -Match 'Summary\.txt'
+            $setupLog[-1] | Should-MatchString 'Summary\.txt'
         }
     }
 }

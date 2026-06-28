@@ -66,8 +66,8 @@ Describe 'Remove-SqlDscRSSslCertificateBinding' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -83,20 +83,20 @@ Describe 'Remove-SqlDscRSSslCertificateBinding' {
         It 'Should remove SSL certificate binding without errors' {
             $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'RemoveSSLCertificateBindings' -and
                 $Arguments.CertificateHash -eq 'aabbccdd' -and
                 $Arguments.Application -eq 'ReportServerWebService' -and
                 $Arguments.IPAddress -eq '0.0.0.0' -and
                 $Arguments.Port -eq 443 -and
                 $Arguments.Lcid -eq 1033
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should not return anything by default' {
             $result = $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -110,13 +110,13 @@ Describe 'Remove-SqlDscRSSslCertificateBinding' {
         }
 
         It 'Should use custom IP address and port' {
-            { $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -IPAddress '192.168.1.1' -Port 8443 -Lcid 1031 -Confirm:$false } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -IPAddress '192.168.1.1' -Port 8443 -Lcid 1031 -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $Arguments.IPAddress -eq '192.168.1.1' -and
                 $Arguments.Port -eq 8443 -and
                 $Arguments.Lcid -eq 1031
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -132,8 +132,8 @@ Describe 'Remove-SqlDscRSSslCertificateBinding' {
         It 'Should return the configuration CIM instance' {
             $result = $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -147,9 +147,9 @@ Describe 'Remove-SqlDscRSSslCertificateBinding' {
         }
 
         It 'Should remove SSL certificate binding without confirmation' {
-            { $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Force } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Force })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -165,7 +165,7 @@ Describe 'Remove-SqlDscRSSslCertificateBinding' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false } | Should -Throw -ErrorId 'RSRSSCB0001,Remove-SqlDscRSSslCertificateBinding'
+            { $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false } | Should-Throw -FullyQualifiedErrorId 'RSRSSCB0001,Remove-SqlDscRSSslCertificateBinding'
         }
     }
 
@@ -181,7 +181,7 @@ Describe 'Remove-SqlDscRSSslCertificateBinding' {
         It 'Should not call Invoke-RsCimMethod' {
             $mockCimInstance | Remove-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
         }
     }
 
@@ -195,9 +195,9 @@ Describe 'Remove-SqlDscRSSslCertificateBinding' {
         }
 
         It 'Should remove SSL certificate binding' {
-            { Remove-SqlDscRSSslCertificateBinding -Configuration $mockCimInstance -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false } | Should -Not -Throw
+            $null = & ({ Remove-SqlDscRSSslCertificateBinding -Configuration $mockCimInstance -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 }

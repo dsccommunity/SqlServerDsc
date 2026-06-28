@@ -98,12 +98,12 @@ Describe 'New-SqlDscRole' -Tag 'Public' {
 
             $result = New-SqlDscRole -ServerObject $mockServerObject -Name 'TestRole' -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestRole'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestRole'
 
-            Should -Invoke -CommandName 'New-Object' -ParameterFilter {
+            Should-Invoke -CommandName 'New-Object' -Exactly -ParameterFilter {
                 $TypeName -eq 'Microsoft.SqlServer.Management.Smo.ServerRole'
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should set the owner when Owner parameter is specified' {
@@ -126,7 +126,7 @@ Describe 'New-SqlDscRole' -Tag 'Public' {
 
             $result = New-SqlDscRole -ServerObject $mockServerObject -Name 'TestRole' -Owner 'TestOwner' -Force
 
-            $result.Owner | Should -Be 'TestOwner'
+            $result.Owner | Should-Be 'TestOwner'
         }
 
         It 'Should call Refresh when Refresh parameter is specified' {
@@ -163,7 +163,7 @@ Describe 'New-SqlDscRole' -Tag 'Public' {
 
             New-SqlDscRole -ServerObject $mockServerWithRefresh -Name 'TestRole' -Refresh -Force
 
-            $script:refreshCalled | Should -BeTrue
+            $script:refreshCalled | Should-BeTrue
         }
     }
 
@@ -191,7 +191,7 @@ Describe 'New-SqlDscRole' -Tag 'Public' {
 
             # Don't need to mock New-Object here since the command should fail before reaching that point
             { New-SqlDscRole -ServerObject $mockServerObject -Name 'ExistingRole' -Force } |
-                Should -Throw '*already exists*'
+                Should-Throw '*already exists*'
         }
     }
 
@@ -233,7 +233,7 @@ Describe 'New-SqlDscRole' -Tag 'Public' {
             }
 
             { New-SqlDscRole -ServerObject $mockServerObject -Name 'TestRole' -Force } |
-                Should -Throw -ExpectedMessage '*Failed to create*'
+                Should-Throw -ExceptionMessage '*Failed to create*'
         }
     }
 
@@ -251,33 +251,33 @@ Describe 'New-SqlDscRole' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscRole').Parameters['ServerObject']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscRole').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have Owner as a non-mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscRole').Parameters['Owner']
-            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-BeFalse
         }
 
         It 'Should have Force as a non-mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscRole').Parameters['Force']
-            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-BeFalse
         }
 
         It 'Should have Refresh as a non-mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscRole').Parameters['Refresh']
-            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-BeFalse
         }
     }
 }

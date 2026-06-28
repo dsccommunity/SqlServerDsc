@@ -58,23 +58,23 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have Configuration as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Restore-SqlDscRSEncryptionKey').Parameters['Configuration']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have Path as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Restore-SqlDscRSEncryptionKey').Parameters['Path']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have Password as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Restore-SqlDscRSEncryptionKey').Parameters['Password']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
     }
 
@@ -96,15 +96,15 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
         It 'Should restore encryption key without errors' {
             $null = $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path $script:testKeyFilePath -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'RestoreEncryptionKey'
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should not return anything by default' {
             $result = $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path $script:testKeyFilePath -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -126,8 +126,8 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
         It 'Should return the configuration CIM instance' {
             $result = $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path $script:testKeyFilePath -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -149,7 +149,7 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
         It 'Should restore encryption key without confirmation' {
             $null = $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path $script:testKeyFilePath -Force
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -171,7 +171,7 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path $script:testKeyFilePath -Confirm:$false } | Should -Throw -ErrorId 'RSRSEK0001,Restore-SqlDscRSEncryptionKey'
+            { $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path $script:testKeyFilePath -Confirm:$false } | Should-Throw -FullyQualifiedErrorId 'RSRSEK0001,Restore-SqlDscRSEncryptionKey'
         }
     }
 
@@ -193,7 +193,7 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
         It 'Should not call Invoke-RsCimMethod' {
             $null = $mockCimInstance | Restore-SqlDscRSEncryptionKey -Password $mockPassword -Path $script:testKeyFilePath -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
         }
     }
 
@@ -215,7 +215,7 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
         It 'Should restore encryption key' {
             $null = Restore-SqlDscRSEncryptionKey -Configuration $mockCimInstance -Password $mockPassword -Path $script:testKeyFilePath -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 }

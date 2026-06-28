@@ -47,7 +47,7 @@ Describe 'Uninstall-SqlDscReportingService' -Tag @('Integration_SQL2017', 'Integ
     It 'Should have the Reporting Services service running' {
         $getServiceResult = Get-Service -Name 'SQLServerReportingServices' -ErrorAction 'Stop'
 
-        $getServiceResult.Status | Should -Be 'Running'
+        $getServiceResult.Status | Should-Be 'Running'
     }
 
     Context 'When uninstalling Reporting Services' {
@@ -66,7 +66,7 @@ Describe 'Uninstall-SqlDscReportingService' -Tag @('Integration_SQL2017', 'Integ
         }
 
         It 'Should not have a SQL Server Reporting Services service' {
-            Get-Service -Name 'SQLServerReportingServices' -ErrorAction 'Ignore' | Should -BeNullOrEmpty
+            Get-Service -Name 'SQLServerReportingServices' -ErrorAction 'Ignore' | Should-BeFalsy
         }
     }
 }

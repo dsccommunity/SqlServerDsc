@@ -94,7 +94,7 @@ Describe 'SqlServerDsc.Common\Test-ActiveNode' -Tag 'TestActiveNode' {
         }
 
         It 'Should return $true' {
-            Test-ActiveNode -ServerObject $mockServerObject | Should -BeTrue
+            Test-ActiveNode -ServerObject $mockServerObject | Should-BeTrue
         }
     }
 
@@ -115,7 +115,7 @@ Describe 'SqlServerDsc.Common\Test-ActiveNode' -Tag 'TestActiveNode' {
         ) {
             $mockServerObject.ComputerNamePhysicalNetBIOS = $ComputerNamePhysicalNetBIOS
 
-            Test-ActiveNode -ServerObject $mockServerObject | Should -Be $Result
+            Test-ActiveNode -ServerObject $mockServerObject | Should-Be $Result
         }
     }
 }

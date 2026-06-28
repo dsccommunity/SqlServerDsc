@@ -73,7 +73,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag @('Integration_SQL2017', 'Integration_
 
             # Verify the change was applied
             $script:testDatabaseObject.Refresh()
-            $script:testDatabaseObject.DefaultFileGroup | Should -Be $script:testFileGroupName
+            $script:testDatabaseObject.DefaultFileGroup | Should-Be $script:testFileGroupName
         }
 
         It 'Should reset the default filegroup back to PRIMARY' {
@@ -81,7 +81,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag @('Integration_SQL2017', 'Integration_
 
             # Verify the change was applied
             $script:testDatabaseObject.Refresh()
-            $script:testDatabaseObject.DefaultFileGroup | Should -Be 'PRIMARY'
+            $script:testDatabaseObject.DefaultFileGroup | Should-Be 'PRIMARY'
         }
     }
 
@@ -91,25 +91,25 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag @('Integration_SQL2017', 'Integration_
 
             # Verify the change was applied by refreshing the database object
             $script:testDatabaseObject.Refresh()
-            $script:testDatabaseObject.DefaultFileGroup | Should -Be $script:testFileGroupName
+            $script:testDatabaseObject.DefaultFileGroup | Should-Be $script:testFileGroupName
         }
 
         It 'Should return the database object when PassThru is specified' {
             $result = Set-SqlDscDatabaseDefault -ServerObject $script:serverObject -Name $script:testDatabaseName -DefaultFileGroup 'PRIMARY' -PassThru -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:testDatabaseName
-            $result.DefaultFileGroup | Should -Be 'PRIMARY'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:testDatabaseName
+            $result.DefaultFileGroup | Should-Be 'PRIMARY'
         }
     }
 
     Context 'When the command fails' {
         It 'Should throw an error when trying to set a non-existent filegroup as default' {
-            { Set-SqlDscDatabaseDefault -DatabaseObject $script:testDatabaseObject -DefaultFileGroup 'NonExistentFileGroup' -Force } | Should -Throw
+            { Set-SqlDscDatabaseDefault -DatabaseObject $script:testDatabaseObject -DefaultFileGroup 'NonExistentFileGroup' -Force } | Should-Throw
         }
 
         It 'Should throw an error when database is not found' {
-            { Set-SqlDscDatabaseDefault -ServerObject $script:serverObject -Name 'NonExistentDatabase' -DefaultFileGroup 'PRIMARY' -Force } | Should -Throw
+            { Set-SqlDscDatabaseDefault -ServerObject $script:serverObject -Name 'NonExistentDatabase' -DefaultFileGroup 'PRIMARY' -Force } | Should-Throw
         }
     }
 

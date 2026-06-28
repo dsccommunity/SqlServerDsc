@@ -66,8 +66,8 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -81,20 +81,20 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
         }
 
         It 'Should set virtual directory without errors' {
-            { $mockCimInstance | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Confirm:$false } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'SetVirtualDirectory' -and
                 $Arguments.Application -eq 'ReportServerWebService' -and
                 $Arguments.VirtualDirectory -eq 'ReportServer' -and
                 $Arguments.Lcid -eq 1033
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should not return anything by default' {
             $result = $mockCimInstance | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -110,8 +110,8 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
         It 'Should return the configuration CIM instance' {
             $result = $mockCimInstance | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -125,9 +125,9 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
         }
 
         It 'Should set virtual directory without confirmation' {
-            { $mockCimInstance | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Force } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Force })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -141,17 +141,17 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
         }
 
         It 'Should use the specified Lcid' {
-            { $mockCimInstance | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Lcid 1031 -Confirm:$false } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Lcid 1031 -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $Arguments.Lcid -eq 1031
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should not call Get-OperatingSystem when Lcid is specified' {
             $mockCimInstance | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Lcid 1031 -Confirm:$false
 
-            Should -Invoke -CommandName Get-OperatingSystem -Exactly -Times 0
+            Should-Invoke -CommandName Get-OperatingSystem -Exactly -Times 0
         }
     }
 
@@ -167,7 +167,7 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Confirm:$false } | Should -Throw -ErrorId 'SSRSVD0001,Set-SqlDscRSVirtualDirectory'
+            { $mockCimInstance | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Confirm:$false } | Should-Throw -FullyQualifiedErrorId 'SSRSVD0001,Set-SqlDscRSVirtualDirectory'
         }
     }
 
@@ -183,7 +183,7 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
         It 'Should not call Invoke-RsCimMethod' {
             $mockCimInstance | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
         }
     }
 
@@ -197,9 +197,9 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
         }
 
         It 'Should set virtual directory' {
-            { Set-SqlDscRSVirtualDirectory -Configuration $mockCimInstance -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Confirm:$false } | Should -Not -Throw
+            $null = & ({ Set-SqlDscRSVirtualDirectory -Configuration $mockCimInstance -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -213,19 +213,19 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
         }
 
         It 'Should accept ReportServerWebApp application' {
-            { $mockCimInstance | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebApp' -VirtualDirectory 'Reports' -Confirm:$false } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebApp' -VirtualDirectory 'Reports' -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $Arguments.Application -eq 'ReportServerWebApp'
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should accept ReportManager application' {
-            { $mockCimInstance | Set-SqlDscRSVirtualDirectory -Application 'ReportManager' -VirtualDirectory 'Reports' -Confirm:$false } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Set-SqlDscRSVirtualDirectory -Application 'ReportManager' -VirtualDirectory 'Reports' -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $Arguments.Application -eq 'ReportManager'
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -239,11 +239,11 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
         }
 
         It 'Should accept custom virtual directory name' {
-            { $mockCimInstance | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer_Custom' -Confirm:$false } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer_Custom' -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $Arguments.VirtualDirectory -eq 'ReportServer_Custom'
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 }

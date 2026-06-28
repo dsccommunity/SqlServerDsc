@@ -159,16 +159,16 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseServerName | Should -Be $ConfigurationData.AllNodes.DatabaseServerName
-            $resourceCurrentState.DatabaseInstanceName | Should -Be $ConfigurationData.AllNodes.DatabaseInstanceName
-            $resourceCurrentState.IsInitialized | Should -BeTrue
-            $resourceCurrentState.UseSsl | Should -BeFalse
-            $resourceCurrentState.ReportServerReservedUrl | Should -Contain 'http://+:80'
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseServerName | Should-Be $ConfigurationData.AllNodes.DatabaseServerName
+            $resourceCurrentState.DatabaseInstanceName | Should-Be $ConfigurationData.AllNodes.DatabaseInstanceName
+            $resourceCurrentState.IsInitialized | Should-BeTrue
+            $resourceCurrentState.UseSsl | Should-BeFalse
+            $resourceCurrentState.ReportServerReservedUrl | Should-ContainCollection 'http://+:80'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
 
         It 'Should be able to access the ReportServer site without any error' {
@@ -184,8 +184,8 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
             $result = Test-SqlDscRSAccessible -ReportServerUri $reportServerUri -Detailed -ErrorAction 'Stop'
 
-            $result.Accessible | Should -BeTrue -Because 'the ReportServer web service should be accessible'
-            $result.StatusCode | Should -Be 200
+            $result.Accessible | Should-BeTrue -Because 'the ReportServer web service should be accessible'
+            $result.StatusCode | Should-Be 200
         }
 
         It 'Should be able to access the Reports site without any error' {
@@ -201,8 +201,8 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
             $result = Test-SqlDscRSAccessible -ReportsUri $reportsUri -Detailed -ErrorAction 'Stop'
 
-            $result.Accessible | Should -BeTrue -Because 'the Reports web portal should be accessible'
-            $result.StatusCode | Should -Be 200
+            $result.Accessible | Should-BeTrue -Because 'the Reports web portal should be accessible'
+            $result.StatusCode | Should-Be 200
         }
     }
 

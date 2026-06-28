@@ -55,10 +55,10 @@ Describe 'Get-RSServiceState' {
 
                 $result = Get-RSServiceState -Configuration $mockConfiguration -EnableWindowsService
 
-                $result | Should -BeOfType [System.Collections.Hashtable]
-                $result.EnableWindowsService | Should -BeTrue
-                $result.EnableWebService | Should -BeTrue
-                $result.EnableReportManager | Should -BeTrue
+                $result | Should-HaveType ([System.Collections.Hashtable])
+                $result.EnableWindowsService | Should-BeTrue
+                $result.EnableWebService | Should-BeTrue
+                $result.EnableReportManager | Should-BeTrue
             }
         }
     }
@@ -74,10 +74,10 @@ Describe 'Get-RSServiceState' {
 
                 $result = Get-RSServiceState -Configuration $mockConfiguration -DisableWindowsService
 
-                $result | Should -BeOfType [System.Collections.Hashtable]
-                $result.EnableWindowsService | Should -BeFalse
-                $result.EnableWebService | Should -BeTrue
-                $result.EnableReportManager | Should -BeTrue
+                $result | Should-HaveType ([System.Collections.Hashtable])
+                $result.EnableWindowsService | Should-BeFalse
+                $result.EnableWebService | Should-BeTrue
+                $result.EnableReportManager | Should-BeTrue
             }
         }
     }
@@ -93,10 +93,10 @@ Describe 'Get-RSServiceState' {
 
                 $result = Get-RSServiceState -Configuration $mockConfiguration -EnableWebService
 
-                $result | Should -BeOfType [System.Collections.Hashtable]
-                $result.EnableWindowsService | Should -BeTrue
-                $result.EnableWebService | Should -BeTrue
-                $result.EnableReportManager | Should -BeTrue
+                $result | Should-HaveType ([System.Collections.Hashtable])
+                $result.EnableWindowsService | Should-BeTrue
+                $result.EnableWebService | Should-BeTrue
+                $result.EnableReportManager | Should-BeTrue
             }
         }
     }
@@ -112,10 +112,10 @@ Describe 'Get-RSServiceState' {
 
                 $result = Get-RSServiceState -Configuration $mockConfiguration -DisableWebService
 
-                $result | Should -BeOfType [System.Collections.Hashtable]
-                $result.EnableWindowsService | Should -BeTrue
-                $result.EnableWebService | Should -BeFalse
-                $result.EnableReportManager | Should -BeFalse
+                $result | Should-HaveType ([System.Collections.Hashtable])
+                $result.EnableWindowsService | Should-BeTrue
+                $result.EnableWebService | Should-BeFalse
+                $result.EnableReportManager | Should-BeFalse
             }
         }
     }
@@ -131,10 +131,10 @@ Describe 'Get-RSServiceState' {
 
                 $result = Get-RSServiceState -Configuration $mockConfiguration
 
-                $result | Should -BeOfType [System.Collections.Hashtable]
-                $result.EnableWindowsService | Should -BeTrue
-                $result.EnableWebService | Should -BeFalse
-                $result.EnableReportManager | Should -BeFalse
+                $result | Should-HaveType ([System.Collections.Hashtable])
+                $result.EnableWindowsService | Should-BeTrue
+                $result.EnableWebService | Should-BeFalse
+                $result.EnableReportManager | Should-BeFalse
             }
         }
     }
@@ -150,10 +150,10 @@ Describe 'Get-RSServiceState' {
 
                 $result = Get-RSServiceState -Configuration $mockConfiguration -EnableWindowsService
 
-                $result | Should -BeOfType [System.Collections.Hashtable]
-                $result.EnableWindowsService | Should -BeTrue
-                $result.EnableWebService | Should -BeFalse
-                $result.EnableReportManager | Should -BeFalse
+                $result | Should-HaveType ([System.Collections.Hashtable])
+                $result.EnableWindowsService | Should-BeTrue
+                $result.EnableWebService | Should-BeFalse
+                $result.EnableReportManager | Should-BeFalse
             }
         }
     }
@@ -169,10 +169,10 @@ Describe 'Get-RSServiceState' {
 
                 $result = Get-RSServiceState -Configuration $mockConfiguration -DisableWebService
 
-                $result | Should -BeOfType [System.Collections.Hashtable]
-                $result.EnableWindowsService | Should -BeTrue
-                $result.EnableWebService | Should -BeFalse
-                $result.EnableReportManager | Should -BeFalse
+                $result | Should-HaveType ([System.Collections.Hashtable])
+                $result.EnableWindowsService | Should-BeTrue
+                $result.EnableWebService | Should-BeFalse
+                $result.EnableReportManager | Should-BeFalse
             }
         }
     }

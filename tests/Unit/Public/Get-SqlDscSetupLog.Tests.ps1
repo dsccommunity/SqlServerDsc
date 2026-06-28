@@ -72,32 +72,32 @@ Describe 'Get-SqlDscSetupLog' -Tag 'Public' {
         It 'Should return the log content with header and footer using default parameters' {
             $result = Get-SqlDscSetupLog
 
-            $result | Should -HaveCount 5
-            $result[0] | Should -Match 'SQL Server Setup.*Summary\.txt.*from'
-            $result[1] | Should -Be 'Overall summary:'
-            $result[2] | Should -Be '  Final result:                  Passed'
-            $result[3] | Should -Be '  Exit code (Decimal):           0'
-            $result[4] | Should -Match 'End of.*Summary\.txt'
+            $result | Should-BeCollection -Count 5
+            $result[0] | Should-MatchString 'SQL Server Setup.*Summary\.txt.*from'
+            $result[1] | Should-Be 'Overall summary:'
+            $result[2] | Should-Be '  Final result:                  Passed'
+            $result[3] | Should-Be '  Exit code (Decimal):           0'
+            $result[4] | Should-MatchString 'End of.*Summary\.txt'
         }
 
         It 'Should call Get-ChildItem with the correct default parameters' {
             $result = Get-SqlDscSetupLog
 
-            Should -Invoke -CommandName Get-ChildItem -ParameterFilter {
+            Should-Invoke -CommandName Get-ChildItem -Exactly -ParameterFilter {
                 $Path -eq 'C:\Program Files\Microsoft SQL Server' -and
                 $Filter -eq 'Summary.txt' -and
                 $Recurse -eq $true
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should call Get-ChildItem with custom path' {
             $result = Get-SqlDscSetupLog -Path 'D:\SQLServer'
 
-            Should -Invoke -CommandName Get-ChildItem -ParameterFilter {
+            Should-Invoke -CommandName Get-ChildItem -Exactly -ParameterFilter {
                 $Path -eq 'D:\SQLServer' -and
                 $Filter -eq 'Summary.txt' -and
                 $Recurse -eq $true
-            } -Exactly -Times 1
+            } -Times 1
         }
 
 
@@ -105,9 +105,9 @@ Describe 'Get-SqlDscSetupLog' -Tag 'Public' {
         It 'Should call Get-Content with the correct file path' {
             $result = Get-SqlDscSetupLog
 
-            Should -Invoke -CommandName Get-Content -ParameterFilter {
+            Should-Invoke -CommandName Get-Content -Exactly -ParameterFilter {
                 $Path -eq 'C:\Program Files\Microsoft SQL Server\150\Setup Bootstrap\Log\Summary.txt'
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -137,11 +137,11 @@ Describe 'Get-SqlDscSetupLog' -Tag 'Public' {
         It 'Should return the most recent log file' {
             $result = Get-SqlDscSetupLog
 
-            $result[0] | Should -Match '160\\Setup Bootstrap\\Log\\Summary\.txt'
+            $result[0] | Should-MatchString '160\\Setup Bootstrap\\Log\\Summary\.txt'
 
-            Should -Invoke -CommandName Get-Content -ParameterFilter {
+            Should-Invoke -CommandName Get-Content -Exactly -ParameterFilter {
                 $Path -eq 'C:\Program Files\Microsoft SQL Server\160\Setup Bootstrap\Log\Summary.txt'
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -159,7 +159,7 @@ Describe 'Get-SqlDscSetupLog' -Tag 'Public' {
         It 'Should return a message indicating no log file was found' {
             $result = Get-SqlDscSetupLog
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should not call Get-Content' {
@@ -169,7 +169,7 @@ Describe 'Get-SqlDscSetupLog' -Tag 'Public' {
 
             $result = Get-SqlDscSetupLog
 
-            Should -Invoke -CommandName Get-Content -Exactly -Times 0
+            Should-Invoke -CommandName Get-Content -Exactly -Times 0
         }
     }
 
@@ -189,33 +189,33 @@ Describe 'Get-SqlDscSetupLog' -Tag 'Public' {
         It 'Should return null without searching for files' {
             $result = Get-SqlDscSetupLog -Path 'C:\NonExistentPath' -ErrorAction 'SilentlyContinue'
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should not call Get-ChildItem when path does not exist' {
             $result = Get-SqlDscSetupLog -Path 'C:\NonExistentPath' -ErrorAction 'SilentlyContinue'
 
-            Should -Invoke -CommandName Get-ChildItem -Exactly -Times 0
+            Should-Invoke -CommandName Get-ChildItem -Exactly -Times 0
         }
 
         It 'Should call Test-Path with the correct parameters' {
             $result = Get-SqlDscSetupLog -Path 'C:\NonExistentPath' -ErrorAction 'SilentlyContinue'
 
-            Should -Invoke -CommandName Test-Path -ParameterFilter {
+            Should-Invoke -CommandName Test-Path -Exactly -ParameterFilter {
                 $Path -eq 'C:\NonExistentPath' -and
                 $PathType -eq 'Container'
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should call Write-Error with the correct parameters' {
             $result = Get-SqlDscSetupLog -Path 'C:\NonExistentPath' -ErrorAction 'SilentlyContinue'
 
-            Should -Invoke -CommandName Write-Error -ParameterFilter {
+            Should-Invoke -CommandName Write-Error -Exactly -ParameterFilter {
                 $Message -match 'C:\\NonExistentPath' -and
                 $Category -eq 'ObjectNotFound' -and
                 $ErrorId -eq 'GSDSL0006' -and
                 $TargetObject -eq 'C:\NonExistentPath'
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -233,7 +233,7 @@ Describe 'Get-SqlDscSetupLog' -Tag 'Public' {
         It 'Should throw a terminating error when using ErrorAction Stop' {
             {
                 Get-SqlDscSetupLog -Path 'C:\NonExistentPath' -ErrorAction 'Stop'
-            } | Should -Throw -ErrorId 'GSDSL0006,Get-SqlDscSetupLog'
+            } | Should-Throw -FullyQualifiedErrorId 'GSDSL0006,Get-SqlDscSetupLog'
         }
     }
 
@@ -263,8 +263,8 @@ Describe 'Get-SqlDscSetupLog' -Tag 'Public' {
         It 'Should only return files from Setup Bootstrap\Log directory' {
             $result = Get-SqlDscSetupLog
 
-            $result[0] | Should -Match 'Setup Bootstrap\\Log\\Summary\.txt'
-            $result[0] | Should -Not -Match 'SomeOtherLocation'
+            $result[0] | Should-MatchString 'Setup Bootstrap\\Log\\Summary\.txt'
+            $result[0] | Should-NotMatchString 'SomeOtherLocation'
         }
     }
 
@@ -277,18 +277,18 @@ Describe 'Get-SqlDscSetupLog' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be '__AllParameterSets'
-            $result.ParameterListAsString | Should -Be '[[-Path] <String>] [<CommonParameters>]'
+            $result.ParameterSetName | Should-Be '__AllParameterSets'
+            $result.ParameterListAsString | Should-Be '[[-Path] <String>] [<CommonParameters>]'
         }
 
         It 'Should have Path as an optional parameter' {
             $commandInfo = Get-Command -Name 'Get-SqlDscSetupLog'
-            $commandInfo.Parameters['Path'].Attributes.Mandatory | Should -BeFalse
+            $commandInfo.Parameters['Path'].Attributes.Mandatory | Should-BeFalse
         }
 
         It 'Should have the correct output type' {
             $commandInfo = Get-Command -Name 'Get-SqlDscSetupLog'
-            $commandInfo.OutputType.Name | Should -Contain 'System.String[]'
+            $commandInfo.OutputType.Name | Should-ContainCollection 'System.String[]'
         }
     }
 }

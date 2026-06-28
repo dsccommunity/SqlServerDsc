@@ -65,7 +65,7 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
         It 'Should return SSL certificate bindings' {
             $result = $script:configuration | Get-SqlDscRSSslCertificateBinding -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
         }
 
         It 'Should return the binding for the test certificate' {
@@ -77,9 +77,9 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
                 $_.Port -eq $script:testPort
             }
 
-            $binding | Should -Not -BeNullOrEmpty
-            $binding.Application | Should -Be 'ReportServerWebService'
-            $binding.IPAddress | Should -Be $script:testIPAddress
+            $binding | Should-BeTruthy
+            $binding.Application | Should-Be 'ReportServerWebService'
+            $binding.IPAddress | Should-Be $script:testIPAddress
         }
 
         It 'Should return the binding for ReportServerWebApp' {
@@ -91,9 +91,9 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
                 $_.Port -eq $script:testPort
             }
 
-            $binding | Should -Not -BeNullOrEmpty
-            $binding.Application | Should -Be 'ReportServerWebApp'
-            $binding.IPAddress | Should -Be $script:testIPAddress
+            $binding | Should-BeTruthy
+            $binding.Application | Should-Be 'ReportServerWebApp'
+            $binding.IPAddress | Should-Be $script:testIPAddress
         }
     }
 
@@ -105,7 +105,7 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
         It 'Should return SSL certificate bindings' {
             $result = $script:configuration | Get-SqlDscRSSslCertificateBinding -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
         }
 
         It 'Should return the binding for the test certificate' {
@@ -117,9 +117,9 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
                 $_.Port -eq $script:testPort
             }
 
-            $binding | Should -Not -BeNullOrEmpty
-            $binding.Application | Should -Be 'ReportServerWebService'
-            $binding.IPAddress | Should -Be $script:testIPAddress
+            $binding | Should-BeTruthy
+            $binding.Application | Should-Be 'ReportServerWebService'
+            $binding.IPAddress | Should-Be $script:testIPAddress
         }
 
         It 'Should return the binding for ReportServerWebApp' {
@@ -131,9 +131,9 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
                 $_.Port -eq $script:testPort
             }
 
-            $binding | Should -Not -BeNullOrEmpty
-            $binding.Application | Should -Be 'ReportServerWebApp'
-            $binding.IPAddress | Should -Be $script:testIPAddress
+            $binding | Should-BeTruthy
+            $binding.Application | Should-Be 'ReportServerWebApp'
+            $binding.IPAddress | Should-Be $script:testIPAddress
         }
     }
 
@@ -145,7 +145,7 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
         It 'Should return SSL certificate bindings' {
             $result = $script:configuration | Get-SqlDscRSSslCertificateBinding -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
         }
 
         It 'Should return the binding for the test certificate' {
@@ -157,9 +157,9 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
                 $_.Port -eq $script:testPort
             }
 
-            $binding | Should -Not -BeNullOrEmpty
-            $binding.Application | Should -Be 'ReportServerWebService'
-            $binding.IPAddress | Should -Be $script:testIPAddress
+            $binding | Should-BeTruthy
+            $binding.Application | Should-Be 'ReportServerWebService'
+            $binding.IPAddress | Should-Be $script:testIPAddress
         }
 
         It 'Should return the binding for ReportServerWebApp' {
@@ -171,9 +171,9 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
                 $_.Port -eq $script:testPort
             }
 
-            $binding | Should -Not -BeNullOrEmpty
-            $binding.Application | Should -Be 'ReportServerWebApp'
-            $binding.IPAddress | Should -Be $script:testIPAddress
+            $binding | Should-BeTruthy
+            $binding.Application | Should-Be 'ReportServerWebApp'
+            $binding.IPAddress | Should-Be $script:testIPAddress
         }
     }
 
@@ -185,7 +185,7 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
         It 'Should return SSL certificate bindings' {
             $result = $script:configuration | Get-SqlDscRSSslCertificateBinding -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
         }
 
         It 'Should return the binding for the test certificate' {
@@ -197,9 +197,9 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
                 $_.Port -eq $script:testPort
             }
 
-            $binding | Should -Not -BeNullOrEmpty
-            $binding.Application | Should -Be 'ReportServerWebService'
-            $binding.IPAddress | Should -Be $script:testIPAddress
+            $binding | Should-BeTruthy
+            $binding.Application | Should-Be 'ReportServerWebService'
+            $binding.IPAddress | Should-Be $script:testIPAddress
         }
 
         It 'Should return the binding for ReportServerWebApp' {
@@ -211,9 +211,9 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
                 $_.Port -eq $script:testPort
             }
 
-            $binding | Should -Not -BeNullOrEmpty
-            $binding.Application | Should -Be 'ReportServerWebApp'
-            $binding.IPAddress | Should -Be $script:testIPAddress
+            $binding | Should-BeTruthy
+            $binding.Application | Should-Be 'ReportServerWebApp'
+            $binding.IPAddress | Should-Be $script:testIPAddress
         }
     }
 }

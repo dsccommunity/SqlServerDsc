@@ -91,12 +91,12 @@ Describe 'SqlServerDsc.Common\ConvertTo-ServerInstanceName' -Tag 'ConvertToServe
     It 'Should return correct service instance for a default instance' {
         $result = ConvertTo-ServerInstanceName -InstanceName 'MSSQLSERVER' -ServerName $mockComputerName
 
-        $result | Should -BeExactly $mockComputerName
+        $result | Should-BeString -CaseSensitive $mockComputerName
     }
 
     It 'Should return correct service instance for a name instance' {
         $result = ConvertTo-ServerInstanceName -InstanceName 'MyInstance' -ServerName $mockComputerName
 
-        $result | Should -BeExactly ('{0}\{1}' -f $mockComputerName, 'MyInstance')
+        $result | Should-BeString -CaseSensitive ('{0}\{1}' -f $mockComputerName, 'MyInstance')
     }
 }

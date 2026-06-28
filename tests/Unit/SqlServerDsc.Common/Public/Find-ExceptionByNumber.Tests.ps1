@@ -94,15 +94,15 @@ Describe 'SqlServerDsc.Common\Find-ExceptionByNumber' -Tag 'FindExceptionByNumbe
 
     Context 'When searching Exception objects' {
         It 'Should return true for main exception' {
-            Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 1 | Should -BeTrue
+            Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 1 | Should-BeTrue
         }
 
         It 'Should return true for inner exception' {
-            Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 2 | Should -BeTrue
+            Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 2 | Should-BeTrue
         }
 
         It 'Should return false when message not found' {
-            Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 3 | Should -BeFalse
+            Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 3 | Should-BeFalse
         }
     }
 }

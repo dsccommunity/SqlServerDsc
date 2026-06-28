@@ -177,12 +177,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
             ## Uncomment this line to see the registry key values.
             #Write-Verbose -Message ((reg query "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server" /s) | Out-String) -Verbose
 
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.InstallFolder | Should -Be $ConfigurationData.AllNodes.InstallFolder
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.InstallFolder | Should-Be $ConfigurationData.AllNodes.InstallFolder
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 

@@ -108,23 +108,23 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
         It 'Should create a database snapshot successfully with minimal parameters' {
             $result = New-SqlDscDatabaseSnapshot -ServerObject $mockServerObject -Name 'TestSnapshot' -DatabaseName 'SourceDatabase' -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestSnapshot'
-            $result.DatabaseSnapshotBaseName | Should -Be 'SourceDatabase'
-            Should -Invoke -CommandName 'New-SqlDscDatabase' -Exactly -Times 1
-            Should -Invoke -CommandName 'Get-SqlDscDatabase' -Exactly -Times 1
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestSnapshot'
+            $result.DatabaseSnapshotBaseName | Should-Be 'SourceDatabase'
+            Should-Invoke -CommandName 'New-SqlDscDatabase' -Exactly -Times 1
+            Should-Invoke -CommandName 'Get-SqlDscDatabase' -Exactly -Times 1
         }
 
         It 'Should auto-generate file groups when not specified' {
             $result = New-SqlDscDatabaseSnapshot -ServerObject $mockServerObject -Name 'TestSnapshot' -DatabaseName 'SourceDatabase' -Force
 
-            Should -Invoke -CommandName 'Get-SqlDscDatabase' -ParameterFilter {
+            Should-Invoke -CommandName 'Get-SqlDscDatabase' -Exactly -ParameterFilter {
                 $ServerObject.InstanceName -eq 'TestInstance' -and
                 $Name -eq 'SourceDatabase' -and
                 $ErrorAction -eq 'Stop'
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName 'New-SqlDscDatabase' -ParameterFilter {
+            Should-Invoke -CommandName 'New-SqlDscDatabase' -Exactly -ParameterFilter {
                 $expectedPath = Join-Path -Path $script:mockDefaultDataPath -ChildPath 'SourceDatabase.ss'
                 $FileGroup -and
                 $FileGroup.Count -eq 1 -and
@@ -132,30 +132,30 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
                 $FileGroup[0].Files.Count -eq 1 -and
                 $FileGroup[0].Files[0].Name -eq 'SourceDatabase' -and
                 $FileGroup[0].Files[0].FileName -eq $expectedPath
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should pass the correct parameters to New-SqlDscDatabase' {
             $result = New-SqlDscDatabaseSnapshot -ServerObject $mockServerObject -Name 'MySnapshot' -DatabaseName 'SourceDatabase' -Force
 
-            Should -Invoke -CommandName 'New-SqlDscDatabase' -ParameterFilter {
+            Should-Invoke -CommandName 'New-SqlDscDatabase' -Exactly -ParameterFilter {
                 $ServerObject.InstanceName -eq 'TestInstance' -and
                 $Name -eq 'MySnapshot' -and
                 $DatabaseSnapshotBaseName -eq 'SourceDatabase' -and
                 $Force -eq $true
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should pass Refresh parameter to Get-SqlDscDatabase when specified' {
             $result = New-SqlDscDatabaseSnapshot -ServerObject $mockServerObject -Name 'TestSnapshot' -DatabaseName 'SourceDatabase' -Refresh -Force
 
-            Should -Invoke -CommandName 'Get-SqlDscDatabase' -ParameterFilter {
+            Should-Invoke -CommandName 'Get-SqlDscDatabase' -Exactly -ParameterFilter {
                 $Refresh -eq $true
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName 'New-SqlDscDatabase' -ParameterFilter {
+            Should-Invoke -CommandName 'New-SqlDscDatabase' -Exactly -ParameterFilter {
                 $Refresh -eq $true
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should pass FileGroup parameter when specified' {
@@ -175,11 +175,11 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
             $result = New-SqlDscDatabaseSnapshot -ServerObject $mockServerObject -Name 'TestSnapshot' -DatabaseName 'SourceDatabase' -FileGroup @($mockFileGroupSpec) -Force
 
             # Should not call Get-SqlDscDatabase when FileGroup is specified
-            Should -Invoke -CommandName 'Get-SqlDscDatabase' -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName 'Get-SqlDscDatabase' -Exactly -Scope It -Times 0
 
-            Should -Invoke -CommandName 'New-SqlDscDatabase' -ParameterFilter {
+            Should-Invoke -CommandName 'New-SqlDscDatabase' -Exactly -ParameterFilter {
                 $FileGroup -and $FileGroup.Count -eq 1 -and $FileGroup[0].Name -eq 'PRIMARY'
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should use MasterDBPath when DefaultFile is not set' {
@@ -199,10 +199,10 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
 
             $result = New-SqlDscDatabaseSnapshot -ServerObject $mockServerObjectNoDefaultFile -Name 'TestSnapshot' -DatabaseName 'SourceDatabase' -Force
 
-            Should -Invoke -CommandName 'New-SqlDscDatabase' -ParameterFilter {
+            Should-Invoke -CommandName 'New-SqlDscDatabase' -Exactly -ParameterFilter {
                 $expectedPath = Join-Path -Path $script:mockMasterDbPath -ChildPath 'SourceDatabase.ss'
                 $FileGroup[0].Files[0].FileName -eq $expectedPath
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -252,22 +252,22 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
         It 'Should create a database snapshot from DatabaseObject successfully' {
             $result = New-SqlDscDatabaseSnapshot -DatabaseObject $mockDatabaseObject -Name 'TestSnapshot' -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestSnapshot'
-            $result.DatabaseSnapshotBaseName | Should -Be 'MyDatabase'
-            Should -Invoke -CommandName 'New-SqlDscDatabase' -Exactly -Times 1
-            Should -Invoke -CommandName 'Get-SqlDscDatabase' -Exactly -Times 1
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestSnapshot'
+            $result.DatabaseSnapshotBaseName | Should-Be 'MyDatabase'
+            Should-Invoke -CommandName 'New-SqlDscDatabase' -Exactly -Times 1
+            Should-Invoke -CommandName 'Get-SqlDscDatabase' -Exactly -Times 1
         }
 
         It 'Should pass the correct parameters to New-SqlDscDatabase from DatabaseObject' {
             $result = New-SqlDscDatabaseSnapshot -DatabaseObject $mockDatabaseObject -Name 'MySnapshot' -Force
 
-            Should -Invoke -CommandName 'New-SqlDscDatabase' -ParameterFilter {
+            Should-Invoke -CommandName 'New-SqlDscDatabase' -Exactly -ParameterFilter {
                 $ServerObject.InstanceName -eq 'TestInstance' -and
                 $Name -eq 'MySnapshot' -and
                 $DatabaseSnapshotBaseName -eq 'MyDatabase' -and
                 $Force -eq $true
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -287,23 +287,23 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
 
         It 'Should throw error when SQL Server edition does not support snapshots' {
             $errorRecord = { New-SqlDscDatabaseSnapshot -ServerObject $mockServerObjectStandard -Name 'TestSnapshot' -DatabaseName 'MyDatabase' -Force } |
-                Should -Throw -ExpectedMessage '*not supported*' -PassThru
+                Should-Throw -ExceptionMessage '*not supported*'
 
-            $errorRecord.Exception.Message | Should -BeLike '*not supported*'
-            $errorRecord.FullyQualifiedErrorId | Should -Be 'NSDS0001,New-SqlDscDatabaseSnapshot'
-            $errorRecord.CategoryInfo.Category | Should -Be 'InvalidOperation'
+            $errorRecord.Exception.Message | Should-BeLikeString '*not supported*'
+            $errorRecord.FullyQualifiedErrorId | Should-Be 'NSDS0001,New-SqlDscDatabaseSnapshot'
+            $errorRecord.CategoryInfo.Category | Should-Be 'InvalidOperation'
         }
 
         It 'Should throw error when using DatabaseObject with unsupported edition' {
             { New-SqlDscDatabaseSnapshot -DatabaseObject $mockDatabaseObject -Name 'TestSnapshot' -Force } |
-                Should -Throw -ExpectedMessage '*not supported*'
+                Should-Throw -ExceptionMessage '*not supported*'
         }
 
         It 'Should not call New-SqlDscDatabase when edition is not supported' {
             { New-SqlDscDatabaseSnapshot -ServerObject $mockServerObjectStandard -Name 'TestSnapshot' -DatabaseName 'MyDatabase' -Force } |
-                Should -Throw
+                Should-Throw
 
-            Should -Invoke -CommandName 'New-SqlDscDatabase' -Exactly -Times 0
+            Should-Invoke -CommandName 'New-SqlDscDatabase' -Exactly -Times 0
         }
     }
 
@@ -352,9 +352,9 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
         It 'Should create a database snapshot on Developer edition' {
             $result = New-SqlDscDatabaseSnapshot -ServerObject $mockServerObjectDeveloper -Name 'TestSnapshot' -DatabaseName 'MyDatabase' -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestSnapshot'
-            Should -Invoke -CommandName 'New-SqlDscDatabase' -Exactly -Times 1
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestSnapshot'
+            Should-Invoke -CommandName 'New-SqlDscDatabase' -Exactly -Times 1
         }
     }
 
@@ -403,9 +403,9 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
         It 'Should create a database snapshot on Evaluation edition' {
             $result = New-SqlDscDatabaseSnapshot -ServerObject $mockServerObjectEvaluation -Name 'TestSnapshot' -DatabaseName 'MyDatabase' -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestSnapshot'
-            Should -Invoke -CommandName 'New-SqlDscDatabase' -Exactly -Times 1
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestSnapshot'
+            Should-Invoke -CommandName 'New-SqlDscDatabase' -Exactly -Times 1
         }
     }
 
@@ -423,8 +423,8 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have the correct parameters in parameter set DatabaseObject' -ForEach @(
@@ -440,31 +440,31 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have ServerObject as a mandatory parameter in ServerObject parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDatabaseSnapshot').Parameters['ServerObject']
             $serverObjectSetAttribute = $parameterInfo.Attributes | Where-Object { $_.ParameterSetName -eq 'ServerObject' }
-            $serverObjectSetAttribute.Mandatory | Should -BeTrue
+            $serverObjectSetAttribute.Mandatory | Should-BeTrue
         }
 
         It 'Should have DatabaseObject as a mandatory parameter in DatabaseObject parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDatabaseSnapshot').Parameters['DatabaseObject']
             $databaseObjectSetAttribute = $parameterInfo.Attributes | Where-Object { $_.ParameterSetName -eq 'DatabaseObject' }
-            $databaseObjectSetAttribute.Mandatory | Should -BeTrue
+            $databaseObjectSetAttribute.Mandatory | Should-BeTrue
         }
 
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDatabaseSnapshot').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have DatabaseName as a mandatory parameter in ServerObject parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDatabaseSnapshot').Parameters['DatabaseName']
             $serverObjectSetAttribute = $parameterInfo.Attributes | Where-Object { $_.ParameterSetName -eq 'ServerObject' }
-            $serverObjectSetAttribute.Mandatory | Should -BeTrue
+            $serverObjectSetAttribute.Mandatory | Should-BeTrue
         }
     }
 }

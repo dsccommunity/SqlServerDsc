@@ -58,8 +58,8 @@ Describe 'Get-SqlDscRSDatabaseInstallation' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -84,17 +84,17 @@ Describe 'Get-SqlDscRSDatabaseInstallation' {
         It 'Should return installation objects with GUIDs without braces' {
             $result = $mockCimInstance | Get-SqlDscRSDatabaseInstallation
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -HaveCount 2
-            $result[0].InstallationID | Should -Be 'c59fadae-f8ee-46ee-b063-f8d89872100c'
-            $result[0].MachineName | Should -Be 'SERVER1'
-            $result[0].InstanceName | Should -Be 'SSRS'
-            $result[0].IsInitialized | Should -BeTrue
-            $result[1].InstallationID | Should -Be 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'
+            $result | Should-BeTruthy
+            $result | Should-BeCollection -Count 2
+            $result[0].InstallationID | Should-Be 'c59fadae-f8ee-46ee-b063-f8d89872100c'
+            $result[0].MachineName | Should-Be 'SERVER1'
+            $result[0].InstanceName | Should-Be 'SSRS'
+            $result[0].IsInitialized | Should-BeTrue
+            $result[1].InstallationID | Should-Be 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'ListReportServersInDatabase'
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -118,9 +118,9 @@ Describe 'Get-SqlDscRSDatabaseInstallation' {
         It 'Should return an empty result' {
             $result = $mockCimInstance | Get-SqlDscRSDatabaseInstallation
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -136,7 +136,7 @@ Describe 'Get-SqlDscRSDatabaseInstallation' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Get-SqlDscRSDatabaseInstallation } | Should -Throw -ErrorId 'GSRSDI0001,Get-SqlDscRSDatabaseInstallation'
+            { $mockCimInstance | Get-SqlDscRSDatabaseInstallation } | Should-Throw -FullyQualifiedErrorId 'GSRSDI0001,Get-SqlDscRSDatabaseInstallation'
         }
     }
 
@@ -161,11 +161,11 @@ Describe 'Get-SqlDscRSDatabaseInstallation' {
         It 'Should get database installation information' {
             $result = Get-SqlDscRSDatabaseInstallation -Configuration $mockCimInstance
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -HaveCount 1
-            $result.InstallationID | Should -Be 'd4e5f6a7-b8c9-0123-4567-890abcdef012'
+            $result | Should-BeTruthy
+            $result | Should-BeCollection -Count 1
+            $result.InstallationID | Should-Be 'd4e5f6a7-b8c9-0123-4567-890abcdef012'
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 }

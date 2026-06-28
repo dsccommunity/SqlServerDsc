@@ -93,15 +93,15 @@ Describe 'Get-OperatingSystem' -Tag 'Private' {
             InModuleScope -ScriptBlock {
                 $result = Get-OperatingSystem
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.OSLanguage | Should -Be 1033
-                $result.Caption | Should -Be 'Microsoft Windows Server 2022'
+                $result | Should-BeTruthy
+                $result.OSLanguage | Should-Be 1033
+                $result.Caption | Should-Be 'Microsoft Windows Server 2022'
             }
 
-            Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+            Should-Invoke -CommandName Get-CimInstance -Exactly -ParameterFilter {
                 $ClassName -eq 'Win32_OperatingSystem' -and
                 $Namespace -eq 'root/cimv2'
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -114,7 +114,7 @@ Describe 'Get-OperatingSystem' -Tag 'Private' {
 
         It 'Should throw a terminating error' {
             InModuleScope -ScriptBlock {
-                { Get-OperatingSystem } | Should -Throw -ErrorId 'GOS0001,Get-OperatingSystem'
+                { Get-OperatingSystem } | Should-Throw -FullyQualifiedErrorId 'GOS0001,Get-OperatingSystem'
             }
         }
     }

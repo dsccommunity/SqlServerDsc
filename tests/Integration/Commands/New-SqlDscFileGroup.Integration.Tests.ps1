@@ -55,19 +55,19 @@ Describe 'New-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
         It 'Should create a standalone FileGroup successfully' {
             $result = New-SqlDscFileGroup -Name 'TestFileGroup'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
-            $result.Name | Should -Be 'TestFileGroup'
-            $result.Parent | Should -BeNullOrEmpty
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.FileGroup'
+            $result.Name | Should-Be 'TestFileGroup'
+            $result.Parent | Should-BeFalsy
         }
 
         It 'Should create a standalone PRIMARY FileGroup successfully' {
             $result = New-SqlDscFileGroup -Name 'PRIMARY'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
-            $result.Name | Should -Be 'PRIMARY'
-            $result.Parent | Should -BeNullOrEmpty
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.FileGroup'
+            $result.Name | Should-Be 'PRIMARY'
+            $result.Parent | Should-BeFalsy
         }
     }
 
@@ -82,25 +82,25 @@ Describe 'New-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
         It 'Should create a FileGroup with Database successfully' {
             $result = New-SqlDscFileGroup -Database $script:mockDatabase -Name 'TestFileGroup' -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
-            $result.Name | Should -Be 'TestFileGroup'
-            $result.Parent | Should -Be $script:mockDatabase
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.FileGroup'
+            $result.Name | Should-Be 'TestFileGroup'
+            $result.Parent | Should-Be $script:mockDatabase
         }
 
         It 'Should support Force parameter to bypass confirmation' {
             $result = New-SqlDscFileGroup -Database $script:mockDatabase -Name 'ForcedFileGroup' -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
-            $result.Name | Should -Be 'ForcedFileGroup'
-            $result.Parent | Should -Be $script:mockDatabase
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.FileGroup'
+            $result.Name | Should-Be 'ForcedFileGroup'
+            $result.Parent | Should-Be $script:mockDatabase
         }
 
         It 'Should return null when user declines confirmation' {
             $result = New-SqlDscFileGroup -Database $script:mockDatabase -Name 'DeclinedFileGroup' -Confirm:$false -WhatIf
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 }

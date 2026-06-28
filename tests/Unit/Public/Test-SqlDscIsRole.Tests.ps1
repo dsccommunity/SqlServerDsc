@@ -63,7 +63,7 @@ Describe 'Test-SqlDscIsRole' -Tag 'Public' {
         It 'Should return $false' {
             $result = Test-SqlDscIsRole -ServerObject $mockServerObject -Name 'UnknownUser'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 
@@ -81,14 +81,14 @@ Describe 'Test-SqlDscIsRole' -Tag 'Public' {
         It 'Should return $true' {
             $result = Test-SqlDscIsRole -ServerObject $mockServerObject -Name 'JuniorDBA'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         Context 'When passing ServerObject over the pipeline' {
             It 'Should return $true' {
                 $result = $mockServerObject | Test-SqlDscIsRole -Name 'JuniorDBA'
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
         }
     }

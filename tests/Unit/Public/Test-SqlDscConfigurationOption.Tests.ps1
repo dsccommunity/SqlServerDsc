@@ -60,41 +60,41 @@ Describe 'Test-SqlDscConfigurationOption' -Tag 'Public' {
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
     Context 'When command has correct parameter properties' {
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscConfigurationOption').Parameters['ServerObject']
-            $parameterInfo.Attributes.Mandatory | Should -Contain $true
+            $parameterInfo.Attributes.Mandatory | Should-ContainCollection $true
         }
 
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscConfigurationOption').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should -Contain $true
+            $parameterInfo.Attributes.Mandatory | Should-ContainCollection $true
         }
 
         It 'Should have Value as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscConfigurationOption').Parameters['Value']
-            $parameterInfo.Attributes.Mandatory | Should -Contain $true
+            $parameterInfo.Attributes.Mandatory | Should-ContainCollection $true
         }
 
         It 'Should have ServerObject accepting pipeline input' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscConfigurationOption').Parameters['ServerObject']
-            $parameterInfo.Attributes.ValueFromPipeline | Should -Contain $true
+            $parameterInfo.Attributes.ValueFromPipeline | Should-ContainCollection $true
         }
 
         It 'Should not support ShouldProcess' {
             $commandInfo = Get-Command -Name 'Test-SqlDscConfigurationOption'
-            $commandInfo.Parameters.ContainsKey('WhatIf') | Should -BeFalse
-            $commandInfo.Parameters.ContainsKey('Confirm') | Should -BeFalse
+            $commandInfo.Parameters.ContainsKey('WhatIf') | Should-BeFalse
+            $commandInfo.Parameters.ContainsKey('Confirm') | Should-BeFalse
         }
 
         It 'Should return boolean output type' {
             $commandInfo = Get-Command -Name 'Test-SqlDscConfigurationOption'
-            $commandInfo.OutputType[0].Type | Should -Be ([System.Boolean])
+            $commandInfo.OutputType[0].Type | Should-Be ([System.Boolean])
         }
     }
 
@@ -128,29 +128,29 @@ Describe 'Test-SqlDscConfigurationOption' -Tag 'Public' {
         It 'Should return true when configuration option matches expected value' {
             $result = Test-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 4
 
-            $result | Should -BeTrue
-            Should -Invoke -CommandName Write-Verbose -Times 1 -Exactly
+            $result | Should-BeTrue
+            Should-Invoke -CommandName Write-Verbose -Exactly -Times 1
         }
 
         It 'Should return false when configuration option does not match expected value' {
             $result = Test-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 8
 
-            $result | Should -BeFalse
-            Should -Invoke -CommandName Write-Verbose -Times 1 -Exactly
+            $result | Should-BeFalse
+            Should-Invoke -CommandName Write-Verbose -Exactly -Times 1
         }
 
         It 'Should work with pipeline input' {
             $result = $script:mockServerObject | Test-SqlDscConfigurationOption -Name 'max degree of parallelism' -Value 4
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should call Write-Verbose with correct message pattern' {
             $null = Test-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 4
 
-            Should -Invoke -CommandName Write-Verbose -Times 1 -Exactly -ParameterFilter {
+            Should-Invoke -CommandName Write-Verbose -Exactly -ParameterFilter {
                 $Message -match "Testing configuration option 'max degree of parallelism': Current value is '4', expected value is '4', match result is 'True' on server 'TestServer'"
-            }
+            } -Times 1
         }
     }
 
@@ -175,20 +175,20 @@ Describe 'Test-SqlDscConfigurationOption' -Tag 'Public' {
         It 'Should return false and write error when configuration option does not exist' {
             $result = Test-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'NonExistentOption' -Value 1
 
-            $result | Should -BeFalse
-            Should -Invoke -CommandName Write-Error -Times 1 -Exactly -ParameterFilter {
+            $result | Should-BeFalse
+            Should-Invoke -CommandName Write-Error -Exactly -ParameterFilter {
                 $Message -match "There is no configuration option with the name 'NonExistentOption'"
-            }
+            } -Times 1
         }
 
         It 'Should use correct error details for missing configuration option' {
             $null = Test-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'InvalidOption' -Value 1
 
-            Should -Invoke -CommandName Write-Error -Times 1 -Exactly -ParameterFilter {
+            Should-Invoke -CommandName Write-Error -Exactly -ParameterFilter {
                 $Category -eq 'InvalidOperation' -and
                 $ErrorId -eq 'TSDCO0001' -and
                 $TargetObject -eq 'InvalidOption'
-            }
+            } -Times 1
         }
     }
 
@@ -224,7 +224,7 @@ Describe 'Test-SqlDscConfigurationOption' -Tag 'Public' {
 
             $result = Test-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'cost threshold for parallelism' -Value 0
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should return true for exact match at maximum boundary' {
@@ -232,7 +232,7 @@ Describe 'Test-SqlDscConfigurationOption' -Tag 'Public' {
 
             $result = Test-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'cost threshold for parallelism' -Value 32767
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should return false for values that do not match' {
@@ -240,7 +240,7 @@ Describe 'Test-SqlDscConfigurationOption' -Tag 'Public' {
 
             $result = Test-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'cost threshold for parallelism' -Value 50
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
 
         It 'Should handle boolean-style configuration options (0-1 range)' {
@@ -265,11 +265,11 @@ Describe 'Test-SqlDscConfigurationOption' -Tag 'Public' {
 
             # Test enabled state (1)
             $result = Test-SqlDscConfigurationOption -ServerObject $booleanServerObject -Name 'Agent XPs' -Value 1
-            $result | Should -BeTrue
+            $result | Should-BeTrue
 
             # Test disabled state comparison
             $result = Test-SqlDscConfigurationOption -ServerObject $booleanServerObject -Name 'Agent XPs' -Value 0
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 
@@ -286,8 +286,8 @@ Describe 'Test-SqlDscConfigurationOption' -Tag 'Public' {
         It 'Should use correct localized error messages' {
             InModuleScope -ScriptBlock {
                 # Verify localized strings exist
-                $script:localizedData.ConfigurationOption_Test_Missing | Should -Be "There is no configuration option with the name '{0}'."
-                $script:localizedData.ConfigurationOption_Test_Result | Should -Be "Testing configuration option '{0}': Current value is '{1}', expected value is '{2}', match result is '{3}' on server '{4}'."
+                $script:localizedData.ConfigurationOption_Test_Missing | Should-Be "There is no configuration option with the name '{0}'."
+                $script:localizedData.ConfigurationOption_Test_Result | Should-Be "Testing configuration option '{0}': Current value is '{1}', expected value is '{2}', match result is '{3}' on server '{4}'."
             }
         }
     }
@@ -350,15 +350,15 @@ Describe 'Test-SqlDscConfigurationOption' -Tag 'Public' {
             $inputScript = 'Test-SqlDscConfigurationOption -ServerObject $global:TestServerObject -Name max'
             $result = TabExpansion2 -inputScript $inputScript -cursorColumn $inputScript.Length
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.CompletionMatches | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
+            $result.CompletionMatches | Should-BeTruthy
 
             # Should find the max server memory option
             $maxMemoryMatch = $result.CompletionMatches | Where-Object {
                 $_.CompletionText -eq "'max server memory (MB)'"
             }
-            $maxMemoryMatch | Should -Not -BeNullOrEmpty
-            $maxMemoryMatch.ToolTip | Should -Match "Current: 2048"
+            $maxMemoryMatch | Should-BeTruthy
+            $maxMemoryMatch.ToolTip | Should-MatchString "Current: 2048"
         }
 
         It 'Should provide Value parameter completions through TabExpansion2' {
@@ -366,22 +366,22 @@ Describe 'Test-SqlDscConfigurationOption' -Tag 'Public' {
             $inputScript = 'Test-SqlDscConfigurationOption -ServerObject $global:TestServerObject -Name "max server memory (MB)" -Value '
             $result = TabExpansion2 -inputScript $inputScript -cursorColumn $inputScript.Length
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.CompletionMatches | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
+            $result.CompletionMatches | Should-BeTruthy
 
             # Should find current value and other suggestions
             $currentValueMatch = $result.CompletionMatches | Where-Object {
                 $_.CompletionText -eq '2048' -and $_.ToolTip -match "Current ConfigValue"
             }
-            $currentValueMatch | Should -Not -BeNullOrEmpty
+            $currentValueMatch | Should-BeTruthy
         }
 
         It 'Should handle partial Name completions through TabExpansion2' {
             $inputScript = 'Test-SqlDscConfigurationOption -ServerObject $global:TestServerObject -Name cost'
             $result = TabExpansion2 -inputScript $inputScript -cursorColumn $inputScript.Length
 
-            $result.CompletionMatches | Should -HaveCount 1
-            $result.CompletionMatches[0].CompletionText | Should -Be "'cost threshold for parallelism'"
+            $result.CompletionMatches | Should-BeCollection -Count 1
+            $result.CompletionMatches[0].CompletionText | Should-Be "'cost threshold for parallelism'"
         }
 
         It 'Should execute Name argument completer code when retrieving command metadata' {
@@ -397,8 +397,8 @@ Describe 'Test-SqlDscConfigurationOption' -Tag 'Public' {
                 ServerObject = $script:mockServerForTabCompletion
             }
 
-            $completions | Should -Not -BeNullOrEmpty
-            $completions[0].CompletionText | Should -Be "'max server memory (MB)'"
+            $completions | Should-BeTruthy
+            $completions[0].CompletionText | Should-Be "'max server memory (MB)'"
         }
 
         It 'Should execute Value argument completer code when retrieving command metadata' {
@@ -411,8 +411,8 @@ Describe 'Test-SqlDscConfigurationOption' -Tag 'Public' {
                 Name = 'max server memory (MB)'
             }
 
-            $completions | Should -Not -BeNullOrEmpty
-            $completions | Where-Object { $_.ToolTip -match "Current ConfigValue: 2048" } | Should -Not -BeNullOrEmpty
+            $completions | Should-BeTruthy
+            $completions | Where-Object { $_.ToolTip -match "Current ConfigValue: 2048" } | Should-BeTruthy
         }
 
         It 'Should handle tab completion errors gracefully' {
@@ -431,8 +431,8 @@ Describe 'Test-SqlDscConfigurationOption' -Tag 'Public' {
                 Should not throw an error and should return empty from argument completer, but then
                 TabExpansion2 itself returns some default completions (like filesystem paths).
             #>
-            $result | Should -BeOfType ([System.Management.Automation.CommandCompletion])
-            $result.CompletionMatches.ListItemText | Should -Be 'tests'
+            $result | Should-HaveType ([System.Management.Automation.CommandCompletion])
+            $result.CompletionMatches.ListItemText | Should-Be 'tests'
         }
 
         It 'Should handle missing ServerObject in tab completion gracefully' {
@@ -444,8 +444,8 @@ Describe 'Test-SqlDscConfigurationOption' -Tag 'Public' {
                 Should not throw an error and should return empty from argument completer, but then
                 TabExpansion2 itself returns some default completions (like filesystem paths).
             #>
-            $result | Should -BeOfType ([System.Management.Automation.CommandCompletion])
-            $result.CompletionMatches.ListItemText | Should -Be 'tests'
+            $result | Should-HaveType ([System.Management.Automation.CommandCompletion])
+            $result.CompletionMatches.ListItemText | Should-Be 'tests'
         }
 
         # TODO: This tests fails because the boolean-style option tooltips are not set as CompletionMatches

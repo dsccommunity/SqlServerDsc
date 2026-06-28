@@ -58,8 +58,8 @@ Describe 'Stop-SqlDscRSWebService' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -89,20 +89,20 @@ Describe 'Stop-SqlDscRSWebService' {
         It 'Should stop web service without errors' {
             $mockCimInstance | Stop-SqlDscRSWebService -Confirm:$false
 
-            Should -Invoke -CommandName Get-RSServiceState -ParameterFilter {
+            Should-Invoke -CommandName Get-RSServiceState -Exactly -ParameterFilter {
                 $DisableWebService -eq $true
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'SetServiceState' -and
                 $Arguments.EnableWebService -eq $false
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should not return anything' {
             $result = $mockCimInstance | Stop-SqlDscRSWebService -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -132,7 +132,7 @@ Describe 'Stop-SqlDscRSWebService' {
         It 'Should stop web service without confirmation' {
             $mockCimInstance | Stop-SqlDscRSWebService -Force
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -151,8 +151,8 @@ Describe 'Stop-SqlDscRSWebService' {
         It 'Should not call Invoke-RsCimMethod' {
             $mockCimInstance | Stop-SqlDscRSWebService -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
-            Should -Invoke -CommandName Get-RSServiceState -Exactly -Times 0
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+            Should-Invoke -CommandName Get-RSServiceState -Exactly -Times 0
         }
     }
 
@@ -182,7 +182,7 @@ Describe 'Stop-SqlDscRSWebService' {
         It 'Should stop web service' {
             Stop-SqlDscRSWebService -Configuration $mockCimInstance -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -206,7 +206,7 @@ Describe 'Stop-SqlDscRSWebService' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Stop-SqlDscRSWebService -Confirm:$false } | Should -Throw -ErrorId 'SRSWBS0001,Stop-SqlDscRSWebService'
+            { $mockCimInstance | Stop-SqlDscRSWebService -Confirm:$false } | Should-Throw -FullyQualifiedErrorId 'SRSWBS0001,Stop-SqlDscRSWebService'
         }
     }
 }

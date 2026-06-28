@@ -74,8 +74,8 @@ Describe 'Disable-SqlDscAudit' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When enabling an audit by ServerObject' {
@@ -107,7 +107,7 @@ Describe 'Disable-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Disable-SqlDscAudit -Confirm:$false @mockDefaultParameters
 
-                $mockMethodDisableCallCount | Should -Be 1
+                $mockMethodDisableCallCount | Should-Be 1
             }
         }
 
@@ -115,7 +115,7 @@ Describe 'Disable-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Disable-SqlDscAudit -Force @mockDefaultParameters
 
-                $mockMethodDisableCallCount | Should -Be 1
+                $mockMethodDisableCallCount | Should-Be 1
             }
         }
 
@@ -123,7 +123,7 @@ Describe 'Disable-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Disable-SqlDscAudit -WhatIf @mockDefaultParameters
 
-                $mockMethodDisableCallCount | Should -Be 0
+                $mockMethodDisableCallCount | Should-Be 0
             }
         }
 
@@ -131,7 +131,7 @@ Describe 'Disable-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 $mockServerObject | Disable-SqlDscAudit -Name 'Log1' -Force
 
-                $mockMethodDisableCallCount | Should -Be 1
+                $mockMethodDisableCallCount | Should-Be 1
             }
         }
     }
@@ -162,7 +162,7 @@ Describe 'Disable-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Disable-SqlDscAudit -Confirm:$false @mockDefaultParameters
 
-                $mockMethodDisableCallCount | Should -Be 1
+                $mockMethodDisableCallCount | Should-Be 1
             }
         }
 
@@ -170,7 +170,7 @@ Describe 'Disable-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Disable-SqlDscAudit -Force @mockDefaultParameters
 
-                $mockMethodDisableCallCount | Should -Be 1
+                $mockMethodDisableCallCount | Should-Be 1
             }
         }
 
@@ -178,7 +178,7 @@ Describe 'Disable-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Disable-SqlDscAudit -WhatIf @mockDefaultParameters
 
-                $mockMethodDisableCallCount | Should -Be 0
+                $mockMethodDisableCallCount | Should-Be 0
             }
         }
 
@@ -186,7 +186,7 @@ Describe 'Disable-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 $mockAuditObject | Disable-SqlDscAudit -Force
 
-                $mockMethodDisableCallCount | Should -Be 1
+                $mockMethodDisableCallCount | Should-Be 1
             }
         }
     }

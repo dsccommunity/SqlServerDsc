@@ -79,25 +79,25 @@ Describe 'Test-SqlDscBackupFile' -Tag @('Integration_SQL2017', 'Integration_SQL2
         It 'Should return true for a valid backup file' {
             $result = Test-SqlDscBackupFile -ServerObject $script:serverObject -BackupFile $script:testBackupFile
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should return true when using pipeline' {
             $result = $script:serverObject | Test-SqlDscBackupFile -BackupFile $script:testBackupFile
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should return true when specifying FileNumber' {
             $result = Test-SqlDscBackupFile -ServerObject $script:serverObject -BackupFile $script:testBackupFile -FileNumber 1
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should return true when using LoadHistory switch' {
             $result = Test-SqlDscBackupFile -ServerObject $script:serverObject -BackupFile $script:testBackupFile -LoadHistory
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
     }
 
@@ -118,7 +118,7 @@ Describe 'Test-SqlDscBackupFile' -Tag @('Integration_SQL2017', 'Integration_SQL2
         It 'Should return false for an invalid backup file' {
             $result = Test-SqlDscBackupFile -ServerObject $script:serverObject -BackupFile $script:invalidBackupFile
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 
@@ -128,7 +128,7 @@ Describe 'Test-SqlDscBackupFile' -Tag @('Integration_SQL2017', 'Integration_SQL2
 
             $result = Test-SqlDscBackupFile -ServerObject $script:serverObject -BackupFile $nonExistentFile
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 }

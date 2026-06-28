@@ -86,11 +86,11 @@ AfterAll {
 Describe 'SqlServerDsc.Common\Split-FullSqlInstanceName' -Tag 'SplitFullSqlInstanceName' {
     Context 'When the "FullSqlInstanceName" parameter is not supplied' {
         It 'Should throw when the "FullSqlInstanceName" parameter is $null' {
-            { Split-FullSqlInstanceName -FullSqlInstanceName $null } | Should -Throw
+            { Split-FullSqlInstanceName -FullSqlInstanceName $null } | Should-Throw
         }
 
         It 'Should throw when the "FullSqlInstanceName" parameter is an empty string' {
-            { Split-FullSqlInstanceName -FullSqlInstanceName '' } | Should -Throw
+            { Split-FullSqlInstanceName -FullSqlInstanceName '' } | Should-Throw
         }
     }
 
@@ -98,17 +98,17 @@ Describe 'SqlServerDsc.Common\Split-FullSqlInstanceName' -Tag 'SplitFullSqlInsta
         It 'Should throw when the "FullSqlInstanceName" parameter is "ServerName"' {
             $result = Split-FullSqlInstanceName -FullSqlInstanceName 'ServerName'
 
-            $result.Count | Should -Be 2
-            $result.ServerName | Should -Be 'ServerName'
-            $result.InstanceName | Should -Be 'MSSQLSERVER'
+            $result.Count | Should-Be 2
+            $result.ServerName | Should-Be 'ServerName'
+            $result.InstanceName | Should-Be 'MSSQLSERVER'
         }
 
         It 'Should throw when the "FullSqlInstanceName" parameter is "ServerName\InstanceName"' {
             $result = Split-FullSqlInstanceName -FullSqlInstanceName 'ServerName\InstanceName'
 
-            $result.Count | Should -Be 2
-            $result.ServerName | Should -Be 'ServerName'
-            $result.InstanceName | Should -Be 'InstanceName'
+            $result.Count | Should-Be 2
+            $result.ServerName | Should-Be 'ServerName'
+            $result.InstanceName | Should-Be 'InstanceName'
         }
     }
 }

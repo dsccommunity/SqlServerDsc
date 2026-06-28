@@ -64,10 +64,10 @@ Describe 'Assert-SqlDscLogin' -Tag 'Public' {
         It 'Should call Test-SqlDscIsLogin with correct parameters' {
             Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'TestLogin'
 
-            Should -Invoke -CommandName 'Test-SqlDscIsLogin' -ParameterFilter {
+            Should-Invoke -CommandName 'Test-SqlDscIsLogin' -Exactly -ParameterFilter {
                 $ServerObject.InstanceName -eq 'TestInstance' -and
                 $Name -eq 'TestLogin'
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should accept ServerObject from pipeline' {
@@ -84,7 +84,7 @@ Describe 'Assert-SqlDscLogin' -Tag 'Public' {
         }
 
         It 'Should throw a terminating error when the login does not exist' {
-            { Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'NonExistentLogin' } | Should -Throw -ExpectedMessage "*does not exist as a login*"
+            { Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'NonExistentLogin' } | Should-Throw -ExceptionMessage "*does not exist as a login*"
         }
 
         It 'Should throw an error with the correct error category' {
@@ -94,26 +94,26 @@ Describe 'Assert-SqlDscLogin' -Tag 'Public' {
             }
             catch
             {
-                $_.CategoryInfo.Category | Should -Be 'ObjectNotFound'
-                $_.FullyQualifiedErrorId | Should -Be 'ASDL0001,Assert-SqlDscLogin'
+                $_.CategoryInfo.Category | Should-Be 'ObjectNotFound'
+                $_.FullyQualifiedErrorId | Should-Be 'ASDL0001,Assert-SqlDscLogin'
             }
         }
 
         It 'Should include the principal name in the error message' {
-            { Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'NonExistentLogin' } | Should -Throw -ExpectedMessage "*NonExistentLogin*"
+            { Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'NonExistentLogin' } | Should-Throw -ExceptionMessage "*NonExistentLogin*"
         }
 
         It 'Should include the instance name in the error message' {
-            { Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'NonExistentLogin' } | Should -Throw -ExpectedMessage "*TestInstance*"
+            { Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'NonExistentLogin' } | Should-Throw -ExceptionMessage "*TestInstance*"
         }
 
         It 'Should call Test-SqlDscIsLogin with correct parameters' {
-            { Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'NonExistentLogin' } | Should -Throw
+            { Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'NonExistentLogin' } | Should-Throw
 
-            Should -Invoke -CommandName 'Test-SqlDscIsLogin' -ParameterFilter {
+            Should-Invoke -CommandName 'Test-SqlDscIsLogin' -Exactly -ParameterFilter {
                 $ServerObject.InstanceName -eq 'TestInstance' -and
                 $Name -eq 'NonExistentLogin'
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -124,17 +124,17 @@ Describe 'Assert-SqlDscLogin' -Tag 'Public' {
 
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Assert-SqlDscLogin').Parameters['ServerObject']
-            $parameterInfo.Attributes.Mandatory | Should -Contain $true
+            $parameterInfo.Attributes.Mandatory | Should-ContainCollection $true
         }
 
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Assert-SqlDscLogin').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should -Contain $true
+            $parameterInfo.Attributes.Mandatory | Should-ContainCollection $true
         }
 
         It 'Should accept ServerObject from pipeline' {
             $parameterInfo = (Get-Command -Name 'Assert-SqlDscLogin').Parameters['ServerObject']
-            $parameterInfo.Attributes.ValueFromPipeline | Should -Contain $true
+            $parameterInfo.Attributes.ValueFromPipeline | Should-ContainCollection $true
         }
 
         It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
@@ -158,8 +158,8 @@ Describe 'Assert-SqlDscLogin' -Tag 'Public' {
                     }
                 )
 
-            $result.ParameterSetName | Should -Be $MockParameterSetName
-            $result.ParameterListAsString | Should -Be $MockExpectedParameters
+            $result.ParameterSetName | Should-Be $MockParameterSetName
+            $result.ParameterListAsString | Should-Be $MockExpectedParameters
         }
     }
 }

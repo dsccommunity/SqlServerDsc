@@ -68,11 +68,11 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
 
         # Verify the operator was created
         $operator = $script:sqlServerObject | Get-SqlDscAgentOperator -Name 'SqlDscIntegrationTestOperator_Persistent'
-        $operator | Should -Not -BeNullOrEmpty
-        $operator.Name | Should -Be 'SqlDscIntegrationTestOperator_Persistent'
-        $operator.EmailAddress | Should -Be 'persistent@example.com'
-        $operator.NetSendAddress | Should -Be 'SERVER\User'
-        $operator.PagerAddress | Should -Be '555-0123'
+        $operator | Should-BeTruthy
+        $operator.Name | Should-Be 'SqlDscIntegrationTestOperator_Persistent'
+        $operator.EmailAddress | Should-Be 'persistent@example.com'
+        $operator.NetSendAddress | Should-Be 'SERVER\User'
+        $operator.PagerAddress | Should-Be '555-0123'
     }
 
     It 'Should create a new operator with email address' {
@@ -80,18 +80,18 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
 
         # Verify the operator was created
         $operator = $script:sqlServerObject | Get-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator2'
-        $operator | Should -Not -BeNullOrEmpty
-        $operator.Name | Should -Be 'IntegrationTest_NewOperator2'
-        $operator.EmailAddress | Should -Be 'operator2@contoso.com'
+        $operator | Should-BeTruthy
+        $operator.Name | Should-Be 'IntegrationTest_NewOperator2'
+        $operator.EmailAddress | Should-Be 'operator2@contoso.com'
     }
 
     It 'Should create a new operator and return the object with PassThru' {
         $operator = $script:sqlServerObject | New-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator3' -EmailAddress 'operator3@contoso.com' -PassThru -Force -ErrorAction 'Stop'
 
-        $operator | Should -Not -BeNullOrEmpty
-        $operator | Should -BeOfType [Microsoft.SqlServer.Management.Smo.Agent.Operator]
-        $operator.Name | Should -Be 'IntegrationTest_NewOperator3'
-        $operator.EmailAddress | Should -Be 'operator3@contoso.com'
+        $operator | Should-BeTruthy
+        $operator | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Agent.Operator])
+        $operator.Name | Should-Be 'IntegrationTest_NewOperator3'
+        $operator.EmailAddress | Should-Be 'operator3@contoso.com'
     }
 
     It 'Should create a new operator using ServerObject parameter directly' {
@@ -102,8 +102,8 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
 
         # Verify the operator was created
         $operator = $script:sqlServerObject | Get-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator1'
-        $operator | Should -Not -BeNullOrEmpty
-        $operator.Name | Should -Be 'IntegrationTest_NewOperator1'
+        $operator | Should-BeTruthy
+        $operator.Name | Should-Be 'IntegrationTest_NewOperator1'
     }
 
     It 'Should throw an error when trying to create an operator that already exists' {
@@ -112,6 +112,6 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
 
         # Try to create the same operator again
         { $script:sqlServerObject | New-SqlDscAgentOperator -Name 'IntegrationTest_NewOperator10' -ErrorAction 'Stop' } |
-            Should -Throw
+            Should-Throw
     }
 }

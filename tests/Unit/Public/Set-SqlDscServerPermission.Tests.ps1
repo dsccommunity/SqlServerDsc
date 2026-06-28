@@ -67,8 +67,8 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -76,31 +76,31 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
         It 'Should have Login as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscServerPermission').Parameters['Login']
 
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have ServerRole as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscServerPermission').Parameters['ServerRole']
 
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have Grant parameter not accept pipeline input' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscServerPermission').Parameters['Grant']
 
-            $parameterInfo.Attributes.ValueFromPipeline | Should -BeFalse
+            $parameterInfo.Attributes.ValueFromPipeline | Should-BeFalse
         }
 
         It 'Should have GrantWithGrant parameter not accept pipeline input' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscServerPermission').Parameters['GrantWithGrant']
 
-            $parameterInfo.Attributes.ValueFromPipeline | Should -BeFalse
+            $parameterInfo.Attributes.ValueFromPipeline | Should-BeFalse
         }
 
         It 'Should have Deny parameter not accept pipeline input' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscServerPermission').Parameters['Deny']
 
-            $parameterInfo.Attributes.ValueFromPipeline | Should -BeFalse
+            $parameterInfo.Attributes.ValueFromPipeline | Should-BeFalse
         }
     }
 
@@ -121,10 +121,10 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
         It 'Should not call any permission commands' {
             Set-SqlDscServerPermission -Login $mockLoginObject -Grant 'ConnectSql' -WhatIf
 
-            Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 0 -Scope It
-            Should -Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Times 0 -Scope It
-            Should -Invoke -CommandName Deny-SqlDscServerPermission -Exactly -Times 0 -Scope It
-            Should -Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Get-SqlDscServerPermission -Exactly -Scope It -Times 0
+            Should-Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Scope It -Times 0
+            Should-Invoke -CommandName Deny-SqlDscServerPermission -Exactly -Scope It -Times 0
+            Should-Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -Scope It -Times 0
         }
     }
 
@@ -148,34 +148,34 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
             It 'Should grant the specified permissions' {
                 Set-SqlDscServerPermission -Login $mockLoginObject -Grant 'ConnectSql', 'ViewServerState' -Force
 
-                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Grant-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Get-SqlDscServerPermission -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Grant-SqlDscServerPermission -Exactly -ParameterFilter {
                     $Permission -contains 'ConnectSql' -and $Permission -contains 'ViewServerState'
-                } -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Deny-SqlDscServerPermission -Exactly -Times 0 -Scope It
+                } -Scope It -Times 1
+                Should-Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Deny-SqlDscServerPermission -Exactly -Scope It -Times 0
             }
 
             It 'Should deny the specified permissions' {
                 Set-SqlDscServerPermission -Login $mockLoginObject -Deny 'ViewAnyDatabase' -Force
 
-                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Deny-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Get-SqlDscServerPermission -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Deny-SqlDscServerPermission -Exactly -ParameterFilter {
                     $Permission -contains 'ViewAnyDatabase'
-                } -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -Times 0 -Scope It
+                } -Scope It -Times 1
+                Should-Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -Scope It -Times 0
             }
 
             It 'Should grant with grant option the specified permissions' {
                 Set-SqlDscServerPermission -Login $mockLoginObject -GrantWithGrant 'AlterAnyDatabase' -Force
 
-                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Grant-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Get-SqlDscServerPermission -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Grant-SqlDscServerPermission -Exactly -ParameterFilter {
                     $Permission -contains 'AlterAnyDatabase' -and $WithGrant -eq $true
-                } -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Deny-SqlDscServerPermission -Exactly -Times 0 -Scope It
+                } -Scope It -Times 1
+                Should-Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Deny-SqlDscServerPermission -Exactly -Scope It -Times 0
             }
         }
 
@@ -224,37 +224,37 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
                 # Desired: Grant only ConnectSql (ViewServerState should be revoked)
                 Set-SqlDscServerPermission -Login $mockLoginObject -Grant 'ConnectSql' -Deny @() -Force
 
-                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SqlDscServerPermission -Exactly -Scope It -Times 1
 
                 # Should revoke ViewServerState (was granted, no longer desired)
-                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -ParameterFilter {
                     $Permission -contains 'ViewServerState'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
                 # Should revoke ViewAnyDatabase (was denied, no longer desired)
-                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -ParameterFilter {
                     $Permission -contains 'ViewAnyDatabase'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
                 # ConnectSql is already granted, so no Grant call needed
-                Should -Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Scope It -Times 0
             }
 
             It 'Should add new permissions while keeping existing ones' {
                 # Desired: Grant ConnectSql, ViewServerState, AlterAnyDatabase
                 Set-SqlDscServerPermission -Login $mockLoginObject -Grant 'ConnectSql', 'ViewServerState', 'AlterAnyDatabase' -Deny @() -Force
 
-                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SqlDscServerPermission -Exactly -Scope It -Times 1
 
                 # Should grant AlterAnyDatabase (new)
-                Should -Invoke -CommandName Grant-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Grant-SqlDscServerPermission -Exactly -ParameterFilter {
                     $Permission -contains 'AlterAnyDatabase'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
                 # Should revoke ViewAnyDatabase (was denied, no longer desired)
-                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -ParameterFilter {
                     $Permission -contains 'ViewAnyDatabase'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -277,8 +277,8 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
             It 'Should accept Login object from pipeline' {
                 $mockLoginObject | Set-SqlDscServerPermission -Grant 'ConnectSql' -Force
 
-                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SqlDscServerPermission -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Scope It -Times 1
             }
         }
 
@@ -325,14 +325,14 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
             It 'Should revoke all permissions when empty Grant array is specified' {
                 Set-SqlDscServerPermission -Login $mockLoginObject -Grant @() -Force
 
-                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SqlDscServerPermission -Exactly -Scope It -Times 1
 
                 # Should revoke ConnectSql
-                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -ParameterFilter {
                     $Permission -contains 'ConnectSql'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Scope It -Times 0
             }
         }
 
@@ -380,63 +380,63 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
                 # Specify only Grant parameter with empty array - should revoke Grant permissions only
                 Set-SqlDscServerPermission -Login $mockLoginObject -Grant @() -Force
 
-                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SqlDscServerPermission -Exactly -Scope It -Times 1
 
                 # Should revoke ViewServerState (Grant permission)
-                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -ParameterFilter {
                     $Permission -contains 'ViewServerState' -and -not $WithGrant
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
                 # Should NOT revoke GrantWithGrant or Deny permissions
-                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -ParameterFilter {
                     $Permission -contains 'CreateAnyDatabase'
-                } -Exactly -Times 0 -Scope It
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -ParameterFilter {
                     $Permission -contains 'ViewAnyDefinition'
-                } -Exactly -Times 0 -Scope It
+                } -Scope It -Times 0
             }
 
             It 'Should revoke only GrantWithGrant permissions when only GrantWithGrant parameter is specified' {
                 # Specify only GrantWithGrant parameter with empty array
                 Set-SqlDscServerPermission -Login $mockLoginObject -GrantWithGrant @() -Force
 
-                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SqlDscServerPermission -Exactly -Scope It -Times 1
 
                 # Should revoke CreateAnyDatabase (GrantWithGrant permission)
-                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -ParameterFilter {
                     $Permission -contains 'CreateAnyDatabase' -and $WithGrant -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
                 # Should NOT revoke Grant or Deny permissions
-                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -ParameterFilter {
                     $Permission -contains 'ViewServerState'
-                } -Exactly -Times 0 -Scope It
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -ParameterFilter {
                     $Permission -contains 'ViewAnyDefinition'
-                } -Exactly -Times 0 -Scope It
+                } -Scope It -Times 0
             }
 
             It 'Should revoke only Deny permissions when only Deny parameter is specified' {
                 # Specify only Deny parameter with empty array
                 Set-SqlDscServerPermission -Login $mockLoginObject -Deny @() -Force
 
-                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SqlDscServerPermission -Exactly -Scope It -Times 1
 
                 # Should revoke ViewAnyDefinition (Deny permission)
-                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -ParameterFilter {
                     $Permission -contains 'ViewAnyDefinition' -and -not $WithGrant
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
                 # Should NOT revoke Grant or GrantWithGrant permissions
-                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -ParameterFilter {
                     $Permission -contains 'ViewServerState'
-                } -Exactly -Times 0 -Scope It
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -ParameterFilter {
                     $Permission -contains 'CreateAnyDatabase'
-                } -Exactly -Times 0 -Scope It
+                } -Scope It -Times 0
             }
         }
     }
@@ -461,10 +461,10 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
             It 'Should grant the specified permissions to the role' {
                 Set-SqlDscServerPermission -ServerRole $mockServerRoleObject -Grant 'AlterAnyDatabase' -Force
 
-                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Grant-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Get-SqlDscServerPermission -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Grant-SqlDscServerPermission -Exactly -ParameterFilter {
                     $Permission -contains 'AlterAnyDatabase'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -487,8 +487,8 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
             It 'Should accept ServerRole object from pipeline' {
                 $mockServerRoleObject | Set-SqlDscServerPermission -Grant 'AlterAnyDatabase' -Force
 
-                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SqlDscServerPermission -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Scope It -Times 1
             }
         }
 
@@ -535,14 +535,14 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
             It 'Should revoke all permissions when empty Grant array is specified' {
                 Set-SqlDscServerPermission -ServerRole $mockServerRoleObject -Grant @() -Force
 
-                Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SqlDscServerPermission -Exactly -Scope It -Times 1
 
                 # Should revoke ConnectSql
-                Should -Invoke -CommandName Revoke-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Revoke-SqlDscServerPermission -Exactly -ParameterFilter {
                     $Permission -contains 'ConnectSql'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Scope It -Times 0
             }
         }
     }
@@ -570,22 +570,22 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
                 -Deny 'ViewAnyDatabase' `
                 -Force
 
-            Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscServerPermission -Exactly -Scope It -Times 1
 
             # Should grant ConnectSql
-            Should -Invoke -CommandName Grant-SqlDscServerPermission -ParameterFilter {
+            Should-Invoke -CommandName Grant-SqlDscServerPermission -Exactly -ParameterFilter {
                 $Permission -contains 'ConnectSql' -and -not $WithGrant
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
 
             # Should grant AlterAnyDatabase with grant
-            Should -Invoke -CommandName Grant-SqlDscServerPermission -ParameterFilter {
+            Should-Invoke -CommandName Grant-SqlDscServerPermission -Exactly -ParameterFilter {
                 $Permission -contains 'AlterAnyDatabase' -and $WithGrant -eq $true
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
 
             # Should deny ViewAnyDatabase
-            Should -Invoke -CommandName Deny-SqlDscServerPermission -ParameterFilter {
+            Should-Invoke -CommandName Deny-SqlDscServerPermission -Exactly -ParameterFilter {
                 $Permission -contains 'ViewAnyDatabase'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 
@@ -607,8 +607,8 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
             # This test verifies that Force parameter works by ensuring the operation completes
             Set-SqlDscServerPermission -Login $mockLoginObject -Grant 'ConnectSql' -Force
 
-            Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscServerPermission -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Scope It -Times 1
         }
     }
 
@@ -629,8 +629,8 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
         It 'Should not prompt for confirmation when Confirm is $false' {
             Set-SqlDscServerPermission -Login $mockLoginObject -Grant 'ConnectSql' -Confirm:$false
 
-            Should -Invoke -CommandName Get-SqlDscServerPermission -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscServerPermission -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Grant-SqlDscServerPermission -Exactly -Scope It -Times 1
         }
     }
 }

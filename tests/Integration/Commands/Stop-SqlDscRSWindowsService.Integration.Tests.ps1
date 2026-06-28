@@ -39,7 +39,7 @@ Describe 'Stop-SqlDscRSWindowsService' {
 
             # Verify Windows service is stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.IsWindowsServiceEnabled | Should -BeFalse
+            $verifyConfig.IsWindowsServiceEnabled | Should-BeFalse
         }
 
         It 'Should be idempotent when Windows service is already stopped' {
@@ -48,7 +48,7 @@ Describe 'Stop-SqlDscRSWindowsService' {
 
             # Verify Windows service is still stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.IsWindowsServiceEnabled | Should -BeFalse
+            $verifyConfig.IsWindowsServiceEnabled | Should-BeFalse
         }
     }
 
@@ -59,7 +59,7 @@ Describe 'Stop-SqlDscRSWindowsService' {
 
             # Verify Windows service is stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.IsWindowsServiceEnabled | Should -BeFalse
+            $verifyConfig.IsWindowsServiceEnabled | Should-BeFalse
         }
 
         It 'Should be idempotent when Windows service is already stopped' {
@@ -68,7 +68,7 @@ Describe 'Stop-SqlDscRSWindowsService' {
 
             # Verify Windows service is still stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.IsWindowsServiceEnabled | Should -BeFalse
+            $verifyConfig.IsWindowsServiceEnabled | Should-BeFalse
         }
     }
 
@@ -79,7 +79,7 @@ Describe 'Stop-SqlDscRSWindowsService' {
 
             # Verify Windows service is stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.IsWindowsServiceEnabled | Should -BeFalse
+            $verifyConfig.IsWindowsServiceEnabled | Should-BeFalse
         }
 
         It 'Should be idempotent when Windows service is already stopped' {
@@ -88,7 +88,7 @@ Describe 'Stop-SqlDscRSWindowsService' {
 
             # Verify Windows service is still stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.IsWindowsServiceEnabled | Should -BeFalse
+            $verifyConfig.IsWindowsServiceEnabled | Should-BeFalse
         }
     }
 
@@ -99,7 +99,7 @@ Describe 'Stop-SqlDscRSWindowsService' {
 
             # Verify Windows service is stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
-            $verifyConfig.IsWindowsServiceEnabled | Should -BeFalse
+            $verifyConfig.IsWindowsServiceEnabled | Should-BeFalse
         }
 
         It 'Should be idempotent when Windows service is already stopped' {
@@ -108,7 +108,7 @@ Describe 'Stop-SqlDscRSWindowsService' {
 
             # Verify Windows service is still stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
-            $verifyConfig.IsWindowsServiceEnabled | Should -BeFalse
+            $verifyConfig.IsWindowsServiceEnabled | Should-BeFalse
         }
     }
 }

@@ -62,7 +62,7 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
         It 'Should have the default instance SQL Server service started' {
             $getServiceResult = Get-Service -Name 'MSSQLSERVER' -ErrorAction 'Stop'
 
-            $getServiceResult.Status | Should -Be 'Running'
+            $getServiceResult.Status | Should-Be 'Running'
         }
 
         Context 'When impersonating a Windows user' {
@@ -78,7 +78,7 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
 
                 $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+                $sqlServerObject.Status.ToString() | Should-MatchString '^Online$'
 
                 Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject
             }
@@ -89,7 +89,7 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
         It 'Should have the named instance SQL Server service started' {
             $getServiceResult = Get-Service -Name 'MSSQL$DSCSQLTEST' -ErrorAction 'Stop'
 
-            $getServiceResult.Status | Should -Be 'Running'
+            $getServiceResult.Status | Should-Be 'Running'
         }
 
         Context 'When impersonating a Windows user' {
@@ -106,7 +106,7 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
 
                 $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+                $sqlServerObject.Status.ToString() | Should-MatchString '^Online$'
 
                 Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject
             }
@@ -127,7 +127,7 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
 
                 $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+                $sqlServerObject.Status.ToString() | Should-MatchString '^Online$'
 
                 Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject
             }
@@ -148,8 +148,8 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
 
                 $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
-                $sqlServerObject.ConnectionContext.EncryptConnection | Should -BeTrue
+                $sqlServerObject.Status.ToString() | Should-MatchString '^Online$'
+                $sqlServerObject.ConnectionContext.EncryptConnection | Should-BeTrue
 
                 Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject
             }
@@ -167,8 +167,8 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
 
                 $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
-                $sqlServerObject.ConnectionContext.EncryptConnection | Should -BeFalse
+                $sqlServerObject.Status.ToString() | Should-MatchString '^Online$'
+                $sqlServerObject.ConnectionContext.EncryptConnection | Should-BeFalse
 
                 Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject
             }
@@ -189,7 +189,7 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
 
                 $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+                $sqlServerObject.Status.ToString() | Should-MatchString '^Online$'
 
                 Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject
             }
@@ -224,7 +224,7 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
 
                 $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+                $sqlServerObject.Status.ToString() | Should-MatchString '^Online$'
 
                 Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject
             }
@@ -244,7 +244,7 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integrati
 
                 $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+                $sqlServerObject.Status.ToString() | Should-MatchString '^Online$'
 
                 Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject
             }

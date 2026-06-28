@@ -52,7 +52,7 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Int
 
             $result = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $emptyCollection
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should accept empty collection through pipeline' {
@@ -60,7 +60,7 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Int
 
             $result = $emptyCollection | ConvertTo-SqlDscDatabasePermission
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -74,15 +74,15 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Int
                 $result = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $databasePermissionInfo
 
                 # Validate the result structure
-                $result | Should -Not -BeNullOrEmpty
+                $result | Should-BeTruthy
 
                 # Each result should have State and Permission properties
                 foreach ($permission in $result) {
-                    $permission.State | Should -Not -BeNullOrEmpty
-                    $permission.Permission | Should -Not -BeNullOrEmpty
+                    $permission.State | Should-BeTruthy
+                    $permission.Permission | Should-BeTruthy
 
                     # Validate that permission state is one of the expected values
-                    $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
+                    @('Grant', 'Deny', 'GrantWithGrant') | Should-ContainCollection ($permission.State)
                 }
             }
         }
@@ -96,15 +96,15 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Int
                 $result = $databasePermissionInfo | ConvertTo-SqlDscDatabasePermission
 
                 # Validate the result structure
-                $result | Should -Not -BeNullOrEmpty
+                $result | Should-BeTruthy
 
                 # Each result should have State and Permission properties
                 foreach ($permission in $result) {
-                    $permission.State | Should -Not -BeNullOrEmpty
-                    $permission.Permission | Should -Not -BeNullOrEmpty
+                    $permission.State | Should-BeTruthy
+                    $permission.Permission | Should-BeTruthy
 
                     # Validate that permission state is one of the expected values
-                    $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
+                    @('Grant', 'Deny', 'GrantWithGrant') | Should-ContainCollection ($permission.State)
                 }
             }
         }
@@ -120,15 +120,15 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Int
                 $result = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $databasePermissionInfo
 
                 # Validate the result structure
-                $result | Should -Not -BeNullOrEmpty
+                $result | Should-BeTruthy
 
                 # Each result should have State and Permission properties
                 foreach ($permission in $result) {
-                    $permission.State | Should -Not -BeNullOrEmpty
-                    $permission.Permission | Should -Not -BeNullOrEmpty
+                    $permission.State | Should-BeTruthy
+                    $permission.Permission | Should-BeTruthy
 
                     # Validate that permission state is one of the expected values
-                    $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
+                    @('Grant', 'Deny', 'GrantWithGrant') | Should-ContainCollection ($permission.State)
                 }
             }
         }
@@ -149,8 +149,8 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Int
 
                     foreach ($state in $uniqueStates) {
                         $permissionsForState = $result | Where-Object { $_.State -eq $state }
-                        $permissionsForState | Should -HaveCount 1
-                        $permissionsForState[0].Permission | Should -Not -BeNullOrEmpty
+                        $permissionsForState | Should-BeCollection -Count 1
+                        $permissionsForState[0].Permission | Should-BeTruthy
                     }
                 }
             }

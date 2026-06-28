@@ -139,6 +139,8 @@ Pester:
     TestResult:
       OutputFormat: NUnitXML
       OutputEncoding: ascii
+    Should:
+      DisableV5: true
   ExcludeFromCodeCoverage:
     - Modules/DscResource.Common
     - Modules/DscResource.Base

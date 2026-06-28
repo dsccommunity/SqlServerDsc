@@ -59,7 +59,7 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
         }
 
         It 'Should be of the correct type' {
-            $mockStartupParametersInstance.GetType().Name | Should -Be 'StartupParameters'
+            $mockStartupParametersInstance.GetType().Name | Should-Be 'StartupParameters'
         }
     }
 
@@ -79,13 +79,13 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
         }
 
         It 'Should be able read the values from instance' {
-            $mockStartupParametersInstance | Should -Not -BeNullOrEmpty
+            $mockStartupParametersInstance | Should-BeTruthy
 
-            $mockStartupParametersInstance.DataFilePath | Should -Be $TestDrive
-            $mockStartupParametersInstance.LogFilePath | Should -Be $TestDrive
-            $mockStartupParametersInstance.ErrorLogPath | Should -Be $TestDrive
-            $mockStartupParametersInstance.TraceFlag | Should -Be 4199
-            $mockStartupParametersInstance.InternalTraceFlag | Should -Be 8688
+            $mockStartupParametersInstance.DataFilePath | Should-Be $TestDrive
+            $mockStartupParametersInstance.LogFilePath | Should-Be $TestDrive
+            $mockStartupParametersInstance.ErrorLogPath | Should-Be $TestDrive
+            $mockStartupParametersInstance.TraceFlag | Should-Be 4199
+            $mockStartupParametersInstance.InternalTraceFlag | Should-Be 8688
         }
     }
 
@@ -105,27 +105,27 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
         }
 
         It 'Should be able read the values from instance' {
-            $mockStartupParametersInstance | Should -Not -BeNullOrEmpty
+            $mockStartupParametersInstance | Should-BeTruthy
 
-            $mockStartupParametersInstance.DataFilePath | Should -HaveCount 2
-            $mockStartupParametersInstance.DataFilePath | Should -Contain $TestDrive
-            $mockStartupParametersInstance.DataFilePath | Should -Contain 'C:\Temp'
+            $mockStartupParametersInstance.DataFilePath | Should-BeCollection -Count 2
+            $mockStartupParametersInstance.DataFilePath | Should-ContainCollection $TestDrive
+            $mockStartupParametersInstance.DataFilePath | Should-ContainCollection 'C:\Temp'
 
-            $mockStartupParametersInstance.LogFilePath | Should -HaveCount 2
-            $mockStartupParametersInstance.LogFilePath | Should -Contain $TestDrive
-            $mockStartupParametersInstance.LogFilePath | Should -Contain 'C:\Temp'
+            $mockStartupParametersInstance.LogFilePath | Should-BeCollection -Count 2
+            $mockStartupParametersInstance.LogFilePath | Should-ContainCollection $TestDrive
+            $mockStartupParametersInstance.LogFilePath | Should-ContainCollection 'C:\Temp'
 
-            $mockStartupParametersInstance.ErrorLogPath | Should -HaveCount 2
-            $mockStartupParametersInstance.ErrorLogPath | Should -Contain $TestDrive
-            $mockStartupParametersInstance.ErrorLogPath | Should -Contain 'C:\Temp'
+            $mockStartupParametersInstance.ErrorLogPath | Should-BeCollection -Count 2
+            $mockStartupParametersInstance.ErrorLogPath | Should-ContainCollection $TestDrive
+            $mockStartupParametersInstance.ErrorLogPath | Should-ContainCollection 'C:\Temp'
 
-            $mockStartupParametersInstance.TraceFlag | Should -HaveCount 2
-            $mockStartupParametersInstance.TraceFlag | Should -Contain 4199
-            $mockStartupParametersInstance.TraceFlag | Should -Contain 3226
+            $mockStartupParametersInstance.TraceFlag | Should-BeCollection -Count 2
+            $mockStartupParametersInstance.TraceFlag | Should-ContainCollection 4199
+            $mockStartupParametersInstance.TraceFlag | Should-ContainCollection 3226
 
-            $mockStartupParametersInstance.InternalTraceFlag | Should -HaveCount 2
-            $mockStartupParametersInstance.InternalTraceFlag | Should -Contain 8678
-            $mockStartupParametersInstance.InternalTraceFlag | Should -Contain 8688
+            $mockStartupParametersInstance.InternalTraceFlag | Should-BeCollection -Count 2
+            $mockStartupParametersInstance.InternalTraceFlag | Should-ContainCollection 8678
+            $mockStartupParametersInstance.InternalTraceFlag | Should-ContainCollection 8688
         }
     }
 
@@ -138,7 +138,7 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
                     return $startupParametersInstance
                 }
 
-                $mockStartupParametersInstance | Should -Not -BeNullOrEmpty
+                $mockStartupParametersInstance | Should-BeTruthy
             }
 
             It 'Should have the correct value for <MockPropertyName>' -ForEach @(
@@ -155,17 +155,17 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
                     MockExpectedValue = 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG'
                 }
             ) {
-                $mockStartupParametersInstance.$MockPropertyName | Should -Be $MockExpectedValue
+                $mockStartupParametersInstance.$MockPropertyName | Should-Be $MockExpectedValue
             }
 
             It 'Should have the correct value for TraceFlag' {
-                $mockStartupParametersInstance.TraceFlag | Should -BeNullOrEmpty
-                $mockStartupParametersInstance.TraceFlag | Should -HaveCount 0
+                $mockStartupParametersInstance.TraceFlag | Should-BeFalsy
+                $mockStartupParametersInstance.TraceFlag | Should-BeCollection -Count 0
             }
 
             It 'Should have the correct value for InternalTraceFlag' {
-                $mockStartupParametersInstance.InternalTraceFlag | Should -BeNullOrEmpty
-                $mockStartupParametersInstance.InternalTraceFlag | Should -HaveCount 0
+                $mockStartupParametersInstance.InternalTraceFlag | Should-BeFalsy
+                $mockStartupParametersInstance.InternalTraceFlag | Should-BeCollection -Count 0
             }
         }
 
@@ -177,7 +177,7 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
                     return $startupParametersInstance
                 }
 
-                $mockStartupParametersInstance | Should -Not -BeNullOrEmpty
+                $mockStartupParametersInstance | Should-BeTruthy
             }
 
             It 'Should have the correct value for <MockPropertyName>' -ForEach @(
@@ -194,12 +194,12 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
                     MockExpectedValue = 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG'
                 }
             ) {
-                $mockStartupParametersInstance.$MockPropertyName | Should -Be $MockExpectedValue
+                $mockStartupParametersInstance.$MockPropertyName | Should-Be $MockExpectedValue
             }
 
             It 'Should have the correct value for TraceFlag' {
-                $mockStartupParametersInstance.TraceFlag | Should -HaveCount 1
-                $mockStartupParametersInstance.TraceFlag | Should -Be 4199
+                $mockStartupParametersInstance.TraceFlag | Should-BeCollection -Count 1
+                $mockStartupParametersInstance.TraceFlag | Should-Be 4199
             }
         }
 
@@ -211,7 +211,7 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
                     return $startupParametersInstance
                 }
 
-                $mockStartupParametersInstance | Should -Not -BeNullOrEmpty
+                $mockStartupParametersInstance | Should-BeTruthy
             }
 
             It 'Should have the correct value for <MockPropertyName>' -ForEach @(
@@ -228,13 +228,13 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
                     MockExpectedValue = 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG'
                 }
             ) {
-                $mockStartupParametersInstance.$MockPropertyName | Should -Be $MockExpectedValue
+                $mockStartupParametersInstance.$MockPropertyName | Should-Be $MockExpectedValue
             }
 
             It 'Should have the correct value for TraceFlag' {
-                $mockStartupParametersInstance.TraceFlag | Should -HaveCount 2
-                $mockStartupParametersInstance.TraceFlag | Should -Contain 4199
-                $mockStartupParametersInstance.TraceFlag | Should -Contain 3226
+                $mockStartupParametersInstance.TraceFlag | Should-BeCollection -Count 2
+                $mockStartupParametersInstance.TraceFlag | Should-ContainCollection 4199
+                $mockStartupParametersInstance.TraceFlag | Should-ContainCollection 3226
             }
         }
 
@@ -246,17 +246,17 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
                     return $startupParametersInstance
                 }
 
-                $mockStartupParametersInstance | Should -Not -BeNullOrEmpty
+                $mockStartupParametersInstance | Should-BeTruthy
             }
 
             # Evaluates that startup parameter '-t' is not also interpreted as '-T'.
             It 'Should have the correct value for TraceFlag' {
-                $mockStartupParametersInstance.TraceFlag | Should -HaveCount 0
+                $mockStartupParametersInstance.TraceFlag | Should-BeCollection -Count 0
             }
 
             It 'Should have the correct value for InternalTraceFlag' {
-                $mockStartupParametersInstance.InternalTraceFlag | Should -HaveCount 1
-                $mockStartupParametersInstance.InternalTraceFlag | Should -Be 8688
+                $mockStartupParametersInstance.InternalTraceFlag | Should-BeCollection -Count 1
+                $mockStartupParametersInstance.InternalTraceFlag | Should-Be 8688
             }
         }
 
@@ -268,13 +268,13 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
                     return $startupParametersInstance
                 }
 
-                $mockStartupParametersInstance | Should -Not -BeNullOrEmpty
+                $mockStartupParametersInstance | Should-BeTruthy
             }
 
             It 'Should have the correct value for InternalTraceFlag' {
-                $mockStartupParametersInstance.InternalTraceFlag | Should -HaveCount 2
-                $mockStartupParametersInstance.InternalTraceFlag | Should -Contain 8688
-                $mockStartupParametersInstance.InternalTraceFlag | Should -Contain 8678
+                $mockStartupParametersInstance.InternalTraceFlag | Should-BeCollection -Count 2
+                $mockStartupParametersInstance.InternalTraceFlag | Should-ContainCollection 8688
+                $mockStartupParametersInstance.InternalTraceFlag | Should-ContainCollection 8678
             }
         }
     }
@@ -296,7 +296,7 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
                     return $startupParametersInstance
                 }
 
-                $mockStartupParametersInstance.ToString() | Should -Be $mockDefaultExpectedValue
+                $mockStartupParametersInstance.ToString() | Should-Be $mockDefaultExpectedValue
             }
         }
 
@@ -313,7 +313,7 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
                     return $startupParametersInstance
                 }
 
-                $mockStartupParametersInstance.ToString() | Should -Be ($mockDefaultExpectedValue + ';-T4199')
+                $mockStartupParametersInstance.ToString() | Should-Be ($mockDefaultExpectedValue + ';-T4199')
             }
         }
 
@@ -330,9 +330,9 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
                     return $startupParametersInstance
                 }
 
-                $mockStartupParametersInstance.ToString() | Should -BeLike ($mockDefaultExpectedValue + '*')
-                $mockStartupParametersInstance.ToString() | Should -MatchExactly ';-T4199'
-                $mockStartupParametersInstance.ToString() | Should -MatchExactly ';-T3226'
+                $mockStartupParametersInstance.ToString() | Should-BeLikeString ($mockDefaultExpectedValue + '*')
+                $mockStartupParametersInstance.ToString() | Should-MatchString -CaseSensitive ';-T4199'
+                $mockStartupParametersInstance.ToString() | Should-MatchString -CaseSensitive ';-T3226'
             }
         }
 
@@ -349,7 +349,7 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
                     return $startupParametersInstance
                 }
 
-                $mockStartupParametersInstance.ToString() | Should -Be ($mockDefaultExpectedValue + ';-t8688')
+                $mockStartupParametersInstance.ToString() | Should-Be ($mockDefaultExpectedValue + ';-t8688')
             }
         }
 
@@ -366,14 +366,14 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
                     return $startupParametersInstance
                 }
 
-                $mockStartupParametersInstance.ToString() | Should -BeLike ($mockDefaultExpectedValue + '*')
-                $mockStartupParametersInstance.ToString() | Should -MatchExactly ';-t8688'
-                $mockStartupParametersInstance.ToString() | Should -MatchExactly ';-t8678'
+                $mockStartupParametersInstance.ToString() | Should-BeLikeString ($mockDefaultExpectedValue + '*')
+                $mockStartupParametersInstance.ToString() | Should-MatchString -CaseSensitive ';-t8688'
+                $mockStartupParametersInstance.ToString() | Should-MatchString -CaseSensitive ';-t8678'
             }
 
             It 'Should not have set any ''-T'' parameters' {
-                $mockStartupParametersInstance.ToString() | Should -Not -MatchExactly ';-T8688'
-                $mockStartupParametersInstance.ToString() | Should -Not -MatchExactly ';-T8678'
+                $mockStartupParametersInstance.ToString() | Should-NotMatchString -CaseSensitive ';-T8688'
+                $mockStartupParametersInstance.ToString() | Should-NotMatchString -CaseSensitive ';-T8678'
             }
         }
     }

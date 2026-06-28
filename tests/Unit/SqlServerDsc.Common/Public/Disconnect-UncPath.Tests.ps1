@@ -112,7 +112,7 @@ Describe 'SqlServerDsc.Common\Disconnect-UncPath' -Tag 'DisconnectUncPath' {
 
             $null = Disconnect-UncPath @disconnectUncPathParameters
 
-            Should -Invoke -CommandName Remove-SmbMapping -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Remove-SmbMapping -Exactly -Scope It -Times 1
         }
     }
 }

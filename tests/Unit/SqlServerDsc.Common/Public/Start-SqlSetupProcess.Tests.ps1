@@ -103,7 +103,7 @@ Describe 'SqlServerDsc.Common\Start-SqlSetupProcess' -Tag 'StartSqlSetupProcess'
             }
 
             $processExitCode = Start-SqlSetupProcess @startSqlSetupProcessParameters
-            $processExitCode | Should -BeExactly 0
+            $processExitCode | Should-BeString -CaseSensitive 0
         }
     }
 
@@ -115,7 +115,7 @@ Describe 'SqlServerDsc.Common\Start-SqlSetupProcess' -Tag 'StartSqlSetupProcess'
                 Timeout      = 2
             }
 
-            { Start-SqlSetupProcess @startSqlSetupProcessParameters } | Should -Throw -ErrorId 'ProcessNotTerminated,Microsoft.PowerShell.Commands.WaitProcessCommand'
+            { Start-SqlSetupProcess @startSqlSetupProcessParameters } | Should-Throw -FullyQualifiedErrorId 'ProcessNotTerminated,Microsoft.PowerShell.Commands.WaitProcessCommand'
         }
     }
 }

@@ -58,23 +58,23 @@ Describe 'Backup-SqlDscRSEncryptionKey' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have Configuration as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Backup-SqlDscRSEncryptionKey').Parameters['Configuration']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have Path as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Backup-SqlDscRSEncryptionKey').Parameters['Path']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have Password as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Backup-SqlDscRSEncryptionKey').Parameters['Password']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
     }
 
@@ -98,9 +98,9 @@ Describe 'Backup-SqlDscRSEncryptionKey' {
 
             $null = $mockCimInstance | Backup-SqlDscRSEncryptionKey -Password $mockPassword -Path $testPath -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'BackupEncryptionKey'
-            } -Exactly -Times 1
+            } -Times 1
 
             $testPath | Should -Exist
         }
@@ -110,7 +110,7 @@ Describe 'Backup-SqlDscRSEncryptionKey' {
 
             $result = $mockCimInstance | Backup-SqlDscRSEncryptionKey -Password $mockPassword -Path $testPath -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -134,8 +134,8 @@ Describe 'Backup-SqlDscRSEncryptionKey' {
 
             $result = $mockCimInstance | Backup-SqlDscRSEncryptionKey -Password $mockPassword -Path $testPath -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -159,7 +159,7 @@ Describe 'Backup-SqlDscRSEncryptionKey' {
 
             $null = $mockCimInstance | Backup-SqlDscRSEncryptionKey -Password $mockPassword -Path $testPath -Force
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -179,7 +179,7 @@ Describe 'Backup-SqlDscRSEncryptionKey' {
         It 'Should throw a terminating error' {
             $testPath = Join-Path -Path $TestDrive -ChildPath 'RSKey.snk'
 
-            { $mockCimInstance | Backup-SqlDscRSEncryptionKey -Password $mockPassword -Path $testPath -Confirm:$false } | Should -Throw -ErrorId 'BSRSEK0001,Backup-SqlDscRSEncryptionKey'
+            { $mockCimInstance | Backup-SqlDscRSEncryptionKey -Password $mockPassword -Path $testPath -Confirm:$false } | Should-Throw -FullyQualifiedErrorId 'BSRSEK0001,Backup-SqlDscRSEncryptionKey'
         }
     }
 
@@ -199,7 +199,7 @@ Describe 'Backup-SqlDscRSEncryptionKey' {
 
             $null = $mockCimInstance | Backup-SqlDscRSEncryptionKey -Password $mockPassword -Path $testPath -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
 
             $testPath | Should -Not -Exist
         }
@@ -225,7 +225,7 @@ Describe 'Backup-SqlDscRSEncryptionKey' {
 
             $null = Backup-SqlDscRSEncryptionKey -Configuration $mockCimInstance -Password $mockPassword -Path $testPath -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 }

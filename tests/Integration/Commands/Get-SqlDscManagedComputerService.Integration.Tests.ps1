@@ -45,12 +45,12 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
             It 'Should return all available services' {
                 $result = Get-SqlDscManagedComputerService -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
 
                 # Should contain SQL Server related services
                 $sqlServices = $result | Where-Object -FilterScript { $_.Name -like '*SQL*' }
-                $sqlServices | Should -Not -BeNullOrEmpty
+                $sqlServices | Should-BeTruthy
             }
         }
 
@@ -58,12 +58,12 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
             It 'Should return all available services' {
                 $result = Get-SqlDscManagedComputerService -ServerName $script:mockServerName -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
 
                 # Should contain SQL Server related services
                 $sqlServices = $result | Where-Object -FilterScript { $_.Name -like '*SQL*' }
-                $sqlServices | Should -Not -BeNullOrEmpty
+                $sqlServices | Should-BeTruthy
             }
         }
 
@@ -71,13 +71,13 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
             It 'Should return only Database Engine services' {
                 $result = Get-SqlDscManagedComputerService -ServerName $script:mockServerName -ServiceType 'DatabaseEngine' -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
 
                 # All returned services should be of type SqlServer
                 foreach ($service in $result)
                 {
-                    $service.Type | Should -Be 'SqlServer'
+                    $service.Type | Should-Be 'SqlServer'
                 }
             }
 
@@ -86,8 +86,8 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
 
                 if ($result)
                 {
-                    $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
-                    $result.Type | Should -Be 'SqlBrowser'
+                    $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+                    $result.Type | Should-Be 'SqlBrowser'
                 }
             }
         }
@@ -98,12 +98,12 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
 
                 if ($result)
                 {
-                    $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+                    $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
 
                     # All returned services should contain the instance name
                     foreach ($service in $result)
                     {
-                        $service.Name | Should -Match ('\$' + $script:mockInstanceName + '$')
+                        $service.Name | Should-MatchString ('\$' + $script:mockInstanceName + '$')
                     }
                 }
             }
@@ -113,11 +113,11 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
 
                 if ($result)
                 {
-                    $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+                    $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
 
                     # Should contain the default instance service
                     $defaultInstanceService = $result | Where-Object -FilterScript { $_.Name -eq 'MSSQLSERVER' }
-                    $defaultInstanceService | Should -Not -BeNullOrEmpty
+                    $defaultInstanceService | Should-BeTruthy
                 }
             }
         }
@@ -132,12 +132,12 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
             It 'Should return all available services' {
                 $result = $script:managedComputerObject | Get-SqlDscManagedComputerService -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
 
                 # Should contain SQL Server related services
                 $sqlServices = $result | Where-Object -FilterScript { $_.Name -like '*SQL*' }
-                $sqlServices | Should -Not -BeNullOrEmpty
+                $sqlServices | Should-BeTruthy
             }
         }
 
@@ -145,13 +145,13 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
             It 'Should return only Database Engine services' {
                 $result = $script:managedComputerObject | Get-SqlDscManagedComputerService -ServiceType 'DatabaseEngine' -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
 
                 # All returned services should be of type SqlServer
                 foreach ($service in $result)
                 {
-                    $service.Type | Should -Be 'SqlServer'
+                    $service.Type | Should-Be 'SqlServer'
                 }
             }
         }
@@ -162,12 +162,12 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
 
                 if ($result)
                 {
-                    $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+                    $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
 
                     # All returned services should contain the instance name
                     foreach ($service in $result)
                     {
-                        $service.Name | Should -Match ('\$' + $script:mockInstanceName + '$')
+                        $service.Name | Should-MatchString ('\$' + $script:mockInstanceName + '$')
                     }
                 }
             }
@@ -178,19 +178,19 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
         It 'Should return objects with correct SMO properties' {
             $result = Get-SqlDscManagedComputerService -ServerName $script:mockServerName -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
 
             # Verify it's a proper SMO Service object
-            $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+            $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
 
             # Verify key properties exist for at least one service
             $firstService = $result | Select-Object -First 1
-            $firstService.Name | Should -Not -BeNullOrEmpty
-            $firstService.Type | Should -Not -BeNullOrEmpty
+            $firstService.Name | Should-BeTruthy
+            $firstService.Type | Should-BeTruthy
 
             # Verify the service has access to its parent ManagedComputer
-            $firstService.Parent | Should -Not -BeNullOrEmpty
-            $firstService.Parent.Name | Should -Be $script:mockServerName
+            $firstService.Parent | Should-BeTruthy
+            $firstService.Parent.Name | Should-Be $script:mockServerName
         }
     }
 }

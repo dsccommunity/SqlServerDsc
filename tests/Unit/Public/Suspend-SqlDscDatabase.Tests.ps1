@@ -75,8 +75,8 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -88,19 +88,19 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
         It 'Should have ServerObject as a mandatory parameter in ServerObjectSet' {
             $parameterInfo = $command.Parameters['ServerObject']
 
-            $parameterInfo.ParameterSets['ServerObjectSet'].IsMandatory | Should -BeTrue
+            $parameterInfo.ParameterSets['ServerObjectSet'].IsMandatory | Should-BeTrue
         }
 
         It 'Should have Name as a mandatory parameter in ServerObjectSet' {
             $parameterInfo = $command.Parameters['Name']
 
-            $parameterInfo.ParameterSets['ServerObjectSet'].IsMandatory | Should -BeTrue
+            $parameterInfo.ParameterSets['ServerObjectSet'].IsMandatory | Should-BeTrue
         }
 
         It 'Should have DatabaseObject as a mandatory parameter in DatabaseObjectSet' {
             $parameterInfo = $command.Parameters['DatabaseObject']
 
-            $parameterInfo.ParameterSets['DatabaseObjectSet'].IsMandatory | Should -BeTrue
+            $parameterInfo.ParameterSets['DatabaseObjectSet'].IsMandatory | Should-BeTrue
         }
     }
 
@@ -120,9 +120,9 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
         It 'Should take the database offline and not throw' {
             $null = Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force
 
-            $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
+            $mockDatabaseObject.Status | Should-Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
 
-            Should -Invoke -CommandName 'Get-SqlDscDatabase' -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName 'Get-SqlDscDatabase' -Exactly -Scope It -Times 1
         }
 
         It 'Should call Get-SqlDscDatabase with Refresh when specified' {
@@ -130,9 +130,9 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
 
             $null = Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Refresh -Force
 
-            Should -Invoke -CommandName 'Get-SqlDscDatabase' -ParameterFilter {
+            Should-Invoke -CommandName 'Get-SqlDscDatabase' -Exactly -ParameterFilter {
                 $Refresh -eq $true
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should return the database object when PassThru is specified' {
@@ -140,8 +140,8 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
 
             $result = Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -PassThru -Force
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
-            $result.Name | Should -Be 'TestDatabase'
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Database'
+            $result.Name | Should-Be 'TestDatabase'
         }
 
         It 'Should not take the database offline when database is already offline' {
@@ -149,7 +149,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
 
             $null = Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force
 
-            $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
+            $mockDatabaseObject.Status | Should-Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
         }
     }
 
@@ -165,7 +165,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
         It 'Should take the database offline using DatabaseObject parameter' {
             $null = Suspend-SqlDscDatabase -DatabaseObject $mockDatabaseObject -Force
 
-            $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
+            $mockDatabaseObject.Status | Should-Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
         }
 
         It 'Should return the database object when PassThru is specified' {
@@ -173,8 +173,8 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
 
             $result = Suspend-SqlDscDatabase -DatabaseObject $mockDatabaseObject -PassThru -Force
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
-            $result.Name | Should -Be 'TestDatabase'
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Database'
+            $result.Name | Should-Be 'TestDatabase'
         }
     }
 
@@ -194,7 +194,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
         It 'Should take the database offline via pipeline' {
             $null = $mockServerObject | Suspend-SqlDscDatabase -Name 'TestDatabase' -Force
 
-            $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
+            $mockDatabaseObject.Status | Should-Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
         }
     }
 
@@ -210,7 +210,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
         It 'Should take the database offline via pipeline' {
             $null = $mockDatabaseObject | Suspend-SqlDscDatabase -Force
 
-            $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
+            $mockDatabaseObject.Status | Should-Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
         }
     }
 
@@ -241,7 +241,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
 
             Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force -Confirm:$false
 
-            $script:killAllProcessesCalled | Should -BeTrue
+            $script:killAllProcessesCalled | Should-BeTrue
         }
 
         It 'Should not call KillAllProcesses when Force parameter is not specified' {
@@ -250,7 +250,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
 
             Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Confirm:$false
 
-            $script:killAllProcessesCalled | Should -BeFalse
+            $script:killAllProcessesCalled | Should-BeFalse
         }
     }
 
@@ -270,7 +270,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
         It 'Should not take the database offline when WhatIf is specified' {
             $null = Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -WhatIf
 
-            $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
+            $mockDatabaseObject.Status | Should-Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
         }
     }
 
@@ -293,7 +293,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should throw a terminating error when SetOffline fails' {
-            { Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Confirm:$false } | Should -Throw -ExpectedMessage '*Failed to take database*offline*'
+            { Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Confirm:$false } | Should-Throw -ExceptionMessage '*Failed to take database*offline*'
         }
 
         It 'Should throw a terminating error when KillAllProcesses fails' {
@@ -302,7 +302,7 @@ Describe 'Suspend-SqlDscDatabase' -Tag 'Public' {
                 throw 'Failed to kill processes'
             } -Force
 
-            { Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force -Confirm:$false } | Should -Throw -ExpectedMessage '*Failed to kill processes*'
+            { Suspend-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force -Confirm:$false } | Should-Throw -ExceptionMessage '*Failed to kill processes*'
         }
     }
 }

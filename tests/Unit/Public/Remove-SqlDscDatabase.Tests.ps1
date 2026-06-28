@@ -84,7 +84,7 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
             }
 
             { Remove-SqlDscDatabase -ServerObject $mockServerObject -Name 'NonExistentDatabase' -Force } |
-                Should -Throw -ExpectedMessage ('*{0}*' -f $expectedMessage) -ErrorId 'RSDD0002,Remove-SqlDscDatabase'
+                Should-Throw -ExceptionMessage ('*{0}*' -f $expectedMessage) -FullyQualifiedErrorId 'RSDD0002,Remove-SqlDscDatabase'
         }
 
         It 'Should throw error when trying to remove system database' {
@@ -93,7 +93,7 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
             }
 
             { Remove-SqlDscDatabase -ServerObject $mockServerObject -Name 'master' -Force } |
-                Should -Throw -ExpectedMessage ('*{0}*' -f $expectedMessage) -ErrorId 'RSDD0001,Remove-SqlDscDatabase'
+                Should-Throw -ExceptionMessage ('*{0}*' -f $expectedMessage) -FullyQualifiedErrorId 'RSDD0001,Remove-SqlDscDatabase'
         }
     }
 
@@ -133,7 +133,7 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
             }
 
             { Remove-SqlDscDatabase -DatabaseObject $mockSystemDatabaseObject -Force } |
-                Should -Throw -ExpectedMessage ('*{0}*' -f $expectedMessage) -ErrorId 'RSDD0001,Remove-SqlDscDatabase'
+                Should-Throw -ExceptionMessage ('*{0}*' -f $expectedMessage) -FullyQualifiedErrorId 'RSDD0001,Remove-SqlDscDatabase'
         }
     }
 
@@ -179,8 +179,8 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
             
             $null = Remove-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -DropConnections -Force
             
-            $script:alterCalled | Should -BeTrue
-            $mockDatabaseObject.UserAccess | Should -Be 'Single'
+            $script:alterCalled | Should-BeTrue
+            $mockDatabaseObject.UserAccess | Should-Be 'Single'
         }
 
         It 'Should drop all active connections before removing database with DatabaseObject' {
@@ -189,8 +189,8 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
             
             $null = Remove-SqlDscDatabase -DatabaseObject $mockDatabaseObject -DropConnections -Force
             
-            $script:alterCalled | Should -BeTrue
-            $mockDatabaseObject.UserAccess | Should -Be 'Single'
+            $script:alterCalled | Should-BeTrue
+            $mockDatabaseObject.UserAccess | Should-Be 'Single'
         }
     }
 
@@ -208,8 +208,8 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have the correct parameters in parameter set DatabaseObject' -ForEach @(
@@ -225,8 +225,8 @@ Describe 'Remove-SqlDscDatabase' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 }

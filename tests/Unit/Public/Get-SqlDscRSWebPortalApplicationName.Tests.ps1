@@ -58,8 +58,8 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -100,7 +100,7 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
 
             $result = $mockSetupConfiguration | Get-SqlDscRSWebPortalApplicationName
 
-            $result | Should -Be $ExpectedApplicationName
+            $result | Should-Be $ExpectedApplicationName
         }
     }
 
@@ -131,7 +131,7 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
 
             $result = $mockSetupConfiguration | Get-SqlDscRSWebPortalApplicationName
 
-            $result | Should -Be $ExpectedApplicationName
+            $result | Should-Be $ExpectedApplicationName
         }
     }
 
@@ -147,7 +147,7 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
 
             $result = $mockSetupConfiguration | Get-SqlDscRSWebPortalApplicationName
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -165,7 +165,7 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
 
             $result = Get-SqlDscRSWebPortalApplicationName -SetupConfiguration $mockSetupConfiguration
 
-            $result | Should -Be 'ReportServerWebApp'
+            $result | Should-Be 'ReportServerWebApp'
         }
     }
 }

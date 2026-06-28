@@ -66,7 +66,7 @@ Describe 'SqlRSSetup' {
                 Set-StrictMode -Version 1.0
 
                 $instance = [SqlRSSetup]::new()
-                $instance | Should -Not -BeNullOrEmpty
+                $instance | Should-BeTruthy
             }
         }
 
@@ -75,7 +75,7 @@ Describe 'SqlRSSetup' {
                 Set-StrictMode -Version 1.0
 
                 $instance = [SqlRSSetup]::new()
-                $instance.GetType().Name | Should -Be 'SqlRSSetup'
+                $instance.GetType().Name | Should-Be 'SqlRSSetup'
             }
         }
     }
@@ -120,21 +120,21 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
 
                     $currentState = $script:mockSqlRSSetupInstance.Get()
 
-                    $currentState.InstanceName | Should -Be 'SSRS'
-                    $currentState.Timeout | Should -Be 7200
+                    $currentState.InstanceName | Should-Be 'SSRS'
+                    $currentState.Timeout | Should-Be 7200
                     # Returns 0, that means no value was set by GetCurrentState() from the enum InstallAction
-                    $currentState.Action | Should -Be 0
-                    $currentState.AcceptLicensingTerms | Should -BeFalse
-                    $currentState.MediaPath | Should -BeNullOrEmpty
-                    $currentState.ProductKey | Should -BeNullOrEmpty
-                    $currentState.EditionUpgrade | Should -BeNullOrEmpty
+                    $currentState.Action | Should-Be 0
+                    $currentState.AcceptLicensingTerms | Should-BeFalse
+                    $currentState.MediaPath | Should-BeFalsy
+                    $currentState.ProductKey | Should-BeFalsy
+                    $currentState.EditionUpgrade | Should-BeFalsy
                     # Returns 0, that means no value was set by GetCurrentState() from the enum ReportServerEdition
-                    $currentState.Edition | Should -Be 0
-                    $currentState.LogPath | Should -BeNullOrEmpty
-                    $currentState.InstallFolder | Should -BeNullOrEmpty
-                    $currentState.SuppressRestart | Should -BeFalse
-                    $currentState.ForceRestart | Should -BeFalse
-                    $currentState.VersionUpgrade | Should -BeNullOrEmpty
+                    $currentState.Edition | Should-Be 0
+                    $currentState.LogPath | Should-BeFalsy
+                    $currentState.InstallFolder | Should-BeFalsy
+                    $currentState.SuppressRestart | Should-BeFalse
+                    $currentState.ForceRestart | Should-BeFalse
+                    $currentState.VersionUpgrade | Should-BeFalsy
                 }
             }
         }
@@ -178,22 +178,22 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
 
                     $currentState = $script:mockSqlRSSetupInstance.Get()
 
-                    $currentState.InstanceName | Should -BeNullOrEmpty
-                    $currentState.Installed | Should -BeFalse
-                    $currentState.Timeout | Should -Be 7200
+                    $currentState.InstanceName | Should-BeFalsy
+                    $currentState.Installed | Should-BeFalse
+                    $currentState.Timeout | Should-Be 7200
                     # Returns 0, that means no value was set by GetCurrentState() from the enum InstallAction
-                    $currentState.Action | Should -Be 0
-                    $currentState.AcceptLicensingTerms | Should -BeFalse
-                    $currentState.MediaPath | Should -BeNullOrEmpty
-                    $currentState.ProductKey | Should -BeNullOrEmpty
-                    $currentState.EditionUpgrade | Should -BeNullOrEmpty
+                    $currentState.Action | Should-Be 0
+                    $currentState.AcceptLicensingTerms | Should-BeFalse
+                    $currentState.MediaPath | Should-BeFalsy
+                    $currentState.ProductKey | Should-BeFalsy
+                    $currentState.EditionUpgrade | Should-BeFalsy
                     # Returns 0, that means no value was set by GetCurrentState() from the enum ReportServerEdition
-                    $currentState.Edition | Should -Be 0
-                    $currentState.LogPath | Should -BeNullOrEmpty
-                    $currentState.InstallFolder | Should -BeNullOrEmpty
-                    $currentState.SuppressRestart | Should -BeFalse
-                    $currentState.ForceRestart | Should -BeFalse
-                    $currentState.VersionUpgrade | Should -BeNullOrEmpty
+                    $currentState.Edition | Should-Be 0
+                    $currentState.LogPath | Should-BeFalsy
+                    $currentState.InstallFolder | Should-BeFalsy
+                    $currentState.SuppressRestart | Should-BeFalse
+                    $currentState.ForceRestart | Should-BeFalse
+                    $currentState.VersionUpgrade | Should-BeFalsy
                 }
             }
         }
@@ -231,9 +231,9 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $script:mockSqlRSSetupInstance.Test() | Should -BeTrue
+                    $script:mockSqlRSSetupInstance.Test() | Should-BeTrue
 
-                    $script:mockMethodGetCallCount | Should -Be 1
+                    $script:mockMethodGetCallCount | Should-Be 1
                 }
             }
         }
@@ -267,9 +267,9 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $script:mockSqlRSSetupInstance.Test() | Should -BeTrue
+                    $script:mockSqlRSSetupInstance.Test() | Should-BeTrue
 
-                    $script:mockMethodGetCallCount | Should -Be 1
+                    $script:mockMethodGetCallCount | Should-Be 1
                 }
             }
         }
@@ -303,9 +303,9 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $script:mockSqlRSSetupInstance.Test() | Should -BeTrue
+                    $script:mockSqlRSSetupInstance.Test() | Should-BeTrue
 
-                    $script:mockMethodGetCallCount | Should -Be 1
+                    $script:mockMethodGetCallCount | Should-Be 1
                 }
             }
         }
@@ -344,9 +344,9 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $script:mockSqlRSSetupInstance.Test() | Should -BeTrue
+                    $script:mockSqlRSSetupInstance.Test() | Should-BeTrue
 
-                    $script:mockMethodGetCallCount | Should -Be 1
+                    $script:mockMethodGetCallCount | Should-Be 1
                 }
             }
         }
@@ -382,9 +382,9 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $script:mockSqlRSSetupInstance.Test() | Should -BeFalse
+                    $script:mockSqlRSSetupInstance.Test() | Should-BeFalse
 
-                    $script:mockMethodGetCallCount | Should -Be 1
+                    $script:mockMethodGetCallCount | Should-Be 1
                 }
             }
         }
@@ -410,9 +410,9 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $script:mockSqlRSSetupInstance.Test() | Should -BeFalse
+                    $script:mockSqlRSSetupInstance.Test() | Should-BeFalse
 
-                    $script:mockMethodGetCallCount | Should -Be 1
+                    $script:mockMethodGetCallCount | Should-Be 1
                 }
             }
         }
@@ -438,9 +438,9 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $script:mockSqlRSSetupInstance.Test() | Should -BeFalse
+                    $script:mockSqlRSSetupInstance.Test() | Should-BeFalse
 
-                    $script:mockMethodGetCallCount | Should -Be 1
+                    $script:mockMethodGetCallCount | Should-Be 1
                 }
             }
         }
@@ -479,9 +479,9 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $script:mockSqlRSSetupInstance.Test() | Should -BeFalse
+                    $script:mockSqlRSSetupInstance.Test() | Should-BeFalse
 
-                    $script:mockMethodGetCallCount | Should -Be 1
+                    $script:mockMethodGetCallCount | Should-Be 1
                 }
             }
         }
@@ -530,8 +530,8 @@ Describe 'SqlRSSetup\Set()' -Tag 'Set' {
 
                 $script:mockSqlRSSetupInstance.Set()
 
-                $script:mockMethodModifyCallCount | Should -Be 0
-                $script:mockMethodTestCallCount | Should -Be 1
+                $script:mockMethodModifyCallCount | Should-Be 0
+                $script:mockMethodTestCallCount | Should-Be 1
             }
         }
     }
@@ -562,8 +562,8 @@ Describe 'SqlRSSetup\Set()' -Tag 'Set' {
 
                 $script:mockSqlRSSetupInstance.Set()
 
-                $script:mockMethodModifyCallCount | Should -Be 1
-                $script:mockMethodTestCallCount | Should -Be 1
+                $script:mockMethodModifyCallCount | Should-Be 1
+                $script:mockMethodTestCallCount | Should-Be 1
             }
         }
     }
@@ -592,10 +592,10 @@ Describe 'SqlRSSetup\GetCurrentState()' -Tag 'GetCurrentState' {
                     }
                 )
 
-                $currentState.InstanceName | Should -BeNullOrEmpty
+                $currentState.InstanceName | Should-BeFalsy
             }
 
-            Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Scope It -Times 1
         }
     }
 
@@ -628,11 +628,11 @@ Describe 'SqlRSSetup\GetCurrentState()' -Tag 'GetCurrentState' {
                     }
                 )
 
-                $currentState.InstanceName | Should -Be 'SSRS'
-                $currentState.InstallFolder | Should -Be 'C:\Program Files\SSRS'
+                $currentState.InstanceName | Should-Be 'SSRS'
+                $currentState.InstallFolder | Should-Be 'C:\Program Files\SSRS'
             }
 
-            Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Scope It -Times 1
         }
     }
 }
@@ -667,7 +667,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         )
                     }
 
-                    Should -Invoke -CommandName Install-SqlDscReportingService -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Install-SqlDscReportingService -Exactly -Scope It -Times 1
                 }
             }
 
@@ -700,8 +700,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         )
                     }
 
-                    Should -Invoke -CommandName Install-SqlDscReportingService -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Set-DscMachineRebootRequired -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Install-SqlDscReportingService -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Set-DscMachineRebootRequired -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -734,7 +734,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         )
                     }
 
-                    Should -Invoke -CommandName Install-SqlDscPowerBIReportServer -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Install-SqlDscPowerBIReportServer -Exactly -Scope It -Times 1
                 }
             }
 
@@ -767,8 +767,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         )
                     }
 
-                    Should -Invoke -CommandName Install-SqlDscPowerBIReportServer -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Set-DscMachineRebootRequired -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Install-SqlDscPowerBIReportServer -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Set-DscMachineRebootRequired -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -803,7 +803,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         )
                     }
 
-                    Should -Invoke -CommandName Uninstall-SqlDscReportingService -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Uninstall-SqlDscReportingService -Exactly -Scope It -Times 1
                 }
             }
 
@@ -836,8 +836,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         )
                     }
 
-                    Should -Invoke -CommandName Uninstall-SqlDscReportingService -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Set-DscMachineRebootRequired -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Uninstall-SqlDscReportingService -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Set-DscMachineRebootRequired -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -870,7 +870,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         )
                     }
 
-                    Should -Invoke -CommandName Uninstall-SqlDscPowerBIReportServer -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Uninstall-SqlDscPowerBIReportServer -Exactly -Scope It -Times 1
                 }
             }
 
@@ -903,8 +903,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         )
                     }
 
-                    Should -Invoke -CommandName Uninstall-SqlDscPowerBIReportServer -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Set-DscMachineRebootRequired -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Uninstall-SqlDscPowerBIReportServer -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Set-DscMachineRebootRequired -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -939,7 +939,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         )
                     }
 
-                    Should -Invoke -CommandName Repair-SqlDscReportingService -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Repair-SqlDscReportingService -Exactly -Scope It -Times 1
                 }
             }
 
@@ -972,8 +972,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         )
                     }
 
-                    Should -Invoke -CommandName Repair-SqlDscReportingService -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Set-DscMachineRebootRequired -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Repair-SqlDscReportingService -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Set-DscMachineRebootRequired -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -1006,7 +1006,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         )
                     }
 
-                    Should -Invoke -CommandName Repair-SqlDscPowerBIReportServer -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Repair-SqlDscPowerBIReportServer -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1039,8 +1039,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         )
                     }
 
-                    Should -Invoke -CommandName Repair-SqlDscPowerBIReportServer -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Set-DscMachineRebootRequired -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Repair-SqlDscPowerBIReportServer -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Set-DscMachineRebootRequired -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -1073,7 +1073,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                             MediaPath    = $TestDrive
                         }
                     )
-                } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+                } | Should-Throw -ExceptionMessage $mockExpectedErrorMessage
             }
         }
     }
@@ -1109,7 +1109,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                                 MediaPath    = $TestDrive
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage.Exception.Message
+                    } | Should-Throw -ExceptionMessage $mockExpectedErrorMessage.Exception.Message
                 }
             }
         }
@@ -1146,7 +1146,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                                 AcceptLicensingTerms = $false
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage.Exception.Message
+                    } | Should-Throw -ExceptionMessage $mockExpectedErrorMessage.Exception.Message
                 }
             }
         }
@@ -1185,7 +1185,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                                 AcceptLicensingTerms = $true
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage.Exception.Message
+                    } | Should-Throw -ExceptionMessage $mockExpectedErrorMessage.Exception.Message
                 }
             }
         }
@@ -1228,7 +1228,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                                 InstallFolder        = $TestDrive | Join-Path -ChildPath 'MissingParent' | Join-Path -ChildPath 'SSRS'
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage.Exception.Message
+                    } | Should-Throw -ExceptionMessage $mockExpectedErrorMessage.Exception.Message
                 }
             }
         }
@@ -1265,7 +1265,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                                 MediaPath    = $TestDrive
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage.Exception.Message
+                    } | Should-Throw -ExceptionMessage $mockExpectedErrorMessage.Exception.Message
                 }
             }
         }
@@ -1302,7 +1302,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                                 AcceptLicensingTerms = $false
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage.Exception.Message
+                    } | Should-Throw -ExceptionMessage $mockExpectedErrorMessage.Exception.Message
                 }
             }
         }
@@ -1343,7 +1343,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                                 EditionUpgrade       = $true
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage.Exception.Message
+                    } | Should-Throw -ExceptionMessage $mockExpectedErrorMessage.Exception.Message
                 }
             }
         }
@@ -1378,7 +1378,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                             ProductKey           = 'XXXXX-XXXXX-XXXXX-XXXXX-XXXXX'
                         }
                     )
-                } | Should -Throw -ExpectedMessage '*DRC0010*'
+                } | Should-Throw -ExceptionMessage '*DRC0010*'
             }
         }
     }
@@ -1418,7 +1418,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                                 Edition              = 'Developer'
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage.Exception.Message
+                    } | Should-Throw -ExceptionMessage $mockExpectedErrorMessage.Exception.Message
                 }
             }
         }
@@ -1460,7 +1460,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                                 Edition              = 'Developer'
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage.Exception.Message
+                    } | Should-Throw -ExceptionMessage $mockExpectedErrorMessage.Exception.Message
                 }
             }
         }
@@ -1504,7 +1504,7 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                             LogPath              = $TestDrive | Join-Path -ChildPath 'MissingParent' | Join-Path -ChildPath 'Logs'
                         }
                     )
-                } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage.Exception.Message
+                } | Should-Throw -ExceptionMessage $mockExpectedErrorMessage.Exception.Message
             }
         }
     }
@@ -1545,7 +1545,7 @@ Describe 'SqlRSSetup\NormalizeProperties()' -Tag 'NormalizeProperties' {
                 )
             }
 
-            Should -Invoke -CommandName Format-Path -Exactly -Times 3 -Scope It
+            Should-Invoke -CommandName Format-Path -Exactly -Scope It -Times 3
         }
     }
 
@@ -1579,7 +1579,7 @@ Describe 'SqlRSSetup\NormalizeProperties()' -Tag 'NormalizeProperties' {
                 )
             }
 
-            Should -Invoke -CommandName Format-Path -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Format-Path -Exactly -Scope It -Times 1
         }
     }
 }

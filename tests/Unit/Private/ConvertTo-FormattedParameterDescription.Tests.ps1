@@ -62,7 +62,7 @@ Describe 'ConvertTo-FormattedParameterDescription' -Tag 'Private' {
                 $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude $excludeParameters
 
                 # Check that parameters are sorted alphabetically
-                $result | Should -Be "`r`n    CategoryName: 'TestCategory'`r`n    EmailAddress: 'test@contoso.com'"
+                $result | Should-Be "`r`n    CategoryName: 'TestCategory'`r`n    EmailAddress: 'test@contoso.com'"
             }
         }
 
@@ -78,7 +78,7 @@ Describe 'ConvertTo-FormattedParameterDescription' -Tag 'Private' {
 
                 $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude $excludeParameters
 
-                $result | Should -Be " $($script:localizedData.ConvertTo_FormattedParameterDescription_NoParametersToUpdate)"
+                $result | Should-Be " $($script:localizedData.ConvertTo_FormattedParameterDescription_NoParametersToUpdate)"
             }
         }
 
@@ -93,7 +93,7 @@ Describe 'ConvertTo-FormattedParameterDescription' -Tag 'Private' {
 
                 $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude $excludeParameters
 
-                $result | Should -Be "`r`n    EmailAddress: 'admin@company.com'"
+                $result | Should-Be "`r`n    EmailAddress: 'admin@company.com'"
             }
         }
 
@@ -107,7 +107,7 @@ Describe 'ConvertTo-FormattedParameterDescription' -Tag 'Private' {
                 $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude @()
 
                 # Check that parameters are sorted alphabetically
-                $result | Should -Be "`r`n    CategoryName: 'TestCategory'`r`n    EmailAddress: 'test@contoso.com'"
+                $result | Should-Be "`r`n    CategoryName: 'TestCategory'`r`n    EmailAddress: 'test@contoso.com'"
             }
         }
 
@@ -125,7 +125,7 @@ Describe 'ConvertTo-FormattedParameterDescription' -Tag 'Private' {
                 $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude $excludeParameters
 
                 # Check that parameters are sorted alphabetically
-                $result | Should -Be "`r`n    EmailAddress: 'test@contoso.com'`r`n    PagerDays: 'Monday'`r`n    SaturdayPagerEndTime: '17:00:00'"
+                $result | Should-Be "`r`n    EmailAddress: 'test@contoso.com'`r`n    PagerDays: 'Monday'`r`n    SaturdayPagerEndTime: '17:00:00'"
             }
         }
 
@@ -139,7 +139,7 @@ Describe 'ConvertTo-FormattedParameterDescription' -Tag 'Private' {
 
                 $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude @()
 
-                $result | Should -Be "`r`n    EmailAddress: 'test@contoso.com'`r`n    Password: '***'"
+                $result | Should-Be "`r`n    EmailAddress: 'test@contoso.com'`r`n    Password: '***'"
             }
         }
 
@@ -154,7 +154,7 @@ Describe 'ConvertTo-FormattedParameterDescription' -Tag 'Private' {
 
                 $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude @()
 
-                $result | Should -Be "`r`n    Credential: 'TestUser'`r`n    EmailAddress: 'test@contoso.com'"
+                $result | Should-Be "`r`n    Credential: 'TestUser'`r`n    EmailAddress: 'test@contoso.com'"
             }
         }
 
@@ -168,7 +168,7 @@ Describe 'ConvertTo-FormattedParameterDescription' -Tag 'Private' {
 
                 $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude @()
 
-                $result | Should -Be "`r`n    Categories: 'Category1, Category2, Category3'`r`n    EmailAddress: 'test@contoso.com'`r`n    Numbers: '1, 2, 3'"
+                $result | Should-Be "`r`n    Categories: 'Category1, Category2, Category3'`r`n    EmailAddress: 'test@contoso.com'`r`n    Numbers: '1, 2, 3'"
             }
         }
 
@@ -188,7 +188,7 @@ Describe 'ConvertTo-FormattedParameterDescription' -Tag 'Private' {
 
                 $result = ConvertTo-FormattedParameterDescription -BoundParameters $boundParameters -Exclude $excludeParameters
 
-                $result | Should -Be "`r`n    Categories: 'Cat1, Cat2'`r`n    Credential: 'TestUser'`r`n    EmailAddress: 'test@contoso.com'`r`n    Password: '***'"
+                $result | Should-Be "`r`n    Categories: 'Cat1, Cat2'`r`n    Credential: 'TestUser'`r`n    EmailAddress: 'test@contoso.com'`r`n    Password: '***'"
             }
         }
     }

@@ -130,13 +130,11 @@ Describe 'SqlServerDsc.Common\Get-SqlInstanceMajorVersion' -Tag 'GetSqlInstanceM
     Context 'When calling Get-SqlInstanceMajorVersion' {
         It 'Should return the correct major SQL version number' {
             $result = Get-SqlInstanceMajorVersion -InstanceName $mockInstanceName
-            $result | Should -Be $mockSqlMajorVersion
+            $result | Should-Be $mockSqlMajorVersion
 
-            Should -Invoke -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It `
-                -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_InstanceNames_SQL
+            Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_InstanceNames_SQL -Scope It -Times 1
 
-            Should -Invoke -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It `
-                -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_FullInstanceId_Setup
+            Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_FullInstanceId_Setup -Scope It -Times 1
         }
     }
 
@@ -156,15 +154,13 @@ Describe 'SqlServerDsc.Common\Get-SqlInstanceMajorVersion' -Tag 'GetSqlInstanceM
                 $mockLocalizedString -f $mockInstanceName
             )
 
-            $mockErrorMessage | Should -Not -BeNullOrEmpty
+            $mockErrorMessage | Should-BeTruthy
 
-            { Get-SqlInstanceMajorVersion -InstanceName $mockInstanceName } | Should -Throw -ExpectedMessage $mockErrorMessage
+            { Get-SqlInstanceMajorVersion -InstanceName $mockInstanceName } | Should-Throw -ExceptionMessage $mockErrorMessage
 
-            Should -Invoke -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It `
-                -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_InstanceNames_SQL
+            Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_InstanceNames_SQL -Scope It -Times 1
 
-            Should -Invoke -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It `
-                -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_FullInstanceId_Setup
+            Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_FullInstanceId_Setup -Scope It -Times 1
         }
     }
 }

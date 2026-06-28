@@ -97,20 +97,20 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.AccountName | Should -Be $ConfigurationData.AllNodes.AccountName
-            $resourceCurrentState.ProfileName | Should -Be $ConfigurationData.AllNodes.ProfileName
-            $resourceCurrentState.EmailAddress | Should -Be $ConfigurationData.AllNodes.EmailAddress
-            $resourceCurrentState.ReplyToAddress | Should -Be $ConfigurationData.AllNodes.EmailAddress
-            $resourceCurrentState.DisplayName | Should -Be $ConfigurationData.AllNodes.MailServerName
-            $resourceCurrentState.MailServerName | Should -Be $ConfigurationData.AllNodes.MailServerName
-            $resourceCurrentState.Description | Should -Be $ConfigurationData.AllNodes.Description
-            $resourceCurrentState.LoggingLevel | Should -Be $ConfigurationData.AllNodes.LoggingLevel
-            $resourceCurrentState.TcpPort | Should -Be $ConfigurationData.AllNodes.TcpPort
+            $resourceCurrentState.Ensure | Should-Be 'Present'
+            $resourceCurrentState.AccountName | Should-Be $ConfigurationData.AllNodes.AccountName
+            $resourceCurrentState.ProfileName | Should-Be $ConfigurationData.AllNodes.ProfileName
+            $resourceCurrentState.EmailAddress | Should-Be $ConfigurationData.AllNodes.EmailAddress
+            $resourceCurrentState.ReplyToAddress | Should-Be $ConfigurationData.AllNodes.EmailAddress
+            $resourceCurrentState.DisplayName | Should-Be $ConfigurationData.AllNodes.MailServerName
+            $resourceCurrentState.MailServerName | Should-Be $ConfigurationData.AllNodes.MailServerName
+            $resourceCurrentState.Description | Should-Be $ConfigurationData.AllNodes.Description
+            $resourceCurrentState.LoggingLevel | Should-Be $ConfigurationData.AllNodes.LoggingLevel
+            $resourceCurrentState.TcpPort | Should-Be $ConfigurationData.AllNodes.TcpPort
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -151,7 +151,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -197,20 +197,20 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Absent'
-            $resourceCurrentState.AccountName | Should -BeNullOrEmpty
-            $resourceCurrentState.ProfileName | Should -BeNullOrEmpty
-            $resourceCurrentState.EmailAddress | Should -BeNullOrEmpty
-            $resourceCurrentState.ReplyToAddress | Should -BeNullOrEmpty
-            $resourceCurrentState.DisplayName | Should -BeNullOrEmpty
-            $resourceCurrentState.MailServerName | Should -BeNullOrEmpty
-            $resourceCurrentState.Description | Should -BeNullOrEmpty
-            $resourceCurrentState.LoggingLevel | Should -BeNullOrEmpty
-            $resourceCurrentState.TcpPort | Should -BeNullOrEmpty
+            $resourceCurrentState.Ensure | Should-Be 'Absent'
+            $resourceCurrentState.AccountName | Should-BeFalsy
+            $resourceCurrentState.ProfileName | Should-BeFalsy
+            $resourceCurrentState.EmailAddress | Should-BeFalsy
+            $resourceCurrentState.ReplyToAddress | Should-BeFalsy
+            $resourceCurrentState.DisplayName | Should-BeFalsy
+            $resourceCurrentState.MailServerName | Should-BeFalsy
+            $resourceCurrentState.Description | Should-BeFalsy
+            $resourceCurrentState.LoggingLevel | Should-BeFalsy
+            $resourceCurrentState.TcpPort | Should-BeFalsy
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 }

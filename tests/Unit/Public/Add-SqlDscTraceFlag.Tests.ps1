@@ -74,15 +74,15 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When passing $null as ServiceObject' {
         It 'Should throw the correct error' {
             $mockErrorMessage = 'Cannot bind argument to parameter ''ServiceObject'' because it is null.'
 
-            { Add-SqlDscTraceFlag -ServiceObject $null } | Should -Throw -ExpectedMessage $mockErrorMessage
+            { Add-SqlDscTraceFlag -ServiceObject $null } | Should-Throw -ExceptionMessage $mockErrorMessage
         }
     }
 
@@ -90,7 +90,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
         It 'Should throw the correct error' {
             $mockErrorMessage = 'Cannot validate argument on parameter ''TraceFlag''*'
 
-            { Add-SqlDscTraceFlag -TraceFlag @(4199, $null, 3226) -Force } | Should -Throw -ExpectedMessage $mockErrorMessage
+            { Add-SqlDscTraceFlag -TraceFlag @(4199, $null, 3226) -Force } | Should-Throw -ExceptionMessage $mockErrorMessage
         }
     }
 
@@ -112,9 +112,9 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
                 It 'Should call the mocked method and have correct value in the object' {
                     $null = Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Confirm:$false -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                    Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -ParameterFilter {
                         $TraceFlag -contains 4199
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -122,9 +122,9 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
                 It 'Should call the mocked method and have correct value in the object' {
                     $null = Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Force -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                    Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -ParameterFilter {
                         $TraceFlag -contains 4199
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -132,7 +132,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
                 It 'Should not call the mocked method and should not have changed the value in the object' {
                     $null = Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -WhatIf -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Scope It -Times 0
                 }
             }
 
@@ -140,9 +140,9 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
                 It 'Should call the mocked method and have correct value in the object' {
                     $null = $mockServiceObject | Add-SqlDscTraceFlag -TraceFlag 4199 -Force -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                    Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -ParameterFilter {
                         $TraceFlag -contains 4199
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -152,9 +152,9 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
                 It 'Should call the mocked method and have correct value in the object' {
                     $null = Add-SqlDscTraceFlag -TraceFlag 4199 -Confirm:$false -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                    Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -ParameterFilter {
                         $TraceFlag -contains 4199
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -162,9 +162,9 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
                 It 'Should call the mocked method and have correct value in the object' {
                     $null = Add-SqlDscTraceFlag -TraceFlag 4199 -Force -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                    Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -ParameterFilter {
                         $TraceFlag -contains 4199
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -172,7 +172,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
                 It 'Should not call the mocked method and should not have changed the value in the object' {
                     $null = Add-SqlDscTraceFlag -TraceFlag 4199 -WhatIf -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -192,18 +192,18 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
         It 'Should call the mocked method and have correct value in the object' {
             $null = Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Force -ErrorAction 'Stop'
 
-            Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+            Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -ParameterFilter {
                 $TraceFlag.Count -eq 2 -and
                 $TraceFlag -contains 4199 -and
                 $TraceFlag -contains 3226
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should not add duplicate if it already exist' {
             $null = Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 3226 -Force -ErrorAction 'Stop'
 
             # Should not call Set-SqlDscTraceFlag when the trace flag already exists (idempotent)
-            Should -Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Scope It -Times 0
         }
     }
 
@@ -225,31 +225,31 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
             It 'Should de-duplicate trace flags when only duplicates are provided' {
                 $null = Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,4199 -Force
 
-                Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -ParameterFilter {
                     $TraceFlag.Count -eq 1 -and
                     $TraceFlag -contains 4199
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
 
             It 'Should de-duplicate trace flags when mix of unique and duplicates are provided' {
                 $null = Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,3226,4199,3226 -Force
 
-                Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -ParameterFilter {
                     $TraceFlag.Count -eq 2 -and
                     $TraceFlag -contains 4199 -and
                     $TraceFlag -contains 3226
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
 
             It 'Should handle multiple duplicates of multiple trace flags' {
                 $null = Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,4199,3226,3226,3226,1222 -Force
 
-                Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -ParameterFilter {
                     $TraceFlag.Count -eq 3 -and
                     $TraceFlag -contains 4199 -and
                     $TraceFlag -contains 3226 -and
                     $TraceFlag -contains 1222
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -266,29 +266,29 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
             It 'Should de-duplicate when adding trace flags that include duplicates and existing flag' {
                 $null = Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,3226,4199 -Force
 
-                Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -ParameterFilter {
                     $TraceFlag.Count -eq 2 -and
                     $TraceFlag -contains 4199 -and
                     $TraceFlag -contains 3226
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
 
             It 'Should de-duplicate when all provided trace flags are duplicates of existing flag' {
                 $null = Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 3226,3226 -Force
 
                 # Should not call Set-SqlDscTraceFlag when all flags already exist (idempotent)
-                Should -Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Scope It -Times 0
             }
 
             It 'Should de-duplicate complex scenario with existing and new flags' {
                 $null = Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,4199,3226,1222,1222 -Force
 
-                Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -ParameterFilter {
                     $TraceFlag.Count -eq 3 -and
                     $TraceFlag -contains 4199 -and
                     $TraceFlag -contains 3226 -and
                     $TraceFlag -contains 1222
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -305,12 +305,12 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
             It 'Should de-duplicate and merge with multiple existing trace flags' {
                 $null = Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199,4199,3226,1222 -Force
 
-                Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -ParameterFilter {
                     $TraceFlag.Count -eq 3 -and
                     $TraceFlag -contains 4199 -and
                     $TraceFlag -contains 3226 -and
                     $TraceFlag -contains 1222
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
     }

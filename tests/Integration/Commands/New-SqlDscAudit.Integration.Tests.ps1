@@ -87,16 +87,16 @@ Describe 'New-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         It 'Should create an application log audit successfully' {
             $result = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:testAuditName
-            $result.DestinationType | Should -Be 'ApplicationLog'
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Audit'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:testAuditName
+            $result.DestinationType | Should-Be 'ApplicationLog'
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Audit'
 
             # Verify the audit exists in the server
             $createdAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
-            $createdAudit | Should -Not -BeNullOrEmpty
-            $createdAudit.Name | Should -Be $script:testAuditName
-            $createdAudit.DestinationType | Should -Be 'ApplicationLog'
+            $createdAudit | Should-BeTruthy
+            $createdAudit.Name | Should-Be $script:testAuditName
+            $createdAudit.DestinationType | Should-Be 'ApplicationLog'
         }
 
         It 'Should create a security log audit successfully' {
@@ -104,22 +104,22 @@ Describe 'New-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
             $result = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'SecurityLog' -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:testAuditName
-            $result.DestinationType | Should -Be 'SecurityLog'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:testAuditName
+            $result.DestinationType | Should-Be 'SecurityLog'
 
             # Verify the audit exists in the server
             $createdAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
-            $createdAudit | Should -Not -BeNullOrEmpty
-            $createdAudit.DestinationType | Should -Be 'SecurityLog'
+            $createdAudit | Should-BeTruthy
+            $createdAudit.DestinationType | Should-Be 'SecurityLog'
         }
 
         It 'Should support PassThru parameter' {
             $result = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Audit'
-            $result.Name | Should -Be $script:testAuditName
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Audit'
+            $result.Name | Should-Be $script:testAuditName
         }
     }
 
@@ -140,57 +140,57 @@ Describe 'New-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         It 'Should create a file audit successfully' {
             $result = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Path $script:testAuditPath -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:testAuditName
-            $result.DestinationType | Should -Be 'File'
-            $result.FilePath.TrimEnd('\', '/') | Should -Be $script:testAuditPath.TrimEnd('\', '/')
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:testAuditName
+            $result.DestinationType | Should-Be 'File'
+            $result.FilePath.TrimEnd('\', '/') | Should-Be $script:testAuditPath.TrimEnd('\', '/')
 
             # Verify the audit exists in the server
             $createdAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
-            $createdAudit | Should -Not -BeNullOrEmpty
-            $createdAudit.DestinationType | Should -Be 'File'
-            $createdAudit.FilePath.TrimEnd('\', '/') | Should -Be $script:testAuditPath.TrimEnd('\', '/')
+            $createdAudit | Should-BeTruthy
+            $createdAudit.DestinationType | Should-Be 'File'
+            $createdAudit.FilePath.TrimEnd('\', '/') | Should-Be $script:testAuditPath.TrimEnd('\', '/')
         }
 
         It 'Should create a file audit with maximum file size' {
             $result = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Path $script:testAuditPath -MaximumFileSize 100 -MaximumFileSizeUnit 'Megabyte' -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.MaximumFileSize | Should -Be 100
-            $result.MaximumFileSizeUnit | Should -Be 'MB'
+            $result | Should-BeTruthy
+            $result.MaximumFileSize | Should-Be 100
+            $result.MaximumFileSizeUnit | Should-Be 'MB'
 
             # Verify the audit exists with correct properties
             $createdAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
-            $createdAudit.MaximumFileSize | Should -Be 100
-            $createdAudit.MaximumFileSizeUnit | Should -Be 'MB'
+            $createdAudit.MaximumFileSize | Should-Be 100
+            $createdAudit.MaximumFileSizeUnit | Should-Be 'MB'
         }
 
         It 'Should create a file audit with maximum files and reserve disk space' {
             $result = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Path $script:testAuditPath -MaximumFiles 5 -MaximumFileSize 50 -MaximumFileSizeUnit 'Megabyte' -ReserveDiskSpace -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.MaximumFiles | Should -Be 5
-            $result.MaximumFileSize | Should -Be 50
-            $result.MaximumFileSizeUnit | Should -Be 'MB'
-            $result.ReserveDiskSpace | Should -BeTrue
+            $result | Should-BeTruthy
+            $result.MaximumFiles | Should-Be 5
+            $result.MaximumFileSize | Should-Be 50
+            $result.MaximumFileSizeUnit | Should-Be 'MB'
+            $result.ReserveDiskSpace | Should-BeTrue
 
             # Verify the audit exists with correct properties
             $createdAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
-            $createdAudit.MaximumFiles | Should -Be 5
-            $createdAudit.MaximumFileSize | Should -Be 50
-            $createdAudit.MaximumFileSizeUnit | Should -Be 'MB'
-            $createdAudit.ReserveDiskSpace | Should -BeTrue
+            $createdAudit.MaximumFiles | Should-Be 5
+            $createdAudit.MaximumFileSize | Should-Be 50
+            $createdAudit.MaximumFileSizeUnit | Should-Be 'MB'
+            $createdAudit.ReserveDiskSpace | Should-BeTrue
         }
 
         It 'Should create a file audit with maximum rollover files' {
             $result = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Path $script:testAuditPath -MaximumRolloverFiles 10 -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.MaximumRolloverFiles | Should -Be 10
+            $result | Should-BeTruthy
+            $result.MaximumRolloverFiles | Should-Be 10
 
             # Verify the audit exists with correct properties
             $createdAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
-            $createdAudit.MaximumRolloverFiles | Should -Be 10
+            $createdAudit.MaximumRolloverFiles | Should-Be 10
         }
     }
 
@@ -211,35 +211,35 @@ Describe 'New-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         It 'Should create an audit with OnFailure setting' {
             $result = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -OnFailure 'Continue' -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.OnFailure | Should -Be 'Continue'
+            $result | Should-BeTruthy
+            $result.OnFailure | Should-Be 'Continue'
 
             # Verify the audit exists with correct properties
             $createdAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
-            $createdAudit.OnFailure | Should -Be 'Continue'
+            $createdAudit.OnFailure | Should-Be 'Continue'
         }
 
         It 'Should create an audit with QueueDelay setting' {
             $result = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -QueueDelay 5000 -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.QueueDelay | Should -Be 5000
+            $result | Should-BeTruthy
+            $result.QueueDelay | Should-Be 5000
 
             # Verify the audit exists with correct properties
             $createdAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
-            $createdAudit.QueueDelay | Should -Be 5000
+            $createdAudit.QueueDelay | Should-Be 5000
         }
 
         It 'Should create an audit with AuditGuid setting' {
             $testGuid = [System.Guid]::NewGuid().ToString()
             $result = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -AuditGuid $testGuid -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Guid | Should -Be $testGuid
+            $result | Should-BeTruthy
+            $result.Guid | Should-Be $testGuid
 
             # Verify the audit exists with correct properties
             $createdAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
-            $createdAudit.Guid | Should -Be $testGuid
+            $createdAudit.Guid | Should-Be $testGuid
         }
 
         It 'Should create an audit with AuditFilter setting' {
@@ -247,23 +247,23 @@ Describe 'New-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
             $expectedFilter = "([database_name]='master')"  # SQL Server normalizes the filter by removing spaces
             $result = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -AuditFilter $testFilter -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Filter | Should -Be $expectedFilter
+            $result | Should-BeTruthy
+            $result.Filter | Should-Be $expectedFilter
 
             # Verify the audit exists with correct properties
             $createdAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
-            $createdAudit.Filter | Should -Be $expectedFilter
+            $createdAudit.Filter | Should-Be $expectedFilter
         }
 
         It 'Should support Refresh parameter' {
             $result = New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -Refresh -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:testAuditName
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:testAuditName
 
             # Verify the audit exists
             $createdAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
-            $createdAudit | Should -Not -BeNullOrEmpty
+            $createdAudit | Should-BeTruthy
         }
     }
 
@@ -284,12 +284,12 @@ Describe 'New-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         It 'Should support pipeline input with server object' {
             $result = $script:serverObject | New-SqlDscAudit -Name $script:testAuditName -LogType 'ApplicationLog' -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:testAuditName
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:testAuditName
 
             # Verify the audit exists
             $createdAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
-            $createdAudit | Should -Not -BeNullOrEmpty
+            $createdAudit | Should-BeTruthy
         }
     }
 
@@ -313,14 +313,14 @@ Describe 'New-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
             # Then try to create another audit with the same name
             { New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -LogType 'ApplicationLog' -Force -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
 
         It 'Should throw error when path does not exist for file audit' {
             $nonExistentPath = Join-Path -Path $env:TEMP -ChildPath 'NonExistentPath'
 
             { New-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Path $nonExistentPath -Force -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
     }
 }

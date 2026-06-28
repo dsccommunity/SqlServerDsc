@@ -62,26 +62,26 @@ Describe 'Get-SqlDscRSLogPath' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have InstanceName as a mandatory parameter in the ByInstanceName parameter set' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRSLogPath').Parameters['InstanceName']
 
-            $parameterInfo.Attributes.Where({$_.ParameterSetName -eq 'ByInstanceName'}).Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Where({$_.ParameterSetName -eq 'ByInstanceName'}).Mandatory | Should-BeTrue
         }
 
         It 'Should have Configuration as a mandatory parameter in the ByConfiguration parameter set' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRSLogPath').Parameters['Configuration']
 
-            $parameterInfo.Attributes.Where({$_.ParameterSetName -eq 'ByConfiguration'}).Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Where({$_.ParameterSetName -eq 'ByConfiguration'}).Mandatory | Should-BeTrue
         }
 
         It 'Should accept Configuration parameter from pipeline' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRSLogPath').Parameters['Configuration']
 
-            $parameterInfo.Attributes.ValueFromPipeline | Should -Contain $true
+            $parameterInfo.Attributes.ValueFromPipeline | Should-ContainCollection $true
         }
     }
 
@@ -102,9 +102,9 @@ Describe 'Get-SqlDscRSLogPath' {
         It 'Should return the log file path' {
             $result = Get-SqlDscRSLogPath -InstanceName 'SSRS'
 
-            $result | Should -Be $mockLogPath
+            $result | Should-Be $mockLogPath
 
-            Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Scope It -Times 1
         }
     }
 
@@ -116,9 +116,9 @@ Describe 'Get-SqlDscRSLogPath' {
         }
 
         It 'Should throw a terminating error' {
-            { Get-SqlDscRSLogPath -InstanceName 'NonExistent' } | Should -Throw -ErrorId 'GSRSLP0001*'
+            { Get-SqlDscRSLogPath -InstanceName 'NonExistent' } | Should-Throw -FullyQualifiedErrorId 'GSRSLP0001*'
 
-            Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Scope It -Times 1
         }
     }
 
@@ -135,9 +135,9 @@ Describe 'Get-SqlDscRSLogPath' {
         }
 
         It 'Should throw a terminating error' {
-            { Get-SqlDscRSLogPath -InstanceName 'SSRS' } | Should -Throw -ErrorId 'GSRSLP0002*'
+            { Get-SqlDscRSLogPath -InstanceName 'SSRS' } | Should-Throw -FullyQualifiedErrorId 'GSRSLP0002*'
 
-            Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Scope It -Times 1
         }
     }
 
@@ -159,9 +159,9 @@ Describe 'Get-SqlDscRSLogPath' {
         It 'Should return the log file path for PBIRS' {
             $result = Get-SqlDscRSLogPath -InstanceName 'PBIRS'
 
-            $result | Should -Be $mockLogPath
+            $result | Should-Be $mockLogPath
 
-            Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Scope It -Times 1
         }
     }
 
@@ -189,17 +189,17 @@ Describe 'Get-SqlDscRSLogPath' {
         It 'Should return the log file path when piping configuration' {
             $result = $mockConfiguration | Get-SqlDscRSLogPath
 
-            $result | Should -Be $mockLogPath
+            $result | Should-Be $mockLogPath
 
-            Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Scope It -Times 1
         }
 
         It 'Should work with Configuration parameter passed directly' {
             $result = Get-SqlDscRSLogPath -Configuration $mockConfiguration
 
-            $result | Should -Be $mockLogPath
+            $result | Should-Be $mockLogPath
 
-            Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Scope It -Times 1
         }
     }
 }

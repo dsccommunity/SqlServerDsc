@@ -90,7 +90,7 @@ Describe 'Post.ServiceAccountChange.SQL2019-2022.RS' -Tag @('Integration_SQL2019
             $script:databaseRightsScript = $script:configuration |
                 Request-SqlDscRSDatabaseRightsScript -DatabaseName $script:databaseName -UserName $script:serviceAccount -ErrorAction 'Stop'
 
-            $script:databaseRightsScript | Should -Not -BeNullOrEmpty -Because 'the database rights script should be generated'
+            $script:databaseRightsScript | Should-BeTruthy -Because 'the database rights script should be generated'
         }
 
         It 'Should execute the database rights script against the database' {
@@ -149,7 +149,7 @@ Describe 'Post.ServiceAccountChange.SQL2019-2022.RS' -Tag @('Integration_SQL2019
 
             $isInitialized = $configuration | Test-SqlDscRSInitialized -ErrorAction 'Stop'
 
-            $isInitialized | Should -BeTrue -Because 'the instance should be initialized after re-initialization'
+            $isInitialized | Should-BeTrue -Because 'the instance should be initialized after re-initialization'
         }
 
         It 'Should restart the Reporting Services service' {
@@ -165,13 +165,13 @@ Describe 'Post.ServiceAccountChange.SQL2019-2022.RS' -Tag @('Integration_SQL2019
 
             $currentServiceAccount = $script:configuration | Get-SqlDscRSServiceAccount -ErrorAction 'Stop'
 
-            $currentServiceAccount | Should -BeExactly $script:expectedServiceAccount -Because 'the service account should have been changed'
+            $currentServiceAccount | Should-BeString -CaseSensitive $script:expectedServiceAccount -Because 'the service account should have been changed'
         }
 
         It 'Should have an initialized instance' {
             $isInitialized = $script:configuration | Test-SqlDscRSInitialized -ErrorAction 'Stop'
 
-            $isInitialized | Should -BeTrue -Because 'the instance should remain initialized after service account change'
+            $isInitialized | Should-BeTrue -Because 'the instance should remain initialized after service account change'
         }
 
         It 'Should have all configured sites accessible after service account change' {
@@ -182,15 +182,15 @@ Describe 'Post.ServiceAccountChange.SQL2019-2022.RS' -Tag @('Integration_SQL2019
             $urlReservations = $script:configuration | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
             $expectedApplications = $urlReservations.Application | Select-Object -Unique
 
-            $results | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
+            $results | Should-BeTruthy -Because 'the command should return site accessibility results'
 
             foreach ($application in $expectedApplications)
             {
                 $siteResult = $results | Where-Object -FilterScript { $_.Site -eq $application }
 
-                $siteResult | Should -Not -BeNullOrEmpty -Because "the '$application' site should have a result"
-                $siteResult.Accessible | Should -BeTrue -Because "the '$application' site should be accessible after service account change"
-                $siteResult.StatusCode | Should -Be 200 -Because "the '$application' site should return HTTP 200 after service account change"
+                $siteResult | Should-BeTruthy -Because "the '$application' site should have a result"
+                $siteResult.Accessible | Should-BeTrue -Because "the '$application' site should be accessible after service account change"
+                $siteResult.StatusCode | Should-Be 200 -Because "the '$application' site should return HTTP 200 after service account change"
             }
         }
     }

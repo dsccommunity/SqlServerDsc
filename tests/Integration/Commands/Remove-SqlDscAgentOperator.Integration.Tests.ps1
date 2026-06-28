@@ -61,14 +61,14 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_S
 
             # Verify it was created
             $operatorExists = Test-SqlDscIsAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -ErrorAction 'Stop'
-            $operatorExists | Should -BeTrue
+            $operatorExists | Should-BeTrue
 
             # Remove the operator
             $null = Remove-SqlDscAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -Force -ErrorAction 'Stop'
 
             # Verify it was removed
             $operatorExists = Test-SqlDscIsAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -ErrorAction 'Stop'
-            $operatorExists | Should -BeFalse
+            $operatorExists | Should-BeFalse
         }
 
         It 'Should remove operator using OperatorObject parameter set' {
@@ -78,14 +78,14 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_S
 
             # Get the operator object
             $operatorObject = Get-SqlDscAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -ErrorAction 'Stop'
-            $operatorObject | Should -Not -BeNullOrEmpty
+            $operatorObject | Should-BeTruthy
 
             # Remove using OperatorObject parameter set
             $null = Remove-SqlDscAgentOperator -OperatorObject $operatorObject -Force -ErrorAction 'Stop'
 
             # Verify it was removed
             $operatorExists = Test-SqlDscIsAgentOperator -ServerObject $script:serverObject -Name $tempOperatorName -ErrorAction 'Stop'
-            $operatorExists | Should -BeFalse
+            $operatorExists | Should-BeFalse
         }
     }
 }

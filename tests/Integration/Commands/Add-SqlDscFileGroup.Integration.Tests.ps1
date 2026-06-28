@@ -63,16 +63,16 @@ Describe 'Add-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             Add-SqlDscFileGroup -Database $script:testDatabase -FileGroup $script:testFileGroup -ErrorAction 'Stop'
 
-            $script:testDatabase.FileGroups.Count | Should -Be ($initialCount + 1)
-            $script:testDatabase.FileGroups[$script:testFileGroup.Name] | Should -Be $script:testFileGroup
+            $script:testDatabase.FileGroups.Count | Should-Be ($initialCount + 1)
+            $script:testDatabase.FileGroups[$script:testFileGroup.Name] | Should-Be $script:testFileGroup
         }
 
         It 'Should return FileGroup when using PassThru' {
             $result = Add-SqlDscFileGroup -Database $script:testDatabase -FileGroup $script:testFileGroup -PassThru -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
-            $result | Should -Be $script:testFileGroup
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.FileGroup'
+            $result | Should-Be $script:testFileGroup
         }
 
         It 'Should accept FileGroup from pipeline' {
@@ -80,7 +80,7 @@ Describe 'Add-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             $script:testFileGroup | Add-SqlDscFileGroup -Database $script:testDatabase -ErrorAction 'Stop'
 
-            $script:testDatabase.FileGroups.Count | Should -Be ($initialCount + 1)
+            $script:testDatabase.FileGroups.Count | Should-Be ($initialCount + 1)
         }
 
         It 'Should add multiple FileGroups to Database' {
@@ -91,9 +91,9 @@ Describe 'Add-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             Add-SqlDscFileGroup -Database $script:testDatabase -FileGroup @($fileGroup1, $fileGroup2) -ErrorAction 'Stop'
 
-            $script:testDatabase.FileGroups.Count | Should -Be ($initialCount + 2)
-            $script:testDatabase.FileGroups[$fileGroup1.Name] | Should -Be $fileGroup1
-            $script:testDatabase.FileGroups[$fileGroup2.Name] | Should -Be $fileGroup2
+            $script:testDatabase.FileGroups.Count | Should-Be ($initialCount + 2)
+            $script:testDatabase.FileGroups[$fileGroup1.Name] | Should-Be $fileGroup1
+            $script:testDatabase.FileGroups[$fileGroup2.Name] | Should-Be $fileGroup2
         }
 
         It 'Should add multiple FileGroups via pipeline and return them with PassThru' {
@@ -102,9 +102,9 @@ Describe 'Add-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             $result = @($fileGroup1, $fileGroup2) | Add-SqlDscFileGroup -Database $script:testDatabase -PassThru -ErrorAction 'Stop'
 
-            $result | Should -HaveCount 2
-            $result[0] | Should -Be $fileGroup1
-            $result[1] | Should -Be $fileGroup2
+            $result | Should-BeCollection -Count 2
+            $result[0] | Should-Be $fileGroup1
+            $result[1] | Should-Be $fileGroup2
         }
     }
 
@@ -118,13 +118,13 @@ Describe 'Add-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
         }
 
         It 'Should update FileGroup parent reference when added to Database' {
-            $script:testFileGroup.Parent | Should -BeNullOrEmpty
+            $script:testFileGroup.Parent | Should-BeFalsy
 
             Add-SqlDscFileGroup -Database $script:testDatabase -FileGroup $script:testFileGroup -ErrorAction 'Stop'
 
             # Note: The parent may or may not be updated depending on SMO implementation
             # This test verifies the FileGroup is in the collection
-            $script:testDatabase.FileGroups[$script:testFileGroup.Name] | Should -Be $script:testFileGroup
+            $script:testDatabase.FileGroups[$script:testFileGroup.Name] | Should-Be $script:testFileGroup
         }
     }
 
@@ -146,10 +146,10 @@ Describe 'Add-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_SQL201
             Add-SqlDscFileGroup -Database $script:testDatabase -FileGroup $fileGroup -ErrorAction 'Stop'
 
             # Verify structure
-            $script:testDatabase.FileGroups[$fileGroup.Name] | Should -Be $fileGroup
+            $script:testDatabase.FileGroups[$fileGroup.Name] | Should-Be $fileGroup
             $addedFile = $script:testDatabase.FileGroups[$fileGroup.Name].Files | Where-Object -FilterScript { $_.Name -eq 'SecondaryDataFile' }
-            $addedFile | Should -Not -BeNullOrEmpty
-            $addedFile.FileName | Should -Be 'C:\Data\SecondaryDataFile.ndf'
+            $addedFile | Should-BeTruthy
+            $addedFile.FileName | Should-Be 'C:\Data\SecondaryDataFile.ndf'
         }
     }
 }

@@ -95,8 +95,8 @@ Describe 'Get-SqlDscRSUrl' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -127,29 +127,29 @@ Describe 'Get-SqlDscRSUrl' {
         It 'Should return Report Server URLs' {
             $result = $mockSetupConfiguration | Get-SqlDscRSUrl
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -Be 2
+            $result | Should-BeTruthy
+            $result.Count | Should-Be 2
 
-            Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+            Should-Invoke -CommandName Get-CimInstance -Exactly -ParameterFilter {
                 $Namespace -eq 'root\Microsoft\SqlServer\ReportServer\RS_SSRS\v15' -and
                 $ClassName -eq 'MSReportServer_Instance'
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'GetReportServerUrls'
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should return ReportServerUri objects with correct properties' {
             $result = $mockSetupConfiguration | Get-SqlDscRSUrl
 
-            $result[0].InstanceName | Should -Be 'SSRS'
-            $result[0].ApplicationName | Should -Be 'ReportServerWebService'
-            $result[0].Uri | Should -Be 'http://localhost:80/ReportServer'
+            $result[0].InstanceName | Should-Be 'SSRS'
+            $result[0].ApplicationName | Should-Be 'ReportServerWebService'
+            $result[0].Uri | Should-Be 'http://localhost:80/ReportServer'
 
-            $result[1].InstanceName | Should -Be 'SSRS'
-            $result[1].ApplicationName | Should -Be 'ReportServerWebApp'
-            $result[1].Uri | Should -Be 'http://localhost:80/Reports'
+            $result[1].InstanceName | Should-Be 'SSRS'
+            $result[1].ApplicationName | Should-Be 'ReportServerWebApp'
+            $result[1].Uri | Should-Be 'http://localhost:80/Reports'
         }
     }
 
@@ -182,12 +182,12 @@ Describe 'Get-SqlDscRSUrl' {
         It 'Should return all URLs for the application' {
             $result = $mockSetupConfiguration | Get-SqlDscRSUrl
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -Be 2
-            $result[0].Uri | Should -Be 'http://localhost:80/ReportServer'
-            $result[1].Uri | Should -Be 'https://localhost:443/ReportServer'
-            $result[0].ApplicationName | Should -Be 'ReportServerWebService'
-            $result[1].ApplicationName | Should -Be 'ReportServerWebService'
+            $result | Should-BeTruthy
+            $result.Count | Should-Be 2
+            $result[0].Uri | Should-Be 'http://localhost:80/ReportServer'
+            $result[1].Uri | Should-Be 'https://localhost:443/ReportServer'
+            $result[0].ApplicationName | Should-Be 'ReportServerWebService'
+            $result[1].ApplicationName | Should-Be 'ReportServerWebService'
         }
     }
 
@@ -218,7 +218,7 @@ Describe 'Get-SqlDscRSUrl' {
         It 'Should return $null' {
             $result = $mockSetupConfiguration | Get-SqlDscRSUrl
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -232,7 +232,7 @@ Describe 'Get-SqlDscRSUrl' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockSetupConfiguration | Get-SqlDscRSUrl } | Should -Throw -ErrorId 'GSRSU0001,Get-SqlDscRSUrl'
+            { $mockSetupConfiguration | Get-SqlDscRSUrl } | Should-Throw -FullyQualifiedErrorId 'GSRSU0001,Get-SqlDscRSUrl'
         }
     }
 
@@ -250,7 +250,7 @@ Describe 'Get-SqlDscRSUrl' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockSetupConfiguration | Get-SqlDscRSUrl } | Should -Throw -ErrorId 'GSRSU0002,Get-SqlDscRSUrl'
+            { $mockSetupConfiguration | Get-SqlDscRSUrl } | Should-Throw -FullyQualifiedErrorId 'GSRSU0002,Get-SqlDscRSUrl'
         }
     }
 
@@ -268,7 +268,7 @@ Describe 'Get-SqlDscRSUrl' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockSetupConfiguration | Get-SqlDscRSUrl } | Should -Throw -ErrorId 'GSRSU0003,Get-SqlDscRSUrl'
+            { $mockSetupConfiguration | Get-SqlDscRSUrl } | Should-Throw -FullyQualifiedErrorId 'GSRSU0003,Get-SqlDscRSUrl'
         }
     }
 
@@ -292,7 +292,7 @@ Describe 'Get-SqlDscRSUrl' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockSetupConfiguration | Get-SqlDscRSUrl } | Should -Throw -ErrorId 'GSRSU0004,Get-SqlDscRSUrl'
+            { $mockSetupConfiguration | Get-SqlDscRSUrl } | Should-Throw -FullyQualifiedErrorId 'GSRSU0004,Get-SqlDscRSUrl'
         }
     }
 
@@ -323,9 +323,9 @@ Describe 'Get-SqlDscRSUrl' {
         It 'Should get Report Server URLs' {
             $result = Get-SqlDscRSUrl -SetupConfiguration $mockSetupConfiguration
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -375,17 +375,17 @@ Describe 'Get-SqlDscRSUrl' {
         It 'Should return URLs for all instances' {
             $result = $mockSetupConfigurations | Get-SqlDscRSUrl
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -Be 2
+            $result | Should-BeTruthy
+            $result.Count | Should-Be 2
 
-            $result[0].InstanceName | Should -Be 'SSRS'
-            $result[0].Uri | Should -Be 'http://localhost:80/ReportServer_SSRS'
+            $result[0].InstanceName | Should-Be 'SSRS'
+            $result[0].Uri | Should-Be 'http://localhost:80/ReportServer_SSRS'
 
-            $result[1].InstanceName | Should -Be 'PBIRS'
-            $result[1].Uri | Should -Be 'http://localhost:80/ReportServer_PBIRS'
+            $result[1].InstanceName | Should-Be 'PBIRS'
+            $result[1].Uri | Should-Be 'http://localhost:80/ReportServer_PBIRS'
 
-            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 2
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 2
+            Should-Invoke -CommandName Get-CimInstance -Exactly -Times 2
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 2
         }
     }
 }

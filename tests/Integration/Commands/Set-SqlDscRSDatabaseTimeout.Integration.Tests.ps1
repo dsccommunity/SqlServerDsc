@@ -56,8 +56,8 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         It 'Should return the configuration when using PassThru' {
             $result = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 120 -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -85,8 +85,8 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         It 'Should return the configuration when using PassThru' {
             $result = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 120 -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -114,8 +114,8 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         It 'Should return the configuration when using PassThru' {
             $result = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 120 -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -143,8 +143,8 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         It 'Should return the configuration when using PassThru' {
             $result = $script:configuration | Set-SqlDscRSDatabaseTimeout -LogonTimeout 120 -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'PBIRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'PBIRS'
         }
     }
 }

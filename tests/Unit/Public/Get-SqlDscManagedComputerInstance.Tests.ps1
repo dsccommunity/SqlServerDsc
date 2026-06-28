@@ -52,31 +52,31 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag 'Public' {
     Context 'When testing localized strings' {
         It 'Should have localized string for getting instance from server' {
             InModuleScope -ScriptBlock {
-                $script:localizedData.ManagedComputerInstance_GetFromServer | Should -Not -BeNullOrEmpty
+                $script:localizedData.ManagedComputerInstance_GetFromServer | Should-BeTruthy
             }
         }
 
         It 'Should have localized string for getting instance from object' {
             InModuleScope -ScriptBlock {
-                $script:localizedData.ManagedComputerInstance_GetFromObject | Should -Not -BeNullOrEmpty
+                $script:localizedData.ManagedComputerInstance_GetFromObject | Should-BeTruthy
             }
         }
 
         It 'Should have localized string for getting specific instance' {
             InModuleScope -ScriptBlock {
-                $script:localizedData.ManagedComputerInstance_GetSpecificInstance | Should -Not -BeNullOrEmpty
+                $script:localizedData.ManagedComputerInstance_GetSpecificInstance | Should-BeTruthy
             }
         }
 
         It 'Should have localized string for getting all instances' {
             InModuleScope -ScriptBlock {
-                $script:localizedData.ManagedComputerInstance_GetAllInstances | Should -Not -BeNullOrEmpty
+                $script:localizedData.ManagedComputerInstance_GetAllInstances | Should-BeTruthy
             }
         }
 
         It 'Should have localized string for instance not found error' {
             InModuleScope -ScriptBlock {
-                $script:localizedData.ManagedComputerInstance_InstanceNotFound | Should -Not -BeNullOrEmpty
+                $script:localizedData.ManagedComputerInstance_InstanceNotFound | Should-BeTruthy
             }
         }
     }
@@ -109,36 +109,36 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag 'Public' {
         It 'Should use local computer name when ServerName is not provided' {
             $result = Get-SqlDscManagedComputerInstance -InstanceName 'MSSQLSERVER'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance'
-            Should -Invoke -CommandName Get-ComputerName -Exactly -Times 1
-            Should -Invoke -CommandName Get-SqlDscManagedComputer -ParameterFilter {
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance'
+            Should-Invoke -CommandName Get-ComputerName -Exactly -Times 1
+            Should-Invoke -CommandName Get-SqlDscManagedComputer -Exactly -ParameterFilter {
                 $ServerName -eq 'LocalServer'
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should return specific instance when InstanceName is provided' {
             $result = Get-SqlDscManagedComputerInstance -ServerName 'TestServer' -InstanceName 'MSSQLSERVER'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance'
-            Should -Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 1
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance'
+            Should-Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 1
         }
 
         It 'Should return all instances when InstanceName is not provided' {
             $result = Get-SqlDscManagedComputerInstance -ServerName 'TestServer'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -HaveCount 2
-            Should -Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 1
+            $result | Should-BeTruthy
+            $result | Should-BeCollection -Count 2
+            Should-Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 1
         }
 
         It 'Should throw terminating error when instance does not exist' {
-            { Get-SqlDscManagedComputerInstance -ServerName 'TestServer' -InstanceName 'NonExistent' } | Should -Throw -ExpectedMessage '*Could not find SQL Server instance*NonExistent*TestServer*'
+            { Get-SqlDscManagedComputerInstance -ServerName 'TestServer' -InstanceName 'NonExistent' } | Should-Throw -ExceptionMessage '*Could not find SQL Server instance*NonExistent*TestServer*'
         }
 
         It 'Should throw terminating error with correct error record properties when instance does not exist' {
-            { Get-SqlDscManagedComputerInstance -ServerName 'TestServer' -InstanceName 'NonExistent' } | Should -Throw -ErrorId 'SqlServerInstanceNotFound,Get-SqlDscManagedComputerInstance'
+            { Get-SqlDscManagedComputerInstance -ServerName 'TestServer' -InstanceName 'NonExistent' } | Should-Throw -FullyQualifiedErrorId 'SqlServerInstanceNotFound,Get-SqlDscManagedComputerInstance'
         }
     }
 
@@ -162,18 +162,18 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag 'Public' {
         It 'Should return specific instance from managed computer object' {
             $result = $mockManagedComputerObject | Get-SqlDscManagedComputerInstance -InstanceName 'MSSQLSERVER'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance'
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance'
         }
 
         It 'Should return all instances from managed computer object' {
             $result = $mockManagedComputerObject | Get-SqlDscManagedComputerInstance
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
         }
 
         It 'Should throw terminating error when instance does not exist using pipeline' {
-            { $mockManagedComputerObject | Get-SqlDscManagedComputerInstance -InstanceName 'NonExistent' } | Should -Throw -ExpectedMessage '*Could not find SQL Server instance*NonExistent*TestServer*'
+            { $mockManagedComputerObject | Get-SqlDscManagedComputerInstance -InstanceName 'NonExistent' } | Should-Throw -ExceptionMessage '*Could not find SQL Server instance*NonExistent*TestServer*'
         }
     }
 
@@ -190,8 +190,8 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag 'Public' {
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have the correct parameters in parameter set ByManagedComputerObject' -ForEach @(
@@ -206,21 +206,21 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag 'Public' {
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
     Context 'When parameter properties are validated' {
         It 'Should have ManagedComputerObject as a pipeline parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscManagedComputerInstance').Parameters['ManagedComputerObject']
-            $parameterInfo.Attributes.ValueFromPipeline | Should -BeTrue
+            $parameterInfo.Attributes.ValueFromPipeline | Should-BeTrue
         }
 
         It 'Should have ManagedComputerObject as a mandatory parameter in ByManagedComputerObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscManagedComputerInstance').Parameters['ManagedComputerObject']
             $parameterSetAttribute = $parameterInfo.Attributes | Where-Object -FilterScript { $_.ParameterSetName -eq 'ByManagedComputerObject' }
-            $parameterSetAttribute.Mandatory | Should -BeTrue
+            $parameterSetAttribute.Mandatory | Should-BeTrue
         }
     }
 }

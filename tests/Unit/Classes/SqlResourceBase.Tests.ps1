@@ -68,8 +68,8 @@ Describe 'SqlResourceBase' {
                 Set-StrictMode -Version 1.0
 
                 $instance = [SqlResourceBase]::new()
-                $instance | Should -Not -BeNullOrEmpty
-                $instance.SqlServerObject | Should -BeNullOrEmpty
+                $instance | Should-BeTruthy
+                $instance.SqlServerObject | Should-BeFalsy
             }
         }
 
@@ -78,7 +78,7 @@ Describe 'SqlResourceBase' {
                 Set-StrictMode -Version 1.0
 
                 $instance = [SqlResourceBase]::new()
-                $instance.GetType().Name | Should -Be 'SqlResourceBase'
+                $instance.GetType().Name | Should-Be 'SqlResourceBase'
             }
         }
     }
@@ -101,9 +101,9 @@ Describe 'SqlResourceBase\GetServerObject()' -Tag 'GetServerObject' {
         It 'Should call the correct mock' {
             $result = $mockSqlResourceBaseInstance.GetServerObject()
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Server'
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Server'
 
-            Should -Invoke -CommandName Connect-SqlDscDatabaseEngine -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SqlDscDatabaseEngine -Exactly -Scope It -Times 1
         }
 
         Context 'When property Credential is used' {
@@ -123,11 +123,11 @@ Describe 'SqlResourceBase\GetServerObject()' -Tag 'GetServerObject' {
             It 'Should call the correct mock' {
                 $result = $mockSqlResourceBaseInstance.GetServerObject()
 
-                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Server'
+                $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Server'
 
-                Should -Invoke -CommandName Connect-SqlDscDatabaseEngine -ParameterFilter {
+                Should-Invoke -CommandName Connect-SqlDscDatabaseEngine -Exactly -ParameterFilter {
                     $PesterBoundParameters.Keys -contains 'Credential'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -145,11 +145,11 @@ Describe 'SqlResourceBase\GetServerObject()' -Tag 'GetServerObject' {
             It 'Should call the correct mock' {
                 $result = $mockSqlResourceBaseInstance.GetServerObject()
 
-                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Server'
+                $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Server'
 
-                Should -Invoke -CommandName Connect-SqlDscDatabaseEngine -ParameterFilter {
+                Should-Invoke -CommandName Connect-SqlDscDatabaseEngine -Exactly -ParameterFilter {
                     $PesterBoundParameters.Keys -contains 'Protocol'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -167,11 +167,11 @@ Describe 'SqlResourceBase\GetServerObject()' -Tag 'GetServerObject' {
             It 'Should call the correct mock' {
                 $result = $mockSqlResourceBaseInstance.GetServerObject()
 
-                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Server'
+                $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Server'
 
-                Should -Invoke -CommandName Connect-SqlDscDatabaseEngine -ParameterFilter {
+                Should-Invoke -CommandName Connect-SqlDscDatabaseEngine -Exactly -ParameterFilter {
                     $PesterBoundParameters.Keys -contains 'Port'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
     }
@@ -190,9 +190,9 @@ Describe 'SqlResourceBase\GetServerObject()' -Tag 'GetServerObject' {
 
         It 'Should call the correct mock' {
             $result = $mockSqlResourceBaseInstance.GetServerObject()
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Server'
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Server'
 
-            Should -Invoke -CommandName Connect-SqlDscDatabaseEngine -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Connect-SqlDscDatabaseEngine -Exactly -Scope It -Times 0
         }
     }
 }

@@ -121,25 +121,25 @@ Describe 'SqlServerDsc.Common\Test-ClusterPermissions' -Tag 'TestClusterPermissi
         It "Should throw the correct error when the logins '$($clusterServiceName)' or '$($systemAccountName)' are absent" {
             $mockServerObject.Logins = @{}
 
-            { Test-ClusterPermissions -ServerObject $mockServerObject } | Should -Throw -ExpectedMessage ( "The cluster does not have permissions to manage the Availability Group on '{0}\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either '$($clusterServiceName)' or '$($systemAccountName)'. (SQLCOMMON0049)" -f $mockServerObject.NetName, $mockServerObject.ServiceName )
+            { Test-ClusterPermissions -ServerObject $mockServerObject } | Should-Throw -ExceptionMessage ( "The cluster does not have permissions to manage the Availability Group on '{0}\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either '$($clusterServiceName)' or '$($systemAccountName)'. (SQLCOMMON0049)" -f $mockServerObject.NetName, $mockServerObject.ServiceName )
 
-            Should -Invoke -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly -ParameterFilter {
+            Should-Invoke -CommandName Test-LoginEffectivePermissions -Exactly -ParameterFilter {
                 $LoginName -eq $clusterServiceName
-            }
-            Should -Invoke -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly -ParameterFilter {
+            } -Scope It -Times 0
+            Should-Invoke -CommandName Test-LoginEffectivePermissions -Exactly -ParameterFilter {
                 $LoginName -eq $systemAccountName
-            }
+            } -Scope It -Times 0
         }
 
         It "Should throw the correct error when the logins '$($clusterServiceName)' and '$($systemAccountName)' do not have permissions to manage availability groups" {
-            { Test-ClusterPermissions -ServerObject $mockServerObject } | Should -Throw -ExpectedMessage ( "The cluster does not have permissions to manage the Availability Group on '{0}\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either '$($clusterServiceName)' or '$($systemAccountName)'. (SQLCOMMON0049)" -f $mockServerObject.NetName, $mockServerObject.ServiceName )
+            { Test-ClusterPermissions -ServerObject $mockServerObject } | Should-Throw -ExceptionMessage ( "The cluster does not have permissions to manage the Availability Group on '{0}\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either '$($clusterServiceName)' or '$($systemAccountName)'. (SQLCOMMON0049)" -f $mockServerObject.NetName, $mockServerObject.ServiceName )
 
-            Should -Invoke -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
+            Should-Invoke -CommandName Test-LoginEffectivePermissions -Exactly -ParameterFilter {
                 $LoginName -eq $clusterServiceName
-            }
-            Should -Invoke -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
+            } -Scope It -Times 1
+            Should-Invoke -CommandName Test-LoginEffectivePermissions -Exactly -ParameterFilter {
                 $LoginName -eq $systemAccountName
-            }
+            } -Scope It -Times 1
         }
     }
 
@@ -147,27 +147,27 @@ Describe 'SqlServerDsc.Common\Test-ClusterPermissions' -Tag 'TestClusterPermissi
         It "Should return NullOrEmpty when 'NT SERVICE\ClusSvc' is present and has the permissions to manage availability groups" {
             $mockClusterServicePermissionsPresent = $true
 
-            Test-ClusterPermissions -ServerObject $mockServerObject | Should -BeTrue
+            Test-ClusterPermissions -ServerObject $mockServerObject | Should-BeTrue
 
-            Should -Invoke -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
+            Should-Invoke -CommandName Test-LoginEffectivePermissions -Exactly -ParameterFilter {
                 $LoginName -eq $clusterServiceName
-            }
-            Should -Invoke -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly -ParameterFilter {
+            } -Scope It -Times 1
+            Should-Invoke -CommandName Test-LoginEffectivePermissions -Exactly -ParameterFilter {
                 $LoginName -eq $systemAccountName
-            }
+            } -Scope It -Times 0
         }
 
         It "Should return NullOrEmpty when 'NT AUTHORITY\System' is present and has the permissions to manage availability groups" {
             $mockSystemPermissionsPresent = $true
 
-            Test-ClusterPermissions -ServerObject $mockServerObject | Should -BeTrue
+            Test-ClusterPermissions -ServerObject $mockServerObject | Should-BeTrue
 
-            Should -Invoke -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
+            Should-Invoke -CommandName Test-LoginEffectivePermissions -Exactly -ParameterFilter {
                 $LoginName -eq $clusterServiceName
-            }
-            Should -Invoke -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
+            } -Scope It -Times 1
+            Should-Invoke -CommandName Test-LoginEffectivePermissions -Exactly -ParameterFilter {
                 $LoginName -eq $systemAccountName
-            }
+            } -Scope It -Times 1
         }
     }
 }

@@ -66,35 +66,35 @@ Describe 'Grant-SqlDscServerPermission' -Tag 'Public' {
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
     Context 'When testing parameter properties' {
         It 'Should have Login as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Grant-SqlDscServerPermission').Parameters['Login']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have ServerRole as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Grant-SqlDscServerPermission').Parameters['ServerRole']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have Permission as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Grant-SqlDscServerPermission').Parameters['Permission']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have Force as an optional parameter' {
             $parameterInfo = (Get-Command -Name 'Grant-SqlDscServerPermission').Parameters['Force']
-            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-BeFalse
         }
 
         It 'Should have WithGrant as an optional parameter' {
             $parameterInfo = (Get-Command -Name 'Grant-SqlDscServerPermission').Parameters['WithGrant']
-            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-BeFalse
         }
     }
 
@@ -157,7 +157,7 @@ Describe 'Grant-SqlDscServerPermission' -Tag 'Public' {
                 mockLogin = $mockLogin
             } -ScriptBlock {
                 { Grant-SqlDscServerPermission -Login $mockLogin -Permission ConnectSql -Force } |
-                    Should -Throw -ExpectedMessage '*Failed to grant server permissions*'
+                    Should-Throw -ExceptionMessage '*Failed to grant server permissions*'
             }
         }
     }

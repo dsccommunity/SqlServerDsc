@@ -69,8 +69,8 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When no parameters are specified' {
@@ -81,9 +81,9 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
                 }
 
                 It 'Should return $null' {
-                    Get-SqlDscPreferredModule -ErrorAction 'SilentlyContinue' -ErrorVariable mockError | Should -BeNullOrEmpty
+                    Get-SqlDscPreferredModule -ErrorAction 'SilentlyContinue' -ErrorVariable mockError | Should-BeFalsy
 
-                    $mockError | Should -HaveCount 1
+                    $mockError | Should-BeCollection -Count 1
                 }
             }
 
@@ -93,9 +93,9 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
                 }
 
                 It 'Should return $null' {
-                    Get-SqlDscPreferredModule -ErrorAction 'Ignore' -ErrorVariable mockError | Should -BeNullOrEmpty
+                    Get-SqlDscPreferredModule -ErrorAction 'Ignore' -ErrorVariable mockError | Should-BeFalsy
 
-                    $mockError | Should -BeNullOrEmpty
+                    $mockError | Should-BeFalsy
                 }
             }
 
@@ -109,7 +109,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
                         $script:localizedData.PreferredModule_ModuleNotFound
                     }
 
-                    { Get-SqlDscPreferredModule -ErrorAction 'Stop' } | Should -Throw -ExpectedMessage $errorMessage
+                    { Get-SqlDscPreferredModule -ErrorAction 'Stop' } | Should-Throw -ExceptionMessage $errorMessage
                 }
             }
         }
@@ -127,7 +127,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
             }
 
             It 'Should return the correct module' {
-                Get-SqlDscPreferredModule | Should -Be $sqlServerModule
+                Get-SqlDscPreferredModule | Should-Be $sqlServerModule
             }
         }
 
@@ -144,7 +144,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
             }
 
             It 'Should return the correct module name' {
-                Get-SqlDscPreferredModule | Should -Be $sqlpsModule
+                Get-SqlDscPreferredModule | Should-Be $sqlpsModule
             }
         }
 
@@ -168,7 +168,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
             }
 
             It 'Should return the correct module name' {
-                Get-SqlDscPreferredModule | Should -Be $sqlServerModule
+                Get-SqlDscPreferredModule | Should-Be $sqlServerModule
             }
         }
 
@@ -202,7 +202,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
             }
 
             It 'Should return the latest version of the first default preferred module' {
-                Get-SqlDscPreferredModule | Should -Be $sqlServerModule2
+                Get-SqlDscPreferredModule | Should-Be $sqlServerModule2
             }
         }
 
@@ -226,7 +226,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
             }
 
             It 'Should return the latest version of the first default preferred module' {
-                Get-SqlDscPreferredModule | Should -Be $sqlServerModule2
+                Get-SqlDscPreferredModule | Should-Be $sqlServerModule2
             }
         }
 
@@ -250,7 +250,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
             }
 
             It 'Should return the latest version of the second default preferred module' {
-                Get-SqlDscPreferredModule | Should -Be $sqlpsModule2
+                Get-SqlDscPreferredModule | Should-Be $sqlpsModule2
             }
         }
     }
@@ -263,9 +263,9 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
                 }
 
                 It 'Should return $null' {
-                    Get-SqlDscPreferredModule -Name 'SqlServer' -ErrorAction 'SilentlyContinue' -ErrorVariable mockError | Should -BeNullOrEmpty
+                    Get-SqlDscPreferredModule -Name 'SqlServer' -ErrorAction 'SilentlyContinue' -ErrorVariable mockError | Should-BeFalsy
 
-                    $mockError | Should -HaveCount 1
+                    $mockError | Should-BeCollection -Count 1
                 }
             }
 
@@ -275,9 +275,9 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
                 }
 
                 It 'Should return $null' {
-                    Get-SqlDscPreferredModule -Name 'SqlServer' -ErrorAction 'Ignore' -ErrorVariable mockError | Should -BeNullOrEmpty
+                    Get-SqlDscPreferredModule -Name 'SqlServer' -ErrorAction 'Ignore' -ErrorVariable mockError | Should-BeFalsy
 
-                    $mockError | Should -BeNullOrEmpty
+                    $mockError | Should-BeFalsy
                 }
             }
 
@@ -291,7 +291,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
                         $script:localizedData.PreferredModule_ModuleNotFound
                     }
 
-                    { Get-SqlDscPreferredModule -Name 'SqlServer' -ErrorAction 'Stop' } | Should -Throw -ExpectedMessage $errorMessage
+                    { Get-SqlDscPreferredModule -Name 'SqlServer' -ErrorAction 'Stop' } | Should-Throw -ExceptionMessage $errorMessage
                 }
             }
         }
@@ -308,7 +308,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
             }
 
             It 'Should return the correct module name' {
-                Get-SqlDscPreferredModule -Name 'SqlServer' | Should -Be $sqlServerModule
+                Get-SqlDscPreferredModule -Name 'SqlServer' | Should-Be $sqlServerModule
             }
         }
 
@@ -324,7 +324,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
             }
 
             It 'Should return the correct module name' {
-                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be $sqlpsModule
+                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should-Be $sqlpsModule
             }
         }
 
@@ -348,7 +348,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
             }
 
             It 'Should return the first preferred module' {
-                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be $sqlServerModule
+                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should-Be $sqlServerModule
             }
         }
 
@@ -397,7 +397,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
             }
 
             It 'Should return the latest first preferred module' {
-                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be $sqlServerModule3
+                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should-Be $sqlServerModule3
             }
 
             Context 'When the environment variable SMODefaultModuleVersion is assigned a module version' {
@@ -411,7 +411,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
                     }
 
                     It 'Should return the specified module version' {
-                        Get-SqlDscPreferredModule | Should -Be $sqlServerModule1
+                        Get-SqlDscPreferredModule | Should-Be $sqlServerModule1
                     }
                 }
 
@@ -429,7 +429,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
                             $script:localizedData.PreferredModule_ModuleVersionNotFound
                         }
 
-                        { Get-SqlDscPreferredModule -ErrorAction 'Stop' } | Should -Throw -ExpectedMessage ($errorMessage -f $env:SMODefaultModuleVersion)
+                        { Get-SqlDscPreferredModule -ErrorAction 'Stop' } | Should-Throw -ExceptionMessage ($errorMessage -f $env:SMODefaultModuleVersion)
                     }
                 }
             }
@@ -455,7 +455,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
             }
 
             It 'Should return the latest version of the first preferred module' {
-                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be $sqlServerModule2
+                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should-Be $sqlServerModule2
             }
 
             Context 'When the environment variable SMODefaultModuleVersion is assigned a module version' {
@@ -469,7 +469,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
                     }
 
                     It 'Should return the specified module version' {
-                        Get-SqlDscPreferredModule | Should -Be $sqlServerModule1
+                        Get-SqlDscPreferredModule | Should-Be $sqlServerModule1
                     }
                 }
 
@@ -487,7 +487,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
                             $script:localizedData.PreferredModule_ModuleVersionNotFound
                         }
 
-                        { Get-SqlDscPreferredModule -ErrorAction 'Stop' } | Should -Throw -ExpectedMessage ($errorMessage -f $env:SMODefaultModuleVersion)
+                        { Get-SqlDscPreferredModule -ErrorAction 'Stop' } | Should-Throw -ExceptionMessage ($errorMessage -f $env:SMODefaultModuleVersion)
                     }
                 }
             }
@@ -513,7 +513,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
             }
 
             It 'Should return the latest version of the second preferred module' {
-                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be $sqlpsModule2
+                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should-Be $sqlpsModule2
             }
 
             Context 'When the environment variable SMODefaultModuleVersion is assigned a module version' {
@@ -527,7 +527,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
                     }
 
                     It 'Should return the specified module version' {
-                        Get-SqlDscPreferredModule | Should -Be $sqlpsModule1
+                        Get-SqlDscPreferredModule | Should-Be $sqlpsModule1
                     }
                 }
 
@@ -545,7 +545,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
                             $script:localizedData.PreferredModule_ModuleVersionNotFound
                         }
 
-                        { Get-SqlDscPreferredModule -ErrorAction 'Stop' } | Should -Throw -ExpectedMessage ($errorMessage -f $env:SMODefaultModuleVersion)
+                        { Get-SqlDscPreferredModule -ErrorAction 'Stop' } | Should-Throw -ExceptionMessage ($errorMessage -f $env:SMODefaultModuleVersion)
                     }
                 }
             }
@@ -575,9 +575,9 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
         }
 
         It 'Should return the correct module name' {
-            Get-SqlDscPreferredModule -Refresh | Should -Be $sqlServerModule
+            Get-SqlDscPreferredModule -Refresh | Should-Be $sqlServerModule
 
-            Should -Invoke -CommandName Set-PSModulePath -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Set-PSModulePath -Exactly -Scope It -Times 1
         }
     }
 
@@ -600,7 +600,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
         }
 
         It 'Should return the correct module name' {
-            Get-SqlDscPreferredModule | Should -Be $otherModule
+            Get-SqlDscPreferredModule | Should-Be $otherModule
         }
     }
 }

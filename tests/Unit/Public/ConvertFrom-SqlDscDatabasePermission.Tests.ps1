@@ -64,18 +64,18 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag 'Public' {
     It 'Should return the correct values' {
         $mockResult = ConvertFrom-SqlDscDatabasePermission -Permission $mockPermission
 
-        $mockResult.Connect | Should -BeTrue
-        $mockResult.Alter | Should -BeTrue
-        $mockResult.Update | Should -BeFalse
+        $mockResult.Connect | Should-BeTrue
+        $mockResult.Alter | Should-BeTrue
+        $mockResult.Update | Should-BeFalse
     }
 
     Context 'When passing DatabasePermissionInfo over the pipeline' {
         It 'Should return the correct values' {
             $mockResult = $mockPermission | ConvertFrom-SqlDscDatabasePermission
 
-            $mockResult.Connect | Should -BeTrue
-            $mockResult.Alter | Should -BeTrue
-            $mockResult.Update | Should -BeFalse
+            $mockResult.Connect | Should-BeTrue
+            $mockResult.Alter | Should-BeTrue
+            $mockResult.Update | Should-BeFalse
         }
     }
 
@@ -104,15 +104,15 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag 'Public' {
             $mockResult = @($mockPermission1, $mockPermission2) | ConvertFrom-SqlDscDatabasePermission
 
             # Verify permissions from first object are set
-            $mockResult.Connect | Should -BeTrue
-            $mockResult.Alter | Should -BeTrue
+            $mockResult.Connect | Should-BeTrue
+            $mockResult.Alter | Should-BeTrue
 
             # Verify permissions from second object are set
-            $mockResult.Update | Should -BeTrue
-            $mockResult.Delete | Should -BeTrue
+            $mockResult.Update | Should-BeTrue
+            $mockResult.Delete | Should-BeTrue
 
             # Verify a permission not specified in either object remains false
-            $mockResult.Insert | Should -BeFalse
+            $mockResult.Insert | Should-BeFalse
         }
     }
 
@@ -128,11 +128,11 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag 'Public' {
             $mockResult = ConvertFrom-SqlDscDatabasePermission -Permission $mockEmptyPermission
 
             # Verify that common permissions remain false when no permissions are specified
-            $mockResult.Connect | Should -BeFalse
-            $mockResult.Alter | Should -BeFalse
-            $mockResult.Update | Should -BeFalse
-            $mockResult.Delete | Should -BeFalse
-            $mockResult.Insert | Should -BeFalse
+            $mockResult.Connect | Should-BeFalse
+            $mockResult.Alter | Should-BeFalse
+            $mockResult.Update | Should-BeFalse
+            $mockResult.Delete | Should-BeFalse
+            $mockResult.Insert | Should-BeFalse
         }
 
         It 'Should return a DatabasePermissionSet with all permissions set to false when passed over the pipeline' {
@@ -146,11 +146,11 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag 'Public' {
             $mockResult = $mockEmptyPermission | ConvertFrom-SqlDscDatabasePermission
 
             # Verify that common permissions remain false when no permissions are specified
-            $mockResult.Connect | Should -BeFalse
-            $mockResult.Alter | Should -BeFalse
-            $mockResult.Update | Should -BeFalse
-            $mockResult.Delete | Should -BeFalse
-            $mockResult.Insert | Should -BeFalse
+            $mockResult.Connect | Should-BeFalse
+            $mockResult.Alter | Should-BeFalse
+            $mockResult.Update | Should-BeFalse
+            $mockResult.Delete | Should-BeFalse
+            $mockResult.Insert | Should-BeFalse
         }
     }
 }

@@ -76,10 +76,10 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_S
 
             $result = ConvertTo-SqlDscDataFile -FileGroupObject $script:mockFileGroup -DataFileSpec $fileSpec
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DataFile]
-            $result.Name | Should -Be 'TestFile'
-            $result.FileName | Should -Be 'C:\Data\TestFile.ndf'
+            $result | Should-BeTruthy
+            $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.DataFile])
+            $result.Name | Should-Be 'TestFile'
+            $result.FileName | Should-Be 'C:\Data\TestFile.ndf'
         }
 
         It 'Should convert a DatabaseFileSpec with Size to a DataFile object' {
@@ -87,8 +87,8 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_S
 
             $result = ConvertTo-SqlDscDataFile -FileGroupObject $script:mockFileGroup -DataFileSpec $fileSpec
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Size | Should -Be 100
+            $result | Should-BeTruthy
+            $result.Size | Should-Be 100
         }
 
         It 'Should convert a DatabaseFileSpec with MaxSize to a DataFile object' {
@@ -96,8 +96,8 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_S
 
             $result = ConvertTo-SqlDscDataFile -FileGroupObject $script:mockFileGroup -DataFileSpec $fileSpec
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.MaxSize | Should -Be 1000
+            $result | Should-BeTruthy
+            $result.MaxSize | Should-Be 1000
         }
 
         It 'Should convert a DatabaseFileSpec with Growth to a DataFile object' {
@@ -105,8 +105,8 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_S
 
             $result = ConvertTo-SqlDscDataFile -FileGroupObject $script:mockFileGroup -DataFileSpec $fileSpec
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Growth | Should -Be 10
+            $result | Should-BeTruthy
+            $result.Growth | Should-Be 10
         }
 
         It 'Should convert a DatabaseFileSpec with GrowthType to a DataFile object' {
@@ -114,8 +114,8 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_S
 
             $result = ConvertTo-SqlDscDataFile -FileGroupObject $script:mockFileGroup -DataFileSpec $fileSpec
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.GrowthType | Should -Be 'Percent'
+            $result | Should-BeTruthy
+            $result.GrowthType | Should-Be 'Percent'
         }
 
         It 'Should convert a DatabaseFileSpec with IsPrimaryFile to a DataFile object' {
@@ -126,8 +126,8 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_S
 
             $result = ConvertTo-SqlDscDataFile -FileGroupObject $primaryFileGroup -DataFileSpec $fileSpec
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.IsPrimaryFile | Should -Be $true
+            $result | Should-BeTruthy
+            $result.IsPrimaryFile | Should-Be $true
         }
 
         It 'Should convert a DatabaseFileSpec with all optional properties to a DataFile object' {
@@ -135,13 +135,13 @@ Describe 'ConvertTo-SqlDscDataFile' -Tag @('Integration_SQL2017', 'Integration_S
 
             $result = ConvertTo-SqlDscDataFile -FileGroupObject $script:mockFileGroup -DataFileSpec $fileSpec
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestFile'
-            $result.FileName | Should -Be 'C:\Data\TestFile.ndf'
-            $result.Size | Should -Be 100
-            $result.MaxSize | Should -Be 1000
-            $result.Growth | Should -Be 10
-            $result.GrowthType | Should -Be 'Percent'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestFile'
+            $result.FileName | Should-Be 'C:\Data\TestFile.ndf'
+            $result.Size | Should-Be 100
+            $result.MaxSize | Should-Be 1000
+            $result.Growth | Should-Be 10
+            $result.GrowthType | Should-Be 'Percent'
         }
 
     }

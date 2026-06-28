@@ -73,13 +73,13 @@ Describe 'Install-SqlDscFailoverCluster Integration Tests' -Tag @('Integration_S
         It 'Should have created the SQL Server cluster resource' -Skip {
             $clusterResource = Get-ClusterResource -Name "SQL Server ($($script:installParameters.InstanceName))" -ErrorAction 'SilentlyContinue'
 
-            $clusterResource | Should -Not -BeNullOrEmpty
+            $clusterResource | Should-BeTruthy
         }
 
         It 'Should have the cluster resource in online state' -Skip {
             $clusterResource = Get-ClusterResource -Name "SQL Server ($($script:installParameters.InstanceName))" -ErrorAction 'SilentlyContinue'
 
-            $clusterResource.State | Should -Be 'Online'
+            $clusterResource.State | Should-Be 'Online'
         }
     }
 
@@ -87,7 +87,7 @@ Describe 'Install-SqlDscFailoverCluster Integration Tests' -Tag @('Integration_S
         It 'Should be able to connect to the instance' -Skip {
             $serverObject = Connect-SqlDscDatabaseEngine -ServerName $script:clusterNetworkName -InstanceName $script:installParameters.InstanceName
 
-            $serverObject | Should -Not -BeNullOrEmpty
+            $serverObject | Should-BeTruthy
 
             Disconnect-SqlDscDatabaseEngine -ServerObject $serverObject
         }

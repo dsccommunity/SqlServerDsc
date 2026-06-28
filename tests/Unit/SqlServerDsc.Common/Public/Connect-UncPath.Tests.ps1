@@ -153,7 +153,7 @@ Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
 
             $null = Connect-UncPath @connectUncPathParameters -ErrorAction 'Stop'
 
-            Should -Invoke -CommandName New-SmbMapping -ParameterFilter {
+            Should-Invoke -CommandName New-SmbMapping -Exactly -ParameterFilter {
                 <#
                     Due to issue https://github.com/pester/Pester/issues/1542
                     we must use `$null -ne $UserName` instead of
@@ -161,7 +161,7 @@ Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
                 #>
                 $RemotePath -eq $mockSourcePathUNC `
                     -and $null -eq $UserName
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 
@@ -174,10 +174,10 @@ Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
 
             $null = Connect-UncPath @connectUncPathParameters -ErrorAction 'Stop'
 
-            Should -Invoke -CommandName New-SmbMapping -ParameterFilter {
+            Should-Invoke -CommandName New-SmbMapping -Exactly -ParameterFilter {
                 $RemotePath -eq $mockSourcePathUNC `
                     -and $UserName -eq $mockShareCredentialUserName
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 
@@ -190,10 +190,10 @@ Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
 
             $null = Connect-UncPath @connectUncPathParameters -ErrorAction 'Stop'
 
-            Should -Invoke -CommandName New-SmbMapping -ParameterFilter {
+            Should-Invoke -CommandName New-SmbMapping -Exactly -ParameterFilter {
                 $RemotePath -eq $mockSourcePathUNC `
                     -and $UserName -eq $mockFqdnShareCredentialUserName
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 
@@ -206,7 +206,7 @@ Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
             }
 
             $connectUncPathResult = Connect-UncPath @connectUncPathParameters
-            $connectUncPathResult.RemotePath | Should -Be $mockSourcePathUNC
+            $connectUncPathResult.RemotePath | Should-Be $mockSourcePathUNC
         }
     }
 }

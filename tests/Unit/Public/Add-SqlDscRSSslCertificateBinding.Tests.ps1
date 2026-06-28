@@ -66,8 +66,8 @@ Describe 'Add-SqlDscRSSslCertificateBinding' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -81,22 +81,22 @@ Describe 'Add-SqlDscRSSslCertificateBinding' {
         }
 
         It 'Should add SSL certificate binding without errors' {
-            { $mockCimInstance | Add-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Add-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'CreateSSLCertificateBinding' -and
                 $Arguments.CertificateHash -eq 'AABBCCDD' -and
                 $Arguments.Application -eq 'ReportServerWebService' -and
                 $Arguments.IPAddress -eq '0.0.0.0' -and
                 $Arguments.Port -eq 443 -and
                 $Arguments.Lcid -eq 1033
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should not return anything by default' {
             $result = $mockCimInstance | Add-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -110,13 +110,13 @@ Describe 'Add-SqlDscRSSslCertificateBinding' {
         }
 
         It 'Should use custom IP address and port' {
-            { $mockCimInstance | Add-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -IPAddress '192.168.1.1' -Port 8443 -Lcid 1031 -Confirm:$false } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Add-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -IPAddress '192.168.1.1' -Port 8443 -Lcid 1031 -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $Arguments.IPAddress -eq '192.168.1.1' -and
                 $Arguments.Port -eq 8443 -and
                 $Arguments.Lcid -eq 1031
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -132,8 +132,8 @@ Describe 'Add-SqlDscRSSslCertificateBinding' {
         It 'Should return the configuration CIM instance' {
             $result = $mockCimInstance | Add-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -147,9 +147,9 @@ Describe 'Add-SqlDscRSSslCertificateBinding' {
         }
 
         It 'Should add SSL certificate binding without confirmation' {
-            { $mockCimInstance | Add-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Force } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Add-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Force })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -165,7 +165,7 @@ Describe 'Add-SqlDscRSSslCertificateBinding' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Add-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false } | Should -Throw -ErrorId 'ASRSSCB0001,Add-SqlDscRSSslCertificateBinding'
+            { $mockCimInstance | Add-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false } | Should-Throw -FullyQualifiedErrorId 'ASRSSCB0001,Add-SqlDscRSSslCertificateBinding'
         }
     }
 
@@ -181,7 +181,7 @@ Describe 'Add-SqlDscRSSslCertificateBinding' {
         It 'Should not call Invoke-RsCimMethod' {
             $mockCimInstance | Add-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
         }
     }
 
@@ -195,9 +195,9 @@ Describe 'Add-SqlDscRSSslCertificateBinding' {
         }
 
         It 'Should add SSL certificate binding' {
-            { Add-SqlDscRSSslCertificateBinding -Configuration $mockCimInstance -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false } | Should -Not -Throw
+            $null = & ({ Add-SqlDscRSSslCertificateBinding -Configuration $mockCimInstance -CertificateHash 'AABBCCDD' -Application 'ReportServerWebService' -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -211,19 +211,19 @@ Describe 'Add-SqlDscRSSslCertificateBinding' {
         }
 
         It 'Should accept ReportServerWebApp application' {
-            { $mockCimInstance | Add-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebApp' -Confirm:$false } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Add-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportServerWebApp' -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $Arguments.Application -eq 'ReportServerWebApp'
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should accept ReportManager application' {
-            { $mockCimInstance | Add-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportManager' -Confirm:$false } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Add-SqlDscRSSslCertificateBinding -CertificateHash 'AABBCCDD' -Application 'ReportManager' -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $Arguments.Application -eq 'ReportManager'
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 }

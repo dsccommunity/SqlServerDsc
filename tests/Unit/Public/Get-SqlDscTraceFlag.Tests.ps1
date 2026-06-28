@@ -74,15 +74,15 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When passing $null as ServiceObject' {
         It 'Should throw the correct error' {
             $mockErrorMessage = 'Cannot bind argument to parameter ''ServiceObject'' because it is null.'
 
-            { Get-SqlDscTraceFlag -ServiceObject $null } | Should -Throw -ExpectedMessage $mockErrorMessage
+            { Get-SqlDscTraceFlag -ServiceObject $null } | Should-Throw -ExceptionMessage $mockErrorMessage
         }
     }
 
@@ -99,9 +99,9 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
             It 'Should return an empty array' {
                 $result = Get-SqlDscTraceFlag
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
 
-                Should -Invoke -CommandName Get-SqlDscStartupParameter -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SqlDscStartupParameter -Exactly -Scope It -Times 1
             }
         }
 
@@ -109,11 +109,11 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
             It 'Should return an empty array' {
                 $result = Get-SqlDscTraceFlag -ServerName 'localhost'
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
 
-                Should -Invoke -CommandName Get-SqlDscStartupParameter -ParameterFilter {
+                Should-Invoke -CommandName Get-SqlDscStartupParameter -Exactly -ParameterFilter {
                     $ServerName -eq 'localhost'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -121,11 +121,11 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
             It 'Should return an empty array' {
                 $result = Get-SqlDscTraceFlag -InstanceName 'SQL2022'
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
 
-                Should -Invoke -CommandName Get-SqlDscStartupParameter -ParameterFilter {
+                Should-Invoke -CommandName Get-SqlDscStartupParameter -Exactly -ParameterFilter {
                     $InstanceName -eq 'SQL2022'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -139,9 +139,9 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
 
                 $result = Get-SqlDscTraceFlag -ServiceObject $mockServiceObject
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
 
-                Should -Invoke -CommandName Get-SqlDscStartupParameter -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SqlDscStartupParameter -Exactly -Scope It -Times 1
             }
         }
     }
@@ -159,10 +159,10 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
             It 'Should return the correct values' {
                 $result = Get-SqlDscTraceFlag
 
-                $result | Should -HaveCount 1
-                $result | Should -Contain 4199
+                $result | Should-BeCollection -Count 1
+                $result | Should-ContainCollection 4199
 
-                Should -Invoke -CommandName Get-SqlDscStartupParameter -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SqlDscStartupParameter -Exactly -Scope It -Times 1
             }
         }
 
@@ -170,12 +170,12 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
             It 'Should return the correct values' {
                 $result = Get-SqlDscTraceFlag -ServerName 'localhost'
 
-                $result | Should -HaveCount 1
-                $result | Should -Contain 4199
+                $result | Should-BeCollection -Count 1
+                $result | Should-ContainCollection 4199
 
-                Should -Invoke -CommandName Get-SqlDscStartupParameter -ParameterFilter {
+                Should-Invoke -CommandName Get-SqlDscStartupParameter -Exactly -ParameterFilter {
                     $ServerName -eq 'localhost'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -183,12 +183,12 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
             It 'Should return the correct values' {
                 $result = Get-SqlDscTraceFlag -InstanceName 'SQL2022'
 
-                $result | Should -HaveCount 1
-                $result | Should -Contain 4199
+                $result | Should-BeCollection -Count 1
+                $result | Should-ContainCollection 4199
 
-                Should -Invoke -CommandName Get-SqlDscStartupParameter -ParameterFilter {
+                Should-Invoke -CommandName Get-SqlDscStartupParameter -Exactly -ParameterFilter {
                     $InstanceName -eq 'SQL2022'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -202,10 +202,10 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
 
                 $result = Get-SqlDscTraceFlag -ServiceObject $mockServiceObject
 
-                $result | Should -HaveCount 1
-                $result | Should -Contain 4199
+                $result | Should-BeCollection -Count 1
+                $result | Should-ContainCollection 4199
 
-                Should -Invoke -CommandName Get-SqlDscStartupParameter -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SqlDscStartupParameter -Exactly -Scope It -Times 1
             }
         }
     }
@@ -223,11 +223,11 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
             It 'Should return the correct values' {
                 $result = Get-SqlDscTraceFlag
 
-                $result | Should -HaveCount 2
-                $result | Should -Contain 4199
-                $result | Should -Contain 3226
+                $result | Should-BeCollection -Count 2
+                $result | Should-ContainCollection 4199
+                $result | Should-ContainCollection 3226
 
-                Should -Invoke -CommandName Get-SqlDscStartupParameter -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SqlDscStartupParameter -Exactly -Scope It -Times 1
             }
         }
 
@@ -235,13 +235,13 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
             It 'Should return the correct values' {
                 $result = Get-SqlDscTraceFlag -ServerName 'localhost'
 
-                $result | Should -HaveCount 2
-                $result | Should -Contain 4199
-                $result | Should -Contain 3226
+                $result | Should-BeCollection -Count 2
+                $result | Should-ContainCollection 4199
+                $result | Should-ContainCollection 3226
 
-                Should -Invoke -CommandName Get-SqlDscStartupParameter -ParameterFilter {
+                Should-Invoke -CommandName Get-SqlDscStartupParameter -Exactly -ParameterFilter {
                     $ServerName -eq 'localhost'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -249,13 +249,13 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
             It 'Should return the correct values' {
                 $result = Get-SqlDscTraceFlag -InstanceName 'SQL2022'
 
-                $result | Should -HaveCount 2
-                $result | Should -Contain 4199
-                $result | Should -Contain 3226
+                $result | Should-BeCollection -Count 2
+                $result | Should-ContainCollection 4199
+                $result | Should-ContainCollection 3226
 
-                Should -Invoke -CommandName Get-SqlDscStartupParameter -ParameterFilter {
+                Should-Invoke -CommandName Get-SqlDscStartupParameter -Exactly -ParameterFilter {
                     $InstanceName -eq 'SQL2022'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -269,11 +269,11 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
 
                 $result = Get-SqlDscTraceFlag -ServiceObject $mockServiceObject
 
-                $result | Should -HaveCount 2
-                $result | Should -Contain 4199
-                $result | Should -Contain 3226
+                $result | Should-BeCollection -Count 2
+                $result | Should-ContainCollection 4199
+                $result | Should-ContainCollection 3226
 
-                Should -Invoke -CommandName Get-SqlDscStartupParameter -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SqlDscStartupParameter -Exactly -Scope It -Times 1
             }
         }
     }

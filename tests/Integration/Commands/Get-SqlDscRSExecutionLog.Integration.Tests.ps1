@@ -41,10 +41,10 @@ Describe 'Get-SqlDscRSExecutionLog' {
             # If there are results, verify they have expected properties
             if ($result)
             {
-                $result[0].PSObject.Properties.Name | Should -Contain 'ItemPath'
-                $result[0].PSObject.Properties.Name | Should -Contain 'UserName'
-                $result[0].PSObject.Properties.Name | Should -Contain 'TimeStart'
-                $result[0].PSObject.Properties.Name | Should -Contain 'Status'
+                $result[0].PSObject.Properties.Name | Should-ContainCollection 'ItemPath'
+                $result[0].PSObject.Properties.Name | Should-ContainCollection 'UserName'
+                $result[0].PSObject.Properties.Name | Should-ContainCollection 'TimeStart'
+                $result[0].PSObject.Properties.Name | Should-ContainCollection 'Status'
             }
         }
 
@@ -55,7 +55,7 @@ Describe 'Get-SqlDscRSExecutionLog' {
 
             if ($result)
             {
-                @($result).Count | Should -BeLessOrEqual 5
+                @($result).Count | Should-BeLessThanOrEqual 5
             }
         }
 
@@ -73,8 +73,8 @@ Describe 'Get-SqlDscRSExecutionLog' {
             {
                 foreach ($entry in $result)
                 {
-                    $entry.TimeStart | Should -BeGreaterOrEqual $startTime
-                    $entry.TimeStart | Should -BeLessOrEqual $endTime
+                    $entry.TimeStart | Should-BeGreaterThanOrEqual $startTime
+                    $entry.TimeStart | Should-BeLessThanOrEqual $endTime
                 }
             }
         }
@@ -92,10 +92,10 @@ Describe 'Get-SqlDscRSExecutionLog' {
             # If there are results, verify they have expected properties
             if ($result)
             {
-                $result[0].PSObject.Properties.Name | Should -Contain 'ItemPath'
-                $result[0].PSObject.Properties.Name | Should -Contain 'UserName'
-                $result[0].PSObject.Properties.Name | Should -Contain 'TimeStart'
-                $result[0].PSObject.Properties.Name | Should -Contain 'Status'
+                $result[0].PSObject.Properties.Name | Should-ContainCollection 'ItemPath'
+                $result[0].PSObject.Properties.Name | Should-ContainCollection 'UserName'
+                $result[0].PSObject.Properties.Name | Should-ContainCollection 'TimeStart'
+                $result[0].PSObject.Properties.Name | Should-ContainCollection 'Status'
             }
         }
 
@@ -106,7 +106,7 @@ Describe 'Get-SqlDscRSExecutionLog' {
 
             if ($result)
             {
-                @($result).Count | Should -BeLessOrEqual 5
+                @($result).Count | Should-BeLessThanOrEqual 5
             }
         }
     }

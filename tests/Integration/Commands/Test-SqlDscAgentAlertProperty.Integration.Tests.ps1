@@ -62,13 +62,13 @@ Describe 'Test-SqlDscAgentAlertProperty' -Tag @('Integration_SQL2017', 'Integrat
         It 'Should return true for matching severity' {
             $result = $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'IntegrationTest_SeverityAlert' -Severity 16 -ErrorAction 'Stop'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should return false for non-matching severity' {
             $result = $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'IntegrationTest_SeverityAlert' -Severity 14 -ErrorAction 'Stop'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 
@@ -76,13 +76,13 @@ Describe 'Test-SqlDscAgentAlertProperty' -Tag @('Integration_SQL2017', 'Integrat
         It 'Should return true for matching message ID' {
             $result = $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'IntegrationTest_MessageIdAlert' -MessageId 50001 -ErrorAction 'Stop'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should return false for non-matching message ID' {
             $result = $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'IntegrationTest_MessageIdAlert' -MessageId 50002 -ErrorAction 'Stop'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 
@@ -91,21 +91,21 @@ Describe 'Test-SqlDscAgentAlertProperty' -Tag @('Integration_SQL2017', 'Integrat
             {
                 $null = $script:sqlServerObject |
                     Test-SqlDscAgentAlertProperty -Name 'NonExistentAlert' -Severity 16 -ErrorAction 'Stop'
-            } | Should -Throw
+            } | Should-Throw
         }
 
         It 'Should throw an exception for non-existent alert with message ID' {
             {
                 $null = $script:sqlServerObject |
                     Test-SqlDscAgentAlertProperty -Name 'NonExistentAlert' -MessageId 50001 -ErrorAction 'Stop'
-            } | Should -Throw
+            } | Should-Throw
         }
     }
 
     Context 'When no properties are specified' {
         It 'Should throw error when no property parameters are specified' {
             { $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'IntegrationTest_SeverityAlert' -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
     }
 
@@ -114,28 +114,28 @@ Describe 'Test-SqlDscAgentAlertProperty' -Tag @('Integration_SQL2017', 'Integrat
             $alertObject = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -ErrorAction 'Stop'
             $result = $alertObject | Test-SqlDscAgentAlertProperty -Severity 16 -ErrorAction 'Stop'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should return false when alert object has non-matching severity' {
             $alertObject = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_SeverityAlert' -ErrorAction 'Stop'
             $result = $alertObject | Test-SqlDscAgentAlertProperty -Severity 14 -ErrorAction 'Stop'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
 
         It 'Should return true when alert object has matching message ID' {
             $alertObject = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_MessageIdAlert' -ErrorAction 'Stop'
             $result = $alertObject | Test-SqlDscAgentAlertProperty -MessageId 50001 -ErrorAction 'Stop'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
     }
 
     Context 'When both Severity and MessageId are specified' {
         It 'Should throw error for both Severity and MessageId parameters' {
             { $script:sqlServerObject | Test-SqlDscAgentAlertProperty -Name 'IntegrationTest_SeverityAlert' -Severity 16 -MessageId 50001 -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
     }
 }

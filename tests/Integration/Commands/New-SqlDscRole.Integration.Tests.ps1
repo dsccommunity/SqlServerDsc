@@ -73,23 +73,23 @@ Describe 'New-SqlDscRole' -Tag @('Integration_SQL2017', 'Integration_SQL2019', '
         It 'Should create a role and return a ServerRole object' {
             $result = New-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -Force
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
-            $result.Name | Should -Be $script:testRoleName
-            $result.IsFixedRole | Should -BeFalse
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ServerRole'
+            $result.Name | Should-Be $script:testRoleName
+            $result.IsFixedRole | Should-BeFalse
 
             # Verify the role exists in the server
             $verifyRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName
-            $verifyRole | Should -Not -BeNullOrEmpty
-            $verifyRole.Name | Should -Be $script:testRoleName
+            $verifyRole | Should-BeTruthy
+            $verifyRole.Name | Should-Be $script:testRoleName
         }
 
         It 'Should create a role with a specified owner' {
             $result = New-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleNameWithOwner -Owner 'sa' -Force
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
-            $result.Name | Should -Be $script:testRoleNameWithOwner
-            $result.Owner | Should -Be 'sa'
-            $result.IsFixedRole | Should -BeFalse
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ServerRole'
+            $result.Name | Should-Be $script:testRoleNameWithOwner
+            $result.Owner | Should-Be 'sa'
+            $result.IsFixedRole | Should-BeFalse
         }
     }
 
@@ -103,8 +103,8 @@ Describe 'New-SqlDscRole' -Tag @('Integration_SQL2017', 'Integration_SQL2019', '
 
             $script:pipelineTestRole = $script:serverObject | New-SqlDscRole -Name $uniqueRoleName -Force
 
-            $script:pipelineTestRole | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
-            $script:pipelineTestRole.Name | Should -Be $uniqueRoleName
+            $script:pipelineTestRole | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ServerRole'
+            $script:pipelineTestRole.Name | Should-Be $uniqueRoleName
         }
 
         AfterAll {
@@ -121,44 +121,44 @@ Describe 'New-SqlDscRole' -Tag @('Integration_SQL2017', 'Integration_SQL2019', '
             # Create shared role for Get-SqlDscRole integration tests
             $result = New-SqlDscRole -ServerObject $script:serverObject -Name $script:sharedTestRoleForIntegrationTests -Force
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
-            $result.Name | Should -Be $script:sharedTestRoleForIntegrationTests
-            $result.IsFixedRole | Should -BeFalse
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ServerRole'
+            $result.Name | Should-Be $script:sharedTestRoleForIntegrationTests
+            $result.IsFixedRole | Should-BeFalse
 
             # Verify the role exists in the server
             $verifyRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:sharedTestRoleForIntegrationTests
-            $verifyRole | Should -Not -BeNullOrEmpty
-            $verifyRole.Name | Should -Be $script:sharedTestRoleForIntegrationTests
+            $verifyRole | Should-BeTruthy
+            $verifyRole.Name | Should-Be $script:sharedTestRoleForIntegrationTests
         }
 
         It 'Should create a shared role for removal tests' {
             # Create shared role for Remove-SqlDscRole integration tests
             $result = New-SqlDscRole -ServerObject $script:serverObject -Name $script:sharedTestRoleForRemoval -Force
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
-            $result.Name | Should -Be $script:sharedTestRoleForRemoval
-            $result.IsFixedRole | Should -BeFalse
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ServerRole'
+            $result.Name | Should-Be $script:sharedTestRoleForRemoval
+            $result.IsFixedRole | Should-BeFalse
 
             # Verify the role exists in the server
             $verifyRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:sharedTestRoleForRemoval
-            $verifyRole | Should -Not -BeNullOrEmpty
-            $verifyRole.Name | Should -Be $script:sharedTestRoleForRemoval
+            $verifyRole | Should-BeTruthy
+            $verifyRole.Name | Should-Be $script:sharedTestRoleForRemoval
         }
 
         It 'Should create a persistent role that remains on the instance' {
             # Create persistent role with sa owner that will remain on the instance
             $result = New-SqlDscRole -ServerObject $script:serverObject -Name $script:persistentTestRole -Owner 'sa' -Force
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
-            $result.Name | Should -Be $script:persistentTestRole
-            $result.Owner | Should -Be 'sa'
-            $result.IsFixedRole | Should -BeFalse
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ServerRole'
+            $result.Name | Should-Be $script:persistentTestRole
+            $result.Owner | Should-Be 'sa'
+            $result.IsFixedRole | Should-BeFalse
 
             # Verify the role exists in the server
             $verifyRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:persistentTestRole
-            $verifyRole | Should -Not -BeNullOrEmpty
-            $verifyRole.Name | Should -Be $script:persistentTestRole
-            $verifyRole.Owner | Should -Be 'sa'
+            $verifyRole | Should-BeTruthy
+            $verifyRole.Name | Should-Be $script:persistentTestRole
+            $verifyRole.Owner | Should-Be 'sa'
         }
     }
 
@@ -166,7 +166,7 @@ Describe 'New-SqlDscRole' -Tag @('Integration_SQL2017', 'Integration_SQL2019', '
         It 'Should throw an error when creating a role that already exists' {
             # Try to re-create the persistent role which should already exist
             { New-SqlDscRole -ServerObject $script:serverObject -Name $script:persistentTestRole -Force -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage "*already exists*"
+                Should-Throw -ExceptionMessage "*already exists*"
         }
     }
 }

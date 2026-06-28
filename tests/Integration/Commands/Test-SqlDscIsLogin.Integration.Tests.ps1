@@ -55,32 +55,32 @@ Describe 'Test-SqlDscIsLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             # Test with persistent integration test login
             $result = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeTrue
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeTrue
         }
 
         It 'Should return False when login does not exist' {
             # Test with non-existent login
             $result = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name 'NonExistentLogin'
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeFalse
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeFalse
         }
 
         It 'Should accept ServerObject from pipeline' {
             # Test using pipeline
             $result = $script:serverObject | Test-SqlDscIsLogin -Name $script:testLoginName
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeTrue
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeTrue
         }
 
         It 'Should return True for built-in sa login' {
             # Test with built-in sa login
             $result = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name 'sa'
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeTrue
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeTrue
         }
     }
 
@@ -89,8 +89,8 @@ Describe 'Test-SqlDscIsLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             # Verify the persistent test login exists and is a SQL Server login
             $result = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeTrue
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeTrue
         }
 
         It 'Should return True for Windows login if it exists' {
@@ -100,7 +100,7 @@ Describe 'Test-SqlDscIsLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             $result = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $windowsLoginName
 
-            $result | Should -BeOfType [System.Boolean]
+            $result | Should-HaveType ([System.Boolean])
             # Note: We don't assert True/False here as it depends on environment setup
             # but we verify it returns a boolean value
         }
@@ -112,9 +112,9 @@ Describe 'Test-SqlDscIsLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             $result1 = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName.ToUpper()
             $result2 = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName.ToLower()
 
-            $result1 | Should -BeOfType [System.Boolean]
-            $result2 | Should -BeOfType [System.Boolean]
-            $result1 | Should -Be $result2
+            $result1 | Should-HaveType ([System.Boolean])
+            $result2 | Should-HaveType ([System.Boolean])
+            $result1 | Should-Be $result2
         }
     }
 }

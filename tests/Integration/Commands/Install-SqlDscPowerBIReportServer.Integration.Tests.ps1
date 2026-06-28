@@ -62,8 +62,8 @@ Describe 'Install-SqlDscPowerBIReportServer' -Tag @('Integration_PowerBI') {
             # Validate the Power BI Report Server installation
             $reportServerService = Get-Service -Name 'PowerBIReportServer'
 
-            $reportServerService | Should -Not -BeNullOrEmpty
-            $reportServerService.Status | Should -Be 'Running'
+            $reportServerService | Should-BeTruthy
+            $reportServerService.Status | Should-Be 'Running'
         }
     }
 }

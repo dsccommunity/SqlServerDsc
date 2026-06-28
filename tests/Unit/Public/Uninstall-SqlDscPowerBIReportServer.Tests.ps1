@@ -67,8 +67,8 @@ Describe 'Uninstall-SqlDscPowerBIReportServer' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When uninstalling SQL Server BI Report Server' {
@@ -90,10 +90,10 @@ Describe 'Uninstall-SqlDscPowerBIReportServer' -Tag 'Public' {
                 It 'Should call the Invoke-ReportServerSetupAction with Uninstall action' {
                     Uninstall-SqlDscPowerBIReportServer -Confirm:$false @mockDefaultParameters
 
-                    Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
+                    Should-Invoke -CommandName Invoke-ReportServerSetupAction -Exactly -ParameterFilter {
                         $Uninstall -eq $true -and
                         $MediaPath -eq '\PowerBIReportServer.exe'
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -101,10 +101,10 @@ Describe 'Uninstall-SqlDscPowerBIReportServer' -Tag 'Public' {
                 It 'Should call the Invoke-ReportServerSetupAction with Uninstall action' {
                     Uninstall-SqlDscPowerBIReportServer -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
+                    Should-Invoke -CommandName Invoke-ReportServerSetupAction -Exactly -ParameterFilter {
                         $Uninstall -eq $true -and
                         $Force -eq $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -112,7 +112,7 @@ Describe 'Uninstall-SqlDscPowerBIReportServer' -Tag 'Public' {
                 It 'Should call Invoke-ReportServerSetupAction' {
                     Uninstall-SqlDscPowerBIReportServer -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Invoke-ReportServerSetupAction -Exactly -Times 1     -Scope It
+                    Should-Invoke -CommandName Invoke-ReportServerSetupAction -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -132,14 +132,14 @@ Describe 'Uninstall-SqlDscPowerBIReportServer' -Tag 'Public' {
             It 'Should pass all parameters to Invoke-ReportServerSetupAction' {
                 Uninstall-SqlDscPowerBIReportServer @uninstallParameters
 
-                Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
+                Should-Invoke -CommandName Invoke-ReportServerSetupAction -Exactly -ParameterFilter {
                     $Uninstall -eq $true -and
                     $MediaPath -eq '\PowerBIReportServer.exe' -and
                     $LogPath -eq 'C:\Logs\Uninstall.log' -and
                     $SuppressRestart -eq $true -and
                     $Timeout -eq 3600 -and
                     $Force -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -160,18 +160,18 @@ Describe 'Uninstall-SqlDscPowerBIReportServer' -Tag 'Public' {
             It 'Should return the exit code when PassThru is specified' {
                 $result = Uninstall-SqlDscPowerBIReportServer -PassThru @mockDefaultParameters
 
-                $result | Should -Be 3010
-                $result | Should -BeOfType [System.Int32]
+                $result | Should-Be 3010
+                $result | Should-HaveType ([System.Int32])
 
-                Should -Invoke -CommandName Invoke-ReportServerSetupAction
+                Should-Invoke -CommandName Invoke-ReportServerSetupAction
             }
 
             It 'Should not return an exit code when PassThru is not specified' {
                 $result = Uninstall-SqlDscPowerBIReportServer @mockDefaultParameters
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
 
-                Should -Invoke -CommandName Invoke-ReportServerSetupAction
+                Should-Invoke -CommandName Invoke-ReportServerSetupAction
             }
         }
     }

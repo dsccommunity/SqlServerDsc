@@ -71,7 +71,7 @@ Describe 'Assert-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
         Context 'When a login does not exist' {
             It 'Should throw a terminating error for non-existent login' {
-                { Assert-SqlDscLogin -ServerObject $script:serverObject -Name 'NonExistentLogin123' } | Should -Throw -ExpectedMessage "*does not exist as a login*"
+                { Assert-SqlDscLogin -ServerObject $script:serverObject -Name 'NonExistentLogin123' } | Should-Throw -ExceptionMessage "*does not exist as a login*"
             }
 
             It 'Should throw an error with ObjectNotFound category' {
@@ -81,7 +81,7 @@ Describe 'Assert-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
                 }
                 catch
                 {
-                    $_.CategoryInfo.Category | Should -Be 'ObjectNotFound'
+                    $_.CategoryInfo.Category | Should-Be 'ObjectNotFound'
                 }
             }
         }

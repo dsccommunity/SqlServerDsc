@@ -71,25 +71,25 @@ Describe 'Restore-SqlDscDatabase' -Tag 'Public' {
             }
 
             { Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.bak' -RestoreType 'Full' -Force } |
-                Should -Throw -ExpectedMessage ('*{0}*' -f $expectedMessage) -ErrorId 'RSDD0001,Restore-SqlDscDatabase'
+                Should-Throw -ExceptionMessage ('*{0}*' -f $expectedMessage) -FullyQualifiedErrorId 'RSDD0001,Restore-SqlDscDatabase'
         }
 
         It 'Should not throw error when database already exists and RestoreType is Differential' {
             $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test_Diff.bak' -RestoreType 'Differential' -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should not throw error when database already exists and RestoreType is Log' {
             $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.trn' -RestoreType 'Log' -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should not throw error when database already exists and RestoreType is Files' {
             $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.bak' -RestoreType 'Files' -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -110,7 +110,7 @@ Describe 'Restore-SqlDscDatabase' -Tag 'Public' {
             }
 
             { Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.bak' -NoRecovery -Standby 'C:\Standby\undo.ldf' -Force } |
-                Should -Throw -ExpectedMessage ('*{0}*' -f $expectedMessage) -ErrorId 'RSDD0006,Restore-SqlDscDatabase'
+                Should-Throw -ExceptionMessage ('*{0}*' -f $expectedMessage) -FullyQualifiedErrorId 'RSDD0006,Restore-SqlDscDatabase'
         }
     }
 
@@ -127,37 +127,37 @@ Describe 'Restore-SqlDscDatabase' -Tag 'Public' {
 
         It 'Should throw error when ToPointInTime is used with Full restore' {
             { Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.bak' -RestoreType 'Full' -ToPointInTime '2024-01-15T14:30:00' -Force } |
-                Should -Throw -ExpectedMessage "*The parameter(s) 'ToPointInTime' are not allowed to be specified*" -ErrorId 'Parameters,New-ArgumentException'
+                Should-Throw -ExceptionMessage "*The parameter(s) 'ToPointInTime' are not allowed to be specified*" -FullyQualifiedErrorId 'Parameters,New-ArgumentException'
         }
 
         It 'Should throw error when StopAtMarkName is used with Differential restore' {
             { Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.bak' -RestoreType 'Differential' -StopAtMarkName 'MyMark' -Force } |
-                Should -Throw -ExpectedMessage "*The parameter(s) 'StopAtMarkName' are not allowed to be specified*" -ErrorId 'Parameters,New-ArgumentException'
+                Should-Throw -ExceptionMessage "*The parameter(s) 'StopAtMarkName' are not allowed to be specified*" -FullyQualifiedErrorId 'Parameters,New-ArgumentException'
         }
 
         It 'Should throw error when StopBeforeMarkName is used with Files restore' {
             { Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.bak' -RestoreType 'Files' -StopBeforeMarkName 'MyMark' -Force } |
-                Should -Throw -ExpectedMessage "*The parameter(s) 'StopBeforeMarkName' are not allowed to be specified*" -ErrorId 'Parameters,New-ArgumentException'
+                Should-Throw -ExceptionMessage "*The parameter(s) 'StopBeforeMarkName' are not allowed to be specified*" -FullyQualifiedErrorId 'Parameters,New-ArgumentException'
         }
 
         It 'Should throw error when StopAtMarkAfterDate is used with Full restore' {
             { Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.bak' -RestoreType 'Full' -StopAtMarkAfterDate '2024-01-15T14:30:00' -Force } |
-                Should -Throw -ExpectedMessage "*The parameter(s) 'StopAtMarkAfterDate' are not allowed to be specified*" -ErrorId 'Parameters,New-ArgumentException'
+                Should-Throw -ExceptionMessage "*The parameter(s) 'StopAtMarkAfterDate' are not allowed to be specified*" -FullyQualifiedErrorId 'Parameters,New-ArgumentException'
         }
 
         It 'Should throw error when StopBeforeMarkAfterDate is used with Differential restore' {
             { Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.bak' -RestoreType 'Differential' -StopBeforeMarkAfterDate '2024-01-15T14:30:00' -Force } |
-                Should -Throw -ExpectedMessage "*The parameter(s) 'StopBeforeMarkAfterDate' are not allowed to be specified*" -ErrorId 'Parameters,New-ArgumentException'
+                Should-Throw -ExceptionMessage "*The parameter(s) 'StopBeforeMarkAfterDate' are not allowed to be specified*" -FullyQualifiedErrorId 'Parameters,New-ArgumentException'
         }
 
         It 'Should throw error when StopAtMarkAfterDate is used without StopAtMarkName' {
             { Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.trn' -RestoreType 'Log' -StopAtMarkAfterDate '2024-01-15T14:30:00' -Force } |
-                Should -Throw -ExpectedMessage "*'StopAtMarkName'*must*all be specified*" -ErrorId 'ARCP0001,Assert-RequiredCommandParameter'
+                Should-Throw -ExceptionMessage "*'StopAtMarkName'*must*all be specified*" -FullyQualifiedErrorId 'ARCP0001,Assert-RequiredCommandParameter'
         }
 
         It 'Should throw error when StopBeforeMarkAfterDate is used without StopBeforeMarkName' {
             { Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\Test.trn' -RestoreType 'Log' -StopBeforeMarkAfterDate '2024-01-15T14:30:00' -Force } |
-                Should -Throw -ExpectedMessage "*'StopBeforeMarkName'*must*all be specified*" -ErrorId 'ARCP0001,Assert-RequiredCommandParameter'
+                Should-Throw -ExceptionMessage "*'StopBeforeMarkName'*must*all be specified*" -FullyQualifiedErrorId 'ARCP0001,Assert-RequiredCommandParameter'
         }
     }
 
@@ -175,37 +175,37 @@ Describe 'Restore-SqlDscDatabase' -Tag 'Public' {
         It 'Should perform full restore successfully' {
             $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'NewDatabase' -BackupFile 'C:\Backups\TestDatabase.bak' -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform differential restore successfully' {
             $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'NewDatabase' -BackupFile 'C:\Backups\TestDatabase_Diff.bak' -RestoreType 'Differential' -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform log restore successfully' {
             $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'NewDatabase' -BackupFile 'C:\Backups\TestDatabase.trn' -RestoreType 'Log' -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform files restore successfully' {
             $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'NewDatabase' -BackupFile 'C:\Backups\TestDatabase.bak' -RestoreType 'Files' -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform restore with NoRecovery option' {
             $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'NewDatabase' -BackupFile 'C:\Backups\TestDatabase.bak' -NoRecovery -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform restore with Standby option' {
             $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'NewDatabase' -BackupFile 'C:\Backups\TestDatabase.bak' -Standby 'C:\Standby\undo.ldf' -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform restore with ReplaceDatabase option' {
@@ -224,49 +224,49 @@ Describe 'Restore-SqlDscDatabase' -Tag 'Public' {
 
             $result = Restore-SqlDscDatabase -ServerObject $mockServerWithDb -Name 'ExistingDatabase' -BackupFile 'C:\Backups\TestDatabase.bak' -ReplaceDatabase -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform restore with Checksum option' {
             $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'NewDatabase' -BackupFile 'C:\Backups\TestDatabase.bak' -Checksum -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform restore with RestrictedUser option' {
             $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'NewDatabase' -BackupFile 'C:\Backups\TestDatabase.bak' -RestrictedUser -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform restore with KeepReplication option' {
             $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'NewDatabase' -BackupFile 'C:\Backups\TestDatabase.bak' -KeepReplication -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform restore with FileNumber option' {
             $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'NewDatabase' -BackupFile 'C:\Backups\TestDatabase.bak' -FileNumber 2 -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform restore with point-in-time recovery' {
             $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'NewDatabase' -BackupFile 'C:\Backups\TestDatabase.trn' -RestoreType 'Log' -ToPointInTime (Get-Date '2024-01-15T14:30:00') -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform restore with StopAtMarkName option' {
             $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'NewDatabase' -BackupFile 'C:\Backups\TestDatabase.trn' -RestoreType 'Log' -StopAtMarkName 'MyMark' -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform restore with performance options' {
             $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'NewDatabase' -BackupFile 'C:\Backups\TestDatabase.bak' -BlockSize 65536 -BufferCount 10 -MaxTransferSize 4194304 -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -289,7 +289,7 @@ Describe 'Restore-SqlDscDatabase' -Tag 'Public' {
 
             $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'NewDatabase' -BackupFile 'C:\Backups\TestDatabase.bak' -RelocateFile $relocateFiles -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -311,8 +311,8 @@ Describe 'Restore-SqlDscDatabase' -Tag 'Public' {
 
             $result = Restore-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\TestDatabase.bak' -Refresh -Force
 
-            $result | Should -BeNullOrEmpty
-            $script:refreshCalled | Should -BeTrue
+            $result | Should-BeFalsy
+            $script:refreshCalled | Should-BeTrue
         }
     }
 
@@ -337,7 +337,7 @@ Describe 'Restore-SqlDscDatabase' -Tag 'Public' {
         It 'Should perform restore using database object with ReplaceDatabase' {
             $result = Restore-SqlDscDatabase -DatabaseObject $mockDatabaseObject -BackupFile 'C:\Backups\TestDatabase.bak' -ReplaceDatabase -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -355,8 +355,8 @@ Describe 'Restore-SqlDscDatabase' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have the correct parameters in parameter set DatabaseObject' -ForEach @(
@@ -372,40 +372,40 @@ Describe 'Restore-SqlDscDatabase' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have default parameter set as ServerObject' {
             $result = Get-Command -Name 'Restore-SqlDscDatabase'
-            $result.DefaultParameterSet | Should -Be 'ServerObject'
+            $result.DefaultParameterSet | Should-Be 'ServerObject'
         }
 
         It 'Should have RestoreType parameter with valid values' {
             $result = (Get-Command -Name 'Restore-SqlDscDatabase').Parameters['RestoreType']
-            $result.Attributes.ValidValues | Should -Contain 'Full'
-            $result.Attributes.ValidValues | Should -Contain 'Differential'
-            $result.Attributes.ValidValues | Should -Contain 'Log'
-            $result.Attributes.ValidValues | Should -Contain 'Files'
+            $result.Attributes.ValidValues | Should-ContainCollection 'Full'
+            $result.Attributes.ValidValues | Should-ContainCollection 'Differential'
+            $result.Attributes.ValidValues | Should-ContainCollection 'Log'
+            $result.Attributes.ValidValues | Should-ContainCollection 'Files'
         }
 
         It 'Should have BlockSize parameter with valid values' {
             $result = (Get-Command -Name 'Restore-SqlDscDatabase').Parameters['BlockSize']
-            $result.Attributes.ValidValues | Should -Contain 512
-            $result.Attributes.ValidValues | Should -Contain 1024
-            $result.Attributes.ValidValues | Should -Contain 65536
+            $result.Attributes.ValidValues | Should-ContainCollection 512
+            $result.Attributes.ValidValues | Should-ContainCollection 1024
+            $result.Attributes.ValidValues | Should-ContainCollection 65536
         }
 
         It 'Should have ServerObject as a mandatory parameter in ServerObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Restore-SqlDscDatabase').Parameters['ServerObject']
             $parameterSetInfo = $parameterInfo.ParameterSets['ServerObject']
-            $parameterSetInfo.IsMandatory | Should -BeTrue
+            $parameterSetInfo.IsMandatory | Should-BeTrue
         }
 
         It 'Should have Name as a mandatory parameter in ServerObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Restore-SqlDscDatabase').Parameters['Name']
             $parameterSetInfo = $parameterInfo.ParameterSets['ServerObject']
-            $parameterSetInfo.IsMandatory | Should -BeTrue
+            $parameterSetInfo.IsMandatory | Should-BeTrue
         }
 
         It 'Should have BackupFile as a mandatory parameter in all parameter sets' {
@@ -413,14 +413,14 @@ Describe 'Restore-SqlDscDatabase' -Tag 'Public' {
 
             foreach ($parameterSet in $parameterInfo.ParameterSets.Keys)
             {
-                $parameterInfo.ParameterSets[$parameterSet].IsMandatory | Should -BeTrue -Because "BackupFile should be mandatory in parameter set '$parameterSet'"
+                $parameterInfo.ParameterSets[$parameterSet].IsMandatory | Should-BeTrue -Because "BackupFile should be mandatory in parameter set '$parameterSet'"
             }
         }
 
         It 'Should have DatabaseObject as a mandatory parameter in DatabaseObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Restore-SqlDscDatabase').Parameters['DatabaseObject']
             $parameterSetInfo = $parameterInfo.ParameterSets['DatabaseObject']
-            $parameterSetInfo.IsMandatory | Should -BeTrue
+            $parameterSetInfo.IsMandatory | Should-BeTrue
         }
     }
 }

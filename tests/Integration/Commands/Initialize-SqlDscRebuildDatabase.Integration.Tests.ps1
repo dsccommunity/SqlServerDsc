@@ -114,7 +114,7 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag @('Integration_SQL2017', 'Integ
                 Start-Sleep -Seconds 10
 
                 $sqlService = Get-Service -Name $serviceName -ErrorAction 'Stop'
-                $sqlService.Status | Should -Be 'Running'
+                $sqlService.Status | Should-Be 'Running'
             }
 
             It 'Should be able to connect to the instance after rebuild' {
@@ -129,8 +129,8 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag @('Integration_SQL2017', 'Integ
 
                 $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'DSCSQLTEST' -Credential $mockSqlAdminCredential -ErrorAction 'Stop'
 
-                $serverObject | Should -Not -BeNullOrEmpty
-                $serverObject.Name | Should -Match 'DSCSQLTEST'
+                $serverObject | Should-BeTruthy
+                $serverObject.Name | Should-MatchString 'DSCSQLTEST'
 
                 Disconnect-SqlDscDatabaseEngine -ServerObject $serverObject
             }
@@ -174,7 +174,7 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag @('Integration_SQL2017', 'Integ
                 Start-Sleep -Seconds 10
 
                 $sqlService = Get-Service -Name $serviceName -ErrorAction 'Stop'
-                $sqlService.Status | Should -Be 'Running'
+                $sqlService.Status | Should-Be 'Running'
             }
 
             It 'Should have the requested TempDB file count' {
@@ -187,7 +187,7 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag @('Integration_SQL2017', 'Integ
                 )
 
                 $server = Connect-SqlDscDatabaseEngine -InstanceName 'DSCSQLTEST' -Credential $mockSqlAdministratorCredential -ErrorAction 'Stop'
-                $server.Databases['tempdb'].FileGroups['PRIMARY'].Files.Count | Should -Be 8
+                $server.Databases['tempdb'].FileGroups['PRIMARY'].Files.Count | Should-Be 8
                 Disconnect-SqlDscDatabaseEngine -ServerObject $server -ErrorAction 'Stop'
             }
         }
@@ -230,7 +230,7 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag @('Integration_SQL2017', 'Integ
                 Start-Sleep -Seconds 10
 
                 $sqlService = Get-Service -Name $serviceName -ErrorAction 'Stop'
-                $sqlService.Status | Should -Be 'Running'
+                $sqlService.Status | Should-Be 'Running'
             }
 
             It 'Should set the requested server collation' {
@@ -243,7 +243,7 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag @('Integration_SQL2017', 'Integ
                 )
 
                 $server = Connect-SqlDscDatabaseEngine -InstanceName 'DSCSQLTEST' -Credential $mockSqlAdminCredential -ErrorAction 'Stop'
-                $server.Collation | Should -Be 'SQL_Latin1_General_CP1_CI_AS'
+                $server.Collation | Should-Be 'SQL_Latin1_General_CP1_CI_AS'
                 Disconnect-SqlDscDatabaseEngine -ServerObject $server -ErrorAction 'Stop'
             }
         }

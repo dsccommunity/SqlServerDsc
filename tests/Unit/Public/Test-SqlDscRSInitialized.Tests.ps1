@@ -58,8 +58,8 @@ Describe 'Test-SqlDscRSInitialized' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -74,7 +74,7 @@ Describe 'Test-SqlDscRSInitialized' {
         It 'Should return $true' {
             $result = $mockCimInstance | Test-SqlDscRSInitialized
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
     }
 
@@ -89,7 +89,7 @@ Describe 'Test-SqlDscRSInitialized' {
         It 'Should return $false' {
             $result = $mockCimInstance | Test-SqlDscRSInitialized
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 
@@ -104,7 +104,7 @@ Describe 'Test-SqlDscRSInitialized' {
         It 'Should return the initialization status' {
             $result = Test-SqlDscRSInitialized -Configuration $mockCimInstance
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
     }
 }

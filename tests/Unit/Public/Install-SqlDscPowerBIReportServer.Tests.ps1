@@ -67,8 +67,8 @@ Describe 'Install-SqlDscPowerBIReportServer' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When installing SQL Server Power BI Report Server' {
@@ -92,11 +92,11 @@ Describe 'Install-SqlDscPowerBIReportServer' -Tag 'Public' {
                 It 'Should call the Invoke-ReportServerSetupAction with Install action' {
                     Install-SqlDscPowerBIReportServer -Confirm:$false @mockDefaultParameters
 
-                    Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
+                    Should-Invoke -CommandName Invoke-ReportServerSetupAction -Exactly -ParameterFilter {
                         $Install -eq $true -and
                         $AcceptLicensingTerms -eq $true -and
                         $MediaPath -eq '\PowerBIReportServer.exe'
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -104,10 +104,10 @@ Describe 'Install-SqlDscPowerBIReportServer' -Tag 'Public' {
                 It 'Should call the Invoke-ReportServerSetupAction with Install action' {
                     Install-SqlDscPowerBIReportServer -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
+                    Should-Invoke -CommandName Invoke-ReportServerSetupAction -Exactly -ParameterFilter {
                         $Install -eq $true -and
                         $Force -eq $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -115,7 +115,7 @@ Describe 'Install-SqlDscPowerBIReportServer' -Tag 'Public' {
                 It 'Should call Invoke-ReportServerSetupAction' {
                     Install-SqlDscPowerBIReportServer -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Invoke-ReportServerSetupAction -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Invoke-ReportServerSetupAction -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -139,7 +139,7 @@ Describe 'Install-SqlDscPowerBIReportServer' -Tag 'Public' {
             It 'Should pass all parameters to Invoke-ReportServerSetupAction' {
                 Install-SqlDscPowerBIReportServer @installParameters
 
-                Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
+                Should-Invoke -CommandName Invoke-ReportServerSetupAction -Exactly -ParameterFilter {
                     $Install -eq $true -and
                     $AcceptLicensingTerms -eq $true -and
                     $MediaPath -eq '\PowerBIReportServer.exe' -and
@@ -150,7 +150,7 @@ Describe 'Install-SqlDscPowerBIReportServer' -Tag 'Public' {
                     $SuppressRestart -eq $true -and
                     $Timeout -eq 3600 -and
                     $Force -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -168,10 +168,10 @@ Describe 'Install-SqlDscPowerBIReportServer' -Tag 'Public' {
             It 'Should pass the Edition parameter to Invoke-ReportServerSetupAction' {
                 Install-SqlDscPowerBIReportServer @installParameters
 
-                Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
+                Should-Invoke -CommandName Invoke-ReportServerSetupAction -Exactly -ParameterFilter {
                     $Install -eq $true -and
                     $Edition -eq 'Evaluation'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -193,18 +193,18 @@ Describe 'Install-SqlDscPowerBIReportServer' -Tag 'Public' {
             It 'Should return the exit code when PassThru is specified' {
                 $result = Install-SqlDscPowerBIReportServer -PassThru @mockDefaultParameters
 
-                $result | Should -Be 3010
-                $result | Should -BeOfType [System.Int32]
+                $result | Should-Be 3010
+                $result | Should-HaveType ([System.Int32])
 
-                Should -Invoke -CommandName Invoke-ReportServerSetupAction
+                Should-Invoke -CommandName Invoke-ReportServerSetupAction
             }
 
             It 'Should not return an exit code when PassThru is not specified' {
                 $result = Install-SqlDscPowerBIReportServer @mockDefaultParameters
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
 
-                Should -Invoke -CommandName Invoke-ReportServerSetupAction
+                Should-Invoke -CommandName Invoke-ReportServerSetupAction
             }
         }
     }

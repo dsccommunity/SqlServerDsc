@@ -58,8 +58,8 @@ Describe 'Get-SqlDscRSIPAddress' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -81,20 +81,20 @@ Describe 'Get-SqlDscRSIPAddress' {
         It 'Should return IP addresses as ReportServerIPAddress objects' {
             $result = $mockCimInstance | Get-SqlDscRSIPAddress
 
-            $result | Should -HaveCount 3
-            $result[0].IPAddress | Should -Be '0.0.0.0'
-            $result[0].IPVersion | Should -Be 'V4'
-            $result[0].IsDhcpEnabled | Should -BeFalse
-            $result[1].IPAddress | Should -Be '192.168.1.1'
-            $result[1].IPVersion | Should -Be 'V4'
-            $result[1].IsDhcpEnabled | Should -BeTrue
-            $result[2].IPAddress | Should -Be '::'
-            $result[2].IPVersion | Should -Be 'V6'
-            $result[2].IsDhcpEnabled | Should -BeFalse
+            $result | Should-BeCollection -Count 3
+            $result[0].IPAddress | Should-Be '0.0.0.0'
+            $result[0].IPVersion | Should-Be 'V4'
+            $result[0].IsDhcpEnabled | Should-BeFalse
+            $result[1].IPAddress | Should-Be '192.168.1.1'
+            $result[1].IPVersion | Should-Be 'V4'
+            $result[1].IsDhcpEnabled | Should-BeTrue
+            $result[2].IPAddress | Should-Be '::'
+            $result[2].IPVersion | Should-Be 'V6'
+            $result[2].IsDhcpEnabled | Should-BeFalse
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'ListIPAddresses'
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -116,9 +116,9 @@ Describe 'Get-SqlDscRSIPAddress' {
         It 'Should return an empty result' {
             $result = $mockCimInstance | Get-SqlDscRSIPAddress
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -134,7 +134,7 @@ Describe 'Get-SqlDscRSIPAddress' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Get-SqlDscRSIPAddress } | Should -Throw -ErrorId 'GSRSIP0001,Get-SqlDscRSIPAddress'
+            { $mockCimInstance | Get-SqlDscRSIPAddress } | Should-Throw -FullyQualifiedErrorId 'GSRSIP0001,Get-SqlDscRSIPAddress'
         }
     }
 
@@ -156,12 +156,12 @@ Describe 'Get-SqlDscRSIPAddress' {
         It 'Should get IP addresses' {
             $result = Get-SqlDscRSIPAddress -Configuration $mockCimInstance
 
-            $result | Should -HaveCount 1
-            $result[0].IPAddress | Should -Be '0.0.0.0'
-            $result[0].IPVersion | Should -Be 'V4'
-            $result[0].IsDhcpEnabled | Should -BeFalse
+            $result | Should-BeCollection -Count 1
+            $result[0].IPAddress | Should-Be '0.0.0.0'
+            $result[0].IPVersion | Should-Be 'V4'
+            $result[0].IsDhcpEnabled | Should-BeFalse
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 }

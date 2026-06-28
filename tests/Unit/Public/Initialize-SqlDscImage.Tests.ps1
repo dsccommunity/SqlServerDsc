@@ -69,27 +69,27 @@ Describe 'Initialize-SqlDscImage' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When validating parameter properties' {
         It 'Should have AcceptLicensingTerms as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Initialize-SqlDscImage').Parameters['AcceptLicensingTerms']
 
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have MediaPath as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Initialize-SqlDscImage').Parameters['MediaPath']
 
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have Features as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Initialize-SqlDscImage').Parameters['Features']
 
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
     }
 
@@ -124,14 +124,14 @@ Describe 'Initialize-SqlDscImage' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Initialize-SqlDscImage -Confirm:$false @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList | Should -MatchExactly '\/ACTION=PrepareImage'
                         $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE'
                         $ArgumentList | Should -MatchExactly '\/INSTANCEID="MSSQLSERVER"'
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1          } -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -139,12 +139,12 @@ Describe 'Initialize-SqlDscImage' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Initialize-SqlDscImage -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList | Should -MatchExactly '\/ACTION=PrepareImage'
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1s 1 -Scope It
                 }
             }
 
@@ -152,7 +152,7 @@ Describe 'Initialize-SqlDscImage' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Initialize-SqlDscImage -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -177,12 +177,12 @@ Describe 'Initialize-SqlDscImage' -Tag 'Public' {
             It 'Should call the mock with the correct argument string' {
                 Initialize-SqlDscImage @mockInitializeSqlDscImageParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                     $ArgumentList | Should -MatchExactly '\/PBPORTRANGE=16450-16460' # cspell: disable-line
 
                     # Return $true if none of the above throw.
                     $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1s 1 -Scope It
             }
         }
 
@@ -269,12 +269,12 @@ Describe 'Initialize-SqlDscImage' -Tag 'Public' {
 
                 Initialize-SqlDscImage @mockInitializeSqlDscImageParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                     $ArgumentList | Should -MatchExactly $MockExpectedRegEx
 
                     # Return $true if none of the above throw.
                     $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1s 1 -Scope It
             }
         }
 
@@ -297,9 +297,9 @@ Describe 'Initialize-SqlDscImage' -Tag 'Public' {
 
                 Initialize-SqlDscImage @mockInitializeSqlDscImageParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                     $Timeout -eq 3600
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
     }

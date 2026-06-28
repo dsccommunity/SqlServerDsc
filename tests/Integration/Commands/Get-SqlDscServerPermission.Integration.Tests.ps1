@@ -52,15 +52,15 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
             It 'Should return permissions for sa login' {
                 $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sa'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
             }
 
             It 'Should return permissions for sa login using pipeline' {
                 $result = $script:serverObject | Get-SqlDscServerPermission -Name 'sa'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
             }
         }
 
@@ -69,15 +69,15 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
                 $windowsLogin = '{0}\SqlAdmin' -f (Get-ComputerName)
                 $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $windowsLogin
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
             }
 
             It 'Should return permissions for NT AUTHORITY\SYSTEM login' {
                 $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'NT AUTHORITY\SYSTEM'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
             }
         }
 
@@ -85,44 +85,44 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
             It 'Should return permissions for public server role' {
                 $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'public'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
             }
 
             It 'Should return permissions for SqlDscIntegrationTestRole_Persistent server role' {
                 $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestRole_Persistent'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
 
                 # Verify that the CreateEndpoint permission granted by Grant-SqlDscServerPermission test is present
                 $createEndpointPermission = $result | Where-Object { $_.PermissionType.CreateEndpoint -eq $true }
-                $createEndpointPermission | Should -Not -BeNullOrEmpty -Because 'CreateEndpoint permission should have been granted by Grant-SqlDscServerPermission integration test'
-                $createEndpointPermission.PermissionState | Should -Be 'Grant'
+                $createEndpointPermission | Should-BeTruthy -Because 'CreateEndpoint permission should have been granted by Grant-SqlDscServerPermission integration test'
+                $createEndpointPermission.PermissionState | Should-Be 'Grant'
             }
         }
 
         Context 'When getting permissions for invalid principals' {
             It 'Should throw error for non-existent login with ErrorAction Stop' {
                 { Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'NonExistentLogin123' -ErrorAction 'Stop' } |
-                    Should -Throw
+                    Should-Throw
             }
 
             It 'Should return null for non-existent login with ErrorAction SilentlyContinue' {
                 $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'NonExistentLogin123' -ErrorAction 'SilentlyContinue'
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
             }
 
             It 'Should throw error for non-existent server role with ErrorAction Stop' {
                 { Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'NonExistentRole123' -ErrorAction 'Stop' } |
-                    Should -Throw
+                    Should-Throw
             }
 
             It 'Should return null for non-existent server role with ErrorAction SilentlyContinue' {
                 $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'NonExistentRole123' -ErrorAction 'SilentlyContinue'
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
             }
         }
 
@@ -133,19 +133,19 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
             }
 
             It 'Should return ServerPermissionInfo objects with PermissionState property' {
-                $script:testPermissions | Should -Not -BeNullOrEmpty
+                $script:testPermissions | Should-BeTruthy
 
                 foreach ($permission in $script:testPermissions) {
-                    $permission.PermissionState | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
+                    @('Grant', 'Deny', 'GrantWithGrant') | Should-ContainCollection ($permission.PermissionState)
                 }
             }
 
             It 'Should return ServerPermissionInfo objects with PermissionType property' {
-                $script:testPermissions | Should -Not -BeNullOrEmpty
+                $script:testPermissions | Should-BeTruthy
 
                 foreach ($permission in $script:testPermissions) {
-                    $permission.PermissionType | Should -Not -BeNullOrEmpty
-                    $permission.PermissionType | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]
+                    $permission.PermissionType | Should-BeTruthy
+                    $permission.PermissionType | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionSet])
                 }
             }
         }
@@ -154,44 +154,44 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
             It 'Should return permissions for sa login when PrincipalType is Login' {
                 $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sa' -PrincipalType 'Login'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
             }
 
             It 'Should return permissions for SqlDscIntegrationTestRole_Persistent role when PrincipalType is Role' {
                 $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestRole_Persistent' -PrincipalType 'Role'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
             }
 
             It 'Should return permissions for sa login when PrincipalType is both Login and Role' {
                 $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sa' -PrincipalType 'Login', 'Role'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
             }
 
             It 'Should throw error when looking for login as role' {
                 { Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sa' -PrincipalType 'Role' -ErrorAction 'Stop' } |
-                    Should -Throw
+                    Should-Throw
             }
 
             It 'Should throw error when looking for role as login' {
                 { Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestRole_Persistent' -PrincipalType 'Login' -ErrorAction 'Stop' } |
-                    Should -Throw
+                    Should-Throw
             }
 
             It 'Should return null when looking for login as role with SilentlyContinue' {
                 $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sa' -PrincipalType 'Role' -ErrorAction 'SilentlyContinue'
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
             }
 
             It 'Should return null when looking for role as login with SilentlyContinue' {
                 $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestRole_Persistent' -PrincipalType 'Login' -ErrorAction 'SilentlyContinue'
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
             }
         }
 
@@ -200,16 +200,16 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
                 $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name 'sa'
                 $result = Get-SqlDscServerPermission -Login $loginObject
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
             }
 
             It 'Should return permissions for sa login using Login object from pipeline' {
                 $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name 'sa'
                 $result = $loginObject | Get-SqlDscServerPermission
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
             }
 
             It 'Should return permissions for Windows login using Login object' {
@@ -217,8 +217,8 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
                 $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $windowsLogin
                 $result = Get-SqlDscServerPermission -Login $loginObject
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
             }
 
             It 'Should return permissions for multiple logins using pipeline' {
@@ -228,9 +228,9 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
                 )
                 $result = $loginObjects | Get-SqlDscServerPermission
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
-                $result.Count | Should -BeGreaterThan 1
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
+                $result.Count | Should-BeGreaterThan 1
             }
         }
 
@@ -239,24 +239,24 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
                 $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestRole_Persistent'
                 $result = Get-SqlDscServerPermission -ServerRole $roleObject
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
             }
 
             It 'Should return permissions for SqlDscIntegrationTestRole_Persistent role using ServerRole object from pipeline' {
                 $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestRole_Persistent'
                 $result = $roleObject | Get-SqlDscServerPermission
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
             }
 
             It 'Should return permissions for public role using ServerRole object' {
                 $roleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name 'public'
                 $result = Get-SqlDscServerPermission -ServerRole $roleObject
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
             }
 
             It 'Should return permissions for multiple server roles using pipeline' {
@@ -266,9 +266,9 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
                 )
                 $result = $roleObjects | Get-SqlDscServerPermission
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
-                $result.Count | Should -BeGreaterThan 1
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
+                $result.Count | Should-BeGreaterThan 1
             }
         }
 
@@ -282,11 +282,11 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
                 $resultByLogin = Get-SqlDscServerPermission -Login $loginObject
 
                 # Compare results
-                $resultByName.Count | Should -Be $resultByLogin.Count
+                $resultByName.Count | Should-Be $resultByLogin.Count
 
                 # Compare each permission (assuming they are returned in the same order)
                 for ($i = 0; $i -lt $resultByName.Count; $i++) {
-                    $resultByName[$i].PermissionState | Should -Be $resultByLogin[$i].PermissionState
+                    $resultByName[$i].PermissionState | Should-Be $resultByLogin[$i].PermissionState
                     # Note: Permission type comparison is complex due to object structure
                 }
             }
@@ -300,11 +300,11 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
                 $resultByRole = Get-SqlDscServerPermission -ServerRole $roleObject
 
                 # Compare results
-                $resultByName.Count | Should -Be $resultByRole.Count
+                $resultByName.Count | Should-Be $resultByRole.Count
 
                 # Compare each permission (assuming they are returned in the same order)
                 for ($i = 0; $i -lt $resultByName.Count; $i++) {
-                    $resultByName[$i].PermissionState | Should -Be $resultByRole[$i].PermissionState
+                    $resultByName[$i].PermissionState | Should-Be $resultByRole[$i].PermissionState
                     # Note: Permission type comparison is complex due to object structure
                 }
             }

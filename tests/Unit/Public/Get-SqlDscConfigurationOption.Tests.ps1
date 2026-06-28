@@ -74,8 +74,8 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When the specified configuration option does not exist' {
@@ -102,14 +102,14 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
 
             It 'Should throw the correct error' {
                 { Get-SqlDscConfigurationOption @mockDefaultParameters -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage ($mockErrorMessage -f 'Unknown Option Name')
+                    Should-Throw -ExceptionMessage ($mockErrorMessage -f 'Unknown Option Name')
             }
         }
 
         Context 'When ignoring the error' {
             It 'Should not throw an exception and return $null' {
                 Get-SqlDscConfigurationOption @mockDefaultParameters -ErrorAction 'SilentlyContinue' |
-                    Should -BeNullOrEmpty
+                    Should-BeFalsy
             }
         }
     }
@@ -141,15 +141,15 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
 
             $result = Get-SqlDscConfigurationOption @mockDefaultParameters
 
-            $result | Should -BeOfType 'PSCustomObject'
-            $result.PSTypeNames[0] | Should -Be 'SqlDsc.ConfigurationOption'
+            $result | Should-HaveType 'PSCustomObject'
+            $result.PSTypeNames[0] | Should-Be 'SqlDsc.ConfigurationOption'
 
-            $result.Name | Should -Be 'blocked process threshold (s)'
-            $result.RunValue | Should -Be 10
-            $result.ConfigValue | Should -Be 10
-            $result.Minimum | Should -Be 0
-            $result.Maximum | Should -Be 86400
-            $result.IsDynamic | Should -BeTrue
+            $result.Name | Should-Be 'blocked process threshold (s)'
+            $result.RunValue | Should-Be 10
+            $result.ConfigValue | Should-Be 10
+            $result.Minimum | Should-Be 0
+            $result.Maximum | Should-Be 86400
+            $result.IsDynamic | Should-BeTrue
         }
 
         It 'Should return raw ConfigProperty when using -Raw switch' {
@@ -161,24 +161,24 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
 
             $result = Get-SqlDscConfigurationOption @mockDefaultParameters
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
-            $result.DisplayName | Should -Be 'blocked process threshold (s)'
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
+            $result.DisplayName | Should-Be 'blocked process threshold (s)'
         }
 
         Context 'When passing parameter ServerObject over the pipeline' {
             It 'Should return the correct metadata values' {
                 $result = $mockServerObject | Get-SqlDscConfigurationOption -Name 'blocked process threshold (s)'
 
-                $result | Should -BeOfType 'PSCustomObject'
-                $result.PSTypeNames[0] | Should -Be 'SqlDsc.ConfigurationOption'
-                $result.Name | Should -Be 'blocked process threshold (s)'
+                $result | Should-HaveType 'PSCustomObject'
+                $result.PSTypeNames[0] | Should-Be 'SqlDsc.ConfigurationOption'
+                $result.Name | Should-Be 'blocked process threshold (s)'
             }
 
             It 'Should return raw ConfigProperty when using -Raw switch' {
                 $result = $mockServerObject | Get-SqlDscConfigurationOption -Name 'blocked process threshold (s)' -Raw
 
-                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
-                $result.DisplayName | Should -Be 'blocked process threshold (s)'
+                $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
+                $result.DisplayName | Should-Be 'blocked process threshold (s)'
             }
         }
     }
@@ -214,42 +214,42 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
         It 'Should return the correct metadata values by default' {
             $result = Get-SqlDscConfigurationOption -ServerObject $mockServerObject
 
-            $result | Should -BeOfType 'PSCustomObject'
-            $result | Should -HaveCount 2
-            $result[0].PSTypeNames[0] | Should -Be 'SqlDsc.ConfigurationOption'
+            $result | Should-HaveType 'PSCustomObject'
+            $result | Should-BeCollection -Count 2
+            $result[0].PSTypeNames[0] | Should-Be 'SqlDsc.ConfigurationOption'
 
-            $result.Name | Should -Contain 'show advanced options'
-            $result.Name | Should -Contain 'blocked process threshold (s)'
+            $result.Name | Should-ContainCollection 'show advanced options'
+            $result.Name | Should-ContainCollection 'blocked process threshold (s)'
         }
 
         It 'Should return raw ConfigProperty objects when using -Raw switch' {
             $result = Get-SqlDscConfigurationOption -ServerObject $mockServerObject -Raw
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
-            $result | Should -HaveCount 2
-            $result.DisplayName | Should -Contain 'show advanced options'
-            $result.DisplayName | Should -Contain 'blocked process threshold (s)'
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
+            $result | Should-BeCollection -Count 2
+            $result.DisplayName | Should-ContainCollection 'show advanced options'
+            $result.DisplayName | Should-ContainCollection 'blocked process threshold (s)'
         }
 
         Context 'When passing parameter ServerObject over the pipeline' {
             It 'Should return the correct metadata values' {
                 $result = $mockServerObject | Get-SqlDscConfigurationOption
 
-                $result | Should -BeOfType 'PSCustomObject'
-                $result | Should -HaveCount 2
-                $result[0].PSTypeNames[0] | Should -Be 'SqlDsc.ConfigurationOption'
+                $result | Should-HaveType 'PSCustomObject'
+                $result | Should-BeCollection -Count 2
+                $result[0].PSTypeNames[0] | Should-Be 'SqlDsc.ConfigurationOption'
 
-                $result.Name | Should -Contain 'show advanced options'
-                $result.Name | Should -Contain 'blocked process threshold (s)'
+                $result.Name | Should-ContainCollection 'show advanced options'
+                $result.Name | Should-ContainCollection 'blocked process threshold (s)'
             }
 
             It 'Should return raw ConfigProperty objects when using -Raw switch' {
                 $result = $mockServerObject | Get-SqlDscConfigurationOption -Raw
 
-                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
-                $result | Should -HaveCount 2
-                $result.DisplayName | Should -Contain 'show advanced options'
-                $result.DisplayName | Should -Contain 'blocked process threshold (s)'
+                $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
+                $result | Should-BeCollection -Count 2
+                $result.DisplayName | Should-ContainCollection 'show advanced options'
+                $result.DisplayName | Should-ContainCollection 'blocked process threshold (s)'
             }
         }
     }
@@ -326,30 +326,30 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
             $inputScript = 'Get-SqlDscConfigurationOption -ServerObject $global:TestServerObject -Name max'
             $result = TabExpansion2 -inputScript $inputScript -cursorColumn $inputScript.Length
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.CompletionMatches | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
+            $result.CompletionMatches | Should-BeTruthy
 
             # Should find configuration options containing "max"
             $maxMemoryMatch = $result.CompletionMatches | Where-Object {
                 $_.CompletionText -eq "'max server memory (MB)'"
             }
-            $maxMemoryMatch | Should -Not -BeNullOrEmpty
-            $maxMemoryMatch.ToolTip | Should -Match "Current: 2048"
+            $maxMemoryMatch | Should-BeTruthy
+            $maxMemoryMatch.ToolTip | Should-MatchString "Current: 2048"
 
             $maxDegreeMatch = $result.CompletionMatches | Where-Object {
                 $_.CompletionText -eq "'max degree of parallelism'"
             }
-            $maxDegreeMatch | Should -Not -BeNullOrEmpty
-            $maxDegreeMatch.ToolTip | Should -Match "Current: 0"
+            $maxDegreeMatch | Should-BeTruthy
+            $maxDegreeMatch.ToolTip | Should-MatchString "Current: 0"
         }
 
         It 'Should handle partial Name completions through TabExpansion2' {
             $inputScript = 'Get-SqlDscConfigurationOption -ServerObject $global:TestServerObject -Name cost'
             $result = TabExpansion2 -inputScript $inputScript -cursorColumn $inputScript.Length
 
-            $result.CompletionMatches | Should -HaveCount 1
-            $result.CompletionMatches[0].CompletionText | Should -Be "'cost threshold for parallelism'"
-            $result.CompletionMatches[0].ToolTip | Should -Match "Current: 5"
+            $result.CompletionMatches | Should-BeCollection -Count 1
+            $result.CompletionMatches[0].CompletionText | Should-Be "'cost threshold for parallelism'"
+            $result.CompletionMatches[0].ToolTip | Should-MatchString "Current: 5"
         }
 
         It 'Should execute Name argument completer code when retrieving command metadata' {
@@ -365,11 +365,11 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
                 ServerObject = $script:mockServerForTabCompletion
             }
 
-            $completions | Should -Not -BeNullOrEmpty
-            $completions | Should -HaveCount 2
+            $completions | Should-BeTruthy
+            $completions | Should-BeCollection -Count 2
 
-            $completions[0].CompletionText | Should -Be "'max degree of parallelism'"
-            $completions[1].CompletionText | Should -Be "'max server memory (MB)'"
+            $completions[0].CompletionText | Should-Be "'max degree of parallelism'"
+            $completions[1].CompletionText | Should-Be "'max server memory (MB)'"
         }
 
         It 'Should return sorted completions' {
@@ -381,11 +381,11 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
                 ServerObject = $script:mockServerForTabCompletion
             }
 
-            $completions | Should -HaveCount 3
+            $completions | Should-BeCollection -Count 3
             # Should be sorted alphabetically by DisplayName
-            $completions[0].CompletionText | Should -Be "'cost threshold for parallelism'"
-            $completions[1].CompletionText | Should -Be "'max degree of parallelism'"
-            $completions[2].CompletionText | Should -Be "'max server memory (MB)'"
+            $completions[0].CompletionText | Should-Be "'cost threshold for parallelism'"
+            $completions[1].CompletionText | Should-Be "'max degree of parallelism'"
+            $completions[2].CompletionText | Should-Be "'max server memory (MB)'"
         }
 
         It 'Should provide detailed tooltip information' {
@@ -397,11 +397,11 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
                 ServerObject = $script:mockServerForTabCompletion
             }
 
-            $completions | Should -HaveCount 1
+            $completions | Should-BeCollection -Count 1
             $completion = $completions[0]
-            $completion.ToolTip | Should -Match "Current: 2048"
-            $completion.ToolTip | Should -Match "Run: 2048"
-            $completion.ToolTip | Should -Match "Range: 0-2147483647"
+            $completion.ToolTip | Should-MatchString "Current: 2048"
+            $completion.ToolTip | Should-MatchString "Run: 2048"
+            $completion.ToolTip | Should-MatchString "Range: 0-2147483647"
         }
 
         It 'Should handle wildcard patterns in completions' {
@@ -414,9 +414,9 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
                 ServerObject = $script:mockServerForTabCompletion
             }
 
-            $completions | Should -HaveCount 2
-            $completions[0].CompletionText | Should -Be "'cost threshold for parallelism'"
-            $completions[1].CompletionText | Should -Be "'max degree of parallelism'"
+            $completions | Should-BeCollection -Count 2
+            $completions[0].CompletionText | Should-Be "'cost threshold for parallelism'"
+            $completions[1].CompletionText | Should-Be "'max degree of parallelism'"
         }
 
         It 'Should handle tab completion errors gracefully' {
@@ -435,8 +435,8 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
                 Should not throw an error and should return empty from argument completer, but then
                 TabExpansion2 itself returns some default completions (like filesystem paths).
             #>
-            $result | Should -BeOfType ([System.Management.Automation.CommandCompletion])
-            $result.CompletionMatches.ListItemText | Should -Be 'tests'
+            $result | Should-HaveType ([System.Management.Automation.CommandCompletion])
+            $result.CompletionMatches.ListItemText | Should-Be 'tests'
         }
 
         It 'Should handle missing ServerObject in tab completion gracefully' {
@@ -448,8 +448,8 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
                 Should not throw an error and should return empty from argument completer, but then
                 TabExpansion2 itself returns some default completions (like filesystem paths).
             #>
-            $result | Should -BeOfType ([System.Management.Automation.CommandCompletion])
-            $result.CompletionMatches.ListItemText | Should -Be 'tests'
+            $result | Should-HaveType ([System.Management.Automation.CommandCompletion])
+            $result.CompletionMatches.ListItemText | Should-Be 'tests'
         }
 
         It 'Should handle invalid ServerObject type gracefully' {
@@ -464,8 +464,8 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
                 Should not throw an error and should return empty from argument completer, but then
                 TabExpansion2 itself returns some default completions (like filesystem paths).
             #>
-            $result | Should -BeOfType ([System.Management.Automation.CommandCompletion])
-            $result.CompletionMatches.ListItemText | Should -Be 'tests'
+            $result | Should-HaveType ([System.Management.Automation.CommandCompletion])
+            $result.CompletionMatches.ListItemText | Should-Be 'tests'
         }
     }
 }

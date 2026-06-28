@@ -58,33 +58,33 @@ Describe 'Get-SqlDscRSConfiguration' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have RetryCount as a non-mandatory Int32 parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRSConfiguration').Parameters['RetryCount']
 
-            $parameterInfo.Attributes.Where({ $_ -is [System.Management.Automation.ParameterAttribute] }).Mandatory | Should -BeFalse
+            $parameterInfo.Attributes.Where({ $_ -is [System.Management.Automation.ParameterAttribute] }).Mandatory | Should-BeFalse
 
             $defaultValue = $parameterInfo.Attributes.Where({ $_ -is [System.Management.Automation.PSDefaultValueAttribute] }).Value
 
             # Check via reflection since default values are set in the param block
             $functionInfo = Get-Command -Name 'Get-SqlDscRSConfiguration'
-            $functionInfo.Parameters['RetryCount'].ParameterType | Should -Be ([System.Int32])
+            $functionInfo.Parameters['RetryCount'].ParameterType | Should-Be ([System.Int32])
         }
 
         It 'Should have RetryDelaySeconds as a non-mandatory Int32 parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRSConfiguration').Parameters['RetryDelaySeconds']
 
-            $parameterInfo.Attributes.Where({ $_ -is [System.Management.Automation.ParameterAttribute] }).Mandatory | Should -BeFalse
-            $parameterInfo.ParameterType | Should -Be ([System.Int32])
+            $parameterInfo.Attributes.Where({ $_ -is [System.Management.Automation.ParameterAttribute] }).Mandatory | Should-BeFalse
+            $parameterInfo.ParameterType | Should-Be ([System.Int32])
         }
 
         It 'Should have SkipRetry as a switch parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRSConfiguration').Parameters['SkipRetry']
 
-            $parameterInfo.SwitchParameter | Should -BeTrue
+            $parameterInfo.SwitchParameter | Should-BeTrue
         }
     }
 
@@ -136,13 +136,13 @@ Describe 'Get-SqlDscRSConfiguration' {
         It 'Should return the configuration CIM instance' {
             $result = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -Version 15
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
 
-            Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+            Should-Invoke -CommandName Get-CimInstance -Exactly -ParameterFilter {
                 $ClassName -eq 'MSReportServer_ConfigurationSetting' -and
                 $Namespace -eq 'root\Microsoft\SQLServer\ReportServer\RS_SSRS\v15\Admin'
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should not call Get-SqlDscRSSetupConfiguration' {
@@ -150,7 +150,7 @@ Describe 'Get-SqlDscRSConfiguration' {
 
             $null = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -Version 15
 
-            Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Times 0
+            Should-Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Times 0
         }
     }
 
@@ -177,17 +177,17 @@ Describe 'Get-SqlDscRSConfiguration' {
         It 'Should auto-detect version and return configuration' {
             $result = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
 
-            Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -ParameterFilter {
+            Should-Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -ParameterFilter {
                 $InstanceName -eq 'SSRS'
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+            Should-Invoke -CommandName Get-CimInstance -Exactly -ParameterFilter {
                 $ClassName -eq 'MSReportServer_ConfigurationSetting' -and
                 $Namespace -eq 'root\Microsoft\SQLServer\ReportServer\RS_SSRS\v15\Admin'
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -199,7 +199,7 @@ Describe 'Get-SqlDscRSConfiguration' {
         }
 
         It 'Should throw a terminating error' {
-            { Get-SqlDscRSConfiguration -InstanceName 'NonExistent' } | Should -Throw -ErrorId 'GSRSCD0001,Get-SqlDscRSConfiguration'
+            { Get-SqlDscRSConfiguration -InstanceName 'NonExistent' } | Should-Throw -FullyQualifiedErrorId 'GSRSCD0001,Get-SqlDscRSConfiguration'
         }
     }
 
@@ -214,7 +214,7 @@ Describe 'Get-SqlDscRSConfiguration' {
         }
 
         It 'Should throw a terminating error' {
-            { Get-SqlDscRSConfiguration -InstanceName 'SSRS' } | Should -Throw -ErrorId 'GSRSCD0002,Get-SqlDscRSConfiguration'
+            { Get-SqlDscRSConfiguration -InstanceName 'SSRS' } | Should-Throw -FullyQualifiedErrorId 'GSRSCD0002,Get-SqlDscRSConfiguration'
         }
     }
 
@@ -233,7 +233,7 @@ Describe 'Get-SqlDscRSConfiguration' {
         }
 
         It 'Should throw a terminating error' {
-            { Get-SqlDscRSConfiguration -InstanceName 'SSRS' } | Should -Throw -ErrorId 'GSRSCD0003,Get-SqlDscRSConfiguration'
+            { Get-SqlDscRSConfiguration -InstanceName 'SSRS' } | Should-Throw -FullyQualifiedErrorId 'GSRSCD0003,Get-SqlDscRSConfiguration'
         }
     }
 
@@ -258,21 +258,21 @@ Describe 'Get-SqlDscRSConfiguration' {
         }
 
         It 'Should throw a terminating error after retrying' {
-            { Get-SqlDscRSConfiguration -InstanceName 'SSRS' } | Should -Throw -ErrorId 'GSRSCD0004,Get-SqlDscRSConfiguration'
+            { Get-SqlDscRSConfiguration -InstanceName 'SSRS' } | Should-Throw -FullyQualifiedErrorId 'GSRSCD0004,Get-SqlDscRSConfiguration'
 
             # Should retry once (default RetryCount = 1) plus initial attempt = 2 calls
-            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 2
-            Should -Invoke -CommandName Start-Sleep -ParameterFilter {
+            Should-Invoke -CommandName Get-CimInstance -Exactly -Times 2
+            Should-Invoke -CommandName Start-Sleep -Exactly -ParameterFilter {
                 $Seconds -eq 30
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should throw immediately with -SkipRetry' {
-            { Get-SqlDscRSConfiguration -InstanceName 'SSRS' -SkipRetry } | Should -Throw -ErrorId 'GSRSCD0004,Get-SqlDscRSConfiguration'
+            { Get-SqlDscRSConfiguration -InstanceName 'SSRS' -SkipRetry } | Should-Throw -FullyQualifiedErrorId 'GSRSCD0004,Get-SqlDscRSConfiguration'
 
             # Should not retry
-            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1
-            Should -Invoke -CommandName Start-Sleep -Exactly -Times 0
+            Should-Invoke -CommandName Get-CimInstance -Exactly -Times 1
+            Should-Invoke -CommandName Start-Sleep -Exactly -Times 0
         }
     }
 
@@ -316,13 +316,13 @@ Describe 'Get-SqlDscRSConfiguration' {
         It 'Should succeed on retry' {
             $result = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
 
-            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 2
-            Should -Invoke -CommandName Start-Sleep -ParameterFilter {
+            Should-Invoke -CommandName Get-CimInstance -Exactly -Times 2
+            Should-Invoke -CommandName Start-Sleep -Exactly -ParameterFilter {
                 $Seconds -eq 30
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -347,13 +347,13 @@ Describe 'Get-SqlDscRSConfiguration' {
         }
 
         It 'Should retry the specified number of times with specified delay' {
-            { Get-SqlDscRSConfiguration -InstanceName 'SSRS' -RetryCount 3 -RetryDelaySeconds 10 } | Should -Throw -ErrorId 'GSRSCD0004,Get-SqlDscRSConfiguration'
+            { Get-SqlDscRSConfiguration -InstanceName 'SSRS' -RetryCount 3 -RetryDelaySeconds 10 } | Should-Throw -FullyQualifiedErrorId 'GSRSCD0004,Get-SqlDscRSConfiguration'
 
             # 1 initial + 3 retries = 4 calls
-            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 4
-            Should -Invoke -CommandName Start-Sleep -ParameterFilter {
+            Should-Invoke -CommandName Get-CimInstance -Exactly -Times 4
+            Should-Invoke -CommandName Start-Sleep -Exactly -ParameterFilter {
                 $Seconds -eq 10
-            } -Exactly -Times 3
+            } -Times 3
         }
     }
 
@@ -373,12 +373,12 @@ Describe 'Get-SqlDscRSConfiguration' {
         It 'Should return PBIRS configuration' {
             $result = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -Version 15
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'PBIRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'PBIRS'
 
-            Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+            Should-Invoke -CommandName Get-CimInstance -Exactly -ParameterFilter {
                 $Namespace -eq 'root\Microsoft\SQLServer\ReportServer\RS_PBIRS\v15\Admin'
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 }

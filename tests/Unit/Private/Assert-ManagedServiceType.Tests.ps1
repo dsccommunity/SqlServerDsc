@@ -94,7 +94,7 @@ Describe 'Assert-ManagedServiceType' -Tag 'Private' {
                     {
                         $MockServiceObject |
                             Assert-ManagedServiceType -ServiceType 'SqlServerAgent' -ErrorAction 'Stop'
-                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    } | Should-Throw -ExceptionMessage $mockErrorMessage
                 }
             }
         }
@@ -111,7 +111,7 @@ Describe 'Assert-ManagedServiceType' -Tag 'Private' {
                     {
                         $MockServiceObject |
                             Assert-ManagedServiceType -ServiceType 'SqlServerAgent' -ErrorAction 'SilentlyContinue'
-                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    } | Should-Throw -ExceptionMessage $mockErrorMessage
                 }
             }
         }

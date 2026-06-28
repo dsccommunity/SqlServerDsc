@@ -82,15 +82,15 @@ Describe 'Get-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
                 Casting to array to ensure we get the count on Windows PowerShell
                 when there is only one audit.
             #>
-            @($result).Count | Should -BeGreaterOrEqual 2
-            @($result)[0] | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Audit'
+            @($result).Count | Should-BeGreaterThanOrEqual 2
+            @($result)[0] | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Audit'
         }
 
         It 'Should return test audits that were created' {
             $result = Get-SqlDscAudit -ServerObject $script:serverObject
 
-            $result.Name | Should -Contain $script:testAuditName1
-            $result.Name | Should -Contain $script:testAuditName2
+            $result.Name | Should-ContainCollection $script:testAuditName1
+            $result.Name | Should-ContainCollection $script:testAuditName2
         }
     }
 
@@ -98,19 +98,19 @@ Describe 'Get-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         It 'Should return the specified audit when it exists' {
             $result = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName1
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Audit'
-            $result.Name | Should -Be $script:testAuditName1
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Audit'
+            $result.Name | Should-Be $script:testAuditName1
         }
 
         It 'Should throw an error when the audit does not exist' {
             { Get-SqlDscAudit -ServerObject $script:serverObject -Name 'NonExistentAudit' -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
 
         It 'Should return null when the audit does not exist and error action is SilentlyContinue' {
             $result = Get-SqlDscAudit -ServerObject $script:serverObject -Name 'NonExistentAudit' -ErrorAction 'SilentlyContinue'
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -119,15 +119,15 @@ Describe 'Get-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
             $resultWithoutRefresh = Get-SqlDscAudit -ServerObject $script:serverObject
             $resultWithRefresh = Get-SqlDscAudit -ServerObject $script:serverObject -Refresh
 
-            @($resultWithoutRefresh).Count | Should -Be @($resultWithRefresh).Count
+            @($resultWithoutRefresh).Count | Should-Be @($resultWithRefresh).Count
         }
 
         It 'Should return the same result with and without Refresh for specific audit' {
             $resultWithoutRefresh = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName1
             $resultWithRefresh = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName1 -Refresh
 
-            $resultWithoutRefresh.Name | Should -Be $resultWithRefresh.Name
-            $resultWithoutRefresh.Name | Should -Be $script:testAuditName1
+            $resultWithoutRefresh.Name | Should-Be $resultWithRefresh.Name
+            $resultWithoutRefresh.Name | Should-Be $script:testAuditName1
         }
     }
 
@@ -135,16 +135,16 @@ Describe 'Get-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         It 'Should accept ServerObject from pipeline for all audits' {
             $result = $script:serverObject | Get-SqlDscAudit
 
-            @($result).Count | Should -BeGreaterOrEqual 2
-            $result.Name | Should -Contain $script:testAuditName1
-            $result.Name | Should -Contain $script:testAuditName2
+            @($result).Count | Should-BeGreaterThanOrEqual 2
+            $result.Name | Should-ContainCollection $script:testAuditName1
+            $result.Name | Should-ContainCollection $script:testAuditName2
         }
 
         It 'Should accept ServerObject from pipeline for specific audit' {
             $result = $script:serverObject | Get-SqlDscAudit -Name $script:testAuditName1
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Audit'
-            $result.Name | Should -Be $script:testAuditName1
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Audit'
+            $result.Name | Should-Be $script:testAuditName1
         }
     }
 
@@ -152,10 +152,10 @@ Describe 'Get-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         It 'Should return audits with expected properties' {
             $result = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName1
 
-            $result.Name | Should -Be $script:testAuditName1
-            $result.Parent | Should -Be $script:serverObject
-            $result.Enabled | Should -Not -BeNullOrEmpty
-            $result.DestinationType | Should -Not -BeNullOrEmpty
+            $result.Name | Should-Be $script:testAuditName1
+            $result.Parent | Should-Be $script:serverObject
+            $result.Enabled | Should-BeTruthy
+            $result.DestinationType | Should-BeTruthy
         }
     }
 }

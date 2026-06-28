@@ -58,8 +58,8 @@ Describe 'Get-SqlDscRSServiceAccount' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -74,7 +74,7 @@ Describe 'Get-SqlDscRSServiceAccount' {
         It 'Should return the service account name' {
             $result = $mockCimInstance | Get-SqlDscRSServiceAccount
 
-            $result | Should -Be 'NT SERVICE\SQLServerReportingServices'
+            $result | Should-Be 'NT SERVICE\SQLServerReportingServices'
         }
     }
 
@@ -89,7 +89,7 @@ Describe 'Get-SqlDscRSServiceAccount' {
         It 'Should return the service account name' {
             $result = Get-SqlDscRSServiceAccount -Configuration $mockCimInstance
 
-            $result | Should -Be 'DOMAIN\ServiceAccount'
+            $result | Should-Be 'DOMAIN\ServiceAccount'
         }
     }
 }

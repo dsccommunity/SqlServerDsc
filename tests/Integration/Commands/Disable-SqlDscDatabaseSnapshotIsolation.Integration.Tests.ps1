@@ -80,11 +80,11 @@ Describe 'Disable-SqlDscDatabaseSnapshotIsolation' -Tag @('Integration_SQL2017',
             $null = Enable-SqlDscDatabaseSnapshotIsolation -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction 'Stop'
 
             $resultDb = Disable-SqlDscDatabaseSnapshotIsolation -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -PassThru -ErrorAction 'Stop'
-            $resultDb.SnapshotIsolationState | Should -Be 'Disabled'
+            $resultDb.SnapshotIsolationState | Should-Be 'Disabled'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
-            $updatedDb.SnapshotIsolationState | Should -Be 'Disabled'
+            $updatedDb.SnapshotIsolationState | Should-Be 'Disabled'
         }
 
         It 'Should be idempotent when snapshot isolation is already disabled' {
@@ -96,12 +96,12 @@ Describe 'Disable-SqlDscDatabaseSnapshotIsolation' -Tag @('Integration_SQL2017',
 
             # Verify the value is still correct
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
-            $updatedDb.SnapshotIsolationState | Should -Be 'Disabled'
+            $updatedDb.SnapshotIsolationState | Should-Be 'Disabled'
         }
 
         It 'Should throw error when trying to disable snapshot isolation on non-existent database' {
             { Disable-SqlDscDatabaseSnapshotIsolation -ServerObject $script:serverObject -Name 'NonExistentDatabase' -Force -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
     }
 
@@ -116,7 +116,7 @@ Describe 'Disable-SqlDscDatabaseSnapshotIsolation' -Tag @('Integration_SQL2017',
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Refresh -ErrorAction 'Stop'
-            $updatedDb.SnapshotIsolationState | Should -Be 'Disabled'
+            $updatedDb.SnapshotIsolationState | Should-Be 'Disabled'
         }
 
         It 'Should support pipeline input with database object' {
@@ -129,7 +129,7 @@ Describe 'Disable-SqlDscDatabaseSnapshotIsolation' -Tag @('Integration_SQL2017',
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Refresh -ErrorAction 'Stop'
-            $updatedDb.SnapshotIsolationState | Should -Be 'Disabled'
+            $updatedDb.SnapshotIsolationState | Should-Be 'Disabled'
         }
     }
 
@@ -142,7 +142,7 @@ Describe 'Disable-SqlDscDatabaseSnapshotIsolation' -Tag @('Integration_SQL2017',
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
-            $updatedDb.SnapshotIsolationState | Should -Be 'Disabled'
+            $updatedDb.SnapshotIsolationState | Should-Be 'Disabled'
         }
     }
 
@@ -153,9 +153,9 @@ Describe 'Disable-SqlDscDatabaseSnapshotIsolation' -Tag @('Integration_SQL2017',
 
             $resultDb = Disable-SqlDscDatabaseSnapshotIsolation -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -PassThru -ErrorAction 'Stop'
 
-            $resultDb | Should -Not -BeNullOrEmpty
-            $resultDb.Name | Should -Be $script:testDatabaseName
-            $resultDb.SnapshotIsolationState | Should -Be 'Disabled'
+            $resultDb | Should-BeTruthy
+            $resultDb.Name | Should-Be $script:testDatabaseName
+            $resultDb.SnapshotIsolationState | Should-Be 'Disabled'
         }
     }
 }

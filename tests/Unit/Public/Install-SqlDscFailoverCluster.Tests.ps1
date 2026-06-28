@@ -69,8 +69,8 @@ Describe 'Install-SqlDscFailoverCluster' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When setup action is ''InstallFailoverCluster''' {
@@ -108,7 +108,7 @@ Describe 'Install-SqlDscFailoverCluster' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscFailoverCluster -Confirm:$false @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList | Should -MatchExactly '\/ACTION=InstallFailoverCluster'
                         $ArgumentList | Should -MatchExactly '\/INSTANCENAME="MSSQLSERVER"' # cspell: disable-line
                         $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE'
@@ -119,6 +119,8 @@ Describe 'Install-SqlDscFailoverCluster' -Tag 'Public' {
 
                         # Return $true if none of the above throw.
                         $true
+                    } -Scope It -Times 1bove throw.
+                        $true
                     } -Exactly -Times 1 -Scope It
                 }
             }
@@ -127,14 +129,14 @@ Describe 'Install-SqlDscFailoverCluster' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscFailoverCluster -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList | Should -MatchExactly '\/ACTION=InstallFailoverCluster'
                         $ArgumentList | Should -MatchExactly '\/INSTANCENAME="MSSQLSERVER"' # cspell: disable-line
                         $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE'
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1          } -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -142,7 +144,7 @@ Describe 'Install-SqlDscFailoverCluster' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscFailoverCluster -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -172,14 +174,14 @@ Describe 'Install-SqlDscFailoverCluster' -Tag 'Public' {
             It 'Should call the mock with the correct argument string' {
                 Install-SqlDscFailoverCluster @mockDefaultParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                     $ArgumentList | Should -MatchExactly '\/ACTION=InstallFailoverCluster'
                     $ArgumentList | Should -MatchExactly '\/FAILOVERCLUSTERGROUP="SQL Server \(MSSQLSERVER\)"' # cspell: disable-line
                     $ArgumentList | Should -MatchExactly '\/FAILOVERCLUSTERDISKS="SysData;UserData;UserLogs"' # cspell: disable-line
 
                     # Return $true if none of the above throw.
                     $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1          } -Exactly -Times 1 -Scope It
             }
         }
     }

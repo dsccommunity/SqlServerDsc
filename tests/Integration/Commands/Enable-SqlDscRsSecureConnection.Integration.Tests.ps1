@@ -40,7 +40,7 @@ Describe 'Enable-SqlDscRsSecureConnection' {
 
             # Verify secure connection is enabled (level 1 or higher means enabled)
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.SecureConnectionLevel | Should -BeGreaterOrEqual 1
+            $verifyConfig.SecureConnectionLevel | Should-BeGreaterThanOrEqual 1
         }
     }
 
@@ -52,7 +52,7 @@ Describe 'Enable-SqlDscRsSecureConnection' {
 
             # Verify secure connection is enabled (level 1 or higher means enabled)
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.SecureConnectionLevel | Should -BeGreaterOrEqual 1
+            $verifyConfig.SecureConnectionLevel | Should-BeGreaterThanOrEqual 1
         }
     }
 
@@ -64,7 +64,7 @@ Describe 'Enable-SqlDscRsSecureConnection' {
 
             # Verify secure connection is enabled (level 1 or higher means enabled)
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.SecureConnectionLevel | Should -BeGreaterOrEqual 1
+            $verifyConfig.SecureConnectionLevel | Should-BeGreaterThanOrEqual 1
         }
     }
 
@@ -76,7 +76,7 @@ Describe 'Enable-SqlDscRsSecureConnection' {
 
             # Verify secure connection is enabled (level 1 or higher means enabled)
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
-            $verifyConfig.SecureConnectionLevel | Should -BeGreaterOrEqual 1
+            $verifyConfig.SecureConnectionLevel | Should-BeGreaterThanOrEqual 1
         }
     }
 }

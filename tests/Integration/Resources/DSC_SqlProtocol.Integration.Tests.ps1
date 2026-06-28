@@ -97,13 +97,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ProtocolName | Should -Be 'NamedPipes'
-            $resourceCurrentState.Enabled | Should -BeFalse
-            $resourceCurrentState.PipeName | Should -Be '\\.\pipe\MSSQL$DSCSQLTEST\sql\query'
+            $resourceCurrentState.ProtocolName | Should-Be 'NamedPipes'
+            $resourceCurrentState.Enabled | Should-BeFalse
+            $resourceCurrentState.PipeName | Should-Be '\\.\pipe\MSSQL$DSCSQLTEST\sql\query'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -149,13 +149,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ProtocolName | Should -Be 'NamedPipes'
-            $resourceCurrentState.Enabled | Should -BeTrue
-            $resourceCurrentState.PipeName | Should -Be '\\.\pipe\MSSQL$DSCSQLTEST\sql\query'
+            $resourceCurrentState.ProtocolName | Should-Be 'NamedPipes'
+            $resourceCurrentState.Enabled | Should-BeTrue
+            $resourceCurrentState.PipeName | Should-Be '\\.\pipe\MSSQL$DSCSQLTEST\sql\query'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 }

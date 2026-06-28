@@ -59,14 +59,14 @@ Describe 'Get-SqlDscRole' -Tag @('Integration_SQL2017', 'Integration_SQL2019', '
                 Casting to array to ensure we get the count on Windows PowerShell
                 when there is only one role.
             #>
-            @($result).Count | Should -BeGreaterOrEqual 1
-            @($result)[0] | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
+            @($result).Count | Should-BeGreaterThanOrEqual 1
+            @($result)[0] | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ServerRole'
         }
 
         It 'Should return system roles including sysadmin' {
             $result = Get-SqlDscRole -ServerObject $script:serverObject
 
-            $result.Name | Should -Contain 'sysadmin'
+            $result.Name | Should-ContainCollection 'sysadmin'
         }
     }
 
@@ -74,37 +74,37 @@ Describe 'Get-SqlDscRole' -Tag @('Integration_SQL2017', 'Integration_SQL2019', '
         It 'Should return the specified role when it exists (system role)' {
             $result = Get-SqlDscRole -ServerObject $script:serverObject -Name 'sysadmin'
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
-            $result.Name | Should -Be 'sysadmin'
-            $result.IsFixedRole | Should -BeTrue
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ServerRole'
+            $result.Name | Should-Be 'sysadmin'
+            $result.IsFixedRole | Should-BeTrue
         }
 
         It 'Should return the specified role when it exists (shared test role)' {
             $result = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:sharedTestRoleForIntegrationTests
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
-            $result.Name | Should -Be $script:sharedTestRoleForIntegrationTests
-            $result.IsFixedRole | Should -BeFalse
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ServerRole'
+            $result.Name | Should-Be $script:sharedTestRoleForIntegrationTests
+            $result.IsFixedRole | Should-BeFalse
         }
 
         It 'Should return the specified role when it exists (persistent test role)' {
             $result = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:persistentTestRole
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
-            $result.Name | Should -Be $script:persistentTestRole
-            $result.Owner | Should -Be 'sa'
-            $result.IsFixedRole | Should -BeFalse
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ServerRole'
+            $result.Name | Should-Be $script:persistentTestRole
+            $result.Owner | Should-Be 'sa'
+            $result.IsFixedRole | Should-BeFalse
         }
 
         It 'Should throw an error when the role does not exist' {
             { Get-SqlDscRole -ServerObject $script:serverObject -Name 'NonExistentRole' -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
 
         It 'Should return null when the role does not exist and error action is SilentlyContinue' {
             $result = Get-SqlDscRole -ServerObject $script:serverObject -Name 'NonExistentRole' -ErrorAction 'SilentlyContinue'
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -113,7 +113,7 @@ Describe 'Get-SqlDscRole' -Tag @('Integration_SQL2017', 'Integration_SQL2019', '
             $resultWithoutRefresh = Get-SqlDscRole -ServerObject $script:serverObject
             $resultWithRefresh = Get-SqlDscRole -ServerObject $script:serverObject -Refresh
 
-            @($resultWithoutRefresh).Count | Should -Be @($resultWithRefresh).Count
+            @($resultWithoutRefresh).Count | Should-Be @($resultWithRefresh).Count
         }
     }
 
@@ -121,8 +121,8 @@ Describe 'Get-SqlDscRole' -Tag @('Integration_SQL2017', 'Integration_SQL2019', '
         It 'Should accept ServerObject from pipeline' {
             $result = $script:serverObject | Get-SqlDscRole -Name $script:sharedTestRoleForIntegrationTests
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
-            $result.Name | Should -Be $script:sharedTestRoleForIntegrationTests
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ServerRole'
+            $result.Name | Should-Be $script:sharedTestRoleForIntegrationTests
         }
     }
 }

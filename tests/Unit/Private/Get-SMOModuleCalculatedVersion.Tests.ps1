@@ -59,7 +59,7 @@ Describe 'Get-SMOModuleCalculatedVersion' -Tag 'Private' {
                     Version = [Version]::new(21, 1, 18068)
                 }
 
-                $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '21.1.18068'
+                $sqlServerModule | Get-SMOModuleCalculatedVersion | Should-Be '21.1.18068'
             }
         }
 
@@ -78,7 +78,7 @@ Describe 'Get-SMOModuleCalculatedVersion' -Tag 'Private' {
                         }
                     }
 
-                    $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '22.0.49-preview1'
+                    $sqlServerModule | Get-SMOModuleCalculatedVersion | Should-Be '22.0.49-preview1'
                 }
             }
         }
@@ -94,7 +94,7 @@ Describe 'Get-SMOModuleCalculatedVersion' -Tag 'Private' {
                     Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
                 }
 
-                $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '13.0'
+                $sqlServerModule | Get-SMOModuleCalculatedVersion | Should-Be '13.0'
             }
         }
     }
@@ -109,7 +109,7 @@ Describe 'Get-SMOModuleCalculatedVersion' -Tag 'Private' {
                     Version = [Version]::new(1, 0, 0)
                 }
 
-                $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '1.0.0'
+                $sqlServerModule | Get-SMOModuleCalculatedVersion | Should-Be '1.0.0'
             }
         }
 
@@ -128,7 +128,7 @@ Describe 'Get-SMOModuleCalculatedVersion' -Tag 'Private' {
                         }
                     }
 
-                    $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '1.0.0-preview1'
+                    $sqlServerModule | Get-SMOModuleCalculatedVersion | Should-Be '1.0.0-preview1'
                 }
             }
         }

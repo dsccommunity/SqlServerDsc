@@ -102,28 +102,28 @@ Describe 'SqlServerDsc.Common\Get-ServiceAccount' -Tag 'GetServiceAccount' {
         It 'Should return NT AUTHORITY\SYSTEM' {
             $returnValue = Get-ServiceAccount -ServiceAccount $mockLocalSystemAccountCredential
 
-            $returnValue.UserName | Should -Be $mockLocalSystemAccountUserName
-            $returnValue.Password | Should -BeNullOrEmpty
+            $returnValue.UserName | Should-Be $mockLocalSystemAccountUserName
+            $returnValue.Password | Should-BeFalsy
         }
 
         It 'Should return Domain Account and Password' {
             $returnValue = Get-ServiceAccount -ServiceAccount $mockDomainAccountCredential
 
-            $returnValue.UserName | Should -Be $mockDomainAccountUserName
-            $returnValue.Password | Should -Be $mockDomainAccountCredential.GetNetworkCredential().Password
+            $returnValue.UserName | Should-Be $mockDomainAccountUserName
+            $returnValue.Password | Should-Be $mockDomainAccountCredential.GetNetworkCredential().Password
         }
 
         It 'Should return managed service account' {
             $returnValue = Get-ServiceAccount -ServiceAccount $mockManagedServiceAccountCredential
 
-            $returnValue.UserName | Should -Be $mockManagedServiceAccountUserName
+            $returnValue.UserName | Should-Be $mockManagedServiceAccountUserName
         }
 
         It 'Should return local service account' {
             $returnValue = Get-ServiceAccount -ServiceAccount $mockLocalServiceAccountCredential
 
-            $returnValue.UserName | Should -Be $mockLocalServiceAccountUserName
-            $returnValue.Password | Should -BeNullOrEmpty
+            $returnValue.UserName | Should-Be $mockLocalServiceAccountUserName
+            $returnValue.Password | Should-BeFalsy
         }
     }
 }

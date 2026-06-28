@@ -67,11 +67,11 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should call Get-AgentOperatorObject with correct parameters' {
             Assert-SqlDscAgentOperator -ServerObject $mockServerObject -Name $mockOperatorName
 
-            Should -Invoke -CommandName Get-AgentOperatorObject -ParameterFilter {
+            Should-Invoke -CommandName Get-AgentOperatorObject -Exactly -ParameterFilter {
                 $ServerObject -eq $mockServerObject -and
                 $Name -eq $mockOperatorName -and
                 $ErrorAction -eq 'Stop'
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -91,7 +91,7 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Public' {
         }
 
         It 'Should throw a terminating error when operator not found' {
-            { Assert-SqlDscAgentOperator -ServerObject $mockServerObject -Name 'NonExistentOperator' } | Should -Throw -ExpectedMessage "*NonExistentOperator*does not exist*"
+            { Assert-SqlDscAgentOperator -ServerObject $mockServerObject -Name 'NonExistentOperator' } | Should-Throw -ExceptionMessage "*NonExistentOperator*does not exist*"
         }
 
         It 'Should call Get-AgentOperatorObject once before throwing error' {
@@ -104,7 +104,7 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Public' {
                 # Expected to throw
             }
 
-            Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1
+            Should-Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1
         }
     }
 
@@ -123,11 +123,11 @@ Describe 'Assert-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should call Get-AgentOperatorObject with correct parameters when using pipeline' {
             $mockServerObject | Assert-SqlDscAgentOperator -Name $mockOperatorName
 
-            Should -Invoke -CommandName Get-AgentOperatorObject -ParameterFilter {
+            Should-Invoke -CommandName Get-AgentOperatorObject -Exactly -ParameterFilter {
                 $ServerObject -eq $mockServerObject -and
                 $Name -eq $mockOperatorName -and
                 $ErrorAction -eq 'Stop'
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 }

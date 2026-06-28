@@ -58,8 +58,8 @@ Describe 'Initialize-SqlDscRS' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -76,16 +76,16 @@ Describe 'Initialize-SqlDscRS' {
         It 'Should initialize Reporting Services without errors' {
             $mockCimInstance | Initialize-SqlDscRS -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'InitializeReportServer' -and
                 $Arguments.InstallationID -eq '12345678-1234-1234-1234-123456789012'
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should not return anything by default' {
             $result = $mockCimInstance | Initialize-SqlDscRS -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -102,8 +102,8 @@ Describe 'Initialize-SqlDscRS' {
         It 'Should return the configuration CIM instance' {
             $result = $mockCimInstance | Initialize-SqlDscRS -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -120,7 +120,7 @@ Describe 'Initialize-SqlDscRS' {
         It 'Should initialize Reporting Services without confirmation' {
             $mockCimInstance | Initialize-SqlDscRS -Force
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -137,7 +137,7 @@ Describe 'Initialize-SqlDscRS' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Initialize-SqlDscRS -Confirm:$false } | Should -Throw -ErrorId 'ISRS0001,Initialize-SqlDscRS'
+            { $mockCimInstance | Initialize-SqlDscRS -Confirm:$false } | Should-Throw -FullyQualifiedErrorId 'ISRS0001,Initialize-SqlDscRS'
         }
     }
 
@@ -154,7 +154,7 @@ Describe 'Initialize-SqlDscRS' {
         It 'Should not call Invoke-RsCimMethod' {
             $mockCimInstance | Initialize-SqlDscRS -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
         }
     }
 
@@ -171,7 +171,7 @@ Describe 'Initialize-SqlDscRS' {
         It 'Should initialize Reporting Services' {
             Initialize-SqlDscRS -Configuration $mockCimInstance -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 }

@@ -61,27 +61,27 @@ Describe 'Get-SqlDscRSExecutionLog' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have InstanceName as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRSExecutionLog').Parameters['InstanceName']
 
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have MaxRows with a default value of 1000' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRSExecutionLog').Parameters['MaxRows']
 
             # Find the default value by examining parameter attributes or testing the command
-            $parameterInfo | Should -Not -BeNullOrEmpty
+            $parameterInfo | Should-BeTruthy
         }
 
         It 'Should have LoginType with a default value of Integrated' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRSExecutionLog').Parameters['LoginType']
 
-            $parameterInfo | Should -Not -BeNullOrEmpty
+            $parameterInfo | Should-BeTruthy
         }
     }
 
@@ -122,24 +122,24 @@ Describe 'Get-SqlDscRSExecutionLog' {
         It 'Should return execution log entries' {
             $result = Get-SqlDscRSExecutionLog -InstanceName 'SSRS' -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.ItemPath | Should -Be '/Sales/Revenue'
-            $result.UserName | Should -Be 'DOMAIN\TestUser'
+            $result | Should-BeTruthy
+            $result.ItemPath | Should-Be '/Sales/Revenue'
+            $result.UserName | Should-Be 'DOMAIN\TestUser'
 
-            Should -Invoke -CommandName Get-SqlDscRSConfiguration -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscRSConfiguration -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 1
         }
 
         It 'Should pass the correct parameters to Invoke-SqlDscQuery' {
             Get-SqlDscRSExecutionLog -InstanceName 'SSRS' -Force
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                 $ServerName -eq 'localhost' -and
                 $InstanceName -eq 'MSSQLSERVER' -and
                 $DatabaseName -eq 'ReportServer' -and
                 $PassThru -eq $true -and
                 $Force -eq $true
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 
@@ -165,10 +165,10 @@ Describe 'Get-SqlDscRSExecutionLog' {
         It 'Should parse the server and instance name correctly' {
             Get-SqlDscRSExecutionLog -InstanceName 'SSRS' -Force
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                 $ServerName -eq 'SqlServer01' -and
                 $InstanceName -eq 'RSDB'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 
@@ -196,9 +196,9 @@ Describe 'Get-SqlDscRSExecutionLog' {
 
             Get-SqlDscRSExecutionLog -InstanceName 'SSRS' -StartTime $startTime -Force
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                 $Query -match "TimeStart >= '2025-01-01 00:00:00'"
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should include EndTime filter in the query' {
@@ -206,41 +206,41 @@ Describe 'Get-SqlDscRSExecutionLog' {
 
             Get-SqlDscRSExecutionLog -InstanceName 'SSRS' -EndTime $endTime -Force
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                 $Query -match "TimeStart <= '2025-12-31 23:59:59'"
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should include UserName filter in the query' {
             Get-SqlDscRSExecutionLog -InstanceName 'SSRS' -UserName 'DOMAIN\%' -Force
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                 $Query -match "UserName LIKE 'DOMAIN\\%'"
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should include ReportPath filter in the query' {
             Get-SqlDscRSExecutionLog -InstanceName 'SSRS' -ReportPath '/Sales/%' -Force
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                 $Query -match "ItemPath LIKE '/Sales/%'"
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should include MaxRows in the query' {
             Get-SqlDscRSExecutionLog -InstanceName 'SSRS' -MaxRows 500 -Force
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                 $Query -match 'TOP \(500\)'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should not include TOP clause when MaxRows is 0' {
             Get-SqlDscRSExecutionLog -InstanceName 'SSRS' -MaxRows 0 -Force
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                 $Query -notmatch 'TOP'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 
@@ -269,26 +269,26 @@ Describe 'Get-SqlDscRSExecutionLog' {
 
             Get-SqlDscRSExecutionLog -InstanceName 'SSRS' -Credential $credential -LoginType 'SqlLogin' -Force
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                 $null -ne $Credential -and
                 $LoginType -eq 'SqlLogin'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should pass Encrypt to Invoke-SqlDscQuery' {
             Get-SqlDscRSExecutionLog -InstanceName 'SSRS' -Encrypt -Force
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                 $Encrypt -eq $true
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should pass StatementTimeout to Invoke-SqlDscQuery' {
             Get-SqlDscRSExecutionLog -InstanceName 'SSRS' -StatementTimeout 120 -Force
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                 $StatementTimeout -eq 120
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 
@@ -310,10 +310,10 @@ Describe 'Get-SqlDscRSExecutionLog' {
         It 'Should write an error and return null' {
             $result = Get-SqlDscRSExecutionLog -InstanceName 'SSRS' -Force -ErrorAction SilentlyContinue -ErrorVariable testError 3>&1 4>&1 5>&1 6>&1
 
-            $result | Should -BeNullOrEmpty
-            $testError | Should -Not -BeNullOrEmpty
+            $result | Should-BeFalsy
+            $testError | Should-BeTruthy
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 1
         }
     }
 
@@ -340,13 +340,13 @@ Describe 'Get-SqlDscRSExecutionLog' {
         It 'Should query the correct database for PBIRS' {
             Get-SqlDscRSExecutionLog -InstanceName 'PBIRS' -Force
 
-            Should -Invoke -CommandName Get-SqlDscRSConfiguration -ParameterFilter {
+            Should-Invoke -CommandName Get-SqlDscRSConfiguration -Exactly -ParameterFilter {
                 $InstanceName -eq 'PBIRS'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                 $DatabaseName -eq 'ReportServerPBIRS'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 
@@ -366,7 +366,7 @@ Describe 'Get-SqlDscRSExecutionLog' {
         It 'Should not execute the query' {
             Get-SqlDscRSExecutionLog -InstanceName 'SSRS' -WhatIf
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 0
         }
     }
 }

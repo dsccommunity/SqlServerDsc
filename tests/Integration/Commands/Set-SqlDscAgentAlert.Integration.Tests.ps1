@@ -59,8 +59,8 @@ Describe 'Set-SqlDscAgentAlert' -Tag @('Integration_SQL2017', 'Integration_SQL20
         $null = $script:sqlServerObject | Set-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -Severity 16 -ErrorAction 'Stop' -Force
 
         $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert'
-        $alert.Severity | Should -Be 16
-        $alert.MessageId | Should -Be 0
+        $alert.Severity | Should-Be 16
+        $alert.MessageId | Should-Be 0
     }
 
     It 'Should update alert message ID using ServerObject parameter set' {
@@ -80,8 +80,8 @@ END
         $null = $script:sqlServerObject | Set-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -MessageId 50003 -ErrorAction 'Stop' -Force
 
         $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert'
-        $alert.MessageId | Should -Be 50003
-        $alert.Severity | Should -Be 0
+        $alert.MessageId | Should-Be 50003
+        $alert.Severity | Should-Be 0
     }
 
     It 'Should update alert using AlertObject parameter set' {
@@ -94,25 +94,25 @@ END
 
         # Refresh the alert to get updated values
         $updatedAlert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert'
-        $updatedAlert.Severity | Should -Be 18
-        $updatedAlert.MessageId | Should -Be 0
+        $updatedAlert.Severity | Should-Be 18
+        $updatedAlert.MessageId | Should-Be 0
     }
 
     It 'Should return updated alert when PassThru is specified' {
         $result = $script:sqlServerObject | Set-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -Severity 20 -PassThru -ErrorAction 'Stop' -Force
 
-        $result | Should -Not -BeNullOrEmpty
-        $result.Name | Should -Be 'IntegrationTest_UpdateAlert'
-        $result.Severity | Should -Be 20
+        $result | Should-BeTruthy
+        $result.Name | Should-Be 'IntegrationTest_UpdateAlert'
+        $result.Severity | Should-Be 20
     }
 
     It 'Should throw error when alert does not exist' {
         { $script:sqlServerObject | Set-SqlDscAgentAlert -Name 'NonExistentAlert' -Severity 16 -Force -ErrorAction 'Stop' } |
-            Should -Throw
+            Should-Throw
     }
 
     It 'Should throw error when both Severity and MessageId are specified' {
         { $script:sqlServerObject | Set-SqlDscAgentAlert -Name 'IntegrationTest_UpdateAlert' -Severity 16 -MessageId 50001 -Force -ErrorAction 'Stop' } |
-            Should -Throw
+            Should-Throw
     }
 }

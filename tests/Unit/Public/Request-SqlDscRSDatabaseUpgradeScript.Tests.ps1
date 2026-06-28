@@ -58,8 +58,8 @@ Describe 'Request-SqlDscRSDatabaseUpgradeScript' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -70,15 +70,15 @@ Describe 'Request-SqlDscRSDatabaseUpgradeScript' {
         }
 
         It 'Should have ValueFromPipeline set to True' {
-            $configurationParameter.Attributes.ValueFromPipeline | Should -Contain $true
+            $configurationParameter.Attributes.ValueFromPipeline | Should-ContainCollection $true
         }
 
         It 'Should have Mandatory set to True' {
-            $configurationParameter.Attributes.Mandatory | Should -Contain $true
+            $configurationParameter.Attributes.Mandatory | Should-ContainCollection $true
         }
 
         It 'Should have the expected parameter type' {
-            $configurationParameter.ParameterType.Name | Should -Be 'Object'
+            $configurationParameter.ParameterType.Name | Should-Be 'Object'
         }
     }
 
@@ -106,15 +106,15 @@ GO
         It 'Should return the database upgrade script' {
             $result = $mockCimInstance | Request-SqlDscRSDatabaseUpgradeScript
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeLike '*Upgrade script*'
-            $result | Should -BeLike '*ALTER TABLE*'
+            $result | Should-BeTruthy
+            $result | Should-BeLikeString '*Upgrade script*'
+            $result | Should-BeLikeString '*ALTER TABLE*'
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'GenerateDatabaseUpgradeScript' -and
                 $Arguments.DatabaseName -eq 'ReportServer' -and
                 $Arguments.ServerVersion -eq '15.0.2000.5'
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -136,9 +136,9 @@ GO
         It 'Should return an empty script' {
             $result = $mockCimInstance | Request-SqlDscRSDatabaseUpgradeScript
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -156,7 +156,7 @@ GO
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Request-SqlDscRSDatabaseUpgradeScript } | Should -Throw -ErrorId 'RSRSDBUS0001,Request-SqlDscRSDatabaseUpgradeScript'
+            { $mockCimInstance | Request-SqlDscRSDatabaseUpgradeScript } | Should-Throw -FullyQualifiedErrorId 'RSRSDBUS0001,Request-SqlDscRSDatabaseUpgradeScript'
         }
     }
 
@@ -178,9 +178,9 @@ GO
         It 'Should generate database upgrade script' {
             $result = Request-SqlDscRSDatabaseUpgradeScript -Configuration $mockCimInstance
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 }

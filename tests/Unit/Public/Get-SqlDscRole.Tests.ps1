@@ -69,9 +69,9 @@ Describe 'Get-SqlDscRole' -Tag 'Public' {
 
             $result = Get-SqlDscRole -ServerObject $mockServerObject
 
-            $result | Should -HaveCount 2
-            $result[0].Name | Should -Be 'sysadmin'
-            $result[1].Name | Should -Be 'CustomRole1'
+            $result | Should-BeCollection -Count 2
+            $result[0].Name | Should-Be 'sysadmin'
+            $result[1].Name | Should-Be 'CustomRole1'
         }
 
         It 'Should call Refresh when Refresh parameter is specified' {
@@ -91,8 +91,8 @@ Describe 'Get-SqlDscRole' -Tag 'Public' {
 
             $result = Get-SqlDscRole -ServerObject $mockServerObjectWithRefresh -Refresh
 
-            $result | Should -HaveCount 1
-            $script:refreshCalled | Should -BeTrue
+            $result | Should-BeCollection -Count 1
+            $script:refreshCalled | Should-BeTrue
         }
     }
 
@@ -115,8 +115,8 @@ Describe 'Get-SqlDscRole' -Tag 'Public' {
 
             $result = Get-SqlDscRole -ServerObject $mockServerObject -Name 'sysadmin'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'sysadmin'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'sysadmin'
         }
 
         It 'Should throw the correct error when the specified role does not exist' {
@@ -126,7 +126,7 @@ Describe 'Get-SqlDscRole' -Tag 'Public' {
             $expectedMessage = 'Server role ''NonExistentRole'' was not found. (GSDR0001)'
 
             { Get-SqlDscRole -ServerObject $mockServerObject -Name 'NonExistentRole' -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage $expectedMessage
+                Should-Throw -ExceptionMessage $expectedMessage
         }
 
         It 'Should return empty result when ignoring the error' {
@@ -134,7 +134,7 @@ Describe 'Get-SqlDscRole' -Tag 'Public' {
 
             $result = Get-SqlDscRole -ServerObject $mockServerObject -Name 'NonExistentRole' -ErrorAction 'SilentlyContinue'
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -152,23 +152,23 @@ Describe 'Get-SqlDscRole' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRole').Parameters['ServerObject']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have Name as a non-mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRole').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-BeFalse
         }
 
         It 'Should have Refresh as a non-mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRole').Parameters['Refresh']
-            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-BeFalse
         }
     }
 }

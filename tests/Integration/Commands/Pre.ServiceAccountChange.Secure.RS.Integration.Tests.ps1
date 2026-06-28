@@ -58,14 +58,14 @@ Describe 'Pre.ServiceAccountChange.Secure.RS' -Tag @('Integration_PowerBI') {
                 $null = New-Item -Path $script:backupDirectory -ItemType Directory -Force -ErrorAction 'Stop'
             }
 
-            Test-Path -Path $script:backupDirectory | Should -BeTrue -Because 'the backup directory should exist'
+            Test-Path -Path $script:backupDirectory | Should-BeTrue -Because 'the backup directory should exist'
         }
 
         It 'Should verify the Reporting Services instance is configured' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName $script:instanceName -ErrorAction 'Stop'
 
-            $configuration | Should -Not -BeNullOrEmpty -Because 'the RS instance should be configured'
-            $configuration.IsInitialized | Should -BeTrue -Because 'the RS instance should be initialized'
+            $configuration | Should-BeTruthy -Because 'the RS instance should be configured'
+            $configuration.IsInitialized | Should-BeTrue -Because 'the RS instance should be initialized'
         }
     }
 }

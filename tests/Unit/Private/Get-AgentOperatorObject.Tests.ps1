@@ -71,8 +71,8 @@ Describe 'Get-AgentOperatorObject' -Tag 'Private' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'TestOperator'
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be 'TestOperator'
+                $result | Should-BeTruthy
+                $result.Name | Should-Be 'TestOperator'
             }
         }
     }
@@ -93,7 +93,7 @@ Describe 'Get-AgentOperatorObject' -Tag 'Private' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'NonExistentOperator' -ErrorAction 'SilentlyContinue'
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
             }
         }
 
@@ -102,7 +102,7 @@ Describe 'Get-AgentOperatorObject' -Tag 'Private' {
                 Set-StrictMode -Version 1.0
 
                 { Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'NonExistentOperator' -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage "*NonExistentOperator*not found*"
+                    Should-Throw -ExceptionMessage "*NonExistentOperator*not found*"
             }
         }
     }
@@ -128,8 +128,8 @@ Describe 'Get-AgentOperatorObject' -Tag 'Private' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'TestOperator' -Refresh
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be 'TestOperator'
+                $result | Should-BeTruthy
+                $result.Name | Should-Be 'TestOperator'
             }
         }
     }

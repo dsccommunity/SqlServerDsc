@@ -45,11 +45,11 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
             It 'Should return a StartupParameters object for the test instance' {
                 $result = Get-SqlDscStartupParameter -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType (InModuleScope -ModuleName $script:moduleName -ScriptBlock { [StartupParameters] })
-                $result.DataFilePath | Should -Not -BeNullOrEmpty
-                $result.LogFilePath | Should -Not -BeNullOrEmpty
-                $result.ErrorLogPath | Should -Not -BeNullOrEmpty
+                $result | Should-BeTruthy
+                $result | Should-HaveType (InModuleScope -ModuleName $script:moduleName -ScriptBlock { [StartupParameters] })
+                $result.DataFilePath | Should-BeTruthy
+                $result.LogFilePath | Should-BeTruthy
+                $result.ErrorLogPath | Should-BeTruthy
             }
         }
 
@@ -57,11 +57,11 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
             It 'Should return a StartupParameters object for the specified instance' {
                 $result = Get-SqlDscStartupParameter -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType (InModuleScope -ModuleName $script:moduleName -ScriptBlock { [StartupParameters] })
-                $result.DataFilePath | Should -Not -BeNullOrEmpty
-                $result.LogFilePath | Should -Not -BeNullOrEmpty
-                $result.ErrorLogPath | Should -Not -BeNullOrEmpty
+                $result | Should-BeTruthy
+                $result | Should-HaveType (InModuleScope -ModuleName $script:moduleName -ScriptBlock { [StartupParameters] })
+                $result.DataFilePath | Should-BeTruthy
+                $result.LogFilePath | Should-BeTruthy
+                $result.ErrorLogPath | Should-BeTruthy
             }
         }
 
@@ -69,11 +69,11 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
             It 'Should return a StartupParameters object for the specified server' {
                 $result = Get-SqlDscStartupParameter -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType (InModuleScope -ModuleName $script:moduleName -ScriptBlock { [StartupParameters] })
-                $result.DataFilePath | Should -Not -BeNullOrEmpty
-                $result.LogFilePath | Should -Not -BeNullOrEmpty
-                $result.ErrorLogPath | Should -Not -BeNullOrEmpty
+                $result | Should-BeTruthy
+                $result | Should-HaveType (InModuleScope -ModuleName $script:moduleName -ScriptBlock { [StartupParameters] })
+                $result.DataFilePath | Should-BeTruthy
+                $result.LogFilePath | Should-BeTruthy
+                $result.ErrorLogPath | Should-BeTruthy
             }
         }
 
@@ -81,7 +81,7 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
             It 'Should throw an error when the instance does not exist' {
                 {
                     Get-SqlDscStartupParameter -ServerName $script:mockServerName -InstanceName 'NonExistentInstance' -ErrorAction 'Stop'
-                } | Should -Throw -ErrorId 'GSDSP0001,Get-SqlDscStartupParameter'
+                } | Should-Throw -FullyQualifiedErrorId 'GSDSP0001,Get-SqlDscStartupParameter'
             }
         }
     }
@@ -95,11 +95,11 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
             It 'Should return a StartupParameters object for the service object' {
                 $result = Get-SqlDscStartupParameter -ServiceObject $script:serviceObject -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType (InModuleScope -ModuleName $script:moduleName -ScriptBlock { [StartupParameters] })
-                $result.DataFilePath | Should -Not -BeNullOrEmpty
-                $result.LogFilePath | Should -Not -BeNullOrEmpty
-                $result.ErrorLogPath | Should -Not -BeNullOrEmpty
+                $result | Should-BeTruthy
+                $result | Should-HaveType (InModuleScope -ModuleName $script:moduleName -ScriptBlock { [StartupParameters] })
+                $result.DataFilePath | Should-BeTruthy
+                $result.LogFilePath | Should-BeTruthy
+                $result.ErrorLogPath | Should-BeTruthy
             }
         }
 
@@ -107,11 +107,11 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
             It 'Should accept ServiceObject from pipeline and return StartupParameters' {
                 $result = $script:serviceObject | Get-SqlDscStartupParameter -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType (InModuleScope -ModuleName $script:moduleName -ScriptBlock { [StartupParameters] })
-                $result.DataFilePath | Should -Not -BeNullOrEmpty
-                $result.LogFilePath | Should -Not -BeNullOrEmpty
-                $result.ErrorLogPath | Should -Not -BeNullOrEmpty
+                $result | Should-BeTruthy
+                $result | Should-HaveType (InModuleScope -ModuleName $script:moduleName -ScriptBlock { [StartupParameters] })
+                $result.DataFilePath | Should-BeTruthy
+                $result.LogFilePath | Should-BeTruthy
+                $result.ErrorLogPath | Should-BeTruthy
             }
         }
 
@@ -124,7 +124,7 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
             It 'Should throw an error when the service type is not DatabaseEngine' {
                 {
                     Get-SqlDscStartupParameter -ServiceObject $script:wrongServiceObject -ErrorAction 'Stop'
-                } | Should -Throw
+                } | Should-Throw
             }
         }
     }
@@ -135,30 +135,30 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
         }
 
         It 'Should return an object with expected DataFilePath property' {
-            $script:result.DataFilePath | Should -Not -BeNullOrEmpty
-            $script:result.DataFilePath | Should -BeOfType ([System.String])
-            $script:result.DataFilePath | Should -Match '\.mdf$'
+            $script:result.DataFilePath | Should-BeTruthy
+            $script:result.DataFilePath | Should-HaveType ([System.String])
+            $script:result.DataFilePath | Should-MatchString '\.mdf$'
         }
 
         It 'Should return an object with expected LogFilePath property' {
-            $script:result.LogFilePath | Should -Not -BeNullOrEmpty
-            $script:result.LogFilePath | Should -BeOfType ([System.String])
-            $script:result.LogFilePath | Should -Match '\.ldf$'
+            $script:result.LogFilePath | Should-BeTruthy
+            $script:result.LogFilePath | Should-HaveType ([System.String])
+            $script:result.LogFilePath | Should-MatchString '\.ldf$'
         }
 
         It 'Should return an object with expected ErrorLogPath property' {
-            $script:result.ErrorLogPath | Should -Not -BeNullOrEmpty
-            $script:result.ErrorLogPath | Should -BeOfType ([System.String])
-            $script:result.ErrorLogPath | Should -Match 'ERRORLOG$'
+            $script:result.ErrorLogPath | Should-BeTruthy
+            $script:result.ErrorLogPath | Should-HaveType ([System.String])
+            $script:result.ErrorLogPath | Should-MatchString 'ERRORLOG$'
         }
 
         It 'Should return TraceFlag property as expected type' {
             # TraceFlag can be null, a single UInt32, or an array
             if ($null -ne $script:result.TraceFlag) {
                 # Check if it's either a single UInt32 or UInt32 array
-                ($script:result.TraceFlag -is [System.UInt32]) -or ($script:result.TraceFlag -is [System.UInt32[]]) | Should -BeTrue -Because 'TraceFlag can be a single value or array depending on how many flags are set'
+                ($script:result.TraceFlag -is [System.UInt32]) -or ($script:result.TraceFlag -is [System.UInt32[]]) | Should-BeTrue -Because 'TraceFlag can be a single value or array depending on how many flags are set'
             } else {
-                $script:result.TraceFlag | Should -BeNullOrEmpty -Because 'TraceFlag can be empty/null if no trace flags are set'
+                $script:result.TraceFlag | Should-BeFalsy -Because 'TraceFlag can be empty/null if no trace flags are set'
             }
         }
 
@@ -166,9 +166,9 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
             # InternalTraceFlag can be null, a single UInt32, or an array
             if ($null -ne $script:result.InternalTraceFlag) {
                 # Check if it's either a single UInt32 or UInt32 array
-                ($script:result.InternalTraceFlag -is [System.UInt32]) -or ($script:result.InternalTraceFlag -is [System.UInt32[]]) | Should -BeTrue -Because 'InternalTraceFlag can be a single value or array depending on how many flags are set'
+                ($script:result.InternalTraceFlag -is [System.UInt32]) -or ($script:result.InternalTraceFlag -is [System.UInt32[]]) | Should-BeTrue -Because 'InternalTraceFlag can be a single value or array depending on how many flags are set'
             } else {
-                $script:result.InternalTraceFlag | Should -BeNullOrEmpty -Because 'InternalTraceFlag can be empty/null if no internal trace flags are set'
+                $script:result.InternalTraceFlag | Should-BeFalsy -Because 'InternalTraceFlag can be empty/null if no internal trace flags are set'
             }
         }
     }
@@ -180,11 +180,11 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
             $serviceObject = Get-SqlDscManagedComputerService -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ServiceType 'DatabaseEngine' -ErrorAction 'Stop'
             $resultByServiceObject = Get-SqlDscStartupParameter -ServiceObject $serviceObject -ErrorAction 'Stop'
 
-            $resultByServerName.DataFilePath | Should -Be $resultByServiceObject.DataFilePath
-            $resultByServerName.LogFilePath | Should -Be $resultByServiceObject.LogFilePath
-            $resultByServerName.ErrorLogPath | Should -Be $resultByServiceObject.ErrorLogPath
-            $resultByServerName.TraceFlag | Should -Be $resultByServiceObject.TraceFlag
-            $resultByServerName.InternalTraceFlag | Should -Be $resultByServiceObject.InternalTraceFlag
+            $resultByServerName.DataFilePath | Should-Be $resultByServiceObject.DataFilePath
+            $resultByServerName.LogFilePath | Should-Be $resultByServiceObject.LogFilePath
+            $resultByServerName.ErrorLogPath | Should-Be $resultByServiceObject.ErrorLogPath
+            $resultByServerName.TraceFlag | Should-Be $resultByServiceObject.TraceFlag
+            $resultByServerName.InternalTraceFlag | Should-Be $resultByServiceObject.InternalTraceFlag
         }
     }
 }

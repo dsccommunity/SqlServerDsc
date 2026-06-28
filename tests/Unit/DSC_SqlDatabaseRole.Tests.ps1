@@ -151,12 +151,12 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
 
                 $errorMessage = $script:localizedData.DatabaseNotFound -f $mockGetTargetResourceParameters.DatabaseName
 
-                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $errorMessage)
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $errorMessage)
             }
         }
 
         It 'Should call the mock function Connect-SQL' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope Context -Times 1
         }
     }
 
@@ -173,10 +173,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.Ensure | Should -Be 'Absent'
+                $result.Ensure | Should-Be 'Absent'
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return the members as null' {
@@ -184,10 +184,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.Members | Should -BeNullOrEmpty
+                $result.Members | Should-BeFalsy
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return the same values as passed as parameters' {
@@ -195,13 +195,13 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                $result.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
-                $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+                $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                $result.DatabaseName | Should-Be $mockGetTargetResourceParameters.DatabaseName
+                $result.Name | Should-Be $mockGetTargetResourceParameters.Name
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -218,14 +218,14 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.Ensure | Should -Be 'Present'
+                $result.Ensure | Should-Be 'Present'
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should call the mock function Connect-SQL' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope Context -Times 1
         }
     }
 
@@ -243,10 +243,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.Ensure | Should -Be 'Absent'
+                $result.Ensure | Should-Be 'Absent'
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return the members as null' {
@@ -255,10 +255,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.Members | Should -BeNullOrEmpty
+                $result.Members | Should-BeFalsy
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return the same values as passed as parameters' {
@@ -267,13 +267,13 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                $result.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
-                $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+                $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                $result.DatabaseName | Should-Be $mockGetTargetResourceParameters.DatabaseName
+                $result.Name | Should-Be $mockGetTargetResourceParameters.Name
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return $false for the property DatabaseIsUpdateable' {
@@ -282,7 +282,7 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.DatabaseIsUpdateable | Should -BeFalse
+                $result.DatabaseIsUpdateable | Should-BeFalse
             }
         }
     }
@@ -307,12 +307,12 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
 
                 $errorMessage = $script:localizedData.EnumDatabaseRoleMemberNamesError -f 'MyRole', 'AdventureWorks'
 
-                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $errorMessage + '*')
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $errorMessage + '*')
             }
         }
 
         It 'Should call the mock function Connect-SQL' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope Context -Times 1
         }
     }
 
@@ -330,10 +330,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.Ensure | Should -Be 'Present'
+                $result.Ensure | Should-Be 'Present'
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return MembersInDesiredState as True' {
@@ -341,10 +341,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.MembersInDesiredState | Should -BeTrue
+                $result.MembersInDesiredState | Should-BeTrue
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return the members as not null' {
@@ -352,10 +352,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.Members | Should -Be $mockGetTargetResourceParameters.Members
+                $result.Members | Should-Be $mockGetTargetResourceParameters.Members
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return the members as string array' {
@@ -363,10 +363,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                ($result.Members -is [System.String[]]) | Should -BeTrue
+                ($result.Members -is [System.String[]]) | Should-BeTrue
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return the same values as passed as parameters' {
@@ -374,14 +374,14 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                $result.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
-                $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                $result.Members | Should -Be $mockGetTargetResourceParameters.Members
+                $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                $result.DatabaseName | Should-Be $mockGetTargetResourceParameters.DatabaseName
+                $result.Name | Should-Be $mockGetTargetResourceParameters.Name
+                $result.Members | Should-Be $mockGetTargetResourceParameters.Members
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -399,10 +399,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.Ensure | Should -Be 'Present'
+                $result.Ensure | Should-Be 'Present'
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return MembersInDesiredState as False' {
@@ -410,10 +410,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.MembersInDesiredState | Should -BeFalse
+                $result.MembersInDesiredState | Should-BeFalse
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return the members as string array' {
@@ -421,10 +421,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                ($result.Members -is [System.String[]]) | Should -BeTrue
+                ($result.Members -is [System.String[]]) | Should-BeTrue
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -444,12 +444,12 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
 
                 $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
 
-                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $errorMessage)
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $errorMessage)
             }
         }
 
         It 'Should call the mock function Connect-SQL' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope Context -Times 1
         }
     }
 
@@ -467,10 +467,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.Ensure | Should -Be 'Present'
+                $result.Ensure | Should-Be 'Present'
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return MembersInDesiredState as True' {
@@ -478,10 +478,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.MembersInDesiredState | Should -BeTrue
+                $result.MembersInDesiredState | Should-BeTrue
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return the members as not null' {
@@ -489,10 +489,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.Members | Should -Not -BeNullOrEmpty
+                $result.Members | Should-BeTruthy
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return the members as string array' {
@@ -500,10 +500,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                ($result.Members -is [System.String[]]) | Should -BeTrue
+                ($result.Members -is [System.String[]]) | Should-BeTrue
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return the same values as passed as parameters' {
@@ -511,14 +511,14 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                $result.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
-                $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                $result.MembersToInclude | Should -Be $mockGetTargetResourceParameters.MembersToInclude
+                $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                $result.DatabaseName | Should-Be $mockGetTargetResourceParameters.DatabaseName
+                $result.Name | Should-Be $mockGetTargetResourceParameters.Name
+                $result.MembersToInclude | Should-Be $mockGetTargetResourceParameters.MembersToInclude
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -536,10 +536,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.Ensure | Should -Be 'Present'
+                $result.Ensure | Should-Be 'Present'
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return MembersInDesiredState as False' {
@@ -547,10 +547,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.MembersInDesiredState | Should -BeFalse
+                $result.MembersInDesiredState | Should-BeFalse
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return the members as string array' {
@@ -558,10 +558,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                ($result.Members -is [System.String[]]) | Should -BeTrue
+                ($result.Members -is [System.String[]]) | Should-BeTrue
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -582,12 +582,12 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
 
                 $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
 
-                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $errorMessage)
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $errorMessage)
             }
         }
 
         It 'Should call the mock function Connect-SQL' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope Context -Times 1
         }
     }
 
@@ -605,10 +605,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.Ensure | Should -Be 'Present'
+                $result.Ensure | Should-Be 'Present'
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return MembersInDesiredState as True' {
@@ -616,10 +616,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.MembersInDesiredState | Should -BeTrue
+                $result.MembersInDesiredState | Should-BeTrue
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return the same values as passed as parameters' {
@@ -627,14 +627,14 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                $result.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
-                $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                $result.MembersToExclude | Should -Be $mockGetTargetResourceParameters.MembersToExclude
+                $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                $result.DatabaseName | Should-Be $mockGetTargetResourceParameters.DatabaseName
+                $result.Name | Should-Be $mockGetTargetResourceParameters.Name
+                $result.MembersToExclude | Should-Be $mockGetTargetResourceParameters.MembersToExclude
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -652,10 +652,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.Ensure | Should -Be 'Present'
+                $result.Ensure | Should-Be 'Present'
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return MembersInDesiredState as False' {
@@ -663,10 +663,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.MembersInDesiredState | Should -BeFalse
+                $result.MembersInDesiredState | Should-BeFalse
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return the members as string array' {
@@ -674,10 +674,10 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                ($result.Members -is [System.String[]]) | Should -BeTrue
+                ($result.Members -is [System.String[]]) | Should-BeTrue
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 }
@@ -720,10 +720,10 @@ Describe 'SqlDatabaseRole\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -747,10 +747,10 @@ Describe 'SqlDatabaseRole\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -777,10 +777,10 @@ Describe 'SqlDatabaseRole\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -805,10 +805,10 @@ Describe 'SqlDatabaseRole\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -833,10 +833,10 @@ Describe 'SqlDatabaseRole\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -861,10 +861,10 @@ Describe 'SqlDatabaseRole\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue -Because 'the database is not updatable'
+                    $result | Should-BeTrue -Because 'the database is not updatable'
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -888,10 +888,10 @@ Describe 'SqlDatabaseRole\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue -Because 'the database is not updatable'
+                    $result | Should-BeTrue -Because 'the database is not updatable'
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -1001,10 +1001,10 @@ Describe 'SqlDatabaseRole\Set-TargetResource' -Tag 'Set' {
 
                     $null = Set-TargetResource @mockSetTargetResourceParameters
 
-                    $mockMethodDropWasCalled | Should -Be 1
+                    $mockMethodDropWasCalled | Should-Be 1
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
 
@@ -1023,10 +1023,10 @@ Describe 'SqlDatabaseRole\Set-TargetResource' -Tag 'Set' {
 
                     {
                         Set-TargetResource @mockSetTargetResourceParameters
-                    } | Should -Throw -ExpectedMessage ('*' + $errorMessage +'*Mock Drop method was called with invalid operation.*')
+                    } | Should-Throw -ExceptionMessage ('*' + $errorMessage +'*Mock Drop method was called with invalid operation.*')
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
 
                 $mockInvalidOperationForDropMethod = $false
             }
@@ -1043,14 +1043,14 @@ Describe 'SqlDatabaseRole\Set-TargetResource' -Tag 'Set' {
 
                     $null = Set-TargetResource @mockSetTargetResourceParameters
 
-                    $mockMethodCreateWasCalled | Should -Be 1
+                    $mockMethodCreateWasCalled | Should-Be 1
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
 
-                Should -Invoke -CommandName New-Object -Exactly -Times 1 -ParameterFilter {
+                Should-Invoke -CommandName New-Object -Exactly -ParameterFilter {
                     $TypeName -eq 'Microsoft.SqlServer.Management.Smo.DatabaseRole'
-                } -Scope Context
+                } -Scope Context -Times 1
             }
         }
 
@@ -1069,10 +1069,10 @@ Describe 'SqlDatabaseRole\Set-TargetResource' -Tag 'Set' {
 
                     {
                         Set-TargetResource @mockSetTargetResourceParameters
-                    } | Should -Throw -ExpectedMessage ('*' + $errorMessage +'*Mock Create method was called with invalid operation.*')
+                    } | Should-Throw -ExceptionMessage ('*' + $errorMessage +'*Mock Create method was called with invalid operation.*')
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
 
                 $mockInvalidOperationForCreateMethod = $false
             }
@@ -1093,10 +1093,10 @@ Describe 'SqlDatabaseRole\Set-TargetResource' -Tag 'Set' {
 
                     {
                         Set-TargetResource @mockSetTargetResourceParameters
-                    } | Should -Throw -ExpectedMessage ('*' + $errorMessage)
+                    } | Should-Throw -ExceptionMessage ('*' + $errorMessage)
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
 
@@ -1115,10 +1115,10 @@ Describe 'SqlDatabaseRole\Set-TargetResource' -Tag 'Set' {
 
                     {
                         Set-TargetResource @mockSetTargetResourceParameters
-                    } | Should -Throw -ExpectedMessage ('*' + $errorMessage)
+                    } | Should-Throw -ExceptionMessage ('*' + $errorMessage)
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
 
@@ -1144,15 +1144,15 @@ Describe 'SqlDatabaseRole\Set-TargetResource' -Tag 'Set' {
                     $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
 
-                Should -Invoke -CommandName Add-SqlDscDatabaseRoleMember -ParameterFilter {
+                Should-Invoke -CommandName Add-SqlDscDatabaseRoleMember -Exactly -ParameterFilter {
                     $MemberName -eq 'CONTOSO\SQLAdmin'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Remove-SqlDscDatabaseRoleMember -ParameterFilter {
+                Should-Invoke -CommandName Remove-SqlDscDatabaseRoleMember -Exactly -ParameterFilter {
                     $MemberName -eq 'CONTOSO\KingJulian'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -1178,13 +1178,13 @@ Describe 'SqlDatabaseRole\Set-TargetResource' -Tag 'Set' {
                     $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
 
-                Should -Invoke -CommandName Add-SqlDscDatabaseRoleMember -ParameterFilter {
+                Should-Invoke -CommandName Add-SqlDscDatabaseRoleMember -Exactly -ParameterFilter {
                     $MemberName -eq 'CONTOSO\SQLAdmin'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Remove-SqlDscDatabaseRoleMember -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Remove-SqlDscDatabaseRoleMember -Exactly -Scope It -Times 0
             }
         }
 
@@ -1210,11 +1210,11 @@ Describe 'SqlDatabaseRole\Set-TargetResource' -Tag 'Set' {
                     $null = Set-TargetResource @mockSetTargetResourceParameters
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Add-SqlDscDatabaseRoleMember -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Remove-SqlDscDatabaseRoleMember -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Add-SqlDscDatabaseRoleMember -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Remove-SqlDscDatabaseRoleMember -Exactly -ParameterFilter {
                     $MemberName -eq 'CONTOSO\KingJulian'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
     }
@@ -1272,7 +1272,7 @@ Describe 'Add-SqlDscDatabaseRoleMember' -Tag 'Helper' {
                 $mockErrorMessage = $script:localizedData.DatabaseRoleOrUserNotFound -f 'MissingRole', 'MissingUser', 'AdventureWorks'
                 {
                     Add-SqlDscDatabaseRoleMember -SqlDatabaseObject $mockSqlDatabaseObject -Name 'MissingRole' -MemberName 'MissingUser'
-                } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
             }
         }
     }
@@ -1290,7 +1290,7 @@ Describe 'Add-SqlDscDatabaseRoleMember' -Tag 'Helper' {
 
                 $null = Add-SqlDscDatabaseRoleMember -SqlDatabaseObject $mockSqlDatabaseObject -Name 'MyRole' -MemberName 'John'
 
-                $mockMethodAddMemberWasCalled | Should -Be 1
+                $mockMethodAddMemberWasCalled | Should-Be 1
             }
         }
     }
@@ -1316,7 +1316,7 @@ Describe 'Add-SqlDscDatabaseRoleMember' -Tag 'Helper' {
 
                 {
                     Add-SqlDscDatabaseRoleMember -SqlDatabaseObject $mockSqlDatabaseObject -Name 'MyRole' -MemberName 'John'
-                } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*Mock AddMember Method was called with invalid operation.*')
+                } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*Mock AddMember Method was called with invalid operation.*')
             }
         }
     }
@@ -1379,7 +1379,7 @@ Describe 'Remove-SqlDscDatabaseRoleMember' -Tag 'Helper' {
 
                 $null = Remove-SqlDscDatabaseRoleMember -SqlDatabaseObject $mockSqlDatabaseObject -Name 'MyRole' -MemberName 'MyRole'
 
-                $mockMethodDropMemberWasCalled | Should -Be 1
+                $mockMethodDropMemberWasCalled | Should-Be 1
             }
         }
     }
@@ -1405,7 +1405,7 @@ Describe 'Remove-SqlDscDatabaseRoleMember' -Tag 'Helper' {
 
                 {
                     Remove-SqlDscDatabaseRoleMember -SqlDatabaseObject $mockSqlDatabaseObject -Name 'MyRole' -MemberName 'MyRole'
-                } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*Mock DropMember Method was called with invalid operation.*')
+                } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*Mock DropMember Method was called with invalid operation.*')
             }
         }
     }

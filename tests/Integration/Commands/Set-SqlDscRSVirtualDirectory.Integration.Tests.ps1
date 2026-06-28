@@ -38,21 +38,21 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
         }
 
         It 'Should set virtual directory for ReportServerWebService using pipeline' {
-            { $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = & ({ $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Force -ErrorAction 'Stop' })
 
             # Verify the virtual directory was set
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            $config.VirtualDirectoryReportServer | Should -Be 'ReportServer'
+            $config.VirtualDirectoryReportServer | Should-Be 'ReportServer'
         }
 
         It 'Should set virtual directory for ReportServerWebApp using pipeline' {
-            { $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebApp' -VirtualDirectory 'Reports' -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = & ({ $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebApp' -VirtualDirectory 'Reports' -Force -ErrorAction 'Stop' })
 
             # Verify the virtual directory was set
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            $config.VirtualDirectoryReportManager | Should -Be 'Reports'
+            $config.VirtualDirectoryReportManager | Should-Be 'Reports'
         }
     }
 
@@ -62,21 +62,21 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
         }
 
         It 'Should set virtual directory for ReportServerWebService using pipeline' {
-            { $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = & ({ $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Force -ErrorAction 'Stop' })
 
             # Verify the virtual directory was set
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            $config.VirtualDirectoryReportServer | Should -Be 'ReportServer'
+            $config.VirtualDirectoryReportServer | Should-Be 'ReportServer'
         }
 
         It 'Should set virtual directory for ReportServerWebApp using pipeline' {
-            { $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebApp' -VirtualDirectory 'Reports' -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = & ({ $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebApp' -VirtualDirectory 'Reports' -Force -ErrorAction 'Stop' })
 
             # Verify the virtual directory was set
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            $config.VirtualDirectoryReportManager | Should -Be 'Reports'
+            $config.VirtualDirectoryReportManager | Should-Be 'Reports'
         }
     }
 
@@ -86,21 +86,21 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
         }
 
         It 'Should set virtual directory for ReportServerWebService using pipeline' {
-            { $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = & ({ $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Force -ErrorAction 'Stop' })
 
             # Verify the virtual directory was set
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            $config.VirtualDirectoryReportServer | Should -Be 'ReportServer'
+            $config.VirtualDirectoryReportServer | Should-Be 'ReportServer'
         }
 
         It 'Should set virtual directory for ReportServerWebApp using pipeline' {
-            { $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebApp' -VirtualDirectory 'Reports' -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = & ({ $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebApp' -VirtualDirectory 'Reports' -Force -ErrorAction 'Stop' })
 
             # Verify the virtual directory was set
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            $config.VirtualDirectoryReportManager | Should -Be 'Reports'
+            $config.VirtualDirectoryReportManager | Should-Be 'Reports'
         }
     }
 
@@ -110,21 +110,21 @@ Describe 'Set-SqlDscRSVirtualDirectory' {
         }
 
         It 'Should set virtual directory for ReportServerWebService using pipeline' {
-            { $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = & ({ $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebService' -VirtualDirectory 'ReportServer' -Force -ErrorAction 'Stop' })
 
             # Verify the virtual directory was set
             $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
 
-            $config.VirtualDirectoryReportServer | Should -Be 'ReportServer'
+            $config.VirtualDirectoryReportServer | Should-Be 'ReportServer'
         }
 
         It 'Should set virtual directory for ReportServerWebApp using pipeline' {
-            { $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebApp' -VirtualDirectory 'Reports' -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = & ({ $script:configuration | Set-SqlDscRSVirtualDirectory -Application 'ReportServerWebApp' -VirtualDirectory 'Reports' -Force -ErrorAction 'Stop' })
 
             # Verify the virtual directory was set
             $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
 
-            $config.VirtualDirectoryReportManager | Should -Be 'Reports'
+            $config.VirtualDirectoryReportManager | Should-Be 'Reports'
         }
     }
 }

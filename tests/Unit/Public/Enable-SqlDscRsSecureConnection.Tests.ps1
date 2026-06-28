@@ -58,8 +58,8 @@ Describe 'Enable-SqlDscRsSecureConnection' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -78,18 +78,18 @@ Describe 'Enable-SqlDscRsSecureConnection' {
         }
 
         It 'Should enable secure connection without errors' {
-            { $mockCimInstance | Enable-SqlDscRsSecureConnection -Confirm:$false } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Enable-SqlDscRsSecureConnection -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'SetSecureConnectionLevel' -and
                 $Arguments.Level -eq 1
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should not return anything by default' {
             $result = $mockCimInstance | Enable-SqlDscRsSecureConnection -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -110,8 +110,8 @@ Describe 'Enable-SqlDscRsSecureConnection' {
         It 'Should return the configuration CIM instance' {
             $result = $mockCimInstance | Enable-SqlDscRsSecureConnection -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -130,9 +130,9 @@ Describe 'Enable-SqlDscRsSecureConnection' {
         }
 
         It 'Should enable secure connection without confirmation' {
-            { $mockCimInstance | Enable-SqlDscRsSecureConnection -Force } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Enable-SqlDscRsSecureConnection -Force })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -149,7 +149,7 @@ Describe 'Enable-SqlDscRsSecureConnection' {
         It 'Should not call Invoke-RsCimMethod' {
             $mockCimInstance | Enable-SqlDscRsSecureConnection -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
         }
     }
 
@@ -168,9 +168,9 @@ Describe 'Enable-SqlDscRsSecureConnection' {
         }
 
         It 'Should enable secure connection' {
-            { Enable-SqlDscRsSecureConnection -Configuration $mockCimInstance -Confirm:$false } | Should -Not -Throw
+            $null = & ({ Enable-SqlDscRsSecureConnection -Configuration $mockCimInstance -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 }

@@ -101,11 +101,11 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
                 ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
-            $parameters | Should -Not -BeNullOrEmpty
-            $parameters['ServerObject'] | Should -Be $script:serverObject
-            $parameters['Name'] | Should -Be $script:testAudit.Name
-            $parameters['LogType'] | Should -Be 'ApplicationLog'
-            $parameters.ContainsKey('Path') | Should -BeFalse
+            $parameters | Should-BeTruthy
+            $parameters['ServerObject'] | Should-Be $script:serverObject
+            $parameters['Name'] | Should-Be $script:testAudit.Name
+            $parameters['LogType'] | Should-Be 'ApplicationLog'
+            $parameters.ContainsKey('Path') | Should-BeFalse
         }
 
         It 'Should recreate the audit with the same properties using returned parameters' {
@@ -119,9 +119,9 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
             # Recreate using the parameters
             $recreatedAudit = New-SqlDscAudit @parameters -Confirm:$false -PassThru
 
-            $recreatedAudit | Should -Not -BeNullOrEmpty
-            $recreatedAudit.Name | Should -Be $script:testAudit.Name
-            $recreatedAudit.DestinationType | Should -Be $script:testAudit.DestinationType
+            $recreatedAudit | Should-BeTruthy
+            $recreatedAudit.Name | Should-Be $script:testAudit.Name
+            $recreatedAudit.DestinationType | Should-Be $script:testAudit.DestinationType
         }
     }
 
@@ -143,9 +143,9 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
                 ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
-            $parameters | Should -Not -BeNullOrEmpty
-            $parameters['LogType'] | Should -Be 'SecurityLog'
-            $parameters.ContainsKey('Path') | Should -BeFalse
+            $parameters | Should-BeTruthy
+            $parameters['LogType'] | Should-Be 'SecurityLog'
+            $parameters.ContainsKey('Path') | Should-BeFalse
         }
     }
 
@@ -167,9 +167,9 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
                 ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
-            $parameters | Should -Not -BeNullOrEmpty
-            $parameters['Path'].TrimEnd('\', '/') | Should -Be $script:testAuditPath.TrimEnd('\', '/')
-            $parameters.ContainsKey('LogType') | Should -BeFalse
+            $parameters | Should-BeTruthy
+            $parameters['Path'].TrimEnd('\', '/') | Should-Be $script:testAuditPath.TrimEnd('\', '/')
+            $parameters.ContainsKey('LogType') | Should-BeFalse
         }
 
         It 'Should recreate the File audit with the same properties' {
@@ -183,10 +183,10 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
             # Recreate using the parameters
             $recreatedAudit = New-SqlDscAudit @parameters -Confirm:$false -PassThru
 
-            $recreatedAudit | Should -Not -BeNullOrEmpty
-            $recreatedAudit.Name | Should -Be $script:testAudit.Name
-            $recreatedAudit.DestinationType | Should -Be 'File'
-            $recreatedAudit.FilePath.TrimEnd('\', '/') | Should -Be $script:testAuditPath.TrimEnd('\', '/')
+            $recreatedAudit | Should-BeTruthy
+            $recreatedAudit.Name | Should-Be $script:testAudit.Name
+            $recreatedAudit.DestinationType | Should-Be 'File'
+            $recreatedAudit.FilePath.TrimEnd('\', '/') | Should-Be $script:testAuditPath.TrimEnd('\', '/')
         }
     }
 
@@ -208,9 +208,9 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
                 ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
-            $parameters | Should -Not -BeNullOrEmpty
-            $parameters['MaximumFileSize'] | Should -Be 100
-            $parameters['MaximumFileSizeUnit'] | Should -Be 'Megabyte'
+            $parameters | Should-BeTruthy
+            $parameters['MaximumFileSize'] | Should-Be 100
+            $parameters['MaximumFileSizeUnit'] | Should-Be 'Megabyte'
         }
 
         It 'Should recreate the audit with the same file size properties' {
@@ -224,9 +224,9 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
             # Recreate using the parameters
             $recreatedAudit = New-SqlDscAudit @parameters -Confirm:$false -PassThru
 
-            $recreatedAudit | Should -Not -BeNullOrEmpty
-            $recreatedAudit.MaximumFileSize | Should -Be 100
-            $recreatedAudit.MaximumFileSizeUnit | Should -Be 'MB'
+            $recreatedAudit | Should-BeTruthy
+            $recreatedAudit.MaximumFileSize | Should-Be 100
+            $recreatedAudit.MaximumFileSizeUnit | Should-Be 'MB'
         }
     }
 
@@ -248,12 +248,12 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
                 ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
-            $parameters | Should -Not -BeNullOrEmpty
-            $parameters['MaximumFiles'] | Should -Be 10
-            $parameters['MaximumFileSize'] | Should -Be 50
-            $parameters['MaximumFileSizeUnit'] | Should -Be 'Megabyte'
-            $parameters['ReserveDiskSpace'] | Should -BeTrue
-            $parameters.ContainsKey('MaximumRolloverFiles') | Should -BeFalse
+            $parameters | Should-BeTruthy
+            $parameters['MaximumFiles'] | Should-Be 10
+            $parameters['MaximumFileSize'] | Should-Be 50
+            $parameters['MaximumFileSizeUnit'] | Should-Be 'Megabyte'
+            $parameters['ReserveDiskSpace'] | Should-BeTrue
+            $parameters.ContainsKey('MaximumRolloverFiles') | Should-BeFalse
         }
 
         It 'Should recreate the audit with the same MaximumFiles properties' {
@@ -267,10 +267,10 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
             # Recreate using the parameters
             $recreatedAudit = New-SqlDscAudit @parameters -Confirm:$false -PassThru
 
-            $recreatedAudit | Should -Not -BeNullOrEmpty
-            $recreatedAudit.MaximumFiles | Should -Be 10
-            $recreatedAudit.MaximumFileSize | Should -Be 50
-            $recreatedAudit.ReserveDiskSpace | Should -BeTrue
+            $recreatedAudit | Should-BeTruthy
+            $recreatedAudit.MaximumFiles | Should-Be 10
+            $recreatedAudit.MaximumFileSize | Should-Be 50
+            $recreatedAudit.ReserveDiskSpace | Should-BeTrue
         }
     }
 
@@ -292,10 +292,10 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
                 ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
-            $parameters | Should -Not -BeNullOrEmpty
-            $parameters['MaximumRolloverFiles'] | Should -Be 15
-            $parameters.ContainsKey('MaximumFiles') | Should -BeFalse
-            $parameters.ContainsKey('ReserveDiskSpace') | Should -BeFalse
+            $parameters | Should-BeTruthy
+            $parameters['MaximumRolloverFiles'] | Should-Be 15
+            $parameters.ContainsKey('MaximumFiles') | Should-BeFalse
+            $parameters.ContainsKey('ReserveDiskSpace') | Should-BeFalse
         }
 
         It 'Should recreate the audit with the same MaximumRolloverFiles properties' {
@@ -309,8 +309,8 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
             # Recreate using the parameters
             $recreatedAudit = New-SqlDscAudit @parameters -Confirm:$false -PassThru
 
-            $recreatedAudit | Should -Not -BeNullOrEmpty
-            $recreatedAudit.MaximumRolloverFiles | Should -Be 15
+            $recreatedAudit | Should-BeTruthy
+            $recreatedAudit.MaximumRolloverFiles | Should-Be 15
         }
     }
 
@@ -332,8 +332,8 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
                 ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
-            $parameters | Should -Not -BeNullOrEmpty
-            $parameters['OnFailure'] | Should -Be 'FailOperation'
+            $parameters | Should-BeTruthy
+            $parameters['OnFailure'] | Should-Be 'FailOperation'
         }
 
         It 'Should recreate the audit with the same OnFailure setting' {
@@ -347,8 +347,8 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
             # Recreate using the parameters
             $recreatedAudit = New-SqlDscAudit @parameters -Confirm:$false -PassThru
 
-            $recreatedAudit | Should -Not -BeNullOrEmpty
-            $recreatedAudit.OnFailure | Should -Be 'FailOperation'
+            $recreatedAudit | Should-BeTruthy
+            $recreatedAudit.OnFailure | Should-Be 'FailOperation'
         }
     }
 
@@ -370,8 +370,8 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
                 ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
-            $parameters | Should -Not -BeNullOrEmpty
-            $parameters['QueueDelay'] | Should -Be 3000
+            $parameters | Should-BeTruthy
+            $parameters['QueueDelay'] | Should-Be 3000
         }
 
         It 'Should recreate the audit with the same QueueDelay setting' {
@@ -385,8 +385,8 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
             # Recreate using the parameters
             $recreatedAudit = New-SqlDscAudit @parameters -Confirm:$false -PassThru
 
-            $recreatedAudit | Should -Not -BeNullOrEmpty
-            $recreatedAudit.QueueDelay | Should -Be 3000
+            $recreatedAudit | Should-BeTruthy
+            $recreatedAudit.QueueDelay | Should-Be 3000
         }
     }
 
@@ -409,8 +409,8 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
                 ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
-            $parameters | Should -Not -BeNullOrEmpty
-            $parameters['AuditGuid'] | Should -Be $script:testGuid
+            $parameters | Should-BeTruthy
+            $parameters['AuditGuid'] | Should-Be $script:testGuid
         }
 
         It 'Should allow overriding AuditGuid with new value' {
@@ -422,9 +422,9 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
                 ConvertTo-AuditNewParameterSet -AuditObject $AuditObject -AuditGuid $NewGuid
             }
 
-            $parameters | Should -Not -BeNullOrEmpty
-            $parameters['AuditGuid'] | Should -Be $newGuid
-            $parameters['AuditGuid'] | Should -Not -Be $script:testAudit.Guid
+            $parameters | Should-BeTruthy
+            $parameters['AuditGuid'] | Should-Be $newGuid
+            $parameters['AuditGuid'] | Should-NotBe $script:testAudit.Guid
         }
 
         It 'Should recreate the audit with the same AuditGuid' {
@@ -438,8 +438,8 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
             # Recreate using the parameters
             $recreatedAudit = New-SqlDscAudit @parameters -Confirm:$false -PassThru
 
-            $recreatedAudit | Should -Not -BeNullOrEmpty
-            $recreatedAudit.Guid | Should -Be $script:testGuid
+            $recreatedAudit | Should-BeTruthy
+            $recreatedAudit.Guid | Should-Be $script:testGuid
         }
     }
 
@@ -463,8 +463,8 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
                 ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
-            $parameters | Should -Not -BeNullOrEmpty
-            $parameters['AuditFilter'] | Should -Be $script:expectedFilter
+            $parameters | Should-BeTruthy
+            $parameters['AuditFilter'] | Should-Be $script:expectedFilter
         }
 
         It 'Should recreate the audit with the same AuditFilter' {
@@ -478,8 +478,8 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
             # Recreate using the parameters
             $recreatedAudit = New-SqlDscAudit @parameters -Confirm:$false -PassThru
 
-            $recreatedAudit | Should -Not -BeNullOrEmpty
-            $recreatedAudit.Filter | Should -Be $script:expectedFilter
+            $recreatedAudit | Should-BeTruthy
+            $recreatedAudit.Filter | Should-Be $script:expectedFilter
         }
     }
 
@@ -518,16 +518,16 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
                 ConvertTo-AuditNewParameterSet -AuditObject $AuditObject
             }
 
-            $parameters | Should -Not -BeNullOrEmpty
-            $parameters['Path'].TrimEnd('\', '/') | Should -Be $script:testAuditPath.TrimEnd('\', '/')
-            $parameters['MaximumFileSize'] | Should -Be 200
-            $parameters['MaximumFileSizeUnit'] | Should -Be 'Gigabyte'
-            $parameters['MaximumFiles'] | Should -Be 20
-            $parameters['ReserveDiskSpace'] | Should -BeTrue
-            $parameters['OnFailure'] | Should -Be 'Shutdown'
-            $parameters['QueueDelay'] | Should -Be 2000
-            $parameters['AuditGuid'] | Should -Be $script:testGuid
-            $parameters['AuditFilter'] | Should -Be $script:expectedFilter
+            $parameters | Should-BeTruthy
+            $parameters['Path'].TrimEnd('\', '/') | Should-Be $script:testAuditPath.TrimEnd('\', '/')
+            $parameters['MaximumFileSize'] | Should-Be 200
+            $parameters['MaximumFileSizeUnit'] | Should-Be 'Gigabyte'
+            $parameters['MaximumFiles'] | Should-Be 20
+            $parameters['ReserveDiskSpace'] | Should-BeTrue
+            $parameters['OnFailure'] | Should-Be 'Shutdown'
+            $parameters['QueueDelay'] | Should-Be 2000
+            $parameters['AuditGuid'] | Should-Be $script:testGuid
+            $parameters['AuditFilter'] | Should-Be $script:expectedFilter
         }
 
         It 'Should recreate the complex audit with all the same properties' {
@@ -541,17 +541,17 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag @('Integration_SQL2017', 'Integra
             # Recreate using the parameters
             $recreatedAudit = New-SqlDscAudit @parameters -Confirm:$false -PassThru
 
-            $recreatedAudit | Should -Not -BeNullOrEmpty
-            $recreatedAudit.Name | Should -Be $script:testAudit.Name
-            $recreatedAudit.FilePath.TrimEnd('\', '/') | Should -Be $script:testAuditPath.TrimEnd('\', '/')
-            $recreatedAudit.MaximumFileSize | Should -Be 200
-            $recreatedAudit.MaximumFileSizeUnit | Should -Be 'GB'
-            $recreatedAudit.MaximumFiles | Should -Be 20
-            $recreatedAudit.ReserveDiskSpace | Should -BeTrue
-            $recreatedAudit.OnFailure | Should -Be 'Shutdown'
-            $recreatedAudit.QueueDelay | Should -Be 2000
-            $recreatedAudit.Guid | Should -Be $script:testGuid
-            $recreatedAudit.Filter | Should -Be $script:expectedFilter
+            $recreatedAudit | Should-BeTruthy
+            $recreatedAudit.Name | Should-Be $script:testAudit.Name
+            $recreatedAudit.FilePath.TrimEnd('\', '/') | Should-Be $script:testAuditPath.TrimEnd('\', '/')
+            $recreatedAudit.MaximumFileSize | Should-Be 200
+            $recreatedAudit.MaximumFileSizeUnit | Should-Be 'GB'
+            $recreatedAudit.MaximumFiles | Should-Be 20
+            $recreatedAudit.ReserveDiskSpace | Should-BeTrue
+            $recreatedAudit.OnFailure | Should-Be 'Shutdown'
+            $recreatedAudit.QueueDelay | Should-Be 2000
+            $recreatedAudit.Guid | Should-Be $script:testGuid
+            $recreatedAudit.Filter | Should-Be $script:expectedFilter
         }
     }
 }

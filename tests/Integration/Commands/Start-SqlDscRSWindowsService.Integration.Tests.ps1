@@ -39,7 +39,7 @@ Describe 'Start-SqlDscRSWindowsService' {
 
             # Verify Windows service is started
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.IsWindowsServiceEnabled | Should -BeTrue
+            $verifyConfig.IsWindowsServiceEnabled | Should-BeTrue
         }
 
         It 'Should be idempotent when Windows service is already started' {
@@ -48,7 +48,7 @@ Describe 'Start-SqlDscRSWindowsService' {
 
             # Verify Windows service is still started
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.IsWindowsServiceEnabled | Should -BeTrue
+            $verifyConfig.IsWindowsServiceEnabled | Should-BeTrue
         }
     }
 
@@ -59,7 +59,7 @@ Describe 'Start-SqlDscRSWindowsService' {
 
             # Verify Windows service is started
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.IsWindowsServiceEnabled | Should -BeTrue
+            $verifyConfig.IsWindowsServiceEnabled | Should-BeTrue
         }
 
         It 'Should be idempotent when Windows service is already started' {
@@ -68,7 +68,7 @@ Describe 'Start-SqlDscRSWindowsService' {
 
             # Verify Windows service is still started
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.IsWindowsServiceEnabled | Should -BeTrue
+            $verifyConfig.IsWindowsServiceEnabled | Should-BeTrue
         }
     }
 
@@ -79,7 +79,7 @@ Describe 'Start-SqlDscRSWindowsService' {
 
             # Verify Windows service is started
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.IsWindowsServiceEnabled | Should -BeTrue
+            $verifyConfig.IsWindowsServiceEnabled | Should-BeTrue
         }
 
         It 'Should be idempotent when Windows service is already started' {
@@ -88,7 +88,7 @@ Describe 'Start-SqlDscRSWindowsService' {
 
             # Verify Windows service is still started
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.IsWindowsServiceEnabled | Should -BeTrue
+            $verifyConfig.IsWindowsServiceEnabled | Should-BeTrue
         }
     }
 
@@ -99,7 +99,7 @@ Describe 'Start-SqlDscRSWindowsService' {
 
             # Verify Windows service is started
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
-            $verifyConfig.IsWindowsServiceEnabled | Should -BeTrue
+            $verifyConfig.IsWindowsServiceEnabled | Should-BeTrue
         }
 
         It 'Should be idempotent when Windows service is already started' {
@@ -108,7 +108,7 @@ Describe 'Start-SqlDscRSWindowsService' {
 
             # Verify Windows service is still started
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
-            $verifyConfig.IsWindowsServiceEnabled | Should -BeTrue
+            $verifyConfig.IsWindowsServiceEnabled | Should-BeTrue
         }
     }
 }

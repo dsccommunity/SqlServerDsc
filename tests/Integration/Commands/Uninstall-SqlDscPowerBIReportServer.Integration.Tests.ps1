@@ -47,7 +47,7 @@ Describe 'Uninstall-SqlDscPowerBIReportServer' -Tag @('Integration_PowerBI') {
     It 'Should have the BI Report Server service running' {
         $getServiceResult = Get-Service -Name 'PowerBIReportServer' -ErrorAction 'Stop'
 
-        $getServiceResult.Status | Should -Be 'Running'
+        $getServiceResult.Status | Should-Be 'Running'
     }
 
     Context 'When uninstalling BI Report Server' {
@@ -66,7 +66,7 @@ Describe 'Uninstall-SqlDscPowerBIReportServer' -Tag @('Integration_PowerBI') {
         }
 
         It 'Should not have a Power BI Report Server service' {
-            Get-Service -Name 'PowerBIReportServer' -ErrorAction 'Ignore' | Should -BeNullOrEmpty
+            Get-Service -Name 'PowerBIReportServer' -ErrorAction 'Ignore' | Should-BeFalsy
         }
     }
 }

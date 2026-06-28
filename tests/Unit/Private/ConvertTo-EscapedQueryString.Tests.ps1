@@ -51,7 +51,7 @@ Describe 'ConvertTo-EscapedQueryString' -Tag 'Private' {
 
                 $result = ConvertTo-EscapedQueryString -Query "SELECT * FROM Users WHERE Name = N'{0}'" -Argument "O'Brien"
 
-                $result | Should -Be "SELECT * FROM Users WHERE Name = N'O''Brien'"
+                $result | Should-Be "SELECT * FROM Users WHERE Name = N'O''Brien'"
             }
         }
 
@@ -61,7 +61,7 @@ Describe 'ConvertTo-EscapedQueryString' -Tag 'Private' {
 
                 $result = ConvertTo-EscapedQueryString -Query "SELECT * FROM Users WHERE Name = N'{0}'" -Argument "O'Brien's"
 
-                $result | Should -Be "SELECT * FROM Users WHERE Name = N'O''Brien''s'"
+                $result | Should-Be "SELECT * FROM Users WHERE Name = N'O''Brien''s'"
             }
         }
 
@@ -71,7 +71,7 @@ Describe 'ConvertTo-EscapedQueryString' -Tag 'Private' {
 
                 $result = ConvertTo-EscapedQueryString -Query "SELECT * FROM Users WHERE Name = N'{0}'" -Argument 'Smith'
 
-                $result | Should -Be "SELECT * FROM Users WHERE Name = N'Smith'"
+                $result | Should-Be "SELECT * FROM Users WHERE Name = N'Smith'"
             }
         }
     }
@@ -83,7 +83,7 @@ Describe 'ConvertTo-EscapedQueryString' -Tag 'Private' {
 
                 $result = ConvertTo-EscapedQueryString -Query "EXECUTE sys.sp_adddistributor @distributor = N'{0}', @password = N'{1}';" -Argument 'Server1', "Pass'word;123"
 
-                $result | Should -Be "EXECUTE sys.sp_adddistributor @distributor = N'Server1', @password = N'Pass''word;123';"
+                $result | Should-Be "EXECUTE sys.sp_adddistributor @distributor = N'Server1', @password = N'Pass''word;123';"
             }
         }
 
@@ -93,7 +93,7 @@ Describe 'ConvertTo-EscapedQueryString' -Tag 'Private' {
 
                 $result = ConvertTo-EscapedQueryString -Query "INSERT INTO Users (FirstName, LastName) VALUES (N'{0}', N'{1}')" -Argument "Mary's", "O'Connor"
 
-                $result | Should -Be "INSERT INTO Users (FirstName, LastName) VALUES (N'Mary''s', N'O''Connor')"
+                $result | Should-Be "INSERT INTO Users (FirstName, LastName) VALUES (N'Mary''s', N'O''Connor')"
             }
         }
     }
@@ -106,7 +106,7 @@ Describe 'ConvertTo-EscapedQueryString' -Tag 'Private' {
                 # Password with single quote, semicolon, and dashes
                 $result = ConvertTo-EscapedQueryString -Query "EXECUTE sys.sp_adddistributor @password = N'{0}';" -Argument "Pass'word;--DROP TABLE Users"
 
-                $result | Should -Be "EXECUTE sys.sp_adddistributor @password = N'Pass''word;--DROP TABLE Users';"
+                $result | Should-Be "EXECUTE sys.sp_adddistributor @password = N'Pass''word;--DROP TABLE Users';"
             }
         }
 
@@ -116,7 +116,7 @@ Describe 'ConvertTo-EscapedQueryString' -Tag 'Private' {
 
                 $result = ConvertTo-EscapedQueryString -Query "SELECT N'{0}'" -Argument "'''"
 
-                $result | Should -Be "SELECT N''''''''"
+                $result | Should-Be "SELECT N''''''''"
             }
         }
 
@@ -126,7 +126,7 @@ Describe 'ConvertTo-EscapedQueryString' -Tag 'Private' {
 
                 $result = ConvertTo-EscapedQueryString -Query "SELECT N'{0}'" -Argument ''
 
-                $result | Should -Be "SELECT N''"
+                $result | Should-Be "SELECT N''"
             }
         }
     }

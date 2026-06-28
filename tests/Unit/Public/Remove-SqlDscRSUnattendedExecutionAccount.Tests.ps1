@@ -58,8 +58,8 @@ Describe 'Remove-SqlDscRSUnattendedExecutionAccount' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -75,15 +75,15 @@ Describe 'Remove-SqlDscRSUnattendedExecutionAccount' {
         It 'Should remove unattended execution account without errors' {
             $mockCimInstance | Remove-SqlDscRSUnattendedExecutionAccount -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'RemoveUnattendedExecutionAccount'
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should not return anything by default' {
             $result = $mockCimInstance | Remove-SqlDscRSUnattendedExecutionAccount -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -99,8 +99,8 @@ Describe 'Remove-SqlDscRSUnattendedExecutionAccount' {
         It 'Should return the configuration CIM instance' {
             $result = $mockCimInstance | Remove-SqlDscRSUnattendedExecutionAccount -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -116,7 +116,7 @@ Describe 'Remove-SqlDscRSUnattendedExecutionAccount' {
         It 'Should remove unattended execution account without confirmation' {
             $mockCimInstance | Remove-SqlDscRSUnattendedExecutionAccount -Force
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -132,7 +132,7 @@ Describe 'Remove-SqlDscRSUnattendedExecutionAccount' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Remove-SqlDscRSUnattendedExecutionAccount -Confirm:$false } | Should -Throw -ErrorId 'RSRSUEA0001,Remove-SqlDscRSUnattendedExecutionAccount'
+            { $mockCimInstance | Remove-SqlDscRSUnattendedExecutionAccount -Confirm:$false } | Should-Throw -FullyQualifiedErrorId 'RSRSUEA0001,Remove-SqlDscRSUnattendedExecutionAccount'
         }
     }
 
@@ -148,7 +148,7 @@ Describe 'Remove-SqlDscRSUnattendedExecutionAccount' {
         It 'Should not call Invoke-RsCimMethod' {
             $mockCimInstance | Remove-SqlDscRSUnattendedExecutionAccount -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
         }
     }
 
@@ -164,7 +164,7 @@ Describe 'Remove-SqlDscRSUnattendedExecutionAccount' {
         It 'Should remove unattended execution account' {
             Remove-SqlDscRSUnattendedExecutionAccount -Configuration $mockCimInstance -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 }

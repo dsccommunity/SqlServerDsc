@@ -59,28 +59,28 @@ Describe 'ConvertTo-SqlDscEditionName' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should return correct mapping for SQL Server Developer edition ID (2176971986)' {
             $result = ConvertTo-SqlDscEditionName -Id 2176971986 -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.EditionId | Should -Be $script:expectedEditionMappings[2176971986].EditionId
-            $result.Edition | Should -Be $script:expectedEditionMappings[2176971986].Edition
-            $result.EditionName | Should -Be $script:expectedEditionMappings[2176971986].EditionName
+            $result | Should-BeTruthy
+            $result.EditionId | Should-Be $script:expectedEditionMappings[2176971986].EditionId
+            $result.Edition | Should-Be $script:expectedEditionMappings[2176971986].Edition
+            $result.EditionName | Should-Be $script:expectedEditionMappings[2176971986].EditionName
         }
 
         It 'Should return correct mapping for Power BI Report Server Developer edition ID (2017617798)' {
             $result = ConvertTo-SqlDscEditionName -Id 2017617798 -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.EditionId | Should -Be $script:expectedEditionMappings[2017617798].EditionId
-            $result.Edition | Should -Be $script:expectedEditionMappings[2017617798].Edition
-            $result.EditionName | Should -Be $script:expectedEditionMappings[2017617798].EditionName
+            $result | Should-BeTruthy
+            $result.EditionId | Should-Be $script:expectedEditionMappings[2017617798].EditionId
+            $result.Edition | Should-Be $script:expectedEditionMappings[2017617798].Edition
+            $result.EditionName | Should-Be $script:expectedEditionMappings[2017617798].EditionName
         }
 
         It 'Should return correct mapping for Power BI Report Server Evaluation edition ID (1369084056)' {
             $result = ConvertTo-SqlDscEditionName -Id 1369084056 -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.EditionId | Should -Be $script:expectedEditionMappings[1369084056].EditionId
-            $result.Edition | Should -Be $script:expectedEditionMappings[1369084056].Edition
-            $result.EditionName | Should -Be $script:expectedEditionMappings[1369084056].EditionName
+            $result | Should-BeTruthy
+            $result.EditionId | Should-Be $script:expectedEditionMappings[1369084056].EditionId
+            $result.Edition | Should-Be $script:expectedEditionMappings[1369084056].Edition
+            $result.EditionName | Should-Be $script:expectedEditionMappings[1369084056].EditionName
         }
     }
 
@@ -88,28 +88,28 @@ Describe 'ConvertTo-SqlDscEditionName' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should return Unknown for an unknown EditionId (99999)' {
             $result = ConvertTo-SqlDscEditionName -Id 99999 -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.EditionId | Should -Be 99999
-            $result.Edition | Should -Be 'Unknown'
-            $result.EditionName | Should -Be 'Unknown'
+            $result | Should-BeTruthy
+            $result.EditionId | Should-Be 99999
+            $result.Edition | Should-Be 'Unknown'
+            $result.EditionName | Should-Be 'Unknown'
         }
 
         It 'Should return Unknown for another unknown EditionId (0)' {
             $result = ConvertTo-SqlDscEditionName -Id 0 -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.EditionId | Should -Be 0
-            $result.Edition | Should -Be 'Unknown'
-            $result.EditionName | Should -Be 'Unknown'
+            $result | Should-BeTruthy
+            $result.EditionId | Should-Be 0
+            $result.Edition | Should-Be 'Unknown'
+            $result.EditionName | Should-Be 'Unknown'
         }
 
         It 'Should return Unknown for a large unknown EditionId (4294967295)' {
             $result = ConvertTo-SqlDscEditionName -Id 4294967295 -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.EditionId | Should -Be 4294967295
-            $result.Edition | Should -Be 'Unknown'
-            $result.EditionName | Should -Be 'Unknown'
+            $result | Should-BeTruthy
+            $result.EditionId | Should-Be 4294967295
+            $result.Edition | Should-Be 'Unknown'
+            $result.EditionName | Should-Be 'Unknown'
         }
     }
 
@@ -117,34 +117,34 @@ Describe 'ConvertTo-SqlDscEditionName' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should return PSCustomObject with correct properties' {
             $result = ConvertTo-SqlDscEditionName -Id 2176971986 -ErrorAction 'Stop'
 
-            $result | Should -BeOfType ([System.Management.Automation.PSCustomObject])
-            $result.PSObject.Properties.Name | Should -Contain 'EditionId'
-            $result.PSObject.Properties.Name | Should -Contain 'Edition'
-            $result.PSObject.Properties.Name | Should -Contain 'EditionName'
-            $result.PSObject.Properties.Name | Should -HaveCount 3
+            $result | Should-HaveType ([System.Management.Automation.PSCustomObject])
+            $result.PSObject.Properties.Name | Should-ContainCollection 'EditionId'
+            $result.PSObject.Properties.Name | Should-ContainCollection 'Edition'
+            $result.PSObject.Properties.Name | Should-ContainCollection 'EditionName'
+            $result.PSObject.Properties.Name | Should-BeCollection -Count 3
         }
 
         It 'Should return consistent object types for all EditionId values' {
             $resultKnown = ConvertTo-SqlDscEditionName -Id 2176971986 -ErrorAction 'Stop'
             $resultUnknown = ConvertTo-SqlDscEditionName -Id 99999 -ErrorAction 'Stop'
 
-            $resultKnown.GetType() | Should -Be $resultUnknown.GetType()
+            $resultKnown.GetType() | Should-Be $resultUnknown.GetType()
 
             # Verify both have the same property structure
-            $resultKnown.PSObject.Properties.Name | Should -Be $resultUnknown.PSObject.Properties.Name
+            $resultKnown.PSObject.Properties.Name | Should-Be $resultUnknown.PSObject.Properties.Name
         }
 
         It 'Should return EditionId as UInt32 type' {
             $result = ConvertTo-SqlDscEditionName -Id 2176971986 -ErrorAction 'Stop'
 
-            $result.EditionId | Should -BeOfType ([System.UInt32])
+            $result.EditionId | Should-HaveType ([System.UInt32])
         }
 
         It 'Should return Edition and EditionName as String types' {
             $result = ConvertTo-SqlDscEditionName -Id 2176971986 -ErrorAction 'Stop'
 
-            $result.Edition | Should -BeOfType ([System.String])
-            $result.EditionName | Should -BeOfType ([System.String])
+            $result.Edition | Should-HaveType ([System.String])
+            $result.EditionName | Should-HaveType ([System.String])
         }
     }
 

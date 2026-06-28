@@ -69,8 +69,8 @@ Describe 'Complete-SqlDscFailoverCluster' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When setup action is ''CompleteFailoverCluster''' {
@@ -110,7 +110,7 @@ Describe 'Complete-SqlDscFailoverCluster' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Complete-SqlDscFailoverCluster -Confirm:$false @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList | Should -MatchExactly '\/ACTION=CompleteFailoverCluster'
                         $ArgumentList | Should -MatchExactly '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' # cspell: disable-line
                         $ArgumentList | Should -MatchExactly '\/INSTALLSQLDATADIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
@@ -120,6 +120,7 @@ Describe 'Complete-SqlDscFailoverCluster' -Tag 'Public' {
 
                         # Return $true if none of the above throw.
                         $true
+                    } -Scope It -Times 1                       $true
                     } -Exactly -Times 1 -Scope It
                 }
             }
@@ -128,7 +129,7 @@ Describe 'Complete-SqlDscFailoverCluster' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Complete-SqlDscFailoverCluster -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList | Should -MatchExactly '\/ACTION=CompleteFailoverCluster'
                         $ArgumentList | Should -MatchExactly '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' # cspell: disable-line
                         $ArgumentList | Should -MatchExactly '\/INSTALLSQLDATADIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
@@ -138,6 +139,7 @@ Describe 'Complete-SqlDscFailoverCluster' -Tag 'Public' {
 
                         # Return $true if none of the above throw.
                         $true
+                    } -Scope It -Times 1                       $true
                     } -Exactly -Times 1 -Scope It
                 }
             }
@@ -146,7 +148,7 @@ Describe 'Complete-SqlDscFailoverCluster' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Complete-SqlDscFailoverCluster -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -350,12 +352,12 @@ Describe 'Complete-SqlDscFailoverCluster' -Tag 'Public' {
 
                 Complete-SqlDscFailoverCluster @completeSqlDscFailoverClusterParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                     $ArgumentList | Should -MatchExactly $MockExpectedRegEx
 
                     # Return $true if none of the above throw.
                     $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1s 1 -Scope It
             }
         }
     }

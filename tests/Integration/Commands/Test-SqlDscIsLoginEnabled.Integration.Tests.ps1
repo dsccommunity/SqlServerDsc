@@ -58,8 +58,8 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2017', 'Integration_
             # Test if login is enabled
             $result = Test-SqlDscIsLoginEnabled -ServerObject $script:serverObject -Name $script:testLoginName
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeTrue
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeTrue
         }
 
         It 'Should return False when login is disabled' {
@@ -69,8 +69,8 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2017', 'Integration_
             # Test if login is enabled
             $result = Test-SqlDscIsLoginEnabled -ServerObject $script:serverObject -Name $script:testLoginName
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeFalse
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeFalse
         }
 
         It 'Should work with Refresh parameter when login is enabled' {
@@ -80,8 +80,8 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2017', 'Integration_
             # Test with Refresh parameter
             $result = Test-SqlDscIsLoginEnabled -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeTrue
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeTrue
         }
 
         It 'Should work with Refresh parameter when login is disabled' {
@@ -91,8 +91,8 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2017', 'Integration_
             # Test with Refresh parameter
             $result = Test-SqlDscIsLoginEnabled -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeFalse
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeFalse
         }
 
         It 'Should accept ServerObject from pipeline' {
@@ -102,8 +102,8 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2017', 'Integration_
             # Test using pipeline
             $result = $script:serverObject | Test-SqlDscIsLoginEnabled -Name $script:testLoginName
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeTrue
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeTrue
         }
     }
 
@@ -116,8 +116,8 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2017', 'Integration_
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
             $result = Test-SqlDscIsLoginEnabled -LoginObject $loginObject
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeTrue
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeTrue
         }
 
         It 'Should return False when login object is disabled' {
@@ -128,8 +128,8 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2017', 'Integration_
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
             $result = Test-SqlDscIsLoginEnabled -LoginObject $loginObject
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeFalse
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeFalse
         }
 
         It 'Should accept LoginObject from pipeline when enabled' {
@@ -140,8 +140,8 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2017', 'Integration_
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
             $result = $loginObject | Test-SqlDscIsLoginEnabled
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeTrue
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeTrue
         }
 
         It 'Should accept LoginObject from pipeline when disabled' {
@@ -152,15 +152,15 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2017', 'Integration_
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
             $result = $loginObject | Test-SqlDscIsLoginEnabled
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeFalse
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeFalse
         }
     }
 
     Context 'When testing a non-existent login' {
         It 'Should throw an error for non-existent login' {
             { Test-SqlDscIsLoginEnabled -ServerObject $script:serverObject -Name 'NonExistentLogin' -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage 'There is no login with the name ''NonExistentLogin''.'
+                Should-Throw -ExceptionMessage 'There is no login with the name ''NonExistentLogin''.'
         }
     }
 
@@ -168,7 +168,7 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag @('Integration_SQL2017', 'Integration_
         It 'Should return correct state for sa login' {
             $result = Test-SqlDscIsLoginEnabled -ServerObject $script:serverObject -Name 'sa'
 
-            $result | Should -BeOfType [System.Boolean]
+            $result | Should-HaveType ([System.Boolean])
             # We only assert the type here; specific state is environment-dependent.
         }
     }

@@ -137,11 +137,11 @@ Describe 'SqlMaxDop\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                $result.MinMemory | Should -Be 2048
-                $result.MaxMemory | Should -Be 10300
-                $result.IsActiveNode | Should -BeFalse
+                $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                $result.MinMemory | Should-Be 2048
+                $result.MaxMemory | Should-Be 10300
+                $result.IsActiveNode | Should-BeFalse
             }
         }
     }
@@ -191,7 +191,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $mockErrorMessage = '{0} (Parameter ''MaxMemory'')' -f $script:localizedData.MaxMemoryParamMustBeNull
 
-                     { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                     { Test-TargetResource @mockTestTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                 }
             }
         }
@@ -222,7 +222,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $mockErrorMessage = '{0} (Parameter ''MaxMemoryPercent'')' -f $script:localizedData.MaxMemoryPercentParamMustBeNull
 
-                     { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                     { Test-TargetResource @mockTestTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                 }
             }
         }
@@ -253,7 +253,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $mockErrorMessage = '{0} (Parameter ''MaxMemoryPercent'')' -f $script:localizedData.MaxMemoryPercentParamMustBeNull
 
-                     { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                     { Test-TargetResource @mockTestTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                 }
             }
         }
@@ -284,7 +284,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $mockErrorMessage = '{0} (Parameter ''MinMemoryPercent'')' -f $script:localizedData.MinMemoryPercentParamMustBeNull
 
-                     { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                     { Test-TargetResource @mockTestTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                 }
             }
         }
@@ -314,7 +314,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $mockErrorMessage = '{0} (Parameter ''MaxMemory'')' -f $script:localizedData.MaxMemoryParamMustNotBeNull
 
-                     { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                     { Test-TargetResource @mockTestTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                 }
             }
         }
@@ -344,7 +344,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $mockErrorMessage = '{0} (Parameter ''MaxMemory'')' -f $script:localizedData.MaxMemoryParamMustNotBeNull
 
-                     { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                     { Test-TargetResource @mockTestTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                 }
             }
         }
@@ -372,7 +372,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -398,7 +398,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -424,7 +424,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -455,7 +455,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -485,7 +485,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -515,7 +515,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -543,7 +543,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -569,7 +569,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -595,7 +595,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -626,7 +626,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -656,7 +656,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -686,7 +686,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -717,7 +717,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -759,7 +759,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $mockErrorMessage = '{0} (Parameter ''MaxMemory'')' -f $script:localizedData.MaxMemoryParamMustBeNull
 
-                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                     { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                 }
             }
         }
@@ -774,7 +774,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $mockErrorMessage = '{0} (Parameter ''MaxMemoryPercent'')' -f $script:localizedData.MaxMemoryPercentParamMustBeNull
 
-                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                     { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                 }
             }
         }
@@ -789,7 +789,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $mockErrorMessage = '{0} (Parameter ''MaxMemoryPercent'')' -f $script:localizedData.MaxMemoryPercentParamMustBeNull
 
-                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                     { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                 }
             }
         }
@@ -804,7 +804,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $mockErrorMessage = '{0} (Parameter ''MinMemoryPercent'')' -f $script:localizedData.MinMemoryPercentParamMustBeNull
 
-                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                     { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                 }
             }
         }
@@ -818,7 +818,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $mockErrorMessage = '{0} (Parameter ''MaxMemory'')' -f $script:localizedData.MaxMemoryParamMustNotBeNull
 
-                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                     { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                 }
             }
         }
@@ -832,7 +832,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $mockErrorMessage = '{0} (Parameter ''MaxMemory'')' -f $script:localizedData.MaxMemoryParamMustNotBeNull
 
-                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                     { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                 }
             }
         }
@@ -907,7 +907,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $null = Set-TargetResource @mockSetTargetResourceParameters
 
-                    $mockMethodAlterWasRun | Should -Be 1
+                    $mockMethodAlterWasRun | Should-Be 1
                 }
             }
         }
@@ -924,7 +924,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $null = Set-TargetResource @mockSetTargetResourceParameters
 
-                    $mockMethodAlterWasRun | Should -Be 1
+                    $mockMethodAlterWasRun | Should-Be 1
                 }
             }
         }
@@ -941,7 +941,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $null = Set-TargetResource @mockSetTargetResourceParameters
 
-                    $mockMethodAlterWasRun | Should -Be 1
+                    $mockMethodAlterWasRun | Should-Be 1
                 }
             }
         }
@@ -964,7 +964,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $null = Set-TargetResource @mockSetTargetResourceParameters
 
-                    $mockMethodAlterWasRun | Should -Be 1
+                    $mockMethodAlterWasRun | Should-Be 1
                 }
             }
         }
@@ -987,7 +987,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $null = Set-TargetResource @mockSetTargetResourceParameters
 
-                    $mockMethodAlterWasRun | Should -Be 1
+                    $mockMethodAlterWasRun | Should-Be 1
                 }
             }
         }
@@ -1010,7 +1010,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $null = Set-TargetResource @mockSetTargetResourceParameters
 
-                    $mockMethodAlterWasRun | Should -Be 1
+                    $mockMethodAlterWasRun | Should-Be 1
                 }
             }
         }
@@ -1034,7 +1034,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $null = Set-TargetResource @mockSetTargetResourceParameters
 
-                    $mockMethodAlterWasRun | Should -Be 1
+                    $mockMethodAlterWasRun | Should-Be 1
                 }
             }
         }
@@ -1062,7 +1062,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $null = Set-TargetResource @mockSetTargetResourceParameters
 
-                    $mockMethodAlterWasRun | Should -Be 1
+                    $mockMethodAlterWasRun | Should-Be 1
                 }
             }
         }
@@ -1086,7 +1086,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $null = Set-TargetResource @mockSetTargetResourceParameters
 
-                    $mockMethodAlterWasRun | Should -Be 1
+                    $mockMethodAlterWasRun | Should-Be 1
                 }
             }
         }
@@ -1104,7 +1104,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $null = Set-TargetResource @mockSetTargetResourceParameters
 
-                    $mockMethodAlterWasRun | Should -Be 1
+                    $mockMethodAlterWasRun | Should-Be 1
                 }
             }
         }
@@ -1128,7 +1128,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $null = Set-TargetResource @mockSetTargetResourceParameters
 
-                    $mockMethodAlterWasRun | Should -Be 1
+                    $mockMethodAlterWasRun | Should-Be 1
                 }
             }
         }
@@ -1144,9 +1144,9 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $mockErrorMessage = '*{0}*Mock InvalidOperationException*' -f ($script:localizedData.AlterServerMemoryFailed -f 'localhost', 'MSSQLSERVER')
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorMessage
 
-                    $mockMethodAlterWasRun | Should -Be 1
+                    $mockMethodAlterWasRun | Should-Be 1
                 }
 
                 $script:mockInvalidOperationAlterMethod = $false
@@ -1207,7 +1207,7 @@ Describe 'SqlMemory\Get-SqlDscDynamicMaxMemory' -Tag 'Helper' {
 
                             $result = Get-SqlDscDynamicMaxMemory
 
-                            $result | Should -Be 14560
+                            $result | Should-Be 14560
                         }
                     }
                 }
@@ -1229,7 +1229,7 @@ Describe 'SqlMemory\Get-SqlDscDynamicMaxMemory' -Tag 'Helper' {
 
                             $result = Get-SqlDscDynamicMaxMemory
 
-                            $result | Should -Be 16896
+                            $result | Should-Be 16896
                         }
                     }
                 }
@@ -1251,7 +1251,7 @@ Describe 'SqlMemory\Get-SqlDscDynamicMaxMemory' -Tag 'Helper' {
 
                             $result = Get-SqlDscDynamicMaxMemory
 
-                            $result | Should -Be 25646
+                            $result | Should-Be 25646
                         }
                     }
                 }
@@ -1294,7 +1294,7 @@ Describe 'SqlMemory\Get-SqlDscDynamicMaxMemory' -Tag 'Helper' {
                     It 'Should return the correct max memory (in megabytes) value' {
                         $result = Get-SqlDscDynamicMaxMemory
 
-                        $result | Should -Be 25134
+                        $result | Should-Be 25134
                     }
                 }
             }
@@ -1324,7 +1324,7 @@ Describe 'SqlMemory\Get-SqlDscDynamicMaxMemory' -Tag 'Helper' {
                     It 'Should return the correct max memory (in megabytes) value' {
                         $result = Get-SqlDscDynamicMaxMemory
 
-                        $result | Should -Be 25390
+                        $result | Should-Be 25390
                     }
                 }
             }
@@ -1354,7 +1354,7 @@ Describe 'SqlMemory\Get-SqlDscDynamicMaxMemory' -Tag 'Helper' {
                     It 'Should return the correct max memory (in megabytes) value' {
                         $result = Get-SqlDscDynamicMaxMemory
 
-                        $result | Should -Be 24622
+                        $result | Should-Be 24622
                     }
                 }
             }
@@ -1396,7 +1396,7 @@ Describe 'SqlMemory\Get-SqlDscDynamicMaxMemory' -Tag 'Helper' {
                     It 'Should return the correct max memory (in megabytes) value' {
                         $result = Get-SqlDscDynamicMaxMemory
 
-                        $result | Should -Be 24078
+                        $result | Should-Be 24078
                     }
                 }
             }
@@ -1426,7 +1426,7 @@ Describe 'SqlMemory\Get-SqlDscDynamicMaxMemory' -Tag 'Helper' {
                     It 'Should return the correct max memory (in megabytes) value' {
                         $result = Get-SqlDscDynamicMaxMemory
 
-                        $result | Should -Be 24350
+                        $result | Should-Be 24350
                     }
                 }
             }
@@ -1456,7 +1456,7 @@ Describe 'SqlMemory\Get-SqlDscDynamicMaxMemory' -Tag 'Helper' {
                     It 'Should return the correct max memory (in megabytes) value' {
                         $result = Get-SqlDscDynamicMaxMemory
 
-                        $result | Should -Be 23534
+                        $result | Should-Be 23534
                     }
                 }
             }
@@ -1476,7 +1476,7 @@ Describe 'SqlMemory\Get-SqlDscDynamicMaxMemory' -Tag 'Helper' {
 
                 $mockErrorMessage = $script:localizedData.ErrorGetDynamicMaxMemory
 
-                { Get-SqlDscDynamicMaxMemory } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                { Get-SqlDscDynamicMaxMemory } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
             }
         }
     }
@@ -1501,7 +1501,7 @@ Describe 'SqlMemory\Get-SqlDscPercentMemory' -Tag 'Helper' {
 
                     $result = Get-SqlDscPercentMemory -PercentMemory 80
 
-                    $result | Should -Be 16384
+                    $result | Should-Be 16384
                 }
             }
         }
@@ -1523,7 +1523,7 @@ Describe 'SqlMemory\Get-SqlDscPercentMemory' -Tag 'Helper' {
 
                     $result = Get-SqlDscPercentMemory -PercentMemory 50
 
-                    $result | Should -Be 762
+                    $result | Should-Be 762
                 }
             }
         }
@@ -1542,7 +1542,7 @@ Describe 'SqlMemory\Get-SqlDscPercentMemory' -Tag 'Helper' {
 
                 $mockErrorMessage = $script:localizedData.ErrorGetPercentMemory
 
-                { Get-SqlDscPercentMemory -PercentMemory 80 } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                { Get-SqlDscPercentMemory -PercentMemory 80 } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
             }
         }
     }

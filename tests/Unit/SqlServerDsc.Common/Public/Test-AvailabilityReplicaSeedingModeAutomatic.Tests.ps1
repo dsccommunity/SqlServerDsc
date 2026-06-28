@@ -127,20 +127,20 @@ Describe 'SqlServerDsc.Common\Test-AvailabilityReplicaSeedingModeAutomatic' -Tag
         It 'Should return $false when the instance version is <_>' -ForEach @(11, 12) {
             $mockSqlVersion = $_
 
-            Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should -BeFalse
+            Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should-BeFalse
 
-            Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-            Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 0
         }
 
         # Test SQL 2016 and later where Seeding Mode is supported.
         It 'Should return $false when the instance version is <_> and the replica seeding mode is manual' -ForEach @(13, 14, 15) {
             $mockSqlVersion = $_
 
-            Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should -BeFalse
+            Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should-BeFalse
 
-            Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-            Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 1
         }
     }
 
@@ -155,10 +155,10 @@ Describe 'SqlServerDsc.Common\Test-AvailabilityReplicaSeedingModeAutomatic' -Tag
             $mockSqlVersion = $_
             $mockDynamic_SeedingMode = 'Automatic'
 
-            Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should -BeTrue
+            Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should-BeTrue
 
-            Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-            Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 1
         }
     }
 }

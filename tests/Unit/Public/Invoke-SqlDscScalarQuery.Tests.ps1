@@ -71,23 +71,23 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     It 'Should have ServerObject as a mandatory parameter' {
         $parameterInfo = (Get-Command -Name 'Invoke-SqlDscScalarQuery').Parameters['ServerObject']
-        $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        $parameterInfo.Attributes.Mandatory | Should-BeTrue
     }
 
     It 'Should have Query as a mandatory parameter' {
         $parameterInfo = (Get-Command -Name 'Invoke-SqlDscScalarQuery').Parameters['Query']
-        $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        $parameterInfo.Attributes.Mandatory | Should-BeTrue
     }
 
     It 'Should accept ServerObject from pipeline' {
         $parameterInfo = (Get-Command -Name 'Invoke-SqlDscScalarQuery').Parameters['ServerObject']
-        $parameterInfo.Attributes.ValueFromPipeline | Should -BeTrue
+        $parameterInfo.Attributes.ValueFromPipeline | Should-BeTrue
     }
 
     Context 'When executing a scalar query' {
@@ -122,9 +122,9 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag 'Public' {
 
                 $result = Invoke-SqlDscScalarQuery -ServerObject $mockServerObject -Query 'SELECT @@VERSION'
 
-                $result | Should -Be 'TestResult'
+                $result | Should-Be 'TestResult'
 
-                $mockMethodExecuteScalarCallCount | Should -Be 1
+                $mockMethodExecuteScalarCallCount | Should-Be 1
             }
         }
 
@@ -134,9 +134,9 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag 'Public' {
 
                 $result = $mockServerObject | Invoke-SqlDscScalarQuery -Query 'SELECT 12345'
 
-                $result | Should -Be '12345'
+                $result | Should-Be '12345'
 
-                $mockMethodExecuteScalarCallCount | Should -Be 1
+                $mockMethodExecuteScalarCallCount | Should-Be 1
             }
         }
 
@@ -146,9 +146,9 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag 'Public' {
 
                 $result = Invoke-SqlDscScalarQuery -StatementTimeout 900 -ServerObject $mockServerObject -Query 'SELECT 42'
 
-                $result | Should -Be 42
+                $result | Should-Be 42
 
-                $mockMethodExecuteScalarCallCount | Should -Be 1
+                $mockMethodExecuteScalarCallCount | Should-Be 1
             }
         }
 
@@ -158,9 +158,9 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag 'Public' {
 
                 $result = Invoke-SqlDscScalarQuery -RedactText @('MySecret') -ServerObject $mockServerObject -Query 'SELECT MySecret'
 
-                $result | Should -Be 'Success'
+                $result | Should-Be 'Success'
 
-                $mockMethodExecuteScalarCallCount | Should -Be 1
+                $mockMethodExecuteScalarCallCount | Should-Be 1
             }
         }
 
@@ -170,10 +170,10 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag 'Public' {
 
                 $result = Invoke-SqlDscScalarQuery -ServerObject $mockServerObject -Query 'SELECT SYSDATETIME()'
 
-                $result | Should -BeOfType [System.DateTime]
-                $result | Should -Be ([System.DateTime]::Parse('2023-01-01 12:00:00'))
+                $result | Should-HaveType ([System.DateTime])
+                $result | Should-Be ([System.DateTime]::Parse('2023-01-01 12:00:00'))
 
-                $mockMethodExecuteScalarCallCount | Should -Be 1
+                $mockMethodExecuteScalarCallCount | Should-Be 1
             }
         }
 
@@ -183,9 +183,9 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag 'Public' {
 
                 $result = Invoke-SqlDscScalarQuery -ServerObject $mockServerObject -Query 'SELECT NULL'
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
 
-                $mockMethodExecuteScalarCallCount | Should -Be 1
+                $mockMethodExecuteScalarCallCount | Should-Be 1
             }
         }
     }
@@ -212,9 +212,9 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag 'Public' {
             It 'Should throw the correct error' {
                 {
                     Invoke-SqlDscScalarQuery -ServerObject $mockServerObject -Query 'SELECT invalid' -ErrorAction 'Stop'
-                } | Should -Throw -ExpectedMessage '*Mocked error*'
+                } | Should-Throw -ExceptionMessage '*Mocked error*'
 
-                $mockMethodExecuteScalarCallCount | Should -Be 1
+                $mockMethodExecuteScalarCallCount | Should-Be 1
             }
         }
 
@@ -222,9 +222,9 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag 'Public' {
             It 'Should not throw an exception and does not return any result' {
                 $result = Invoke-SqlDscScalarQuery -ServerObject $mockServerObject -Query 'SELECT invalid' -ErrorAction 'Ignore'
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
 
-                $mockMethodExecuteScalarCallCount | Should -Be 1
+                $mockMethodExecuteScalarCallCount | Should-Be 1
             }
         }
     }

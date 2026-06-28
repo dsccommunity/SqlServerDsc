@@ -61,8 +61,8 @@ Describe 'SqlReason' -Tag 'SqlReason' {
         }
 
         It 'Should be of the correct type' {
-            $script:mockSqlReasonInstance | Should -Not -BeNullOrEmpty
-            $script:mockSqlReasonInstance.GetType().Name | Should -Be 'SqlReason'
+            $script:mockSqlReasonInstance | Should-BeTruthy
+            $script:mockSqlReasonInstance.GetType().Name | Should-Be 'SqlReason'
         }
     }
 
@@ -81,8 +81,8 @@ Describe 'SqlReason' -Tag 'SqlReason' {
         }
 
         It 'Should be able read the values from instance' {
-            $script:mockSqlReasonInstance.Code | Should -Be 'SqlAudit:SqlAudit:Ensure'
-            $script:mockSqlReasonInstance.Phrase | Should -Be 'The property Ensure should be "Present", but was "Absent"'
+            $script:mockSqlReasonInstance.Code | Should-Be 'SqlAudit:SqlAudit:Ensure'
+            $script:mockSqlReasonInstance.Phrase | Should-Be 'The property Ensure should be "Present", but was "Absent"'
         }
     }
 }

@@ -69,7 +69,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
 
                 # Verify the trace flag was set
                 $result = Get-SqlDscStartupParameter -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
-                $result.TraceFlag | Should -Contain 4199
+                $result.TraceFlag | Should-ContainCollection 4199
             }
 
             It 'Should set multiple trace flags' {
@@ -79,8 +79,8 @@ Describe 'Set-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
 
                 # Verify the trace flags were set
                 $result = Get-SqlDscStartupParameter -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
-                $result.TraceFlag | Should -Contain 4199
-                $result.TraceFlag | Should -Contain 1222
+                $result.TraceFlag | Should-ContainCollection 4199
+                $result.TraceFlag | Should-ContainCollection 1222
             }
 
             It 'Should clear all trace flags when given empty array' {
@@ -92,7 +92,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
 
                 # Verify trace flags were cleared
                 $result = Get-SqlDscStartupParameter -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
-                $result.TraceFlag | Should -BeNullOrEmpty
+                $result.TraceFlag | Should-BeFalsy
             }
         }
 
@@ -104,8 +104,8 @@ Describe 'Set-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
 
                 # Verify the internal trace flags were set
                 $result = Get-SqlDscStartupParameter -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
-                $result.InternalTraceFlag | Should -Contain 8011
-                $result.InternalTraceFlag | Should -Contain 8012
+                $result.InternalTraceFlag | Should-ContainCollection 8011
+                $result.InternalTraceFlag | Should-ContainCollection 8012
             }
 
             It 'Should clear internal trace flags when given empty array' {
@@ -117,7 +117,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
 
                 # Verify internal trace flags were cleared
                 $result = Get-SqlDscStartupParameter -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
-                $result.InternalTraceFlag | Should -BeNullOrEmpty
+                $result.InternalTraceFlag | Should-BeFalsy
             }
         }
 
@@ -130,8 +130,8 @@ Describe 'Set-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
 
                 # Verify both types were set
                 $result = Get-SqlDscStartupParameter -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
-                $result.TraceFlag | Should -Contain 4199
-                $result.InternalTraceFlag | Should -Contain 8011
+                $result.TraceFlag | Should-ContainCollection 4199
+                $result.InternalTraceFlag | Should-ContainCollection 8011
             }
         }
 
@@ -141,7 +141,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
 
                 # Verify the trace flag was set
                 $result = Get-SqlDscStartupParameter -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
-                $result.TraceFlag | Should -Contain 4199
+                $result.TraceFlag | Should-ContainCollection 4199
             }
         }
     }
@@ -154,8 +154,8 @@ Describe 'Set-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
 
                 # Verify the trace flags were set
                 $result = Get-SqlDscStartupParameter -ServiceObject $script:serviceObject -ErrorAction 'Stop'
-                $result.TraceFlag | Should -Contain 4199
-                $result.TraceFlag | Should -Contain 1222
+                $result.TraceFlag | Should-ContainCollection 4199
+                $result.TraceFlag | Should-ContainCollection 1222
             }
 
             It 'Should set internal trace flags using service object parameter' {
@@ -164,7 +164,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
 
                 # Verify the internal trace flags were set
                 $result = Get-SqlDscStartupParameter -ServiceObject $script:serviceObject -ErrorAction 'Stop'
-                $result.InternalTraceFlag | Should -Contain 8011
+                $result.InternalTraceFlag | Should-ContainCollection 8011
             }
         }
     }
@@ -182,13 +182,13 @@ Describe 'Set-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
 
             # Compare arrays properly handling nulls/empty arrays
             if ($currentParams.TraceFlag -and $newParams.TraceFlag) {
-                Compare-Object -ReferenceObject $currentParams.TraceFlag -DifferenceObject $newParams.TraceFlag | Should -BeNullOrEmpty
+                Compare-Object -ReferenceObject $currentParams.TraceFlag -DifferenceObject $newParams.TraceFlag | Should-BeFalsy
             } elseif (-not $currentParams.TraceFlag -and -not $newParams.TraceFlag) {
                 # Both should be null/empty - this is expected
-                $true | Should -BeTrue
+                $true | Should-BeTrue
             } else {
                 # One is null and the other isn't - this means something changed
-                $false | Should -BeTrue -Because "Startup parameters should not change when using WhatIf"
+                $false | Should-BeTrue -Because "Startup parameters should not change when using WhatIf"
             }
         }
     }
@@ -197,13 +197,13 @@ Describe 'Set-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
         It 'Should throw an error when instance does not exist' {
             {
                 Set-SqlDscStartupParameter -ServerName $script:mockServerName -InstanceName 'NonExistentInstance' -TraceFlag @(4199) -Force -ErrorAction 'Stop'
-            } | Should -Throw
+            } | Should-Throw
         }
 
         It 'Should throw an error when server does not exist' {
             {
                 Set-SqlDscStartupParameter -ServerName 'NonExistentServer' -InstanceName $script:mockInstanceName -TraceFlag @(4199) -Force -ErrorAction 'Stop'
-            } | Should -Throw
+            } | Should-Throw
         }
     }
 }

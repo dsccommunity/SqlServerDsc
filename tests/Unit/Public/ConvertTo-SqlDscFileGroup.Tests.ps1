@@ -61,9 +61,9 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag 'Public' {
 
             $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
-            $result.Name | Should -Be 'PRIMARY'
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.FileGroup'
+            $result.Name | Should-Be 'PRIMARY'
         }
 
         It 'Should convert a file group spec with ReadOnly property' {
@@ -71,8 +71,8 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag 'Public' {
 
             $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
 
-            $result.Name | Should -Be 'READONLY_FG'
-            $result.ReadOnly | Should -Be $true
+            $result.Name | Should-Be 'READONLY_FG'
+            $result.ReadOnly | Should-Be $true
         }
 
         It 'Should convert a file group spec with IsDefault property' {
@@ -80,8 +80,8 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag 'Public' {
 
             $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
 
-            $result.Name | Should -Be 'PRIMARY'
-            $result.IsDefault | Should -Be $true
+            $result.Name | Should-Be 'PRIMARY'
+            $result.IsDefault | Should-Be $true
         }
 
         It 'Should convert a file group spec with a single data file' {
@@ -90,10 +90,10 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag 'Public' {
 
             $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
 
-            $result.Name | Should -Be 'PRIMARY'
-            $result.Files.Count | Should -Be 1
-            $result.Files[0].Name | Should -Be 'TestFile'
-            $result.Files[0].FileName | Should -Be 'C:\SQLData\TestFile.mdf'
+            $result.Name | Should-Be 'PRIMARY'
+            $result.Files.Count | Should-Be 1
+            $result.Files[0].Name | Should-Be 'TestFile'
+            $result.Files[0].FileName | Should-Be 'C:\SQLData\TestFile.mdf'
         }
 
         It 'Should convert a file group spec with multiple data files' {
@@ -103,12 +103,12 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag 'Public' {
 
             $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
 
-            $result.Name | Should -Be 'SECONDARY'
-            $result.Files.Count | Should -Be 2
-            $result.Files[0].Name | Should -Be 'TestFile1'
-            $result.Files[0].Size | Should -Be 102400
-            $result.Files[1].Name | Should -Be 'TestFile2'
-            $result.Files[1].Size | Should -Be 204800
+            $result.Name | Should-Be 'SECONDARY'
+            $result.Files.Count | Should-Be 2
+            $result.Files[0].Name | Should-Be 'TestFile1'
+            $result.Files[0].Size | Should-Be 102400
+            $result.Files[1].Name | Should-Be 'TestFile2'
+            $result.Files[1].Size | Should-Be 204800
         }
 
         It 'Should convert a file group spec with all properties and multiple files' {
@@ -123,12 +123,12 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag 'Public' {
 
             $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
 
-            $result.Name | Should -Be 'PRIMARY'
-            $result.IsDefault | Should -Be $true
-            $result.Files.Count | Should -Be 2
-            $result.Files[0].Name | Should -Be 'PrimaryFile'
-            $result.Files[0].IsPrimaryFile | Should -Be $true
-            $result.Files[1].Name | Should -Be 'SecondaryFile'
+            $result.Name | Should-Be 'PRIMARY'
+            $result.IsDefault | Should-Be $true
+            $result.Files.Count | Should-Be 2
+            $result.Files[0].Name | Should-Be 'PrimaryFile'
+            $result.Files[0].IsPrimaryFile | Should-Be $true
+            $result.Files[1].Name | Should-Be 'SecondaryFile'
         }
 
         It 'Should convert a file group spec without files (empty Files array)' {
@@ -136,8 +136,8 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag 'Public' {
 
             $result = ConvertTo-SqlDscFileGroup -DatabaseObject $mockDatabase -FileGroupSpec $fileGroupSpec
 
-            $result.Name | Should -Be 'EMPTY_FG'
-            $result.Files.Count | Should -Be 0
+            $result.Name | Should-Be 'EMPTY_FG'
+            $result.Files.Count | Should-Be 0
         }
     }
 
@@ -159,22 +159,22 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have DatabaseObject as a mandatory parameter' {
             $parameterInfo = $commandInfo.Parameters['DatabaseObject']
-            $parameterInfo.Attributes.Mandatory | Should -Contain $true
+            $parameterInfo.Attributes.Mandatory | Should-ContainCollection $true
         }
 
         It 'Should have FileGroupSpec as a mandatory parameter' {
             $parameterInfo = $commandInfo.Parameters['FileGroupSpec']
-            $parameterInfo.Attributes.Mandatory | Should -Contain $true
+            $parameterInfo.Attributes.Mandatory | Should-ContainCollection $true
         }
 
         It 'Should have OutputType set to Microsoft.SqlServer.Management.Smo.FileGroup' {
-            $commandInfo.OutputType.Name | Should -Contain 'Microsoft.SqlServer.Management.Smo.FileGroup'
+            $commandInfo.OutputType.Name | Should-ContainCollection 'Microsoft.SqlServer.Management.Smo.FileGroup'
         }
     }
 }

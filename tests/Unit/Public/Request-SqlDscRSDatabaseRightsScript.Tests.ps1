@@ -58,8 +58,8 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -77,21 +77,21 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         }
 
         It 'Should generate script without errors' {
-            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'NT SERVICE\SQLServerReportingServices' } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'NT SERVICE\SQLServerReportingServices' })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'GenerateDatabaseRightsScript' -and
                 $Arguments.DatabaseName -eq 'ReportServer' -and
                 $Arguments.UserName -eq 'NT SERVICE\SQLServerReportingServices' -and
                 $Arguments.IsRemote -eq $false -and
                 $Arguments.IsWindowsUser -eq $true
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should return the script as a string' {
             $result = $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'NT SERVICE\SQLServerReportingServices'
 
-            $result | Should -Be 'GRANT SELECT ON [ReportServer] TO [NT SERVICE\SQLServerReportingServices]'
+            $result | Should-Be 'GRANT SELECT ON [ReportServer] TO [NT SERVICE\SQLServerReportingServices]'
         }
     }
 
@@ -109,11 +109,11 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         }
 
         It 'Should set IsRemote to true' {
-            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'DOMAIN\SQLRSUser' -IsRemote } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'DOMAIN\SQLRSUser' -IsRemote })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $Arguments.IsRemote -eq $true
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -131,11 +131,11 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         }
 
         It 'Should set IsWindowsUser to false when UseSqlAuthentication is specified' {
-            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'sqluser' -UseSqlAuthentication } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'sqluser' -UseSqlAuthentication })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $Arguments.IsWindowsUser -eq $false
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -153,9 +153,9 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         }
 
         It 'Should generate script' {
-            { Request-SqlDscRSDatabaseRightsScript -Configuration $mockCimInstance -DatabaseName 'ReportServer' -UserName 'NT SERVICE\SQLServerReportingServices' } | Should -Not -Throw
+            $null = & ({ Request-SqlDscRSDatabaseRightsScript -Configuration $mockCimInstance -DatabaseName 'ReportServer' -UserName 'NT SERVICE\SQLServerReportingServices' })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -171,7 +171,7 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'NT SERVICE\SQLServerReportingServices' } | Should -Throw -ErrorId 'RSRDBRS0001,Request-SqlDscRSDatabaseRightsScript'
+            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'NT SERVICE\SQLServerReportingServices' } | Should-Throw -FullyQualifiedErrorId 'RSRDBRS0001,Request-SqlDscRSDatabaseRightsScript'
         }
     }
 
@@ -186,33 +186,33 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         }
 
         It 'Should throw terminating error for UserName without backslash with IsRemote' {
-            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'SQLRSUser' -IsRemote } | Should -Throw -ErrorId 'UserName,New-ArgumentException'
+            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'SQLRSUser' -IsRemote } | Should-Throw -FullyQualifiedErrorId 'UserName,New-ArgumentException'
 
-            Should -Not -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-NotInvoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'GenerateDatabaseRightsScript'
             }
         }
 
         It 'Should throw terminating error for UserName with multiple backslashes with IsRemote' {
-            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'DOMAIN\SUB\SQLRSUser' -IsRemote } | Should -Throw -ErrorId 'UserName,New-ArgumentException'
+            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'DOMAIN\SUB\SQLRSUser' -IsRemote } | Should-Throw -FullyQualifiedErrorId 'UserName,New-ArgumentException'
 
-            Should -Not -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-NotInvoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'GenerateDatabaseRightsScript'
             }
         }
 
         It 'Should throw terminating error for UserName with only domain with IsRemote' {
-            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'DOMAIN\' -IsRemote } | Should -Throw -ErrorId 'UserName,New-ArgumentException'
+            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'DOMAIN\' -IsRemote } | Should-Throw -FullyQualifiedErrorId 'UserName,New-ArgumentException'
 
-            Should -Not -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-NotInvoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'GenerateDatabaseRightsScript'
             }
         }
 
         It 'Should throw terminating error for UserName with only username with IsRemote' {
-            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName '\SQLRSUser' -IsRemote } | Should -Throw -ErrorId 'UserName,New-ArgumentException'
+            { $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName '\SQLRSUser' -IsRemote } | Should-Throw -FullyQualifiedErrorId 'UserName,New-ArgumentException'
 
-            Should -Not -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-NotInvoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'GenerateDatabaseRightsScript'
             }
         }
@@ -234,21 +234,21 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         It 'Should not throw for valid <domain>\<username> format with IsRemote' {
             $null = $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'DOMAIN\SQLRSUser' -IsRemote
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'GenerateDatabaseRightsScript'
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should call Invoke-RsCimMethod with correct parameters for valid username' {
             $null = $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'DOMAIN\SQLRSUser' -IsRemote
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'GenerateDatabaseRightsScript' -and
                 $Arguments.DatabaseName -eq 'ReportServer' -and
                 $Arguments.UserName -eq 'DOMAIN\SQLRSUser' -and
                 $Arguments.IsRemote -eq $true -and
                 $Arguments.IsWindowsUser -eq $true
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -268,21 +268,21 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         It 'Should not validate username format with UseSqlAuthentication' {
             $null = $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'SqlUser' -IsRemote -UseSqlAuthentication
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'GenerateDatabaseRightsScript'
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should call Invoke-RsCimMethod with correct parameters for SQL authentication' {
             $null = $mockCimInstance | Request-SqlDscRSDatabaseRightsScript -DatabaseName 'ReportServer' -UserName 'SqlUser' -IsRemote -UseSqlAuthentication
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'GenerateDatabaseRightsScript' -and
                 $Arguments.DatabaseName -eq 'ReportServer' -and
                 $Arguments.UserName -eq 'SqlUser' -and
                 $Arguments.IsRemote -eq $true -and
                 $Arguments.IsWindowsUser -eq $false
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 }

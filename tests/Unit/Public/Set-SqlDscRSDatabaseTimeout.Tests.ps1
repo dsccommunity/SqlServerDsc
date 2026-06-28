@@ -66,14 +66,14 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have LogonTimeout as the default parameter set' {
             $commandMetadata = Get-Command -Name 'Set-SqlDscRSDatabaseTimeout'
 
-            $commandMetadata.DefaultParameterSet | Should -Be 'LogonTimeout'
+            $commandMetadata.DefaultParameterSet | Should-Be 'LogonTimeout'
         }
     }
 
@@ -88,27 +88,27 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
             }
 
             It 'Should have Mandatory set to True in all parameter sets' {
-                $configurationParameter.Attributes.Mandatory | Should -Contain $true
+                $configurationParameter.Attributes.Mandatory | Should-ContainCollection $true
             }
 
             It 'Should have ValueFromPipeline set to True' {
-                $configurationParameter.Attributes.ValueFromPipeline | Should -Contain $true
+                $configurationParameter.Attributes.ValueFromPipeline | Should-ContainCollection $true
             }
 
             It 'Should have the expected parameter type' {
-                $configurationParameter.ParameterType.Name | Should -Be 'Object'
+                $configurationParameter.ParameterType.Name | Should-Be 'Object'
             }
 
             It 'Should be a member of LogonTimeout parameter set' {
-                $configurationParameter.ParameterSets.Keys | Should -Contain 'LogonTimeout'
+                $configurationParameter.ParameterSets.Keys | Should-ContainCollection 'LogonTimeout'
             }
 
             It 'Should be a member of QueryTimeout parameter set' {
-                $configurationParameter.ParameterSets.Keys | Should -Contain 'QueryTimeout'
+                $configurationParameter.ParameterSets.Keys | Should-ContainCollection 'QueryTimeout'
             }
 
             It 'Should be a member of BothTimeouts parameter set' {
-                $configurationParameter.ParameterSets.Keys | Should -Contain 'BothTimeouts'
+                $configurationParameter.ParameterSets.Keys | Should-ContainCollection 'BothTimeouts'
             }
         }
 
@@ -118,34 +118,34 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
             }
 
             It 'Should have the expected parameter type' {
-                $logonTimeoutParameter.ParameterType.Name | Should -Be 'Int32'
+                $logonTimeoutParameter.ParameterType.Name | Should-Be 'Int32'
             }
 
             It 'Should be a member of LogonTimeout parameter set' {
-                $logonTimeoutParameter.ParameterSets.Keys | Should -Contain 'LogonTimeout'
+                $logonTimeoutParameter.ParameterSets.Keys | Should-ContainCollection 'LogonTimeout'
             }
 
             It 'Should be a member of BothTimeouts parameter set' {
-                $logonTimeoutParameter.ParameterSets.Keys | Should -Contain 'BothTimeouts'
+                $logonTimeoutParameter.ParameterSets.Keys | Should-ContainCollection 'BothTimeouts'
             }
 
             It 'Should not be a member of QueryTimeout parameter set' {
-                $logonTimeoutParameter.ParameterSets.Keys | Should -Not -Contain 'QueryTimeout'
+                $logonTimeoutParameter.ParameterSets.Keys | Should-NotContainCollection 'QueryTimeout'
             }
 
             It 'Should be mandatory in LogonTimeout parameter set' {
-                $logonTimeoutParameter.ParameterSets['LogonTimeout'].IsMandatory | Should -BeTrue
+                $logonTimeoutParameter.ParameterSets['LogonTimeout'].IsMandatory | Should-BeTrue
             }
 
             It 'Should be mandatory in BothTimeouts parameter set' {
-                $logonTimeoutParameter.ParameterSets['BothTimeouts'].IsMandatory | Should -BeTrue
+                $logonTimeoutParameter.ParameterSets['BothTimeouts'].IsMandatory | Should-BeTrue
             }
 
             It 'Should have ValidateRange attribute with minimum 0' {
                 $validateRangeAttribute = $logonTimeoutParameter.Attributes |
                     Where-Object -FilterScript { $_ -is [System.Management.Automation.ValidateRangeAttribute] }
 
-                $validateRangeAttribute.MinRange | Should -Be 0
+                $validateRangeAttribute.MinRange | Should-Be 0
             }
         }
 
@@ -155,34 +155,34 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
             }
 
             It 'Should have the expected parameter type' {
-                $queryTimeoutParameter.ParameterType.Name | Should -Be 'Int32'
+                $queryTimeoutParameter.ParameterType.Name | Should-Be 'Int32'
             }
 
             It 'Should be a member of QueryTimeout parameter set' {
-                $queryTimeoutParameter.ParameterSets.Keys | Should -Contain 'QueryTimeout'
+                $queryTimeoutParameter.ParameterSets.Keys | Should-ContainCollection 'QueryTimeout'
             }
 
             It 'Should be a member of BothTimeouts parameter set' {
-                $queryTimeoutParameter.ParameterSets.Keys | Should -Contain 'BothTimeouts'
+                $queryTimeoutParameter.ParameterSets.Keys | Should-ContainCollection 'BothTimeouts'
             }
 
             It 'Should not be a member of LogonTimeout parameter set' {
-                $queryTimeoutParameter.ParameterSets.Keys | Should -Not -Contain 'LogonTimeout'
+                $queryTimeoutParameter.ParameterSets.Keys | Should-NotContainCollection 'LogonTimeout'
             }
 
             It 'Should be mandatory in QueryTimeout parameter set' {
-                $queryTimeoutParameter.ParameterSets['QueryTimeout'].IsMandatory | Should -BeTrue
+                $queryTimeoutParameter.ParameterSets['QueryTimeout'].IsMandatory | Should-BeTrue
             }
 
             It 'Should be mandatory in BothTimeouts parameter set' {
-                $queryTimeoutParameter.ParameterSets['BothTimeouts'].IsMandatory | Should -BeTrue
+                $queryTimeoutParameter.ParameterSets['BothTimeouts'].IsMandatory | Should-BeTrue
             }
 
             It 'Should have ValidateRange attribute with minimum 0' {
                 $validateRangeAttribute = $queryTimeoutParameter.Attributes |
                     Where-Object -FilterScript { $_ -is [System.Management.Automation.ValidateRangeAttribute] }
 
-                $validateRangeAttribute.MinRange | Should -Be 0
+                $validateRangeAttribute.MinRange | Should-Be 0
             }
         }
 
@@ -192,15 +192,15 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
             }
 
             It 'Should have Mandatory set to False' {
-                $passThruParameter.Attributes.Mandatory | Should -Contain $false
+                $passThruParameter.Attributes.Mandatory | Should-ContainCollection $false
             }
 
             It 'Should have ValueFromPipeline set to False' {
-                $passThruParameter.Attributes.ValueFromPipeline | Should -Contain $false
+                $passThruParameter.Attributes.ValueFromPipeline | Should-ContainCollection $false
             }
 
             It 'Should have the expected parameter type' {
-                $passThruParameter.ParameterType.Name | Should -Be 'SwitchParameter'
+                $passThruParameter.ParameterType.Name | Should-Be 'SwitchParameter'
             }
         }
 
@@ -210,15 +210,15 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
             }
 
             It 'Should have Mandatory set to False' {
-                $forceParameter.Attributes.Mandatory | Should -Contain $false
+                $forceParameter.Attributes.Mandatory | Should-ContainCollection $false
             }
 
             It 'Should have ValueFromPipeline set to False' {
-                $forceParameter.Attributes.ValueFromPipeline | Should -Contain $false
+                $forceParameter.Attributes.ValueFromPipeline | Should-ContainCollection $false
             }
 
             It 'Should have the expected parameter type' {
-                $forceParameter.ParameterType.Name | Should -Be 'SwitchParameter'
+                $forceParameter.ParameterType.Name | Should-Be 'SwitchParameter'
             }
         }
 
@@ -228,11 +228,11 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
             }
 
             It 'Should have Mandatory set to False' {
-                $whatIfParameter.Attributes.Mandatory | Should -BeIn @($false, $null)
+                @($false, $null) | Should-ContainCollection ($whatIfParameter.Attributes.Mandatory)
             }
 
             It 'Should have the expected parameter type' {
-                $whatIfParameter.ParameterType.Name | Should -Be 'SwitchParameter'
+                $whatIfParameter.ParameterType.Name | Should-Be 'SwitchParameter'
             }
         }
 
@@ -242,11 +242,11 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
             }
 
             It 'Should have Mandatory set to False' {
-                $confirmParameter.Attributes.Mandatory | Should -BeIn @($false, $null)
+                @($false, $null) | Should-ContainCollection ($confirmParameter.Attributes.Mandatory)
             }
 
             It 'Should have the expected parameter type' {
-                $confirmParameter.ParameterType.Name | Should -Be 'SwitchParameter'
+                $confirmParameter.ParameterType.Name | Should-Be 'SwitchParameter'
             }
         }
     }
@@ -263,24 +263,24 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         It 'Should call SetDatabaseLogonTimeout method' {
             $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'SetDatabaseLogonTimeout' -and
                 $Arguments.LogonTimeout -eq 30
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should not call SetDatabaseQueryTimeout method' {
             $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'SetDatabaseQueryTimeout'
-            } -Exactly -Times 0 -Scope It
+            } -Scope It -Times 0
         }
 
         It 'Should not return anything by default' {
             $result = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -296,24 +296,24 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         It 'Should call SetDatabaseQueryTimeout method' {
             $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -QueryTimeout 120 -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'SetDatabaseQueryTimeout' -and
                 $Arguments.QueryTimeout -eq 120
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should not call SetDatabaseLogonTimeout method' {
             $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -QueryTimeout 120 -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'SetDatabaseLogonTimeout'
-            } -Exactly -Times 0 -Scope It
+            } -Scope It -Times 0
         }
 
         It 'Should not return anything by default' {
             $result = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -QueryTimeout 120 -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -329,21 +329,21 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         It 'Should call both SetDatabaseLogonTimeout and SetDatabaseQueryTimeout methods' {
             $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -QueryTimeout 120 -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'SetDatabaseLogonTimeout' -and
                 $Arguments.LogonTimeout -eq 30
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'SetDatabaseQueryTimeout' -and
                 $Arguments.QueryTimeout -eq 120
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should not return anything by default' {
             $result = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -QueryTimeout 120 -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -359,19 +359,19 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         It 'Should accept LogonTimeout value of 0' {
             $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -LogonTimeout 0 -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'SetDatabaseLogonTimeout' -and
                 $Arguments.LogonTimeout -eq 0
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should accept QueryTimeout value of 0' {
             $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -QueryTimeout 0 -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'SetDatabaseQueryTimeout' -and
                 $Arguments.QueryTimeout -eq 0
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 
@@ -387,22 +387,22 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         It 'Should return the configuration CIM instance when setting LogonTimeout' {
             $result = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
 
         It 'Should return the configuration CIM instance when setting QueryTimeout' {
             $result = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -QueryTimeout 120 -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
 
         It 'Should return the configuration CIM instance when setting both timeouts' {
             $result = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -QueryTimeout 120 -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -418,19 +418,19 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         It 'Should set LogonTimeout without confirmation' {
             $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -Force
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Scope It -Times 1
         }
 
         It 'Should set QueryTimeout without confirmation' {
             $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -QueryTimeout 120 -Force
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Scope It -Times 1
         }
 
         It 'Should set both timeouts without confirmation' {
             $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -QueryTimeout 120 -Force
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 2 -Scope It
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Scope It -Times 2
         }
     }
 
@@ -446,7 +446,7 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         }
 
         It 'Should throw a terminating error with correct error ID' {
-            { $mockCimInstance | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -Confirm:$false } | Should -Throw -ErrorId 'SSRSDT0001,Set-SqlDscRSDatabaseTimeout'
+            { $mockCimInstance | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -Confirm:$false } | Should-Throw -FullyQualifiedErrorId 'SSRSDT0001,Set-SqlDscRSDatabaseTimeout'
         }
     }
 
@@ -462,7 +462,7 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         }
 
         It 'Should throw a terminating error with correct error ID' {
-            { $mockCimInstance | Set-SqlDscRSDatabaseTimeout -QueryTimeout 120 -Confirm:$false } | Should -Throw -ErrorId 'SSRSDT0002,Set-SqlDscRSDatabaseTimeout'
+            { $mockCimInstance | Set-SqlDscRSDatabaseTimeout -QueryTimeout 120 -Confirm:$false } | Should-Throw -FullyQualifiedErrorId 'SSRSDT0002,Set-SqlDscRSDatabaseTimeout'
         }
     }
 
@@ -478,19 +478,19 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         It 'Should not call Invoke-RsCimMethod when setting LogonTimeout' {
             $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Scope It -Times 0
         }
 
         It 'Should not call Invoke-RsCimMethod when setting QueryTimeout' {
             $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -QueryTimeout 120 -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Scope It -Times 0
         }
 
         It 'Should not call Invoke-RsCimMethod when setting both timeouts' {
             $null = $mockCimInstance | Set-SqlDscRSDatabaseTimeout -LogonTimeout 30 -QueryTimeout 120 -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Scope It -Times 0
         }
     }
 
@@ -506,17 +506,17 @@ Describe 'Set-SqlDscRSDatabaseTimeout' {
         It 'Should set LogonTimeout using Configuration parameter' {
             $null = Set-SqlDscRSDatabaseTimeout -Configuration $mockCimInstance -LogonTimeout 30 -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'SetDatabaseLogonTimeout'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should set QueryTimeout using Configuration parameter' {
             $null = Set-SqlDscRSDatabaseTimeout -Configuration $mockCimInstance -QueryTimeout 120 -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'SetDatabaseQueryTimeout'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 }

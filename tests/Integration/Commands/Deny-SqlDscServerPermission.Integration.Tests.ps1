@@ -74,7 +74,7 @@ Describe 'Deny-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
             # Then test if it's denied
             $result = Test-SqlDscServerPermission -Login $loginObject -Deny -Permission @('ViewAnyDatabase') -ErrorAction 'Stop'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should accept Login from pipeline' {
@@ -84,7 +84,7 @@ Describe 'Deny-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
 
             # Verify the permission was denied
             $result = Test-SqlDscServerPermission -Login $loginObject -Deny -Permission @('ViewAnyDefinition') -ErrorAction 'Stop'
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
     }
 
@@ -102,7 +102,7 @@ Describe 'Deny-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
 
             # Verify the permission was denied
             $result = Test-SqlDscServerPermission -ServerRole $roleObject -Deny -Permission @('ViewServerState') -ErrorAction 'Stop'
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should deny persistent AlterTrace permission to login for other tests' {
@@ -112,7 +112,7 @@ Describe 'Deny-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
 
             # Verify the permission was denied - this denial will remain persistent for other integration tests
             $result = Test-SqlDscServerPermission -Login $loginObject -Deny -Permission @('AlterTrace') -ErrorAction 'Stop'
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should accept ServerRole from pipeline' {
@@ -121,7 +121,7 @@ Describe 'Deny-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integratio
             $null = $roleObject | Deny-SqlDscServerPermission -Permission @('ViewServerState') -Force -ErrorAction 'Stop'
 
             $result = Test-SqlDscServerPermission -ServerRole $roleObject -Deny -Permission @('ViewServerState') -ErrorAction 'Stop'
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
     }
 }

@@ -58,8 +58,8 @@ Describe 'Stop-SqlDscRSWindowsService' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -87,22 +87,22 @@ Describe 'Stop-SqlDscRSWindowsService' {
         }
 
         It 'Should stop Windows service without errors' {
-            { $mockCimInstance | Stop-SqlDscRSWindowsService -Confirm:$false } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Stop-SqlDscRSWindowsService -Confirm:$false })
 
-            Should -Invoke -CommandName Get-RSServiceState -ParameterFilter {
+            Should-Invoke -CommandName Get-RSServiceState -Exactly -ParameterFilter {
                 $DisableWindowsService -eq $true
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'SetServiceState' -and
                 $Arguments.EnableWindowsService -eq $false
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should not return anything' {
             $result = $mockCimInstance | Stop-SqlDscRSWindowsService -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -130,9 +130,9 @@ Describe 'Stop-SqlDscRSWindowsService' {
         }
 
         It 'Should stop Windows service without confirmation' {
-            { $mockCimInstance | Stop-SqlDscRSWindowsService -Force } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Stop-SqlDscRSWindowsService -Force })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -151,8 +151,8 @@ Describe 'Stop-SqlDscRSWindowsService' {
         It 'Should not call Invoke-RsCimMethod' {
             $mockCimInstance | Stop-SqlDscRSWindowsService -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
-            Should -Invoke -CommandName Get-RSServiceState -Exactly -Times 0
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+            Should-Invoke -CommandName Get-RSServiceState -Exactly -Times 0
         }
     }
 
@@ -180,9 +180,9 @@ Describe 'Stop-SqlDscRSWindowsService' {
         }
 
         It 'Should stop Windows service' {
-            { Stop-SqlDscRSWindowsService -Configuration $mockCimInstance -Confirm:$false } | Should -Not -Throw
+            $null = & ({ Stop-SqlDscRSWindowsService -Configuration $mockCimInstance -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -206,7 +206,7 @@ Describe 'Stop-SqlDscRSWindowsService' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Stop-SqlDscRSWindowsService -Confirm:$false } | Should -Throw -ErrorId 'SRSWS0001,Stop-SqlDscRSWindowsService'
+            { $mockCimInstance | Stop-SqlDscRSWindowsService -Confirm:$false } | Should-Throw -FullyQualifiedErrorId 'SRSWS0001,Stop-SqlDscRSWindowsService'
         }
     }
 }

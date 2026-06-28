@@ -40,7 +40,7 @@ Describe 'Disable-SqlDscRsSecureConnection' {
 
             # Verify secure connection is disabled
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.SecureConnectionLevel | Should -Be 0
+            $verifyConfig.SecureConnectionLevel | Should-Be 0
         }
     }
 
@@ -52,7 +52,7 @@ Describe 'Disable-SqlDscRsSecureConnection' {
 
             # Verify secure connection is disabled
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.SecureConnectionLevel | Should -Be 0
+            $verifyConfig.SecureConnectionLevel | Should-Be 0
         }
     }
 
@@ -64,7 +64,7 @@ Describe 'Disable-SqlDscRsSecureConnection' {
 
             # Verify secure connection is disabled
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.SecureConnectionLevel | Should -Be 0
+            $verifyConfig.SecureConnectionLevel | Should-Be 0
         }
     }
 
@@ -76,7 +76,7 @@ Describe 'Disable-SqlDscRsSecureConnection' {
 
             # Verify secure connection is disabled
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
-            $verifyConfig.SecureConnectionLevel | Should -Be 0
+            $verifyConfig.SecureConnectionLevel | Should-Be 0
         }
     }
 }

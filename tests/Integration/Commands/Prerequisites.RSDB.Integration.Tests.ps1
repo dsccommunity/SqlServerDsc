@@ -85,8 +85,8 @@ Describe 'Prerequisites - RSDB SQL Server Instance' -Tag @('Integration_SQL2017_
         It 'Should have the RSDB instance running' {
             $service = Get-Service -Name 'MSSQL$RSDB' -ErrorAction 'SilentlyContinue'
 
-            $service | Should -Not -BeNullOrEmpty
-            $service.Status | Should -Be 'Running'
+            $service | Should-BeTruthy
+            $service.Status | Should-Be 'Running'
         }
     }
 }

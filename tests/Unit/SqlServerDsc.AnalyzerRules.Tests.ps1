@@ -115,14 +115,14 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
 
                 $mockAst = Get-AstFromDefinition -ScriptDefinition $definition -AstType $astType
 
-                $mockAst | Should -Not -BeNullOrEmpty
+                $mockAst | Should-BeTruthy
 
                 # We should evaluate the second function in the script definition.
                 $record = Measure-CommandsNeededToLoadSMO -FunctionAst $mockAst[1]
 
-                ($record | Measure-Object).Count | Should -Be 1
-                $record.Message | Should -Be $expectedErrorRecordMessage
-                $record.RuleName | Should -Be $ruleName
+                ($record | Measure-Object).Count | Should-Be 1
+                $record.Message | Should-Be $expectedErrorRecordMessage
+                $record.RuleName | Should-Be $ruleName
             }
         }
 
@@ -145,12 +145,12 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
 
                 $mockAst = Get-AstFromDefinition -ScriptDefinition $definition -AstType $astType
 
-                $mockAst | Should -Not -BeNullOrEmpty
+                $mockAst | Should-BeTruthy
 
                 # We should evaluate the second function in the script definition.
                 $record = Measure-CommandsNeededToLoadSMO -FunctionAst $mockAst[1]
 
-                $record | Should -BeNullOrEmpty
+                $record | Should-BeFalsy
             }
         }
 
@@ -173,12 +173,12 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
 
                 $mockAst = Get-AstFromDefinition -ScriptDefinition $definition -AstType $astType
 
-                $mockAst | Should -Not -BeNullOrEmpty
+                $mockAst | Should-BeTruthy
 
                 # We should evaluate the second function in the script definition.
                 $record = Measure-CommandsNeededToLoadSMO -FunctionAst $mockAst[1]
 
-                $record | Should -BeNullOrEmpty
+                $record | Should-BeFalsy
             }
         }
     }
@@ -210,9 +210,9 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
                 "
 
                 $record = Invoke-ScriptAnalyzer @invokeScriptAnalyzerParameters
-                ($record | Measure-Object).Count | Should -BeExactly 1
-                $record.Message | Should -Be $expectedErrorRecordMessage
-                $record.RuleName | Should -Be $ruleName
+                ($record | Measure-Object).Count | Should-BeString -CaseSensitive 1
+                $record.Message | Should-Be $expectedErrorRecordMessage
+                $record.RuleName | Should-Be $ruleName
             }
         }
 
@@ -230,9 +230,9 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
                 "
 
                 $record = Invoke-ScriptAnalyzer @invokeScriptAnalyzerParameters
-                ($record | Measure-Object).Count | Should -BeExactly 1
-                $record.Message | Should -Be $expectedErrorRecordMessage
-                $record.RuleName | Should -Be $ruleName
+                ($record | Measure-Object).Count | Should-BeString -CaseSensitive 1
+                $record.Message | Should-Be $expectedErrorRecordMessage
+                $record.RuleName | Should-Be $ruleName
             }
         }
 
@@ -254,7 +254,7 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
                 "
 
                 $record = Invoke-ScriptAnalyzer @invokeScriptAnalyzerParameters
-                $record | Should -BeNullOrEmpty
+                $record | Should-BeFalsy
             }
         }
 
@@ -276,7 +276,7 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
                 "
 
                 $record = Invoke-ScriptAnalyzer @invokeScriptAnalyzerParameters
-                $record | Should -BeNullOrEmpty
+                $record | Should-BeFalsy
             }
         }
     }

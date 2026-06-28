@@ -34,19 +34,19 @@ Describe 'Get-SqlDscRSConfigFile' {
         It 'Should return the configuration file as an XML object for SSRS instance' {
             $result = Get-SqlDscRSConfigFile -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'System.Xml.XmlDocument'
-            $result.Configuration | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'System.Xml.XmlDocument'
+            $result.Configuration | Should-BeTruthy
         }
 
         It 'Should return a configuration file with expected structure' {
             $config = Get-SqlDscRSConfigFile -InstanceName 'SSRS' -ErrorAction 'Stop'
 
             # Verify key configuration sections exist
-            $config.Configuration.Dsn | Should -Not -BeNullOrEmpty
-            $config.Configuration.InstanceId | Should -Not -BeNullOrEmpty
-            $config.Configuration.Service | Should -Not -BeNullOrEmpty
-            $config.Configuration.Authentication | Should -Not -BeNullOrEmpty
+            $config.Configuration.Dsn | Should-BeTruthy
+            $config.Configuration.InstanceId | Should-BeTruthy
+            $config.Configuration.Service | Should-BeTruthy
+            $config.Configuration.Authentication | Should-BeTruthy
         }
 
         It 'Should support XPath queries on the returned XML' {
@@ -55,15 +55,15 @@ Describe 'Get-SqlDscRSConfigFile' {
             # Use XPath to query authentication types
             $authTypes = $config.SelectSingleNode('//Authentication/AuthenticationTypes')
 
-            $authTypes | Should -Not -BeNullOrEmpty
+            $authTypes | Should-BeTruthy
         }
 
         It 'Should work with pipeline input from Get-SqlDscRSSetupConfiguration' {
             $result = Get-SqlDscRSSetupConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop' | Get-SqlDscRSConfigFile -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'System.Xml.XmlDocument'
-            $result.Configuration | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'System.Xml.XmlDocument'
+            $result.Configuration | Should-BeTruthy
         }
 
         It 'Should work with Path parameter using the config file path' {
@@ -72,9 +72,9 @@ Describe 'Get-SqlDscRSConfigFile' {
 
             $result = Get-SqlDscRSConfigFile -Path $configFilePath -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'System.Xml.XmlDocument'
-            $result.Configuration | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'System.Xml.XmlDocument'
+            $result.Configuration | Should-BeTruthy
         }
     }
 
@@ -83,26 +83,26 @@ Describe 'Get-SqlDscRSConfigFile' {
         It 'Should return the configuration file as an XML object for PBIRS instance' {
             $result = Get-SqlDscRSConfigFile -InstanceName 'PBIRS' -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'System.Xml.XmlDocument'
-            $result.Configuration | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'System.Xml.XmlDocument'
+            $result.Configuration | Should-BeTruthy
         }
 
         It 'Should return a configuration file with expected structure' {
             $config = Get-SqlDscRSConfigFile -InstanceName 'PBIRS' -ErrorAction 'Stop'
 
             # Verify key configuration sections exist
-            $config.Configuration.Dsn | Should -Not -BeNullOrEmpty
-            $config.Configuration.InstanceId | Should -Not -BeNullOrEmpty
-            $config.Configuration.Service | Should -Not -BeNullOrEmpty
+            $config.Configuration.Dsn | Should-BeTruthy
+            $config.Configuration.InstanceId | Should-BeTruthy
+            $config.Configuration.Service | Should-BeTruthy
         }
 
         It 'Should work with pipeline input from Get-SqlDscRSSetupConfiguration' {
             $result = Get-SqlDscRSSetupConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop' | Get-SqlDscRSConfigFile -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'System.Xml.XmlDocument'
-            $result.Configuration | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'System.Xml.XmlDocument'
+            $result.Configuration | Should-BeTruthy
         }
 
         It 'Should work with Path parameter using the config file path' {
@@ -111,21 +111,21 @@ Describe 'Get-SqlDscRSConfigFile' {
 
             $result = Get-SqlDscRSConfigFile -Path $configFilePath -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'System.Xml.XmlDocument'
-            $result.Configuration | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'System.Xml.XmlDocument'
+            $result.Configuration | Should-BeTruthy
         }
     }
 
     Context 'When trying to get the configuration file for a non-existent instance' -Tag @('Integration_SQL2019_RS', 'Integration_SQL2022_RS', 'Integration_PowerBI') {
         It 'Should throw a terminating error' {
-            { Get-SqlDscRSConfigFile -InstanceName 'NonExistentInstance' -ErrorAction 'Stop' } | Should -Throw
+            { Get-SqlDscRSConfigFile -InstanceName 'NonExistentInstance' -ErrorAction 'Stop' } | Should-Throw
         }
     }
 
     Context 'When trying to read a non-existent file path' -Tag @('Integration_SQL2019_RS', 'Integration_SQL2022_RS', 'Integration_PowerBI') {
         It 'Should throw a terminating error' {
-            { Get-SqlDscRSConfigFile -Path 'C:\NonExistent\rsreportserver.config' -ErrorAction 'Stop' } | Should -Throw
+            { Get-SqlDscRSConfigFile -Path 'C:\NonExistent\rsreportserver.config' -ErrorAction 'Stop' } | Should-Throw
         }
     }
 }

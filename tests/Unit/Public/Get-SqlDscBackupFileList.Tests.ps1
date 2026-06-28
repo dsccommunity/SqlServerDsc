@@ -59,13 +59,13 @@ Describe 'Get-SqlDscBackupFileList' -Tag 'Public' {
             # The stub's ReadFileList returns MockReadFileListResult which defaults to null
             $result = Get-SqlDscBackupFileList -ServerObject $mockServerObject -BackupFile 'C:\Backups\TestBackup.bak'
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should accept FileNumber parameter' {
             $result = Get-SqlDscBackupFileList -ServerObject $mockServerObject -BackupFile 'C:\Backups\TestBackup.bak' -FileNumber 2
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -78,31 +78,31 @@ Describe 'Get-SqlDscBackupFileList' -Tag 'Public' {
         It 'Should accept ServerObject from pipeline' {
             $result = $mockServerObject | Get-SqlDscBackupFileList -BackupFile 'C:\Backups\TestBackup.bak'
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
     Context 'Parameter validation' {
         It 'Should have mandatory ServerObject parameter' {
             $result = (Get-Command -Name 'Get-SqlDscBackupFileList').Parameters['ServerObject']
-            $result.Attributes.Mandatory | Should -Contain $true
+            $result.Attributes.Mandatory | Should-ContainCollection $true
         }
 
         It 'Should have mandatory BackupFile parameter' {
             $result = (Get-Command -Name 'Get-SqlDscBackupFileList').Parameters['BackupFile']
-            $result.Attributes.Mandatory | Should -Contain $true
+            $result.Attributes.Mandatory | Should-ContainCollection $true
         }
 
         It 'Should have optional FileNumber parameter' {
             $result = (Get-Command -Name 'Get-SqlDscBackupFileList').Parameters['FileNumber']
-            $result.Attributes.Mandatory | Should -Not -Contain $true
+            $result.Attributes.Mandatory | Should-NotContainCollection $true
         }
 
         It 'Should have FileNumber parameter with range validation' {
             $result = (Get-Command -Name 'Get-SqlDscBackupFileList').Parameters['FileNumber']
             $rangeAttribute = $result.Attributes | Where-Object -FilterScript { $_ -is [System.Management.Automation.ValidateRangeAttribute] }
-            $rangeAttribute.MinRange | Should -Be 1
-            $rangeAttribute.MaxRange | Should -Be 2147483647
+            $rangeAttribute.MinRange | Should-Be 1
+            $rangeAttribute.MaxRange | Should-Be 2147483647
         }
     }
 }

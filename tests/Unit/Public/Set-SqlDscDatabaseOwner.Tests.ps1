@@ -91,8 +91,8 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
         It 'Should set database owner successfully' {
             $script:setOwnerCalled = $false
             $null = Set-SqlDscDatabaseOwner -ServerObject $mockServerObject -Name 'TestDatabase' -OwnerName 'sa' -Force
-            $mockDatabaseObject.Owner | Should -Be 'sa'
-            $script:setOwnerCalled | Should -BeTrue -Because 'SetOwner should be called to change the owner'
+            $mockDatabaseObject.Owner | Should-Be 'sa'
+            $script:setOwnerCalled | Should-BeTrue -Because 'SetOwner should be called to change the owner'
         }
 
         It 'Should return a database object when PassThru is specified' {
@@ -100,8 +100,8 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
             $mockDatabaseObject.Owner = 'OldOwner'
             $script:setOwnerCalled = $false
             $result = Set-SqlDscDatabaseOwner -ServerObject $mockServerObject -Name 'TestDatabase' -OwnerName 'sa' -Force -PassThru
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestDatabase'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestDatabase'
         }
 
         It 'Should refresh database properties when Refresh is specified' {
@@ -109,7 +109,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
             $mockDatabaseObject.Owner = 'OldOwner'
             $script:setOwnerCalled = $false
             $null = Set-SqlDscDatabaseOwner -ServerObject $mockServerObject -Name 'TestDatabase' -OwnerName 'sa' -Force -Refresh
-            $mockDatabaseObject.Owner | Should -Be 'sa'
+            $mockDatabaseObject.Owner | Should-Be 'sa'
         }
 
         It 'Should call SetOwner with correct owner name' {
@@ -117,8 +117,8 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
             $mockDatabaseObject.Owner = 'OldOwner'
             $script:setOwnerCalled = $false
             $null = Set-SqlDscDatabaseOwner -ServerObject $mockServerObject -Name 'TestDatabase' -OwnerName 'NewOwner' -Force
-            $mockDatabaseObject.Owner | Should -Be 'NewOwner'
-            $script:setOwnerCalled | Should -BeTrue -Because 'SetOwner should be called to change the owner'
+            $mockDatabaseObject.Owner | Should-Be 'NewOwner'
+            $script:setOwnerCalled | Should-BeTrue -Because 'SetOwner should be called to change the owner'
         }
     }
 
@@ -146,8 +146,8 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
         It 'Should set database owner successfully' {
             $script:setOwnerCalled = $false
             $null = Set-SqlDscDatabaseOwner -DatabaseObject $mockDatabaseObject -OwnerName 'sa' -Force
-            $mockDatabaseObject.Owner | Should -Be 'sa'
-            $script:setOwnerCalled | Should -BeTrue -Because 'SetOwner should be called to change the owner'
+            $mockDatabaseObject.Owner | Should-Be 'sa'
+            $script:setOwnerCalled | Should-BeTrue -Because 'SetOwner should be called to change the owner'
         }
 
         It 'Should return a database object when PassThru is specified' {
@@ -155,16 +155,16 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
             $mockDatabaseObject.Owner = 'OldOwner'
             $script:setOwnerCalled = $false
             $result = Set-SqlDscDatabaseOwner -DatabaseObject $mockDatabaseObject -OwnerName 'sa' -Force -PassThru
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestDatabase'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestDatabase'
         }
 
         It 'Should call SetOwner with correct owner name' {
             $mockDatabaseObject.Owner = 'OldOwner'
             $script:setOwnerCalled = $false
             $null = Set-SqlDscDatabaseOwner -DatabaseObject $mockDatabaseObject -OwnerName 'DomainUser' -Force
-            $mockDatabaseObject.Owner | Should -Be 'DomainUser'
-            $script:setOwnerCalled | Should -BeTrue -Because 'SetOwner should be called to change the owner'
+            $mockDatabaseObject.Owner | Should-Be 'DomainUser'
+            $script:setOwnerCalled | Should-BeTrue -Because 'SetOwner should be called to change the owner'
         }
     }
 
@@ -198,8 +198,8 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
             $null = Set-SqlDscDatabaseOwner -DatabaseObject $mockDatabaseObject -OwnerName 'sa' -Force
 
             # Verify SetOwner was not called (idempotent behavior)
-            $script:setOwnerCalled | Should -BeFalse -Because 'SetOwner should not be called when the owner already matches'
-            $mockDatabaseObject.Owner | Should -Be 'sa'
+            $script:setOwnerCalled | Should-BeFalse -Because 'SetOwner should not be called when the owner already matches'
+            $mockDatabaseObject.Owner | Should-Be 'sa'
         }
     }
 
@@ -224,7 +224,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
 
         It 'Should throw error when SetOwner() fails' {
             { Set-SqlDscDatabaseOwner -DatabaseObject $mockDatabaseObject -OwnerName 'sa' -Force } |
-                Should -Throw -ExpectedMessage '*Failed to set owner of database*'
+                Should-Throw -ExceptionMessage '*Failed to set owner of database*'
         }
     }
 
@@ -241,7 +241,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
 
         It 'Should throw error when database does not exist' {
             { Set-SqlDscDatabaseOwner -ServerObject $mockServerObject -Name 'NonExistentDatabase' -OwnerName 'sa' -Force } |
-                Should -Throw -ExpectedMessage '*Database * was not found*'
+                Should-Throw -ExceptionMessage '*Database * was not found*'
         }
     }
 
@@ -279,9 +279,9 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
             $script:setOwnerParameters = $null
             $null = Set-SqlDscDatabaseOwner -DatabaseObject $mockDatabaseObject -OwnerName 'sa' -DropExistingUser -Force
 
-            $script:setOwnerParameters | Should -Not -BeNullOrEmpty
-            $script:setOwnerParameters.OwnerName | Should -Be 'sa'
-            $script:setOwnerParameters.DropExistingUser | Should -BeTrue
+            $script:setOwnerParameters | Should-BeTruthy
+            $script:setOwnerParameters.OwnerName | Should-Be 'sa'
+            $script:setOwnerParameters.DropExistingUser | Should-BeTrue
         }
 
         It 'Should call SetOwner with only ownerName parameter when DropExistingUser is not specified' {
@@ -290,9 +290,9 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
             $script:setOwnerParameters = $null
             $null = Set-SqlDscDatabaseOwner -DatabaseObject $mockDatabaseObject -OwnerName 'sa' -Force
 
-            $script:setOwnerParameters | Should -Not -BeNullOrEmpty
-            $script:setOwnerParameters.OwnerName | Should -Be 'sa'
-            $script:setOwnerParameters.DropExistingUser | Should -BeFalse
+            $script:setOwnerParameters | Should-BeTruthy
+            $script:setOwnerParameters.OwnerName | Should-Be 'sa'
+            $script:setOwnerParameters.DropExistingUser | Should-BeFalse
         }
     }
 
@@ -310,8 +310,8 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have the correct parameters in parameter set DatabaseObjectSet' -ForEach @(
@@ -327,57 +327,57 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have OwnerName as a mandatory parameter' {
             $command = Get-Command -Name 'Set-SqlDscDatabaseOwner'
             $ownerNameParam = $command.Parameters['OwnerName']
 
-            $ownerNameParam | Should -Not -BeNullOrEmpty
-            $ownerNameParam.ParameterType.Name | Should -Be 'String'
+            $ownerNameParam | Should-BeTruthy
+            $ownerNameParam.ParameterType.Name | Should-Be 'String'
 
             # Check if parameter is mandatory in at least one parameter set
             $mandatoryInAnySets = $ownerNameParam.Attributes |
                 Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] } |
                 Where-Object { $_.Mandatory -eq $true }
 
-            $mandatoryInAnySets | Should -Not -BeNullOrEmpty
+            $mandatoryInAnySets | Should-BeTruthy
         }
 
         It 'Should support ShouldProcess (WhatIf and Confirm)' {
             $command = Get-Command -Name 'Set-SqlDscDatabaseOwner'
-            $command.Parameters.Keys | Should -Contain 'WhatIf'
-            $command.Parameters.Keys | Should -Contain 'Confirm'
+            $command.Parameters.Keys | Should-ContainCollection 'WhatIf'
+            $command.Parameters.Keys | Should-ContainCollection 'Confirm'
         }
 
         It 'Should have Force parameter to bypass confirmation' {
             $command = Get-Command -Name 'Set-SqlDscDatabaseOwner'
-            $command.Parameters.Keys | Should -Contain 'Force'
+            $command.Parameters.Keys | Should-ContainCollection 'Force'
         }
 
         It 'Should have PassThru parameter to return the database object' {
             $command = Get-Command -Name 'Set-SqlDscDatabaseOwner'
-            $command.Parameters.Keys | Should -Contain 'PassThru'
+            $command.Parameters.Keys | Should-ContainCollection 'PassThru'
         }
 
         It 'Should have DropExistingUser parameter as a switch' {
             $command = Get-Command -Name 'Set-SqlDscDatabaseOwner'
             $dropExistingUserParam = $command.Parameters['DropExistingUser']
 
-            $dropExistingUserParam | Should -Not -BeNullOrEmpty
-            $dropExistingUserParam.ParameterType.Name | Should -Be 'SwitchParameter'
+            $dropExistingUserParam | Should-BeTruthy
+            $dropExistingUserParam.ParameterType.Name | Should-Be 'SwitchParameter'
         }
 
         It 'Should have ServerObject as a mandatory parameter in ServerObjectSet' {
             $param = (Get-Command -Name 'Set-SqlDscDatabaseOwner').Parameters['ServerObject']
-            ($param.Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] -and $_.ParameterSetName -eq 'ServerObjectSet' }).Mandatory | Should -BeTrue
+            ($param.Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] -and $_.ParameterSetName -eq 'ServerObjectSet' }).Mandatory | Should-BeTrue
         }
 
         It 'Should have DatabaseObject as a mandatory parameter in DatabaseObjectSet' {
             $param = (Get-Command -Name 'Set-SqlDscDatabaseOwner').Parameters['DatabaseObject']
-            ($param.Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] -and $_.ParameterSetName -eq 'DatabaseObjectSet' }).Mandatory | Should -BeTrue
+            ($param.Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] -and $_.ParameterSetName -eq 'DatabaseObjectSet' }).Mandatory | Should-BeTrue
         }
     }
 }

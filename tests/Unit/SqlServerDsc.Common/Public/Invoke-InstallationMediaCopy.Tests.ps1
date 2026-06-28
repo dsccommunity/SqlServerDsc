@@ -129,11 +129,11 @@ Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstalla
 
             $null = Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters -ErrorAction 'Stop'
 
-            Should -Invoke -CommandName Connect-UncPath -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName New-Guid -Exactly -Times 0 -Scope It
-            Should -Invoke -CommandName Get-TemporaryFolder -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Copy-ItemWithRobocopy -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Disconnect-UncPath -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-UncPath -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName New-Guid -Exactly -Scope It -Times 0
+            Should-Invoke -CommandName Get-TemporaryFolder -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Copy-ItemWithRobocopy -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Disconnect-UncPath -Exactly -Scope It -Times 1
         }
 
         It 'Should return the correct destination path' {
@@ -145,7 +145,7 @@ Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstalla
 
             $invokeInstallationMediaCopyResult = Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters
 
-            $invokeInstallationMediaCopyResult | Should -Be ('{0}\leaf' -f $mockDestinationPath)
+            $invokeInstallationMediaCopyResult | Should-Be ('{0}\leaf' -f $mockDestinationPath)
         }
     }
 
@@ -166,11 +166,11 @@ Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstalla
 
             $null = Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters -ErrorAction 'Stop'
 
-            Should -Invoke -CommandName Connect-UncPath -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName New-Guid -Exactly -Times 0 -Scope It
-            Should -Invoke -CommandName Get-TemporaryFolder -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Copy-ItemWithRobocopy -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Disconnect-UncPath -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-UncPath -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName New-Guid -Exactly -Scope It -Times 0
+            Should-Invoke -CommandName Get-TemporaryFolder -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Copy-ItemWithRobocopy -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Disconnect-UncPath -Exactly -Scope It -Times 1
         }
 
         It 'Should return the correct destination path' {
@@ -182,7 +182,7 @@ Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstalla
 
             $invokeInstallationMediaCopyResult = Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters
 
-            $invokeInstallationMediaCopyResult | Should -Be ('{0}\secondleaf' -f $mockDestinationPath)
+            $invokeInstallationMediaCopyResult | Should-Be ('{0}\secondleaf' -f $mockDestinationPath)
         }
     }
 
@@ -203,11 +203,11 @@ Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstalla
 
             $null = Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters -ErrorAction 'Stop'
 
-            Should -Invoke -CommandName Connect-UncPath -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName New-Guid -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-TemporaryFolder -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Copy-ItemWithRobocopy -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Disconnect-UncPath -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-UncPath -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName New-Guid -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-TemporaryFolder -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Copy-ItemWithRobocopy -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Disconnect-UncPath -Exactly -Scope It -Times 1
         }
 
         It 'Should return the correct destination path' {
@@ -218,7 +218,7 @@ Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstalla
             }
 
             $invokeInstallationMediaCopyResult = Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters
-            $invokeInstallationMediaCopyResult | Should -Be ('{0}\{1}' -f $mockDestinationPath, $mockSourcePathGuid)
+            $invokeInstallationMediaCopyResult | Should-Be ('{0}\{1}' -f $mockDestinationPath, $mockSourcePathGuid)
         }
     }
 }

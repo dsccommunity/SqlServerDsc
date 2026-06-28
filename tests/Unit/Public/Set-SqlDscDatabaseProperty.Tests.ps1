@@ -101,8 +101,8 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag 'Public' {
 
             $null = Set-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'TestDatabase' -RecoveryModel 'Simple' -Force
 
-            $mockDatabaseObject.RecoveryModel | Should -Be 'Simple'
-            $script:mockAlterCalled | Should -BeTrue -Because 'Alter() should have been called'
+            $mockDatabaseObject.RecoveryModel | Should-Be 'Simple'
+            $script:mockAlterCalled | Should-BeTrue -Because 'Alter() should have been called'
         }
 
         It 'Should modify multiple properties at once' {
@@ -113,10 +113,10 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag 'Public' {
 
             $null = Set-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'TestDatabase' -AutoClose -AutoShrink -PageVerify 'None' -Force
 
-            $mockDatabaseObject.AutoClose | Should -BeTrue
-            $mockDatabaseObject.AutoShrink | Should -BeTrue
-            $mockDatabaseObject.PageVerify | Should -Be 'None'
-            $script:mockAlterCalled | Should -BeTrue -Because 'Alter() should have been called'
+            $mockDatabaseObject.AutoClose | Should-BeTrue
+            $mockDatabaseObject.AutoShrink | Should-BeTrue
+            $mockDatabaseObject.PageVerify | Should-Be 'None'
+            $script:mockAlterCalled | Should-BeTrue -Because 'Alter() should have been called'
         }
 
         It 'Should return database object when PassThru is specified' {
@@ -125,19 +125,19 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag 'Public' {
 
             $result = Set-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'TestDatabase' -RecoveryModel 'Simple' -Force -PassThru
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestDatabase'
-            $mockDatabaseObject.RecoveryModel | Should -Be 'Simple'
-            $script:mockAlterCalled | Should -BeTrue -Because 'Alter() should have been called'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestDatabase'
+            $mockDatabaseObject.RecoveryModel | Should-Be 'Simple'
+            $script:mockAlterCalled | Should-BeTrue -Because 'Alter() should have been called'
         }
 
         It 'Should throw error when database does not exist' {
             $script:mockAlterCalled = $false
 
             { Set-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'NonExistentDatabase' -RecoveryModel 'Simple' -Force -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage '*not found*' -ErrorId 'GSDD0001,Get-SqlDscDatabase'
+                Should-Throw -ExceptionMessage '*not found*' -FullyQualifiedErrorId 'GSDD0001,Get-SqlDscDatabase'
 
-            $script:mockAlterCalled | Should -BeFalse -Because 'Alter() should not have been called when database does not exist'
+            $script:mockAlterCalled | Should-BeFalse -Because 'Alter() should not have been called when database does not exist'
         }
     }
 
@@ -172,8 +172,8 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag 'Public' {
 
             $null = Set-SqlDscDatabaseProperty -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -Force
 
-            $mockDatabaseObject.RecoveryModel | Should -Be 'Simple'
-            $script:mockAlterCalled | Should -BeTrue -Because 'Alter() should have been called'
+            $mockDatabaseObject.RecoveryModel | Should-Be 'Simple'
+            $script:mockAlterCalled | Should-BeTrue -Because 'Alter() should have been called'
         }
     }
 
@@ -198,7 +198,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag 'Public' {
 
         It 'Should throw error when CompatibilityLevel is invalid for SQL Server version' {
             { Set-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'TestDatabase' -CompatibilityLevel 'Version80' -Force } |
-                Should -Throw -ExpectedMessage '*not a valid compatibility level*' -ErrorId 'SSDD0002,Set-SqlDscDatabaseProperty'
+                Should-Throw -ExceptionMessage '*not a valid compatibility level*' -FullyQualifiedErrorId 'SSDD0002,Set-SqlDscDatabaseProperty'
         }
 
         It 'Should allow valid CompatibilityLevel for SQL Server version' {
@@ -226,8 +226,8 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag 'Public' {
 
             $null = Set-SqlDscDatabaseProperty -ServerObject $mockServerObjectWithValidDb -Name 'TestDatabase' -CompatibilityLevel 'Version150' -Force
 
-            $mockDatabaseObjectWithValidProps.CompatibilityLevel | Should -Be 'Version150'
-            $script:mockAlterCalled | Should -BeTrue -Because 'Alter() should have been called'
+            $mockDatabaseObjectWithValidProps.CompatibilityLevel | Should-Be 'Version150'
+            $script:mockAlterCalled | Should-BeTrue -Because 'Alter() should have been called'
         }
     }
 
@@ -256,7 +256,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag 'Public' {
 
         It 'Should throw error when Collation is invalid' {
             { Set-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'TestDatabase' -Collation 'InvalidCollation' -Force } |
-                Should -Throw -ExpectedMessage '*not a valid collation*' -ErrorId 'SSDD0003,Set-SqlDscDatabaseProperty'
+                Should-Throw -ExceptionMessage '*not a valid collation*' -FullyQualifiedErrorId 'SSDD0003,Set-SqlDscDatabaseProperty'
         }
 
         It 'Should allow valid Collation' {
@@ -288,8 +288,8 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag 'Public' {
 
             $null = Set-SqlDscDatabaseProperty -ServerObject $mockServerObjectWithValidDb -Refresh -Name 'TestDatabase' -Collation 'SQL_Latin1_General_Pref_CP850_CI_AS' -Force
 
-            $mockDatabaseObjectWithValidProps.Collation | Should -Be 'SQL_Latin1_General_Pref_CP850_CI_AS'
-            $script:mockAlterCalled | Should -BeTrue -Because 'Alter() should have been called'
+            $mockDatabaseObjectWithValidProps.Collation | Should-Be 'SQL_Latin1_General_Pref_CP850_CI_AS'
+            $script:mockAlterCalled | Should-BeTrue -Because 'Alter() should have been called'
         }
     }
 
@@ -322,7 +322,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag 'Public' {
 
             $null = Set-SqlDscDatabaseProperty -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -Force
 
-            $script:mockAlterCalled | Should -BeFalse -Because 'Alter() should not be called when property is already set'
+            $script:mockAlterCalled | Should-BeFalse -Because 'Alter() should not be called when property is already set'
         }
 
         It 'Should not call Alter() when all properties are already set' {
@@ -330,7 +330,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag 'Public' {
 
             $null = Set-SqlDscDatabaseProperty -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -AutoClose -Force
 
-            $script:mockAlterCalled | Should -BeFalse -Because 'Alter() should not be called when all properties are already set'
+            $script:mockAlterCalled | Should-BeFalse -Because 'Alter() should not be called when all properties are already set'
         }
     }
 
@@ -357,7 +357,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag 'Public' {
 
         It 'Should throw terminating error when Alter() fails' {
             { Set-SqlDscDatabaseProperty -DatabaseObject $mockDatabaseObject -RecoveryModel 'Simple' -Force } |
-                Should -Throw -ExpectedMessage '*Failed to set properties*' -ErrorId 'SSDD0004,Set-SqlDscDatabaseProperty'
+                Should-Throw -ExceptionMessage '*Failed to set properties*' -FullyQualifiedErrorId 'SSDD0004,Set-SqlDscDatabaseProperty'
         }
     }
 
@@ -375,8 +375,8 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have the correct parameters in parameter set DatabaseObjectSet' -ForEach @(
@@ -392,22 +392,22 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have many settable SMO properties available as parameters' {
             $command = Get-Command -Name 'Set-SqlDscDatabaseProperty'
 
             # Verify some key properties are available
-            $command.Parameters.Keys | Should -Contain 'Collation'
-            $command.Parameters.Keys | Should -Contain 'CompatibilityLevel'
-            $command.Parameters.Keys | Should -Contain 'RecoveryModel'
-            $command.Parameters.Keys | Should -Contain 'AutoClose'
-            $command.Parameters.Keys | Should -Contain 'AutoShrink'
-            $command.Parameters.Keys | Should -Contain 'PageVerify'
-            $command.Parameters.Keys | Should -Contain 'AnsiNullDefault'
-            $command.Parameters.Keys | Should -Contain 'TargetRecoveryTime'
+            $command.Parameters.Keys | Should-ContainCollection 'Collation'
+            $command.Parameters.Keys | Should-ContainCollection 'CompatibilityLevel'
+            $command.Parameters.Keys | Should-ContainCollection 'RecoveryModel'
+            $command.Parameters.Keys | Should-ContainCollection 'AutoClose'
+            $command.Parameters.Keys | Should-ContainCollection 'AutoShrink'
+            $command.Parameters.Keys | Should-ContainCollection 'PageVerify'
+            $command.Parameters.Keys | Should-ContainCollection 'AnsiNullDefault'
+            $command.Parameters.Keys | Should-ContainCollection 'TargetRecoveryTime'
         }
     }
 }

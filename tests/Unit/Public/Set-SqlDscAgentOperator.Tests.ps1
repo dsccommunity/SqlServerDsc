@@ -66,8 +66,8 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -75,29 +75,29 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscAgentOperator').Parameters['ServerObject']
             $byNameParameterSet = $parameterInfo.ParameterSets['ByName']
-            $byNameParameterSet.IsMandatory | Should -BeTrue
+            $byNameParameterSet.IsMandatory | Should-BeTrue
         }
 
         It 'Should have ServerObject accept pipeline input' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscAgentOperator').Parameters['ServerObject']
-            $parameterInfo.Attributes.ValueFromPipeline | Should -BeTrue
+            $parameterInfo.Attributes.ValueFromPipeline | Should-BeTrue
         }
 
         It 'Should have OperatorObject as a mandatory parameter in ByObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscAgentOperator').Parameters['OperatorObject']
             $byObjectParameterSet = $parameterInfo.ParameterSets['ByObject']
-            $byObjectParameterSet.IsMandatory | Should -BeTrue
+            $byObjectParameterSet.IsMandatory | Should-BeTrue
         }
 
         It 'Should have OperatorObject accept pipeline input in ByObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscAgentOperator').Parameters['OperatorObject']
-            $parameterInfo.Attributes.ValueFromPipeline | Should -BeTrue
+            $parameterInfo.Attributes.ValueFromPipeline | Should-BeTrue
         }
 
         It 'Should have Name as a mandatory parameter in ByName parameter set' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscAgentOperator').Parameters['Name']
             $byNameParameterSet = $parameterInfo.ParameterSets['ByName']
-            $byNameParameterSet.IsMandatory | Should -BeTrue
+            $byNameParameterSet.IsMandatory | Should-BeTrue
         }
     }
 
@@ -105,7 +105,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should throw when no settable parameters are provided' {
             $mockServerObject = [Microsoft.SqlServer.Management.Smo.Server]::CreateTypeInstance()
 
-            { Set-SqlDscAgentOperator -ServerObject $mockServerObject -Name 'TestOperator' -Force } | Should -Throw -ExpectedMessage '*At least one*'
+            { Set-SqlDscAgentOperator -ServerObject $mockServerObject -Name 'TestOperator' -Force } | Should-Throw -ExceptionMessage '*At least one*'
         }
 
         It 'Should successfully execute when at least one settable parameter is provided' {
@@ -133,9 +133,9 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
             Set-SqlDscAgentOperator -ServerObject $mockServerObject -Name 'TestOperator' -EmailAddress 'test@contoso.com' -WhatIf
 
             # Verify that WhatIf prevents Alter from being called
-            $mockMethodAlterCallCount | Should -Be 0
+            $mockMethodAlterCallCount | Should-Be 0
             # Verify that the operator object is found and accessible
-            $mockOperator.Name | Should -Be 'TestOperator'
+            $mockOperator.Name | Should-Be 'TestOperator'
         }
     }
 
@@ -172,8 +172,8 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
 
             $null = Set-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'new@contoso.com'
 
-            $script:mockOperator.EmailAddress | Should -Be 'new@contoso.com'
-            $script:mockMethodAlterCallCount | Should -Be 1
+            $script:mockOperator.EmailAddress | Should-Be 'new@contoso.com'
+            $script:mockMethodAlterCallCount | Should-Be 1
         }
 
         It 'Should update when email address is already correct (always set user-specified properties)' {
@@ -182,12 +182,12 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
 
             $null = Set-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'correct@contoso.com'
 
-            $script:mockMethodAlterCallCount | Should -Be 1
+            $script:mockMethodAlterCallCount | Should-Be 1
         }
 
         It 'Should throw when operator does not exist' {
             { Set-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'NonExistentOperator' -EmailAddress 'test@contoso.com' -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage '*SQL Agent Operator ''NonExistentOperator'' was not found*'
+                Should-Throw -ExceptionMessage '*SQL Agent Operator ''NonExistentOperator'' was not found*'
         }
 
         Context 'When using parameter WhatIf' {
@@ -197,7 +197,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
 
                 $null = Set-SqlDscAgentOperator -WhatIf -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'new@contoso.com'
 
-                $script:mockMethodAlterCallCount | Should -Be 0
+                $script:mockMethodAlterCallCount | Should-Be 0
             }
         }
 
@@ -208,8 +208,8 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
 
                 $script:mockServerObject | Set-SqlDscAgentOperator -Force -Name 'TestOperator' -EmailAddress 'new@contoso.com'
 
-                $script:mockOperator.EmailAddress | Should -Be 'new@contoso.com'
-                $script:mockMethodAlterCallCount | Should -Be 1
+                $script:mockOperator.EmailAddress | Should-Be 'new@contoso.com'
+                $script:mockMethodAlterCallCount | Should-Be 1
             }
         }
 
@@ -302,10 +302,10 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
                 Set-SqlDscAgentOperator @testParameters
 
                 # Verify the operator was updated
-                $script:mockMethodAlterCallCount | Should -Be 1
+                $script:mockMethodAlterCallCount | Should-Be 1
 
                 # Verify the property was set correctly
-                $script:mockOperator.$PropertyName | Should -Be $PropertyValue
+                $script:mockOperator.$PropertyName | Should-Be $PropertyValue
             }
         }
 
@@ -345,20 +345,20 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
                 Set-SqlDscAgentOperator @testParameters
 
                 # Verify the operator was updated
-                $script:mockMethodAlterCallCount | Should -Be 1
+                $script:mockMethodAlterCallCount | Should-Be 1
 
                 # Verify all properties were set correctly
-                $script:mockOperator.EmailAddress | Should -Be 'admin@contoso.com'
-                $script:mockOperator.CategoryName | Should -Be 'DatabaseAdmins'
-                $script:mockOperator.NetSendAddress | Should -Be 'SQLSERVER01'
-                $script:mockOperator.PagerAddress | Should -Be '555-999-8888'
-                $script:mockOperator.PagerDays | Should -Be ([Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::EveryDay)
-                $script:mockOperator.SaturdayPagerStartTime | Should -Be ([System.TimeSpan]::new(10, 0, 0))
-                $script:mockOperator.SaturdayPagerEndTime | Should -Be ([System.TimeSpan]::new(20, 0, 0))
-                $script:mockOperator.SundayPagerStartTime | Should -Be ([System.TimeSpan]::new(11, 0, 0))
-                $script:mockOperator.SundayPagerEndTime | Should -Be ([System.TimeSpan]::new(19, 0, 0))
-                $script:mockOperator.WeekdayPagerStartTime | Should -Be ([System.TimeSpan]::new(7, 0, 0))
-                $script:mockOperator.WeekdayPagerEndTime | Should -Be ([System.TimeSpan]::new(18, 0, 0))
+                $script:mockOperator.EmailAddress | Should-Be 'admin@contoso.com'
+                $script:mockOperator.CategoryName | Should-Be 'DatabaseAdmins'
+                $script:mockOperator.NetSendAddress | Should-Be 'SQLSERVER01'
+                $script:mockOperator.PagerAddress | Should-Be '555-999-8888'
+                $script:mockOperator.PagerDays | Should-Be ([Microsoft.SqlServer.Management.Smo.Agent.WeekDays]::EveryDay)
+                $script:mockOperator.SaturdayPagerStartTime | Should-Be ([System.TimeSpan]::new(10, 0, 0))
+                $script:mockOperator.SaturdayPagerEndTime | Should-Be ([System.TimeSpan]::new(20, 0, 0))
+                $script:mockOperator.SundayPagerStartTime | Should-Be ([System.TimeSpan]::new(11, 0, 0))
+                $script:mockOperator.SundayPagerEndTime | Should-Be ([System.TimeSpan]::new(19, 0, 0))
+                $script:mockOperator.WeekdayPagerStartTime | Should-Be ([System.TimeSpan]::new(7, 0, 0))
+                $script:mockOperator.WeekdayPagerEndTime | Should-Be ([System.TimeSpan]::new(18, 0, 0))
             }
         }
     }
@@ -393,8 +393,8 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
 
             $null = Set-SqlDscAgentOperator -Force -OperatorObject $script:mockOperator -EmailAddress 'new@contoso.com'
 
-            $script:mockOperator.EmailAddress | Should -Be 'new@contoso.com'
-            $script:mockMethodAlterCallCount | Should -Be 1
+            $script:mockOperator.EmailAddress | Should-Be 'new@contoso.com'
+            $script:mockMethodAlterCallCount | Should-Be 1
         }
 
         Context 'When passing parameter OperatorObject over the pipeline' {
@@ -404,8 +404,8 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
 
                 $script:mockOperator | Set-SqlDscAgentOperator -Force -EmailAddress 'new@contoso.com'
 
-                $script:mockOperator.EmailAddress | Should -Be 'new@contoso.com'
-                $script:mockMethodAlterCallCount | Should -Be 1
+                $script:mockOperator.EmailAddress | Should-Be 'new@contoso.com'
+                $script:mockMethodAlterCallCount | Should-Be 1
             }
         }
 
@@ -497,10 +497,10 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
                 Set-SqlDscAgentOperator @testParameters
 
                 # Verify the operator was updated
-                $script:mockMethodAlterCallCount | Should -Be 1
+                $script:mockMethodAlterCallCount | Should-Be 1
 
                 # Verify the property was set correctly
-                $script:mockOperator.$PropertyName | Should -Be $PropertyValue
+                $script:mockOperator.$PropertyName | Should-Be $PropertyValue
             }
         }
     }
@@ -532,7 +532,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Public' {
 
         It 'Should throw when alter operation fails' {
             { Set-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -EmailAddress 'new@contoso.com' -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage '*Failed to update SQL Agent Operator ''TestOperator''*'
+                Should-Throw -ExceptionMessage '*Failed to update SQL Agent Operator ''TestOperator''*'
         }
     }
 }

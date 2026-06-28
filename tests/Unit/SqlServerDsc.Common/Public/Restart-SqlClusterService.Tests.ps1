@@ -97,7 +97,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
                 $null = Restart-SqlClusterService -InstanceName 'MSSQLSERVER' -ErrorAction 'Stop'
             }
 
-            Should -Invoke -CommandName Get-CimInstance -Scope It -Exactly -Times 1
+            Should-Invoke -CommandName Get-CimInstance -Exactly -Scope It -Times 1
         }
     }
 
@@ -126,16 +126,16 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
                 $null = Restart-SqlClusterService -InstanceName 'MSSQLSERVER' -ErrorAction 'Stop'
             }
 
-            Should -Invoke -CommandName Get-CimInstance -Scope It -Exactly -Times 1
-            Should -Invoke -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 0
+            Should-Invoke -CommandName Get-CimInstance -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-CimAssociatedInstance -Exactly -Scope It -Times 0
 
-            Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'TakeOffline'
-            } -Scope It -Exactly -Times 0
+            } -Scope It -Times 0
 
-            Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'BringOnline'
-            } -Scope It -Exactly -Times 0
+            } -Scope It -Times 0
         }
     }
 
@@ -175,20 +175,20 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
                     $null = Restart-SqlClusterService -InstanceName 'MSSQLSERVER' -ErrorAction 'Stop'
                 }
 
-                Should -Invoke -CommandName Get-CimInstance -Scope It -Exactly -Times 1
-                Should -Invoke -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 1
+                Should-Invoke -CommandName Get-CimInstance -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Get-CimAssociatedInstance -Exactly -Scope It -Times 1
 
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+                Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                     $MethodName -eq 'TakeOffline' -and $InputObject.Name -eq 'SQL Server (MSSQLSERVER)'
-                } -Scope It -Exactly -Times 1
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+                Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                     $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server (MSSQLSERVER)'
-                } -Scope It -Exactly -Times 1
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+                Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                     $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server Agent (MSSQLSERVER)'
-                } -Scope It -Exactly -Times 1
+                } -Scope It -Times 1
             }
         }
 
@@ -227,20 +227,20 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
                     $null = Restart-SqlClusterService -InstanceName 'DSCTEST' -ErrorAction 'Stop'
                 }
 
-                Should -Invoke -CommandName Get-CimInstance -Scope It -Exactly -Times 1
-                Should -Invoke -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 1
+                Should-Invoke -CommandName Get-CimInstance -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Get-CimAssociatedInstance -Exactly -Scope It -Times 1
 
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+                Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                     $MethodName -eq 'TakeOffline' -and $InputObject.Name -eq 'SQL Server (DSCTEST)'
-                } -Scope It -Exactly -Times 1
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+                Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                     $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server (DSCTEST)'
-                } -Scope It -Exactly -Times 1
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+                Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                     $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server Agent (DSCTEST)'
-                } -Scope It -Exactly -Times 1
+                } -Scope It -Times 1
             }
         }
     }
@@ -280,16 +280,16 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
                 $null = Restart-SqlClusterService -InstanceName 'MSSQLSERVER'
             }
 
-            Should -Invoke -CommandName Get-CimInstance -Scope It -Exactly -Times 1
-            Should -Invoke -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 1
+            Should-Invoke -CommandName Get-CimInstance -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-CimAssociatedInstance -Exactly -Scope It -Times 1
 
-            Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'TakeOffline' -and $InputObject.Name -eq 'SQL Server (MSSQLSERVER)'
-            } -Scope It -Exactly -Times 1
+            } -Scope It -Times 1
 
-            Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server (MSSQLSERVER)'
-            } -Scope It -Exactly -Times 1
+            } -Scope It -Times 1
         }
     }
 
@@ -331,20 +331,20 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
                     $null = Restart-SqlClusterService -InstanceName 'MSSQLSERVER' -OwnerNode @('NODE1')
                 }
 
-                Should -Invoke -CommandName Get-CimInstance -Scope It -Exactly -Times 1
-                Should -Invoke -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 1
+                Should-Invoke -CommandName Get-CimInstance -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Get-CimAssociatedInstance -Exactly -Scope It -Times 1
 
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+                Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                     $MethodName -eq 'TakeOffline' -and $InputObject.Name -eq 'SQL Server (MSSQLSERVER)'
-                } -Scope It -Exactly -Times 1
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+                Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                     $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server (MSSQLSERVER)'
-                } -Scope It -Exactly -Times 1
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+                Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                     $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server Agent (MSSQLSERVER)'
-                } -Scope It -Exactly -Times 1
+                } -Scope It -Times 1
             }
         }
 
@@ -385,20 +385,20 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
                     $null = Restart-SqlClusterService -InstanceName 'MSSQLSERVER' -OwnerNode @('NODE1')
                 }
 
-                Should -Invoke -CommandName Get-CimInstance -Scope It -Exactly -Times 1
-                Should -Invoke -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 1
+                Should-Invoke -CommandName Get-CimInstance -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Get-CimAssociatedInstance -Exactly -Scope It -Times 1
 
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+                Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                     $MethodName -eq 'TakeOffline' -and $InputObject.Name -eq 'SQL Server (MSSQLSERVER)'
-                } -Scope It -Exactly -Times 1
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+                Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                     $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server (MSSQLSERVER)'
-                } -Scope It -Exactly -Times 1
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+                Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                     $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server Agent (MSSQLSERVER)'
-                } -Scope It -Exactly -Times 0
+                } -Scope It -Times 0
             }
         }
 
@@ -439,20 +439,20 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
                     $null = Restart-SqlClusterService -InstanceName 'MSSQLSERVER' -OwnerNode @('NODE1')
                 }
 
-                Should -Invoke -CommandName Get-CimInstance -Scope It -Exactly -Times 1
-                Should -Invoke -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 1
+                Should-Invoke -CommandName Get-CimInstance -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Get-CimAssociatedInstance -Exactly -Scope It -Times 1
 
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+                Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                     $MethodName -eq 'TakeOffline' -and $InputObject.Name -eq 'SQL Server (MSSQLSERVER)'
-                } -Scope It -Exactly -Times 1
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+                Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                     $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server (MSSQLSERVER)'
-                } -Scope It -Exactly -Times 1
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+                Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                     $MethodName -eq 'BringOnline' -and $InputObject.Name -eq 'SQL Server Agent (MSSQLSERVER)'
-                } -Scope It -Exactly -Times 0
+                } -Scope It -Times 0
             }
         }
 
@@ -482,16 +482,16 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
                     $null = Restart-SqlClusterService -InstanceName 'MSSQLSERVER' -OwnerNode @('NODE1')
                 }
 
-                Should -Invoke -CommandName Get-CimInstance -Scope It -Exactly -Times 1
-                Should -Invoke -CommandName Get-CimAssociatedInstance -Scope It -Exactly -Times 0
+                Should-Invoke -CommandName Get-CimInstance -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Get-CimAssociatedInstance -Exactly -Scope It -Times 0
 
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+                Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                     $MethodName -eq 'TakeOffline'
-                } -Scope It -Exactly -Times 0
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+                Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                     $MethodName -eq 'BringOnline'
-                } -Scope It -Exactly -Times 0
+                } -Scope It -Times 0
             }
         }
     }

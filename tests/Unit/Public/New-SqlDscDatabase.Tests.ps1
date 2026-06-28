@@ -95,19 +95,19 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
         It 'Should create a database successfully with minimal parameters' {
             $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestDatabase'
-            Should -Invoke -CommandName 'New-Object' -ParameterFilter { $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Database' } -Exactly -Times 1
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestDatabase'
+            Should-Invoke -CommandName 'New-Object' -Exactly -ParameterFilter { $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Database' } -Times 1
         }
 
         It 'Should create a database with specified properties' {
             $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase2' -Collation 'SQL_Latin1_General_CP1_CI_AS' -RecoveryModel 'Simple' -CompatibilityLevel 'Version150' -OwnerName 'sa' -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestDatabase2'
-            $result.RecoveryModel | Should -Be 'Simple'
-            $result.Collation | Should -Be 'SQL_Latin1_General_CP1_CI_AS'
-            $result.CompatibilityLevel | Should -Be 'Version150'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestDatabase2'
+            $result.RecoveryModel | Should-Be 'Simple'
+            $result.Collation | Should-Be 'SQL_Latin1_General_CP1_CI_AS'
+            $result.CompatibilityLevel | Should-Be 'Version150'
         }
 
         It 'Should create a ledger database with IsLedger set to true' {
@@ -123,9 +123,9 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
 
             $result = New-SqlDscDatabase -ServerObject $mockServerObject2022 -Name 'LedgerDatabase' -IsLedger -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'LedgerDatabase'
-            $result.IsLedger | Should -BeTrue
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'LedgerDatabase'
+            $result.IsLedger | Should-BeTrue
         }
 
         It 'Should create a ledger database on SQL Server 2025 (version 17) with IsLedger set to true' {
@@ -141,9 +141,9 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
 
             $result = New-SqlDscDatabase -ServerObject $mockServerObject2025 -Name 'LedgerDatabase2025' -IsLedger -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'LedgerDatabase2025'
-            $result.IsLedger | Should -BeTrue
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'LedgerDatabase2025'
+            $result.IsLedger | Should-BeTrue
         }
 
         It 'Should accept CompatibilityLevel Version170 on SQL Server 2025' {
@@ -159,36 +159,36 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
 
             $result = New-SqlDscDatabase -ServerObject $mockServerObject2025 -Name 'TestDatabase170' -CompatibilityLevel 'Version170' -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.CompatibilityLevel | Should -Be 'Version170'
+            $result | Should-BeTruthy
+            $result.CompatibilityLevel | Should-Be 'Version170'
         }
 
         It 'Should create a database with additional boolean properties set' {
             $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabaseWithProps' -AutoClose -AutoShrink -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestDatabaseWithProps'
-            $result.AutoClose | Should -BeTrue
-            $result.AutoShrink | Should -BeTrue
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestDatabaseWithProps'
+            $result.AutoClose | Should-BeTrue
+            $result.AutoShrink | Should-BeTrue
         }
 
         It 'Should create a database with integer properties set' {
             $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabaseWithIntProps' -MaxDop 4 -TargetRecoveryTime 60 -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestDatabaseWithIntProps'
-            $result.MaxDop | Should -Be 4
-            $result.TargetRecoveryTime | Should -Be 60
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestDatabaseWithIntProps'
+            $result.MaxDop | Should-Be 4
+            $result.TargetRecoveryTime | Should-Be 60
         }
 
         It 'Should create a database with enum properties set' {
             $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabaseWithEnumProps' -ContainmentType 'Partial' -PageVerify 'Checksum' -DelayedDurability 'Allowed' -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestDatabaseWithEnumProps'
-            $result.ContainmentType | Should -Be 'Partial'
-            $result.PageVerify | Should -Be 'Checksum'
-            $result.DelayedDurability | Should -Be 'Allowed'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestDatabaseWithEnumProps'
+            $result.ContainmentType | Should-Be 'Partial'
+            $result.PageVerify | Should-Be 'Checksum'
+            $result.DelayedDurability | Should-Be 'Allowed'
         }
 
         It 'Should throw error when database already exists' {
@@ -201,7 +201,7 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
             } -Force
 
             { New-SqlDscDatabase -ServerObject $mockServerObjectWithExistingDb -Name 'ExistingDatabase' -Force } |
-                Should -Throw -ExpectedMessage '*already exists*'
+                Should-Throw -ExceptionMessage '*already exists*'
         }
     }
 
@@ -223,31 +223,31 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
 
         It 'Should throw error when CompatibilityLevel is invalid for SQL Server version' {
             $errorRecord = { New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDB' -CompatibilityLevel 'Version80' -Force } |
-                Should -Throw -ExpectedMessage '*not a valid compatibility level*' -PassThru
+                Should-Throw -ExceptionMessage '*not a valid compatibility level*'
 
-            $errorRecord.Exception.Message | Should -BeLike '*not a valid compatibility level*'
-            $errorRecord.FullyQualifiedErrorId | Should -Be 'NSD0003,New-SqlDscDatabase'
-            $errorRecord.CategoryInfo.Category | Should -Be 'InvalidArgument'
-            $errorRecord.CategoryInfo.TargetName | Should -Be 'Version80'
+            $errorRecord.Exception.Message | Should-BeLikeString '*not a valid compatibility level*'
+            $errorRecord.FullyQualifiedErrorId | Should-Be 'NSD0003,New-SqlDscDatabase'
+            $errorRecord.CategoryInfo.Category | Should-Be 'InvalidArgument'
+            $errorRecord.CategoryInfo.TargetName | Should-Be 'Version80'
         }
 
         It 'Should throw error when Collation is invalid' {
             $errorRecord = { New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDB' -Collation 'InvalidCollation' -Force } |
-                Should -Throw -ExpectedMessage '*not a valid collation*' -PassThru
+                Should-Throw -ExceptionMessage '*not a valid collation*'
 
-            $errorRecord.Exception.Message | Should -BeLike '*not a valid collation*'
-            $errorRecord.FullyQualifiedErrorId | Should -Be 'NSD0004,New-SqlDscDatabase'
-            $errorRecord.CategoryInfo.Category | Should -Be 'InvalidArgument'
-            $errorRecord.CategoryInfo.TargetName | Should -Be 'InvalidCollation'
+            $errorRecord.Exception.Message | Should-BeLikeString '*not a valid collation*'
+            $errorRecord.FullyQualifiedErrorId | Should-Be 'NSD0004,New-SqlDscDatabase'
+            $errorRecord.CategoryInfo.Category | Should-Be 'InvalidArgument'
+            $errorRecord.CategoryInfo.TargetName | Should-Be 'InvalidCollation'
         }
 
         It 'Should throw error when IsLedger is used on SQL Server version older than 2022' {
             $errorRecord = { New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDB' -IsLedger -Force } |
-                Should -Throw -ExpectedMessage '*IsLedger is not supported*' -PassThru
+                Should-Throw -ExceptionMessage '*IsLedger is not supported*'
 
-            $errorRecord.Exception.Message | Should -BeLike '*IsLedger is not supported*'
-            $errorRecord.FullyQualifiedErrorId | Should -Be 'NSD0007,New-SqlDscDatabase'
-            $errorRecord.CategoryInfo.Category | Should -Be 'InvalidOperation'
+            $errorRecord.Exception.Message | Should-BeLikeString '*IsLedger is not supported*'
+            $errorRecord.FullyQualifiedErrorId | Should-Be 'NSD0007,New-SqlDscDatabase'
+            $errorRecord.CategoryInfo.Category | Should-Be 'InvalidOperation'
         }
     }
 
@@ -261,13 +261,13 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
             $parameterSet = (Get-Command -Name 'New-SqlDscDatabase').ParameterSets |
                 Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName }
 
-            $parameterSet | Should -Not -BeNullOrEmpty
-            $parameterSet.Name | Should -Be $ExpectedParameterSetName
+            $parameterSet | Should-BeTruthy
+            $parameterSet.Name | Should-Be $ExpectedParameterSetName
 
             # Verify core parameters are present
             foreach ($paramName in $ExpectedCoreParameters)
             {
-                $parameterSet.Parameters.Name | Should -Contain $paramName -Because "Parameter '$paramName' should be in the $ExpectedParameterSetName parameter set"
+                $parameterSet.Parameters.Name | Should-ContainCollection $paramName -Because "Parameter '$paramName' should be in the $ExpectedParameterSetName parameter set"
             }
         }
 
@@ -294,7 +294,7 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
 
             foreach ($paramName in $SampleParameters)
             {
-                $databaseParameterSet.Parameters.Name | Should -Contain $paramName -Because "$PropertyType parameter '$paramName' should be available in the Database parameter set"
+                $databaseParameterSet.Parameters.Name | Should-ContainCollection $paramName -Because "$PropertyType parameter '$paramName' should be available in the Database parameter set"
             }
         }
 
@@ -311,30 +311,30 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDatabase').Parameters['ServerObject']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDatabase').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have DatabaseSnapshotBaseName as a mandatory parameter in Snapshot parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDatabase').Parameters['DatabaseSnapshotBaseName']
             $snapshotSetAttribute = $parameterInfo.Attributes | Where-Object { $_.ParameterSetName -eq 'Snapshot' }
-            $snapshotSetAttribute.Mandatory | Should -BeTrue
+            $snapshotSetAttribute.Mandatory | Should-BeTrue
         }
 
         It 'Should have IsLedger as a parameter in Database parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDatabase').Parameters['IsLedger']
             $databaseSetAttribute = $parameterInfo.Attributes | Where-Object { $_.ParameterSetName -eq 'Database' }
-            $databaseSetAttribute | Should -Not -BeNullOrEmpty
+            $databaseSetAttribute | Should-BeTruthy
         }
     }
 
@@ -370,10 +370,10 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
         It 'Should create a database snapshot successfully' {
             $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestSnapshot' -DatabaseSnapshotBaseName 'SourceDatabase' -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestSnapshot'
-            $result.DatabaseSnapshotBaseName | Should -Be 'SourceDatabase'
-            Should -Invoke -CommandName 'New-Object' -ParameterFilter { $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Database' } -Exactly -Times 1
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestSnapshot'
+            $result.DatabaseSnapshotBaseName | Should-Be 'SourceDatabase'
+            Should-Invoke -CommandName 'New-Object' -Exactly -ParameterFilter { $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Database' } -Times 1
         }
 
         It 'Should throw error when source database does not exist' {
@@ -384,7 +384,7 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
             } -Force
 
             { New-SqlDscDatabase -ServerObject $mockServerObjectNoSourceDb -Name 'TestSnapshot' -DatabaseSnapshotBaseName 'NonExistentDatabase' -Force } |
-                Should -Throw -ExpectedMessage '*does not exist*'
+                Should-Throw -ExceptionMessage '*does not exist*'
         }
     }
 
@@ -451,11 +451,11 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
 
             $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestSnapshot' -DatabaseSnapshotBaseName 'SourceDatabase' -FileGroup @($fileGroupSpec) -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestSnapshot'
-            $result.DatabaseSnapshotBaseName | Should -Be 'SourceDatabase'
-            Should -Invoke -CommandName 'New-SqlDscFileGroup' -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName 'Add-SqlDscFileGroup' -Exactly -Times 1 -Scope It
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestSnapshot'
+            $result.DatabaseSnapshotBaseName | Should-Be 'SourceDatabase'
+            Should-Invoke -CommandName 'New-SqlDscFileGroup' -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName 'Add-SqlDscFileGroup' -Exactly -Scope It -Times 1
         }
     }
 
@@ -518,10 +518,10 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
 
             $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDB' -FileGroup @($primaryFileGroup) -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestDB'
-            Should -Invoke -CommandName 'New-SqlDscFileGroup' -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName 'Add-SqlDscFileGroup' -Exactly -Times 1 -Scope It
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestDB'
+            Should-Invoke -CommandName 'New-SqlDscFileGroup' -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName 'Add-SqlDscFileGroup' -Exactly -Scope It -Times 1
         }
 
         It 'Should create a database with multiple filegroups using -AsSpec parameters' {
@@ -535,10 +535,10 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
 
             $result = New-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDB' -FileGroup @($primaryFileGroup, $secondaryFileGroup) -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestDB'
-            Should -Invoke -CommandName 'New-SqlDscFileGroup' -Exactly -Times 2 -Scope It
-            Should -Invoke -CommandName 'Add-SqlDscFileGroup' -Exactly -Times 2 -Scope It
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestDB'
+            Should-Invoke -CommandName 'New-SqlDscFileGroup' -Exactly -Scope It -Times 2
+            Should-Invoke -CommandName 'Add-SqlDscFileGroup' -Exactly -Scope It -Times 2
         }
     }
 }

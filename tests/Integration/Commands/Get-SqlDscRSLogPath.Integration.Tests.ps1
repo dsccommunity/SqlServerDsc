@@ -34,9 +34,9 @@ Describe 'Get-SqlDscRSLogPath' {
         It 'Should return the correct log path for SSRS instance' {
             $result = Get-SqlDscRSLogPath -InstanceName 'SSRS' -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -Be 'C:\Program Files\SSRS\SSRS\LogFiles'
-            Test-Path -Path $result | Should -BeTrue
+            $result | Should-BeTruthy
+            $result | Should-Be 'C:\Program Files\SSRS\SSRS\LogFiles'
+            Test-Path -Path $result | Should-BeTrue
         }
 
         It 'Should return a path that contains log files' {
@@ -45,15 +45,15 @@ Describe 'Get-SqlDscRSLogPath' {
             $logFiles = Get-ChildItem -Path $logPath -Filter '*.log' -ErrorAction 'Stop'
 
             # After initialization, there should be log files
-            $logFiles | Should -Not -BeNullOrEmpty
+            $logFiles | Should-BeTruthy
         }
 
         It 'Should work with pipeline input from Get-SqlDscRSConfiguration' {
             $result = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop' | Get-SqlDscRSLogPath -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -Be 'C:\Program Files\SSRS\SSRS\LogFiles'
-            Test-Path -Path $result | Should -BeTrue
+            $result | Should-BeTruthy
+            $result | Should-Be 'C:\Program Files\SSRS\SSRS\LogFiles'
+            Test-Path -Path $result | Should-BeTrue
         }
     }
 
@@ -62,9 +62,9 @@ Describe 'Get-SqlDscRSLogPath' {
         It 'Should return the correct log path for PBIRS instance' {
             $result = Get-SqlDscRSLogPath -InstanceName 'PBIRS' -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -Be 'C:\Program Files\PBIRS\PBIRS\LogFiles'
-            Test-Path -Path $result | Should -BeTrue
+            $result | Should-BeTruthy
+            $result | Should-Be 'C:\Program Files\PBIRS\PBIRS\LogFiles'
+            Test-Path -Path $result | Should-BeTrue
         }
 
         It 'Should return a path that contains log files' {
@@ -73,21 +73,21 @@ Describe 'Get-SqlDscRSLogPath' {
             $logFiles = Get-ChildItem -Path $logPath -Filter '*.log' -ErrorAction 'Stop'
 
             # After initialization, there should be log files
-            $logFiles | Should -Not -BeNullOrEmpty
+            $logFiles | Should-BeTruthy
         }
 
         It 'Should work with pipeline input from Get-SqlDscRSConfiguration' {
             $result = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop' | Get-SqlDscRSLogPath -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -Be 'C:\Program Files\PBIRS\PBIRS\LogFiles'
-            Test-Path -Path $result | Should -BeTrue
+            $result | Should-BeTruthy
+            $result | Should-Be 'C:\Program Files\PBIRS\PBIRS\LogFiles'
+            Test-Path -Path $result | Should-BeTrue
         }
     }
 
     Context 'When trying to get the log path for a non-existent instance' -Tag @('Integration_SQL2019_RS', 'Integration_SQL2022_RS', 'Integration_PowerBI') {
         It 'Should throw a terminating error' {
-            { Get-SqlDscRSLogPath -InstanceName 'NonExistentInstance' -ErrorAction 'Stop' } | Should -Throw
+            { Get-SqlDscRSLogPath -InstanceName 'NonExistentInstance' -ErrorAction 'Stop' } | Should-Throw
         }
     }
 }

@@ -58,8 +58,8 @@ Describe 'Set-SqlDscRSSmtpConfiguration' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -74,23 +74,23 @@ Describe 'Set-SqlDscRSSmtpConfiguration' {
             }
 
             It 'Should have Mandatory set to True' {
-                $configurationParameter.Attributes.Mandatory | Should -Contain $true
+                $configurationParameter.Attributes.Mandatory | Should-ContainCollection $true
             }
 
             It 'Should have ValueFromPipeline set to True' {
-                $configurationParameter.Attributes.ValueFromPipeline | Should -Contain $true
+                $configurationParameter.Attributes.ValueFromPipeline | Should-ContainCollection $true
             }
 
             It 'Should have the expected parameter type' {
-                $configurationParameter.ParameterType.Name | Should -Be 'Object'
+                $configurationParameter.ParameterType.Name | Should-Be 'Object'
             }
 
             It 'Should have Position set to 0' {
-                $configurationParameter.Attributes.Position | Should -Contain 0
+                $configurationParameter.Attributes.Position | Should-ContainCollection 0
             }
 
             It 'Should be a member of __AllParameterSets parameter set' {
-                $configurationParameter.ParameterSets.Keys | Should -Contain '__AllParameterSets'
+                $configurationParameter.ParameterSets.Keys | Should-ContainCollection '__AllParameterSets'
             }
         }
 
@@ -100,23 +100,23 @@ Describe 'Set-SqlDscRSSmtpConfiguration' {
             }
 
             It 'Should have Mandatory set to True' {
-                $smtpServerParameter.Attributes.Mandatory | Should -Contain $true
+                $smtpServerParameter.Attributes.Mandatory | Should-ContainCollection $true
             }
 
             It 'Should have ValueFromPipeline set to False' {
-                $smtpServerParameter.Attributes.ValueFromPipeline | Should -Contain $false
+                $smtpServerParameter.Attributes.ValueFromPipeline | Should-ContainCollection $false
             }
 
             It 'Should have the expected parameter type' {
-                $smtpServerParameter.ParameterType.Name | Should -Be 'String'
+                $smtpServerParameter.ParameterType.Name | Should-Be 'String'
             }
 
             It 'Should have Position set to 1' {
-                $smtpServerParameter.Attributes.Position | Should -Contain 1
+                $smtpServerParameter.Attributes.Position | Should-ContainCollection 1
             }
 
             It 'Should be a member of __AllParameterSets parameter set' {
-                $smtpServerParameter.ParameterSets.Keys | Should -Contain '__AllParameterSets'
+                $smtpServerParameter.ParameterSets.Keys | Should-ContainCollection '__AllParameterSets'
             }
         }
 
@@ -126,23 +126,23 @@ Describe 'Set-SqlDscRSSmtpConfiguration' {
             }
 
             It 'Should have Mandatory set to True' {
-                $senderEmailAddressParameter.Attributes.Mandatory | Should -Contain $true
+                $senderEmailAddressParameter.Attributes.Mandatory | Should-ContainCollection $true
             }
 
             It 'Should have ValueFromPipeline set to False' {
-                $senderEmailAddressParameter.Attributes.ValueFromPipeline | Should -Contain $false
+                $senderEmailAddressParameter.Attributes.ValueFromPipeline | Should-ContainCollection $false
             }
 
             It 'Should have the expected parameter type' {
-                $senderEmailAddressParameter.ParameterType.Name | Should -Be 'String'
+                $senderEmailAddressParameter.ParameterType.Name | Should-Be 'String'
             }
 
             It 'Should have Position set to 2' {
-                $senderEmailAddressParameter.Attributes.Position | Should -Contain 2
+                $senderEmailAddressParameter.Attributes.Position | Should-ContainCollection 2
             }
 
             It 'Should be a member of __AllParameterSets parameter set' {
-                $senderEmailAddressParameter.ParameterSets.Keys | Should -Contain '__AllParameterSets'
+                $senderEmailAddressParameter.ParameterSets.Keys | Should-ContainCollection '__AllParameterSets'
             }
         }
 
@@ -152,19 +152,19 @@ Describe 'Set-SqlDscRSSmtpConfiguration' {
             }
 
             It 'Should have Mandatory set to False' {
-                $passThruParameter.Attributes.Mandatory | Should -Contain $false
+                $passThruParameter.Attributes.Mandatory | Should-ContainCollection $false
             }
 
             It 'Should have ValueFromPipeline set to False' {
-                $passThruParameter.Attributes.ValueFromPipeline | Should -Contain $false
+                $passThruParameter.Attributes.ValueFromPipeline | Should-ContainCollection $false
             }
 
             It 'Should have the expected parameter type' {
-                $passThruParameter.ParameterType.Name | Should -Be 'SwitchParameter'
+                $passThruParameter.ParameterType.Name | Should-Be 'SwitchParameter'
             }
 
             It 'Should be a member of __AllParameterSets parameter set' {
-                $passThruParameter.ParameterSets.Keys | Should -Contain '__AllParameterSets'
+                $passThruParameter.ParameterSets.Keys | Should-ContainCollection '__AllParameterSets'
             }
         }
 
@@ -174,19 +174,19 @@ Describe 'Set-SqlDscRSSmtpConfiguration' {
             }
 
             It 'Should have Mandatory set to False' {
-                $forceParameter.Attributes.Mandatory | Should -Contain $false
+                $forceParameter.Attributes.Mandatory | Should-ContainCollection $false
             }
 
             It 'Should have ValueFromPipeline set to False' {
-                $forceParameter.Attributes.ValueFromPipeline | Should -Contain $false
+                $forceParameter.Attributes.ValueFromPipeline | Should-ContainCollection $false
             }
 
             It 'Should have the expected parameter type' {
-                $forceParameter.ParameterType.Name | Should -Be 'SwitchParameter'
+                $forceParameter.ParameterType.Name | Should-Be 'SwitchParameter'
             }
 
             It 'Should be a member of __AllParameterSets parameter set' {
-                $forceParameter.ParameterSets.Keys | Should -Contain '__AllParameterSets'
+                $forceParameter.ParameterSets.Keys | Should-ContainCollection '__AllParameterSets'
             }
         }
 
@@ -196,11 +196,11 @@ Describe 'Set-SqlDscRSSmtpConfiguration' {
             }
 
             It 'Should have Mandatory set to False' {
-                $whatIfParameter.Attributes.Mandatory | Should -BeIn @($false, $null)
+                @($false, $null) | Should-ContainCollection ($whatIfParameter.Attributes.Mandatory)
             }
 
             It 'Should have the expected parameter type' {
-                $whatIfParameter.ParameterType.Name | Should -Be 'SwitchParameter'
+                $whatIfParameter.ParameterType.Name | Should-Be 'SwitchParameter'
             }
         }
 
@@ -210,11 +210,11 @@ Describe 'Set-SqlDscRSSmtpConfiguration' {
             }
 
             It 'Should have Mandatory set to False' {
-                $confirmParameter.Attributes.Mandatory | Should -BeIn @($false, $null)
+                @($false, $null) | Should-ContainCollection ($confirmParameter.Attributes.Mandatory)
             }
 
             It 'Should have the expected parameter type' {
-                $confirmParameter.ParameterType.Name | Should -Be 'SwitchParameter'
+                $confirmParameter.ParameterType.Name | Should-Be 'SwitchParameter'
             }
         }
     }
@@ -231,18 +231,18 @@ Describe 'Set-SqlDscRSSmtpConfiguration' {
         It 'Should set SMTP configuration without errors' {
             $null = $mockCimInstance | Set-SqlDscRSSmtpConfiguration -SmtpServer 'smtp.example.com' -SenderEmailAddress 'reports@example.com' -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'SetEmailConfiguration' -and
                 $Arguments.SendUsingSMTPServer -eq $true -and
                 $Arguments.SMTPServer -eq 'smtp.example.com' -and
                 $Arguments.SenderEmailAddress -eq 'reports@example.com'
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should not return anything by default' {
             $result = $mockCimInstance | Set-SqlDscRSSmtpConfiguration -SmtpServer 'smtp.example.com' -SenderEmailAddress 'reports@example.com' -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -258,8 +258,8 @@ Describe 'Set-SqlDscRSSmtpConfiguration' {
         It 'Should return the configuration CIM instance' {
             $result = $mockCimInstance | Set-SqlDscRSSmtpConfiguration -SmtpServer 'smtp.example.com' -SenderEmailAddress 'reports@example.com' -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -275,7 +275,7 @@ Describe 'Set-SqlDscRSSmtpConfiguration' {
         It 'Should set SMTP configuration without confirmation' {
             $null = $mockCimInstance | Set-SqlDscRSSmtpConfiguration -SmtpServer 'smtp.example.com' -SenderEmailAddress 'reports@example.com' -Force
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -291,7 +291,7 @@ Describe 'Set-SqlDscRSSmtpConfiguration' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Set-SqlDscRSSmtpConfiguration -SmtpServer 'smtp.example.com' -SenderEmailAddress 'reports@example.com' -Confirm:$false } | Should -Throw -ErrorId 'SSRSSC0001,Set-SqlDscRSSmtpConfiguration'
+            { $mockCimInstance | Set-SqlDscRSSmtpConfiguration -SmtpServer 'smtp.example.com' -SenderEmailAddress 'reports@example.com' -Confirm:$false } | Should-Throw -FullyQualifiedErrorId 'SSRSSC0001,Set-SqlDscRSSmtpConfiguration'
         }
     }
 
@@ -307,7 +307,7 @@ Describe 'Set-SqlDscRSSmtpConfiguration' {
         It 'Should not call Invoke-RsCimMethod' {
             $null = $mockCimInstance | Set-SqlDscRSSmtpConfiguration -SmtpServer 'smtp.example.com' -SenderEmailAddress 'reports@example.com' -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
         }
     }
 
@@ -323,7 +323,7 @@ Describe 'Set-SqlDscRSSmtpConfiguration' {
         It 'Should set SMTP configuration' {
             $null = Set-SqlDscRSSmtpConfiguration -Configuration $mockCimInstance -SmtpServer 'smtp.example.com' -SenderEmailAddress 'reports@example.com' -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 }

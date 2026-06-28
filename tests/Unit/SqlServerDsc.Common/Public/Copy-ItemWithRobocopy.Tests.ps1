@@ -159,8 +159,8 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
 
             $null = Copy-ItemWithRobocopy @copyItemWithRobocopyParameter -ErrorAction 'Stop'
 
-            Should -Invoke -CommandName Get-Command -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Start-Process -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-Command -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Start-Process -Exactly -Scope It -Times 1
         }
 
         It 'Should not use Unbuffered IO when copying' {
@@ -181,8 +181,8 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
 
             $null = Copy-ItemWithRobocopy @copyItemWithRobocopyParameter -ErrorAction 'Stop'
 
-            Should -Invoke -CommandName Get-Command -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Start-Process -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-Command -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Start-Process -Exactly -Scope It -Times 1
         }
     }
 
@@ -233,12 +233,12 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
                 $mockLocalizedString -f $mockStartSqlSetupProcessExitCode
             )
 
-            $mockErrorMessage.Exception.Message | Should -Not -BeNullOrEmpty
+            $mockErrorMessage.Exception.Message | Should-BeTruthy
 
-            { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Throw -ExpectedMessage $mockErrorMessage
+            { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should-Throw -ExceptionMessage $mockErrorMessage
 
-            Should -Invoke -CommandName Get-Command -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Start-Process -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-Command -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Start-Process -Exactly -Scope It -Times 1
         }
 
         It 'Should throw the correct error message when error code is 16' {
@@ -258,12 +258,12 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
                 $mockLocalizedString -f $mockStartSqlSetupProcessExitCode
             )
 
-            $mockErrorMessage.Exception.Message | Should -Not -BeNullOrEmpty
+            $mockErrorMessage.Exception.Message | Should-BeTruthy
 
-            { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Throw -ExpectedMessage $mockErrorMessage
+            { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should-Throw -ExceptionMessage $mockErrorMessage
 
-            Should -Invoke -CommandName Get-Command -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Start-Process -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-Command -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Start-Process -Exactly -Scope It -Times 1
         }
 
         It 'Should throw the correct error message when error code is greater than 7 (but not 8 or 16)' {
@@ -282,12 +282,12 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
                 $mockLocalizedString -f $mockStartSqlSetupProcessExitCode
             )
 
-            $mockErrorMessage | Should -Not -BeNullOrEmpty
+            $mockErrorMessage | Should-BeTruthy
 
-            { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Throw -ExpectedMessage $mockErrorMessage
+            { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should-Throw -ExceptionMessage $mockErrorMessage
 
-            Should -Invoke -CommandName Get-Command -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Start-Process -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-Command -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Start-Process -Exactly -Scope It -Times 1
         }
     }
 
@@ -300,8 +300,8 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
         }
 
         AfterEach {
-            Should -Invoke -CommandName Get-Command -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Start-Process -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-Command -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Start-Process -Exactly -Scope It -Times 1
         }
 
         It 'Should finish successfully with exit code 1' {
@@ -314,8 +314,8 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
 
             $null = Copy-ItemWithRobocopy @copyItemWithRobocopyParameter -ErrorAction 'Stop'
 
-            Should -Invoke -CommandName Get-Command -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Start-Process -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-Command -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Start-Process -Exactly -Scope It -Times 1
         }
 
         It 'Should finish successfully with exit code 2' {
@@ -328,8 +328,8 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
 
             $null = Copy-ItemWithRobocopy @copyItemWithRobocopyParameter -ErrorAction 'Stop'
 
-            Should -Invoke -CommandName Get-Command -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Start-Process -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-Command -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Start-Process -Exactly -Scope It -Times 1
         }
 
         It 'Should finish successfully with exit code 3' {
@@ -353,8 +353,8 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
         }
 
         AfterEach {
-            Should -Invoke -CommandName Get-Command -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Start-Process -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-Command -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Start-Process -Exactly -Scope It -Times 1
         }
 
         It 'Should finish successfully with exit code 1' {

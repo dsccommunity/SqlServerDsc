@@ -60,11 +60,11 @@ Describe 'ConvertTo-SqlDscEditionName' {
         It 'Should return the correct information' {
             $result = ConvertTo-SqlDscEditionName -Id $testEditionId
 
-            $result.EditionId | Should -Be $mockExpectedResult.EditionId
-            $result.Edition | Should -Be $mockExpectedResult.Edition
-            $result.EditionName | Should -Be $mockExpectedResult.EditionName
+            $result.EditionId | Should-Be $mockExpectedResult.EditionId
+            $result.Edition | Should-Be $mockExpectedResult.Edition
+            $result.EditionName | Should-Be $mockExpectedResult.EditionName
 
-            $result | Should -BeOfType 'System.Management.Automation.PSCustomObject'
+            $result | Should-HaveType 'System.Management.Automation.PSCustomObject'
         }
     }
 
@@ -81,9 +81,9 @@ Describe 'ConvertTo-SqlDscEditionName' {
         It 'Should return the correct information' {
             $result = ConvertTo-SqlDscEditionName -Id $testEditionId
 
-            $result.EditionId | Should -Be $mockExpectedResult.EditionId
-            $result.Edition | Should -Be $mockExpectedResult.Edition
-            $result.EditionName | Should -Be $mockExpectedResult.EditionName
+            $result.EditionId | Should-Be $mockExpectedResult.EditionId
+            $result.Edition | Should-Be $mockExpectedResult.Edition
+            $result.EditionName | Should-Be $mockExpectedResult.EditionName
         }
     }
 
@@ -100,9 +100,9 @@ Describe 'ConvertTo-SqlDscEditionName' {
         It 'Should return Unknown for unknown EditionId' {
             $result = ConvertTo-SqlDscEditionName -Id $testEditionId
 
-            $result.EditionId | Should -Be $mockExpectedResult.EditionId
-            $result.Edition | Should -Be $mockExpectedResult.Edition
-            $result.EditionName | Should -Be $mockExpectedResult.EditionName
+            $result.EditionId | Should-Be $mockExpectedResult.EditionId
+            $result.Edition | Should-Be $mockExpectedResult.Edition
+            $result.EditionName | Should-Be $mockExpectedResult.EditionName
         }
     }
 }

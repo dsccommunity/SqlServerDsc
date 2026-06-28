@@ -59,11 +59,11 @@ Describe 'Test-SqlDscRSInstalled' {
         It 'Should return $true when the instance exists' {
             $result = Test-SqlDscRSInstalled -InstanceName 'SSRS'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
 
-            Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -ParameterFilter {
+            Should-Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -ParameterFilter {
                 $InstanceName -eq 'SSRS'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 
@@ -77,11 +77,11 @@ Describe 'Test-SqlDscRSInstalled' {
         It 'Should return $false when the instance does not exist' {
             $result = Test-SqlDscRSInstalled -InstanceName 'SSRS'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
 
-            Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -ParameterFilter {
+            Should-Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -ParameterFilter {
                 $InstanceName -eq 'SSRS'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 }

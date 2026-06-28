@@ -70,25 +70,25 @@ Describe 'Get-SqlDscLogin' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     It 'Should have the correct parameter metadata for ServerObject, Name, and Refresh' {
         $cmd = Get-Command -Name 'Get-SqlDscLogin'
 
         # Test ServerObject parameter
-        $cmd.Parameters['ServerObject'].ParameterType.FullName | Should -Be 'Microsoft.SqlServer.Management.Smo.Server'
-        $cmd.Parameters['ServerObject'].Attributes.Mandatory | Should -BeTrue
-        $cmd.Parameters['ServerObject'].Attributes.ValueFromPipeline | Should -BeTrue
+        $cmd.Parameters['ServerObject'].ParameterType.FullName | Should-Be 'Microsoft.SqlServer.Management.Smo.Server'
+        $cmd.Parameters['ServerObject'].Attributes.Mandatory | Should-BeTrue
+        $cmd.Parameters['ServerObject'].Attributes.ValueFromPipeline | Should-BeTrue
 
         # Test Name parameter
-        $cmd.Parameters['Name'].ParameterType.FullName | Should -Be 'System.String'
-        $cmd.Parameters['Name'].Attributes.Mandatory | Should -BeFalse
+        $cmd.Parameters['Name'].ParameterType.FullName | Should-Be 'System.String'
+        $cmd.Parameters['Name'].Attributes.Mandatory | Should-BeFalse
 
         # Test Refresh parameter
-        $cmd.Parameters['Refresh'].ParameterType.FullName | Should -Be 'System.Management.Automation.SwitchParameter'
-        $cmd.Parameters['Refresh'].Attributes.Mandatory | Should -BeFalse
+        $cmd.Parameters['Refresh'].ParameterType.FullName | Should-Be 'System.Management.Automation.SwitchParameter'
+        $cmd.Parameters['Refresh'].Attributes.Mandatory | Should-BeFalse
     }
 
     Context 'When no login exists' {
@@ -113,14 +113,14 @@ Describe 'Get-SqlDscLogin' -Tag 'Public' {
 
             It 'Should throw the correct error' {
                 { Get-SqlDscLogin @mockDefaultParameters -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage ($mockErrorMessage -f 'TestLogin')
+                    Should-Throw -ExceptionMessage ($mockErrorMessage -f 'TestLogin')
             }
         }
 
         Context 'When ignoring the error' {
             It 'Should not throw an exception and return $null' {
                 Get-SqlDscLogin @mockDefaultParameters -ErrorAction 'SilentlyContinue' |
-                    Should -BeNullOrEmpty
+                    Should-BeFalsy
             }
         }
     }
@@ -149,16 +149,16 @@ Describe 'Get-SqlDscLogin' -Tag 'Public' {
         It 'Should return the correct values' {
             $result = Get-SqlDscLogin @mockDefaultParameters
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Login'
-            $result.Name | Should -Be 'TestLogin'
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Login'
+            $result.Name | Should-Be 'TestLogin'
         }
 
         Context 'When passing parameter ServerObject over the pipeline' {
             It 'Should return the correct values' {
                 $result = $mockServerObject | Get-SqlDscLogin -Name 'TestLogin'
 
-                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Login'
-                $result.Name | Should -Be 'TestLogin'
+                $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Login'
+                $result.Name | Should-Be 'TestLogin'
             }
         }
     }
@@ -194,10 +194,10 @@ Describe 'Get-SqlDscLogin' -Tag 'Public' {
         It 'Should return the correct values' {
             $result = Get-SqlDscLogin @mockDefaultParameters
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Login'
-            $result | Should -HaveCount 2
-            $result.Name | Should -Contain 'TestLogin1'
-            $result.Name | Should -Contain 'TestLogin2'
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Login'
+            $result | Should-BeCollection -Count 2
+            $result.Name | Should-ContainCollection 'TestLogin1'
+            $result.Name | Should-ContainCollection 'TestLogin2'
         }
     }
 
@@ -233,7 +233,7 @@ Describe 'Get-SqlDscLogin' -Tag 'Public' {
         It 'Should call the Refresh method on the Logins collection' {
             Get-SqlDscLogin @mockDefaultParameters
 
-            $script:mockRefreshCallCount | Should -Be 1
+            $script:mockRefreshCallCount | Should-Be 1
         }
     }
 }

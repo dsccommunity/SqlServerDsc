@@ -67,7 +67,7 @@ Describe 'Repair-SqlDscServer' -Tag @('Integration_SQL2017', 'Integration_SQL201
     It 'Should have the named instance SQL Server service running' {
         $getServiceResult = Get-Service -Name 'MSSQL$DSCSQLTEST' -ErrorAction 'Stop'
 
-        $getServiceResult.Status | Should -Be 'Running'
+        $getServiceResult.Status | Should-Be 'Running'
     }
 
     It 'Should uninstall SQL Server LocalDB if present to avoid repair conflicts' {
@@ -187,8 +187,8 @@ This is not a bug in SqlServerDsc but a limitation of SQL Server setup.
         It 'Should still have the named instance SQL Server service running after repair' {
             $getServiceResult = Get-Service -Name 'MSSQL$DSCSQLTEST' -ErrorAction 'Stop'
 
-            $getServiceResult | Should -Not -BeNullOrEmpty
-            $getServiceResult.Status | Should -Be 'Running'
+            $getServiceResult | Should-BeTruthy
+            $getServiceResult.Status | Should-Be 'Running'
         }
 
         It 'Should be able to connect to the instance after repair' {
@@ -203,8 +203,8 @@ This is not a bug in SqlServerDsc but a limitation of SQL Server setup.
 
             $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-            $sqlServerObject | Should -Not -BeNullOrEmpty
-            $sqlServerObject.InstanceName | Should -Be 'DSCSQLTEST'
+            $sqlServerObject | Should-BeTruthy
+            $sqlServerObject.InstanceName | Should-Be 'DSCSQLTEST'
 
             Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject -ErrorAction 'Stop'
         }

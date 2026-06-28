@@ -109,12 +109,12 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result | Should -BeOfType [System.Collections.Hashtable]
-                $result.Id | Should -Be $mockGetTargetResourceParameters.Id
-                $result.ServerInstance | Should -Be $mockGetTargetResourceParameters.ServerInstance
-                $result.SetFilePath | Should -Be $mockGetTargetResourceParameters.SetFilePath
-                $result.GetFilePath | Should -Be $mockGetTargetResourceParameters.GetFilePath
-                $result.TestFilePath | Should -Be $mockGetTargetResourceParameters.TestFilePath
+                $result | Should-HaveType ([System.Collections.Hashtable])
+                $result.Id | Should-Be $mockGetTargetResourceParameters.Id
+                $result.ServerInstance | Should-Be $mockGetTargetResourceParameters.ServerInstance
+                $result.SetFilePath | Should-Be $mockGetTargetResourceParameters.SetFilePath
+                $result.GetFilePath | Should-Be $mockGetTargetResourceParameters.GetFilePath
+                $result.TestFilePath | Should-Be $mockGetTargetResourceParameters.TestFilePath
             }
         }
     }
@@ -135,12 +135,12 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result | Should -BeOfType [System.Collections.Hashtable]
-                $result.Id | Should -Be $mockGetTargetResourceParameters.Id
-                $result.ServerInstance | Should -Be $mockGetTargetResourceParameters.ServerInstance
-                $result.SetFilePath | Should -Be $mockGetTargetResourceParameters.SetFilePath
-                $result.GetFilePath | Should -Be $mockGetTargetResourceParameters.GetFilePath
-                $result.TestFilePath | Should -Be $mockGetTargetResourceParameters.TestFilePath
+                $result | Should-HaveType ([System.Collections.Hashtable])
+                $result.Id | Should-Be $mockGetTargetResourceParameters.Id
+                $result.ServerInstance | Should-Be $mockGetTargetResourceParameters.ServerInstance
+                $result.SetFilePath | Should-Be $mockGetTargetResourceParameters.SetFilePath
+                $result.GetFilePath | Should-Be $mockGetTargetResourceParameters.GetFilePath
+                $result.TestFilePath | Should-Be $mockGetTargetResourceParameters.TestFilePath
             }
         }
     }
@@ -159,7 +159,7 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
 
                 $mockErrorMessage = 'Failed to run SQL Script'
 
-                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
@@ -175,7 +175,7 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
 
                 $expectedError = $script:localizedData.GetScript_FileNotFound -f $script:mockGetTargetResourceParameters.GetFilePath
 
-                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage $expectedError
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should-Throw -ExceptionMessage $expectedError
             }
         }
     }
@@ -254,7 +254,7 @@ Describe 'SqlScript\Set-TargetResource' -Tag 'Set' {
 
                 $mockErrorMessage = 'Failed to run SQL Script'
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
@@ -270,7 +270,7 @@ Describe 'SqlScript\Set-TargetResource' -Tag 'Set' {
 
                 $expectedError = $script:localizedData.SetScript_FileNotFound -f $script:mockSetTargetResourceParameters.SetFilePath
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage $expectedError
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage $expectedError
             }
         }
     }
@@ -311,7 +311,7 @@ Describe 'SqlScript\Test-TargetResource' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -330,7 +330,7 @@ Describe 'SqlScript\Test-TargetResource' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -353,7 +353,7 @@ Describe 'SqlScript\Test-TargetResource' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -372,7 +372,7 @@ Describe 'SqlScript\Test-TargetResource' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -391,7 +391,7 @@ Describe 'SqlScript\Test-TargetResource' {
 
                     $mockErrorMessage = 'Failed to run SQL Script'
 
-                    { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    { Test-TargetResource @mockTestTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorMessage
                 }
             }
         }
@@ -408,7 +408,7 @@ Describe 'SqlScript\Test-TargetResource' {
 
                 $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                $result | Should -BeFalse
+                $result | Should-BeFalse
             }
         }
     }

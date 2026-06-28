@@ -96,17 +96,17 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.EndpointName | Should -Be $ConfigurationData.AllNodes.EndpointName
-            $resourceCurrentState.EndpointType | Should -Be 'DatabaseMirroring'
-            $resourceCurrentState.Port | Should -Be $ConfigurationData.AllNodes.Port
-            $resourceCurrentState.IpAddress | Should -Be $ConfigurationData.AllNodes.IpAddress
-            $resourceCurrentState.Owner | Should -Be $ConfigurationData.AllNodes.Owner
-            $resourceCurrentState.State | Should -Be 'Started'
+            $resourceCurrentState.Ensure | Should-Be 'Present'
+            $resourceCurrentState.EndpointName | Should-Be $ConfigurationData.AllNodes.EndpointName
+            $resourceCurrentState.EndpointType | Should-Be 'DatabaseMirroring'
+            $resourceCurrentState.Port | Should-Be $ConfigurationData.AllNodes.Port
+            $resourceCurrentState.IpAddress | Should-Be $ConfigurationData.AllNodes.IpAddress
+            $resourceCurrentState.Owner | Should-Be $ConfigurationData.AllNodes.Owner
+            $resourceCurrentState.State | Should-Be 'Started'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -151,13 +151,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Absent'
-            $resourceCurrentState.EndpointName | Should -BeNullOrEmpty
-            $resourceCurrentState.EndpointType | Should -Be 'DatabaseMirroring'
+            $resourceCurrentState.Ensure | Should-Be 'Absent'
+            $resourceCurrentState.EndpointName | Should-BeFalsy
+            $resourceCurrentState.EndpointType | Should-Be 'DatabaseMirroring'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -202,20 +202,20 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.EndpointName | Should -Be $ConfigurationData.AllNodes.SsbrEndpointName
-            $resourceCurrentState.EndpointType | Should -Be 'ServiceBroker'
-            $resourceCurrentState.Port | Should -Be $ConfigurationData.AllNodes.SsbrPort
-            $resourceCurrentState.IpAddress | Should -Be $ConfigurationData.AllNodes.IpAddress
-            $resourceCurrentState.Owner | Should -Be $ConfigurationData.AllNodes.Owner
-            $resourceCurrentState.State | Should -Be 'Started'
+            $resourceCurrentState.Ensure | Should-Be 'Present'
+            $resourceCurrentState.EndpointName | Should-Be $ConfigurationData.AllNodes.SsbrEndpointName
+            $resourceCurrentState.EndpointType | Should-Be 'ServiceBroker'
+            $resourceCurrentState.Port | Should-Be $ConfigurationData.AllNodes.SsbrPort
+            $resourceCurrentState.IpAddress | Should-Be $ConfigurationData.AllNodes.IpAddress
+            $resourceCurrentState.Owner | Should-Be $ConfigurationData.AllNodes.Owner
+            $resourceCurrentState.State | Should-Be 'Started'
 
-            $resourceCurrentState.IsMessageForwardingEnabled | Should -Be $ConfigurationData.AllNodes.IsMessageForwardingEnabled
-            $resourceCurrentState.MessageForwardingSize | Should -Be $ConfigurationData.AllNodes.MessageForwardingSize
+            $resourceCurrentState.IsMessageForwardingEnabled | Should-Be $ConfigurationData.AllNodes.IsMessageForwardingEnabled
+            $resourceCurrentState.MessageForwardingSize | Should-Be $ConfigurationData.AllNodes.MessageForwardingSize
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -260,13 +260,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Absent'
-            $resourceCurrentState.EndpointName | Should -BeNullOrEmpty
-            $resourceCurrentState.EndpointType | Should -Be 'ServiceBroker'
+            $resourceCurrentState.Ensure | Should-Be 'Absent'
+            $resourceCurrentState.EndpointName | Should-BeFalsy
+            $resourceCurrentState.EndpointType | Should-Be 'ServiceBroker'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 }

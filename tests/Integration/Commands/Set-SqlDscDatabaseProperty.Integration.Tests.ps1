@@ -75,7 +75,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
-            $updatedDb.RecoveryModel | Should -Be 'Simple'
+            $updatedDb.RecoveryModel | Should-Be 'Simple'
         }
 
         It 'Should set compatibility level successfully' {
@@ -84,7 +84,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
-            $updatedDb.CompatibilityLevel | Should -Be 'Version140'
+            $updatedDb.CompatibilityLevel | Should-Be 'Version140'
         }
 
         It 'Should set AutoClose successfully' {
@@ -92,7 +92,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
-            $updatedDb.AutoClose | Should -BeTrue
+            $updatedDb.AutoClose | Should-BeTrue
 
             # Reset to default
             $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoClose:$false -Force -ErrorAction 'Stop'
@@ -103,7 +103,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
-            $updatedDb.AutoShrink | Should -BeTrue
+            $updatedDb.AutoShrink | Should-BeTrue
 
             # Reset to default
             $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -AutoShrink:$false -Force -ErrorAction 'Stop'
@@ -114,7 +114,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
-            $updatedDb.PageVerify | Should -Be 'TornPageDetection'
+            $updatedDb.PageVerify | Should-Be 'TornPageDetection'
 
             # Reset to default
             $null = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -PageVerify 'Checksum' -Force -ErrorAction 'Stop'
@@ -125,10 +125,10 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
 
             # Verify the changes
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
-            $updatedDb.RecoveryModel | Should -Be 'Full'
-            $updatedDb.AutoClose | Should -BeFalse
-            $updatedDb.AutoShrink | Should -BeFalse
-            $updatedDb.PageVerify | Should -Be 'Checksum'
+            $updatedDb.RecoveryModel | Should-Be 'Full'
+            $updatedDb.AutoClose | Should-BeFalse
+            $updatedDb.AutoShrink | Should-BeFalse
+            $updatedDb.PageVerify | Should-Be 'Checksum'
         }
 
         It 'Should be idempotent when property is already set' {
@@ -140,12 +140,12 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
 
             # Verify the value is still correct
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
-            $updatedDb.RecoveryModel | Should -Be 'Simple'
+            $updatedDb.RecoveryModel | Should-Be 'Simple'
         }
 
         It 'Should throw error when trying to set properties of non-existent database' {
             { Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name 'NonExistentDatabase' -RecoveryModel 'Simple' -Force -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
     }
 
@@ -157,7 +157,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
-            $updatedDb.RecoveryModel | Should -Be 'Simple'
+            $updatedDb.RecoveryModel | Should-Be 'Simple'
         }
 
         It 'Should set AutoClose using database object' {
@@ -167,7 +167,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
-            $updatedDb.AutoClose | Should -BeTrue
+            $updatedDb.AutoClose | Should-BeTrue
 
             # Reset to default
             $null = Set-SqlDscDatabaseProperty -DatabaseObject $databaseObject -AutoClose:$false -Force -ErrorAction 'Stop'
@@ -180,8 +180,8 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
 
             # Verify the changes
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
-            $updatedDb.RecoveryModel | Should -Be 'Full'
-            $updatedDb.PageVerify | Should -Be 'TornPageDetection'
+            $updatedDb.RecoveryModel | Should-Be 'Full'
+            $updatedDb.PageVerify | Should-Be 'TornPageDetection'
         }
 
         It 'Should support pipeline input with database object' {
@@ -190,7 +190,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
-            $updatedDb.RecoveryModel | Should -Be 'BulkLogged'
+            $updatedDb.RecoveryModel | Should-Be 'BulkLogged'
         }
 
         It 'Should set compatibility level successfully using pipeline database object' {
@@ -200,7 +200,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
 
             # Verify the change
             $updatedDb140 = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
-            $updatedDb140.CompatibilityLevel | Should -Be 'Version140'
+            $updatedDb140.CompatibilityLevel | Should-Be 'Version140'
         }
 
         It 'Should change compatibility level successfully using pipeline database object' {
@@ -209,12 +209,12 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
 
             # Verify Version130 is set
             $updatedDb140 = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
-            $updatedDb140.CompatibilityLevel | Should -Be 'Version130'
+            $updatedDb140.CompatibilityLevel | Should-Be 'Version130'
 
             # Change to Version140 which is supported on all tested versions (SQL 2017+)
             $databaseObject | Set-SqlDscDatabaseProperty -CompatibilityLevel 'Version140' -Force -ErrorAction 'Stop'
             $updatedDb160 = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -ErrorAction 'Stop'
-            $updatedDb160.CompatibilityLevel | Should -Be 'Version140'
+            $updatedDb160.CompatibilityLevel | Should-Be 'Version140'
         }
     }
 
@@ -224,7 +224,7 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
-            $updatedDb.RecoveryModel | Should -Be 'BulkLogged'
+            $updatedDb.RecoveryModel | Should-Be 'BulkLogged'
         }
     }
 
@@ -232,10 +232,10 @@ Describe 'Set-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integration
         It 'Should return the database object when PassThru is specified' {
             $result = Set-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $script:testDatabaseName -RecoveryModel 'Simple' -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Database])
-            $result.Name | Should -Be $script:testDatabaseName
-            $result.RecoveryModel | Should -Be 'Simple'
+            $result | Should-BeTruthy
+            $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Database])
+            $result.Name | Should-Be $script:testDatabaseName
+            $result.RecoveryModel | Should-Be 'Simple'
         }
     }
 }

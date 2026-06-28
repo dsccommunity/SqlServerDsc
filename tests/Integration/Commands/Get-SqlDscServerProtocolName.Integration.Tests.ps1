@@ -59,28 +59,28 @@ Describe 'Get-SqlDscServerProtocolName' -Tag @('Integration_SQL2017', 'Integrati
         It 'Should return correct mapping for TcpIp protocol' {
             $result = Get-SqlDscServerProtocolName -ProtocolName 'TcpIp' -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:expectedProtocolMappings['TcpIp'].Name
-            $result.DisplayName | Should -Be $script:expectedProtocolMappings['TcpIp'].DisplayName
-            $result.ShortName | Should -Be $script:expectedProtocolMappings['TcpIp'].ShortName
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:expectedProtocolMappings['TcpIp'].Name
+            $result.DisplayName | Should-Be $script:expectedProtocolMappings['TcpIp'].DisplayName
+            $result.ShortName | Should-Be $script:expectedProtocolMappings['TcpIp'].ShortName
         }
 
         It 'Should return correct mapping for NamedPipes protocol' {
             $result = Get-SqlDscServerProtocolName -ProtocolName 'NamedPipes' -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:expectedProtocolMappings['NamedPipes'].Name
-            $result.DisplayName | Should -Be $script:expectedProtocolMappings['NamedPipes'].DisplayName
-            $result.ShortName | Should -Be $script:expectedProtocolMappings['NamedPipes'].ShortName
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:expectedProtocolMappings['NamedPipes'].Name
+            $result.DisplayName | Should-Be $script:expectedProtocolMappings['NamedPipes'].DisplayName
+            $result.ShortName | Should-Be $script:expectedProtocolMappings['NamedPipes'].ShortName
         }
 
         It 'Should return correct mapping for SharedMemory protocol' {
             $result = Get-SqlDscServerProtocolName -ProtocolName 'SharedMemory' -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:expectedProtocolMappings['SharedMemory'].Name
-            $result.DisplayName | Should -Be $script:expectedProtocolMappings['SharedMemory'].DisplayName
-            $result.ShortName | Should -Be $script:expectedProtocolMappings['SharedMemory'].ShortName
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:expectedProtocolMappings['SharedMemory'].Name
+            $result.DisplayName | Should-Be $script:expectedProtocolMappings['SharedMemory'].DisplayName
+            $result.ShortName | Should-Be $script:expectedProtocolMappings['SharedMemory'].ShortName
         }
     }
 
@@ -88,28 +88,28 @@ Describe 'Get-SqlDscServerProtocolName' -Tag @('Integration_SQL2017', 'Integrati
         It 'Should return correct mapping for TCP/IP display name' {
             $result = Get-SqlDscServerProtocolName -DisplayName 'TCP/IP' -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:expectedProtocolMappings['TcpIp'].Name
-            $result.DisplayName | Should -Be $script:expectedProtocolMappings['TcpIp'].DisplayName
-            $result.ShortName | Should -Be $script:expectedProtocolMappings['TcpIp'].ShortName
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:expectedProtocolMappings['TcpIp'].Name
+            $result.DisplayName | Should-Be $script:expectedProtocolMappings['TcpIp'].DisplayName
+            $result.ShortName | Should-Be $script:expectedProtocolMappings['TcpIp'].ShortName
         }
 
         It 'Should return correct mapping for Named Pipes display name' {
             $result = Get-SqlDscServerProtocolName -DisplayName 'Named Pipes' -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:expectedProtocolMappings['NamedPipes'].Name
-            $result.DisplayName | Should -Be $script:expectedProtocolMappings['NamedPipes'].DisplayName
-            $result.ShortName | Should -Be $script:expectedProtocolMappings['NamedPipes'].ShortName
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:expectedProtocolMappings['NamedPipes'].Name
+            $result.DisplayName | Should-Be $script:expectedProtocolMappings['NamedPipes'].DisplayName
+            $result.ShortName | Should-Be $script:expectedProtocolMappings['NamedPipes'].ShortName
         }
 
         It 'Should return correct mapping for Shared Memory display name' {
             $result = Get-SqlDscServerProtocolName -DisplayName 'Shared Memory' -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:expectedProtocolMappings['SharedMemory'].Name
-            $result.DisplayName | Should -Be $script:expectedProtocolMappings['SharedMemory'].DisplayName
-            $result.ShortName | Should -Be $script:expectedProtocolMappings['SharedMemory'].ShortName
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:expectedProtocolMappings['SharedMemory'].Name
+            $result.DisplayName | Should-Be $script:expectedProtocolMappings['SharedMemory'].DisplayName
+            $result.ShortName | Should-Be $script:expectedProtocolMappings['SharedMemory'].ShortName
         }
     }
 
@@ -117,28 +117,28 @@ Describe 'Get-SqlDscServerProtocolName' -Tag @('Integration_SQL2017', 'Integrati
         It 'Should return correct mapping for Tcp short name' {
             $result = Get-SqlDscServerProtocolName -ShortName 'Tcp' -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:expectedProtocolMappings['TcpIp'].Name
-            $result.DisplayName | Should -Be $script:expectedProtocolMappings['TcpIp'].DisplayName
-            $result.ShortName | Should -Be $script:expectedProtocolMappings['TcpIp'].ShortName
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:expectedProtocolMappings['TcpIp'].Name
+            $result.DisplayName | Should-Be $script:expectedProtocolMappings['TcpIp'].DisplayName
+            $result.ShortName | Should-Be $script:expectedProtocolMappings['TcpIp'].ShortName
         }
 
         It 'Should return correct mapping for Np short name' {
             $result = Get-SqlDscServerProtocolName -ShortName 'Np' -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:expectedProtocolMappings['NamedPipes'].Name
-            $result.DisplayName | Should -Be $script:expectedProtocolMappings['NamedPipes'].DisplayName
-            $result.ShortName | Should -Be $script:expectedProtocolMappings['NamedPipes'].ShortName
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:expectedProtocolMappings['NamedPipes'].Name
+            $result.DisplayName | Should-Be $script:expectedProtocolMappings['NamedPipes'].DisplayName
+            $result.ShortName | Should-Be $script:expectedProtocolMappings['NamedPipes'].ShortName
         }
 
         It 'Should return correct mapping for Sm short name' {
             $result = Get-SqlDscServerProtocolName -ShortName 'Sm' -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:expectedProtocolMappings['SharedMemory'].Name
-            $result.DisplayName | Should -Be $script:expectedProtocolMappings['SharedMemory'].DisplayName
-            $result.ShortName | Should -Be $script:expectedProtocolMappings['SharedMemory'].ShortName
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:expectedProtocolMappings['SharedMemory'].Name
+            $result.DisplayName | Should-Be $script:expectedProtocolMappings['SharedMemory'].DisplayName
+            $result.ShortName | Should-Be $script:expectedProtocolMappings['SharedMemory'].ShortName
         }
     }
 
@@ -146,37 +146,37 @@ Describe 'Get-SqlDscServerProtocolName' -Tag @('Integration_SQL2017', 'Integrati
         It 'Should return all protocol mappings when -All is specified' {
             $result = Get-SqlDscServerProtocolName -All -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -HaveCount 3
+            $result | Should-BeTruthy
+            $result | Should-BeCollection -Count 3
 
             # Verify all expected protocols are present
             $tcpProtocol = $result | Where-Object -FilterScript { $_.Name -eq 'TcpIp' }
-            $tcpProtocol | Should -Not -BeNullOrEmpty
-            $tcpProtocol.DisplayName | Should -Be 'TCP/IP'
-            $tcpProtocol.ShortName | Should -Be 'Tcp'
+            $tcpProtocol | Should-BeTruthy
+            $tcpProtocol.DisplayName | Should-Be 'TCP/IP'
+            $tcpProtocol.ShortName | Should-Be 'Tcp'
 
             $namedPipesProtocol = $result | Where-Object -FilterScript { $_.Name -eq 'NamedPipes' }
-            $namedPipesProtocol | Should -Not -BeNullOrEmpty
-            $namedPipesProtocol.DisplayName | Should -Be 'Named Pipes'
-            $namedPipesProtocol.ShortName | Should -Be 'Np'
+            $namedPipesProtocol | Should-BeTruthy
+            $namedPipesProtocol.DisplayName | Should-Be 'Named Pipes'
+            $namedPipesProtocol.ShortName | Should-Be 'Np'
 
             $sharedMemoryProtocol = $result | Where-Object -FilterScript { $_.Name -eq 'SharedMemory' }
-            $sharedMemoryProtocol | Should -Not -BeNullOrEmpty
-            $sharedMemoryProtocol.DisplayName | Should -Be 'Shared Memory'
-            $sharedMemoryProtocol.ShortName | Should -Be 'Sm'
+            $sharedMemoryProtocol | Should-BeTruthy
+            $sharedMemoryProtocol.DisplayName | Should-Be 'Shared Memory'
+            $sharedMemoryProtocol.ShortName | Should-Be 'Sm'
         }
 
         It 'Should return all protocol mappings when no parameters are specified (default)' {
             $result = Get-SqlDscServerProtocolName -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -HaveCount 3
+            $result | Should-BeTruthy
+            $result | Should-BeCollection -Count 3
 
             # Verify all expected protocols are present
             $protocolNames = $result | ForEach-Object -Process { $_.Name }
-            $protocolNames | Should -Contain 'TcpIp'
-            $protocolNames | Should -Contain 'NamedPipes'
-            $protocolNames | Should -Contain 'SharedMemory'
+            $protocolNames | Should-ContainCollection 'TcpIp'
+            $protocolNames | Should-ContainCollection 'NamedPipes'
+            $protocolNames | Should-ContainCollection 'SharedMemory'
         }
     }
 
@@ -184,10 +184,10 @@ Describe 'Get-SqlDscServerProtocolName' -Tag @('Integration_SQL2017', 'Integrati
         It 'Should return PSCustomObject with correct properties' {
             $result = Get-SqlDscServerProtocolName -ProtocolName 'TcpIp' -ErrorAction 'Stop'
 
-            $result | Should -BeOfType ([System.Management.Automation.PSCustomObject])
-            $result.PSObject.Properties.Name | Should -Contain 'Name'
-            $result.PSObject.Properties.Name | Should -Contain 'DisplayName'
-            $result.PSObject.Properties.Name | Should -Contain 'ShortName'
+            $result | Should-HaveType ([System.Management.Automation.PSCustomObject])
+            $result.PSObject.Properties.Name | Should-ContainCollection 'Name'
+            $result.PSObject.Properties.Name | Should-ContainCollection 'DisplayName'
+            $result.PSObject.Properties.Name | Should-ContainCollection 'ShortName'
         }
 
         It 'Should return consistent object types for all parameter sets' {
@@ -195,12 +195,12 @@ Describe 'Get-SqlDscServerProtocolName' -Tag @('Integration_SQL2017', 'Integrati
             $resultByDisplayName = Get-SqlDscServerProtocolName -DisplayName 'TCP/IP' -ErrorAction 'Stop'
             $resultByShortName = Get-SqlDscServerProtocolName -ShortName 'Tcp' -ErrorAction 'Stop'
 
-            $resultByProtocolName.GetType() | Should -Be $resultByDisplayName.GetType()
-            $resultByDisplayName.GetType() | Should -Be $resultByShortName.GetType()
+            $resultByProtocolName.GetType() | Should-Be $resultByDisplayName.GetType()
+            $resultByDisplayName.GetType() | Should-Be $resultByShortName.GetType()
 
             # Verify all return the same data
-            $resultByProtocolName.Name | Should -Be $resultByDisplayName.Name
-            $resultByDisplayName.Name | Should -Be $resultByShortName.Name
+            $resultByProtocolName.Name | Should-Be $resultByDisplayName.Name
+            $resultByDisplayName.Name | Should-Be $resultByShortName.Name
         }
     }
 }

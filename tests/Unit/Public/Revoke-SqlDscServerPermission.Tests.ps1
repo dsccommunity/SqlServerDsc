@@ -66,35 +66,35 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'Public' {
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
     Context 'When testing parameter properties' {
         It 'Should have Login as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Revoke-SqlDscServerPermission').Parameters['Login']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have ServerRole as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Revoke-SqlDscServerPermission').Parameters['ServerRole']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have Permission as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Revoke-SqlDscServerPermission').Parameters['Permission']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have Force as an optional parameter' {
             $parameterInfo = (Get-Command -Name 'Revoke-SqlDscServerPermission').Parameters['Force']
-            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-BeFalse
         }
 
         It 'Should have WithGrant as an optional parameter' {
             $parameterInfo = (Get-Command -Name 'Revoke-SqlDscServerPermission').Parameters['WithGrant']
-            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-BeFalse
         }
     }
 
@@ -142,7 +142,7 @@ Describe 'Revoke-SqlDscServerPermission' -Tag 'Public' {
 
         It 'Should throw a descriptive error when operation fails' {
             { Revoke-SqlDscServerPermission -Login $script:mockLogin -Permission 'ConnectSql' -Force } |
-                Should -Throw -ExpectedMessage '*Failed to revoke server permissions*'
+                Should-Throw -ExceptionMessage '*Failed to revoke server permissions*'
         }
     }
 

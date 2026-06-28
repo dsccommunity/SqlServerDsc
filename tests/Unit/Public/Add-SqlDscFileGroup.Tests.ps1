@@ -68,8 +68,8 @@ Describe 'Add-SqlDscFileGroup' -Tag 'Public' {
         It 'Should add a single FileGroup to the Database without returning output' {
             $null = Add-SqlDscFileGroup -Database $mockDatabaseObject -FileGroup $mockFileGroupObject1
 
-            $mockDatabaseObject.FileGroups.Count | Should -Be 1
-            $mockDatabaseObject.FileGroups[0].Name | Should -Be 'FG1'
+            $mockDatabaseObject.FileGroups.Count | Should-Be 1
+            $mockDatabaseObject.FileGroups[0].Name | Should-Be 'FG1'
         }
 
         It 'Should add a FileGroup and return it when PassThru is specified' {
@@ -78,10 +78,10 @@ Describe 'Add-SqlDscFileGroup' -Tag 'Public' {
 
             $result = Add-SqlDscFileGroup -Database $mockDatabaseObject2 -FileGroup $mockFileGroupObject3 -PassThru
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
-            $result.Name | Should -Be 'FG3'
-            $mockDatabaseObject2.FileGroups.Count | Should -Be 1
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.FileGroup'
+            $result.Name | Should-Be 'FG3'
+            $mockDatabaseObject2.FileGroups.Count | Should-Be 1
         }
 
         It 'Should add multiple FileGroups from an array' {
@@ -92,9 +92,9 @@ Describe 'Add-SqlDscFileGroup' -Tag 'Public' {
 
             $null = Add-SqlDscFileGroup -Database $mockDatabaseObject3 -FileGroup $fileGroupArray
 
-            $mockDatabaseObject3.FileGroups.Count | Should -Be 2
-            $mockDatabaseObject3.FileGroups[0].Name | Should -Be 'FG4'
-            $mockDatabaseObject3.FileGroups[1].Name | Should -Be 'FG5'
+            $mockDatabaseObject3.FileGroups.Count | Should-Be 2
+            $mockDatabaseObject3.FileGroups[0].Name | Should-Be 'FG4'
+            $mockDatabaseObject3.FileGroups[1].Name | Should-Be 'FG5'
         }
 
         It 'Should accept FileGroups from pipeline' {
@@ -104,9 +104,9 @@ Describe 'Add-SqlDscFileGroup' -Tag 'Public' {
 
             $null = @($mockFileGroupObject6, $mockFileGroupObject7) | Add-SqlDscFileGroup -Database $mockDatabaseObject4
 
-            $mockDatabaseObject4.FileGroups.Count | Should -Be 2
-            $mockDatabaseObject4.FileGroups[0].Name | Should -Be 'FG6'
-            $mockDatabaseObject4.FileGroups[1].Name | Should -Be 'FG7'
+            $mockDatabaseObject4.FileGroups.Count | Should-Be 2
+            $mockDatabaseObject4.FileGroups[0].Name | Should-Be 'FG6'
+            $mockDatabaseObject4.FileGroups[1].Name | Should-Be 'FG7'
         }
 
         It 'Should accept FileGroups from pipeline with PassThru' {
@@ -116,33 +116,33 @@ Describe 'Add-SqlDscFileGroup' -Tag 'Public' {
 
             $result = @($mockFileGroupObject8, $mockFileGroupObject9) | Add-SqlDscFileGroup -Database $mockDatabaseObject5 -PassThru
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -Be 2
-            $result[0].Name | Should -Be 'FG8'
-            $result[1].Name | Should -Be 'FG9'
-            $mockDatabaseObject5.FileGroups.Count | Should -Be 2
+            $result | Should-BeTruthy
+            $result.Count | Should-Be 2
+            $result[0].Name | Should-Be 'FG8'
+            $result[1].Name | Should-Be 'FG9'
+            $mockDatabaseObject5.FileGroups.Count | Should-Be 2
         }
     }
 
     Context 'Parameter validation' {
         It 'Should have Database as a mandatory parameter' {
-            (Get-Command -Name 'Add-SqlDscFileGroup').Parameters['Database'].Attributes.Mandatory | Should -BeTrue
+            (Get-Command -Name 'Add-SqlDscFileGroup').Parameters['Database'].Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have FileGroup as a mandatory parameter' {
-            (Get-Command -Name 'Add-SqlDscFileGroup').Parameters['FileGroup'].Attributes.Mandatory | Should -BeTrue
+            (Get-Command -Name 'Add-SqlDscFileGroup').Parameters['FileGroup'].Attributes.Mandatory | Should-BeTrue
         }
 
         It 'Should have PassThru as an optional parameter' {
-            (Get-Command -Name 'Add-SqlDscFileGroup').Parameters['PassThru'].Attributes.Mandatory | Should -BeFalse
+            (Get-Command -Name 'Add-SqlDscFileGroup').Parameters['PassThru'].Attributes.Mandatory | Should-BeFalse
         }
 
         It 'Should have FileGroup parameter accept pipeline input' {
-            (Get-Command -Name 'Add-SqlDscFileGroup').Parameters['FileGroup'].Attributes.ValueFromPipeline | Should -BeTrue
+            (Get-Command -Name 'Add-SqlDscFileGroup').Parameters['FileGroup'].Attributes.ValueFromPipeline | Should-BeTrue
         }
 
         It 'Should have FileGroup parameter accept array input' {
-            (Get-Command -Name 'Add-SqlDscFileGroup').Parameters['FileGroup'].ParameterType.Name | Should -Be 'FileGroup[]'
+            (Get-Command -Name 'Add-SqlDscFileGroup').Parameters['FileGroup'].ParameterType.Name | Should-Be 'FileGroup[]'
         }
     }
 }
