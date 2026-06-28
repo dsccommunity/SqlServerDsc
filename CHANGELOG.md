@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- DSC_SqlRS and DSC_SqlWindowsFirewall
+  - Fixed a duplicated word in localized `TestFailedAfterSet` messages.
 - SqlScript
   - Fixed logic in `Get-TargetResource` and `Set-TargetResource` to throw an error
     when the SQL script file is missing, instead of incorrectly reporting success
