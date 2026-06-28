@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- SqlServerDsc
+  - Bump GitHub actions checkout to v7
 - SqlScript
   - Added integration test configuration that creates script files and executes
     the resource in a single configuration using `DependsOn`.
