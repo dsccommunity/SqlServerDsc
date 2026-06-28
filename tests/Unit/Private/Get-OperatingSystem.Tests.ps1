@@ -30,8 +30,8 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 
     $env:SqlServerDscCI = $true
 

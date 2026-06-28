@@ -37,8 +37,8 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 
     # Define platform-appropriate paths for use in mocks and assertions
     if ($IsWindows -or $PSVersionTable.PSVersion.Major -le 5)

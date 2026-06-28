@@ -32,8 +32,8 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 
     # Create stub for Get-Service in module scope for cross-platform testing
     InModuleScope -ScriptBlock {

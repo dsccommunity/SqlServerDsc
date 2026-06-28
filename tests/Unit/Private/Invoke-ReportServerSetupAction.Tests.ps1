@@ -35,8 +35,8 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 
     # Pester 6 no longer falls through to the real command when no -ParameterFilter
     # matches; add a forwarding default so unmatched Test-Path calls run the real

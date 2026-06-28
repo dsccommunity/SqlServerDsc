@@ -36,8 +36,8 @@ BeforeAll {
     Add-Type -Path "$PSScriptRoot/../Stubs/SMO.cs"
 
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
