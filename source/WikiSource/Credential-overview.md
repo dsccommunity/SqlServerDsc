@@ -83,9 +83,9 @@ NetBIOS domain names to be stripped and authentication to fail on SQL Server 201
 
 1. **Prefer FQDN format** (`user@domain.local`) for maximum compatibility across
    all SQL Server versions and PowerShell modules.
-2. **Avoid NetBIOS format** (`DOMAIN\user`) when targeting SQL Server 2016 or
+1. **Avoid NetBIOS format** (`DOMAIN\user`) when targeting SQL Server 2016 or
    environments where SQLPS may be used.
-3. **Use `$Credential.UserName`** (not `GetNetworkCredential().UserName`) in
+1. **Use `$Credential.UserName`** (not `GetNetworkCredential().UserName`) in
    any custom code that passes credentials to SMO connection contexts.
 
 ### Example: Creating a Windows User Credential
