@@ -212,7 +212,7 @@ Describe 'SqlAGReplica\Get-TargetResource' {
                 $getTargetResourceResult.FailoverMode | Should-Be 'Manual'
                 $getTargetResourceResult.Name | Should-Be 'Server1'
                 $getTargetResourceResult.ReadOnlyRoutingConnectionUrl | Should-Be 'TCP://Server1.domain.com:1433'
-                $getTargetResourceResult.ReadOnlyRoutingList | Should-Be @('Server1', 'Server2')
+                $getTargetResourceResult.ReadOnlyRoutingList | Should-BeCollection @('Server1', 'Server2')
                 $getTargetResourceResult.ServerName | Should-Be 'Server1'
                 $getTargetResourceResult.InstanceName | Should-Be 'MSSQLSERVER'
                 $getTargetResourceResult.EndpointHostName | Should-Be 'Server1'

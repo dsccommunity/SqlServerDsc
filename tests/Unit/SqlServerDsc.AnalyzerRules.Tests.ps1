@@ -210,7 +210,7 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
                 "
 
                 $record = Invoke-ScriptAnalyzer @invokeScriptAnalyzerParameters
-                ($record | Measure-Object).Count | Should-BeString -CaseSensitive 1
+                ($record | Measure-Object).Count | Should-Be 1
                 $record.Message | Should-Be $expectedErrorRecordMessage
                 $record.RuleName | Should-Be $ruleName
             }
@@ -230,7 +230,7 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
                 "
 
                 $record = Invoke-ScriptAnalyzer @invokeScriptAnalyzerParameters
-                ($record | Measure-Object).Count | Should-BeString -CaseSensitive 1
+                ($record | Measure-Object).Count | Should-Be 1
                 $record.Message | Should-Be $expectedErrorRecordMessage
                 $record.RuleName | Should-Be $ruleName
             }

@@ -117,7 +117,7 @@ Describe 'Add-SqlDscNode' -Tag 'Public' {
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Scope It -Times 1          } -Exactly -Times 1 -Scope It
+                    } -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -132,7 +132,7 @@ Describe 'Add-SqlDscNode' -Tag 'Public' {
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Scope It -Times 1          } -Exactly -Times 1 -Scope It
+                    } -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -175,7 +175,7 @@ Describe 'Add-SqlDscNode' -Tag 'Public' {
 
                     # Return $true if none of the above throw.
                     $true
-                } -Scope It -Times 1s 1 -Scope It
+                } -Exactly -Times 1 -Scope It
             }
         }
 
@@ -305,7 +305,7 @@ Describe 'Add-SqlDscNode' -Tag 'Public' {
 
                     # Return $true if none of the above throw.
                     $true
-                } -Scope It -Times 1s 1 -Scope It
+                } -Exactly -Times 1 -Scope It
             }
         }
     }

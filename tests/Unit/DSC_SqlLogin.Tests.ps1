@@ -150,7 +150,7 @@ Describe 'SqlLogin\Get-TargetResource' -Tag 'Get' {
                         $result.Disabled | Should-BeTrue
                         $result.DefaultDatabase | Should-Be 'master'
                         $result.Language | Should-Be 'us_english'
-                        $result.Sid | Should-Be ([byte[]] -split ('B76150A66B38F64FAE9470091789AA66' -replace '..', '0x$& '))
+                        $result.Sid | Should-BeCollection ([byte[]] -split ('B76150A66B38F64FAE9470091789AA66' -replace '..', '0x$& '))
 
                         if ($MockLoginType -eq 'SqlLogin')
                         {
@@ -232,7 +232,7 @@ Describe 'SqlLogin\Get-TargetResource' -Tag 'Get' {
                         $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                         $result.Name | Should-Be $mockGetTargetResourceParameters.Name
                         $result.LoginType | Should-BeFalsy
-                        $result.Disabled | Should-BeFalse
+                        $result.Disabled | Should-BeNull
                         $result.DefaultDatabase | Should-BeFalsy
                         $result.Language | Should-BeFalsy
                         $result.Sid | Should-BeFalsy

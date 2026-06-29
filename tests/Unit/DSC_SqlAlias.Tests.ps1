@@ -139,7 +139,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                         $result.Name | Should-Be $mockGetTargetResourceParameters.Name
                         $result.ServerName | Should-Be 'SqlNode.company.local'
                         $result.Protocol | Should-Be 'TCP'
-                        $result.TcpPort | Should-BeString -CaseSensitive 1433
+                        $result.TcpPort | Should-Be 1433
                         $result.UseDynamicTcpPort | Should-BeFalse
                         $result.PipeName | Should-Be ''
                     }
@@ -193,7 +193,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                         $result.Name | Should-Be $mockGetTargetResourceParameters.Name
                         $result.ServerName | Should-BeFalsy
                         $result.Protocol | Should-Be ''
-                        $result.TcpPort | Should-BeString -CaseSensitive 0
+                        $result.TcpPort | Should-Be 0
                         $result.UseDynamicTcpPort | Should-BeFalse
                         $result.PipeName | Should-Be ''
                     }
@@ -249,7 +249,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                         $result.Name | Should-Be $mockGetTargetResourceParameters.Name
                         $result.ServerName | Should-Be 'SqlNode.company.local'
                         $result.Protocol | Should-Be 'TCP'
-                        $result.TcpPort | Should-BeString -CaseSensitive 0
+                        $result.TcpPort | Should-Be 0
                         $result.UseDynamicTcpPort | Should-BeTrue
                         $result.PipeName | Should-Be ''
                     }
@@ -303,7 +303,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                         $result.Name | Should-Be $mockGetTargetResourceParameters.Name
                         $result.ServerName | Should-BeFalsy
                         $result.Protocol | Should-Be ''
-                        $result.TcpPort | Should-BeString -CaseSensitive 0
+                        $result.TcpPort | Should-Be 0
                         $result.UseDynamicTcpPort | Should-BeFalse
                         $result.PipeName | Should-Be ''
                     }
@@ -376,7 +376,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                         $result.Name | Should-Be $mockGetTargetResourceParameters.Name
                         $result.ServerName | Should-BeFalsy
                         $result.Protocol | Should-Be 'NP'
-                        $result.TcpPort | Should-BeString -CaseSensitive 0
+                        $result.TcpPort | Should-Be 0
                         $result.UseDynamicTcpPort | Should-BeFalse
                         $result.PipeName | Should-Be '\\SqlNode\PIPE\sql\query'
                     }
@@ -430,7 +430,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                         $result.Name | Should-Be $mockGetTargetResourceParameters.Name
                         $result.ServerName | Should-BeFalsy
                         $result.Protocol | Should-Be ''
-                        $result.TcpPort | Should-BeString -CaseSensitive 0
+                        $result.TcpPort | Should-Be 0
                         $result.UseDynamicTcpPort | Should-BeFalse
                         $result.PipeName | Should-Be ''
                     }
@@ -491,7 +491,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                     $result.Name | Should-Be $mockGetTargetResourceParameters.Name
                     $result.ServerName | Should-BeFalsy
                     $result.Protocol | Should-Be ''
-                    $result.TcpPort | Should-BeString -CaseSensitive 0
+                    $result.TcpPort | Should-Be 0
                     $result.UseDynamicTcpPort | Should-BeFalse
                     $result.PipeName | Should-Be ''
                 }
@@ -544,7 +544,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                     $result.Name | Should-Be $mockGetTargetResourceParameters.Name
                     $result.ServerName | Should-BeFalsy
                     $result.Protocol | Should-Be ''
-                    $result.TcpPort | Should-BeString -CaseSensitive 0
+                    $result.TcpPort | Should-Be 0
                     $result.UseDynamicTcpPort | Should-BeFalse
                     $result.PipeName | Should-Be ''
                 }

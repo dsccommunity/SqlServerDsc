@@ -111,7 +111,7 @@ Describe 'Complete-SqlDscImage' -Tag 'Public' {
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Scope It -Times 1s 1 -Scope It
+                    } -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -124,7 +124,7 @@ Describe 'Complete-SqlDscImage' -Tag 'Public' {
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Scope It -Times 1s 1 -Scope It
+                    } -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -163,7 +163,7 @@ Describe 'Complete-SqlDscImage' -Tag 'Public' {
 
                     # Return $true if none of the above throw.
                     $true
-                } -Scope It -Times 1s 1 -Scope It
+                } -Exactly -Times 1 -Scope It
             }
         }
 
@@ -384,7 +384,7 @@ Describe 'Complete-SqlDscImage' -Tag 'Public' {
 
                     # Return $true if none of the above throw.
                     $true
-                } -Scope It -Times 1s 1 -Scope It
+                } -Exactly -Times 1 -Scope It
             }
         }
     }

@@ -104,7 +104,7 @@ Describe 'Backup-SqlDscRSEncryptionKey' {
                 $MethodName -eq 'BackupEncryptionKey'
             } -Times 1
 
-            $testPath | Should -Exist
+            Test-Path -Path $testPath | Should-BeTrue
         }
 
         It 'Should not return anything by default' {
@@ -203,7 +203,7 @@ Describe 'Backup-SqlDscRSEncryptionKey' {
 
             Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
 
-            $testPath | Should -Not -Exist
+            Test-Path -Path $testPath | Should-BeFalse
         }
     }
 

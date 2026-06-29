@@ -399,7 +399,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $result.RSSvcAccountUsername | Should-BeFalsy
                 $result.ASSvcAccountUsername | Should-BeFalsy
                 $result.ASCollation | Should-BeFalsy
-                $result.ProductCoveredBySA | Should-BeFalse
+                $result.ProductCoveredBySA | Should-BeNull
                 $result.ASSysAdminAccounts | Should-BeFalsy
                 $result.ASDataDir | Should-BeFalsy
                 $result.ASLogDir | Should-BeFalsy
@@ -562,7 +562,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $result.RSSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
                 $result.ASSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
                 $result.ASCollation | Should-Be 'Finnish_Swedish_CI_AS'
-                $result.ASSysAdminAccounts | Should-Be @('COMPANY\Stacy', 'COMPANY\SSAS Administrators')
+                $result.ASSysAdminAccounts | Should-BeCollection @('COMPANY\Stacy', 'COMPANY\SSAS Administrators')
                 $result.ASDataDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Data'
                 $result.ASLogDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Log'
                 $result.ASBackupDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Backup'
@@ -618,7 +618,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                Write-Output -InputObject $result.ASSysAdminAccounts -NoEnumerate | Should-HaveType ([System.String[]])
+                Write-Output -InputObject $result.ASSysAdminAccounts -NoEnumerate | Should-HaveType ([System.String])
                 $result.ASSysAdminAccounts | Should-Be 'COMPANY\AnalysisAdmin'
             }
 
@@ -1047,7 +1047,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $result.RSSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
                 $result.ASSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
                 $result.ASCollation | Should-Be 'Finnish_Swedish_CI_AS'
-                $result.ASSysAdminAccounts | Should-Be @('COMPANY\Stacy', 'COMPANY\SSAS Administrators')
+                $result.ASSysAdminAccounts | Should-BeCollection @('COMPANY\Stacy', 'COMPANY\SSAS Administrators')
                 $result.ASDataDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Data'
                 $result.ASLogDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Log'
                 $result.ASBackupDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Backup'
@@ -1098,7 +1098,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                Write-Output -NoEnumerate $result.ASSysAdminAccounts | Should-HaveType ([System.String[]])
+                Write-Output -NoEnumerate $result.ASSysAdminAccounts | Should-HaveType ([System.String])
                 $result.ASSysAdminAccounts | Should-Be 'COMPANY\AnalysisAdmin'
             }
 
@@ -1292,7 +1292,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $result.RSSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
                 $result.ASSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
                 $result.ASCollation | Should-Be 'Finnish_Swedish_CI_AS'
-                $result.ASSysAdminAccounts | Should-Be @('COMPANY\Stacy', 'COMPANY\SSAS Administrators')
+                $result.ASSysAdminAccounts | Should-BeCollection @('COMPANY\Stacy', 'COMPANY\SSAS Administrators')
                 $result.ASDataDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Data'
                 $result.ASLogDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Log'
                 $result.ASBackupDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Backup'
@@ -1607,7 +1607,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $result.RSSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
                 $result.ASSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
                 $result.ASCollation | Should-Be 'Finnish_Swedish_CI_AS'
-                $result.ASSysAdminAccounts | Should-Be @('COMPANY\Stacy', 'COMPANY\SSAS Administrators')
+                $result.ASSysAdminAccounts | Should-BeCollection @('COMPANY\Stacy', 'COMPANY\SSAS Administrators')
                 $result.ASDataDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Data'
                 $result.ASLogDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Log'
                 $result.ASBackupDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Backup'

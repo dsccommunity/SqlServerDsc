@@ -227,7 +227,7 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
 
                             # Return $true if none of the above throw.
                             $true
-                        } -Scope It -Times 1s 1 -Scope It
+                        } -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -242,7 +242,7 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
 
                             # Return $true if none of the above throw.
                             $true
-                        } -Scope It -Times 1s 1 -Scope It
+                        } -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -321,7 +321,7 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Scope It -Times 1s 1 -Scope It
+                    } -Exactly -Times 1 -Scope It
                 }
             }
         }
@@ -433,7 +433,7 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
 
                         # Return wether the correct command was called or not.
                         $correctMessage
-                    } -Scope It -Times 1s 1 -Scope It
+                    } -Exactly -Times 1 -Scope It
                 }
             }
         }
@@ -545,7 +545,7 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Scope It -Times 1s 1 -Scope It
+                    } -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -561,7 +561,7 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Scope It -Times 1s 1 -Scope It
+                    } -Exactly -Times 1 -Scope It
                 }
             }
         }
@@ -596,7 +596,7 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
 
                             # Return $true if none of the above throw.
                             $true
-                        } -Scope It -Times 1s 1 -Scope It
+                        } -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -611,7 +611,7 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
 
                             # Return $true if none of the above throw.
                             $true
-                        } -Scope It -Times 1s 1 -Scope It
+                        } -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -665,7 +665,7 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Scope It -Times 1s 1 -Scope It
+                    } -Exactly -Times 1 -Scope It
                 }
             }
         }
@@ -701,7 +701,7 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
 
                             # Return $true if none of the above throw.
                             $true
-                        } -Scope It -Times 1s 1 -Scope It
+                        } -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -716,7 +716,7 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
 
                             # Return $true if none of the above throw.
                             $true
-                        } -Scope It -Times 1s 1 -Scope It
+                        } -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -790,7 +790,7 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Scope It -Times 1s 1 -Scope It
+                    } -Exactly -Times 1 -Scope It
                 }
             }
         }
@@ -902,7 +902,7 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
 
                         # Return wether the correct command was called or not.
                         $correctMessage
-                    } -Scope It -Times 1s 1 -Scope It
+                    } -Exactly -Times 1 -Scope It
                 }
             }
         }

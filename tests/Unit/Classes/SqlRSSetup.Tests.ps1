@@ -134,7 +134,7 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
                     $currentState.Edition | Should-Be 0
                     $currentState.LogPath | Should-BeFalsy
                     $currentState.InstallFolder | Should-BeFalsy
-                    $currentState.SuppressRestart | Should-BeFalse
+                    $currentState.SuppressRestart | Should-BeNull
                     $currentState.ForceRestart | Should-BeFalse
                     $currentState.VersionUpgrade | Should-BeFalsy
                 }
@@ -181,7 +181,7 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
                     $currentState = $script:mockSqlRSSetupInstance.Get()
 
                     $currentState.InstanceName | Should-BeFalsy
-                    $currentState.Installed | Should-BeFalse
+                    $currentState.Installed | Should-BeNull
                     $currentState.Timeout | Should-Be 7200
                     # Returns 0, that means no value was set by GetCurrentState() from the enum InstallAction
                     $currentState.Action | Should-Be 0

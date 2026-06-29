@@ -122,7 +122,6 @@ Describe 'Complete-SqlDscFailoverCluster' -Tag 'Public' {
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Scope It -Times 1                       $true
                     } -Exactly -Times 1 -Scope It
                 }
             }
@@ -141,7 +140,6 @@ Describe 'Complete-SqlDscFailoverCluster' -Tag 'Public' {
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Scope It -Times 1                       $true
                     } -Exactly -Times 1 -Scope It
                 }
             }
@@ -359,7 +357,7 @@ Describe 'Complete-SqlDscFailoverCluster' -Tag 'Public' {
 
                     # Return $true if none of the above throw.
                     $true
-                } -Scope It -Times 1s 1 -Scope It
+                } -Exactly -Times 1 -Scope It
             }
         }
     }

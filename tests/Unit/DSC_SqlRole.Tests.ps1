@@ -1283,7 +1283,7 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should return the same elements' {
             InModuleScope -ScriptBlock {
-                $result.Members | Should-Be @(
+                $result.Members | Should-BeCollection @(
                     'CONTOSO\John',
                     'CONTOSO\Kelly'
                 )
@@ -1324,7 +1324,7 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should return the same elements' {
             InModuleScope -ScriptBlock {
-                $result.Members | Should-Be @(
+                $result.Members | Should-BeCollection @(
                     'CONTOSO\John',
                     'CONTOSO\Kelly',
                     'SA'
@@ -1403,7 +1403,7 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should return the elements from Members' {
             InModuleScope -ScriptBlock {
-                $result.MembersToInclude | Should-Be @(
+                $result.MembersToInclude | Should-BeCollection @(
                     'CONTOSO\John',
                     'CONTOSO\Kelly',
                     'SA'
@@ -1444,7 +1444,7 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should return the elements from Members' {
             InModuleScope -ScriptBlock {
-                $result.MembersToInclude | Should-Be @(
+                $result.MembersToInclude | Should-BeCollection @(
                     'CONTOSO\John',
                     'CONTOSO\Kelly'
                 )
@@ -1484,7 +1484,7 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should return the elements from Members' {
             InModuleScope -ScriptBlock {
-                $result.MembersToInclude | Should-Be @(
+                $result.MembersToInclude | Should-BeCollection @(
                     'CONTOSO\John',
                     'CONTOSO\Kelly'
                 )
@@ -1525,7 +1525,7 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should return the elements from Members' {
             InModuleScope -ScriptBlock {
-                $result.MembersToInclude | Should-Be @(
+                $result.MembersToInclude | Should-BeCollection @(
                     'CONTOSO\John',
                     'CONTOSO\Kelly',
                     'SA'
@@ -1567,7 +1567,7 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should return the elements from Members' {
             InModuleScope -ScriptBlock {
-                $result.MembersToExclude | Should-Be @(
+                $result.MembersToExclude | Should-BeCollection @(
                     'CONTOSO\John',
                     'CONTOSO\Kelly',
                     'SA'
@@ -1608,7 +1608,7 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should return the elements from Members' {
             InModuleScope -ScriptBlock {
-                $result.MembersToExclude | Should-Be @(
+                $result.MembersToExclude | Should-BeCollection @(
                     'CONTOSO\John',
                     'CONTOSO\Kelly'
                 )
@@ -1648,7 +1648,7 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should return the elements from Members' {
             InModuleScope -ScriptBlock {
-                $result.MembersToExclude | Should-Be @(
+                $result.MembersToExclude | Should-BeCollection @(
                     'CONTOSO\John',
                     'CONTOSO\Kelly'
                 )

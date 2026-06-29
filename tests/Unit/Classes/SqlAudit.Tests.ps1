@@ -460,7 +460,7 @@ Describe 'SqlAudit\GetCurrentState()' -Tag 'GetCurrentState' {
 
                 $currentState.InstanceName | Should-Be 'NamedInstance'
                 $currentState.ServerName | Should-Be (Get-ComputerName)
-                $currentState.Force | Should-BeFalse
+                $currentState.Force | Should-BeNull
                 $currentState.Credential | Should-BeFalsy
             }
         }
@@ -484,7 +484,7 @@ Describe 'SqlAudit\GetCurrentState()' -Tag 'GetCurrentState' {
 
                     $currentState.InstanceName | Should-Be 'NamedInstance'
                     $currentState.ServerName | Should-Be (Get-ComputerName)
-                    $currentState.Force | Should-BeFalse
+                    $currentState.Force | Should-BeNull
 
                     $currentState.Credential | Should-HaveType ([System.Management.Automation.PSCredential])
                     $currentState.Credential.UserName | Should-Be 'MyCredentialUserName'
@@ -550,7 +550,7 @@ Describe 'SqlAudit\GetCurrentState()' -Tag 'GetCurrentState' {
 
                     $currentState.InstanceName | Should-Be 'NamedInstance'
                     $currentState.ServerName | Should-Be (Get-ComputerName)
-                    $currentState.Force | Should-BeFalse
+                    $currentState.Force | Should-BeNull
                     $currentState.Credential | Should-BeFalsy
 
                     $currentState.LogType | Should-BeFalsy
@@ -619,7 +619,7 @@ Describe 'SqlAudit\GetCurrentState()' -Tag 'GetCurrentState' {
 
                     $currentState.InstanceName | Should-Be 'NamedInstance'
                     $currentState.ServerName | Should-Be (Get-ComputerName)
-                    $currentState.Force | Should-BeFalse
+                    $currentState.Force | Should-BeNull
                     $currentState.Credential | Should-BeFalsy
 
                     $currentState.LogType | Should-Be 'SecurityLog'

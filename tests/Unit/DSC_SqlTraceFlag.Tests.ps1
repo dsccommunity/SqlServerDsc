@@ -182,7 +182,7 @@ Describe 'DSC_SqlTraceFlag\Get-TargetResource' -Tag 'Get' {
 
                 $result.ServerName | Should-Be 'TestServer' -Because 'ServerName must be correct'
                 $result.InstanceName | Should-Be 'MSSQLSERVER' -Because 'InstanceName must be correct'
-                $result.TraceFlags | Should-Be @('3226', '1802') -Because 'TraceFlags must be correct'
+                $result.TraceFlags | Should-BeCollection @('3226', '1802') -Because 'TraceFlags must be correct'
                 $result.TraceFlags.Count | Should-Be 2 -Because 'number of TraceFlags must be correct'
             }
         }

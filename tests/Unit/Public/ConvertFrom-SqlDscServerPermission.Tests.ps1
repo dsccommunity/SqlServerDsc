@@ -68,7 +68,7 @@ Describe 'ConvertFrom-SqlDscServerPermission' -Tag 'Public' {
 
         $mockResult.ConnectSql | Should-BeTrue
         $mockResult.AlterAnyAvailabilityGroup | Should-BeTrue
-        $mockResult.AlterAnyLogin | Should-BeFalse
+        $mockResult.AlterAnyLogin | Should-BeNull
     }
 
     Context 'When passing ServerPermissionInfo over the pipeline' {
@@ -77,7 +77,7 @@ Describe 'ConvertFrom-SqlDscServerPermission' -Tag 'Public' {
 
             $mockResult.ConnectSql | Should-BeTrue
             $mockResult.AlterAnyAvailabilityGroup | Should-BeTrue
-            $mockResult.AlterAnyLogin | Should-BeFalse
+            $mockResult.AlterAnyLogin | Should-BeNull
         }
     }
 }

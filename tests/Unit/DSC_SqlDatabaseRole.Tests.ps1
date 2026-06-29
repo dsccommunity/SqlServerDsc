@@ -354,7 +354,7 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
-                $result.Members | Should-Be $mockGetTargetResourceParameters.Members
+                $result.Members | Should-BeCollection $mockGetTargetResourceParameters.Members
             }
 
             Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
@@ -380,7 +380,7 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                 $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                 $result.DatabaseName | Should-Be $mockGetTargetResourceParameters.DatabaseName
                 $result.Name | Should-Be $mockGetTargetResourceParameters.Name
-                $result.Members | Should-Be $mockGetTargetResourceParameters.Members
+                $result.Members | Should-BeCollection $mockGetTargetResourceParameters.Members
             }
 
             Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
