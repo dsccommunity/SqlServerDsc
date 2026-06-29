@@ -11,7 +11,9 @@ To support [Group Managed Service Accounts](https://docs.microsoft.com/en-us/win
 Accounts (MSAs).
 
 There are more information about using (g)MSAs with SQL Server
+<!-- markdownlint-disable MD013 -->
 in the article [Configure Windows Service Accounts and Permissions](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/configure-windows-service-accounts-and-permissions) in section [Managed Service Accounts, Group Managed Service Accounts, and Virtual Accounts](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/configure-windows-service-accounts-and-permissions#New_Accounts)
+<!-- markdownlint-enable MD013 -->
 
 To use a (g)MSA with a DSC resource you should pass the (g)MSA account name
 in the credential object and use any text string as password.
@@ -27,7 +29,9 @@ too.
 For designing a resource for (g)MSAs see the section [Group Managed Service Account](https://github.com/dsccommunity/SqlServerDsc/blob/main/CONTRIBUTING.md#group-managed-service-account)
 in the contribution guidelines.
 
+<!-- markdownlint-disable MD033 -->
 <sup>_This was discussed in [issue #738](https://github.com/dsccommunity/SqlServerDsc/issues/738)_.</sup>
+<!-- markdownlint-enable MD033 -->
 
 ## Built-In Account
 
