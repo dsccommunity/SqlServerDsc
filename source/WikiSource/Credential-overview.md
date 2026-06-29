@@ -47,25 +47,14 @@ DSC resource too.
 
 When using Windows user credentials (i.e., `LoginType = 'WindowsUser'`) with
 SqlServerDsc resources, there are important considerations regarding the
-username format and how it is extracted from the `PSCredential` object.
-
-### Username Property vs GetNetworkCredential()
-
-The `PSCredential` object has two ways to access the username:
-
-| Property | Behavior |
-|----------|----------|
-| `$Credential.UserName` | Returns the **full username as provided**, including domain prefix (NetBIOS or FQDN). |
-| `$Credential.GetNetworkCredential().UserName` | Returns **only the username portion**, stripping the domain prefix when using NetBIOS format (`DOMAIN\user` → `user`). |
-
-**Always use `$Credential.UserName`** when passing the username to SMO connection
-contexts (e.g., `ConnectAsUserName`). This preserves the domain format exactly
-as the user entered it.
+username format used in credential, username, and password parameters.
 
 ### Supported Username Formats
 
+The following username formats can be used when creating Windows credentials:
+
 | Format | Example | Works with SQLPS (SQL 2016) | Works with SqlServer module |
-|--------|---------|-----------------------------|----------------------------|
+| ------ | ------- | --------------------------- | --------------------------- |
 | **FQDN (UPN)** | `user@domain.local` | ✅ Yes | ✅ Yes |
 | **Username only** | `user` | ✅ Yes | ✅ Yes |
 | **NetBIOS** | `DOMAIN\user` | ❌ **No** | ✅ Yes |
@@ -75,18 +64,14 @@ as the user entered it.
 > you must use either FQDN format (`user@domain.local`) or just the username
 > without domain prefix.
 
-This limitation was identified in [issue #1223](https://github.com/dsccommunity/SqlServerDsc/issues/1223)
-where `GetNetworkCredential().UserName` was being used internally, causing
-NetBIOS domain names to be stripped and authentication to fail on SQL Server 2016.
-
 ### Recommendations
 
 1. **Prefer FQDN format** (`user@domain.local`) for maximum compatibility across
    all SQL Server versions and PowerShell modules.
 1. **Avoid NetBIOS format** (`DOMAIN\user`) when targeting SQL Server 2016 or
    environments where SQLPS may be used.
-1. **Use `$Credential.UserName`** (not `GetNetworkCredential().UserName`) in
-   any custom code that passes credentials to SMO connection contexts.
+1. **Use the exact username format required by the target environment** when
+   passing credentials to commands or DSC resources.
 
 ### Example: Creating a Windows User Credential
 
@@ -94,19 +79,17 @@ NetBIOS domain names to be stripped and authentication to fail on SQL Server 201
 # FQDN format (recommended - works everywhere)
 $password = ConvertTo-SecureString 'P@ssw0rd1' -AsPlainText -Force
 $username = 'user@company.local'
-$credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $username, $password
+$credential = [PSCredential]::new($username, $password)
 
 # Username only (works everywhere)
+$password = ConvertTo-SecureString 'P@ssw0rd1' -AsPlainText -Force
 $username = 'user'
-$credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $username, $password
-
-# NetBIOS format (AVOID for SQL 2016 / SQLPS)
-$username = 'COMPANY\user'
-$credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $username, $password
+$credential = [PSCredential]::new($username, $password)
 ```
 
 When using these credentials with SqlServerDsc resources, pass them via the
-built-in `PsDscRunAsCredential` parameter:
+built-in `PsDscRunAsCredential`, credential or password parameters. This
+example shows the built-in `PsDscRunAsCredential` parameter:
 
 ```powershell
 Configuration Example
@@ -135,5 +118,5 @@ Configuration Example
 }
 ```
 
-<sup>_This section was informed by [issue #1223](https://github.com/dsccommunity/SqlServerDsc/issues/1223)
-and [issue #1768](https://github.com/dsccommunity/SqlServerDsc/issues/1768)._</sup>
+_This section was informed by
+[issue #1223](https://github.com/dsccommunity/SqlServerDsc/issues/1223)._
