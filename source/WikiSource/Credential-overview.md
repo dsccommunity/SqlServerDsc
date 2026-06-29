@@ -46,30 +46,33 @@ DSC resource too.
 ## Windows User Credentials
 
 When using Windows user credentials (i.e., `LoginType = 'WindowsUser'`) with
-SqlServerDsc resources, there are important considerations regarding the
-username format used in credential, username, and password parameters.
+_SqlServerDsc_ resources, there are important considerations regarding the
+username format used in **Credential**, **UserName**, and **Password**
+parameters.
 
 ### Supported Username Formats
 
 The following username formats can be used when creating Windows credentials:
 
+<!-- markdownlint-disable MD013 -->
 | Format | Example | Works with SQLPS (SQL 2016) | Works with SqlServer module |
 | ------ | ------- | --------------------------- | --------------------------- |
 | **FQDN (UPN)** | `user@domain.local` | ✅ Yes | ✅ Yes |
 | **Username only** | `user` | ✅ Yes | ✅ Yes |
 | **NetBIOS** | `DOMAIN\user` | ❌ **No** | ✅ Yes |
+<!-- markdownlint-enable MD013 -->
 
 > **Important**: The NetBIOS format (`DOMAIN\user`) **does not work** with the
-> legacy SQLPS module (SQL Server 2016 and earlier). When using SQLPS,
+> legacy _SQLPS_ module (_SQL Server_ 2016 and earlier). When using _SQLPS_,
 > you must use either FQDN format (`user@domain.local`) or just the username
 > without domain prefix.
 
 ### Recommendations
 
 1. **Prefer FQDN format** (`user@domain.local`) for maximum compatibility across
-   all SQL Server versions and PowerShell modules.
+   all _SQL Server_ versions and PowerShell modules.
 1. **Avoid NetBIOS format** (`DOMAIN\user`) when targeting SQL Server 2016 or
-   environments where SQLPS may be used.
+   environments where _SQLPS_ may be used.
 1. **Use the exact username format required by the target environment** when
    passing credentials to commands or DSC resources.
 
@@ -87,9 +90,9 @@ $username = 'user'
 $credential = [PSCredential]::new($username, $password)
 ```
 
-When using these credentials with SqlServerDsc resources, pass them via the
-built-in `PsDscRunAsCredential`, credential or password parameters. This
-example shows the built-in `PsDscRunAsCredential` parameter:
+When using these credentials with _SqlServerDsc_ resources, pass them via the
+built-in **PsDscRunAsCredential**, **credential** or **password** parameters.
+This example shows the built-in **PsDscRunAsCredential** parameter:
 
 ```powershell
 Configuration Example
