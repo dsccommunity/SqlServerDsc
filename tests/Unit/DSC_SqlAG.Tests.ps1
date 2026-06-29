@@ -504,14 +504,18 @@ Describe 'SqlAG\Set-TargetResource' {
         Mock -CommandName Connect-SQL -MockWith $mockConnectSqlServer1 -ParameterFilter {
             $ServerName -eq 'Server1'
         }
+
         Mock -CommandName Connect-SQL -MockWith $mockConnectSqlServer2 -ParameterFilter {
             $ServerName -eq 'Server2'
         }
+
         # Pester 6 no longer falls through to the real command when no -ParameterFilter
         # matches. When the availability group's primary replica is the connected server,
         # the real Get-PrimaryReplicaServerObject returns the passed-in ServerObject, so
         # add a default mock that reproduces that for any unmatched call.
-        Mock -CommandName Get-PrimaryReplicaServerObject -MockWith { $ServerObject }
+        Mock -CommandName Get-PrimaryReplicaServerObject -MockWith {
+            return $ServerObject
+        }
 
         Mock -CommandName Get-PrimaryReplicaServerObject -MockWith $mockConnectSqlServer1 -ParameterFilter {
             $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
@@ -520,6 +524,7 @@ Describe 'SqlAG\Set-TargetResource' {
         Mock -CommandName Get-PrimaryReplicaServerObject -MockWith $mockConnectSqlServer2 -ParameterFilter {
             $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
         }
+
         Mock -CommandName Test-ClusterPermissions
     }
     Context 'When the desired state is Absent' {

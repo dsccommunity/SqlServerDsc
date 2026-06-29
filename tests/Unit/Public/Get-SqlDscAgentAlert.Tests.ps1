@@ -70,6 +70,7 @@ Describe 'Get-SqlDscAgentAlert' -Tag 'Public' {
     Context 'When command has correct parameter properties' {
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscAgentAlert').Parameters['ServerObject']
+            Write-Verbose ((Get-Command -Name 'Get-SqlDscAgentAlert').ParameterSets.Parameters['ServerObject'] | Out-String) -Verbose
             $parameterInfo.Attributes.Mandatory | Should-BeTrue
         }
 

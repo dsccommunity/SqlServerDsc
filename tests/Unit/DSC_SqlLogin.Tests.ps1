@@ -867,6 +867,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                     Should-Invoke -CommandName New-Object -Exactly -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Login'
                     } -Scope It -Times 1
+
                     Should-Invoke -CommandName New-SQLServerLogin -Exactly -ParameterFilter {
                         $Login.Name -eq 'Windows\Login1'
                     } -Scope It -Times 1
@@ -1137,6 +1138,7 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                     Should-Invoke -CommandName New-Object -Exactly -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Login'
                     } -Scope It -Times 1
+
                     Should-Invoke -CommandName New-SQLServerLogin -Exactly -ParameterFilter {
                         $Login.Name -eq 'SqlLogin1'
                     } -Scope It -Times 1
