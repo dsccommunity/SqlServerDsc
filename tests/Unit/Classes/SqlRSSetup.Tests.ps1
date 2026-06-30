@@ -135,7 +135,7 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
                     $currentState.LogPath | Should-BeFalsy
                     $currentState.InstallFolder | Should-BeFalsy
                     $currentState.SuppressRestart | Should-BeNull
-                    $currentState.ForceRestart | Should-BeFalse
+                    $currentState.ForceRestart | Should-BeNull
                     $currentState.VersionUpgrade | Should-BeFalsy
                 }
             }
@@ -193,8 +193,8 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
                     $currentState.Edition | Should-Be 0
                     $currentState.LogPath | Should-BeFalsy
                     $currentState.InstallFolder | Should-BeFalsy
-                    $currentState.SuppressRestart | Should-BeFalse
-                    $currentState.ForceRestart | Should-BeFalse
+                    $currentState.SuppressRestart | Should-BeNull
+                    $currentState.ForceRestart | Should-BeNull
                     $currentState.VersionUpgrade | Should-BeFalsy
                 }
             }
@@ -402,7 +402,7 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
 
                     $script:mockSqlRSSetupInstance |
                         # Mock method Get() which is called by the base method Test()
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Test' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
                             $script:mockMethodGetCallCount += 1
                         }
                 }
