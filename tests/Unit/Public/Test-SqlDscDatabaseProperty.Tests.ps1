@@ -606,19 +606,19 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscDatabaseProperty').Parameters['ServerObject']
 
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscDatabaseProperty').Parameters['Name']
 
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have DatabaseObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscDatabaseProperty').Parameters['DatabaseObject']
 
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
     }
 

@@ -186,17 +186,17 @@ Describe 'Test-SqlDscBackupFile' -Tag 'Public' {
 
         It 'Should have mandatory ServerObject parameter' {
             $result = (Get-Command -Name 'Test-SqlDscBackupFile').Parameters['ServerObject']
-            $result.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+            $result.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have mandatory BackupFile parameter' {
             $result = (Get-Command -Name 'Test-SqlDscBackupFile').Parameters['BackupFile']
-            $result.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+            $result.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have optional FileNumber parameter' {
             $result = (Get-Command -Name 'Test-SqlDscBackupFile').Parameters['FileNumber']
-            $result.Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
+            $result.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
 
         It 'Should output Boolean type' {

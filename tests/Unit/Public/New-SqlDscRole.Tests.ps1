@@ -259,27 +259,27 @@ Describe 'New-SqlDscRole' -Tag 'Public' {
 
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscRole').Parameters['ServerObject']
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscRole').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Owner as a non-mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscRole').Parameters['Owner']
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
 
         It 'Should have Force as a non-mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscRole').Parameters['Force']
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
 
         It 'Should have Refresh as a non-mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscRole').Parameters['Refresh']
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
     }
 }

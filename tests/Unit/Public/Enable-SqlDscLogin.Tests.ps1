@@ -77,17 +77,17 @@ Describe 'Enable-SqlDscLogin' -Tag 'Public' {
 
     It 'Should have ServerObject parameter as mandatory in ServerObject parameter set' {
         $parameterInfo = (Get-Command -Name 'Enable-SqlDscLogin').Parameters['ServerObject']
-        $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+        $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
     }
 
     It 'Should have Name parameter as mandatory in ServerObject parameter set' {
         $parameterInfo = (Get-Command -Name 'Enable-SqlDscLogin').Parameters['Name']
-        $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+        $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
     }
 
     It 'Should have LoginObject parameter as mandatory in LoginObject parameter set' {
         $parameterInfo = (Get-Command -Name 'Enable-SqlDscLogin').Parameters['LoginObject']
-        $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+        $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
     }
 
     Context 'When using parameter set ServerObject' {

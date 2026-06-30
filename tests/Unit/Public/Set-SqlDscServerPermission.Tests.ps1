@@ -78,13 +78,13 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
         It 'Should have Login as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscServerPermission').Parameters['Login']
 
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have ServerRole as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscServerPermission').Parameters['ServerRole']
 
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Grant parameter not accept pipeline input' {

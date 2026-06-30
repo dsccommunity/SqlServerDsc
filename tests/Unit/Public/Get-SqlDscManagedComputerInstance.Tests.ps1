@@ -216,7 +216,7 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag 'Public' {
     Context 'When parameter properties are validated' {
         It 'Should have ManagedComputerObject as a pipeline parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscManagedComputerInstance').Parameters['ManagedComputerObject']
-            $parameterInfo.Attributes.ValueFromPipeline | Should-BeTrue
+            $parameterInfo.Attributes.ValueFromPipeline | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have ManagedComputerObject as a mandatory parameter in ByManagedComputerObject parameter set' {

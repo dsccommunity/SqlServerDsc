@@ -71,12 +71,12 @@ Describe 'Get-SqlDscAgentAlert' -Tag 'Public' {
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscAgentAlert').Parameters['ServerObject']
             #Write-Verbose ((Get-Command -Name 'Get-SqlDscAgentAlert').ParameterSets.Parameters['ServerObject'] | Out-String) -Verbose
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have ServerObject accept pipeline input' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscAgentAlert').Parameters['ServerObject']
-            $parameterInfo.Attributes.ValueFromPipeline | Should-BeTrue
+            $parameterInfo.Attributes.ValueFromPipeline | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Name as a mandatory parameter in ByName parameter set' {

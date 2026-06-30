@@ -84,12 +84,12 @@ Describe 'Test-SqlDscServerPermission' -Tag 'Public' {
     Context 'When testing parameter properties' {
         It 'Should have Login as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscServerPermission').Parameters['Login']
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have ServerRole as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscServerPermission').Parameters['ServerRole']
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Grant as a mandatory parameter in Grant parameter sets' {
@@ -106,7 +106,7 @@ Describe 'Test-SqlDscServerPermission' -Tag 'Public' {
 
         It 'Should have Permission as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscServerPermission').Parameters['Permission']
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Permission parameter allow empty collections' {
@@ -117,12 +117,12 @@ Describe 'Test-SqlDscServerPermission' -Tag 'Public' {
 
         It 'Should have WithGrant as an optional parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscServerPermission').Parameters['WithGrant']
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
 
         It 'Should have ExactMatch as an optional parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscServerPermission').Parameters['ExactMatch']
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
     }
 

@@ -216,7 +216,9 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
         It 'Should return the correct metadata values by default' {
             $result = Get-SqlDscConfigurationOption -ServerObject $mockServerObject
 
-            $result | Should-HaveType 'PSCustomObject'
+            Should-HaveType -Actual $result -Expected 'Object[]'
+            Should-HaveType -Actual $result[0] -Expected 'PSCustomObject'
+            Should-HaveType -Actual $result[1] -Expected 'PSCustomObject'
             $result | Should-BeCollection -Count 2
             $result[0].PSTypeNames[0] | Should-Be 'SqlDsc.ConfigurationOption'
 
@@ -227,7 +229,9 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
         It 'Should return raw ConfigProperty objects when using -Raw switch' {
             $result = Get-SqlDscConfigurationOption -ServerObject $mockServerObject -Raw
 
-            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
+            Should-HaveType -Actual $result -Expected 'Object[]'
+            $result[0] | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
+            $result[1] | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
             $result | Should-BeCollection -Count 2
             $result.DisplayName | Should-ContainCollection 'show advanced options'
             $result.DisplayName | Should-ContainCollection 'blocked process threshold (s)'
@@ -237,8 +241,10 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
             It 'Should return the correct metadata values' {
                 $result = $mockServerObject | Get-SqlDscConfigurationOption
 
-                $result | Should-HaveType 'PSCustomObject'
+                Should-HaveType -Actual $result -Expected 'Object[]'
                 $result | Should-BeCollection -Count 2
+                Should-HaveType -Actual $result[0] -Expected 'PSCustomObject'
+                Should-HaveType -Actual $result[1] -Expected 'PSCustomObject'
                 $result[0].PSTypeNames[0] | Should-Be 'SqlDsc.ConfigurationOption'
 
                 $result.Name | Should-ContainCollection 'show advanced options'
@@ -248,8 +254,10 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
             It 'Should return raw ConfigProperty objects when using -Raw switch' {
                 $result = $mockServerObject | Get-SqlDscConfigurationOption -Raw
 
-                $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
+                $result | Should-HaveType 'object[]'
                 $result | Should-BeCollection -Count 2
+                Should-HaveType -Actual $result[0] -Expected 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
+                Should-HaveType -Actual $result[1] -Expected 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
                 $result.DisplayName | Should-ContainCollection 'show advanced options'
                 $result.DisplayName | Should-ContainCollection 'blocked process threshold (s)'
             }

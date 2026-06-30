@@ -79,17 +79,17 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag 'Public' {
 
     It 'Should have ServerObject as a mandatory parameter' {
         $parameterInfo = (Get-Command -Name 'Invoke-SqlDscScalarQuery').Parameters['ServerObject']
-        $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+        $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
     }
 
     It 'Should have Query as a mandatory parameter' {
         $parameterInfo = (Get-Command -Name 'Invoke-SqlDscScalarQuery').Parameters['Query']
-        $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+        $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
     }
 
     It 'Should accept ServerObject from pipeline' {
         $parameterInfo = (Get-Command -Name 'Invoke-SqlDscScalarQuery').Parameters['ServerObject']
-        $parameterInfo.Attributes.ValueFromPipeline | Should-BeTrue
+        $parameterInfo.Attributes.ValueFromPipeline | Should-All -FilterScript { $_ | Should-BeTrue }
     }
 
     Context 'When executing a scalar query' {

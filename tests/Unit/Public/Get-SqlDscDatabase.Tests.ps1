@@ -150,17 +150,17 @@ Describe 'Get-SqlDscDatabase' -Tag 'Public' {
 
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscDatabase').Parameters['ServerObject']
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Name as a non-mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscDatabase').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
 
         It 'Should have Refresh as a non-mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscDatabase').Parameters['Refresh']
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
     }
 }

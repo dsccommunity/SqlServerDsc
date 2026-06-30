@@ -400,12 +400,12 @@ Describe 'Get-SqlDscServerProtocol' -Tag 'Public' {
 
         It 'Should have InstanceName as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscServerProtocol').Parameters['InstanceName']
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have ProtocolName as an optional parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscServerProtocol').Parameters['ProtocolName']
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
 
         It 'Should have ServerName as an optional parameter in ByServerName parameter set' {

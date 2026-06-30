@@ -79,19 +79,19 @@ Describe 'Initialize-SqlDscImage' -Tag 'Public' {
         It 'Should have AcceptLicensingTerms as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Initialize-SqlDscImage').Parameters['AcceptLicensingTerms']
 
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have MediaPath as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Initialize-SqlDscImage').Parameters['MediaPath']
 
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Features as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Initialize-SqlDscImage').Parameters['Features']
 
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
     }
 

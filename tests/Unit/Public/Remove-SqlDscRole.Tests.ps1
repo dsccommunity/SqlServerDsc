@@ -246,12 +246,12 @@ Describe 'Remove-SqlDscRole' -Tag 'Public' {
 
         It 'Should have Force as a non-mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Remove-SqlDscRole').Parameters['Force']
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
 
         It 'Should have Refresh as a non-mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Remove-SqlDscRole').Parameters['Refresh']
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
     }
 }

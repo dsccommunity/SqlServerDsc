@@ -460,7 +460,7 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag 'Public' {
 
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDatabaseSnapshot').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have DatabaseName as a mandatory parameter in ServerObject parameter set' {

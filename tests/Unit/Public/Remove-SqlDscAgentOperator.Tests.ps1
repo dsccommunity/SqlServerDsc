@@ -82,7 +82,7 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
 
         It 'Should have ServerObject accept pipeline input' {
             $parameterInfo = (Get-Command -Name 'Remove-SqlDscAgentOperator').Parameters['ServerObject']
-            $parameterInfo.Attributes.ValueFromPipeline | Should-BeTrue
+            $parameterInfo.Attributes.ValueFromPipeline | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have OperatorObject as a mandatory parameter in ByObject parameter set' {
@@ -93,7 +93,7 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
 
         It 'Should have OperatorObject accept pipeline input in ByObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Remove-SqlDscAgentOperator').Parameters['OperatorObject']
-            $parameterInfo.Attributes.ValueFromPipeline | Should-BeTrue
+            $parameterInfo.Attributes.ValueFromPipeline | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Name as a mandatory parameter in ByName parameter set' {

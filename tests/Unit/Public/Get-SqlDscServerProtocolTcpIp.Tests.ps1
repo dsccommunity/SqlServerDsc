@@ -335,7 +335,7 @@ Describe 'Get-SqlDscServerProtocolTcpIp' -Tag 'Public' {
 
         It 'Should have IpAddressGroup as an optional parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscServerProtocolTcpIp').Parameters['IpAddressGroup']
-            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
 
         It 'Should have ServerProtocolObject as a pipeline parameter' {
