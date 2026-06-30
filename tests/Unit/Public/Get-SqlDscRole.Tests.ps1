@@ -160,17 +160,17 @@ Describe 'Get-SqlDscRole' -Tag 'Public' {
 
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRole').Parameters['ServerObject']
-            $parameterInfo.Attributes.Mandatory | Should-BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
         }
 
         It 'Should have Name as a non-mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRole').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should-BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
         }
 
         It 'Should have Refresh as a non-mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRole').Parameters['Refresh']
-            $parameterInfo.Attributes.Mandatory | Should-BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
         }
     }
 }

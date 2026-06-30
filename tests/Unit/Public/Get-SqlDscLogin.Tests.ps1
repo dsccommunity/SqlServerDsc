@@ -81,16 +81,16 @@ Describe 'Get-SqlDscLogin' -Tag 'Public' {
 
         # Test ServerObject parameter
         $cmd.Parameters['ServerObject'].ParameterType.FullName | Should-Be 'Microsoft.SqlServer.Management.Smo.Server'
-        $cmd.Parameters['ServerObject'].Attributes.Mandatory | Should-BeTrue
+        $cmd.Parameters['ServerObject'].Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
         $cmd.Parameters['ServerObject'].Attributes.ValueFromPipeline | Should-BeTrue
 
         # Test Name parameter
         $cmd.Parameters['Name'].ParameterType.FullName | Should-Be 'System.String'
-        $cmd.Parameters['Name'].Attributes.Mandatory | Should-BeFalse
+        $cmd.Parameters['Name'].Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
 
         # Test Refresh parameter
         $cmd.Parameters['Refresh'].ParameterType.FullName | Should-Be 'System.Management.Automation.SwitchParameter'
-        $cmd.Parameters['Refresh'].Attributes.Mandatory | Should-BeFalse
+        $cmd.Parameters['Refresh'].Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
     }
 
     Context 'When no login exists' {
@@ -196,7 +196,7 @@ Describe 'Get-SqlDscLogin' -Tag 'Public' {
         It 'Should return the correct values' {
             $result = Get-SqlDscLogin @mockDefaultParameters
 
-            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Login'
+            Should-HaveType -Actual $result -Expected ([Microsoft.SqlServer.Management.Smo.Login])
             $result | Should-BeCollection -Count 2
             $result.Name | Should-ContainCollection 'TestLogin1'
             $result.Name | Should-ContainCollection 'TestLogin2'

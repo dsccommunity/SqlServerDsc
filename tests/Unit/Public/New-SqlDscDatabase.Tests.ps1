@@ -319,12 +319,12 @@ Describe 'New-SqlDscDatabase' -Tag 'Public' {
 
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDatabase').Parameters['ServerObject']
-            $parameterInfo.Attributes.Mandatory | Should-BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
         }
 
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDatabase').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should-BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
         }
 
         It 'Should have DatabaseSnapshotBaseName as a mandatory parameter in Snapshot parameter set' {

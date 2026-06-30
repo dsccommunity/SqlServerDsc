@@ -72,7 +72,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
     Context 'When command has correct parameter properties' {
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscAgentOperator').Parameters['ServerObject']
-            $parameterInfo.Attributes.Mandatory | Should-BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
         }
 
         It 'Should have ServerObject accept pipeline input' {
@@ -82,7 +82,7 @@ Describe 'New-SqlDscAgentOperator' -Tag 'Public' {
 
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscAgentOperator').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should-BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
         }
     }
 

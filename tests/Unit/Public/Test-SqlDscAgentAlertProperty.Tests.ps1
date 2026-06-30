@@ -70,7 +70,7 @@ Describe 'Test-SqlDscAgentAlertProperty' -Tag 'Public' {
     Context 'When command has correct parameter properties' {
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscAgentAlertProperty').Parameters['ServerObject']
-            $parameterInfo.Attributes.Mandatory | Should-BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
         }
 
         It 'Should have ServerObject accept pipeline input' {
@@ -80,12 +80,12 @@ Describe 'Test-SqlDscAgentAlertProperty' -Tag 'Public' {
 
         It 'Should have Name as a mandatory parameter in ByServerAndName parameter set' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscAgentAlertProperty').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should-BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
         }
 
         It 'Should have AlertObject as a mandatory parameter in ByAlertObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscAgentAlertProperty').Parameters['AlertObject']
-            $parameterInfo.Attributes.Mandatory | Should-BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
         }
 
         It 'Should have AlertObject accept pipeline input' {
@@ -95,12 +95,12 @@ Describe 'Test-SqlDscAgentAlertProperty' -Tag 'Public' {
 
         It 'Should have Severity as an optional parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscAgentAlertProperty').Parameters['Severity']
-            $parameterInfo.Attributes.Mandatory | Should-BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
         }
 
         It 'Should have MessageId as an optional parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscAgentAlertProperty').Parameters['MessageId']
-            $parameterInfo.Attributes.Mandatory | Should-BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
         }
     }
 

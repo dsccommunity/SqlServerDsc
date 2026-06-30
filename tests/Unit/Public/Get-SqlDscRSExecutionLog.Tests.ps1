@@ -70,7 +70,7 @@ Describe 'Get-SqlDscRSExecutionLog' {
         It 'Should have InstanceName as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRSExecutionLog').Parameters['InstanceName']
 
-            $parameterInfo.Attributes.Mandatory | Should-BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
         }
 
         It 'Should have MaxRows with a default value of 1000' {

@@ -223,11 +223,11 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
                         Invoke-ReportServerSetupAction -Confirm:$false @mockDefaultParameters
 
                         Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                            $ArgumentList | Should -MatchExactly '\/quiet \/IAcceptLicenseTerms'
+                            $ArgumentList | Should-MatchString -CaseSensitive '\/quiet \/IAcceptLicenseTerms'
 
                             # Return $true if none of the above throw.
                             $true
-                        } -Exactly -Times 1 -Scope It
+                        } -Times 1 -Scope It
                     }
                 }
             }
@@ -238,11 +238,11 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
                         Invoke-ReportServerSetupAction -Force @mockDefaultParameters
 
                         Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                            $ArgumentList | Should -MatchExactly '\/quiet \/IAcceptLicenseTerms'
+                            $ArgumentList | Should-MatchString -CaseSensitive '\/quiet \/IAcceptLicenseTerms'
 
                             # Return $true if none of the above throw.
                             $true
-                        } -Exactly -Times 1 -Scope It
+                        } -Times 1 -Scope It
                     }
                 }
             }
@@ -317,11 +317,11 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
                     Invoke-ReportServerSetupAction @installSqlDscServerParameters
 
                     Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly $MockExpectedRegEx
+                        $ArgumentList | Should-MatchString -CaseSensitive $MockExpectedRegEx
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Times 1 -Scope It
                 }
             }
         }
@@ -428,12 +428,12 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
                         # Only test string if it is the correct verbose command
                         if ($correctMessage)
                         {
-                            $Message | Should -MatchExactly $MockExpectedRegEx
+                            $Message | Should-MatchString -CaseSensitive $MockExpectedRegEx
                         }
 
                         # Return wether the correct command was called or not.
                         $correctMessage
-                    } -Exactly -Times 1 -Scope It
+                    } -Times 1 -Scope It
                 }
             }
         }
@@ -541,11 +541,11 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
                     Invoke-ReportServerSetupAction @installParameters
 
                     Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/log "C:\\Logs\\Test\\setup\.log"'
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/log "C:\\Logs\\Test\\setup\.log"'
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Times 1 -Scope It
                 }
             }
 
@@ -557,11 +557,11 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
                     Invoke-ReportServerSetupAction @installParameters
 
                     Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/InstallFolder="C:\\Program Files\\ReportServer"'
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/InstallFolder="C:\\Program Files\\ReportServer"'
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Times 1 -Scope It
                 }
             }
         }
@@ -592,11 +592,11 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
                         Invoke-ReportServerSetupAction -Confirm:$false @mockDefaultParameters
 
                         Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                            $ArgumentList | Should -MatchExactly '\/quiet \/IAcceptLicenseTerms \/uninstall'
+                            $ArgumentList | Should-MatchString -CaseSensitive '\/quiet \/IAcceptLicenseTerms \/uninstall'
 
                             # Return $true if none of the above throw.
                             $true
-                        } -Exactly -Times 1 -Scope It
+                        } -Times 1 -Scope It
                     }
                 }
             }
@@ -607,11 +607,11 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
                         Invoke-ReportServerSetupAction -Force @mockDefaultParameters
 
                         Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                            $ArgumentList | Should -MatchExactly '\/quiet \/IAcceptLicenseTerms \/uninstall'
+                            $ArgumentList | Should-MatchString -CaseSensitive '\/quiet \/IAcceptLicenseTerms \/uninstall'
 
                             # Return $true if none of the above throw.
                             $true
-                        } -Exactly -Times 1 -Scope It
+                        } -Times 1 -Scope It
                     }
                 }
             }
@@ -661,11 +661,11 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
                     Invoke-ReportServerSetupAction @installSqlDscServerParameters
 
                     Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly $MockExpectedRegEx
+                        $ArgumentList | Should-MatchString -CaseSensitive $MockExpectedRegEx
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Times 1 -Scope It
                 }
             }
         }
@@ -697,11 +697,11 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
                         Invoke-ReportServerSetupAction -Confirm:$false @mockDefaultParameters
 
                         Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                            $ArgumentList | Should -MatchExactly '\/quiet \/IAcceptLicenseTerms \/repair'
+                            $ArgumentList | Should-MatchString -CaseSensitive '\/quiet \/IAcceptLicenseTerms \/repair'
 
                             # Return $true if none of the above throw.
                             $true
-                        } -Exactly -Times 1 -Scope It
+                        } -Times 1 -Scope It
                     }
                 }
             }
@@ -712,11 +712,11 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
                         Invoke-ReportServerSetupAction -Force @mockDefaultParameters
 
                         Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                            $ArgumentList | Should -MatchExactly '\/quiet \/IAcceptLicenseTerms \/repair'
+                            $ArgumentList | Should-MatchString -CaseSensitive '\/quiet \/IAcceptLicenseTerms \/repair'
 
                             # Return $true if none of the above throw.
                             $true
-                        } -Exactly -Times 1 -Scope It
+                        } -Times 1 -Scope It
                     }
                 }
             }
@@ -786,11 +786,11 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
                     Invoke-ReportServerSetupAction @installSqlDscServerParameters
 
                     Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly $MockExpectedRegEx
+                        $ArgumentList | Should-MatchString -CaseSensitive $MockExpectedRegEx
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Times 1 -Scope It
                 }
             }
         }
@@ -897,12 +897,12 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
                         # Only test string if it is the correct verbose command
                         if ($correctMessage)
                         {
-                            $Message | Should -MatchExactly $MockExpectedRegEx
+                            $Message | Should-MatchString -CaseSensitive $MockExpectedRegEx
                         }
 
                         # Return wether the correct command was called or not.
                         $correctMessage
-                    } -Exactly -Times 1 -Scope It
+                    } -Times 1 -Scope It
                 }
             }
         }

@@ -70,22 +70,22 @@ Describe 'New-SqlDscAgentAlert' -Tag 'Public' {
     Context 'When command has correct parameter properties' {
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscAgentAlert').Parameters['ServerObject']
-            $parameterInfo.Attributes.Mandatory | Should-BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
         }
 
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscAgentAlert').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should-BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
         }
 
         It 'Should have Severity as an optional parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscAgentAlert').Parameters['Severity']
-            $parameterInfo.Attributes.Mandatory | Should-BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
         }
 
         It 'Should have MessageId as an optional parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscAgentAlert').Parameters['MessageId']
-            $parameterInfo.Attributes.Mandatory | Should-BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
         }
     }
 

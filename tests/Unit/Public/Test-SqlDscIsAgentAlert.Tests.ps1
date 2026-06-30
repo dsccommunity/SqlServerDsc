@@ -70,7 +70,7 @@ Describe 'Test-SqlDscIsAgentAlert' -Tag 'Public' {
     Context 'When command has correct parameter properties' {
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscIsAgentAlert').Parameters['ServerObject']
-            $parameterInfo.Attributes.Mandatory | Should-BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
         }
 
         It 'Should have ServerObject accept pipeline input' {
@@ -80,7 +80,7 @@ Describe 'Test-SqlDscIsAgentAlert' -Tag 'Public' {
 
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscIsAgentAlert').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should-BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
         }
     }
 

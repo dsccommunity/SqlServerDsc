@@ -90,19 +90,19 @@ Describe 'Disable-SqlDscDatabaseSnapshotIsolation' -Tag 'Public' {
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = $command.Parameters['ServerObject']
 
-            $parameterInfo.Attributes.Mandatory | Should-BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
         }
 
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = $command.Parameters['Name']
 
-            $parameterInfo.Attributes.Mandatory | Should-BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
         }
 
         It 'Should have DatabaseObject as a mandatory parameter' {
             $parameterInfo = $command.Parameters['DatabaseObject']
 
-            $parameterInfo.Attributes.Mandatory | Should-BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
         }
     }
 

@@ -128,15 +128,15 @@ Describe 'Add-SqlDscFileGroup' -Tag 'Public' {
 
     Context 'Parameter validation' {
         It 'Should have Database as a mandatory parameter' {
-            (Get-Command -Name 'Add-SqlDscFileGroup').Parameters['Database'].Attributes.Mandatory | Should-BeTrue
+            (Get-Command -Name 'Add-SqlDscFileGroup').Parameters['Database'].Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
         }
 
         It 'Should have FileGroup as a mandatory parameter' {
-            (Get-Command -Name 'Add-SqlDscFileGroup').Parameters['FileGroup'].Attributes.Mandatory | Should-BeTrue
+            (Get-Command -Name 'Add-SqlDscFileGroup').Parameters['FileGroup'].Attributes.Mandatory | Should-All { $_ | Should-BeTrue }
         }
 
         It 'Should have PassThru as an optional parameter' {
-            (Get-Command -Name 'Add-SqlDscFileGroup').Parameters['PassThru'].Attributes.Mandatory | Should-BeFalse
+            (Get-Command -Name 'Add-SqlDscFileGroup').Parameters['PassThru'].Attributes.Mandatory | Should-All { $_ | Should-BeFalse }
         }
 
         It 'Should have FileGroup parameter accept pipeline input' {

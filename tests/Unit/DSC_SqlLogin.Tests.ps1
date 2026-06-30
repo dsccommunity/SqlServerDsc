@@ -239,9 +239,9 @@ Describe 'SqlLogin\Get-TargetResource' -Tag 'Get' {
 
                         if ($MockLoginType -eq 'SqlLogin')
                         {
-                            $result.LoginMustChangePassword | Should-BeFalse
-                            $result.LoginPasswordExpirationEnabled | Should-BeFalse
-                            $result.LoginPasswordPolicyEnforced | Should-BeFalse
+                            $result.LoginMustChangePassword | Should-BeNull
+                            $result.LoginPasswordExpirationEnabled | Should-BeNull
+                            $result.LoginPasswordPolicyEnforced | Should-BeNull
                         }
                         else
                         {
