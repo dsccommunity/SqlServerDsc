@@ -150,7 +150,7 @@ Describe 'SqlLogin\Get-TargetResource' -Tag 'Get' {
                         $result.Disabled | Should-BeTrue
                         $result.DefaultDatabase | Should-Be 'master'
                         $result.Language | Should-Be 'us_english'
-                        $result.Sid | Should-Be 'B76150A66B38F64FAE9470091789AA66'
+                        $result.Sid | Should-BeCollection @([byte[]] -split ('B76150A66B38F64FAE9470091789AA66' -replace '..', '0x$& '))
 
                         if ($MockLoginType -eq 'SqlLogin')
                         {
