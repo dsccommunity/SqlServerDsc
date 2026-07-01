@@ -16,7 +16,7 @@
         back to stable.
     #>
     Pester                         = @{
-        Version    = '6.0.0-rc2'
+        Version    = '6.0.0-rc4'
         Parameters = @{ AllowPrerelease = $true }
     }
 
