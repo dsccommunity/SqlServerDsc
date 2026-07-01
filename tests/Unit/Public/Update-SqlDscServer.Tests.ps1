@@ -35,15 +35,13 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
-    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -105,12 +103,12 @@ Describe 'Update-SqlDscServer' -Tag 'Public' {
                     Update-SqlDscServer -Confirm:$false -Force @mockDefaultParameters
 
                     Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=Upgrade'
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="MSSQLSERVER"' # cspell: disable-line
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/ACTION=Upgrade'
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/INSTANCENAME="MSSQLSERVER"' # cspell: disable-line
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Scope It -Times 1Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -119,11 +117,11 @@ Describe 'Update-SqlDscServer' -Tag 'Public' {
                     Update-SqlDscServer -Force @mockDefaultParameters
 
                     Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=Upgrade'
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/ACTION=Upgrade'
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Scope It -Times 1s 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -234,11 +232,11 @@ Describe 'Update-SqlDscServer' -Tag 'Public' {
                 Update-SqlDscServer @updateSqlDscServerParameters
 
                 Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly $MockExpectedRegEx
+                    $ArgumentList | Should-MatchString -CaseSensitive $MockExpectedRegEx
 
                     # Return $true if none of the above throw.
                     $true
-                } -Scope It -Times 1s 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 

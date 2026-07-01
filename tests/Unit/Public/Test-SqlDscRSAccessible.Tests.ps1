@@ -196,8 +196,12 @@ Describe 'Test-SqlDscRSAccessible' {
             It 'Should return a detailed object' {
                 $result = Test-SqlDscRSAccessible -ReportServerUri 'http://localhost/ReportServer' -ReportsUri 'http://localhost/Reports' -Detailed
 
+                Should-HaveType -Actual $result -Expected ([System.Object])
+
                 $result | Should-BeCollection -Count 2
-                $result | Should-HaveType ([System.Management.Automation.PSCustomObject])
+
+                Should-HaveType -Actual $result[0] -Expected ([System.Management.Automation.PSCustomObject])
+                Should-HaveType -Actual $result[1] -Expected ([System.Management.Automation.PSCustomObject])
 
                 $reportServerResult = $result | Where-Object -FilterScript { $_.Site -eq 'ReportServerWebService' }
                 $reportServerResult.Accessible | Should-BeTrue
@@ -356,8 +360,12 @@ Describe 'Test-SqlDscRSAccessible' {
             It 'Should return a detailed object' {
                 $result = Test-SqlDscRSAccessible -Configuration $mockCimInstance -ServerName 'localhost' -Detailed -TimeoutSeconds 5 -RetryIntervalSeconds 1
 
+                Should-HaveType -Actual $result[0] -Expected ([System.Object])
+
                 $result | Should-BeCollection -Count 2
-                $result | Should-HaveType ([System.Management.Automation.PSCustomObject])
+
+                Should-HaveType -Actual $result[0] -Expected ([System.Management.Automation.PSCustomObject])
+                Should-HaveType -Actual $result[1] -Expected ([System.Management.Automation.PSCustomObject])
 
                 $reportServerResult = $result | Where-Object -FilterScript { $_.Site -eq 'ReportServerWebService' }
                 $reportServerResult.Accessible | Should-BeTrue

@@ -68,7 +68,8 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:subModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:subModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
 }
 
 AfterAll {
@@ -104,7 +105,7 @@ Describe 'SqlServerDsc.Common\Start-SqlSetupProcess' -Tag 'StartSqlSetupProcess'
             }
 
             $processExitCode = Start-SqlSetupProcess @startSqlSetupProcessParameters
-            $processExitCode | Should-BeString -CaseSensitive 0
+            $processExitCode | Should-Be 0
         }
     }
 

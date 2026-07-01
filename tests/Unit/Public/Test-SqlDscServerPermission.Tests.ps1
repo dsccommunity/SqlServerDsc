@@ -95,13 +95,13 @@ Describe 'Test-SqlDscServerPermission' -Tag 'Public' {
         It 'Should have Grant as a mandatory parameter in Grant parameter sets' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscServerPermission').Parameters['Grant']
             $grantParameterSetAttributes = $parameterInfo.Attributes | Where-Object { $_.GetType().Name -eq 'ParameterAttribute' -and ($_.ParameterSetName -eq 'LoginGrant' -or $_.ParameterSetName -eq 'ServerRoleGrant') }
-            $grantParameterSetAttributes.Mandatory | Should-BeTrue
+            $grantParameterSetAttributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Deny as a mandatory parameter in Deny parameter sets' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscServerPermission').Parameters['Deny']
             $denyParameterSetAttributes = $parameterInfo.Attributes | Where-Object { $_.GetType().Name -eq 'ParameterAttribute' -and ($_.ParameterSetName -eq 'LoginDeny' -or $_.ParameterSetName -eq 'ServerRoleDeny') }
-            $denyParameterSetAttributes.Mandatory | Should-BeTrue
+            $denyParameterSetAttributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Permission as a mandatory parameter' {

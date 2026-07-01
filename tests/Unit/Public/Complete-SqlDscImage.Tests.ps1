@@ -107,7 +107,7 @@ Describe 'Complete-SqlDscImage' -Tag 'Public' {
                     Complete-SqlDscImage -Confirm:$false @mockDefaultParameters
 
                     Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=CompleteImage'
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/ACTION=CompleteImage'
 
                         # Return $true if none of the above throw.
                         $true
@@ -120,7 +120,7 @@ Describe 'Complete-SqlDscImage' -Tag 'Public' {
                     Complete-SqlDscImage -Force @mockDefaultParameters
 
                     Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=CompleteImage'
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/ACTION=CompleteImage'
 
                         # Return $true if none of the above throw.
                         $true
@@ -159,7 +159,7 @@ Describe 'Complete-SqlDscImage' -Tag 'Public' {
                 Complete-SqlDscImage @completeSqlDscImageParameters
 
                 Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly 'PBPORTRANGE=16450-16460' # cspell: disable-line
+                    $ArgumentList | Should-MatchString -CaseSensitive 'PBPORTRANGE=16450-16460' # cspell: disable-line
 
                     # Return $true if none of the above throw.
                     $true
@@ -380,7 +380,7 @@ Describe 'Complete-SqlDscImage' -Tag 'Public' {
                 Complete-SqlDscImage @completeSqlDscImageParameters
 
                 Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly $MockExpectedRegEx
+                    $ArgumentList | Should-MatchString -CaseSensitive $MockExpectedRegEx
 
                     # Return $true if none of the above throw.
                     $true
