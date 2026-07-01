@@ -643,7 +643,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.ASTempDir                  | Should-Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesMultiInstanceName)\OLAP\Temp")
             $resourceCurrentState.ASSvcAccount               | Should-BeFalsy
             $resourceCurrentState.ASSvcAccountUsername       | Should-Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlServicePrimaryAccountUserName -Leaf))
-            $resourceCurrentState.ASSysAdminAccounts         | Should-Be @(
+            $resourceCurrentState.ASSysAdminAccounts         | Should-BeCollection @(
                 $ConfigurationData.AllNodes.SqlAdministratorAccountUserName,
                 "NT SERVICE\SSASTELEMETRY`$$($ConfigurationData.AllNodes.AnalysisServicesMultiInstanceName)"
             )
@@ -803,7 +803,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.ASTempDir                  | Should-Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Temp")
             $resourceCurrentState.ASSvcAccount               | Should-BeFalsy
             $resourceCurrentState.ASSvcAccountUsername       | Should-Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlServicePrimaryAccountUserName -Leaf))
-            $resourceCurrentState.ASSysAdminAccounts         | Should-Be @(
+            $resourceCurrentState.ASSysAdminAccounts         | Should-BeCollection @(
                 $ConfigurationData.AllNodes.SqlAdministratorAccountUserName,
                 "NT SERVICE\SSASTELEMETRY`$$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)"
             )
