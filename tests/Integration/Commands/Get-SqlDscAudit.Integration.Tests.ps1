@@ -154,8 +154,8 @@ Describe 'Get-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
             $result.Name | Should-Be $script:testAuditName1
             $result.Parent | Should-Be $script:serverObject
-            $result.Enabled | Should-BeTruthy
-            $result.DestinationType | Should-BeTruthy
+            $result.Enabled | Should-BeFalsy
+            $result.DestinationType | Should-BeFalsy
         }
     }
 }

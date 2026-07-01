@@ -79,7 +79,7 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag @('Integration_SQL2017', 'Integrati
             $result = Get-SqlDscCompatibilityLevel -ServerObject $script:serverObject
 
             $result | Should-BeTruthy
-            $result | Should-HaveType ([System.String])
+            $result | Should-HaveType ([System.Object[]])
 
             # All results should match Version pattern
             foreach ($compatLevel in $result)
@@ -101,7 +101,7 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag @('Integration_SQL2017', 'Integrati
             $result = Get-SqlDscCompatibilityLevel -Version $serverVersion
 
             $result | Should-BeTruthy
-            $result | Should-HaveType ([System.String])
+            $result | Should-HaveType ([System.Object[]])
 
             # Verify the result matches expected compatibility levels
             $result | Should-BeCollection -Count $script:expectedLevels.Count

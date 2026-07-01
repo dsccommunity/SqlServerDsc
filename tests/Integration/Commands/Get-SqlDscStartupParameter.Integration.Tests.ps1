@@ -180,11 +180,11 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
             $serviceObject = Get-SqlDscManagedComputerService -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ServiceType 'DatabaseEngine' -ErrorAction 'Stop'
             $resultByServiceObject = Get-SqlDscStartupParameter -ServiceObject $serviceObject -ErrorAction 'Stop'
 
-            $resultByServerName.DataFilePath | Should-Be $resultByServiceObject.DataFilePath
-            $resultByServerName.LogFilePath | Should-Be $resultByServiceObject.LogFilePath
-            $resultByServerName.ErrorLogPath | Should-Be $resultByServiceObject.ErrorLogPath
-            $resultByServerName.TraceFlag | Should-Be $resultByServiceObject.TraceFlag
-            $resultByServerName.InternalTraceFlag | Should-Be $resultByServiceObject.InternalTraceFlag
+            $resultByServerName.DataFilePath | Should-BeCollection $resultByServiceObject.DataFilePath
+            $resultByServerName.LogFilePath | Should-BeCollection $resultByServiceObject.LogFilePath
+            $resultByServerName.ErrorLogPath | Should-BeCollection $resultByServiceObject.ErrorLogPath
+            $resultByServerName.TraceFlag | Should-BeCollection $resultByServiceObject.TraceFlag
+            $resultByServerName.InternalTraceFlag | Should-BeCollection $resultByServiceObject.InternalTraceFlag
         }
     }
 }

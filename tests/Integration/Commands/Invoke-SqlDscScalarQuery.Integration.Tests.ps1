@@ -118,7 +118,7 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag @('Integration_SQL2017', 'Integration_S
             It 'Should return null' {
                 $result = Invoke-SqlDscScalarQuery -ServerObject $script:serverObject -Query 'SELECT NULL' -ErrorAction 'Stop'
 
-                $result | Should-BeFalsy
+                Should-HaveType -Actual $result -Expected ([System.DBNull])
             }
         }
     }

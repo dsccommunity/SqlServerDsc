@@ -131,7 +131,7 @@ Describe 'ConvertTo-SqlDscEditionName' -Tag @('Integration_SQL2017', 'Integratio
             $resultKnown.GetType() | Should-Be $resultUnknown.GetType()
 
             # Verify both have the same property structure
-            $resultKnown.PSObject.Properties.Name | Should-Be $resultUnknown.PSObject.Properties.Name
+            $resultKnown.PSObject.Properties.Name | Should-BeCollection $resultUnknown.PSObject.Properties.Name
         }
 
         It 'Should return EditionId as UInt32 type' {

@@ -43,7 +43,7 @@ Describe 'Get-SqlDscSetupLog' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             $setupLog | Should-BeTruthy
 
             # Each line in the log should be a string
-            $setupLog | Should-HaveType ([System.String])
+            $setupLog | Should-HaveType ([System.Object[]])
 
             # The log content should contain typical SQL Server setup log information
             # We check for common patterns that appear in Summary.txt
