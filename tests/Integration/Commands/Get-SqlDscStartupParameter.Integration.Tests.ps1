@@ -183,8 +183,8 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
             $resultByServerName.DataFilePath | Should-BeCollection $resultByServiceObject.DataFilePath
             $resultByServerName.LogFilePath | Should-BeCollection $resultByServiceObject.LogFilePath
             $resultByServerName.ErrorLogPath | Should-BeCollection $resultByServiceObject.ErrorLogPath
-            $resultByServerName.TraceFlag | Should-BeCollection $resultByServiceObject.TraceFlag
-            $resultByServerName.InternalTraceFlag | Should-BeCollection $resultByServiceObject.InternalTraceFlag
+            $resultByServerName.TraceFlag | Should-Be $resultByServiceObject.TraceFlag
+            $resultByServerName.InternalTraceFlag | Should-Be $resultByServiceObject.InternalTraceFlag
         }
     }
 }

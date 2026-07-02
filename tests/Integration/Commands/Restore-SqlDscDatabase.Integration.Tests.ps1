@@ -271,7 +271,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $script:serverObject.Databases.Refresh()
             $restoredDb = $script:serverObject.Databases[$script:noRecoveryDbName]
             $restoredDb | Should-BeTruthy
-            $restoredDb.Status | Should-Any -FilterScript { $_ | Should-MatchString 'Restoring' }
+            $restoredDb.Status | Should-Any -FilterScript { $_ | Should-MatchString 'Restoring' }
         }
     }
 
@@ -534,7 +534,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $script:serverObject.Databases.Refresh()
             $restoredDb = $script:serverObject.Databases[$script:sequenceDbName]
             $restoredDb | Should-BeTruthy
-            $restoredDb.Status | Should-Any -FilterScript { $_ | Should-MatchString 'Restoring' }
+            $restoredDb.Status | Should-Any -FilterScript { $_ | Should-MatchString 'Restoring' }
         }
 
         It 'Should restore differential backup with NoRecovery' {
@@ -543,7 +543,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $script:serverObject.Databases.Refresh()
             $restoredDb = $script:serverObject.Databases[$script:sequenceDbName]
             $restoredDb | Should-BeTruthy
-            $restoredDb.Status | Should-Any -FilterScript { $_ | Should-MatchString 'Restoring' }
+            $restoredDb.Status | Should-Any -FilterScript { $_ | Should-MatchString 'Restoring' }
         }
 
         It 'Should restore log backup and bring database online' {
