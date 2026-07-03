@@ -183,7 +183,12 @@ Describe 'Get-SqlDscStartupParameter' -Tag @('Integration_SQL2017', 'Integration
             $resultByServerName.DataFilePath | Should-BeCollection $resultByServiceObject.DataFilePath
             $resultByServerName.LogFilePath | Should-BeCollection $resultByServiceObject.LogFilePath
             $resultByServerName.ErrorLogPath | Should-BeCollection $resultByServiceObject.ErrorLogPath
-            $resultByServerName.TraceFlag | Should-Be $resultByServiceObject.TraceFlag
+
+            Write-Verbose -Message ('DEBUG: Actual TraceFlag from ByServerName: {0}' -f ($resultByServerName.TraceFlag | Out-String)) -Verbose
+            Write-Verbose -Message ('DEBUG: Actual InternalTraceFlag from ByServerName: {0}' -f ($resultByServerName.InternalTraceFlag | Out-String)) -Verbose
+            Write-Verbose -Message ('DEBUG: Expected TraceFlag from ByServiceObject: {0}' -f ($resultByServiceObject.TraceFlag | Out-String)) -Verbose
+            Write-Verbose -Message ('DEBUG: Expected InternalTraceFlag from ByServiceObject: {0}' -f ($resultByServiceObject.InternalTraceFlag | Out-String)) -Verbose
+            $resultByServerName.TraceFlag | Should-BeCollection $resultByServiceObject.TraceFlag
             $resultByServerName.InternalTraceFlag | Should-Be $resultByServiceObject.InternalTraceFlag
         }
     }

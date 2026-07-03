@@ -271,6 +271,8 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $script:serverObject.Databases.Refresh()
             $restoredDb = $script:serverObject.Databases[$script:noRecoveryDbName]
             $restoredDb | Should-BeTruthy
+            Write-Verbose -Message ('DEBUG: Restored database status: {0}' -f $restoredDb.Status | Out-String) -Verbose
+            Write-Verbose -Message ('DEBUG: Restored database status type: {0}' -f $restoredDb.Status.GetType().FullName) -Verbose
             $restoredDb.Status | Should-Any -FilterScript { $_ | Should-MatchString 'Restoring' }
         }
     }
