@@ -80,8 +80,8 @@ END
         $alerts = $script:sqlServerObject | Get-SqlDscAgentAlert
 
         $alerts | Should-BeTruthy
-        # TODO: this resulted in: The script failed due to call depth overflow.
-        #$alerts | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Agent.Alert])
+        $alerts | Should-HaveType 'System.Object[]'
+        $alerts[0] | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Agent.Alert'
     }
 
     It 'Should get specific alert by name' {

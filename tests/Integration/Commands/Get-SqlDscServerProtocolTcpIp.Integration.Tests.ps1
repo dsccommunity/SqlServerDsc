@@ -116,8 +116,7 @@ Describe 'Get-SqlDscServerProtocolTcpIp' -Tag @('Integration_SQL2017', 'Integrat
                 $result = $script:serverProtocolObject | Get-SqlDscServerProtocolTcpIp -ErrorAction 'Stop'
 
                 $result | Should-BeTruthy
-                # TODO: this resulted in: The script failed due to call depth overflow.
-                #$result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress])
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress])
                 $result.Count | Should-BeGreaterThan 0
 
                 # Should contain the IPAll group

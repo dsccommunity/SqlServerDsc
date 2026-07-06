@@ -78,8 +78,7 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
 
                 $result | Should-BeTruthy
                 $result | Should-HaveType ([System.Object[]])
-                # TODO: this resulted in: The script failed due to call depth overflow.
-                #$result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
+                $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
             }
         }
 
@@ -232,8 +231,7 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
 
                 $result | Should-BeTruthy
                 $result | Should-HaveType ([System.Object[]])
-                # TODO: this resulted in: The script failed due to call depth overflow.
-                #$result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
+                $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
                 $result.Count | Should-BeGreaterThan 1
             }
         }
@@ -272,8 +270,7 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integration
 
                 $result | Should-BeTruthy
                 $result | Should-HaveType ([System.Object[]])
-                # TODO: this resulted in: The script failed due to call depth overflow.
-                #$result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
+                $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionInfo])
                 $result.Count | Should-BeGreaterThan 1
             }
         }

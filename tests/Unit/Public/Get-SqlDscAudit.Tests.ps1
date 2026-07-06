@@ -179,9 +179,10 @@ Describe 'Get-SqlDscAudit' -Tag 'Public' {
         It 'Should return the correct values' {
             $result = Get-SqlDscAudit @mockDefaultParameters
 
-            # TODO: this resulted in: The script failed due to call depth overflow.
-            #$result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Audit'
+            $result | Should-HaveType 'System.Object[]'
             $result | Should-BeCollection -Count 2
+            $result[0] | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Audit'
+            $result[1] | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Audit'
             $result.Name | Should-ContainCollection 'Log1'
             $result.Name | Should-ContainCollection 'Log2'
         }

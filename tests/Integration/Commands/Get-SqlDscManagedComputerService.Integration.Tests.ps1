@@ -46,8 +46,7 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
                 $result = Get-SqlDscManagedComputerService -ErrorAction 'Stop'
 
                 $result | Should-BeTruthy
-                # TODO: this resulted in: The script failed due to call depth overflow.
-                #$result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
 
                 # Should contain SQL Server related services
                 $sqlServices = $result | Where-Object -FilterScript { $_.Name -like '*SQL*' }
@@ -60,8 +59,7 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
                 $result = Get-SqlDscManagedComputerService -ServerName $script:mockServerName -ErrorAction 'Stop'
 
                 $result | Should-BeTruthy
-                # TODO: this resulted in: The script failed due to call depth overflow.
-                #$result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
 
                 # Should contain SQL Server related services
                 $sqlServices = $result | Where-Object -FilterScript { $_.Name -like '*SQL*' }
@@ -74,8 +72,7 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
                 $result = Get-SqlDscManagedComputerService -ServerName $script:mockServerName -ServiceType 'DatabaseEngine' -ErrorAction 'Stop'
 
                 $result | Should-BeTruthy
-                # TODO: this resulted in: The script failed due to call depth overflow.
-                #$result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
 
                 # All returned services should be of type SqlServer
                 foreach ($service in $result)
@@ -89,8 +86,7 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
 
                 if ($result)
                 {
-                    # TODO: this resulted in: The script failed due to call depth overflow.
-                    #$result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+                    $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
                     $result.Type | Should-Be 'SqlBrowser'
                 }
             }
@@ -102,8 +98,7 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
 
                 if ($result)
                 {
-                    # TODO: this resulted in: The script failed due to call depth overflow.
-                    #$result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+                    $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
 
                     # All returned services should contain the instance name
                     foreach ($service in $result)
@@ -118,8 +113,7 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
 
                 if ($result)
                 {
-                    # TODO: this resulted in: The script failed due to call depth overflow.
-                    #$result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+                    $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
 
                     # Should contain the default instance service
                     $defaultInstanceService = $result | Where-Object -FilterScript { $_.Name -eq 'MSSQLSERVER' }
@@ -139,8 +133,7 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
                 $result = $script:managedComputerObject | Get-SqlDscManagedComputerService -ErrorAction 'Stop'
 
                 $result | Should-BeTruthy
-                # TODO: this resulted in: The script failed due to call depth overflow.
-                #$result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
 
                 # Should contain SQL Server related services
                 $sqlServices = $result | Where-Object -FilterScript { $_.Name -like '*SQL*' }
@@ -153,8 +146,7 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
                 $result = $script:managedComputerObject | Get-SqlDscManagedComputerService -ServiceType 'DatabaseEngine' -ErrorAction 'Stop'
 
                 $result | Should-BeTruthy
-                # TODO: this resulted in: The script failed due to call depth overflow.
-                #$result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
 
                 # All returned services should be of type SqlServer
                 foreach ($service in $result)
@@ -170,8 +162,7 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
 
                 if ($result)
                 {
-                    # TODO: this resulted in: The script failed due to call depth overflow.
-                    #$result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+                    $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
 
                     # All returned services should contain the instance name
                     foreach ($service in $result)
@@ -190,8 +181,7 @@ Describe 'Get-SqlDscManagedComputerService' -Tag @('Integration_SQL2017', 'Integ
             $result | Should-BeTruthy
 
             # Verify it's a proper SMO Service object
-            # TODO: this resulted in: The script failed due to call depth overflow.
-            #$result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
+            $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.Service])
 
             # Verify key properties exist for at least one service
             $firstService = $result | Select-Object -First 1

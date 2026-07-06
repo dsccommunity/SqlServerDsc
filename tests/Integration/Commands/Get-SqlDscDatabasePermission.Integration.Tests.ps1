@@ -88,8 +88,7 @@ Describe 'Get-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Integrati
 
                 $result | Should-BeTruthy
                 $result | Should-HaveType ([System.Object[]])
-                # TODO: this resulted in: The script failed due to call depth overflow.
-                #$result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo])
+                $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo])
             }
 
             It 'Should return permissions for test user in test database' {
@@ -97,8 +96,7 @@ Describe 'Get-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Integrati
 
                 $result | Should-BeTruthy
                 $result | Should-HaveType ([System.Object[]])
-                # TODO: this resulted in: The script failed due to call depth overflow.
-                #$result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo])
+                $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo])
 
                 # Verify that the Connect and Select permissions we granted are present
                 $connectPermission = $result | Where-Object { $_.PermissionType.Connect -eq $true }
