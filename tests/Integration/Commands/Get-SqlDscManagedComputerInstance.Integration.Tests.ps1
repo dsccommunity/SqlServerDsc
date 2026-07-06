@@ -62,7 +62,8 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag @('Integration_SQL2017', 'Inte
                 $result = Get-SqlDscManagedComputerInstance -ServerName $script:mockServerName -ErrorAction 'Stop'
 
                 $result | Should-BeTruthy
-                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance])
+                $result | Should-HaveType ([System.Object[]])
+                $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance])
 
                 # Should contain the test instance
                 $testInstance = $result | Where-Object -FilterScript { $_.Name -eq $script:mockInstanceName }
@@ -108,7 +109,8 @@ Describe 'Get-SqlDscManagedComputerInstance' -Tag @('Integration_SQL2017', 'Inte
                 $result = $script:managedComputerObject | Get-SqlDscManagedComputerInstance -ErrorAction 'Stop'
 
                 $result | Should-BeTruthy
-                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance])
+                $result | Should-HaveType ([System.Object[]])
+                $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance])
 
                 # Should contain the test instance
                 $testInstance = $result | Where-Object -FilterScript { $_.Name -eq $script:mockInstanceName }

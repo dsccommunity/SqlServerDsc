@@ -273,7 +273,14 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $restoredDb | Should-BeTruthy
             Write-Verbose -Message ('DEBUG: Restored database status: {0}' -f $restoredDb.Status | Out-String) -Verbose
             Write-Verbose -Message ('DEBUG: Restored database status type: {0}' -f $restoredDb.Status.GetType().FullName) -Verbose
-            $restoredDb.Status | Should-Any -FilterScript { $_ | Should-MatchString 'Restoring' }
+            $script:debugItemCount = 0
+            $restoredDb.Status | Should-Any -FilterScript {
+                $script:debugItemCount++
+                Write-Verbose -Message ('DEBUG: Restored database status item {0}: {1}' -f $script:debugItemCount, $_.ToString()) -Verbose
+                Write-Verbose -Message ('DEBUG: Restored database status item type {0}: {1}' -f $script:debugItemCount, $_.GetType().FullName) -Verbose
+
+                $_.ToString() | Should-MatchString 'Restoring'
+            }
         }
     }
 
@@ -536,7 +543,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $script:serverObject.Databases.Refresh()
             $restoredDb = $script:serverObject.Databases[$script:sequenceDbName]
             $restoredDb | Should-BeTruthy
-            $restoredDb.Status | Should-Any -FilterScript { $_ | Should-MatchString 'Restoring' }
+            $restoredDb.Status | Should-Any -FilterScript { $_.ToString() | Should-MatchString 'Restoring' }
         }
 
         It 'Should restore differential backup with NoRecovery' {
@@ -545,7 +552,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $script:serverObject.Databases.Refresh()
             $restoredDb = $script:serverObject.Databases[$script:sequenceDbName]
             $restoredDb | Should-BeTruthy
-            $restoredDb.Status | Should-Any -FilterScript { $_ | Should-MatchString 'Restoring' }
+            $restoredDb.Status | Should-Any -FilterScript { $_.ToString() | Should-MatchString 'Restoring' }
         }
 
         It 'Should restore log backup and bring database online' {

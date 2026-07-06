@@ -78,7 +78,8 @@ Describe 'Get-SqlDscServerProtocol' -Tag @('Integration_SQL2017', 'Integration_S
                 $result = Get-SqlDscServerProtocol -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
 
                 $result | Should-BeTruthy
-                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
+                $result | Should-HaveType ([System.Object[]])
+                $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
                 $result.Count | Should-BeGreaterThan 0
 
                 # Should contain the standard protocols
@@ -122,7 +123,8 @@ Describe 'Get-SqlDscServerProtocol' -Tag @('Integration_SQL2017', 'Integration_S
                 $result = $script:managedComputerObject | Get-SqlDscServerProtocol -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
 
                 $result | Should-BeTruthy
-                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
+                $result | Should-HaveType ([System.Object[]])
+                $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
                 $result.Count | Should-BeGreaterThan 0
 
                 # Should contain the standard protocols
@@ -156,7 +158,8 @@ Describe 'Get-SqlDscServerProtocol' -Tag @('Integration_SQL2017', 'Integration_S
                 $result = $script:managedComputerInstanceObject | Get-SqlDscServerProtocol -ErrorAction 'Stop'
 
                 $result | Should-BeTruthy
-                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
+                $result | Should-HaveType ([System.Object[]])
+                $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
                 $result.Count | Should-BeGreaterThan 0
 
                 # Should contain the standard protocols
@@ -195,7 +198,8 @@ Describe 'Get-SqlDscServerProtocol' -Tag @('Integration_SQL2017', 'Integration_S
         It 'Should return multiple protocol objects when getting all protocols' {
             $result = Get-SqlDscServerProtocol -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
 
-            $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
+            $result | Should-HaveType ([System.Object[]])
+            $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
             $result.Count | Should-BeGreaterThanOrEqual 3
 
             # Verify each protocol has required properties

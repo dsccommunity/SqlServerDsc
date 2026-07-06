@@ -76,7 +76,8 @@ Describe 'Get-SqlDscServerProtocolTcpIp' -Tag @('Integration_SQL2017', 'Integrat
                 $result = Get-SqlDscServerProtocolTcpIp -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
 
                 $result | Should-BeTruthy
-                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress])
+                $result | Should-HaveType ([System.Object[]])
+                $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress])
                 $result.Count | Should-BeGreaterThan 0
 
                 # Should contain the IPAll group
@@ -116,7 +117,8 @@ Describe 'Get-SqlDscServerProtocolTcpIp' -Tag @('Integration_SQL2017', 'Integrat
                 $result = $script:serverProtocolObject | Get-SqlDscServerProtocolTcpIp -ErrorAction 'Stop'
 
                 $result | Should-BeTruthy
-                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress])
+                $result | Should-HaveType ([System.Object[]])
+                $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress])
                 $result.Count | Should-BeGreaterThan 0
 
                 # Should contain the IPAll group
