@@ -32,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - Bump GitHub actions checkout to v7
   - Update tests to Pester 6 syntax where supported.
+  - Added Windows user credential format guidance to the credential overview
+    documentation. ([issue #1768](https://github.com/dsccommunity/SqlServerDsc/issues/1768))
 - SqlScript
   - Added integration test configuration that creates script files and executes
     the resource in a single configuration using `DependsOn`.
@@ -58,7 +60,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added SChannelDsc as a required module for integration tests and enabled the
     prerequisites tests `Ensure TLS 1.2 is enabled`  ([issue #2441](https://github.com/dsccommunity/SqlServerDsc/issues/2441)).
 - `SqlLogin`
-  - Added parameter `Language` to allow setting the default language used by the login.
+  - Added parameter `Language` to allow setting the default language used by the
+    login.
 
 ## [17.5.0] - 2026-01-30
 
