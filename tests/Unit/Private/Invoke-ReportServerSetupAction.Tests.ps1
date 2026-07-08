@@ -37,6 +37,13 @@ BeforeAll {
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
 
+    # Pester 6 no longer falls through to the real command when no -ParameterFilter
+    # matches; add a forwarding default so unmatched Test-Path calls run the real
+    # cmdlet as they did under Pester 5.
+    Mock -CommandName Test-Path -MockWith {
+        & (Get-Command -Name 'Test-Path' -CommandType Cmdlet) @PesterBoundParameters
+    }
+
     # Adding these mocks to handle the ValidateScript blocks
     Mock -CommandName Test-Path -ParameterFilter {
         $Path -match 'setup\.exe'

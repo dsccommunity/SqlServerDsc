@@ -74,6 +74,13 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
     }
 
     BeforeAll {
+        # Pester 6 no longer falls through to the real command when a later
+        # -ParameterFilter mock doesn't match. Restore the Pester 5 behavior for
+        # Test-Path so unmatched calls run the real cmdlet.
+        Mock -CommandName Test-Path -MockWith {
+            & (Get-Command -Name 'Test-Path' -CommandType Cmdlet) @PesterBoundParameters
+        }
+
         # Mock the Invoke-WebRequest cmdlet to prevent actual downloads during testing
         Mock -CommandName Invoke-WebRequest
 

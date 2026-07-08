@@ -16,10 +16,7 @@
         back to stable.
     #>
     Pester                         = @{
-        Version    = 'latest'
-        Parameters = @{
-            AllowPrerelease = $true
-        }
+        Version = '6.0.0'
     }
 
     Plaster                        = 'latest'

@@ -89,6 +89,14 @@ Describe 'SqlDatabaseObjectPermission\Get-TargetResource' -Tag 'Get' {
         }
 
         Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+
+        # The Connect-SQL mock body builds a server with `New-Object -TypeName
+        # Microsoft.SqlServer.Management.Smo.Server`, which the ObjectPermissionSet
+        # filter in the child contexts does not match. Pester 6 no longer falls through
+        # to the real command, so add a forwarding default for any unmatched New-Object.
+        Mock -CommandName New-Object -MockWith {
+            & (Get-Command -Name 'New-Object' -CommandType Cmdlet) @PesterBoundParameters
+        }
     }
 
     Context 'When the system is in the desired state' {

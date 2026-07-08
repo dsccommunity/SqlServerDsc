@@ -234,6 +234,12 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
         Mock -CommandName Get-PSDrive
         Mock -CommandName Get-FileVersion -MockWith $mockGetSqlMajorVersion
 
+        # Default mock so registry lookups for Names other than 'ImagePath' resolve to
+        # $null, matching the real function's behavior on a build agent without SQL
+        # installed. Pester 6 no longer calls the original command when no mock filter
+        # matches, so without this default those lookups would throw.
+        Mock -CommandName Get-RegistryPropertyValue
+
         Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
             $Name -eq 'ImagePath'
         } -MockWith {

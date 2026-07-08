@@ -308,6 +308,17 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
             if (Get-Variable -Name 'TestServerObject' -Scope Global -ErrorAction SilentlyContinue) {
                 Remove-Variable -Name 'TestServerObject' -Scope Global -Force
             }
+
+            # Clean up global variables created in error handling tests
+            if (Get-Variable -Name 'BadTestServerObject' -Scope Global -ErrorAction SilentlyContinue)
+            {
+                Remove-Variable -Name 'BadTestServerObject' -Scope Global -Force
+            }
+
+            if (Get-Variable -Name 'InvalidTestServerObject' -Scope Global -ErrorAction SilentlyContinue)
+            {
+                Remove-Variable -Name 'InvalidTestServerObject' -Scope Global -Force
+            }
         }
 
         It 'Should provide Name parameter completions through TabExpansion2' {
@@ -406,19 +417,6 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
             $completions | Should -HaveCount 2
             $completions[0].CompletionText | Should -Be "'cost threshold for parallelism'"
             $completions[1].CompletionText | Should -Be "'max degree of parallelism'"
-        }
-
-        AfterAll {
-            # Clean up global variables created in error handling tests
-            if (Get-Variable -Name 'BadTestServerObject' -Scope Global -ErrorAction SilentlyContinue)
-            {
-                Remove-Variable -Name 'BadTestServerObject' -Scope Global -Force
-            }
-
-            if (Get-Variable -Name 'InvalidTestServerObject' -Scope Global -ErrorAction SilentlyContinue)
-            {
-                Remove-Variable -Name 'InvalidTestServerObject' -Scope Global -Force
-            }
         }
 
         It 'Should handle tab completion errors gracefully' {

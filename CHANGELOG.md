@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - DSC_SqlRS and DSC_SqlWindowsFirewall
   - Fixed a duplicated word in localized `TestFailedAfterSet` messages.
+- SqlServerDsc
+  - Updated unit test mocks for compatibility with Pester 6 (`6.0.0`):
+    added forwarding default mocks so cmdlet calls that no longer
+    fall through to the real command in Pester 6 behave as before, added a
+    `$null` default mock for `Get-RegistryPropertyValue` and a default
+    `Get-PrimaryReplicaServerObject` mock, and merged a duplicate `AfterAll`
+    block.
 - SqlScript
   - Fixed logic in `Get-TargetResource` and `Set-TargetResource` to throw an error
     when the SQL script file is missing, instead of incorrectly reporting success
