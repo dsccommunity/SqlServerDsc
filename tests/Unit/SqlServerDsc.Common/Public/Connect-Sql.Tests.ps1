@@ -181,6 +181,14 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
         $mockWinFqdnCredential = New-Object -TypeName PSCredential -ArgumentList ($mockWinFqdnCredentialUserName, $mockWinFqdnCredentialSecurePassword)
 
         Mock -CommandName Import-SqlDscPreferredModule
+
+        # Pester 6 no longer falls through to the real command when no -ParameterFilter
+        # matches. The New-Object mock bodies above build their backing objects with
+        # `New-Object -TypeName Object`, so add a forwarding default that runs the real
+        # cmdlet for any New-Object call not matched by a more specific mock.
+        Mock -CommandName New-Object -MockWith {
+            & (Get-Command -Name 'New-Object' -CommandType Cmdlet) @PesterBoundParameters
+        }
     }
 
     # Skipping on Linux and macOS because they do not support Windows Authentication.

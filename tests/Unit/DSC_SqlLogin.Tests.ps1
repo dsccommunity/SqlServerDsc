@@ -828,6 +828,14 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                                     } -PassThru -Force
                     }
 
+                    # The Connect-SQL mock body builds its object with `New-Object -TypeName Object`,
+                    # which the SMO-typed filter below does not match. Pester 6 no longer falls
+                    # through to the real command, so add a forwarding default that runs the real
+                    # cmdlet for any unmatched New-Object call.
+                    Mock -CommandName New-Object -MockWith {
+                        & (Get-Command -Name 'New-Object' -CommandType Cmdlet) @PesterBoundParameters
+                    }
+
                     Mock -CommandName New-Object -MockWith $mockLoginObject -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Login'
                     }
@@ -855,7 +863,9 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                     }
 
                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName New-Object -ParameterFilter {
+                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Login'
+                    } -Exactly -Times 1 -Scope It
                     Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
                         $Login.Name -eq 'Windows\Login1'
                     } -Exactly -Times 1 -Scope It
@@ -1085,6 +1095,14 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                                     } -PassThru -Force
                     }
 
+                    # The Connect-SQL mock body and the test's credential setup build objects
+                    # with `New-Object` for types the SMO-typed filter below does not match.
+                    # Pester 6 no longer falls through to the real command, so add a forwarding
+                    # default that runs the real cmdlet for any unmatched New-Object call.
+                    Mock -CommandName New-Object -MockWith {
+                        & (Get-Command -Name 'New-Object' -CommandType Cmdlet) @PesterBoundParameters
+                    }
+
                     Mock -CommandName New-Object -MockWith $mockLoginObject -ParameterFilter {
                         $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Login'
                     }
@@ -1115,7 +1133,9 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                     }
 
                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName New-Object -ParameterFilter {
+                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Login'
+                    } -Exactly -Times 1 -Scope It
                     Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
                         $Login.Name -eq 'SqlLogin1'
                     } -Exactly -Times 1 -Scope It
