@@ -589,7 +589,6 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
         It 'Should recreate the audit with the new GUID when AllowAuditGuidChange is specified' {
             $result = Set-SqlDscAudit -AuditGuid 'b5962b93-a359-42ef-bf1e-193e8a5f6222' -AllowAuditGuidChange -PassThru @mockDefaultParameters
 
-            # Debug: Check what we got back
             $result | Should-BeTruthy -Because 'PassThru should return the audit object'
             $result.Name | Should-Be 'Log1' -Because 'The audit name should match'
             $result.Guid | Should-Be 'b5962b93-a359-42ef-bf1e-193e8a5f6222' -Because 'The GUID should be set to the new value'
