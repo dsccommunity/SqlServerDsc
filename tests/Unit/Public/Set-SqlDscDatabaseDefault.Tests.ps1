@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -67,29 +69,29 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have Name as a mandatory parameter in ServerObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscDatabaseDefault').Parameters['Name']
-            $parameterInfo.Attributes.Where({ $_.TypeId -eq [System.Management.Automation.ParameterAttribute] -and $_.ParameterSetName -eq 'ServerObject' }).Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Where({ $_.TypeId -eq [System.Management.Automation.ParameterAttribute] -and $_.ParameterSetName -eq 'ServerObject' }).Mandatory | Should-BeTrue
         }
 
         It 'Should have ServerObject as a mandatory parameter in ServerObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscDatabaseDefault').Parameters['ServerObject']
-            $parameterInfo.Attributes.Where({ $_.TypeId -eq [System.Management.Automation.ParameterAttribute] -and $_.ParameterSetName -eq 'ServerObject' }).Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Where({ $_.TypeId -eq [System.Management.Automation.ParameterAttribute] -and $_.ParameterSetName -eq 'ServerObject' }).Mandatory | Should-BeTrue
         }
 
         It 'Should have DatabaseObject as a mandatory parameter in DatabaseObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscDatabaseDefault').Parameters['DatabaseObject']
-            $parameterInfo.Attributes.Where({ $_.TypeId -eq [System.Management.Automation.ParameterAttribute] -and $_.ParameterSetName -eq 'DatabaseObject' }).Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Where({ $_.TypeId -eq [System.Management.Automation.ParameterAttribute] -and $_.ParameterSetName -eq 'DatabaseObject' }).Mandatory | Should-BeTrue
         }
 
         It 'Should support ShouldProcess' {
             $commandInfo = Get-Command -Name 'Set-SqlDscDatabaseDefault'
-            $commandInfo.Parameters['WhatIf'] | Should -Not -BeNullOrEmpty
-            $commandInfo.Parameters['Confirm'] | Should -Not -BeNullOrEmpty
+            $commandInfo.Parameters['WhatIf'] | Should-BeTruthy
+            $commandInfo.Parameters['Confirm'] | Should-BeTruthy
         }
     }
 
@@ -128,7 +130,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                     $null = Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'TestDatabase' -DefaultFileGroup 'NewFileGroup' -Force
 
                     # Verify that Get-SqlDscDatabase was called
-                    Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-SqlDscDatabase -Exactly -Scope It -Times 1
                 }
             }
 
@@ -150,7 +152,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
 
                     $null = Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'TestDatabase' -DefaultFileStreamFileGroup 'NewFileStreamGroup' -Force
 
-                    Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-SqlDscDatabase -Exactly -Scope It -Times 1
                 }
             }
 
@@ -172,7 +174,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
 
                     $null = Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'TestDatabase' -DefaultFullTextCatalog 'NewFTCatalog' -Force
 
-                    Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-SqlDscDatabase -Exactly -Scope It -Times 1
                 }
             }
 
@@ -192,10 +194,10 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                     Mock -CommandName Get-SqlDscDatabase -MockWith { return $mockDatabaseObject }
 
                     $result = Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'TestDatabase' -DefaultFileGroup 'PassThruTest' -PassThru -Force
-                    $result | Should -Be $mockDatabaseObject
-                    $result.DefaultFileGroup | Should -Be 'PassThruTest'
+                    $result | Should-Be $mockDatabaseObject
+                    $result.DefaultFileGroup | Should-Be 'PassThruTest'
 
-                    Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-SqlDscDatabase -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -220,9 +222,9 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                         }
                     }
 
-                    { Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'NonExistentDatabase' -DefaultFileGroup 'TestGroup' -Force } | Should -Throw -ExpectedMessage "*Database 'NonExistentDatabase' on instance 'TestInstance'*"
+                    { Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'NonExistentDatabase' -DefaultFileGroup 'TestGroup' -Force } | Should-Throw -ExceptionMessage "*Database 'NonExistentDatabase' on instance 'TestInstance'*"
 
-                    Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-SqlDscDatabase -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -245,7 +247,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                 } -Force
 
                 $null = Set-SqlDscDatabaseDefault -DatabaseObject $mockDatabaseObject -DefaultFileGroup 'DirectFileGroup' -Force
-                $mockDatabaseObject.DefaultFileGroup | Should -Be 'DirectFileGroup'
+                $mockDatabaseObject.DefaultFileGroup | Should-Be 'DirectFileGroup'
             }
         }
 
@@ -265,7 +267,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                 } -Force
 
                 $null = Set-SqlDscDatabaseDefault -DatabaseObject $mockDatabaseObject -DefaultFileStreamFileGroup 'DirectStreamGroup' -Force
-                $mockDatabaseObject.DefaultFileStreamFileGroup | Should -Be 'DirectStreamGroup'
+                $mockDatabaseObject.DefaultFileStreamFileGroup | Should-Be 'DirectStreamGroup'
             }
         }
 
@@ -285,7 +287,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                 } -Force
 
                 $null = Set-SqlDscDatabaseDefault -DatabaseObject $mockDatabaseObject -DefaultFullTextCatalog 'DirectFTCatalog' -Force
-                $mockDatabaseObject.DefaultFullTextCatalog | Should -Be 'DirectFTCatalog'
+                $mockDatabaseObject.DefaultFullTextCatalog | Should-Be 'DirectFTCatalog'
             }
         }
 
@@ -305,8 +307,8 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
                 } -Force
 
                 $result = Set-SqlDscDatabaseDefault -DatabaseObject $mockDatabaseObject -DefaultFileGroup 'PassThruDirect' -PassThru -Force
-                $result | Should -Be $mockDatabaseObject
-                $result.DefaultFileGroup | Should -Be 'PassThruDirect'
+                $result | Should-Be $mockDatabaseObject
+                $result.DefaultFileGroup | Should-Be 'PassThruDirect'
             }
         }
     }
@@ -334,7 +336,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
 
                 Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'TestDatabase' -DefaultFileGroup 'WhatIfTest' -WhatIf
 
-                $mockDatabaseObject.DefaultFileGroup | Should -Be $originalDefaultFileGroup
+                $mockDatabaseObject.DefaultFileGroup | Should-Be $originalDefaultFileGroup
             }
         }
     }
@@ -358,7 +360,7 @@ Describe 'Set-SqlDscDatabaseDefault' -Tag 'Public' {
 
                 Set-SqlDscDatabaseDefault -ServerObject $mockServerObject -Name 'TestDatabase' -Force
 
-                $mockDatabaseObject.DefaultFileGroup | Should -Be $originalDefaultFileGroup
+                $mockDatabaseObject.DefaultFileGroup | Should-Be $originalDefaultFileGroup
             }
         }
     }

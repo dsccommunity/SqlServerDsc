@@ -38,13 +38,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -102,8 +104,8 @@ Describe 'ConvertTo-ManagedServiceType' -Tag 'Private' {
                 # Get the ManagedServiceType
                 $managedServiceType = ConvertTo-ManagedServiceType -ServiceType $MockServiceType
 
-                $managedServiceType | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType'
-                $managedServiceType | Should -Be $MockExpectedType
+                $managedServiceType | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType'
+                $managedServiceType | Should-Be $MockExpectedType
             }
         }
     }
@@ -115,7 +117,7 @@ Describe 'ConvertTo-ManagedServiceType' -Tag 'Private' {
 
                 $mockErrorMessage = 'Cannot validate argument on parameter ''ServiceType''. The argument "UnknownType" does not belong to the set "DatabaseEngine,SQLServerAgent,Search,IntegrationServices,AnalysisServices,ReportingServices,SQLServerBrowser,NotificationServices" specified by the ValidateSet attribute. Supply an argument that is in the set and then try the command again.'
 
-                { ConvertTo-ManagedServiceType -ServiceType 'UnknownType' -ErrorAction 'Stop' } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { ConvertTo-ManagedServiceType -ServiceType 'UnknownType' -ErrorAction 'Stop' } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }

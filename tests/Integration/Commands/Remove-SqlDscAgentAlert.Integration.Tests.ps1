@@ -59,7 +59,7 @@ Describe 'Remove-SqlDscAgentAlert' -Tag @('Integration_SQL2017', 'Integration_SQ
             $null = $script:sqlServerObject | Remove-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert' -Force -ErrorAction 'Stop'
 
             $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert'
-            $alert | Should -BeNull
+            $alert | Should-BeFalsy
         }
     }
 
@@ -72,7 +72,7 @@ Describe 'Remove-SqlDscAgentAlert' -Tag @('Integration_SQL2017', 'Integration_SQ
             $null = $alert | Remove-SqlDscAgentAlert -Force -ErrorAction 'Stop'
 
             $removedAlert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_RemoveAlert2'
-            $removedAlert | Should -BeNull
+            $removedAlert | Should-BeFalsy
         }
     }
 

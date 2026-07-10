@@ -43,18 +43,18 @@ Describe 'Get-SqlDscRSDatabaseInstallation' {
         It 'Should return database installation information' {
             $result = @($script:configuration | Get-SqlDscRSDatabaseInstallation -ErrorAction 'Stop')
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -HaveCount 1
-            $result[0].MachineName | Should -Be $script:expectedMachineName
-            $result[0].InstanceName | Should -Be 'SSRS'
-            $result[0].IsInitialized | Should -BeTrue
-            $result[0].InstallationID | Should -Be $script:expectedInstallationID
+            $result | Should-BeTruthy
+            $result | Should-BeCollection -Count 1
+            $result[0].MachineName | Should-Be $script:expectedMachineName
+            $result[0].InstanceName | Should-Be 'SSRS'
+            $result[0].IsInitialized | Should-BeTrue
+            $result[0].InstallationID | Should-Be $script:expectedInstallationID
         }
 
         It 'Should return the same installation ID on subsequent calls' {
             $result = @($script:configuration | Get-SqlDscRSDatabaseInstallation -ErrorAction 'Stop')
 
-            $result[0].InstallationID | Should -Be $script:expectedInstallationID
+            $result[0].InstallationID | Should-Be $script:expectedInstallationID
         }
     }
 
@@ -69,18 +69,18 @@ Describe 'Get-SqlDscRSDatabaseInstallation' {
         It 'Should return database installation information' {
             $result = @($script:configuration | Get-SqlDscRSDatabaseInstallation -ErrorAction 'Stop')
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -HaveCount 1
-            $result[0].MachineName | Should -Be $script:expectedMachineName
-            $result[0].InstanceName | Should -Be 'SSRS'
-            $result[0].IsInitialized | Should -BeTrue
-            $result[0].InstallationID | Should -Be $script:expectedInstallationID
+            $result | Should-BeTruthy
+            $result | Should-BeCollection -Count 1
+            $result[0].MachineName | Should-Be $script:expectedMachineName
+            $result[0].InstanceName | Should-Be 'SSRS'
+            $result[0].IsInitialized | Should-BeTrue
+            $result[0].InstallationID | Should-Be $script:expectedInstallationID
         }
 
         It 'Should return the same installation ID on subsequent calls' {
             $result = @($script:configuration | Get-SqlDscRSDatabaseInstallation -ErrorAction 'Stop')
 
-            $result[0].InstallationID | Should -Be $script:expectedInstallationID
+            $result[0].InstallationID | Should-Be $script:expectedInstallationID
         }
     }
 
@@ -95,18 +95,18 @@ Describe 'Get-SqlDscRSDatabaseInstallation' {
         It 'Should return database installation information' {
             $result = @($script:configuration | Get-SqlDscRSDatabaseInstallation -ErrorAction 'Stop')
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -HaveCount 1
-            $result[0].MachineName | Should -Be $script:expectedMachineName
-            $result[0].InstanceName | Should -Be 'SSRS'
-            $result[0].IsInitialized | Should -BeTrue
-            $result[0].InstallationID | Should -Be $script:expectedInstallationID
+            $result | Should-BeTruthy
+            $result | Should-BeCollection -Count 1
+            $result[0].MachineName | Should-Be $script:expectedMachineName
+            $result[0].InstanceName | Should-Be 'SSRS'
+            $result[0].IsInitialized | Should-BeTrue
+            $result[0].InstallationID | Should-Be $script:expectedInstallationID
         }
 
         It 'Should return the same installation ID on subsequent calls' {
             $result = @($script:configuration | Get-SqlDscRSDatabaseInstallation -ErrorAction 'Stop')
 
-            $result[0].InstallationID | Should -Be $script:expectedInstallationID
+            $result[0].InstallationID | Should-Be $script:expectedInstallationID
         }
     }
 
@@ -121,18 +121,18 @@ Describe 'Get-SqlDscRSDatabaseInstallation' {
         It 'Should return database installation information' {
             $result = @($script:configuration | Get-SqlDscRSDatabaseInstallation -ErrorAction 'Stop')
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -HaveCount 1
-            $result[0].MachineName | Should -Be $script:expectedMachineName
-            $result[0].InstanceName | Should -Be 'PBIRS'
-            $result[0].IsInitialized | Should -BeTrue
-            $result[0].InstallationID | Should -Be $script:expectedInstallationID
+            $result | Should-BeTruthy
+            $result | Should-BeCollection -Count 1
+            $result[0].MachineName | Should-Be $script:expectedMachineName
+            $result[0].InstanceName | Should-Be 'PBIRS'
+            $result[0].IsInitialized | Should-BeTrue
+            $result[0].InstallationID | Should-Be $script:expectedInstallationID
         }
 
         It 'Should return the same installation ID on subsequent calls' {
             $result = @($script:configuration | Get-SqlDscRSDatabaseInstallation -ErrorAction 'Stop')
 
-            $result[0].InstallationID | Should -Be $script:expectedInstallationID
+            $result[0].InstallationID | Should-Be $script:expectedInstallationID
         }
     }
 }

@@ -63,7 +63,7 @@ Describe 'Disable-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_
         It 'Should disable the persistent operator' {
             # Get the persistent operator created by New-SqlDscAgentOperator integration test
             $operatorObject = Get-SqlDscAgentOperator -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestOperator_Persistent' -ErrorAction 'Stop'
-            $operatorObject | Should -Not -BeNullOrEmpty
+            $operatorObject | Should-BeTruthy
 
             # Enable it first if it's not enabled
             if (-not $operatorObject.Enabled)
@@ -76,7 +76,7 @@ Describe 'Disable-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_
 
             # Verify it's disabled
             $operatorObject.Refresh()
-            $operatorObject.Enabled | Should -BeFalse
+            $operatorObject.Enabled | Should-BeFalse
         }
     }
 
@@ -90,7 +90,7 @@ Describe 'Disable-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_
 
             # Verify it's disabled
             $operatorObject = Get-SqlDscAgentOperator -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestOperator_Persistent' -ErrorAction 'Stop'
-            $operatorObject.Enabled | Should -BeFalse
+            $operatorObject.Enabled | Should-BeFalse
         }
     }
 }

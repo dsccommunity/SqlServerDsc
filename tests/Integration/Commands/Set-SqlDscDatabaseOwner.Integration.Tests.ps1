@@ -77,11 +77,11 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
     Context 'When setting database owner using ServerObject parameter set' {
         It 'Should set owner to sa successfully' {
             $resultDb = Set-SqlDscDatabaseOwner -ServerObject $script:serverObject -Name $script:testDatabaseName -OwnerName 'sa' -Force -PassThru -ErrorAction 'Stop'
-            $resultDb.Owner | Should -Be 'sa'
+            $resultDb.Owner | Should-Be 'sa'
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
-            $updatedDb.Owner | Should -Be 'sa'
+            $updatedDb.Owner | Should-Be 'sa'
         }
 
         It 'Should set owner to domain account successfully' {
@@ -90,7 +90,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
-            $updatedDb.Owner | Should -Be $ownerName
+            $updatedDb.Owner | Should-Be $ownerName
         }
 
         It 'Should be idempotent when owner is already set' {
@@ -104,12 +104,12 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
 
             # Verify the value is still correct
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
-            $updatedDb.Owner | Should -Be $ownerName
+            $updatedDb.Owner | Should-Be $ownerName
         }
 
         It 'Should throw error when trying to set owner of non-existent database' {
             { Set-SqlDscDatabaseOwner -ServerObject $script:serverObject -Name 'NonExistentDatabase' -OwnerName 'sa' -Force -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
     }
 
@@ -121,7 +121,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Refresh -ErrorAction 'Stop'
-            $updatedDb.Owner | Should -Be 'sa'
+            $updatedDb.Owner | Should-Be 'sa'
         }
 
         It 'Should support pipeline input with database object' {
@@ -132,7 +132,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Refresh -ErrorAction 'Stop'
-            $updatedDb.Owner | Should -Be $ownerName
+            $updatedDb.Owner | Should-Be $ownerName
         }
     }
 
@@ -143,7 +143,7 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
 
             # Verify the change
             $updatedDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
-            $updatedDb.Owner | Should -Be $ownerName
+            $updatedDb.Owner | Should-Be $ownerName
         }
     }
 
@@ -152,10 +152,10 @@ Describe 'Set-SqlDscDatabaseOwner' -Tag @('Integration_SQL2017', 'Integration_SQ
             $ownerName = 'sa'
             $result = Set-SqlDscDatabaseOwner -ServerObject $script:serverObject -Name $script:testDatabaseName -OwnerName $ownerName -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
-            $result.Name | Should -Be $script:testDatabaseName
-            $result.Owner | Should -Be $ownerName
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Database'
+            $result.Name | Should-Be $script:testDatabaseName
+            $result.Owner | Should-Be $ownerName
         }
     }
 }

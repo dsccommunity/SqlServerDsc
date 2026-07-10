@@ -63,7 +63,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
         It 'Should update the email address' {
             # Get the persistent operator created by New-SqlDscAgentOperator integration test
             $operatorObject = Get-SqlDscAgentOperator -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestOperator_Persistent' -ErrorAction 'Stop'
-            $operatorObject | Should -Not -BeNullOrEmpty
+            $operatorObject | Should-BeTruthy
 
             # Update the email address
             $newEmailAddress = 'updated@example.com'
@@ -71,7 +71,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
 
             # Verify the email address was updated
             $operatorObject.Refresh()
-            $operatorObject.EmailAddress | Should -Be $newEmailAddress
+            $operatorObject.EmailAddress | Should-Be $newEmailAddress
         }
 
         It 'Should update multiple properties' {
@@ -87,9 +87,9 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
 
             # Verify all properties were updated
             $operatorObject.Refresh()
-            $operatorObject.EmailAddress | Should -Be $newEmailAddress
-            $operatorObject.NetSendAddress | Should -Be $newNetSendAddress
-            $operatorObject.PagerAddress | Should -Be $newPagerAddress
+            $operatorObject.EmailAddress | Should-Be $newEmailAddress
+            $operatorObject.NetSendAddress | Should-Be $newNetSendAddress
+            $operatorObject.PagerAddress | Should-Be $newPagerAddress
         }
     }
 
@@ -102,7 +102,7 @@ Describe 'Set-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
 
             # Verify the email address was updated
             $operatorObject = Get-SqlDscAgentOperator -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestOperator_Persistent' -ErrorAction 'Stop'
-            $operatorObject.EmailAddress | Should -Be $newEmailAddress
+            $operatorObject.EmailAddress | Should-Be $newEmailAddress
         }
     }
 }

@@ -68,13 +68,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:subModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:subModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:subModuleName -All | Remove-Module -Force
@@ -94,15 +96,15 @@ Describe 'SqlServerDsc.Common\Find-ExceptionByNumber' -Tag 'FindExceptionByNumbe
 
     Context 'When searching Exception objects' {
         It 'Should return true for main exception' {
-            Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 1 | Should -BeTrue
+            Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 1 | Should-BeTrue
         }
 
         It 'Should return true for inner exception' {
-            Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 2 | Should -BeTrue
+            Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 2 | Should-BeTrue
         }
 
         It 'Should return false when message not found' {
-            Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 3 | Should -BeFalse
+            Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 3 | Should-BeFalse
         }
     }
 }

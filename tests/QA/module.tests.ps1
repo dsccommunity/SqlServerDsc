@@ -93,7 +93,7 @@ Describe 'Changelog Management' -Tag 'Changelog' {
         # Only check if there are any changed files.
         if ($filesChanged)
         {
-            $filesChanged | Should -Contain 'CHANGELOG.md' -Because 'the CHANGELOG.md must be updated with at least one entry in the Unreleased section for each PR'
+            $filesChanged | Should-ContainCollection 'CHANGELOG.md' -Because 'the CHANGELOG.md must be updated with at least one entry in the Unreleased section for each PR'
         }
     }
 
@@ -102,7 +102,7 @@ Describe 'Changelog Management' -Tag 'Changelog' {
     }
 
     It 'Changelog should have an Unreleased header' -Skip:$skipTest {
-        (Get-ChangelogData -Path (Join-Path -Path $ProjectPath -ChildPath 'CHANGELOG.md') -ErrorAction 'Stop').Unreleased | Should -Not -BeNullOrEmpty
+        (Get-ChangelogData -Path (Join-Path -Path $ProjectPath -ChildPath 'CHANGELOG.md') -ErrorAction 'Stop').Unreleased | Should-BeTruthy
     }
 }
 
@@ -112,13 +112,13 @@ Describe 'General module control' -Tags 'FunctionalQuality' {
         # PowerShell class types to get new identities, breaking type comparisons.
         $null = Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 
-        Get-Module -Name $script:moduleName | Should -Not -BeNullOrEmpty
+        Get-Module -Name $script:moduleName | Should-BeTruthy
     }
 
     It 'Should remove without error' {
         $null = Remove-Module -Name $script:moduleName -ErrorAction 'Stop'
 
-        Get-Module $script:moduleName | Should -BeNullOrEmpty
+        Get-Module $script:moduleName | Should-BeFalsy
     }
 }
 
@@ -164,7 +164,7 @@ Describe 'Quality for module' -Tags 'TestQuality' {
     }
 
     It 'Should have a unit test for <Name>' -ForEach $testCasesAllModuleFunction {
-        Get-ChildItem -Path 'tests\' -Recurse -Include "$Name.Tests.ps1" | Should -Not -BeNullOrEmpty
+        Get-ChildItem -Path 'tests\' -Recurse -Include "$Name.Tests.ps1" | Should-BeTruthy
     }
 
     It 'Should pass Script Analyzer for <Name>' -ForEach $testCasesAllModuleFunction -Skip:(-not $scriptAnalyzerRules) {
@@ -172,8 +172,7 @@ Describe 'Quality for module' -Tags 'TestQuality' {
 
         $pssaResult = (Invoke-ScriptAnalyzer -Path $functionFile.FullName)
         $report = $pssaResult | Format-Table -AutoSize | Out-String -Width 110
-        $pssaResult | Should -BeNullOrEmpty -Because `
-            "some rule triggered.`r`n`r`n $report"
+        $pssaResult | Should-BeFalsy -Because "some rule triggered.`r`n`r`n $report"
     }
 }
 
@@ -229,7 +228,7 @@ Describe 'Comment-based help structure' -Tags 'helpQuality' {
                     }
                 }
 
-                $invalidDirectives | Should -BeNullOrEmpty -Because ('invalid help directives found that will break help parsing: {0}' -f ($invalidDirectives -join ', '))
+                $invalidDirectives | Should-BeFalsy -Because ('invalid help directives found that will break help parsing: {0}' -f ($invalidDirectives -join ', '))
             }
         }
 
@@ -276,7 +275,7 @@ Describe 'Comment-based help structure' -Tags 'helpQuality' {
                     }
                 }
 
-                $examplesWithComments | Should -BeNullOrEmpty -Because ('comments within example code blocks break PlatyPS documentation generation: {0}' -f ($examplesWithComments -join ', '))
+                $examplesWithComments | Should-BeFalsy -Because ('comments within example code blocks break PlatyPS documentation generation: {0}' -f ($examplesWithComments -join ', '))
             }
         }
 
@@ -326,7 +325,7 @@ Describe 'Comment-based help structure' -Tags 'helpQuality' {
                     }
                 }
 
-                $examplesWithBlankLines | Should -BeNullOrEmpty -Because ('blank lines within example code blocks break PlatyPS documentation generation: {0}' -f ($examplesWithBlankLines -join '; '))
+                $examplesWithBlankLines | Should-BeFalsy -Because ('blank lines within example code blocks break PlatyPS documentation generation: {0}' -f ($examplesWithBlankLines -join '; '))
             }
         }
     }
@@ -361,17 +360,17 @@ Describe 'Help for module' -Tags 'helpQuality' {
         }
 
         It 'Should have .SYNOPSIS' {
-            $functionHelp.Synopsis | Should -Not -BeNullOrEmpty
+            $functionHelp.Synopsis | Should-BeTruthy
         }
 
         It 'Should have a .DESCRIPTION with length greater than 40 characters for <Name>' {
-            $functionHelp.Description.Length | Should -BeGreaterThan 40
+            $functionHelp.Description.Length | Should-BeGreaterThan 40
         }
 
         It 'Should have at least one (1) example for <Name>' {
-            $functionHelp.Examples.Count | Should -BeGreaterThan 0
-            $functionHelp.Examples[0] | Should -Match ([regex]::Escape($function.Name))
-            $functionHelp.Examples[0].Length | Should -BeGreaterThan ($function.Name.Length + 10)
+            $functionHelp.Examples.Count | Should-BeGreaterThan 0
+            $functionHelp.Examples[0] | Should-MatchString ([regex]::Escape($function.Name))
+            $functionHelp.Examples[0].Length | Should-BeGreaterThan ($function.Name.Length + 10)
         }
 
         It 'Should have described all parameters for <Name>' {
@@ -379,8 +378,8 @@ Describe 'Help for module' -Tags 'helpQuality' {
 
             foreach ($parameter in $parameters)
             {
-                $functionHelp.Parameters.($parameter.ToUpper()) | Should -Not -BeNullOrEmpty -Because ('the parameter {0} must have a description' -f $parameter)
-                $functionHelp.Parameters.($parameter.ToUpper()).Length | Should -BeGreaterThan 25 -Because ('the parameter {0} must have descriptive description' -f $parameter)
+                $functionHelp.Parameters.($parameter.ToUpper()) | Should-BeTruthy -Because ('the parameter {0} must have a description' -f $parameter)
+                $functionHelp.Parameters.($parameter.ToUpper()).Length | Should-BeGreaterThan 25 -Because ('the parameter {0} must have descriptive description' -f $parameter)
             }
         }
     }

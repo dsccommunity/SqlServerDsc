@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -57,14 +59,14 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag 'Public' {
         It 'Should return the correct values' {
             $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
-            $mockResult | Should -HaveCount 0
+            $mockResult | Should-BeCollection -Count 0
         }
 
         Context 'When passing DatabasePermissionInfo over the pipeline' {
             It 'Should return the correct values' {
                 $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
-                $mockResult | Should -HaveCount 0
+                $mockResult | Should-BeCollection -Count 0
             }
         }
     }
@@ -87,20 +89,20 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag 'Public' {
             It 'Should return the correct values' {
                 $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
-                $mockResult | Should -HaveCount 1
+                $mockResult | Should-BeCollection -Count 1
 
-                $mockResult[0].State | Should -Be 'Grant'
-                $mockResult[0].Permission | Should -Contain 'Connect'
+                $mockResult[0].State | Should-Be 'Grant'
+                $mockResult[0].Permission | Should-ContainCollection 'Connect'
             }
 
             Context 'When passing DatabasePermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
                     $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
-                    $mockResult | Should -HaveCount 1
+                    $mockResult | Should-BeCollection -Count 1
 
-                    $mockResult[0].State | Should -Be 'Grant'
-                    $mockResult[0].Permission | Should -Contain 'Connect'
+                    $mockResult[0].State | Should-Be 'Grant'
+                    $mockResult[0].Permission | Should-ContainCollection 'Connect'
                 }
             }
         }
@@ -131,22 +133,22 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag 'Public' {
             It 'Should return the correct values' {
                 $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
-                $mockResult | Should -HaveCount 1
+                $mockResult | Should-BeCollection -Count 1
 
-                $mockResult[0].State | Should -Be 'Grant'
-                $mockResult[0].Permission | Should -Contain 'Connect'
-                $mockResult[0].Permission | Should -Contain 'Alter'
+                $mockResult[0].State | Should-Be 'Grant'
+                $mockResult[0].Permission | Should-ContainCollection 'Connect'
+                $mockResult[0].Permission | Should-ContainCollection 'Alter'
             }
 
             Context 'When passing DatabasePermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
                     $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
-                    $mockResult | Should -HaveCount 1
+                    $mockResult | Should-BeCollection -Count 1
 
-                    $mockResult[0].State | Should -Be 'Grant'
-                    $mockResult[0].Permission | Should -Contain 'Connect'
-                    $mockResult[0].Permission | Should -Contain 'Alter'
+                    $mockResult[0].State | Should-Be 'Grant'
+                    $mockResult[0].Permission | Should-ContainCollection 'Connect'
+                    $mockResult[0].Permission | Should-ContainCollection 'Alter'
                 }
             }
         }
@@ -179,26 +181,26 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag 'Public' {
             It 'Should return the correct values' {
                 $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
-                $mockResult | Should -HaveCount 1
+                $mockResult | Should-BeCollection -Count 1
 
-                $mockResult[0].State | Should -Be 'Grant'
-                $mockResult[0].Permission | Should -Contain 'Connect'
-                $mockResult[0].Permission | Should -Contain 'Alter'
-                $mockResult[0].Permission | Should -Contain 'Select'
-                $mockResult[0].Permission | Should -Contain 'Delete'
+                $mockResult[0].State | Should-Be 'Grant'
+                $mockResult[0].Permission | Should-ContainCollection 'Connect'
+                $mockResult[0].Permission | Should-ContainCollection 'Alter'
+                $mockResult[0].Permission | Should-ContainCollection 'Select'
+                $mockResult[0].Permission | Should-ContainCollection 'Delete'
             }
 
             Context 'When passing DatabasePermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
                     $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
-                    $mockResult | Should -HaveCount 1
+                    $mockResult | Should-BeCollection -Count 1
 
-                    $mockResult[0].State | Should -Be 'Grant'
-                    $mockResult[0].Permission | Should -Contain 'Connect'
-                    $mockResult[0].Permission | Should -Contain 'Alter'
-                    $mockResult[0].Permission | Should -Contain 'Select'
-                    $mockResult[0].Permission | Should -Contain 'Delete'
+                    $mockResult[0].State | Should-Be 'Grant'
+                    $mockResult[0].Permission | Should-ContainCollection 'Connect'
+                    $mockResult[0].Permission | Should-ContainCollection 'Alter'
+                    $mockResult[0].Permission | Should-ContainCollection 'Select'
+                    $mockResult[0].Permission | Should-ContainCollection 'Delete'
                 }
             }
         }
@@ -222,20 +224,20 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag 'Public' {
             It 'Should return the correct values' {
                 $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
-                $mockResult | Should -HaveCount 1
+                $mockResult | Should-BeCollection -Count 1
 
-                $mockResult[0].State | Should -Be 'Deny'
-                $mockResult[0].Permission | Should -Contain 'Connect'
+                $mockResult[0].State | Should-Be 'Deny'
+                $mockResult[0].Permission | Should-ContainCollection 'Connect'
             }
 
             Context 'When passing DatabasePermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
                     $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
-                    $mockResult | Should -HaveCount 1
+                    $mockResult | Should-BeCollection -Count 1
 
-                    $mockResult[0].State | Should -Be 'Deny'
-                    $mockResult[0].Permission | Should -Contain 'Connect'
+                    $mockResult[0].State | Should-Be 'Deny'
+                    $mockResult[0].Permission | Should-ContainCollection 'Connect'
                 }
             }
         }
@@ -266,22 +268,22 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag 'Public' {
             It 'Should return the correct values' {
                 $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
-                $mockResult | Should -HaveCount 1
+                $mockResult | Should-BeCollection -Count 1
 
-                $mockResult[0].State | Should -Be 'Deny'
-                $mockResult[0].Permission | Should -Contain 'Connect'
-                $mockResult[0].Permission | Should -Contain 'Alter'
+                $mockResult[0].State | Should-Be 'Deny'
+                $mockResult[0].Permission | Should-ContainCollection 'Connect'
+                $mockResult[0].Permission | Should-ContainCollection 'Alter'
             }
 
             Context 'When passing DatabasePermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
                     $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
-                    $mockResult | Should -HaveCount 1
+                    $mockResult | Should-BeCollection -Count 1
 
-                    $mockResult[0].State | Should -Be 'Deny'
-                    $mockResult[0].Permission | Should -Contain 'Connect'
-                    $mockResult[0].Permission | Should -Contain 'Alter'
+                    $mockResult[0].State | Should-Be 'Deny'
+                    $mockResult[0].Permission | Should-ContainCollection 'Connect'
+                    $mockResult[0].Permission | Should-ContainCollection 'Alter'
                 }
             }
         }
@@ -314,26 +316,26 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag 'Public' {
             It 'Should return the correct values' {
                 $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
-                $mockResult | Should -HaveCount 1
+                $mockResult | Should-BeCollection -Count 1
 
-                $mockResult[0].State | Should -Be 'Deny'
-                $mockResult[0].Permission | Should -Contain 'Connect'
-                $mockResult[0].Permission | Should -Contain 'Alter'
-                $mockResult[0].Permission | Should -Contain 'Select'
-                $mockResult[0].Permission | Should -Contain 'Delete'
+                $mockResult[0].State | Should-Be 'Deny'
+                $mockResult[0].Permission | Should-ContainCollection 'Connect'
+                $mockResult[0].Permission | Should-ContainCollection 'Alter'
+                $mockResult[0].Permission | Should-ContainCollection 'Select'
+                $mockResult[0].Permission | Should-ContainCollection 'Delete'
             }
 
             Context 'When passing DatabasePermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
                     $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
-                    $mockResult | Should -HaveCount 1
+                    $mockResult | Should-BeCollection -Count 1
 
-                    $mockResult[0].State | Should -Be 'Deny'
-                    $mockResult[0].Permission | Should -Contain 'Connect'
-                    $mockResult[0].Permission | Should -Contain 'Alter'
-                    $mockResult[0].Permission | Should -Contain 'Select'
-                    $mockResult[0].Permission | Should -Contain 'Delete'
+                    $mockResult[0].State | Should-Be 'Deny'
+                    $mockResult[0].Permission | Should-ContainCollection 'Connect'
+                    $mockResult[0].Permission | Should-ContainCollection 'Alter'
+                    $mockResult[0].Permission | Should-ContainCollection 'Select'
+                    $mockResult[0].Permission | Should-ContainCollection 'Delete'
                 }
             }
         }
@@ -357,20 +359,20 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag 'Public' {
             It 'Should return the correct values' {
                 $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
-                $mockResult | Should -HaveCount 1
+                $mockResult | Should-BeCollection -Count 1
 
-                $mockResult[0].State | Should -Be 'GrantWithGrant'
-                $mockResult[0].Permission | Should -Contain 'Connect'
+                $mockResult[0].State | Should-Be 'GrantWithGrant'
+                $mockResult[0].Permission | Should-ContainCollection 'Connect'
             }
 
             Context 'When passing DatabasePermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
                     $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
-                    $mockResult | Should -HaveCount 1
+                    $mockResult | Should-BeCollection -Count 1
 
-                    $mockResult[0].State | Should -Be 'GrantWithGrant'
-                    $mockResult[0].Permission | Should -Contain 'Connect'
+                    $mockResult[0].State | Should-Be 'GrantWithGrant'
+                    $mockResult[0].Permission | Should-ContainCollection 'Connect'
                 }
             }
         }
@@ -401,22 +403,22 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag 'Public' {
             It 'Should return the correct values' {
                 $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
-                $mockResult | Should -HaveCount 1
+                $mockResult | Should-BeCollection -Count 1
 
-                $mockResult[0].State | Should -Be 'GrantWithGrant'
-                $mockResult[0].Permission | Should -Contain 'Connect'
-                $mockResult[0].Permission | Should -Contain 'Alter'
+                $mockResult[0].State | Should-Be 'GrantWithGrant'
+                $mockResult[0].Permission | Should-ContainCollection 'Connect'
+                $mockResult[0].Permission | Should-ContainCollection 'Alter'
             }
 
             Context 'When passing DatabasePermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
                     $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
-                    $mockResult | Should -HaveCount 1
+                    $mockResult | Should-BeCollection -Count 1
 
-                    $mockResult[0].State | Should -Be 'GrantWithGrant'
-                    $mockResult[0].Permission | Should -Contain 'Connect'
-                    $mockResult[0].Permission | Should -Contain 'Alter'
+                    $mockResult[0].State | Should-Be 'GrantWithGrant'
+                    $mockResult[0].Permission | Should-ContainCollection 'Connect'
+                    $mockResult[0].Permission | Should-ContainCollection 'Alter'
                 }
             }
         }
@@ -449,26 +451,26 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag 'Public' {
             It 'Should return the correct values' {
                 $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
-                $mockResult | Should -HaveCount 1
+                $mockResult | Should-BeCollection -Count 1
 
-                $mockResult[0].State | Should -Be 'GrantWithGrant'
-                $mockResult[0].Permission | Should -Contain 'Connect'
-                $mockResult[0].Permission | Should -Contain 'Alter'
-                $mockResult[0].Permission | Should -Contain 'Select'
-                $mockResult[0].Permission | Should -Contain 'Delete'
+                $mockResult[0].State | Should-Be 'GrantWithGrant'
+                $mockResult[0].Permission | Should-ContainCollection 'Connect'
+                $mockResult[0].Permission | Should-ContainCollection 'Alter'
+                $mockResult[0].Permission | Should-ContainCollection 'Select'
+                $mockResult[0].Permission | Should-ContainCollection 'Delete'
             }
 
             Context 'When passing DatabasePermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
                     $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
-                    $mockResult | Should -HaveCount 1
+                    $mockResult | Should-BeCollection -Count 1
 
-                    $mockResult[0].State | Should -Be 'GrantWithGrant'
-                    $mockResult[0].Permission | Should -Contain 'Connect'
-                    $mockResult[0].Permission | Should -Contain 'Alter'
-                    $mockResult[0].Permission | Should -Contain 'Select'
-                    $mockResult[0].Permission | Should -Contain 'Delete'
+                    $mockResult[0].State | Should-Be 'GrantWithGrant'
+                    $mockResult[0].Permission | Should-ContainCollection 'Connect'
+                    $mockResult[0].Permission | Should-ContainCollection 'Alter'
+                    $mockResult[0].Permission | Should-ContainCollection 'Select'
+                    $mockResult[0].Permission | Should-ContainCollection 'Delete'
                 }
             }
         }
@@ -513,52 +515,52 @@ Describe 'ConvertTo-SqlDscDatabasePermission' -Tag 'Public' {
             It 'Should return the correct values' {
                 $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
-                $mockResult | Should -HaveCount 3
+                $mockResult | Should-BeCollection -Count 3
 
                 $grantPermission = $mockResult.Where({ $_.State -eq 'Grant' })
 
-                $grantPermission.State | Should -Be 'Grant'
-                $grantPermission.Permission | Should -Contain 'Alter'
-                $grantPermission.Permission | Should -Contain 'Delete'
+                $grantPermission.State | Should-Be 'Grant'
+                $grantPermission.Permission | Should-ContainCollection 'Alter'
+                $grantPermission.Permission | Should-ContainCollection 'Delete'
 
                 $grantWithGrantPermission = $mockResult.Where({ $_.State -eq 'GrantWithGrant' })
 
-                $grantWithGrantPermission.State | Should -Be 'GrantWithGrant'
-                $grantWithGrantPermission.Permission | Should -Contain 'Connect'
-                $grantWithGrantPermission.Permission | Should -Contain 'Select'
+                $grantWithGrantPermission.State | Should-Be 'GrantWithGrant'
+                $grantWithGrantPermission.Permission | Should-ContainCollection 'Connect'
+                $grantWithGrantPermission.Permission | Should-ContainCollection 'Select'
 
 
                 $denyPermission = $mockResult.Where({ $_.State -eq 'Deny' })
 
-                $denyPermission.State | Should -Be 'Deny'
-                $denyPermission.Permission | Should -Contain 'Update'
-                $denyPermission.Permission | Should -Contain 'Insert'
+                $denyPermission.State | Should-Be 'Deny'
+                $denyPermission.Permission | Should-ContainCollection 'Update'
+                $denyPermission.Permission | Should-ContainCollection 'Insert'
             }
 
             Context 'When passing DatabasePermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
                     $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
-                    $mockResult | Should -HaveCount 3
+                    $mockResult | Should-BeCollection -Count 3
 
                     $grantPermission = $mockResult.Where({ $_.State -eq 'Grant' })
 
-                    $grantPermission.State | Should -Be 'Grant'
-                    $grantPermission.Permission | Should -Contain 'Alter'
-                    $grantPermission.Permission | Should -Contain 'Delete'
+                    $grantPermission.State | Should-Be 'Grant'
+                    $grantPermission.Permission | Should-ContainCollection 'Alter'
+                    $grantPermission.Permission | Should-ContainCollection 'Delete'
 
                     $grantWithGrantPermission = $mockResult.Where({ $_.State -eq 'GrantWithGrant' })
 
-                    $grantWithGrantPermission.State | Should -Be 'GrantWithGrant'
-                    $grantWithGrantPermission.Permission | Should -Contain 'Connect'
-                    $grantWithGrantPermission.Permission | Should -Contain 'Select'
+                    $grantWithGrantPermission.State | Should-Be 'GrantWithGrant'
+                    $grantWithGrantPermission.Permission | Should-ContainCollection 'Connect'
+                    $grantWithGrantPermission.Permission | Should-ContainCollection 'Select'
 
 
                     $denyPermission = $mockResult.Where({ $_.State -eq 'Deny' })
 
-                    $denyPermission.State | Should -Be 'Deny'
-                    $denyPermission.Permission | Should -Contain 'Update'
-                    $denyPermission.Permission | Should -Contain 'Insert'
+                    $denyPermission.State | Should-Be 'Deny'
+                    $denyPermission.Permission | Should-ContainCollection 'Update'
+                    $denyPermission.Permission | Should-ContainCollection 'Insert'
                 }
             }
         }

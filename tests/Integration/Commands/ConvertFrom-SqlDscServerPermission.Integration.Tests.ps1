@@ -48,10 +48,10 @@ Describe 'ConvertFrom-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Int
 
             $result = ConvertFrom-SqlDscServerPermission -Permission $serverPermission -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]
-            $result.ConnectSql | Should -BeTrue
-            $result.ViewServerState | Should -BeFalse
+            $result | Should-BeTruthy
+            $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionSet])
+            $result.ConnectSql | Should-BeTrue
+            $result.ViewServerState | Should-BeFalse
         }
 
         It 'Should convert multiple permissions correctly' {
@@ -64,12 +64,12 @@ Describe 'ConvertFrom-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Int
 
             $result = ConvertFrom-SqlDscServerPermission -Permission $serverPermission -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]
-            $result.ConnectSql | Should -BeTrue
-            $result.ViewServerState | Should -BeTrue
-            $result.AlterAnyLogin | Should -BeTrue
-            $result.ControlServer | Should -BeFalse
+            $result | Should-BeTruthy
+            $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionSet])
+            $result.ConnectSql | Should-BeTrue
+            $result.ViewServerState | Should-BeTrue
+            $result.AlterAnyLogin | Should-BeTrue
+            $result.ControlServer | Should-BeFalse
         }
 
         It 'Should convert permission using pipeline input' {
@@ -82,11 +82,11 @@ Describe 'ConvertFrom-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Int
 
             $result = $serverPermission | ConvertFrom-SqlDscServerPermission -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]
-            $result.ViewAnyDatabase | Should -BeTrue
-            $result.CreateAnyDatabase | Should -BeTrue
-            $result.ConnectSql | Should -BeFalse
+            $result | Should-BeTruthy
+            $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionSet])
+            $result.ViewAnyDatabase | Should-BeTrue
+            $result.CreateAnyDatabase | Should-BeTrue
+            $result.ConnectSql | Should-BeFalse
         }
 
         It 'Should convert permissions correctly regardless of state' {
@@ -100,11 +100,11 @@ Describe 'ConvertFrom-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Int
 
             $result = ConvertFrom-SqlDscServerPermission -Permission $serverPermission -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]
-            $result.AlterSettings | Should -BeTrue
-            $result.CreateEndpoint | Should -BeTrue
-            $result.ConnectSql | Should -BeFalse
+            $result | Should-BeTruthy
+            $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionSet])
+            $result.AlterSettings | Should-BeTrue
+            $result.CreateEndpoint | Should-BeTrue
+            $result.ConnectSql | Should-BeFalse
         }
 
         It 'Should handle empty permission array correctly' {
@@ -117,10 +117,10 @@ Describe 'ConvertFrom-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Int
 
             $result = ConvertFrom-SqlDscServerPermission -Permission $serverPermission -ErrorAction 'Stop'
 
-            $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]
-            $result.ConnectSql | Should -BeFalse
-            $result.ViewServerState | Should -BeFalse
-            $result.ControlServer | Should -BeFalse
+            $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionSet])
+            $result.ConnectSql | Should-BeFalse
+            $result.ViewServerState | Should-BeFalse
+            $result.ControlServer | Should-BeFalse
         }
 
         It 'Should convert multiple ServerPermission objects through pipeline into single combined set' {
@@ -140,13 +140,13 @@ Describe 'ConvertFrom-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Int
             $result = $serverPermissions | ConvertFrom-SqlDscServerPermission -ErrorAction 'Stop'
 
             # The command combines all permissions into a single ServerPermissionSet
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]
+            $result | Should-BeTruthy
+            $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionSet])
 
             # All permissions from both objects should be set to true
-            $result.ConnectSql | Should -BeTrue
-            $result.ViewServerState | Should -BeTrue
-            $result.AlterTrace | Should -BeTrue
+            $result.ConnectSql | Should-BeTrue
+            $result.ViewServerState | Should-BeTrue
+            $result.AlterTrace | Should-BeTrue
         }
 
         It 'Should create compatible ServerPermissionSet for SQL Server permission operations' {
@@ -161,19 +161,19 @@ Describe 'ConvertFrom-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Int
             $result = ConvertFrom-SqlDscServerPermission -Permission $serverPermission -ErrorAction 'Stop'
 
             # Verify this creates a valid ServerPermissionSet that could be used with SQL Server SMO
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionSet]
+            $result | Should-BeTruthy
+            $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.ServerPermissionSet])
 
             # Verify all specified permissions are set to true
-            $result.ConnectSql | Should -BeTrue
-            $result.ViewServerState | Should -BeTrue
-            $result.CreateAnyDatabase | Should -BeTrue
-            $result.AlterAnyLogin | Should -BeTrue
+            $result.ConnectSql | Should-BeTrue
+            $result.ViewServerState | Should-BeTrue
+            $result.CreateAnyDatabase | Should-BeTrue
+            $result.AlterAnyLogin | Should-BeTrue
 
             # Verify unspecified permissions remain false
-            $result.ControlServer | Should -BeFalse
-            $result.Shutdown | Should -BeFalse
-            $result.ViewAnyDefinition | Should -BeFalse
+            $result.ControlServer | Should-BeFalse
+            $result.Shutdown | Should-BeFalse
+            $result.ViewAnyDefinition | Should-BeFalse
         }
     }
 }

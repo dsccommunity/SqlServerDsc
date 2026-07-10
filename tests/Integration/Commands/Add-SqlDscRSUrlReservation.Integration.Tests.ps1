@@ -48,7 +48,7 @@ Describe 'Add-SqlDscRSUrlReservation' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            $reservations.UrlString | Should -Contain $script:testUrl
+            $reservations.UrlString | Should-ContainCollection $script:testUrl
         }
 
         It 'Should add URL reservation for ReportServerWebApp using pipeline' {
@@ -61,8 +61,8 @@ Describe 'Add-SqlDscRSUrlReservation' {
             # Find the index for ReportServerWebApp
             $webAppIndex = [System.Array]::IndexOf($reservations.Application, 'ReportServerWebApp')
 
-            $webAppIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
-            $reservations.UrlString[$webAppIndex] | Should -Be $script:testUrl
+            $webAppIndex | Should-BeGreaterThanOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
+            $reservations.UrlString[$webAppIndex] | Should-Be $script:testUrl
         }
     }
 
@@ -82,7 +82,7 @@ Describe 'Add-SqlDscRSUrlReservation' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            $reservations.UrlString | Should -Contain $script:testUrl
+            $reservations.UrlString | Should-ContainCollection $script:testUrl
         }
 
         It 'Should add URL reservation for ReportServerWebApp using pipeline' {
@@ -95,8 +95,8 @@ Describe 'Add-SqlDscRSUrlReservation' {
             # Find the index for ReportServerWebApp
             $webAppIndex = [System.Array]::IndexOf($reservations.Application, 'ReportServerWebApp')
 
-            $webAppIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
-            $reservations.UrlString[$webAppIndex] | Should -Be $script:testUrl
+            $webAppIndex | Should-BeGreaterThanOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
+            $reservations.UrlString[$webAppIndex] | Should-Be $script:testUrl
         }
     }
 
@@ -116,7 +116,7 @@ Describe 'Add-SqlDscRSUrlReservation' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            $reservations.UrlString | Should -Contain $script:testUrl
+            $reservations.UrlString | Should-ContainCollection $script:testUrl
         }
 
         It 'Should add URL reservation for ReportServerWebApp using pipeline' {
@@ -129,8 +129,8 @@ Describe 'Add-SqlDscRSUrlReservation' {
             # Find the index for ReportServerWebApp
             $webAppIndex = [System.Array]::IndexOf($reservations.Application, 'ReportServerWebApp')
 
-            $webAppIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
-            $reservations.UrlString[$webAppIndex] | Should -Be $script:testUrl
+            $webAppIndex | Should-BeGreaterThanOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
+            $reservations.UrlString[$webAppIndex] | Should-Be $script:testUrl
         }
     }
 
@@ -150,7 +150,7 @@ Describe 'Add-SqlDscRSUrlReservation' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
             $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            $reservations.UrlString | Should -Contain $script:testUrl
+            $reservations.UrlString | Should-ContainCollection $script:testUrl
         }
 
         It 'Should add URL reservation for ReportServerWebApp using pipeline' {
@@ -163,8 +163,8 @@ Describe 'Add-SqlDscRSUrlReservation' {
             # Find the index for ReportServerWebApp
             $webAppIndex = [System.Array]::IndexOf($reservations.Application, 'ReportServerWebApp')
 
-            $webAppIndex | Should -BeGreaterOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
-            $reservations.UrlString[$webAppIndex] | Should -Be $script:testUrl
+            $webAppIndex | Should-BeGreaterThanOrEqual 0 -Because 'ReportServerWebApp should be in the applications'
+            $reservations.UrlString[$webAppIndex] | Should-Be $script:testUrl
         }
     }
 }

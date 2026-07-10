@@ -45,29 +45,29 @@ Describe 'Get-SqlDscServerProtocolTcpIp' -Tag @('Integration_SQL2017', 'Integrat
             It 'Should return IPAll address group information' {
                 $result = Get-SqlDscServerProtocolTcpIp -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -IpAddressGroup 'IPAll' -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress])
-                $result.Name | Should -Be 'IPAll'
-                $result.IPAddressProperties | Should -Not -BeNullOrEmpty
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress])
+                $result.Name | Should-Be 'IPAll'
+                $result.IPAddressProperties | Should-BeTruthy
 
                 # IPAll should have TcpPort property
                 $tcpPortProperty = $result.IPAddressProperties['TcpPort']
-                $tcpPortProperty | Should -Not -BeNullOrEmpty
-                $tcpPortProperty.Name | Should -Be 'TcpPort'
+                $tcpPortProperty | Should-BeTruthy
+                $tcpPortProperty.Name | Should-Be 'TcpPort'
 
                 # IPAll should have TcpDynamicPorts property
                 $tcpDynamicPortsProperty = $result.IPAddressProperties['TcpDynamicPorts']
-                $tcpDynamicPortsProperty | Should -Not -BeNullOrEmpty
-                $tcpDynamicPortsProperty.Name | Should -Be 'TcpDynamicPorts'
+                $tcpDynamicPortsProperty | Should-BeTruthy
+                $tcpDynamicPortsProperty.Name | Should-Be 'TcpDynamicPorts'
             }
 
             It 'Should return IP1 address group information' {
                 $result = Get-SqlDscServerProtocolTcpIp -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -IpAddressGroup 'IP1' -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress])
-                $result.Name | Should -Be 'IP1'
-                $result.IPAddressProperties | Should -Not -BeNullOrEmpty
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress])
+                $result.Name | Should-Be 'IP1'
+                $result.IPAddressProperties | Should-BeTruthy
             }
         }
 
@@ -75,13 +75,14 @@ Describe 'Get-SqlDscServerProtocolTcpIp' -Tag @('Integration_SQL2017', 'Integrat
             It 'Should return all available IP address groups' {
                 $result = Get-SqlDscServerProtocolTcpIp -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress])
-                $result.Count | Should -BeGreaterThan 0
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([System.Object[]])
+                $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress])
+                $result.Count | Should-BeGreaterThan 0
 
                 # Should contain the IPAll group
                 $ipAddressNames = $result | ForEach-Object -Process { $_.Name }
-                $ipAddressNames | Should -Contain 'IPAll'
+                $ipAddressNames | Should-ContainCollection 'IPAll'
             }
         }
 
@@ -89,8 +90,8 @@ Describe 'Get-SqlDscServerProtocolTcpIp' -Tag @('Integration_SQL2017', 'Integrat
             It 'Should use local computer name when ServerName is not specified' {
                 $result = Get-SqlDscServerProtocolTcpIp -InstanceName $script:mockInstanceName -IpAddressGroup 'IPAll' -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be 'IPAll'
+                $result | Should-BeTruthy
+                $result.Name | Should-Be 'IPAll'
             }
         }
     }
@@ -104,10 +105,10 @@ Describe 'Get-SqlDscServerProtocolTcpIp' -Tag @('Integration_SQL2017', 'Integrat
             It 'Should return IPAll address group information' {
                 $result = $script:serverProtocolObject | Get-SqlDscServerProtocolTcpIp -IpAddressGroup 'IPAll' -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress])
-                $result.Name | Should -Be 'IPAll'
-                $result.IPAddressProperties | Should -Not -BeNullOrEmpty
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress])
+                $result.Name | Should-Be 'IPAll'
+                $result.IPAddressProperties | Should-BeTruthy
             }
         }
 
@@ -115,13 +116,14 @@ Describe 'Get-SqlDscServerProtocolTcpIp' -Tag @('Integration_SQL2017', 'Integrat
             It 'Should return all available IP address groups' {
                 $result = $script:serverProtocolObject | Get-SqlDscServerProtocolTcpIp -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress])
-                $result.Count | Should -BeGreaterThan 0
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([System.Object[]])
+                $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress])
+                $result.Count | Should-BeGreaterThan 0
 
                 # Should contain the IPAll group
                 $ipAddressNames = $result | ForEach-Object -Process { $_.Name }
-                $ipAddressNames | Should -Contain 'IPAll'
+                $ipAddressNames | Should-ContainCollection 'IPAll'
             }
         }
     }
@@ -135,14 +137,14 @@ Describe 'Get-SqlDscServerProtocolTcpIp' -Tag @('Integration_SQL2017', 'Integrat
 
             # At least one should have a value
             $hasPort = -not [System.String]::IsNullOrEmpty($tcpPort) -or -not [System.String]::IsNullOrEmpty($tcpDynamicPort)
-            $hasPort | Should -BeTrue
+            $hasPort | Should-BeTrue
 
             # Get the effective port
             $effectivePort = if (-not [System.String]::IsNullOrEmpty($tcpPort)) { $tcpPort } else { $tcpDynamicPort }
 
             Write-Verbose -Message ('Instance {0} is using TCP port: {1}' -f $script:mockInstanceName, $effectivePort) -Verbose
 
-            $effectivePort | Should -Match '^\d+$'
+            $effectivePort | Should-MatchString '^\d+$'
         }
     }
 }

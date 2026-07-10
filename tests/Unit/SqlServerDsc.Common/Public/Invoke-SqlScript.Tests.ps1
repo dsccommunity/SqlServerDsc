@@ -68,13 +68,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:subModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:subModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:subModuleName -All | Remove-Module -Force
@@ -106,7 +108,7 @@ Describe 'SqlServerDsc.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
         }
 
         It 'Should throw the correct error from Import-Module' {
-            { Invoke-SqlScript @invokeScriptFileParameters } | Should -Throw -ExpectedMessage $throwMessage
+            { Invoke-SqlScript @invokeScriptFileParameters } | Should-Throw -ExceptionMessage $throwMessage
         }
     }
 
@@ -136,18 +138,18 @@ Describe 'SqlServerDsc.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
             $invokeScriptFileParameters.Add('Credential', $credential)
             $null = Invoke-SqlScript @invokeScriptFileParameters
 
-            Should -Invoke -CommandName Invoke-SqlCmd -ParameterFilter {
+            Should-Invoke -CommandName Invoke-SqlCmd -Exactly -ParameterFilter {
                 $Username -eq $mockUsername -and $Password -eq $mockPasswordPlain
-            } -Times 1 -Exactly -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should call Invoke-SqlCmd with correct Query ParameterSet parameters' {
             $invokeScriptQueryParameters.Add('Credential', $credential)
             $null = Invoke-SqlScript @invokeScriptQueryParameters
 
-            Should -Invoke -CommandName Invoke-SqlCmd -ParameterFilter {
+            Should-Invoke -CommandName Invoke-SqlCmd -Exactly -ParameterFilter {
                 $Username -eq $mockUsername -and $Password -eq $mockPasswordPlain
-            } -Times 1 -Exactly -Scope It
+            } -Scope It -Times 1
         }
     }
 
@@ -172,11 +174,11 @@ Describe 'SqlServerDsc.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
         }
 
         It 'Should throw the correct error from File ParameterSet Invoke-SqlCmd' {
-            { Invoke-SqlScript @invokeScriptFileParameters } | Should -Throw -ExpectedMessage $errorMessage
+            { Invoke-SqlScript @invokeScriptFileParameters } | Should-Throw -ExceptionMessage $errorMessage
         }
 
         It 'Should throw the correct error from Query ParameterSet Invoke-SqlCmd' {
-            { Invoke-SqlScript @invokeScriptQueryParameters } | Should -Throw -ExpectedMessage $errorMessage
+            { Invoke-SqlScript @invokeScriptQueryParameters } | Should-Throw -ExceptionMessage $errorMessage
         }
     }
 
@@ -216,9 +218,9 @@ Describe 'SqlServerDsc.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
 
                 $null = Invoke-SqlScript @mockInvokeScriptFileParameters
 
-                Should -Invoke -CommandName Invoke-SqlCmd -ParameterFilter {
+                Should-Invoke -CommandName Invoke-SqlCmd -Exactly -ParameterFilter {
                     $Encrypt -eq 'Optional'
-                } -Times 1 -Exactly -Scope It
+                } -Scope It -Times 1
             }
 
             It 'Should call Invoke-SqlCmd with correct Query ParameterSet parameters' {
@@ -230,9 +232,9 @@ Describe 'SqlServerDsc.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
 
                 $null = Invoke-SqlScript @mockInvokeScriptQueryParameters
 
-                Should -Invoke -CommandName Invoke-SqlCmd -ParameterFilter {
+                Should-Invoke -CommandName Invoke-SqlCmd -Exactly -ParameterFilter {
                     $Encrypt -eq 'Optional'
-                } -Times 1 -Exactly -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -258,9 +260,9 @@ Describe 'SqlServerDsc.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
 
                 $null = Invoke-SqlScript @mockInvokeScriptFileParameters
 
-                Should -Invoke -CommandName Invoke-SqlCmd -ParameterFilter {
+                Should-Invoke -CommandName Invoke-SqlCmd -Exactly -ParameterFilter {
                     $PesterBoundParameters.Keys -notcontains 'Encrypt'
-                } -Times 1 -Exactly -Scope It
+                } -Scope It -Times 1
             }
 
             It 'Should call Invoke-SqlCmd with correct Query ParameterSet parameters' {
@@ -272,9 +274,9 @@ Describe 'SqlServerDsc.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
 
                 $null = Invoke-SqlScript @mockInvokeScriptQueryParameters
 
-                Should -Invoke -CommandName Invoke-SqlCmd -ParameterFilter {
+                Should-Invoke -CommandName Invoke-SqlCmd -Exactly -ParameterFilter {
                     $PesterBoundParameters.Keys -notcontains 'Encrypt'
-                } -Times 1 -Exactly -Scope It
+                } -Scope It -Times 1
             }
         }
     }

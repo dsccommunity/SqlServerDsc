@@ -43,16 +43,16 @@ Describe 'Get-SqlDscRSIPAddress' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $result = $configuration | Get-SqlDscRSIPAddress -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
 
             # Should contain loopback addresses (stable across CI workers)
-            $result.IPAddress | Should -Contain '127.0.0.1'
+            $result.IPAddress | Should-ContainCollection '127.0.0.1'
 
             # Should have IPv4 addresses
-            $result.IPVersion | Should -Contain 'V4'
+            $result.IPVersion | Should-ContainCollection 'V4'
 
             # Should have at least one additional IP besides loopback
-            $result.Count | Should -BeGreaterThan 1
+            $result.Count | Should-BeGreaterThan 1
         }
     }
 
@@ -61,16 +61,16 @@ Describe 'Get-SqlDscRSIPAddress' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $result = $configuration | Get-SqlDscRSIPAddress -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
 
             # Should contain loopback addresses (stable across CI workers)
-            $result.IPAddress | Should -Contain '127.0.0.1'
+            $result.IPAddress | Should-ContainCollection '127.0.0.1'
 
             # Should have IPv4 addresses
-            $result.IPVersion | Should -Contain 'V4'
+            $result.IPVersion | Should-ContainCollection 'V4'
 
             # Should have at least one additional IP besides loopback
-            $result.Count | Should -BeGreaterThan 1
+            $result.Count | Should-BeGreaterThan 1
         }
     }
 
@@ -79,16 +79,16 @@ Describe 'Get-SqlDscRSIPAddress' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $result = $configuration | Get-SqlDscRSIPAddress -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
 
             # Should contain loopback addresses (stable across CI workers)
-            $result.IPAddress | Should -Contain '127.0.0.1'
+            $result.IPAddress | Should-ContainCollection '127.0.0.1'
 
             # Should have IPv4 addresses
-            $result.IPVersion | Should -Contain 'V4'
+            $result.IPVersion | Should-ContainCollection 'V4'
 
             # Should have at least one additional IP besides loopback
-            $result.Count | Should -BeGreaterThan 1
+            $result.Count | Should-BeGreaterThan 1
         }
     }
 
@@ -97,16 +97,16 @@ Describe 'Get-SqlDscRSIPAddress' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
             $result = $configuration | Get-SqlDscRSIPAddress -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
 
             # Should contain loopback addresses (stable across CI workers)
-            $result.IPAddress | Should -Contain '127.0.0.1'
+            $result.IPAddress | Should-ContainCollection '127.0.0.1'
 
             # Should have IPv4 addresses
-            $result.IPVersion | Should -Contain 'V4'
+            $result.IPVersion | Should-ContainCollection 'V4'
 
             # Should have at least one additional IP besides loopback
-            $result.Count | Should -BeGreaterThan 1
+            $result.Count | Should-BeGreaterThan 1
         }
     }
 }

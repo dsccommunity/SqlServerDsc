@@ -98,21 +98,21 @@ Describe "<dscResourceFriendlyName>_Integration" -Tag @('Integration_SQL2016', '
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.Name
+            $resourceCurrentState.Ensure | Should-Be 'Present'
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.Name
 
             if ($configurationName -eq "$($script:dscResourceName)_Add_Config")
             {
-                $resourceCurrentState.Severity | Should -Be $ConfigurationData.AllNodes.Severity
+                $resourceCurrentState.Severity | Should-Be $ConfigurationData.AllNodes.Severity
             }
             elseif ($configurationName -eq "$($script:dscResourceName)_ChangeToMessageId_Config")
             {
-                $resourceCurrentState.MessageId | Should -Be $ConfigurationData.AllNodes.MessageId
+                $resourceCurrentState.MessageId | Should-Be $ConfigurationData.AllNodes.MessageId
             }
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -158,13 +158,13 @@ Describe "<dscResourceFriendlyName>_Integration" -Tag @('Integration_SQL2016', '
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Absent'
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.Name
-            $resourceCurrentState.Severity | Should -BeNullOrEmpty
+            $resourceCurrentState.Ensure | Should-Be 'Absent'
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.Name
+            $resourceCurrentState.Severity | Should-BeFalsy
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 }

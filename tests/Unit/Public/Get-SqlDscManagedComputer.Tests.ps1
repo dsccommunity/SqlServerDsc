@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -61,9 +63,9 @@ Describe 'Get-SqlDscManagedComputer' -Tag 'Public' {
         It 'Should return the correct values' {
             $result = Get-SqlDscManagedComputer
 
-            $result | Should -Be 'MockManagedComputer'
+            $result | Should-Be 'MockManagedComputer'
 
-            Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName New-Object -Exactly -Scope It -Times 1
         }
     }
 
@@ -80,9 +82,9 @@ Describe 'Get-SqlDscManagedComputer' -Tag 'Public' {
         It 'Should return the correct values' {
             $result = Get-SqlDscManagedComputer -ServerName 'localhost'
 
-            $result | Should -Be 'MockManagedComputer'
+            $result | Should-Be 'MockManagedComputer'
 
-            Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName New-Object -Exactly -Scope It -Times 1
         }
     }
 }

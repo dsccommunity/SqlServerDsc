@@ -51,13 +51,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:dscResourceName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 
@@ -137,14 +139,14 @@ Describe 'SqlDatabaseDefaultLocation\Get-TargetResource' {
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters -Type $Type -Path $Path
 
                     # Ending backslash is removed because of regression test for issue #1307.
-                    $getTargetResourceResult.Path | Should -Be $Path
-                    $getTargetResourceResult.Type | Should -Be $Type
-                    $getTargetResourceResult.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                    $getTargetResourceResult.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                    $getTargetResourceResult.IsActiveNode | Should -BeTrue
+                    $getTargetResourceResult.Path | Should-Be $Path
+                    $getTargetResourceResult.Type | Should-Be $Type
+                    $getTargetResourceResult.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                    $getTargetResourceResult.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                    $getTargetResourceResult.IsActiveNode | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
     }
@@ -201,10 +203,10 @@ Describe 'SqlDatabaseDefaultLocation\Test-TargetResource' {
 
                     $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters -Type $Type -Path $Path
 
-                    $testTargetResourceResult | Should -BeTrue
+                    $testTargetResourceResult | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -238,10 +240,10 @@ Describe 'SqlDatabaseDefaultLocation\Test-TargetResource' {
 
                     $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $testTargetResourceResult | Should -BeTrue
+                    $testTargetResourceResult | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -280,10 +282,10 @@ Describe 'SqlDatabaseDefaultLocation\Test-TargetResource' {
 
                     $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters -Type $Type -Path $Path
 
-                    $testTargetResourceResult | Should -BeFalse
+                    $testTargetResourceResult | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -319,10 +321,10 @@ Describe 'SqlDatabaseDefaultLocation\Test-TargetResource' {
 
                     $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $testTargetResourceResult | Should -Be $ExpectedReturnValue
+                    $testTargetResourceResult | Should-Be $ExpectedReturnValue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -403,10 +405,10 @@ Describe 'SqlDatabaseDefaultLocation\Set-TargetResource' {
 
                     $null = Set-TargetResource @mockGetTargetResourceParameters -Type $Type -Path $Path -ErrorAction 'Stop'
 
-                    $script:methodAlterWasCalled | Should -Be 1
+                    $script:methodAlterWasCalled | Should-Be 1
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
 
@@ -419,12 +421,12 @@ Describe 'SqlDatabaseDefaultLocation\Set-TargetResource' {
 
                     $mockErrorMessage = $script:localizedData.ChangingPathFailed
 
-                    { Set-TargetResource @mockGetTargetResourceParameters -Type 'Data' -Path 'C:\AnyPath' } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                    { Set-TargetResource @mockGetTargetResourceParameters -Type 'Data' -Path 'C:\AnyPath' } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
 
-                    $script:methodAlterWasCalled | Should -Be 0
+                    $script:methodAlterWasCalled | Should-Be 0
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
 
                 $mockInvalidOperationForAlterMethod = $false
             }
@@ -445,10 +447,10 @@ Describe 'SqlDatabaseDefaultLocation\Set-TargetResource' {
 
                     $null = Set-TargetResource @mockGetTargetResourceParameters -ErrorAction 'Stop'
 
-                    $script:methodAlterWasCalled | Should -Be 1
+                    $script:methodAlterWasCalled | Should-Be 1
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
 
@@ -465,12 +467,12 @@ Describe 'SqlDatabaseDefaultLocation\Set-TargetResource' {
 
                     $mockErrorMessage = $script:localizedData.InvalidPath -f 'C:\AnyPath'
 
-                    { Set-TargetResource @mockGetTargetResourceParameters -Type 'Data' -Path 'C:\AnyPath' } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                    { Set-TargetResource @mockGetTargetResourceParameters -Type 'Data' -Path 'C:\AnyPath' } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
 
-                    $script:methodAlterWasCalled | Should -Be 0
+                    $script:methodAlterWasCalled | Should-Be 0
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 0
             }
         }
     }

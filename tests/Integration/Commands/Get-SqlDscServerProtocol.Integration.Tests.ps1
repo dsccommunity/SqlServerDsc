@@ -45,31 +45,31 @@ Describe 'Get-SqlDscServerProtocol' -Tag @('Integration_SQL2017', 'Integration_S
             It 'Should return TcpIp protocol information' {
                 $result = Get-SqlDscServerProtocol -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ProtocolName 'TcpIp' -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
-                $result.Name | Should -Be 'Tcp'
-                $result.DisplayName | Should -Be 'TCP/IP'
-                $result.Parent.Name | Should -Be $script:mockInstanceName
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
+                $result.Name | Should-Be 'Tcp'
+                $result.DisplayName | Should-Be 'TCP/IP'
+                $result.Parent.Name | Should-Be $script:mockInstanceName
             }
 
             It 'Should return NamedPipes protocol information' {
                 $result = Get-SqlDscServerProtocol -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ProtocolName 'NamedPipes' -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
-                $result.Name | Should -Be 'Np'
-                $result.DisplayName | Should -Be 'Named Pipes'
-                $result.Parent.Name | Should -Be $script:mockInstanceName
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
+                $result.Name | Should-Be 'Np'
+                $result.DisplayName | Should-Be 'Named Pipes'
+                $result.Parent.Name | Should-Be $script:mockInstanceName
             }
 
             It 'Should return SharedMemory protocol information' {
                 $result = Get-SqlDscServerProtocol -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ProtocolName 'SharedMemory' -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
-                $result.Name | Should -Be 'Sm'
-                $result.DisplayName | Should -Be 'Shared Memory'
-                $result.Parent.Name | Should -Be $script:mockInstanceName
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
+                $result.Name | Should-Be 'Sm'
+                $result.DisplayName | Should-Be 'Shared Memory'
+                $result.Parent.Name | Should-Be $script:mockInstanceName
             }
         }
 
@@ -77,15 +77,16 @@ Describe 'Get-SqlDscServerProtocol' -Tag @('Integration_SQL2017', 'Integration_S
             It 'Should return all available protocols' {
                 $result = Get-SqlDscServerProtocol -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
-                $result.Count | Should -BeGreaterThan 0
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([System.Object[]])
+                $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
+                $result.Count | Should-BeGreaterThan 0
 
                 # Should contain the standard protocols
                 $protocolNames = $result | ForEach-Object -Process { $_.Name }
-                $protocolNames | Should -Contain 'Tcp'
-                $protocolNames | Should -Contain 'Np'
-                $protocolNames | Should -Contain 'Sm'
+                $protocolNames | Should-ContainCollection 'Tcp'
+                $protocolNames | Should-ContainCollection 'Np'
+                $protocolNames | Should-ContainCollection 'Sm'
             }
         }
 
@@ -93,9 +94,9 @@ Describe 'Get-SqlDscServerProtocol' -Tag @('Integration_SQL2017', 'Integration_S
             It 'Should use local computer name when ServerName is not specified' {
                 $result = Get-SqlDscServerProtocol -InstanceName $script:mockInstanceName -ProtocolName 'TcpIp' -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Parent.Name | Should -Be $script:mockInstanceName
-                $result.Parent.Parent.Name | Should -Be $script:mockServerName
+                $result | Should-BeTruthy
+                $result.Parent.Name | Should-Be $script:mockInstanceName
+                $result.Parent.Parent.Name | Should-Be $script:mockServerName
             }
         }
     }
@@ -109,11 +110,11 @@ Describe 'Get-SqlDscServerProtocol' -Tag @('Integration_SQL2017', 'Integration_S
             It 'Should return TcpIp protocol information' {
                 $result = $script:managedComputerObject | Get-SqlDscServerProtocol -InstanceName $script:mockInstanceName -ProtocolName 'TcpIp' -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
-                $result.Name | Should -Be 'Tcp'
-                $result.DisplayName | Should -Be 'TCP/IP'
-                $result.Parent.Name | Should -Be $script:mockInstanceName
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
+                $result.Name | Should-Be 'Tcp'
+                $result.DisplayName | Should-Be 'TCP/IP'
+                $result.Parent.Name | Should-Be $script:mockInstanceName
             }
         }
 
@@ -121,15 +122,16 @@ Describe 'Get-SqlDscServerProtocol' -Tag @('Integration_SQL2017', 'Integration_S
             It 'Should return all available protocols' {
                 $result = $script:managedComputerObject | Get-SqlDscServerProtocol -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
-                $result.Count | Should -BeGreaterThan 0
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([System.Object[]])
+                $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
+                $result.Count | Should-BeGreaterThan 0
 
                 # Should contain the standard protocols
                 $protocolNames = $result | ForEach-Object -Process { $_.Name }
-                $protocolNames | Should -Contain 'Tcp'
-                $protocolNames | Should -Contain 'Np'
-                $protocolNames | Should -Contain 'Sm'
+                $protocolNames | Should-ContainCollection 'Tcp'
+                $protocolNames | Should-ContainCollection 'Np'
+                $protocolNames | Should-ContainCollection 'Sm'
             }
         }
     }
@@ -143,11 +145,11 @@ Describe 'Get-SqlDscServerProtocol' -Tag @('Integration_SQL2017', 'Integration_S
             It 'Should return TcpIp protocol information' {
                 $result = $script:managedComputerInstanceObject | Get-SqlDscServerProtocol -ProtocolName 'TcpIp' -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
-                $result.Name | Should -Be 'Tcp'
-                $result.DisplayName | Should -Be 'TCP/IP'
-                $result.Parent.Name | Should -Be $script:mockInstanceName
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
+                $result.Name | Should-Be 'Tcp'
+                $result.DisplayName | Should-Be 'TCP/IP'
+                $result.Parent.Name | Should-Be $script:mockInstanceName
             }
         }
 
@@ -155,15 +157,16 @@ Describe 'Get-SqlDscServerProtocol' -Tag @('Integration_SQL2017', 'Integration_S
             It 'Should return all available protocols' {
                 $result = $script:managedComputerInstanceObject | Get-SqlDscServerProtocol -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
-                $result.Count | Should -BeGreaterThan 0
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([System.Object[]])
+                $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
+                $result.Count | Should-BeGreaterThan 0
 
                 # Should contain the standard protocols
                 $protocolNames = $result | ForEach-Object -Process { $_.Name }
-                $protocolNames | Should -Contain 'Tcp'
-                $protocolNames | Should -Contain 'Np'
-                $protocolNames | Should -Contain 'Sm'
+                $protocolNames | Should-ContainCollection 'Tcp'
+                $protocolNames | Should-ContainCollection 'Np'
+                $protocolNames | Should-ContainCollection 'Sm'
             }
         }
     }
@@ -173,38 +176,39 @@ Describe 'Get-SqlDscServerProtocol' -Tag @('Integration_SQL2017', 'Integration_S
             $result = Get-SqlDscServerProtocol -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ProtocolName 'TcpIp' -ErrorAction 'Stop'
 
             # Verify it's a proper SMO ServerProtocol object
-            $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
+            $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
 
             # Verify key properties exist
-            $result.Name | Should -Not -BeNullOrEmpty
-            $result.DisplayName | Should -Not -BeNullOrEmpty
-            $result.Parent | Should -Not -BeNullOrEmpty
-            $result.Parent.Name | Should -Be $script:mockInstanceName
+            $result.Name | Should-BeTruthy
+            $result.DisplayName | Should-BeTruthy
+            $result.Parent | Should-BeTruthy
+            $result.Parent.Name | Should-Be $script:mockInstanceName
 
             # Verify protocol-specific properties are accessible
-            $result.IsEnabled | Should -Not -BeNullOrEmpty
-            $result.ProtocolProperties | Should -Not -BeNullOrEmpty
+            $result.IsEnabled | Should-BeTruthy
+            $result.ProtocolProperties | Should-BeTruthy
 
             # Verify IP addresses collection for TCP/IP protocol
             if ($result.Name -eq 'Tcp')
             {
-                $result.IPAddresses | Should -Not -BeNullOrEmpty
+                $result.IPAddresses | Should-BeTruthy
             }
         }
 
         It 'Should return multiple protocol objects when getting all protocols' {
             $result = Get-SqlDscServerProtocol -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
 
-            $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
-            $result.Count | Should -BeGreaterOrEqual 3
+            $result | Should-HaveType ([System.Object[]])
+            $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol])
+            $result.Count | Should-BeGreaterThanOrEqual 3
 
             # Verify each protocol has required properties
             foreach ($protocol in $result)
             {
-                $protocol.Name | Should -Not -BeNullOrEmpty
-                $protocol.DisplayName | Should -Not -BeNullOrEmpty
-                $protocol.Parent.Name | Should -Be $script:mockInstanceName
-                $protocol.IsEnabled | Should -Not -BeNullOrEmpty
+                $protocol.Name | Should-BeTruthy
+                $protocol.DisplayName | Should-BeTruthy
+                $protocol.Parent.Name | Should-Be $script:mockInstanceName
+                $protocol.IsEnabled | Should-BeTruthy
             }
         }
     }
@@ -213,17 +217,17 @@ Describe 'Get-SqlDscServerProtocol' -Tag @('Integration_SQL2017', 'Integration_S
         It 'Should work in a pipeline from Get-SqlDscManagedComputer to Get-SqlDscServerProtocol' {
             $result = Get-SqlDscManagedComputer -ServerName $script:mockServerName | Get-SqlDscServerProtocol -InstanceName $script:mockInstanceName -ProtocolName 'TcpIp' -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'Tcp'
-            $result.DisplayName | Should -Be 'TCP/IP'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'Tcp'
+            $result.DisplayName | Should-Be 'TCP/IP'
         }
 
         It 'Should work in a pipeline from Get-SqlDscManagedComputerInstance to Get-SqlDscServerProtocol' {
             $result = Get-SqlDscManagedComputerInstance -ServerName $script:mockServerName -InstanceName $script:mockInstanceName | Get-SqlDscServerProtocol -ProtocolName 'NamedPipes' -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'Np'
-            $result.DisplayName | Should -Be 'Named Pipes'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'Np'
+            $result.DisplayName | Should-Be 'Named Pipes'
         }
     }
 }

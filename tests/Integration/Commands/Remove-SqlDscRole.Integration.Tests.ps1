@@ -81,24 +81,24 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2017', 'Integration_SQL2019'
         It 'Should remove a role when it exists' {
             # Verify the role exists before removal
             $existingRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName
-            $existingRole | Should -Not -BeNullOrEmpty
+            $existingRole | Should-BeTruthy
 
             # Remove the role
             Remove-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -Force
 
             # Verify the role no longer exists
             $removedRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'SilentlyContinue'
-            $removedRole | Should -BeNullOrEmpty
+            $removedRole | Should-BeFalsy
         }
 
         It 'Should throw an error when removing a non-existent role' {
             { Remove-SqlDscRole -ServerObject $script:serverObject -Name 'NonExistentRole' -Force -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage '*Server role ''NonExistentRole'' was not found.*'
+                Should-Throw -ExceptionMessage '*Server role ''NonExistentRole'' was not found.*'
         }
 
         It 'Should throw an error when trying to remove a fixed role' {
             { Remove-SqlDscRole -ServerObject $script:serverObject -Name 'sysadmin' -Force -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage '*Cannot remove built-in server role ''sysadmin''*'
+                Should-Throw -ExceptionMessage '*Cannot remove built-in server role ''sysadmin''*'
         }
     }
 
@@ -106,22 +106,22 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2017', 'Integration_SQL2019'
         It 'Should remove the shared test role for removal' {
             # Verify the shared role exists before removal
             $existingRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:sharedTestRoleForRemoval
-            $existingRole | Should -Not -BeNullOrEmpty
+            $existingRole | Should-BeTruthy
 
             # Remove the shared role
             Remove-SqlDscRole -ServerObject $script:serverObject -Name $script:sharedTestRoleForRemoval -Force
 
             # Verify the role no longer exists
             $removedRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:sharedTestRoleForRemoval -ErrorAction 'SilentlyContinue'
-            $removedRole | Should -BeNullOrEmpty
+            $removedRole | Should-BeFalsy
         }
 
         It 'Should NOT remove the persistent test role (verify it exists)' {
             # Verify the persistent role still exists and should not be removed
             $persistentRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:persistentTestRole -ErrorAction 'SilentlyContinue'
-            $persistentRole | Should -Not -BeNullOrEmpty
-            $persistentRole.Name | Should -Be $script:persistentTestRole
-            $persistentRole.Owner | Should -Be 'sa'
+            $persistentRole | Should-BeTruthy
+            $persistentRole.Name | Should-Be $script:persistentTestRole
+            $persistentRole.Owner | Should-Be 'sa'
         }
     }
 
@@ -143,7 +143,7 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2017', 'Integration_SQL2019'
 
             # Verify the role no longer exists
             $removedRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleNameByObject -ErrorAction 'SilentlyContinue'
-            $removedRole | Should -BeNullOrEmpty
+            $removedRole | Should-BeFalsy
         }
 
         It 'Should throw an error when trying to remove a fixed role by object' {
@@ -151,7 +151,7 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2017', 'Integration_SQL2019'
             $fixedRoleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name 'sysadmin'
 
             { Remove-SqlDscRole -RoleObject $fixedRoleObject -Force -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage '*Cannot remove built-in server role ''sysadmin''*'
+                Should-Throw -ExceptionMessage '*Cannot remove built-in server role ''sysadmin''*'
         }
     }
 
@@ -167,14 +167,14 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2017', 'Integration_SQL2019'
         It 'Should accept ServerObject from pipeline for removal by name' {
             # Verify the role exists before removal
             $existingRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName
-            $existingRole | Should -Not -BeNullOrEmpty
+            $existingRole | Should-BeTruthy
 
             # Remove the role using pipeline
             $script:serverObject | Remove-SqlDscRole -Name $script:testRoleName -Force
 
             # Verify the role no longer exists
             $removedRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'SilentlyContinue'
-            $removedRole | Should -BeNullOrEmpty
+            $removedRole | Should-BeFalsy
         }
 
         It 'Should accept RoleObject from pipeline for removal' {
@@ -185,7 +185,7 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2017', 'Integration_SQL2019'
 
             # Verify the role no longer exists
             $removedRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'SilentlyContinue'
-            $removedRole | Should -BeNullOrEmpty
+            $removedRole | Should-BeFalsy
         }
     }
 }

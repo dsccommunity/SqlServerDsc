@@ -158,12 +158,12 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
         It 'Should return true when testing master database with no properties specified' {
             $result = Test-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name 'master' -ErrorAction 'Stop'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should throw an error when testing non-existent database' {
             { Test-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name 'NonExistentDatabase' -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
     }
 
@@ -173,13 +173,13 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
 
             $result = Test-SqlDscDatabaseProperty -DatabaseObject $databaseObject -ErrorAction 'Stop'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should accept database object via pipeline' {
             $result = $script:serverObject | Get-SqlDscDatabase -Name 'master' -ErrorAction 'Stop' | Test-SqlDscDatabaseProperty -ErrorAction 'Stop'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
     }
 
@@ -191,7 +191,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
         ) {
             $result = Test-SqlDscDatabaseProperty -ServerObject $script:serverObject -Name $DatabaseName -ErrorAction 'Stop'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
     }
 
@@ -212,7 +212,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
 
                 $expectedResult = $actualValue -eq $TestValue
 
-                $result | Should -Be $expectedResult -Because "Property '$PropertyName' should return $expectedResult when testing value '$TestValue' against actual value '$actualValue' for database '$DatabaseName'"
+                $result | Should-Be $expectedResult -Because "Property '$PropertyName' should return $expectedResult when testing value '$TestValue' against actual value '$actualValue' for database '$DatabaseName'"
             }
 
             It 'Should return expected result when property <PropertyName> is tested with value $false' -ForEach ($script:testDatabaseTestCases | Where-Object { $_.TestValue }) {
@@ -231,7 +231,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
 
                 $expectedResult = $actualValue -eq $testValue
 
-                $result | Should -Be $expectedResult -Because "Property '$PropertyName' should return $expectedResult when testing value '$testValue' against actual value '$actualValue' for database '$DatabaseName'"
+                $result | Should-Be $expectedResult -Because "Property '$PropertyName' should return $expectedResult when testing value '$testValue' against actual value '$actualValue' for database '$DatabaseName'"
             }
         }
 
@@ -254,7 +254,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
 
                 $result = Test-SqlDscDatabaseProperty @testParameters
 
-                $result | Should -BeTrue -Because "Property '$PropertyName' should return true when testing value '$actualValue' against actual value '$actualValue' for database '$DatabaseName'"
+                $result | Should-BeTrue -Because "Property '$PropertyName' should return true when testing value '$actualValue' against actual value '$actualValue' for database '$DatabaseName'"
             }
 
             It 'Should return false when property <PropertyName> does not match actual value' -ForEach ($script:testDatabaseTestCases | Where-Object { -not $_.TestValue }) {
@@ -340,7 +340,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
 
                 $result = Test-SqlDscDatabaseProperty @testParameters
 
-                $result | Should -BeFalse -Because "Property '$PropertyName' should return false when testing value '$testValue' against actual value '$actualValue' for database '$DatabaseName'"
+                $result | Should-BeFalse -Because "Property '$PropertyName' should return false when testing value '$testValue' against actual value '$actualValue' for database '$DatabaseName'"
             }
         }
     }
@@ -365,7 +365,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
 
             $result = Test-SqlDscDatabaseProperty @testParameters
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should return false when testing multiple properties with one incorrect value' {
@@ -395,7 +395,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag @('Integration_SQL2017', 'Integratio
 
             $result = Test-SqlDscDatabaseProperty @testParameters
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 }

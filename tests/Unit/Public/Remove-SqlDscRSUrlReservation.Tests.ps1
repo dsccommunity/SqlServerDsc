@@ -32,13 +32,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -66,8 +68,8 @@ Describe 'Remove-SqlDscRSUrlReservation' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -81,20 +83,20 @@ Describe 'Remove-SqlDscRSUrlReservation' {
         }
 
         It 'Should remove URL reservation without errors' {
-            { $mockCimInstance | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80' -Confirm:$false } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80' -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'RemoveURL' -and
                 $Arguments.Application -eq 'ReportServerWebService' -and
                 $Arguments.UrlString -eq 'http://+:80' -and
                 $Arguments.Lcid -eq 1033
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should not return anything by default' {
             $result = $mockCimInstance | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80' -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -110,8 +112,8 @@ Describe 'Remove-SqlDscRSUrlReservation' {
         It 'Should return the configuration CIM instance' {
             $result = $mockCimInstance | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80' -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -125,9 +127,9 @@ Describe 'Remove-SqlDscRSUrlReservation' {
         }
 
         It 'Should remove URL reservation without confirmation' {
-            { $mockCimInstance | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80' -Force } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80' -Force })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -141,17 +143,17 @@ Describe 'Remove-SqlDscRSUrlReservation' {
         }
 
         It 'Should use the specified Lcid' {
-            { $mockCimInstance | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80' -Lcid 1031 -Confirm:$false } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80' -Lcid 1031 -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $Arguments.Lcid -eq 1031
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should not call Get-OperatingSystem when Lcid is specified' {
             $mockCimInstance | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80' -Lcid 1031 -Confirm:$false
 
-            Should -Invoke -CommandName Get-OperatingSystem -Exactly -Times 0
+            Should-Invoke -CommandName Get-OperatingSystem -Exactly -Times 0
         }
     }
 
@@ -167,7 +169,7 @@ Describe 'Remove-SqlDscRSUrlReservation' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80' -Confirm:$false } | Should -Throw -ErrorId 'RSRUR0001,Remove-SqlDscRSUrlReservation'
+            { $mockCimInstance | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80' -Confirm:$false } | Should-Throw -FullyQualifiedErrorId 'RSRUR0001,Remove-SqlDscRSUrlReservation'
         }
     }
 
@@ -183,7 +185,7 @@ Describe 'Remove-SqlDscRSUrlReservation' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80' -Confirm:$false } | Should -Throw -ErrorId 'RSRUR0001,Remove-SqlDscRSUrlReservation'
+            { $mockCimInstance | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80' -Confirm:$false } | Should-Throw -FullyQualifiedErrorId 'RSRUR0001,Remove-SqlDscRSUrlReservation'
         }
     }
 
@@ -199,7 +201,7 @@ Describe 'Remove-SqlDscRSUrlReservation' {
         It 'Should not call Invoke-RsCimMethod' {
             $mockCimInstance | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80' -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
         }
     }
 
@@ -213,9 +215,9 @@ Describe 'Remove-SqlDscRSUrlReservation' {
         }
 
         It 'Should remove URL reservation' {
-            { Remove-SqlDscRSUrlReservation -Configuration $mockCimInstance -Application 'ReportServerWebService' -UrlString 'http://+:80' -Confirm:$false } | Should -Not -Throw
+            $null = & ({ Remove-SqlDscRSUrlReservation -Configuration $mockCimInstance -Application 'ReportServerWebService' -UrlString 'http://+:80' -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -229,19 +231,19 @@ Describe 'Remove-SqlDscRSUrlReservation' {
         }
 
         It 'Should accept ReportServerWebApp application' {
-            { $mockCimInstance | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebApp' -UrlString 'http://+:80' -Confirm:$false } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebApp' -UrlString 'http://+:80' -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $Arguments.Application -eq 'ReportServerWebApp'
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should accept ReportManager application' {
-            { $mockCimInstance | Remove-SqlDscRSUrlReservation -Application 'ReportManager' -UrlString 'http://+:80' -Confirm:$false } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Remove-SqlDscRSUrlReservation -Application 'ReportManager' -UrlString 'http://+:80' -Confirm:$false })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $Arguments.Application -eq 'ReportManager'
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 }

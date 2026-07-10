@@ -84,17 +84,17 @@ Describe 'Resume-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
 
             # Verify database is offline
             $offlineDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
-            $offlineDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeTrue
+            $offlineDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should-BeTrue
 
             # Bring the database online
             $resultDb = Resume-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -PassThru -ErrorAction 'Stop'
-            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeFalse
-            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal) | Should -BeTrue
+            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should-BeFalse
+            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal) | Should-BeTrue
 
             # Verify the change
             $onlineDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
-            $onlineDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeFalse
-            $onlineDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal) | Should -BeTrue
+            $onlineDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should-BeFalse
+            $onlineDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal) | Should-BeTrue
         }
 
         It 'Should be idempotent when database is already online' {
@@ -106,13 +106,13 @@ Describe 'Resume-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
 
             # Verify the database is still online
             $onlineDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Refresh -ErrorAction 'Stop'
-            $onlineDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeFalse
-            $onlineDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal) | Should -BeTrue
+            $onlineDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should-BeFalse
+            $onlineDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal) | Should-BeTrue
         }
 
         It 'Should throw error when trying to bring online non-existent database' {
             { Resume-SqlDscDatabase -ServerObject $script:serverObject -Name 'NonExistentDatabase' -Force -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
     }
 
@@ -123,17 +123,17 @@ Describe 'Resume-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
 
             # Get the database object
             $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Refresh -ErrorAction 'Stop'
-            $databaseObject.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeTrue
+            $databaseObject.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should-BeTrue
 
             # Bring the database online
             $resultDb = Resume-SqlDscDatabase -DatabaseObject $databaseObject -Force -PassThru -ErrorAction 'Stop'
-            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeFalse
-            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal) | Should -BeTrue
+            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should-BeFalse
+            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal) | Should-BeTrue
 
             # Verify the change
             $onlineDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Refresh -ErrorAction 'Stop'
-            $onlineDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeFalse
-            $onlineDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal) | Should -BeTrue
+            $onlineDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should-BeFalse
+            $onlineDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal) | Should-BeTrue
         }
     }
 
@@ -144,8 +144,8 @@ Describe 'Resume-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
 
             # Bring online via pipeline
             $resultDb = $script:serverObject | Resume-SqlDscDatabase -Name $script:testDatabaseName -Force -Refresh -PassThru -ErrorAction 'Stop'
-            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeFalse
-            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal) | Should -BeTrue
+            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should-BeFalse
+            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal) | Should-BeTrue
         }
 
         It 'Should bring the database online via pipeline using DatabaseObject' {
@@ -155,8 +155,8 @@ Describe 'Resume-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
             # Get the database object and bring online via pipeline
             $databaseObject = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameForObject -Refresh -ErrorAction 'Stop'
             $resultDb = $databaseObject | Resume-SqlDscDatabase -Force -PassThru -ErrorAction 'Stop'
-            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeFalse
-            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal) | Should -BeTrue
+            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should-BeFalse
+            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal) | Should-BeTrue
         }
     }
 
@@ -167,8 +167,8 @@ Describe 'Resume-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
 
             # Bring online using pipeline
             $resultDb = $script:serverObject | Get-SqlDscDatabase -Name $script:testDatabaseName -Refresh | Resume-SqlDscDatabase -Force -PassThru -ErrorAction 'Stop'
-            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should -BeFalse
-            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal) | Should -BeTrue
+            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline) | Should-BeFalse
+            $resultDb.Status.HasFlag([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal) | Should-BeTrue
         }
     }
 }

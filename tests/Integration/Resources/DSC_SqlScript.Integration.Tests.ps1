@@ -172,17 +172,17 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 throw $_
             }
 
-            $resultObject.Name | Should -Be $ConfigurationData.AllNodes.Database1Name
+            $resultObject.Name | Should-Be $ConfigurationData.AllNodes.Database1Name
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.GetFilePath | Should -Be $ConfigurationData.AllNodes.GetSqlScriptPath
-            $resourceCurrentState.TestFilePath | Should -Be $ConfigurationData.AllNodes.TestSqlScriptPath
-            $resourceCurrentState.SetFilePath | Should -Be $ConfigurationData.AllNodes.SetSqlScriptPath
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.GetFilePath | Should-Be $ConfigurationData.AllNodes.GetSqlScriptPath
+            $resourceCurrentState.TestFilePath | Should-Be $ConfigurationData.AllNodes.TestSqlScriptPath
+            $resourceCurrentState.SetFilePath | Should-Be $ConfigurationData.AllNodes.SetSqlScriptPath
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -228,16 +228,16 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.GetResult | Should -Match $ConfigurationData.AllNodes.Database2Name
-            $resourceCurrentState.GetFilePath | Should -Be $ConfigurationData.AllNodes.GetSqlScriptPath
-            $resourceCurrentState.TestFilePath | Should -Be $ConfigurationData.AllNodes.TestSqlScriptPath
-            $resourceCurrentState.SetFilePath | Should -Be $ConfigurationData.AllNodes.SetSqlScriptPath
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.GetResult | Should-MatchString $ConfigurationData.AllNodes.Database2Name
+            $resourceCurrentState.GetFilePath | Should-Be $ConfigurationData.AllNodes.GetSqlScriptPath
+            $resourceCurrentState.TestFilePath | Should-Be $ConfigurationData.AllNodes.TestSqlScriptPath
+            $resourceCurrentState.SetFilePath | Should-Be $ConfigurationData.AllNodes.SetSqlScriptPath
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -320,17 +320,17 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 throw $_
             }
 
-            $resultObject.Name | Should -Be $ConfigurationData.AllNodes.Database3Name
+            $resultObject.Name | Should-Be $ConfigurationData.AllNodes.Database3Name
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.GetFilePath | Should -Be $ConfigurationData.AllNodes.GetSqlScriptPath
-            $resourceCurrentState.TestFilePath | Should -Be $ConfigurationData.AllNodes.TestSqlScriptPath
-            $resourceCurrentState.SetFilePath | Should -Be $ConfigurationData.AllNodes.SetSqlScriptPath
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.GetFilePath | Should-Be $ConfigurationData.AllNodes.GetSqlScriptPath
+            $resourceCurrentState.TestFilePath | Should-Be $ConfigurationData.AllNodes.TestSqlScriptPath
+            $resourceCurrentState.SetFilePath | Should-Be $ConfigurationData.AllNodes.SetSqlScriptPath
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -413,17 +413,17 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 throw $_
             }
 
-            $resultObject.Name | Should -Be $ConfigurationData.AllNodes.Database4Name
+            $resultObject.Name | Should-Be $ConfigurationData.AllNodes.Database4Name
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.GetFilePath | Should -Be $ConfigurationData.AllNodes.GetSqlScriptPath2
-            $resourceCurrentState.TestFilePath | Should -Be $ConfigurationData.AllNodes.TestSqlScriptPath2
-            $resourceCurrentState.SetFilePath | Should -Be $ConfigurationData.AllNodes.SetSqlScriptPath2
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.GetFilePath | Should-Be $ConfigurationData.AllNodes.GetSqlScriptPath2
+            $resourceCurrentState.TestFilePath | Should-Be $ConfigurationData.AllNodes.TestSqlScriptPath2
+            $resourceCurrentState.SetFilePath | Should-Be $ConfigurationData.AllNodes.SetSqlScriptPath2
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 

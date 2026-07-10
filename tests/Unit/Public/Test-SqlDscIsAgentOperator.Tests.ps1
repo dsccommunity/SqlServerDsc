@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'Env:\SqlServerDscCI' -ErrorAction 'SilentlyContinue'
 }
@@ -62,25 +64,25 @@ Describe 'Test-SqlDscIsAgentOperator' -Tag 'Public' {
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
     Context 'When command has correct parameter properties' {
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscIsAgentOperator').Parameters['ServerObject']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have ServerObject accept pipeline input' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscIsAgentOperator').Parameters['ServerObject']
-            $parameterInfo.Attributes.ValueFromPipeline | Should -BeTrue
+            $parameterInfo.Attributes.ValueFromPipeline | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscIsAgentOperator').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
     }
 
@@ -102,8 +104,8 @@ Describe 'Test-SqlDscIsAgentOperator' -Tag 'Public' {
 
             $result = Test-SqlDscIsAgentOperator -ServerObject $script:mockServerObject -Name 'TestOperator'
 
-            $result | Should -BeTrue
-            Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1 -Scope It
+            $result | Should-BeTrue
+            Should-Invoke -CommandName Get-AgentOperatorObject -Exactly -Scope It -Times 1
         }
 
         It 'Should return false when operator does not exist' {
@@ -113,8 +115,8 @@ Describe 'Test-SqlDscIsAgentOperator' -Tag 'Public' {
 
             $result = Test-SqlDscIsAgentOperator -ServerObject $script:mockServerObject -Name 'NonExistentOperator'
 
-            $result | Should -BeFalse
-            Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1 -Scope It
+            $result | Should-BeFalse
+            Should-Invoke -CommandName Get-AgentOperatorObject -Exactly -Scope It -Times 1
         }
 
         Context 'When using pipeline input' {
@@ -125,8 +127,8 @@ Describe 'Test-SqlDscIsAgentOperator' -Tag 'Public' {
 
                 $result = $script:mockServerObject | Test-SqlDscIsAgentOperator -Name 'TestOperator'
 
-                $result | Should -BeTrue
-                Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1 -Scope It
+                $result | Should-BeTrue
+                Should-Invoke -CommandName Get-AgentOperatorObject -Exactly -Scope It -Times 1
             }
         }
 
@@ -138,8 +140,8 @@ Describe 'Test-SqlDscIsAgentOperator' -Tag 'Public' {
 
                 $result = Test-SqlDscIsAgentOperator -ServerObject $script:mockServerObject -Name 'TestOperator' -Refresh
 
-                $result | Should -BeTrue
-                Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1 -Scope It
+                $result | Should-BeTrue
+                Should-Invoke -CommandName Get-AgentOperatorObject -Exactly -Scope It -Times 1
             }
         }
     }

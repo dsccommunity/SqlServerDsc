@@ -69,26 +69,26 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         It 'Should create a database successfully with minimal parameters' {
             $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:testDatabaseName
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:testDatabaseName
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Database'
 
             # Verify the database exists
             $createdDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -ErrorAction 'Stop'
-            $createdDb | Should -Not -BeNullOrEmpty
+            $createdDb | Should-BeTruthy
         }
 
         It 'Should create a database with specified properties' {
             $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameWithProperties -RecoveryModel 'Simple' -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:testDatabaseNameWithProperties
-            $result.RecoveryModel | Should -Be 'Simple'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:testDatabaseNameWithProperties
+            $result.RecoveryModel | Should-Be 'Simple'
 
             # Verify the database exists with correct properties
             $createdDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseNameWithProperties -ErrorAction 'Stop'
-            $createdDb | Should -Not -BeNullOrEmpty
-            $createdDb.RecoveryModel | Should -Be 'Simple'
+            $createdDb | Should-BeTruthy
+            $createdDb.RecoveryModel | Should-Be 'Simple'
         }
 
         It 'Should create a database and verify default boolean properties' {
@@ -99,18 +99,18 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
                 # Create database without specifying boolean properties - they should use defaults
                 $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithBoolProps -Force -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be $testDbWithBoolProps
+                $result | Should-BeTruthy
+                $result.Name | Should-Be $testDbWithBoolProps
                 # AutoClose and AutoShrink should be false by default
-                $result.AutoClose | Should -BeFalse
-                $result.AutoShrink | Should -BeFalse
-                $result.ReadOnly | Should -BeFalse
+                $result.AutoClose | Should-BeFalse
+                $result.AutoShrink | Should-BeFalse
+                $result.ReadOnly | Should-BeFalse
 
                 # Verify the database exists with correct properties
                 $createdDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithBoolProps -ErrorAction 'Stop'
-                $createdDb.AutoClose | Should -BeFalse
-                $createdDb.AutoShrink | Should -BeFalse
-                $createdDb.ReadOnly | Should -BeFalse
+                $createdDb.AutoClose | Should-BeFalse
+                $createdDb.AutoShrink | Should-BeFalse
+                $createdDb.ReadOnly | Should-BeFalse
             }
             finally
             {
@@ -129,13 +129,13 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             {
                 $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithIntProps -TargetRecoveryTime 60 -Force -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be $testDbWithIntProps
-                $result.TargetRecoveryTime | Should -Be 60
+                $result | Should-BeTruthy
+                $result.Name | Should-Be $testDbWithIntProps
+                $result.TargetRecoveryTime | Should-Be 60
 
                 # Verify the database exists with correct properties
                 $createdDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithIntProps -ErrorAction 'Stop'
-                $createdDb.TargetRecoveryTime | Should -Be 60
+                $createdDb.TargetRecoveryTime | Should-Be 60
             }
             finally
             {
@@ -154,15 +154,15 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             {
                 $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithEnumProps -PageVerify 'Checksum' -UserAccess 'Multiple' -Force -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be $testDbWithEnumProps
-                $result.PageVerify | Should -Be 'Checksum'
-                $result.UserAccess | Should -Be 'Multiple'
+                $result | Should-BeTruthy
+                $result.Name | Should-Be $testDbWithEnumProps
+                $result.PageVerify | Should-Be 'Checksum'
+                $result.UserAccess | Should-Be 'Multiple'
 
                 # Verify the database exists with correct properties
                 $createdDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithEnumProps -ErrorAction 'Stop'
-                $createdDb.PageVerify | Should -Be 'Checksum'
-                $createdDb.UserAccess | Should -Be 'Multiple'
+                $createdDb.PageVerify | Should-Be 'Checksum'
+                $createdDb.UserAccess | Should-Be 'Multiple'
             }
             finally
             {
@@ -181,17 +181,17 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             {
                 $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithMixedProps -RecoveryModel 'Simple' -TargetRecoveryTime 30 -PageVerify 'TornPageDetection' -Force -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be $testDbWithMixedProps
-                $result.RecoveryModel | Should -Be 'Simple'
-                $result.TargetRecoveryTime | Should -Be 30
-                $result.PageVerify | Should -Be 'TornPageDetection'
+                $result | Should-BeTruthy
+                $result.Name | Should-Be $testDbWithMixedProps
+                $result.RecoveryModel | Should-Be 'Simple'
+                $result.TargetRecoveryTime | Should-Be 30
+                $result.PageVerify | Should-Be 'TornPageDetection'
 
                 # Verify the database exists with correct properties
                 $createdDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $testDbWithMixedProps -ErrorAction 'Stop'
-                $createdDb.RecoveryModel | Should -Be 'Simple'
-                $createdDb.TargetRecoveryTime | Should -Be 30
-                $createdDb.PageVerify | Should -Be 'TornPageDetection'
+                $createdDb.RecoveryModel | Should-Be 'Simple'
+                $createdDb.TargetRecoveryTime | Should-Be 30
+                $createdDb.PageVerify | Should-Be 'TornPageDetection'
             }
             finally
             {
@@ -205,7 +205,7 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
         It 'Should throw error when trying to create a database that already exists' {
             { New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -Force -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
     }
 
@@ -231,8 +231,8 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:refreshTestDbName -Refresh -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:refreshTestDbName
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:refreshTestDbName
         }
     }
 
@@ -245,23 +245,23 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             # Create persistent database with Simple recovery model that will remain on the instance
             $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:persistentTestDatabase -RecoveryModel 'Simple' -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:persistentTestDatabase
-            $result.RecoveryModel | Should -Be 'Simple'
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:persistentTestDatabase
+            $result.RecoveryModel | Should-Be 'Simple'
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Database'
 
             # Verify the database exists
             $verifyDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:persistentTestDatabase -Refresh -ErrorAction 'Stop'
 
-            $verifyDb | Should -Not -BeNullOrEmpty
-            $verifyDb.Name | Should -Be $script:persistentTestDatabase
-            $verifyDb.RecoveryModel | Should -Be 'Simple'
+            $verifyDb | Should-BeTruthy
+            $verifyDb.Name | Should-Be $script:persistentTestDatabase
+            $verifyDb.RecoveryModel | Should-Be 'Simple'
         }
 
         It 'Should throw error when trying to create the persistent database that already exists' {
             # Try to re-create the persistent database which should already exist
             { New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:persistentTestDatabase -Force -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
     }
 
@@ -305,23 +305,23 @@ Describe 'New-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             # Create database with file group specifications
             $result = New-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseWithFileGroups -FileGroup @($primaryFileGroup, $secondaryFileGroup) -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:testDatabaseWithFileGroups
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:testDatabaseWithFileGroups
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Database'
 
             # Verify the database exists with correct file groups
             $createdDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseWithFileGroups -Refresh -ErrorAction 'Stop'
-            $createdDb | Should -Not -BeNullOrEmpty
+            $createdDb | Should-BeTruthy
 
             # Verify PRIMARY filegroup exists
-            $createdDb.FileGroups['PRIMARY'] | Should -Not -BeNullOrEmpty
-            $createdDb.FileGroups['PRIMARY'].Files.Count | Should -Be 1
-            $createdDb.FileGroups['PRIMARY'].Files[0].Name | Should -Be ($script:testDatabaseWithFileGroups + '_Primary')
+            $createdDb.FileGroups['PRIMARY'] | Should-BeTruthy
+            $createdDb.FileGroups['PRIMARY'].Files.Count | Should-Be 1
+            $createdDb.FileGroups['PRIMARY'].Files[0].Name | Should-Be ($script:testDatabaseWithFileGroups + '_Primary')
 
             # Verify secondary filegroup exists
-            $createdDb.FileGroups['SecondaryFG'] | Should -Not -BeNullOrEmpty
-            $createdDb.FileGroups['SecondaryFG'].Files.Count | Should -Be 1
-            $createdDb.FileGroups['SecondaryFG'].Files[0].Name | Should -Be ($script:testDatabaseWithFileGroups + '_Secondary')
+            $createdDb.FileGroups['SecondaryFG'] | Should-BeTruthy
+            $createdDb.FileGroups['SecondaryFG'].Files.Count | Should-Be 1
+            $createdDb.FileGroups['SecondaryFG'].Files[0].Name | Should-Be ($script:testDatabaseWithFileGroups + '_Secondary')
         }
     }
 }

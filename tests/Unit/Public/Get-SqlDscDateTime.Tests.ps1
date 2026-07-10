@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -71,8 +73,8 @@ Describe 'Get-SqlDscDateTime' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When retrieving date and time from SQL Server' {
@@ -92,12 +94,12 @@ Describe 'Get-SqlDscDateTime' -Tag 'Public' {
             It 'Should execute the query using default SYSDATETIME function and return the DateTime result' {
                 $result = Get-SqlDscDateTime -ServerObject $mockServerObject
 
-                $result | Should -BeOfType [System.DateTime]
-                $result | Should -Be $mockDateTime
+                $result | Should-HaveType ([System.DateTime])
+                $result | Should-Be $mockDateTime
 
-                Should -Invoke -CommandName Invoke-SqlDscScalarQuery -Exactly -Times 1 -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Invoke-SqlDscScalarQuery -Exactly -ParameterFilter {
                     $Query -eq 'SELECT SYSDATETIME()'
-                }
+                } -Scope It -Times 1
             }
         }
 
@@ -111,10 +113,10 @@ Describe 'Get-SqlDscDateTime' -Tag 'Public' {
             It 'Should execute the query and return the DateTime result' {
                 $result = $mockServerObject | Get-SqlDscDateTime
 
-                $result | Should -BeOfType [System.DateTime]
-                $result | Should -Be $mockDateTime
+                $result | Should-HaveType ([System.DateTime])
+                $result | Should-Be $mockDateTime
 
-                Should -Invoke -CommandName Invoke-SqlDscScalarQuery -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Invoke-SqlDscScalarQuery -Exactly -Scope It -Times 1
             }
         }
 
@@ -134,11 +136,11 @@ Describe 'Get-SqlDscDateTime' -Tag 'Public' {
             ) {
                 $result = Get-SqlDscDateTime -ServerObject $mockServerObject -DateTimeFunction $DateTimeFunction
 
-                $result | Should -BeOfType [System.DateTime]
+                $result | Should-HaveType ([System.DateTime])
 
-                Should -Invoke -CommandName Invoke-SqlDscScalarQuery -Exactly -Times 1 -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Invoke-SqlDscScalarQuery -Exactly -ParameterFilter {
                     $Query -eq $ExpectedQuery
-                }
+                } -Scope It -Times 1
             }
         }
 
@@ -152,11 +154,11 @@ Describe 'Get-SqlDscDateTime' -Tag 'Public' {
             It 'Should execute the query with the specified timeout' {
                 $result = Get-SqlDscDateTime -ServerObject $mockServerObject -StatementTimeout 900
 
-                $result | Should -BeOfType [System.DateTime]
+                $result | Should-HaveType ([System.DateTime])
 
-                Should -Invoke -CommandName Invoke-SqlDscScalarQuery -Exactly -Times 1 -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Invoke-SqlDscScalarQuery -Exactly -ParameterFilter {
                     $StatementTimeout -eq 900
-                }
+                } -Scope It -Times 1
             }
         }
 
@@ -172,10 +174,10 @@ Describe 'Get-SqlDscDateTime' -Tag 'Public' {
             It 'Should convert DateTimeOffset to DateTime and return the result' {
                 $result = Get-SqlDscDateTime -ServerObject $mockServerObject -DateTimeFunction 'SYSDATETIMEOFFSET'
 
-                $result | Should -BeOfType [System.DateTime]
-                $result | Should -Be $mockDateTimeOffset.DateTime
+                $result | Should-HaveType ([System.DateTime])
+                $result | Should-Be $mockDateTimeOffset.DateTime
 
-                Should -Invoke -CommandName Invoke-SqlDscScalarQuery -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Invoke-SqlDscScalarQuery -Exactly -Scope It -Times 1
             }
         }
     }
@@ -193,9 +195,9 @@ Describe 'Get-SqlDscDateTime' -Tag 'Public' {
             It 'Should throw the correct error' {
                 {
                     Get-SqlDscDateTime -ServerObject $mockServerObject -ErrorAction 'Stop'
-                } | Should -Throw
+                } | Should-Throw
 
-                Should -Invoke -CommandName Invoke-SqlDscScalarQuery -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Invoke-SqlDscScalarQuery -Exactly -Scope It -Times 1
             }
         }
 
@@ -203,9 +205,9 @@ Describe 'Get-SqlDscDateTime' -Tag 'Public' {
             It 'Should not throw an exception and does not return any result' {
                 $result = Get-SqlDscDateTime -ServerObject $mockServerObject -ErrorAction 'Ignore'
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
 
-                Should -Invoke -CommandName Invoke-SqlDscScalarQuery -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Invoke-SqlDscScalarQuery -Exactly -Scope It -Times 1
             }
         }
     }

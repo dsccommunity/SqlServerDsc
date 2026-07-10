@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -62,26 +64,26 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
 
             $null = New-SqlDscDataFile -FileGroup $mockFileGroupObject -Name 'MyDataFile' -FileName 'C:\Data\MyDataFile.mdf' -Confirm:$false
 
-            $mockFileGroupObject.Files.Count | Should -Be ($initialFileCount + 1)
+            $mockFileGroupObject.Files.Count | Should-Be ($initialFileCount + 1)
             $addedFile = $mockFileGroupObject.Files | Where-Object -FilterScript { $_.Name -eq 'MyDataFile' }
-            $addedFile | Should -Not -BeNullOrEmpty
-            $addedFile.FileName | Should -Be 'C:\Data\MyDataFile.mdf'
+            $addedFile | Should-BeTruthy
+            $addedFile.FileName | Should-Be 'C:\Data\MyDataFile.mdf'
         }
 
         It 'Should return the created DataFile when PassThru is specified' {
             $result = New-SqlDscDataFile -FileGroup $mockFileGroupObject -Name 'PassThruDataFile' -FileName 'C:\Data\PassThruDataFile.mdf' -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
-            $result.Name | Should -Be 'PassThruDataFile'
-            $result.FileName | Should -Be 'C:\Data\PassThruDataFile.mdf'
-            $result.Parent | Should -Be $mockFileGroupObject
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.DataFile'
+            $result.Name | Should-Be 'PassThruDataFile'
+            $result.FileName | Should-Be 'C:\Data\PassThruDataFile.mdf'
+            $result.Parent | Should-Be $mockFileGroupObject
         }
 
         It 'Should not return anything when PassThru is not specified' {
             $result = New-SqlDscDataFile -FileGroup $mockFileGroupObject -Name 'NoPassThruDataFile' -FileName 'C:\Data\NoPassThruDataFile.mdf' -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should create a sparse file for database snapshot' {
@@ -89,11 +91,11 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
 
             $result = New-SqlDscDataFile -FileGroup $mockFileGroupObject -Name 'MySnapshot_Data' -FileName 'C:\Snapshots\MySnapshot_Data.ss' -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'MySnapshot_Data'
-            $result.FileName | Should -Be 'C:\Snapshots\MySnapshot_Data.ss'
-            $result.Parent | Should -Be $mockFileGroupObject
-            $mockFileGroupObject.Files.Count | Should -Be ($initialFileCount + 1)
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'MySnapshot_Data'
+            $result.FileName | Should-Be 'C:\Snapshots\MySnapshot_Data.ss'
+            $result.Parent | Should-Be $mockFileGroupObject
+            $mockFileGroupObject.Files.Count | Should-Be ($initialFileCount + 1)
         }
 
         It 'Should support Force parameter to bypass confirmation' {
@@ -101,11 +103,11 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
 
             $result = New-SqlDscDataFile -FileGroup $mockFileGroupObject -Name 'ForcedDataFile' -FileName 'C:\Data\ForcedDataFile.mdf' -PassThru -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'ForcedDataFile'
-            $result.FileName | Should -Be 'C:\Data\ForcedDataFile.mdf'
-            $result.Parent | Should -Be $mockFileGroupObject
-            $mockFileGroupObject.Files.Count | Should -Be ($initialFileCount + 1)
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'ForcedDataFile'
+            $result.FileName | Should-Be 'C:\Data\ForcedDataFile.mdf'
+            $result.Parent | Should-Be $mockFileGroupObject
+            $mockFileGroupObject.Files.Count | Should-Be ($initialFileCount + 1)
         }
 
         It 'Should not add file when WhatIf is specified' {
@@ -113,8 +115,8 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
 
             $result = New-SqlDscDataFile -FileGroup $mockFileGroupObject -Name 'WhatIfDataFile' -FileName 'C:\Data\WhatIfDataFile.mdf' -WhatIf
 
-            $result | Should -BeNullOrEmpty
-            $mockFileGroupObject.Files.Count | Should -Be $initialFileCount
+            $result | Should-BeFalsy
+            $mockFileGroupObject.Files.Count | Should-Be $initialFileCount
         }
     }
 
@@ -132,8 +134,8 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have the correct parameters in parameter set FromSpec' -ForEach @(
@@ -149,8 +151,8 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have the correct parameters in parameter set AsSpec' -ForEach @(
@@ -166,62 +168,62 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have FileGroup as a mandatory parameter in Standard parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDataFile').Parameters['FileGroup']
             $standardSetAttribute = $parameterInfo.Attributes | Where-Object { $_.ParameterSetName -eq 'Standard' }
-            $standardSetAttribute.Mandatory | Should -BeTrue
+            $standardSetAttribute.Mandatory | Should-BeTrue
         }
 
         It 'Should have FileGroup as a mandatory parameter in FromSpec parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDataFile').Parameters['FileGroup']
             $fromSpecSetAttribute = $parameterInfo.Attributes | Where-Object { $_.ParameterSetName -eq 'FromSpec' }
-            $fromSpecSetAttribute.Mandatory | Should -BeTrue
+            $fromSpecSetAttribute.Mandatory | Should-BeTrue
         }
 
         It 'Should have Name as a mandatory parameter in Standard parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDataFile').Parameters['Name']
             $standardSetAttribute = $parameterInfo.Attributes | Where-Object { $_.ParameterSetName -eq 'Standard' }
-            $standardSetAttribute.Mandatory | Should -BeTrue
+            $standardSetAttribute.Mandatory | Should-BeTrue
         }
 
         It 'Should have Name as a mandatory parameter in AsSpec parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDataFile').Parameters['Name']
             $asSpecSetAttribute = $parameterInfo.Attributes | Where-Object { $_.ParameterSetName -eq 'AsSpec' }
-            $asSpecSetAttribute.Mandatory | Should -BeTrue
+            $asSpecSetAttribute.Mandatory | Should-BeTrue
         }
 
         It 'Should have FileName as a mandatory parameter in Standard parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDataFile').Parameters['FileName']
             $standardSetAttribute = $parameterInfo.Attributes | Where-Object { $_.ParameterSetName -eq 'Standard' }
-            $standardSetAttribute.Mandatory | Should -BeTrue
+            $standardSetAttribute.Mandatory | Should-BeTrue
         }
 
         It 'Should have FileName as a mandatory parameter in AsSpec parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDataFile').Parameters['FileName']
             $asSpecSetAttribute = $parameterInfo.Attributes | Where-Object { $_.ParameterSetName -eq 'AsSpec' }
-            $asSpecSetAttribute.Mandatory | Should -BeTrue
+            $asSpecSetAttribute.Mandatory | Should-BeTrue
         }
 
         It 'Should have DataFileSpec as a mandatory parameter in FromSpec parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDataFile').Parameters['DataFileSpec']
             $fromSpecSetAttribute = $parameterInfo.Attributes | Where-Object { $_.ParameterSetName -eq 'FromSpec' }
-            $fromSpecSetAttribute.Mandatory | Should -BeTrue
+            $fromSpecSetAttribute.Mandatory | Should-BeTrue
         }
 
         It 'Should have ValidateNotNull attribute on DataFileSpec parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDataFile').Parameters['DataFileSpec']
             $validateNotNullAttribute = $parameterInfo.Attributes | Where-Object { $_ -is [System.Management.Automation.ValidateNotNullAttribute] }
-            $validateNotNullAttribute | Should -Not -BeNullOrEmpty
+            $validateNotNullAttribute | Should-BeTruthy
         }
 
         It 'Should have AsSpec as a mandatory parameter in AsSpec parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscDataFile').Parameters['AsSpec']
             $asSpecSetAttribute = $parameterInfo.Attributes | Where-Object { $_.ParameterSetName -eq 'AsSpec' }
-            $asSpecSetAttribute.Mandatory | Should -BeTrue
+            $asSpecSetAttribute.Mandatory | Should-BeTrue
         }
     }
 
@@ -229,27 +231,27 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
         It 'Should return a DatabaseFileSpec object' {
             $result = New-SqlDscDataFile -Name 'MyDB_Primary' -FileName 'D:\SQLData\MyDB.mdf' -AsSpec
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.GetType().Name | Should -Be 'DatabaseFileSpec'
-            $result.Name | Should -Be 'MyDB_Primary'
-            $result.FileName | Should -Be 'D:\SQLData\MyDB.mdf'
+            $result | Should-BeTruthy
+            $result.GetType().Name | Should-Be 'DatabaseFileSpec'
+            $result.Name | Should-Be 'MyDB_Primary'
+            $result.FileName | Should-Be 'D:\SQLData\MyDB.mdf'
         }
 
         It 'Should set IsPrimaryFile when specified' {
             $result = New-SqlDscDataFile -Name 'MyDB_Primary' -FileName 'D:\SQLData\MyDB.mdf' -IsPrimaryFile -AsSpec
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.IsPrimaryFile | Should -BeTrue
+            $result | Should-BeTruthy
+            $result.IsPrimaryFile | Should-BeTrue
         }
 
         It 'Should set Size, MaxSize, Growth, and GrowthType when specified' {
             $result = New-SqlDscDataFile -Name 'MyDB_Primary' -FileName 'D:\SQLData\MyDB.mdf' -Size 102400 -MaxSize 5242880 -Growth 10240 -GrowthType 'KB' -AsSpec
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Size | Should -Be 102400
-            $result.MaxSize | Should -Be 5242880
-            $result.Growth | Should -Be 10240
-            $result.GrowthType | Should -Be 'KB'
+            $result | Should-BeTruthy
+            $result.Size | Should-Be 102400
+            $result.MaxSize | Should-Be 5242880
+            $result.Growth | Should-Be 10240
+            $result.GrowthType | Should-Be 'KB'
         }
     }
 
@@ -268,9 +270,9 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
 
             $result = New-SqlDscDataFile -FileGroup $mockFileGroupObject -DataFileSpec $fileSpec -PassThru -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
-            $mockFileGroupObject.Files.Count | Should -Be ($initialFileCount + 1)
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.DataFile'
+            $mockFileGroupObject.Files.Count | Should-Be ($initialFileCount + 1)
         }
 
         It 'Should throw an error when IsPrimaryFile is specified but filegroup is not PRIMARY' {
@@ -279,7 +281,7 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
             $fileSpec = New-SqlDscDataFile -Name 'MyDB_Primary' -FileName 'D:\SQLData\MyDB.mdf' -IsPrimaryFile -AsSpec
 
             { New-SqlDscDataFile -FileGroup $mockFileGroupObject -DataFileSpec $fileSpec -Force -ErrorAction Stop } |
-                Should -Throw -ExpectedMessage '*The primary file must reside in the PRIMARY filegroup*'
+                Should-Throw -ExceptionMessage '*The primary file must reside in the PRIMARY filegroup*'
         }
 
         It 'Should create a DataFile from a DatabaseFileSpec without IsPrimaryFile in a non-PRIMARY filegroup' {
@@ -291,9 +293,9 @@ Describe 'New-SqlDscDataFile' -Tag 'Public' {
 
             $result = New-SqlDscDataFile -FileGroup $mockFileGroupObject -DataFileSpec $fileSpec -PassThru -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.DataFile'
-            $mockFileGroupObject.Files.Count | Should -Be ($initialFileCount + 1)
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.DataFile'
+            $mockFileGroupObject.Files.Count | Should-Be ($initialFileCount + 1)
         }
     }
 }

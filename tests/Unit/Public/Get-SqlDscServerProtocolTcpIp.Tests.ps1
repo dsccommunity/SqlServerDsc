@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -52,37 +54,37 @@ Describe 'Get-SqlDscServerProtocolTcpIp' -Tag 'Public' {
     Context 'When testing localized strings' {
         It 'Should have localized string for getting specific IP address group' {
             InModuleScope -ScriptBlock {
-                $script:localizedData.ServerProtocolTcpIp_GetIpAddressGroup | Should -Not -BeNullOrEmpty
+                $script:localizedData.ServerProtocolTcpIp_GetIpAddressGroup | Should-BeTruthy
             }
         }
 
         It 'Should have localized string for getting all IP address groups' {
             InModuleScope -ScriptBlock {
-                $script:localizedData.ServerProtocolTcpIp_GetAllIpAddressGroups | Should -Not -BeNullOrEmpty
+                $script:localizedData.ServerProtocolTcpIp_GetAllIpAddressGroups | Should-BeTruthy
             }
         }
 
         It 'Should have localized string for getting IP address group from protocol' {
             InModuleScope -ScriptBlock {
-                $script:localizedData.ServerProtocolTcpIp_GetIpAddressGroupFromProtocol | Should -Not -BeNullOrEmpty
+                $script:localizedData.ServerProtocolTcpIp_GetIpAddressGroupFromProtocol | Should-BeTruthy
             }
         }
 
         It 'Should have localized string for getting all IP address groups from protocol' {
             InModuleScope -ScriptBlock {
-                $script:localizedData.ServerProtocolTcpIp_GetAllIpAddressGroupsFromProtocol | Should -Not -BeNullOrEmpty
+                $script:localizedData.ServerProtocolTcpIp_GetAllIpAddressGroupsFromProtocol | Should-BeTruthy
             }
         }
 
         It 'Should have localized string for invalid protocol error' {
             InModuleScope -ScriptBlock {
-                $script:localizedData.ServerProtocolTcpIp_InvalidProtocol | Should -Not -BeNullOrEmpty
+                $script:localizedData.ServerProtocolTcpIp_InvalidProtocol | Should-BeTruthy
             }
         }
 
         It 'Should have localized string for IP address group not found error' {
             InModuleScope -ScriptBlock {
-                $script:localizedData.ServerProtocolTcpIp_IpAddressGroupNotFound | Should -Not -BeNullOrEmpty
+                $script:localizedData.ServerProtocolTcpIp_IpAddressGroupNotFound | Should-BeTruthy
             }
         }
     }
@@ -143,50 +145,50 @@ Describe 'Get-SqlDscServerProtocolTcpIp' -Tag 'Public' {
         It 'Should return IPAll address group when specified' {
             $result = Get-SqlDscServerProtocolTcpIp -InstanceName 'MSSQLSERVER' -IpAddressGroup 'IPAll'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'IPAll'
-            $result.IPAddressProperties['TcpPort'].Value | Should -Be '1433'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'IPAll'
+            $result.IPAddressProperties['TcpPort'].Value | Should-Be '1433'
 
-            Should -Invoke -CommandName Get-SqlDscServerProtocol -ParameterFilter {
+            Should-Invoke -CommandName Get-SqlDscServerProtocol -Exactly -ParameterFilter {
                 $InstanceName -eq 'MSSQLSERVER' -and $ProtocolName -eq 'TcpIp'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should return IP1 address group when specified' {
             $result = Get-SqlDscServerProtocolTcpIp -InstanceName 'MSSQLSERVER' -IpAddressGroup 'IP1'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'IP1'
-            $result.IPAddressProperties['TcpPort'].Value | Should -Be '1434'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'IP1'
+            $result.IPAddressProperties['TcpPort'].Value | Should-Be '1434'
         }
 
         It 'Should return all IP address groups when IpAddressGroup is not specified' {
             $result = Get-SqlDscServerProtocolTcpIp -InstanceName 'MSSQLSERVER'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -HaveCount 2
+            $result | Should-BeTruthy
+            $result | Should-BeCollection -Count 2
 
             $ipAll = $result | Where-Object -FilterScript { $_.Name -eq 'IPAll' }
-            $ipAll | Should -Not -BeNullOrEmpty
+            $ipAll | Should-BeTruthy
 
             $ip1 = $result | Where-Object -FilterScript { $_.Name -eq 'IP1' }
-            $ip1 | Should -Not -BeNullOrEmpty
+            $ip1 | Should-BeTruthy
         }
 
         It 'Should use specified server name' {
             $null = Get-SqlDscServerProtocolTcpIp -ServerName 'TestServer' -InstanceName 'MSSQLSERVER' -IpAddressGroup 'IPAll'
 
-            Should -Invoke -CommandName Get-SqlDscServerProtocol -ParameterFilter {
+            Should-Invoke -CommandName Get-SqlDscServerProtocol -Exactly -ParameterFilter {
                 $ServerName -eq 'TestServer'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should use local computer name when ServerName is not provided' {
             $null = Get-SqlDscServerProtocolTcpIp -InstanceName 'MSSQLSERVER' -IpAddressGroup 'IPAll'
 
-            Should -Invoke -CommandName Get-SqlDscServerProtocol -ParameterFilter {
+            Should-Invoke -CommandName Get-SqlDscServerProtocol -Exactly -ParameterFilter {
                 $ServerName -eq 'LocalComputer'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 
@@ -222,21 +224,21 @@ Describe 'Get-SqlDscServerProtocolTcpIp' -Tag 'Public' {
         It 'Should work with pipeline input from server protocol object' {
             $result = $script:mockServerProtocol | Get-SqlDscServerProtocolTcpIp -IpAddressGroup 'IPAll'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'IPAll'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'IPAll'
 
             # Should not call Get-SqlDscServerProtocol when using pipeline
-            Should -Invoke -CommandName Get-SqlDscServerProtocol -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Get-SqlDscServerProtocol -Exactly -Scope It -Times 0
         }
 
         It 'Should return all IP address groups from pipeline input' {
             $result = $script:mockServerProtocol | Get-SqlDscServerProtocolTcpIp
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -HaveCount 1
-            $result.Name | Should -Be 'IPAll'
+            $result | Should-BeTruthy
+            $result | Should-BeCollection -Count 1
+            $result.Name | Should-Be 'IPAll'
 
-            Should -Invoke -CommandName Get-SqlDscServerProtocol -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Get-SqlDscServerProtocol -Exactly -Scope It -Times 0
         }
     }
 
@@ -249,11 +251,11 @@ Describe 'Get-SqlDscServerProtocolTcpIp' -Tag 'Public' {
         }
 
         It 'Should throw an error when protocol is not TcpIp' {
-            { $script:mockNamedPipesProtocol | Get-SqlDscServerProtocolTcpIp } | Should -Throw '*is not the TCP/IP protocol*'
+            { $script:mockNamedPipesProtocol | Get-SqlDscServerProtocolTcpIp } | Should-Throw '*is not the TCP/IP protocol*'
         }
 
         It 'Should throw terminating error with correct error record properties' {
-            { $script:mockNamedPipesProtocol | Get-SqlDscServerProtocolTcpIp } | Should -Throw -ErrorId 'InvalidServerProtocol,Get-SqlDscServerProtocolTcpIp'
+            { $script:mockNamedPipesProtocol | Get-SqlDscServerProtocolTcpIp } | Should-Throw -FullyQualifiedErrorId 'InvalidServerProtocol,Get-SqlDscServerProtocolTcpIp'
         }
     }
 
@@ -278,17 +280,17 @@ Describe 'Get-SqlDscServerProtocolTcpIp' -Tag 'Public' {
         }
 
         It 'Should throw an error when IP address group is not found' {
-            { Get-SqlDscServerProtocolTcpIp -InstanceName 'MSSQLSERVER' -IpAddressGroup 'IPAll' } | Should -Throw '*Could not find TCP/IP address group*'
+            { Get-SqlDscServerProtocolTcpIp -InstanceName 'MSSQLSERVER' -IpAddressGroup 'IPAll' } | Should-Throw '*Could not find TCP/IP address group*'
         }
 
         It 'Should throw terminating error with correct error record properties' {
-            { Get-SqlDscServerProtocolTcpIp -InstanceName 'MSSQLSERVER' -IpAddressGroup 'IPAll' } | Should -Throw -ErrorId 'IpAddressGroupNotFound,Get-SqlDscServerProtocolTcpIp'
+            { Get-SqlDscServerProtocolTcpIp -InstanceName 'MSSQLSERVER' -IpAddressGroup 'IPAll' } | Should-Throw -FullyQualifiedErrorId 'IpAddressGroupNotFound,Get-SqlDscServerProtocolTcpIp'
         }
 
         It 'Should return null when no IP address groups exist and IpAddressGroup is not specified' {
             $result = Get-SqlDscServerProtocolTcpIp -InstanceName 'MSSQLSERVER'
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -305,8 +307,8 @@ Describe 'Get-SqlDscServerProtocolTcpIp' -Tag 'Public' {
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have the correct parameters in parameter set ByServerProtocolObject' -ForEach @(
@@ -321,24 +323,24 @@ Describe 'Get-SqlDscServerProtocolTcpIp' -Tag 'Public' {
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have InstanceName as a mandatory parameter in ByServerName set' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscServerProtocolTcpIp').Parameters['InstanceName']
             $parameterSetAttribute = $parameterInfo.Attributes | Where-Object -FilterScript { $_.ParameterSetName -eq 'ByServerName' }
-            $parameterSetAttribute.Mandatory | Should -BeTrue
+            $parameterSetAttribute.Mandatory | Should-BeTrue
         }
 
         It 'Should have IpAddressGroup as an optional parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscServerProtocolTcpIp').Parameters['IpAddressGroup']
-            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
 
         It 'Should have ServerProtocolObject as a pipeline parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscServerProtocolTcpIp').Parameters['ServerProtocolObject']
-            $parameterInfo.Attributes.ValueFromPipeline | Should -Not -Contain $false
+            $parameterInfo.Attributes.ValueFromPipeline | Should-NotContainCollection $false
         }
     }
 }

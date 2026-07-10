@@ -68,13 +68,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:subModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:subModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:subModuleName -All | Remove-Module -Force
@@ -151,9 +153,8 @@ Describe 'SqlServerDsc.Common\Connect-SqlAnalysis' -Tag 'ConnectSqlAnalysis' {
             It 'Should not throw when connecting' {
                 $null = Connect-SQLAnalysis -FeatureFlag 'AnalysisServicesConnection'
 
-                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
-                    -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                Should-Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName New-Object -Exactly -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter -Scope It -Times 1
             }
 
             Context 'When Connected status is $false' {
@@ -174,7 +175,7 @@ Describe 'SqlServerDsc.Common\Connect-SqlAnalysis' -Tag 'ConnectSqlAnalysis' {
                         $mockLocalizedString -f $mockComputerName
                     )
 
-                    { Connect-SQLAnalysis -FeatureFlag 'AnalysisServicesConnection' } | Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
+                    { Connect-SQLAnalysis -FeatureFlag 'AnalysisServicesConnection' } | Should-Throw -ExceptionMessage ($mockErrorRecord.Exception.Message + '*')
                 }
             }
         }
@@ -207,8 +208,7 @@ Describe 'SqlServerDsc.Common\Connect-SqlAnalysis' -Tag 'ConnectSqlAnalysis' {
 
                 $null = Connect-SQLAnalysis
 
-                Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
-                    -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                Should-Invoke -CommandName New-Object -Exactly -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter -Scope It -Times 1
             }
         }
 
@@ -218,8 +218,7 @@ Describe 'SqlServerDsc.Common\Connect-SqlAnalysis' -Tag 'ConnectSqlAnalysis' {
 
                 $null = Connect-SQLAnalysis -InstanceName $mockInstanceName
 
-                Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
-                    -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                Should-Invoke -CommandName New-Object -Exactly -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter -Scope It -Times 1
             }
         }
 
@@ -230,8 +229,7 @@ Describe 'SqlServerDsc.Common\Connect-SqlAnalysis' -Tag 'ConnectSqlAnalysis' {
 
                     $null = Connect-SQLAnalysis -InstanceName $mockInstanceName -SetupCredential $mockSqlCredential
 
-                    Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
-                        -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                    Should-Invoke -CommandName New-Object -Exactly -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter -Scope It -Times 1
                 }
             }
 
@@ -241,8 +239,7 @@ Describe 'SqlServerDsc.Common\Connect-SqlAnalysis' -Tag 'ConnectSqlAnalysis' {
 
                     $null = Connect-SQLAnalysis -InstanceName $mockInstanceName -SetupCredential $mockNetBiosSqlCredential
 
-                    Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
-                        -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                    Should-Invoke -CommandName New-Object -Exactly -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter -Scope It -Times 1
                 }
             }
 
@@ -252,8 +249,7 @@ Describe 'SqlServerDsc.Common\Connect-SqlAnalysis' -Tag 'ConnectSqlAnalysis' {
 
                     $null = Connect-SQLAnalysis -InstanceName $mockInstanceName -SetupCredential $mockFqdnSqlCredential
 
-                    Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
-                        -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                    Should-Invoke -CommandName New-Object -Exactly -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter -Scope It -Times 1
                 }
             }
         }
@@ -273,10 +269,9 @@ Describe 'SqlServerDsc.Common\Connect-SqlAnalysis' -Tag 'ConnectSqlAnalysis' {
                     $mockLocalizedString -f $mockComputerName
                 )
 
-                { Connect-SQLAnalysis } | Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
+                { Connect-SQLAnalysis } | Should-Throw -ExceptionMessage ($mockErrorRecord.Exception.Message + '*')
 
-                Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
-                    -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                Should-Invoke -CommandName New-Object -Exactly -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter -Scope It -Times 1
             }
         }
 
@@ -295,10 +290,9 @@ Describe 'SqlServerDsc.Common\Connect-SqlAnalysis' -Tag 'ConnectSqlAnalysis' {
                     $mockLocalizedString -f $mockComputerName
                 )
 
-                { Connect-SQLAnalysis } | Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
+                { Connect-SQLAnalysis } | Should-Throw -ExceptionMessage ($mockErrorRecord.Exception.Message + '*')
 
-                Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
-                    -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                Should-Invoke -CommandName New-Object -Exactly -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter -Scope It -Times 1
 
                 # Setting it back to the default so it does not disturb other tests.
                 $mockThrowInvalidOperation = $false
@@ -323,10 +317,9 @@ Describe 'SqlServerDsc.Common\Connect-SqlAnalysis' -Tag 'ConnectSqlAnalysis' {
                     $mockLocalizedString -f "$($testParameters.ServerName)\$($testParameters.InstanceName)"
                 )
 
-                { Connect-SQLAnalysis @testParameters } | Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
+                { Connect-SQLAnalysis @testParameters } | Should-Throw -ExceptionMessage ($mockErrorRecord.Exception.Message + '*')
 
-                Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
-                    -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                Should-Invoke -CommandName New-Object -Exactly -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter -Scope It -Times 1
             }
         }
     }

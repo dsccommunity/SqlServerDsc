@@ -68,13 +68,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:subModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:subModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:subModuleName -All | Remove-Module -Force
@@ -143,18 +145,18 @@ Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEff
             $mockInvokeQueryPermissionsSet = $mockAllServerPermissionsPresent.Clone()
             $testLoginEffectiveServerPermissionsParams.Permissions = $mockAllServerPermissionsPresent.Clone()
 
-            Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should -BeTrue
+            Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should-BeTrue
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 1
         }
 
         It 'Should return $true when the desired login permissions are present' {
             $mockInvokeQueryPermissionsSet = $mockAllLoginPermissionsPresent.Clone()
             $testLoginEffectiveLoginPermissionsParams.Permissions = $mockAllLoginPermissionsPresent.Clone()
 
-            Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should -BeTrue
+            Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should-BeTrue
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 1
         }
     }
 
@@ -163,36 +165,36 @@ Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEff
             $mockInvokeQueryPermissionsSet = $mockServerPermissionsMissing.Clone()
             $testLoginEffectiveServerPermissionsParams.Permissions = $mockAllServerPermissionsPresent.Clone()
 
-            Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should -BeFalse
+            Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should-BeFalse
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 1
         }
 
         It 'Should return $false when the specified login has no server permissions assigned' {
             $mockInvokeQueryPermissionsSet = @()
             $testLoginEffectiveServerPermissionsParams.Permissions = $mockAllServerPermissionsPresent.Clone()
 
-            Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should -BeFalse
+            Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should-BeFalse
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 1
         }
 
         It 'Should return $false when the desired login permissions are not present' {
             $mockInvokeQueryPermissionsSet = $mockLoginPermissionsMissing.Clone()
             $testLoginEffectiveLoginPermissionsParams.Permissions = $mockAllLoginPermissionsPresent.Clone()
 
-            Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should -BeFalse
+            Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should-BeFalse
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 1
         }
 
         It 'Should return $false when the specified login has no login permissions assigned' {
             $mockInvokeQueryPermissionsSet = @()
             $testLoginEffectiveLoginPermissionsParams.Permissions = $mockAllLoginPermissionsPresent.Clone()
 
-            Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should -BeFalse
+            Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should-BeFalse
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 1
         }
     }
 }

@@ -69,7 +69,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             # Assert - Verify the trace flag was added
             $currentTraceFlags = Get-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
-            $currentTraceFlags | Should -Contain $script:singleTestTraceFlag
+            $currentTraceFlags | Should-ContainCollection $script:singleTestTraceFlag
         }
 
         It 'Should add multiple trace flags without error' {
@@ -80,7 +80,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
             $currentTraceFlags = Get-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
             foreach ($traceFlag in $script:testTraceFlags)
             {
-                $currentTraceFlags | Should -Contain $traceFlag
+                $currentTraceFlags | Should-ContainCollection $traceFlag
             }
         }
 
@@ -98,8 +98,8 @@ Describe 'Add-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
             $afterAddTraceFlags = Get-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
             $afterCount = ($afterAddTraceFlags | Where-Object { $_ -eq $script:singleTestTraceFlag }).Count
 
-            $afterCount | Should -Be $beforeCount
-            $afterAddTraceFlags | Should -Contain $script:singleTestTraceFlag
+            $afterCount | Should-Be $beforeCount
+            $afterAddTraceFlags | Should-ContainCollection $script:singleTestTraceFlag
         }
 
         It 'Should preserve existing trace flags when adding new ones' {
@@ -111,8 +111,8 @@ Describe 'Add-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             # Assert - Verify both old and new trace flags exist
             $currentTraceFlags = Get-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
-            $currentTraceFlags | Should -Contain $script:singleTestTraceFlag
-            $currentTraceFlags | Should -Contain $script:additionalTestTraceFlag
+            $currentTraceFlags | Should-ContainCollection $script:singleTestTraceFlag
+            $currentTraceFlags | Should-ContainCollection $script:additionalTestTraceFlag
         }
 
         It 'Should de-duplicate trace flags provided in the input array' {
@@ -121,8 +121,8 @@ Describe 'Add-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             # Assert - Verify each trace flag appears only once
             $currentTraceFlags = Get-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
-            ($currentTraceFlags | Where-Object { $_ -eq $script:singleTestTraceFlag }).Count | Should -Be 1
-            ($currentTraceFlags | Where-Object { $_ -eq $script:additionalTestTraceFlag }).Count | Should -Be 1
+            ($currentTraceFlags | Where-Object { $_ -eq $script:singleTestTraceFlag }).Count | Should-Be 1
+            ($currentTraceFlags | Where-Object { $_ -eq $script:additionalTestTraceFlag }).Count | Should-Be 1
         }
     }
 
@@ -156,7 +156,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             # Assert - Verify the trace flag was added
             $currentTraceFlags = Get-SqlDscTraceFlag -ServiceObject $script:serviceObject -ErrorAction 'Stop'
-            $currentTraceFlags | Should -Contain $script:singleTestTraceFlag
+            $currentTraceFlags | Should-ContainCollection $script:singleTestTraceFlag
         }
 
         It 'Should add multiple trace flags using ServiceObject parameter' {
@@ -167,7 +167,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
             $currentTraceFlags = Get-SqlDscTraceFlag -ServiceObject $script:serviceObject -ErrorAction 'Stop'
             foreach ($traceFlag in $script:testTraceFlags)
             {
-                $currentTraceFlags | Should -Contain $traceFlag
+                $currentTraceFlags | Should-ContainCollection $traceFlag
             }
         }
 
@@ -177,8 +177,8 @@ Describe 'Add-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             # Assert - Verify each trace flag appears only once
             $currentTraceFlags = Get-SqlDscTraceFlag -ServiceObject $script:serviceObject -ErrorAction 'Stop'
-            ($currentTraceFlags | Where-Object { $_ -eq $script:singleTestTraceFlag }).Count | Should -Be 1
-            ($currentTraceFlags | Where-Object { $_ -eq $script:additionalTestTraceFlag }).Count | Should -Be 1
+            ($currentTraceFlags | Where-Object { $_ -eq $script:singleTestTraceFlag }).Count | Should-Be 1
+            ($currentTraceFlags | Where-Object { $_ -eq $script:additionalTestTraceFlag }).Count | Should-Be 1
         }
     }
 }

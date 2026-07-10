@@ -56,8 +56,8 @@ Describe 'Request-SqlDscRSDatabaseScript' {
         }
 
         It 'Should return a string containing T-SQL' {
-            $script:databaseScript | Should -Not -BeNullOrEmpty
-            $script:databaseScript | Should -Match 'CREATE DATABASE'
+            $script:databaseScript | Should-BeTruthy
+            $script:databaseScript | Should-MatchString 'CREATE DATABASE'
         }
     }
 
@@ -85,8 +85,8 @@ Describe 'Request-SqlDscRSDatabaseScript' {
         }
 
         It 'Should return a string containing T-SQL' {
-            $script:databaseScript | Should -Not -BeNullOrEmpty
-            $script:databaseScript | Should -Match 'CREATE DATABASE'
+            $script:databaseScript | Should-BeTruthy
+            $script:databaseScript | Should-MatchString 'CREATE DATABASE'
         }
     }
 
@@ -114,8 +114,8 @@ Describe 'Request-SqlDscRSDatabaseScript' {
         }
 
         It 'Should return a string containing T-SQL' {
-            $script:databaseScript | Should -Not -BeNullOrEmpty
-            $script:databaseScript | Should -Match 'CREATE DATABASE'
+            $script:databaseScript | Should-BeTruthy
+            $script:databaseScript | Should-MatchString 'CREATE DATABASE'
         }
     }
 
@@ -143,8 +143,8 @@ Describe 'Request-SqlDscRSDatabaseScript' {
         }
 
         It 'Should return a string containing T-SQL' {
-            $script:databaseScript | Should -Not -BeNullOrEmpty
-            $script:databaseScript | Should -Match 'CREATE DATABASE'
+            $script:databaseScript | Should-BeTruthy
+            $script:databaseScript | Should-MatchString 'CREATE DATABASE'
         }
     }
 }

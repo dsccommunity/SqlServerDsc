@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -75,12 +77,12 @@ Describe 'Get-SqlDscManagedComputerService' -Tag 'Public' {
         It 'Should return the correct values' {
             $result = Get-SqlDscManagedComputerService
 
-            $result | Should -HaveCount 3
-            $result.Name | Should -Contain 'MSSQL$SQL2022'
-            $result.Name | Should -Contain 'SQLBrowser'
-            $result.Name | Should -Contain 'MSSQLSERVER'
+            $result | Should-BeCollection -Count 3
+            $result.Name | Should-ContainCollection 'MSSQL$SQL2022'
+            $result.Name | Should-ContainCollection 'SQLBrowser'
+            $result.Name | Should-ContainCollection 'MSSQLSERVER'
 
-            Should -Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Scope It -Times 1
         }
     }
 
@@ -88,12 +90,12 @@ Describe 'Get-SqlDscManagedComputerService' -Tag 'Public' {
         It 'Should return the correct values' {
             $result = Get-SqlDscManagedComputerService -ServerName 'localhost'
 
-            $result | Should -HaveCount 3
-            $result.Name | Should -Contain 'MSSQL$SQL2022'
-            $result.Name | Should -Contain 'SQLBrowser'
-            $result.Name | Should -Contain 'MSSQLSERVER'
+            $result | Should-BeCollection -Count 3
+            $result.Name | Should-ContainCollection 'MSSQL$SQL2022'
+            $result.Name | Should-ContainCollection 'SQLBrowser'
+            $result.Name | Should-ContainCollection 'MSSQLSERVER'
 
-            Should -Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Scope It -Times 1
         }
 
         Context 'When passing parameter ManagedComputerObject over the pipeline' {
@@ -131,12 +133,12 @@ Describe 'Get-SqlDscManagedComputerService' -Tag 'Public' {
                     $managedComputerObject2
                  ) | Get-SqlDscManagedComputerService
 
-                $result | Should -HaveCount 3
-                $result.Name | Should -Contain 'MSSQL$SQL2022'
-                $result.Name | Should -Contain 'SQLBrowser'
-                $result.Name | Should -Contain 'MSSQLSERVER'
+                $result | Should-BeCollection -Count 3
+                $result.Name | Should-ContainCollection 'MSSQL$SQL2022'
+                $result.Name | Should-ContainCollection 'SQLBrowser'
+                $result.Name | Should-ContainCollection 'MSSQLSERVER'
 
-                Should -Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Scope It -Times 0
             }
         }
     }
@@ -145,11 +147,11 @@ Describe 'Get-SqlDscManagedComputerService' -Tag 'Public' {
         It 'Should return the correct values' {
             $result = Get-SqlDscManagedComputerService -ServiceType 'DatabaseEngine'
 
-            $result | Should -HaveCount 2
-            $result.Name | Should -Contain 'MSSQL$SQL2022'
-            $result.Name | Should -Contain 'MSSQLSERVER'
+            $result | Should-BeCollection -Count 2
+            $result.Name | Should-ContainCollection 'MSSQL$SQL2022'
+            $result.Name | Should-ContainCollection 'MSSQLSERVER'
 
-            Should -Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Scope It -Times 1
         }
     }
 
@@ -157,10 +159,10 @@ Describe 'Get-SqlDscManagedComputerService' -Tag 'Public' {
         It 'Should return the correct values' {
             $result = Get-SqlDscManagedComputerService -InstanceName 'SQL2022'
 
-            $result | Should -HaveCount 1
-            $result.Name | Should -Contain 'MSSQL$SQL2022'
+            $result | Should-BeCollection -Count 1
+            $result.Name | Should-ContainCollection 'MSSQL$SQL2022'
 
-            Should -Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscManagedComputer -Exactly -Scope It -Times 1
         }
     }
 }

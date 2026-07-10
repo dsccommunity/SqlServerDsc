@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -67,12 +69,12 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag 'Private' {
             InModuleScope -ScriptBlock {
                 $result = ConvertTo-AuditNewParameterSet -AuditObject $script:mockAuditObject
 
-                $result | Should -BeOfType [System.Collections.Hashtable]
-                $result['ServerObject'] | Should -Be $script:mockServerObject
-                $result['Name'] | Should -Be 'TestAudit'
-                $result['Path'] | Should -Be 'C:\Temp'
-                $result['OnFailure'] | Should -Be 'Continue'
-                $result['QueueDelay'] | Should -Be 1000
+                $result | Should-HaveType ([System.Collections.Hashtable])
+                $result['ServerObject'] | Should-Be $script:mockServerObject
+                $result['Name'] | Should-Be 'TestAudit'
+                $result['Path'] | Should-Be 'C:\Temp'
+                $result['OnFailure'] | Should-Be 'Continue'
+                $result['QueueDelay'] | Should-Be 1000
             }
         }
     }
@@ -93,8 +95,8 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag 'Private' {
             InModuleScope -ScriptBlock {
                 $result = ConvertTo-AuditNewParameterSet -AuditObject $script:mockAuditObject
 
-                $result['MaximumFileSize'] | Should -Be 100
-                $result['MaximumFileSizeUnit'] | Should -Be 'Megabyte'
+                $result['MaximumFileSize'] | Should-Be 100
+                $result['MaximumFileSizeUnit'] | Should-Be 'Megabyte'
             }
         }
     }
@@ -115,9 +117,9 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag 'Private' {
             InModuleScope -ScriptBlock {
                 $result = ConvertTo-AuditNewParameterSet -AuditObject $script:mockAuditObject
 
-                $result['MaximumFiles'] | Should -Be 10
-                $result['ReserveDiskSpace'] | Should -BeTrue
-                $result.ContainsKey('MaximumRolloverFiles') | Should -BeFalse
+                $result['MaximumFiles'] | Should-Be 10
+                $result['ReserveDiskSpace'] | Should-BeTrue
+                $result.ContainsKey('MaximumRolloverFiles') | Should-BeFalse
             }
         }
     }
@@ -137,9 +139,9 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag 'Private' {
             InModuleScope -ScriptBlock {
                 $result = ConvertTo-AuditNewParameterSet -AuditObject $script:mockAuditObject
 
-                $result['MaximumRolloverFiles'] | Should -Be 5
-                $result.ContainsKey('MaximumFiles') | Should -BeFalse
-                $result.ContainsKey('ReserveDiskSpace') | Should -BeFalse
+                $result['MaximumRolloverFiles'] | Should-Be 5
+                $result.ContainsKey('MaximumFiles') | Should-BeFalse
+                $result.ContainsKey('ReserveDiskSpace') | Should-BeFalse
             }
         }
     }
@@ -157,8 +159,8 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag 'Private' {
             InModuleScope -ScriptBlock {
                 $result = ConvertTo-AuditNewParameterSet -AuditObject $script:mockAuditObject
 
-                $result['LogType'] | Should -Be 'ApplicationLog'
-                $result.ContainsKey('Path') | Should -BeFalse
+                $result['LogType'] | Should-Be 'ApplicationLog'
+                $result.ContainsKey('Path') | Should-BeFalse
             }
         }
     }
@@ -176,8 +178,8 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag 'Private' {
             InModuleScope -ScriptBlock {
                 $result = ConvertTo-AuditNewParameterSet -AuditObject $script:mockAuditObject
 
-                $result['LogType'] | Should -Be 'SecurityLog'
-                $result.ContainsKey('Path') | Should -BeFalse
+                $result['LogType'] | Should-Be 'SecurityLog'
+                $result.ContainsKey('Path') | Should-BeFalse
             }
         }
     }
@@ -197,7 +199,7 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag 'Private' {
             InModuleScope -ScriptBlock {
                 $result = ConvertTo-AuditNewParameterSet -AuditObject $script:mockAuditObject
 
-                $result['AuditFilter'] | Should -Be 'database_name = ''master'''
+                $result['AuditFilter'] | Should-Be 'database_name = ''master'''
             }
         }
     }
@@ -218,7 +220,7 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag 'Private' {
                 $newGuid = '87654321-4321-4321-4321-210987654321'
                 $result = ConvertTo-AuditNewParameterSet -AuditObject $script:mockAuditObject -AuditGuid $newGuid
 
-                $result['AuditGuid'] | Should -Be $newGuid
+                $result['AuditGuid'] | Should-Be $newGuid
             }
         }
     }
@@ -238,7 +240,7 @@ Describe 'ConvertTo-AuditNewParameterSet' -Tag 'Private' {
             InModuleScope -ScriptBlock {
                 $result = ConvertTo-AuditNewParameterSet -AuditObject $script:mockAuditObject
 
-                $result['AuditGuid'] | Should -Be '12345678-1234-1234-1234-123456789012'
+                $result['AuditGuid'] | Should-Be '12345678-1234-1234-1234-123456789012'
             }
         }
     }

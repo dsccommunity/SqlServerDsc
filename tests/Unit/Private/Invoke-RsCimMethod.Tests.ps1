@@ -32,7 +32,8 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 
     $env:SqlServerDscCI = $true
 
@@ -83,7 +84,8 @@ AfterAll {
 
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 }
 
 Describe 'Invoke-RsCimMethod' -Tag 'Private' {
@@ -106,15 +108,15 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
 
                 $result = Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'TestMethod'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.HRESULT | Should -Be 0
+                $result | Should-BeTruthy
+                $result.HRESULT | Should-Be 0
             }
 
-            Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'TestMethod'
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Start-Sleep -Exactly -Times 0
+            Should-Invoke -CommandName Start-Sleep -Exactly -Times 0
         }
 
         It 'Should pass arguments to the CIM method' {
@@ -125,13 +127,13 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
 
                 $result = Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'SetSecureConnectionLevel' -Arguments @{ Level = 1 }
 
-                $result | Should -Not -BeNullOrEmpty
+                $result | Should-BeTruthy
             }
 
-            Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'SetSecureConnectionLevel' -and
                 $Arguments.Level -eq 1
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should pass timeout to Invoke-CimMethod as OperationTimeoutSec' {
@@ -142,13 +144,13 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
 
                 $result = Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'TestMethod' -Timeout 120
 
-                $result | Should -Not -BeNullOrEmpty
+                $result | Should-BeTruthy
             }
 
-            Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'TestMethod' -and
                 $OperationTimeoutSec -eq 120
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should pass both arguments and timeout to Invoke-CimMethod' {
@@ -159,14 +161,14 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
 
                 $result = Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'GenerateScript' -Arguments @{ DatabaseName = 'ReportServer' } -Timeout 240
 
-                $result | Should -Not -BeNullOrEmpty
+                $result | Should-BeTruthy
             }
 
-            Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-CimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'GenerateScript' -and
                 $Arguments.DatabaseName -eq 'ReportServer' -and
                 $OperationTimeoutSec -eq 240
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -191,10 +193,10 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
 
                 $result = Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'ListReservedUrls'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Application | Should -HaveCount 2
-                $result.Application[0] | Should -Be 'ReportServerWebService'
-                $result.UrlString[0] | Should -Be 'http://+:80/ReportServer'
+                $result | Should-BeTruthy
+                $result.Application | Should-BeCollection -Count 2
+                $result.Application[0] | Should-Be 'ReportServerWebService'
+                $result.UrlString[0] | Should-Be 'http://+:80/ReportServer'
             }
         }
     }
@@ -234,12 +236,12 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
 
                 $result = Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'TestMethod'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.HRESULT | Should -Be 0
+                $result | Should-BeTruthy
+                $result.HRESULT | Should-Be 0
             }
 
-            Should -Invoke -CommandName Invoke-CimMethod -Exactly -Times 3
-            Should -Invoke -CommandName Start-Sleep -Exactly -Times 2
+            Should-Invoke -CommandName Invoke-CimMethod -Exactly -Times 3
+            Should-Invoke -CommandName Start-Sleep -Exactly -Times 2
         }
 
         It 'Should use default delay of 30 seconds between retries' {
@@ -251,9 +253,9 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
                 $null = Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'TestMethod'
             }
 
-            Should -Invoke -CommandName Start-Sleep -ParameterFilter {
+            Should-Invoke -CommandName Start-Sleep -Exactly -ParameterFilter {
                 $Seconds -eq 30
-            } -Exactly -Times 2
+            } -Times 2
         }
     }
 
@@ -277,12 +279,12 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
                 }
 
                 { Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'TestMethod' } |
-                    Should -Throw -ExpectedMessage '*TestMethod*HRESULT: 1*Extended error message*'
+                    Should-Throw -ExceptionMessage '*TestMethod*HRESULT: 1*Extended error message*'
             }
 
             # 1 initial + 2 retries = 3 attempts
-            Should -Invoke -CommandName Invoke-CimMethod -Exactly -Times 3
-            Should -Invoke -CommandName Start-Sleep -Exactly -Times 2
+            Should-Invoke -CommandName Invoke-CimMethod -Exactly -Times 3
+            Should-Invoke -CommandName Start-Sleep -Exactly -Times 2
         }
     }
 
@@ -305,7 +307,7 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
                 }
 
                 { Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'TestMethod' } |
-                    Should -Throw -ExpectedMessage '*TestMethod*HRESULT: 2*Error property message*'
+                    Should-Throw -ExceptionMessage '*TestMethod*HRESULT: 2*Error property message*'
             }
         }
     }
@@ -331,7 +333,7 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
                 }
 
                 { Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'TestMethod' } |
-                    Should -Throw -ExpectedMessage '*TestMethod*HRESULT: 3*Fallback error message*'
+                    Should-Throw -ExceptionMessage '*TestMethod*HRESULT: 3*Fallback error message*'
             }
         }
     }
@@ -357,7 +359,7 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
                 }
 
                 { Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'TestMethod' } |
-                    Should -Throw -ExpectedMessage '*TestMethod*HRESULT: 4*No error details were returned*'
+                    Should-Throw -ExceptionMessage '*TestMethod*HRESULT: 4*No error details were returned*'
             }
         }
     }
@@ -378,12 +380,12 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
                 }
 
                 { Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'TestMethod' } |
-                    Should -Throw -ExpectedMessage '*Connection failure*'
+                    Should-Throw -ExceptionMessage '*Connection failure*'
             }
 
             # Only 1 attempt - exceptions are not retried
-            Should -Invoke -CommandName Invoke-CimMethod -Exactly -Times 1
-            Should -Invoke -CommandName Start-Sleep -Exactly -Times 0
+            Should-Invoke -CommandName Invoke-CimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Start-Sleep -Exactly -Times 0
         }
     }
 
@@ -406,11 +408,11 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
                 }
 
                 { Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'TestMethod' -SkipRetry } |
-                    Should -Throw -ExpectedMessage '*TestMethod*Single attempt failure*'
+                    Should-Throw -ExceptionMessage '*TestMethod*Single attempt failure*'
             }
 
-            Should -Invoke -CommandName Invoke-CimMethod -Exactly -Times 1
-            Should -Invoke -CommandName Start-Sleep -Exactly -Times 0
+            Should-Invoke -CommandName Invoke-CimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Start-Sleep -Exactly -Times 0
         }
     }
 
@@ -433,12 +435,12 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
                 }
 
                 { Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'TestMethod' -RetryCount 5 } |
-                    Should -Throw
+                    Should-Throw
             }
 
             # 1 initial + 5 retries = 6 attempts
-            Should -Invoke -CommandName Invoke-CimMethod -Exactly -Times 6
-            Should -Invoke -CommandName Start-Sleep -Exactly -Times 5
+            Should-Invoke -CommandName Invoke-CimMethod -Exactly -Times 6
+            Should-Invoke -CommandName Start-Sleep -Exactly -Times 5
         }
 
         It 'Should use custom delay between retries' {
@@ -448,13 +450,13 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
                 }
 
                 { Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'TestMethod' -RetryDelaySeconds 60 -RetryCount 2 } |
-                    Should -Throw
+                    Should-Throw
             }
 
             # 1 initial + 2 retries = 3 attempts with 2 sleeps
-            Should -Invoke -CommandName Start-Sleep -ParameterFilter {
+            Should-Invoke -CommandName Start-Sleep -Exactly -ParameterFilter {
                 $Seconds -eq 60
-            } -Exactly -Times 2
+            } -Times 2
         }
     }
 
@@ -477,11 +479,11 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
                 }
 
                 { Invoke-RsCimMethod -CimInstance $mockCimInstance -MethodName 'TestMethod' -RetryCount 0 } |
-                    Should -Throw -ExpectedMessage '*TestMethod*No retry failure*'
+                    Should-Throw -ExceptionMessage '*TestMethod*No retry failure*'
             }
 
-            Should -Invoke -CommandName Invoke-CimMethod -Exactly -Times 1
-            Should -Invoke -CommandName Start-Sleep -Exactly -Times 0
+            Should-Invoke -CommandName Invoke-CimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Start-Sleep -Exactly -Times 0
         }
     }
 
@@ -550,11 +552,11 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
                     $errorThrown = $_.Exception.Message
                 }
 
-                $errorThrown | Should -Not -BeNullOrEmpty
-                $errorThrown | Should -BeLike '*Attempt 1:*First error*'
-                $errorThrown | Should -BeLike '*Attempt 2:*Second error*'
-                $errorThrown | Should -BeLike '*Attempt 3:*Third error*'
-                $errorThrown | Should -BeLike '*Attempt 4:*Fourth error*'
+                $errorThrown | Should-BeTruthy
+                $errorThrown | Should-BeLikeString '*Attempt 1:*First error*'
+                $errorThrown | Should-BeLikeString '*Attempt 2:*Second error*'
+                $errorThrown | Should-BeLikeString '*Attempt 3:*Third error*'
+                $errorThrown | Should-BeLikeString '*Attempt 4:*Fourth error*'
             }
         }
     }
@@ -588,12 +590,12 @@ Describe 'Invoke-RsCimMethod' -Tag 'Private' {
                     $errorThrown = $_.Exception.Message
                 }
 
-                $errorThrown | Should -Not -BeNullOrEmpty
+                $errorThrown | Should-BeTruthy
 
                 # With default RetryCount=2, we have 3 attempts but same error should only appear once
-                $errorThrown | Should -BeLike '*Attempt 1:*Same error*'
-                $errorThrown | Should -Not -BeLike '*Attempt 2:*'
-                $errorThrown | Should -Not -BeLike '*Attempt 3:*'
+                $errorThrown | Should-BeLikeString '*Attempt 1:*Same error*'
+                $errorThrown | Should-NotBeLikeString '*Attempt 2:*'
+                $errorThrown | Should-NotBeLikeString '*Attempt 3:*'
             }
         }
     }

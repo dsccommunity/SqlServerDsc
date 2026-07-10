@@ -68,13 +68,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:subModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:subModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:subModuleName -All | Remove-Module -Force
@@ -86,11 +88,11 @@ AfterAll {
 Describe 'SqlServerDsc.Common\Split-FullSqlInstanceName' -Tag 'SplitFullSqlInstanceName' {
     Context 'When the "FullSqlInstanceName" parameter is not supplied' {
         It 'Should throw when the "FullSqlInstanceName" parameter is $null' {
-            { Split-FullSqlInstanceName -FullSqlInstanceName $null } | Should -Throw
+            { Split-FullSqlInstanceName -FullSqlInstanceName $null } | Should-Throw
         }
 
         It 'Should throw when the "FullSqlInstanceName" parameter is an empty string' {
-            { Split-FullSqlInstanceName -FullSqlInstanceName '' } | Should -Throw
+            { Split-FullSqlInstanceName -FullSqlInstanceName '' } | Should-Throw
         }
     }
 
@@ -98,17 +100,17 @@ Describe 'SqlServerDsc.Common\Split-FullSqlInstanceName' -Tag 'SplitFullSqlInsta
         It 'Should throw when the "FullSqlInstanceName" parameter is "ServerName"' {
             $result = Split-FullSqlInstanceName -FullSqlInstanceName 'ServerName'
 
-            $result.Count | Should -Be 2
-            $result.ServerName | Should -Be 'ServerName'
-            $result.InstanceName | Should -Be 'MSSQLSERVER'
+            $result.Count | Should-Be 2
+            $result.ServerName | Should-Be 'ServerName'
+            $result.InstanceName | Should-Be 'MSSQLSERVER'
         }
 
         It 'Should throw when the "FullSqlInstanceName" parameter is "ServerName\InstanceName"' {
             $result = Split-FullSqlInstanceName -FullSqlInstanceName 'ServerName\InstanceName'
 
-            $result.Count | Should -Be 2
-            $result.ServerName | Should -Be 'ServerName'
-            $result.InstanceName | Should -Be 'InstanceName'
+            $result.Count | Should-Be 2
+            $result.ServerName | Should-Be 'ServerName'
+            $result.InstanceName | Should-Be 'InstanceName'
         }
     }
 }

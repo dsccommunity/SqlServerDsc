@@ -32,13 +32,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -67,8 +69,8 @@ Describe 'Test-SqlDscRSAccessible' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -85,9 +87,9 @@ Describe 'Test-SqlDscRSAccessible' {
             It 'Should return $true and call Invoke-WebRequest with correct parameters' {
                 $result = Test-SqlDscRSAccessible -ReportServerUri 'http://localhost/ReportServer'
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
 
-                Should -Invoke -CommandName Invoke-WebRequest -ParameterFilter {
+                Should-Invoke -CommandName Invoke-WebRequest -ParameterFilter {
                     $Uri -eq 'http://localhost/ReportServer' -and
                     $UseDefaultCredentials -eq $true -and
                     $UseBasicParsing -eq $true
@@ -107,7 +109,7 @@ Describe 'Test-SqlDscRSAccessible' {
             It 'Should return $true' {
                 $result = Test-SqlDscRSAccessible -ReportsUri 'http://localhost/Reports'
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
         }
 
@@ -123,7 +125,7 @@ Describe 'Test-SqlDscRSAccessible' {
             It 'Should return $true' {
                 $result = Test-SqlDscRSAccessible -ReportServerUri 'http://localhost/ReportServer' -ReportsUri 'http://localhost/Reports'
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
         }
 
@@ -147,11 +149,11 @@ Describe 'Test-SqlDscRSAccessible' {
                 # With TimeoutSeconds=5 and RetryIntervalSeconds=1, we get 5 retries
                 $result = Test-SqlDscRSAccessible -ReportServerUri 'http://localhost/ReportServer' -TimeoutSeconds 5 -RetryIntervalSeconds 1
 
-                $result | Should -BeFalse
+                $result | Should-BeFalse
 
                 # Should have retried multiple times (5 retries for TimeoutSeconds=5)
-                Should -Invoke -CommandName Invoke-WebRequest -Times 5
-                Should -Invoke -CommandName Start-Sleep -Times 4
+                Should-Invoke -CommandName Invoke-WebRequest -Times 5
+                Should-Invoke -CommandName Start-Sleep -Times 4
             }
         }
 
@@ -174,11 +176,11 @@ Describe 'Test-SqlDscRSAccessible' {
             It 'Should return $false immediately without retrying (4xx errors are not retried)' {
                 $result = Test-SqlDscRSAccessible -ReportServerUri 'http://localhost/ReportServer' -TimeoutSeconds 5 -RetryIntervalSeconds 1
 
-                $result | Should -BeFalse
+                $result | Should-BeFalse
 
                 # Should NOT have retried (4xx errors break immediately)
-                Should -Invoke -CommandName Invoke-WebRequest -Times 1
-                Should -Invoke -CommandName Start-Sleep -Times 0
+                Should-Invoke -CommandName Invoke-WebRequest -Times 1
+                Should-Invoke -CommandName Start-Sleep -Times 0
             }
         }
 
@@ -194,18 +196,22 @@ Describe 'Test-SqlDscRSAccessible' {
             It 'Should return a detailed object' {
                 $result = Test-SqlDscRSAccessible -ReportServerUri 'http://localhost/ReportServer' -ReportsUri 'http://localhost/Reports' -Detailed
 
-                $result | Should -HaveCount 2
-                $result | Should -BeOfType [System.Management.Automation.PSCustomObject]
+                Should-HaveType -Actual $result -Expected ([System.Object])
+
+                $result | Should-BeCollection -Count 2
+
+                Should-HaveType -Actual $result[0] -Expected ([System.Management.Automation.PSCustomObject])
+                Should-HaveType -Actual $result[1] -Expected ([System.Management.Automation.PSCustomObject])
 
                 $reportServerResult = $result | Where-Object -FilterScript { $_.Site -eq 'ReportServerWebService' }
-                $reportServerResult.Accessible | Should -BeTrue
-                $reportServerResult.StatusCode | Should -Be 200
-                $reportServerResult.Uri | Should -Be 'http://localhost/ReportServer'
+                $reportServerResult.Accessible | Should-BeTrue
+                $reportServerResult.StatusCode | Should-Be 200
+                $reportServerResult.Uri | Should-Be 'http://localhost/ReportServer'
 
                 $reportsResult = $result | Where-Object -FilterScript { $_.Site -eq 'ReportServerWebApp' }
-                $reportsResult.Accessible | Should -BeTrue
-                $reportsResult.StatusCode | Should -Be 200
-                $reportsResult.Uri | Should -Be 'http://localhost/Reports'
+                $reportsResult.Accessible | Should-BeTrue
+                $reportsResult.StatusCode | Should-Be 200
+                $reportsResult.Uri | Should-Be 'http://localhost/Reports'
             }
         }
     }
@@ -227,7 +233,7 @@ Describe 'Test-SqlDscRSAccessible' {
             }
 
             It 'Should throw an error' {
-                { $mockCimInstance | Test-SqlDscRSAccessible } | Should -Throw
+                { $mockCimInstance | Test-SqlDscRSAccessible } | Should-Throw
             }
         }
 
@@ -250,7 +256,7 @@ Describe 'Test-SqlDscRSAccessible' {
             It 'Should return $true' {
                 $result = Test-SqlDscRSAccessible -Configuration $mockCimInstance -ServerName 'localhost' -TimeoutSeconds 5 -RetryIntervalSeconds 1
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
         }
 
@@ -273,9 +279,9 @@ Describe 'Test-SqlDscRSAccessible' {
             It 'Should use the specified server name in the URI' {
                 $result = Test-SqlDscRSAccessible -Configuration $mockCimInstance -ServerName 'CustomServer' -TimeoutSeconds 5 -RetryIntervalSeconds 1
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
 
-                Should -Invoke -CommandName Invoke-WebRequest -ParameterFilter {
+                Should-Invoke -CommandName Invoke-WebRequest -ParameterFilter {
                     $Uri -eq 'http://CustomServer/ReportServer'
                 }
             }
@@ -300,9 +306,9 @@ Describe 'Test-SqlDscRSAccessible' {
             It 'Should include port in the URI' {
                 $result = Test-SqlDscRSAccessible -Configuration $mockCimInstance -ServerName 'localhost' -TimeoutSeconds 5 -RetryIntervalSeconds 1
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
 
-                Should -Invoke -CommandName Invoke-WebRequest -ParameterFilter {
+                Should-Invoke -CommandName Invoke-WebRequest -ParameterFilter {
                     $Uri -eq 'http://localhost:8080/ReportServer'
                 }
             }
@@ -327,9 +333,9 @@ Describe 'Test-SqlDscRSAccessible' {
             It 'Should not include port in the URI' {
                 $result = Test-SqlDscRSAccessible -Configuration $mockCimInstance -ServerName 'localhost' -TimeoutSeconds 5 -RetryIntervalSeconds 1
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
 
-                Should -Invoke -CommandName Invoke-WebRequest -ParameterFilter {
+                Should-Invoke -CommandName Invoke-WebRequest -ParameterFilter {
                     $Uri -eq 'https://localhost/ReportServer'
                 }
             }
@@ -354,14 +360,18 @@ Describe 'Test-SqlDscRSAccessible' {
             It 'Should return a detailed object' {
                 $result = Test-SqlDscRSAccessible -Configuration $mockCimInstance -ServerName 'localhost' -Detailed -TimeoutSeconds 5 -RetryIntervalSeconds 1
 
-                $result | Should -HaveCount 2
-                $result | Should -BeOfType [System.Management.Automation.PSCustomObject]
+                Should-HaveType -Actual $result[0] -Expected ([System.Object])
+
+                $result | Should-BeCollection -Count 2
+
+                Should-HaveType -Actual $result[0] -Expected ([System.Management.Automation.PSCustomObject])
+                Should-HaveType -Actual $result[1] -Expected ([System.Management.Automation.PSCustomObject])
 
                 $reportServerResult = $result | Where-Object -FilterScript { $_.Site -eq 'ReportServerWebService' }
-                $reportServerResult.Accessible | Should -BeTrue
+                $reportServerResult.Accessible | Should-BeTrue
 
                 $reportsResult = $result | Where-Object -FilterScript { $_.Site -eq 'ReportServerWebApp' }
-                $reportsResult.Accessible | Should -BeTrue
+                $reportsResult.Accessible | Should-BeTrue
             }
         }
     }
@@ -395,8 +405,8 @@ Describe 'Test-SqlDscRSAccessible' {
             It 'Should return $true after retry succeeds' {
                 $result = Test-SqlDscRSAccessible -ReportServerUri 'http://localhost/ReportServer' -TimeoutSeconds 10 -RetryIntervalSeconds 1
 
-                $result | Should -BeTrue
-                $script:invokeCount | Should -Be 2
+                $result | Should-BeTrue
+                $script:invokeCount | Should-Be 2
             }
         }
 
@@ -431,8 +441,8 @@ Describe 'Test-SqlDscRSAccessible' {
             It 'Should return $true after 503 is retried and succeeds' {
                 $result = Test-SqlDscRSAccessible -ReportServerUri 'http://localhost/ReportServer' -TimeoutSeconds 10 -RetryIntervalSeconds 1
 
-                $result | Should -BeTrue
-                $script:invokeCount | Should -Be 3
+                $result | Should-BeTrue
+                $script:invokeCount | Should-Be 3
             }
         }
 
@@ -449,7 +459,7 @@ Describe 'Test-SqlDscRSAccessible' {
             It 'Should return $false after all retries exhausted' {
                 $result = Test-SqlDscRSAccessible -ReportServerUri 'http://localhost/ReportServer' -TimeoutSeconds 3 -RetryIntervalSeconds 1
 
-                $result | Should -BeFalse
+                $result | Should-BeFalse
             }
         }
     }
@@ -483,10 +493,10 @@ Describe 'Test-SqlDscRSAccessible' {
         It 'Should use Get-ComputerName as default ServerName when not specified' {
             $result = Test-SqlDscRSAccessible -Configuration $mockCimInstance -TimeoutSeconds 5 -RetryIntervalSeconds 1
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
 
-            Should -Invoke -CommandName Get-ComputerName -Exactly -Times 1
-            Should -Invoke -CommandName Invoke-WebRequest -ParameterFilter {
+            Should-Invoke -CommandName Get-ComputerName -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-WebRequest -ParameterFilter {
                 $Uri -eq 'http://TESTSERVER/ReportServer'
             }
         }
@@ -495,12 +505,12 @@ Describe 'Test-SqlDscRSAccessible' {
             $command = Get-Command -Name 'Test-SqlDscRSAccessible'
             $serverNameParam = $command.Parameters['ServerName']
 
-            $serverNameParam | Should -Not -BeNullOrEmpty
+            $serverNameParam | Should-BeTruthy
 
             $serverNameParam.Attributes | Where-Object -FilterScript {
                 $_ -is [System.Management.Automation.ParameterAttribute]
             } | ForEach-Object -Process {
-                $_.ParameterSetName | Should -Be 'Configuration'
+                $_.ParameterSetName | Should-Be 'Configuration'
             }
         }
     }

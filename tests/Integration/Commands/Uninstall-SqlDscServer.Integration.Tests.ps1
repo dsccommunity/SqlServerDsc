@@ -40,7 +40,7 @@ Describe 'Uninstall-SqlDscServer' -Tag @('Integration_SQL2017', 'Integration_SQL
     It 'Should have the named instance SQL Server service started' {
         $getServiceResult = Get-Service -Name 'MSSQL$DSCSQLTEST' -ErrorAction 'Stop'
 
-        $getServiceResult.Status | Should -Be 'Running'
+        $getServiceResult.Status | Should-Be 'Running'
     }
 
     Context 'When uninstalling a named instance' {
@@ -59,7 +59,7 @@ Describe 'Uninstall-SqlDscServer' -Tag @('Integration_SQL2017', 'Integration_SQL
         }
 
         It 'Should not have a named instance SQL Server service' {
-            Get-Service -Name 'SQL Server (DSCSQLTEST)' -ErrorAction 'Ignore' | Should -BeNullOrEmpty
+            Get-Service -Name 'SQL Server (DSCSQLTEST)' -ErrorAction 'Ignore' | Should-BeFalsy
         }
     }
 }

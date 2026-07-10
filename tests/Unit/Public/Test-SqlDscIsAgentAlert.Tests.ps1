@@ -36,12 +36,14 @@ BeforeAll {
     Add-Type -Path "$PSScriptRoot/../Stubs/SMO.cs"
 
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'Env:SqlServerDscCI' -ErrorAction 'SilentlyContinue'
 }
@@ -60,25 +62,25 @@ Describe 'Test-SqlDscIsAgentAlert' -Tag 'Public' {
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
     Context 'When command has correct parameter properties' {
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscIsAgentAlert').Parameters['ServerObject']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have ServerObject accept pipeline input' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscIsAgentAlert').Parameters['ServerObject']
-            $parameterInfo.Attributes.ValueFromPipeline | Should -BeTrue
+            $parameterInfo.Attributes.ValueFromPipeline | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscIsAgentAlert').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
     }
 
@@ -97,8 +99,8 @@ Describe 'Test-SqlDscIsAgentAlert' -Tag 'Public' {
         It 'Should return true when alert exists' {
             $result = Test-SqlDscIsAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert'
 
-            $result | Should -BeTrue
-            Should -Invoke -CommandName 'Get-AgentAlertObject' -ModuleName $script:moduleName -Times 1 -Exactly
+            $result | Should-BeTrue
+            Should-Invoke -CommandName 'Get-AgentAlertObject' -Exactly -ModuleName $script:moduleName -Times 1
         }
     }
 
@@ -113,8 +115,8 @@ Describe 'Test-SqlDscIsAgentAlert' -Tag 'Public' {
         It 'Should return false when alert does not exist' {
             $result = Test-SqlDscIsAgentAlert -ServerObject $script:mockServerObject -Name 'NonExistentAlert'
 
-            $result | Should -BeFalse
-            Should -Invoke -CommandName 'Get-AgentAlertObject' -ModuleName $script:moduleName -Times 1 -Exactly
+            $result | Should-BeFalse
+            Should-Invoke -CommandName 'Get-AgentAlertObject' -Exactly -ModuleName $script:moduleName -Times 1
         }
     }
 
@@ -133,8 +135,8 @@ Describe 'Test-SqlDscIsAgentAlert' -Tag 'Public' {
         It 'Should work with alias Test-SqlDscAgentAlert' {
             $result = Test-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert'
 
-            $result | Should -BeTrue
-            Should -Invoke -CommandName 'Get-AgentAlertObject' -ModuleName $script:moduleName -Times 1 -Exactly
+            $result | Should-BeTrue
+            Should-Invoke -CommandName 'Get-AgentAlertObject' -Exactly -ModuleName $script:moduleName -Times 1
         }
     }
 }

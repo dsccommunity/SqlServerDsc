@@ -76,8 +76,8 @@ Describe 'Set-SqlDscRSSslCertificateBinding' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $result = $config | Set-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash $script:testCertificateHash -IPAddress $script:testIPAddress -Port $script:testPort -Force -PassThru -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -94,8 +94,8 @@ Describe 'Set-SqlDscRSSslCertificateBinding' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $result = $config | Set-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash $script:testCertificateHash -IPAddress $script:testIPAddress -Port $script:testPort -Force -PassThru -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -112,8 +112,8 @@ Describe 'Set-SqlDscRSSslCertificateBinding' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $result = $config | Set-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash $script:testCertificateHash -IPAddress $script:testIPAddress -Port $script:testPort -Force -PassThru -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -130,8 +130,8 @@ Describe 'Set-SqlDscRSSslCertificateBinding' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
             $result = $config | Set-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash $script:testCertificateHash -IPAddress $script:testIPAddress -Port $script:testPort -Force -PassThru -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'PBIRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'PBIRS'
         }
     }
 }

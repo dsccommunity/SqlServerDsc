@@ -38,7 +38,7 @@ Describe 'Request-SqlDscRSDatabaseUpgradeScript' {
 
             $result = $configuration | Request-SqlDscRSDatabaseUpgradeScript -ErrorAction 'Stop'
 
-            $result | Should -BeOfType ([System.String])
+            $result | Should-HaveType ([System.String])
         }
     }
 
@@ -48,7 +48,7 @@ Describe 'Request-SqlDscRSDatabaseUpgradeScript' {
 
             $result = $configuration | Request-SqlDscRSDatabaseUpgradeScript -ErrorAction 'Stop'
 
-            $result | Should -BeOfType ([System.String])
+            $result | Should-HaveType ([System.String])
         }
     }
 
@@ -58,7 +58,7 @@ Describe 'Request-SqlDscRSDatabaseUpgradeScript' {
 
             $result = $configuration | Request-SqlDscRSDatabaseUpgradeScript -ErrorAction 'Stop'
 
-            $result | Should -BeOfType ([System.String])
+            $result | Should-HaveType ([System.String])
         }
     }
 
@@ -68,7 +68,7 @@ Describe 'Request-SqlDscRSDatabaseUpgradeScript' {
 
             $result = $configuration | Request-SqlDscRSDatabaseUpgradeScript -ErrorAction 'Stop'
 
-            $result | Should -BeOfType ([System.String])
+            $result | Should-HaveType ([System.String])
         }
     }
 }

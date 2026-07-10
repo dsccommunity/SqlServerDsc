@@ -37,7 +37,8 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 
     # Script-scoped variables for tracking method calls
     $script:mockMethodDisableWasRun = 0
@@ -46,7 +47,8 @@ BeforeAll {
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -69,23 +71,23 @@ Describe 'Disable-SqlDscLogin' -Tag 'Public' {
                 @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
             )
 
-        $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-        $result.ParameterListAsString | Should -Be $ExpectedParameters
+        $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+        $result.ParameterListAsString | Should-Be $ExpectedParameters
     }
 
     It 'Should have ServerObject parameter as mandatory in ServerObject parameter set' {
         $parameterInfo = (Get-Command -Name 'Disable-SqlDscLogin').Parameters['ServerObject']
-        $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
     }
 
     It 'Should have Name parameter as mandatory in ServerObject parameter set' {
         $parameterInfo = (Get-Command -Name 'Disable-SqlDscLogin').Parameters['Name']
-        $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
     }
 
     It 'Should have LoginObject parameter as mandatory in LoginObject parameter set' {
         $parameterInfo = (Get-Command -Name 'Disable-SqlDscLogin').Parameters['LoginObject']
-        $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
     }
 
     Context 'When using parameter set ServerObject' {
@@ -116,11 +118,11 @@ Describe 'Disable-SqlDscLogin' -Tag 'Public' {
             It 'Should call the correct methods' {
                 Disable-SqlDscLogin -ServerObject $mockServerObject -Name 'TestLogin' -Force
 
-                Should -Invoke -CommandName Get-SqlDscLogin -ParameterFilter {
+                Should-Invoke -CommandName Get-SqlDscLogin -Exactly -ParameterFilter {
                     $ServerObject -eq $mockServerObject -and $Name -eq 'TestLogin'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                $script:mockMethodDisableWasRun | Should -Be 1
+                $script:mockMethodDisableWasRun | Should-Be 1
             }
 
             It 'Should not call Disable method when using WhatIf' {
@@ -128,7 +130,7 @@ Describe 'Disable-SqlDscLogin' -Tag 'Public' {
 
                 Disable-SqlDscLogin -ServerObject $mockServerObject -Name 'TestLogin' -WhatIf
 
-                $script:mockMethodDisableWasRun | Should -Be 0
+                $script:mockMethodDisableWasRun | Should-Be 0
             }
         }
 
@@ -140,11 +142,11 @@ Describe 'Disable-SqlDscLogin' -Tag 'Public' {
             }
 
             It 'Should throw a terminating error when login is not found' {
-                { Disable-SqlDscLogin -ServerObject $mockServerObject -Name 'NonExistent' -Force } | Should -Throw
+                { Disable-SqlDscLogin -ServerObject $mockServerObject -Name 'NonExistent' -Force } | Should-Throw
 
-                Should -Invoke -CommandName Get-SqlDscLogin -ParameterFilter {
+                Should-Invoke -CommandName Get-SqlDscLogin -Exactly -ParameterFilter {
                     $ServerObject -eq $mockServerObject -and $Name -eq 'NonExistent'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -152,9 +154,9 @@ Describe 'Disable-SqlDscLogin' -Tag 'Public' {
             It 'Should pass Refresh parameter to Get-SqlDscLogin' {
                 Disable-SqlDscLogin -ServerObject $mockServerObject -Name 'TestLogin' -Refresh -Force
 
-                Should -Invoke -CommandName Get-SqlDscLogin -ParameterFilter {
+                Should-Invoke -CommandName Get-SqlDscLogin -Exactly -ParameterFilter {
                     $ServerObject -eq $mockServerObject -and $Name -eq 'TestLogin' -and $Refresh -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
     }
@@ -185,8 +187,8 @@ Describe 'Disable-SqlDscLogin' -Tag 'Public' {
 
             Disable-SqlDscLogin -LoginObject $mockLoginObject -Force
 
-            $script:mockMethodDisableWasRun | Should -Be 1
-            Should -Invoke -CommandName Get-SqlDscLogin -Exactly -Times 0 -Scope It
+            $script:mockMethodDisableWasRun | Should-Be 1
+            Should-Invoke -CommandName Get-SqlDscLogin -Exactly -Scope It -Times 0
         }
 
         It 'Should not call Disable method when using WhatIf' {
@@ -194,7 +196,7 @@ Describe 'Disable-SqlDscLogin' -Tag 'Public' {
 
             Disable-SqlDscLogin -LoginObject $mockLoginObject -WhatIf
 
-            $script:mockMethodDisableWasRun | Should -Be 0
+            $script:mockMethodDisableWasRun | Should-Be 0
         }
     }
 }

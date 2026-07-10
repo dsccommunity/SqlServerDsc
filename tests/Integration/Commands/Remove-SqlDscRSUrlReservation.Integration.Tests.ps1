@@ -42,13 +42,13 @@ Describe 'Remove-SqlDscRSUrlReservation' {
         }
 
         It 'Should remove URL reservation using pipeline' {
-            { $script:configuration | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = & ({ $script:configuration | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop' })
 
             # Verify the URL was removed
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
             $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            $reservations.UrlReservations | Should -Not -Contain $script:testUrl
+            $reservations.UrlReservations | Should-NotContainCollection $script:testUrl
         }
     }
 
@@ -62,13 +62,13 @@ Describe 'Remove-SqlDscRSUrlReservation' {
         }
 
         It 'Should remove URL reservation using pipeline' {
-            { $script:configuration | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = & ({ $script:configuration | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop' })
 
             # Verify the URL was removed
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
             $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            $reservations.UrlReservations | Should -Not -Contain $script:testUrl
+            $reservations.UrlReservations | Should-NotContainCollection $script:testUrl
         }
     }
 
@@ -82,13 +82,13 @@ Describe 'Remove-SqlDscRSUrlReservation' {
         }
 
         It 'Should remove URL reservation using pipeline' {
-            { $script:configuration | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = & ({ $script:configuration | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop' })
 
             # Verify the URL was removed
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
             $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            $reservations.UrlReservations | Should -Not -Contain $script:testUrl
+            $reservations.UrlReservations | Should-NotContainCollection $script:testUrl
         }
     }
 
@@ -102,13 +102,13 @@ Describe 'Remove-SqlDscRSUrlReservation' {
         }
 
         It 'Should remove URL reservation for PBIRS using pipeline' {
-            { $script:configuration | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = & ({ $script:configuration | Remove-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString $script:testUrl -Force -ErrorAction 'Stop' })
 
             # Verify the URL was removed
             $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
             $reservations = $config | Get-SqlDscRSUrlReservation -ErrorAction 'Stop'
 
-            $reservations.UrlReservations | Should -Not -Contain $script:testUrl
+            $reservations.UrlReservations | Should-NotContainCollection $script:testUrl
         }
     }
 }

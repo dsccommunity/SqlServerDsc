@@ -56,17 +56,17 @@ Describe 'Get-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
                 Casting to array to ensure we get the count on Windows PowerShell
                 when there is only one database.
             #>
-            @($result).Count | Should -BeGreaterOrEqual 1
-            @($result)[0] | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
+            @($result).Count | Should-BeGreaterThanOrEqual 1
+            @($result)[0] | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Database'
         }
 
         It 'Should return system databases including master' {
             $result = Get-SqlDscDatabase -ServerObject $script:serverObject
 
-            $result.Name | Should -Contain 'master'
-            $result.Name | Should -Contain 'model'
-            $result.Name | Should -Contain 'msdb'
-            $result.Name | Should -Contain 'tempdb'
+            $result.Name | Should-ContainCollection 'master'
+            $result.Name | Should-ContainCollection 'model'
+            $result.Name | Should-ContainCollection 'msdb'
+            $result.Name | Should-ContainCollection 'tempdb'
         }
     }
 
@@ -74,20 +74,20 @@ Describe 'Get-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         It 'Should return the specified database when it exists (system database)' {
             $result = Get-SqlDscDatabase -ServerObject $script:serverObject -Name 'master'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'master'
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'master'
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Database'
         }
 
         It 'Should throw error when getting a non-existent database' {
             { Get-SqlDscDatabase -ServerObject $script:serverObject -Name 'NonExistentDatabase' -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
 
         It 'Should return nothing when getting a non-existent database with SilentlyContinue' {
             $result = Get-SqlDscDatabase -ServerObject $script:serverObject -Name 'NonExistentDatabase' -ErrorAction 'SilentlyContinue'
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -95,8 +95,8 @@ Describe 'Get-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         It 'Should refresh the database collection and return databases' {
             $result = Get-SqlDscDatabase -ServerObject $script:serverObject -Refresh
 
-            @($result).Count | Should -BeGreaterOrEqual 1
-            $result.Name | Should -Contain 'master'
+            @($result).Count | Should-BeGreaterThanOrEqual 1
+            $result.Name | Should-ContainCollection 'master'
         }
     }
 }

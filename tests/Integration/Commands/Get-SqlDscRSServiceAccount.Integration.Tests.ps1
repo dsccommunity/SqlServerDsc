@@ -48,7 +48,7 @@ Describe 'Get-SqlDscRSServiceAccount' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $result = $configuration | Get-SqlDscRSServiceAccount -ErrorAction 'Stop'
 
-            $result | Should -BeExactly $script:expectedServiceAccount
+            $result | Should-BeString -CaseSensitive $script:expectedServiceAccount
         }
     }
 
@@ -62,7 +62,7 @@ Describe 'Get-SqlDscRSServiceAccount' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $result = $configuration | Get-SqlDscRSServiceAccount -ErrorAction 'Stop'
 
-            $result | Should -BeExactly $script:expectedServiceAccount
+            $result | Should-BeString -CaseSensitive $script:expectedServiceAccount
         }
     }
 
@@ -76,7 +76,7 @@ Describe 'Get-SqlDscRSServiceAccount' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $result = $configuration | Get-SqlDscRSServiceAccount -ErrorAction 'Stop'
 
-            $result | Should -BeExactly $script:expectedServiceAccount
+            $result | Should-BeString -CaseSensitive $script:expectedServiceAccount
         }
     }
 
@@ -90,7 +90,7 @@ Describe 'Get-SqlDscRSServiceAccount' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
             $result = $configuration | Get-SqlDscRSServiceAccount -ErrorAction 'Stop'
 
-            $result | Should -BeExactly $script:expectedServiceAccount
+            $result | Should-BeString -CaseSensitive $script:expectedServiceAccount
         }
     }
 }

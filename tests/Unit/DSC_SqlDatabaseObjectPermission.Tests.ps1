@@ -48,13 +48,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:dscResourceName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 
@@ -260,13 +262,13 @@ Describe 'SqlDatabaseObjectPermission\Get-TargetResource' -Tag 'Get' {
 
                 $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                $getTargetResourceResult.ServerName | Should -Be $env:COMPUTERNAME
-                $getTargetResourceResult.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                $getTargetResourceResult.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
-                $getTargetResourceResult.SchemaName | Should -Be $mockGetTargetResourceParameters.SchemaName
-                $getTargetResourceResult.ObjectName | Should -Be $mockGetTargetResourceParameters.ObjectName
-                $getTargetResourceResult.ObjectType | Should -Be $mockGetTargetResourceParameters.ObjectType
-                $getTargetResourceResult.Name | Should -Be $mockGetTargetResourceParameters.Name
+                $getTargetResourceResult.ServerName | Should-Be $env:COMPUTERNAME
+                $getTargetResourceResult.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                $getTargetResourceResult.DatabaseName | Should-Be $mockGetTargetResourceParameters.DatabaseName
+                $getTargetResourceResult.SchemaName | Should-Be $mockGetTargetResourceParameters.SchemaName
+                $getTargetResourceResult.ObjectName | Should-Be $mockGetTargetResourceParameters.ObjectName
+                $getTargetResourceResult.ObjectType | Should-Be $mockGetTargetResourceParameters.ObjectType
+                $getTargetResourceResult.Name | Should-Be $mockGetTargetResourceParameters.Name
             }
         }
 
@@ -276,20 +278,20 @@ Describe 'SqlDatabaseObjectPermission\Get-TargetResource' -Tag 'Get' {
 
                 $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                $getTargetResourceResult.Permission | Should -HaveCount 3
-                $getTargetResourceResult.Permission[0] | Should -BeOfType 'CimInstance'
-                $getTargetResourceResult.Permission[1] | Should -BeOfType 'CimInstance'
-                $getTargetResourceResult.Permission[2] | Should -BeOfType 'CimInstance'
+                $getTargetResourceResult.Permission | Should-BeCollection -Count 3
+                $getTargetResourceResult.Permission[0] | Should-HaveType 'CimInstance'
+                $getTargetResourceResult.Permission[1] | Should-HaveType 'CimInstance'
+                $getTargetResourceResult.Permission[2] | Should-HaveType 'CimInstance'
 
                 $grantPermission = $getTargetResourceResult.Permission | Where-Object -FilterScript { $_.State -eq 'Grant' }
-                $grantPermission | Should -Not -BeNullOrEmpty
-                $grantPermission.Ensure[0] | Should -Be 'Present'
-                $grantPermission.Ensure[1] | Should -Be 'Present'
-                $grantPermission.Ensure[2] | Should -Be 'Present'
-                $grantPermission.Permission | Should -HaveCount 3
-                $grantPermission.Permission | Should -Contain @('Select')
-                $grantPermission.Permission | Should -Contain @('Update')
-                $grantPermission.Permission | Should -Contain @('Insert')
+                $grantPermission | Should-BeTruthy
+                $grantPermission.Ensure[0] | Should-Be 'Present'
+                $grantPermission.Ensure[1] | Should-Be 'Present'
+                $grantPermission.Ensure[2] | Should-Be 'Present'
+                $grantPermission.Permission | Should-BeCollection -Count 3
+                $grantPermission.Permission | Should-ContainCollection @('Select')
+                $grantPermission.Permission | Should-ContainCollection @('Update')
+                $grantPermission.Permission | Should-ContainCollection @('Insert')
             }
         }
     }
@@ -438,13 +440,13 @@ Describe 'SqlDatabaseObjectPermission\Get-TargetResource' -Tag 'Get' {
 
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.ServerName | Should -Be $env:COMPUTERNAME
-                    $getTargetResourceResult.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                    $getTargetResourceResult.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
-                    $getTargetResourceResult.SchemaName | Should -Be $mockGetTargetResourceParameters.SchemaName
-                    $getTargetResourceResult.ObjectName | Should -Be $mockGetTargetResourceParameters.ObjectName
-                    $getTargetResourceResult.ObjectType | Should -Be $mockGetTargetResourceParameters.ObjectType
-                    $getTargetResourceResult.Name | Should -Be $mockGetTargetResourceParameters.Name
+                    $getTargetResourceResult.ServerName | Should-Be $env:COMPUTERNAME
+                    $getTargetResourceResult.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                    $getTargetResourceResult.DatabaseName | Should-Be $mockGetTargetResourceParameters.DatabaseName
+                    $getTargetResourceResult.SchemaName | Should-Be $mockGetTargetResourceParameters.SchemaName
+                    $getTargetResourceResult.ObjectName | Should-Be $mockGetTargetResourceParameters.ObjectName
+                    $getTargetResourceResult.ObjectType | Should-Be $mockGetTargetResourceParameters.ObjectType
+                    $getTargetResourceResult.Name | Should-Be $mockGetTargetResourceParameters.Name
                 }
             }
 
@@ -454,14 +456,14 @@ Describe 'SqlDatabaseObjectPermission\Get-TargetResource' -Tag 'Get' {
 
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.Permission | Should -HaveCount 1
-                    $getTargetResourceResult.Permission[0] | Should -BeOfType 'CimInstance'
+                    $getTargetResourceResult.Permission | Should-BeCollection -Count 1
+                    $getTargetResourceResult.Permission[0] | Should-HaveType 'CimInstance'
 
                     $grantPermission = $getTargetResourceResult.Permission | Where-Object -FilterScript { $_.State -eq 'Grant' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Absent'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Delete')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Absent'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Delete')
                 }
             }
         }
@@ -504,13 +506,13 @@ Describe 'SqlDatabaseObjectPermission\Get-TargetResource' -Tag 'Get' {
 
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.ServerName | Should -Be $env:COMPUTERNAME
-                    $getTargetResourceResult.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                    $getTargetResourceResult.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
-                    $getTargetResourceResult.SchemaName | Should -Be $mockGetTargetResourceParameters.SchemaName
-                    $getTargetResourceResult.ObjectName | Should -Be $mockGetTargetResourceParameters.ObjectName
-                    $getTargetResourceResult.ObjectType | Should -Be $mockGetTargetResourceParameters.ObjectType
-                    $getTargetResourceResult.Name | Should -Be $mockGetTargetResourceParameters.Name
+                    $getTargetResourceResult.ServerName | Should-Be $env:COMPUTERNAME
+                    $getTargetResourceResult.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                    $getTargetResourceResult.DatabaseName | Should-Be $mockGetTargetResourceParameters.DatabaseName
+                    $getTargetResourceResult.SchemaName | Should-Be $mockGetTargetResourceParameters.SchemaName
+                    $getTargetResourceResult.ObjectName | Should-Be $mockGetTargetResourceParameters.ObjectName
+                    $getTargetResourceResult.ObjectType | Should-Be $mockGetTargetResourceParameters.ObjectType
+                    $getTargetResourceResult.Name | Should-Be $mockGetTargetResourceParameters.Name
                 }
             }
 
@@ -520,14 +522,14 @@ Describe 'SqlDatabaseObjectPermission\Get-TargetResource' -Tag 'Get' {
 
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.Permission | Should -HaveCount 1
-                    $getTargetResourceResult.Permission[0] | Should -BeOfType 'CimInstance'
+                    $getTargetResourceResult.Permission | Should-BeCollection -Count 1
+                    $getTargetResourceResult.Permission[0] | Should-HaveType 'CimInstance'
 
                     $grantPermission = $getTargetResourceResult.Permission | Where-Object -FilterScript { $_.State -eq 'Deny' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Absent'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Delete')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Absent'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Delete')
                 }
             }
         }
@@ -570,13 +572,13 @@ Describe 'SqlDatabaseObjectPermission\Get-TargetResource' -Tag 'Get' {
 
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.ServerName | Should -Be $env:COMPUTERNAME
-                    $getTargetResourceResult.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                    $getTargetResourceResult.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
-                    $getTargetResourceResult.SchemaName | Should -Be $mockGetTargetResourceParameters.SchemaName
-                    $getTargetResourceResult.ObjectName | Should -Be $mockGetTargetResourceParameters.ObjectName
-                    $getTargetResourceResult.ObjectType | Should -Be $mockGetTargetResourceParameters.ObjectType
-                    $getTargetResourceResult.Name | Should -Be $mockGetTargetResourceParameters.Name
+                    $getTargetResourceResult.ServerName | Should-Be $env:COMPUTERNAME
+                    $getTargetResourceResult.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                    $getTargetResourceResult.DatabaseName | Should-Be $mockGetTargetResourceParameters.DatabaseName
+                    $getTargetResourceResult.SchemaName | Should-Be $mockGetTargetResourceParameters.SchemaName
+                    $getTargetResourceResult.ObjectName | Should-Be $mockGetTargetResourceParameters.ObjectName
+                    $getTargetResourceResult.ObjectType | Should-Be $mockGetTargetResourceParameters.ObjectType
+                    $getTargetResourceResult.Name | Should-Be $mockGetTargetResourceParameters.Name
                 }
             }
 
@@ -586,15 +588,15 @@ Describe 'SqlDatabaseObjectPermission\Get-TargetResource' -Tag 'Get' {
 
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.Permission | Should -HaveCount 1
-                    $getTargetResourceResult.Permission[0] | Should -BeOfType 'CimInstance'
+                    $getTargetResourceResult.Permission | Should-BeCollection -Count 1
+                    $getTargetResourceResult.Permission[0] | Should-HaveType 'CimInstance'
 
                     $grantPermission = $getTargetResourceResult.Permission | Where-Object -FilterScript { $_.State -eq 'Grant' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Select')
-                    $grantPermission.Permission | Should -Not -Contain @('Delete')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Select')
+                    $grantPermission.Permission | Should-NotContainCollection @('Delete')
                 }
             }
         }
@@ -652,9 +654,9 @@ Describe 'SqlDatabaseObjectPermission\Test-TargetResource' -Tag 'Test' {
                 Set-StrictMode -Version 1.0
 
                 $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters
-                $testTargetResourceResult | Should -BeTrue
+                $testTargetResourceResult | Should-BeTrue
 
-                Should -Invoke -CommandName Compare-TargetResourceState -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Compare-TargetResourceState -Exactly -Scope It -Times 1
             }
         }
     }
@@ -676,9 +678,9 @@ Describe 'SqlDatabaseObjectPermission\Test-TargetResource' -Tag 'Test' {
                 Set-StrictMode -Version 1.0
 
                 $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters
-                $testTargetResourceResult | Should -BeFalse
+                $testTargetResourceResult | Should-BeFalse
 
-                Should -Invoke -CommandName Compare-TargetResourceState -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Compare-TargetResourceState -Exactly -Scope It -Times 1
             }
         }
     }
@@ -749,67 +751,67 @@ Describe 'SqlDatabaseObjectPermission\Compare-TargetResourceState' -Tag 'Compare
 
         It 'Should return the correct metadata for the permission property' {
             $compareTargetResourceStateResult = Compare-TargetResourceState @mockCompareTargetResourceParameters
-            $compareTargetResourceStateResult | Should -HaveCount 1
+            $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
             $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
-            $comparedReturnValue | Should -Not -BeNullOrEmpty
-            $comparedReturnValue.InDesiredState | Should -BeTrue
+            $comparedReturnValue | Should-BeTruthy
+            $comparedReturnValue.InDesiredState | Should-BeTrue
 
             # Actual permissions
-            $comparedReturnValue.Actual | Should -HaveCount 4
-            $comparedReturnValue.Actual[0] | Should -BeOfType 'CimInstance'
-            $comparedReturnValue.Actual[1] | Should -BeOfType 'CimInstance'
-            $comparedReturnValue.Actual[2] | Should -BeOfType 'CimInstance'
-            $comparedReturnValue.Actual[3] | Should -BeOfType 'CimInstance'
+            $comparedReturnValue.Actual | Should-BeCollection -Count 4
+            $comparedReturnValue.Actual[0] | Should-HaveType 'CimInstance'
+            $comparedReturnValue.Actual[1] | Should-HaveType 'CimInstance'
+            $comparedReturnValue.Actual[2] | Should-HaveType 'CimInstance'
+            $comparedReturnValue.Actual[3] | Should-HaveType 'CimInstance'
 
             $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'Grant' }
-            $grantPermission | Should -Not -BeNullOrEmpty
-            $grantPermission.Ensure[0] | Should -Be 'Present'
-            $grantPermission.Ensure[1] | Should -Be 'Present'
-            $grantPermission.Permission | Should -HaveCount 2
-            $grantPermission.Permission | Should -Contain @('Select')
-            $grantPermission.Permission | Should -Contain @('Update')
+            $grantPermission | Should-BeTruthy
+            $grantPermission.Ensure[0] | Should-Be 'Present'
+            $grantPermission.Ensure[1] | Should-Be 'Present'
+            $grantPermission.Permission | Should-BeCollection -Count 2
+            $grantPermission.Permission | Should-ContainCollection @('Select')
+            $grantPermission.Permission | Should-ContainCollection @('Update')
 
             $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'Deny' }
-            $grantPermission | Should -Not -BeNullOrEmpty
-            $grantPermission.Ensure | Should -Be 'Present'
-            $grantPermission.Permission | Should -HaveCount 1
-            $grantPermission.Permission | Should -Contain @('Delete')
+            $grantPermission | Should-BeTruthy
+            $grantPermission.Ensure | Should-Be 'Present'
+            $grantPermission.Permission | Should-BeCollection -Count 1
+            $grantPermission.Permission | Should-ContainCollection @('Delete')
 
             $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
-            $grantPermission | Should -Not -BeNullOrEmpty
-            $grantPermission.Ensure | Should -Be 'Absent'
-            $grantPermission.Permission | Should -HaveCount 1
-            $grantPermission.Permission | Should -Contain @('Drop')
+            $grantPermission | Should-BeTruthy
+            $grantPermission.Ensure | Should-Be 'Absent'
+            $grantPermission.Permission | Should-BeCollection -Count 1
+            $grantPermission.Permission | Should-ContainCollection @('Drop')
 
             # Expected permissions
-            $comparedReturnValue.Expected | Should -HaveCount 4
-            $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
-            $comparedReturnValue.Expected[1] | Should -BeOfType 'CimInstance'
-            $comparedReturnValue.Expected[2] | Should -BeOfType 'CimInstance'
-            $comparedReturnValue.Expected[3] | Should -BeOfType 'CimInstance'
+            $comparedReturnValue.Expected | Should-BeCollection -Count 4
+            $comparedReturnValue.Expected[0] | Should-HaveType 'CimInstance'
+            $comparedReturnValue.Expected[1] | Should-HaveType 'CimInstance'
+            $comparedReturnValue.Expected[2] | Should-HaveType 'CimInstance'
+            $comparedReturnValue.Expected[3] | Should-HaveType 'CimInstance'
 
             $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
-            $grantPermission | Should -Not -BeNullOrEmpty
-            $grantPermission.Ensure[0] | Should -Be 'Present'
-            $grantPermission.Ensure[1] | Should -Be 'Present'
-            $grantPermission.Permission | Should -HaveCount 2
-            $grantPermission.Permission | Should -Contain @('Select')
-            $grantPermission.Permission | Should -Contain @('Update')
+            $grantPermission | Should-BeTruthy
+            $grantPermission.Ensure[0] | Should-Be 'Present'
+            $grantPermission.Ensure[1] | Should-Be 'Present'
+            $grantPermission.Permission | Should-BeCollection -Count 2
+            $grantPermission.Permission | Should-ContainCollection @('Select')
+            $grantPermission.Permission | Should-ContainCollection @('Update')
 
             $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Deny' }
-            $grantPermission | Should -Not -BeNullOrEmpty
-            $grantPermission.Ensure | Should -Be 'Present'
-            $grantPermission.Permission | Should -HaveCount 1
-            $grantPermission.Permission | Should -Contain @('Delete')
+            $grantPermission | Should-BeTruthy
+            $grantPermission.Ensure | Should-Be 'Present'
+            $grantPermission.Permission | Should-BeCollection -Count 1
+            $grantPermission.Permission | Should-ContainCollection @('Delete')
 
             $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
-            $grantPermission | Should -Not -BeNullOrEmpty
-            $grantPermission.Ensure | Should -Be 'Absent'
-            $grantPermission.Permission | Should -HaveCount 1
-            $grantPermission.Permission | Should -Contain @('Drop')
+            $grantPermission | Should-BeTruthy
+            $grantPermission.Ensure | Should-Be 'Absent'
+            $grantPermission.Permission | Should-BeCollection -Count 1
+            $grantPermission.Permission | Should-ContainCollection @('Drop')
 
-            Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
         }
     }
 
@@ -871,39 +873,39 @@ Describe 'SqlDatabaseObjectPermission\Compare-TargetResourceState' -Tag 'Compare
                 }
 
                 $compareTargetResourceStateResult = Compare-TargetResourceState @mockCompareTargetResourceParameters
-                $compareTargetResourceStateResult | Should -HaveCount 1
+                $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                 $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
-                $comparedReturnValue | Should -Not -BeNullOrEmpty
+                $comparedReturnValue | Should-BeTruthy
 
-                $comparedReturnValue.Actual | Should -HaveCount 4
-                $comparedReturnValue.Actual[0] | Should -BeOfType 'CimInstance'
-                $comparedReturnValue.Actual[1] | Should -BeOfType 'CimInstance'
-                $comparedReturnValue.Actual[2] | Should -BeOfType 'CimInstance'
-                $comparedReturnValue.Actual[3] | Should -BeOfType 'CimInstance'
+                $comparedReturnValue.Actual | Should-BeCollection -Count 4
+                $comparedReturnValue.Actual[0] | Should-HaveType 'CimInstance'
+                $comparedReturnValue.Actual[1] | Should-HaveType 'CimInstance'
+                $comparedReturnValue.Actual[2] | Should-HaveType 'CimInstance'
+                $comparedReturnValue.Actual[3] | Should-HaveType 'CimInstance'
 
                 # Actual permissions
                 $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'Grant' }
-                $grantPermission | Should -Not -BeNullOrEmpty
-                $grantPermission.Ensure[0] | Should -Be 'Present'
-                $grantPermission.Ensure[1] | Should -Be 'Present'
-                $grantPermission.Permission | Should -HaveCount 2
-                $grantPermission.Permission | Should -Contain @('Select')
-                $grantPermission.Permission | Should -Contain @('Update')
+                $grantPermission | Should-BeTruthy
+                $grantPermission.Ensure[0] | Should-Be 'Present'
+                $grantPermission.Ensure[1] | Should-Be 'Present'
+                $grantPermission.Permission | Should-BeCollection -Count 2
+                $grantPermission.Permission | Should-ContainCollection @('Select')
+                $grantPermission.Permission | Should-ContainCollection @('Update')
 
                 $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'Deny' }
-                $grantPermission | Should -Not -BeNullOrEmpty
-                $grantPermission.Ensure | Should -Be 'Present'
-                $grantPermission.Permission | Should -HaveCount 1
-                $grantPermission.Permission | Should -Contain @('Delete')
+                $grantPermission | Should-BeTruthy
+                $grantPermission.Ensure | Should-Be 'Present'
+                $grantPermission.Permission | Should-BeCollection -Count 1
+                $grantPermission.Permission | Should-ContainCollection @('Delete')
 
                 $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
-                $grantPermission | Should -Not -BeNullOrEmpty
-                $grantPermission.Ensure | Should -Be 'Present'
-                $grantPermission.Permission | Should -HaveCount 1
-                $grantPermission.Permission | Should -Contain @('Drop')
+                $grantPermission | Should-BeTruthy
+                $grantPermission.Ensure | Should-Be 'Present'
+                $grantPermission.Permission | Should-BeCollection -Count 1
+                $grantPermission.Permission | Should-ContainCollection @('Drop')
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
 
             Context 'When the permission state ''Grant'' is ''Present'' but desired state is ''Absent''' {
@@ -946,40 +948,40 @@ Describe 'SqlDatabaseObjectPermission\Compare-TargetResourceState' -Tag 'Compare
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @mockCompareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 1
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                     $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
 
-                    $comparedReturnValue.Expected | Should -HaveCount 4
-                    $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
-                    $comparedReturnValue.Expected[1] | Should -BeOfType 'CimInstance'
-                    $comparedReturnValue.Expected[2] | Should -BeOfType 'CimInstance'
-                    $comparedReturnValue.Expected[3] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Expected | Should-BeCollection -Count 4
+                    $comparedReturnValue.Expected[0] | Should-HaveType 'CimInstance'
+                    $comparedReturnValue.Expected[1] | Should-HaveType 'CimInstance'
+                    $comparedReturnValue.Expected[2] | Should-HaveType 'CimInstance'
+                    $comparedReturnValue.Expected[3] | Should-HaveType 'CimInstance'
 
                     # Expected permissions
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure[0] | Should -Be 'Absent'
-                    $grantPermission.Ensure[1] | Should -Be 'Absent'
-                    $grantPermission.Permission | Should -HaveCount 2
-                    $grantPermission.Permission | Should -Contain @('Select')
-                    $grantPermission.Permission | Should -Contain @('Update')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure[0] | Should-Be 'Absent'
+                    $grantPermission.Ensure[1] | Should-Be 'Absent'
+                    $grantPermission.Permission | Should-BeCollection -Count 2
+                    $grantPermission.Permission | Should-ContainCollection @('Select')
+                    $grantPermission.Permission | Should-ContainCollection @('Update')
 
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Deny' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Delete')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Delete')
 
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Drop')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Drop')
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1023,40 +1025,40 @@ Describe 'SqlDatabaseObjectPermission\Compare-TargetResourceState' -Tag 'Compare
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @mockCompareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 1
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                     $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
 
-                    $comparedReturnValue.Expected | Should -HaveCount 4
-                    $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
-                    $comparedReturnValue.Expected[1] | Should -BeOfType 'CimInstance'
-                    $comparedReturnValue.Expected[2] | Should -BeOfType 'CimInstance'
-                    $comparedReturnValue.Expected[3] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Expected | Should-BeCollection -Count 4
+                    $comparedReturnValue.Expected[0] | Should-HaveType 'CimInstance'
+                    $comparedReturnValue.Expected[1] | Should-HaveType 'CimInstance'
+                    $comparedReturnValue.Expected[2] | Should-HaveType 'CimInstance'
+                    $comparedReturnValue.Expected[3] | Should-HaveType 'CimInstance'
 
                     # Expected permissions
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure[0] | Should -Be 'Present'
-                    $grantPermission.Ensure[1] | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 2
-                    $grantPermission.Permission | Should -Contain @('Select')
-                    $grantPermission.Permission | Should -Contain @('Update')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure[0] | Should-Be 'Present'
+                    $grantPermission.Ensure[1] | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 2
+                    $grantPermission.Permission | Should-ContainCollection @('Select')
+                    $grantPermission.Permission | Should-ContainCollection @('Update')
 
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Deny' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Delete')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Delete')
 
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Absent'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Drop')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Absent'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Drop')
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1100,40 +1102,40 @@ Describe 'SqlDatabaseObjectPermission\Compare-TargetResourceState' -Tag 'Compare
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @mockCompareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 1
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                     $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
 
-                    $comparedReturnValue.Expected | Should -HaveCount 4
-                    $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
-                    $comparedReturnValue.Expected[1] | Should -BeOfType 'CimInstance'
-                    $comparedReturnValue.Expected[2] | Should -BeOfType 'CimInstance'
-                    $comparedReturnValue.Expected[3] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Expected | Should-BeCollection -Count 4
+                    $comparedReturnValue.Expected[0] | Should-HaveType 'CimInstance'
+                    $comparedReturnValue.Expected[1] | Should-HaveType 'CimInstance'
+                    $comparedReturnValue.Expected[2] | Should-HaveType 'CimInstance'
+                    $comparedReturnValue.Expected[3] | Should-HaveType 'CimInstance'
 
                     # Expected permissions
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure[0] | Should -Be 'Present'
-                    $grantPermission.Ensure[1] | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 2
-                    $grantPermission.Permission | Should -Contain @('Select')
-                    $grantPermission.Permission | Should -Contain @('Update')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure[0] | Should-Be 'Present'
+                    $grantPermission.Ensure[1] | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 2
+                    $grantPermission.Permission | Should-ContainCollection @('Select')
+                    $grantPermission.Permission | Should-ContainCollection @('Update')
 
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Deny' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Absent'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Delete')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Absent'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Delete')
 
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Drop')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Drop')
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1162,23 +1164,23 @@ Describe 'SqlDatabaseObjectPermission\Compare-TargetResourceState' -Tag 'Compare
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @mockCompareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 1
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                     $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
 
-                    $comparedReturnValue.Expected | Should -HaveCount 1
-                    $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Expected | Should-BeCollection -Count 1
+                    $comparedReturnValue.Expected[0] | Should-HaveType 'CimInstance'
 
                     # Expected permissions
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('CreateTable')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('CreateTable')
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1207,23 +1209,23 @@ Describe 'SqlDatabaseObjectPermission\Compare-TargetResourceState' -Tag 'Compare
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @mockCompareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 1
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                     $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
 
-                    $comparedReturnValue.Expected | Should -HaveCount 1
-                    $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Expected | Should-BeCollection -Count 1
+                    $comparedReturnValue.Expected[0] | Should-HaveType 'CimInstance'
 
                     # Expected permissions
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('CreateTable')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('CreateTable')
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1252,23 +1254,23 @@ Describe 'SqlDatabaseObjectPermission\Compare-TargetResourceState' -Tag 'Compare
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @mockCompareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 1
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                     $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
 
-                    $comparedReturnValue.Expected | Should -HaveCount 1
-                    $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Expected | Should-BeCollection -Count 1
+                    $comparedReturnValue.Expected[0] | Should-HaveType 'CimInstance'
 
                     # Expected permissions
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Deny' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('CreateTable')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('CreateTable')
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -1320,29 +1322,29 @@ Describe 'SqlDatabaseObjectPermission\Compare-TargetResourceState' -Tag 'Compare
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @mockCompareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 1
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                     $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
 
                     # Actual permissions
-                    $comparedReturnValue.Actual | Should -BeNullOrEmpty
+                    $comparedReturnValue.Actual | Should-BeFalsy
 
                     # Expected permissions
-                    $comparedReturnValue.Expected | Should -HaveCount 2
-                    $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
-                    $comparedReturnValue.Expected[1] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Expected | Should-BeCollection -Count 2
+                    $comparedReturnValue.Expected[0] | Should-HaveType 'CimInstance'
+                    $comparedReturnValue.Expected[1] | Should-HaveType 'CimInstance'
 
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure[0] | Should -Be 'Present'
-                    $grantPermission.Ensure[1] | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 2
-                    $grantPermission.Permission | Should -Contain @('Select')
-                    $grantPermission.Permission | Should -Contain @('Update')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure[0] | Should-Be 'Present'
+                    $grantPermission.Ensure[1] | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 2
+                    $grantPermission.Permission | Should-ContainCollection @('Select')
+                    $grantPermission.Permission | Should-ContainCollection @('Update')
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1392,29 +1394,29 @@ Describe 'SqlDatabaseObjectPermission\Compare-TargetResourceState' -Tag 'Compare
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @mockCompareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 1
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                     $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
 
                     # Actual permissions
-                    $comparedReturnValue.Actual | Should -BeNullOrEmpty
+                    $comparedReturnValue.Actual | Should-BeFalsy
 
                     # Expected permissions
-                    $comparedReturnValue.Expected | Should -HaveCount 2
-                    $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
-                    $comparedReturnValue.Expected[1] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Expected | Should-BeCollection -Count 2
+                    $comparedReturnValue.Expected[0] | Should-HaveType 'CimInstance'
+                    $comparedReturnValue.Expected[1] | Should-HaveType 'CimInstance'
 
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure[0] | Should -Be 'Present'
-                    $grantPermission.Ensure[1] | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 2
-                    $grantPermission.Permission | Should -Contain @('Select')
-                    $grantPermission.Permission | Should -Contain @('Update')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure[0] | Should-Be 'Present'
+                    $grantPermission.Ensure[1] | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 2
+                    $grantPermission.Permission | Should-ContainCollection @('Select')
+                    $grantPermission.Permission | Should-ContainCollection @('Update')
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1464,29 +1466,29 @@ Describe 'SqlDatabaseObjectPermission\Compare-TargetResourceState' -Tag 'Compare
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @mockCompareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 1
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                     $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
 
                     # Actual permissions
-                    $comparedReturnValue.Actual | Should -BeNullOrEmpty
+                    $comparedReturnValue.Actual | Should-BeFalsy
 
                     # Expected permissions
-                    $comparedReturnValue.Expected | Should -HaveCount 2
-                    $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
-                    $comparedReturnValue.Expected[1] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Expected | Should-BeCollection -Count 2
+                    $comparedReturnValue.Expected[0] | Should-HaveType 'CimInstance'
+                    $comparedReturnValue.Expected[1] | Should-HaveType 'CimInstance'
 
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Deny' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure[0] | Should -Be 'Present'
-                    $grantPermission.Ensure[1] | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 2
-                    $grantPermission.Permission | Should -Contain @('Select')
-                    $grantPermission.Permission | Should -Contain @('Update')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure[0] | Should-Be 'Present'
+                    $grantPermission.Ensure[1] | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 2
+                    $grantPermission.Permission | Should-ContainCollection @('Select')
+                    $grantPermission.Permission | Should-ContainCollection @('Update')
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -1539,33 +1541,33 @@ Describe 'SqlDatabaseObjectPermission\Compare-TargetResourceState' -Tag 'Compare
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @mockCompareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 1
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                     $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
 
                     # Actual permissions
-                    $comparedReturnValue.Actual | Should -HaveCount 1
-                    $comparedReturnValue.Actual[0] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Actual | Should-BeCollection -Count 1
+                    $comparedReturnValue.Actual[0] | Should-HaveType 'CimInstance'
 
                     $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'Grant' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Select')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Select')
 
                     # Expected permissions
-                    $comparedReturnValue.Expected | Should -HaveCount 1
-                    $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Expected | Should-BeCollection -Count 1
+                    $comparedReturnValue.Expected[0] | Should-HaveType 'CimInstance'
 
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Update')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Update')
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1616,33 +1618,33 @@ Describe 'SqlDatabaseObjectPermission\Compare-TargetResourceState' -Tag 'Compare
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @mockCompareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 1
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                     $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
 
                     # Actual permissions
-                    $comparedReturnValue.Actual | Should -HaveCount 1
-                    $comparedReturnValue.Actual[0] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Actual | Should-BeCollection -Count 1
+                    $comparedReturnValue.Actual[0] | Should-HaveType 'CimInstance'
 
                     $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Select')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Select')
 
                     # Expected permissions
-                    $comparedReturnValue.Expected | Should -HaveCount 1
-                    $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Expected | Should-BeCollection -Count 1
+                    $comparedReturnValue.Expected[0] | Should-HaveType 'CimInstance'
 
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Update')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Update')
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1693,33 +1695,33 @@ Describe 'SqlDatabaseObjectPermission\Compare-TargetResourceState' -Tag 'Compare
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @mockCompareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 1
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                     $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
 
                     # Actual permissions
-                    $comparedReturnValue.Actual | Should -HaveCount 1
-                    $comparedReturnValue.Actual[0] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Actual | Should-BeCollection -Count 1
+                    $comparedReturnValue.Actual[0] | Should-HaveType 'CimInstance'
 
                     $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'Deny' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Select')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Select')
 
                     # Expected permissions
-                    $comparedReturnValue.Expected | Should -HaveCount 1
-                    $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Expected | Should-BeCollection -Count 1
+                    $comparedReturnValue.Expected[0] | Should-HaveType 'CimInstance'
 
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Deny' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Update')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Update')
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -1772,33 +1774,33 @@ Describe 'SqlDatabaseObjectPermission\Compare-TargetResourceState' -Tag 'Compare
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @mockCompareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 1
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                     $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
 
                     # Actual permissions
-                    $comparedReturnValue.Actual | Should -HaveCount 1
-                    $comparedReturnValue.Actual[0] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Actual | Should-BeCollection -Count 1
+                    $comparedReturnValue.Actual[0] | Should-HaveType 'CimInstance'
 
                     $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'Deny' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Update')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Update')
 
                     # Expected permissions
-                    $comparedReturnValue.Expected | Should -HaveCount 1
-                    $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Expected | Should-BeCollection -Count 1
+                    $comparedReturnValue.Expected[0] | Should-HaveType 'CimInstance'
 
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Select')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Select')
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1849,33 +1851,33 @@ Describe 'SqlDatabaseObjectPermission\Compare-TargetResourceState' -Tag 'Compare
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @mockCompareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 1
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                     $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
 
                     # Actual permissions
-                    $comparedReturnValue.Actual | Should -HaveCount 1
-                    $comparedReturnValue.Actual[0] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Actual | Should-BeCollection -Count 1
+                    $comparedReturnValue.Actual[0] | Should-HaveType 'CimInstance'
 
                     $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'Deny' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Update')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Update')
 
                     # Expected permissions
-                    $comparedReturnValue.Expected | Should -HaveCount 1
-                    $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Expected | Should-BeCollection -Count 1
+                    $comparedReturnValue.Expected[0] | Should-HaveType 'CimInstance'
 
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Select')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Select')
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1926,33 +1928,33 @@ Describe 'SqlDatabaseObjectPermission\Compare-TargetResourceState' -Tag 'Compare
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @mockCompareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 1
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                     $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
 
                     # Actual permissions
-                    $comparedReturnValue.Actual | Should -HaveCount 1
-                    $comparedReturnValue.Actual[0] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Actual | Should-BeCollection -Count 1
+                    $comparedReturnValue.Actual[0] | Should-HaveType 'CimInstance'
 
                     $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'Grant' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Select')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Select')
 
                     # Expected permissions
-                    $comparedReturnValue.Expected | Should -HaveCount 1
-                    $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Expected | Should-BeCollection -Count 1
+                    $comparedReturnValue.Expected[0] | Should-HaveType 'CimInstance'
 
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Deny' }
-                    $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
-                    $grantPermission.Permission | Should -HaveCount 1
-                    $grantPermission.Permission | Should -Contain @('Update')
+                    $grantPermission | Should-BeTruthy
+                    $grantPermission.Ensure | Should-Be 'Present'
+                    $grantPermission.Permission | Should-BeCollection -Count 1
+                    $grantPermission.Permission | Should-ContainCollection @('Update')
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -2018,7 +2020,7 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
         It 'Should not try to set any values and should not throw an exception' {
             $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
-            Should -Invoke -CommandName Get-DatabaseObject -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Get-DatabaseObject -Exactly -Scope It -Times 0
         }
     }
 
@@ -2081,7 +2083,7 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
                     $mockSetTargetResourceParameters.DatabaseName
                 )
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw $mockErrorMessage
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw $mockErrorMessage
             }
         }
 
@@ -2178,10 +2180,10 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
                 It 'Should set the permissions without throwing an exception' {
                     $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Get-DatabaseObject -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-DatabaseObject -Exactly -Scope It -Times 1
 
-                    $script:mockMethodGrantRanTimes | Should -Be 1
-                    $script:mockMethodDenyRanTimes  | Should -Be 0
+                    $script:mockMethodGrantRanTimes | Should-Be 1
+                    $script:mockMethodDenyRanTimes  | Should-Be 0
                 }
 
                 # Regression test for issue #1602.
@@ -2223,7 +2225,7 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
                                 $mockSetTargetResourceParameters.DatabaseName
                             )
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw
+                            { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw
                         }
                     }
 
@@ -2235,11 +2237,11 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
                         It 'Should set the permissions without throwing an exception' {
                             $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
-                            Should -Invoke -CommandName Get-DatabaseObject -Exactly -Times 1 -Scope It
+                            Should-Invoke -CommandName Get-DatabaseObject -Exactly -Scope It -Times 1
 
-                            $script:mockMethodRevokeRanTimes | Should -Be 1
-                            $script:mockMethodGrantRanTimes | Should -Be 1
-                            $script:mockMethodDenyRanTimes  | Should -Be 0
+                            $script:mockMethodRevokeRanTimes | Should-Be 1
+                            $script:mockMethodGrantRanTimes | Should-Be 1
+                            $script:mockMethodDenyRanTimes  | Should-Be 0
                         }
                     }
                 }
@@ -2303,10 +2305,10 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
                 It 'Should set the permissions without throwing an exception' {
                     $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Get-DatabaseObject -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-DatabaseObject -Exactly -Scope It -Times 1
 
-                    $script:mockMethodGrantRanTimes | Should -Be 1
-                    $script:mockMethodDenyRanTimes  | Should -Be 0
+                    $script:mockMethodGrantRanTimes | Should-Be 1
+                    $script:mockMethodDenyRanTimes  | Should-Be 0
                 }
             }
 
@@ -2368,10 +2370,10 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
                 It 'Should set the permissions without throwing an exception' {
                     $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Get-DatabaseObject -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-DatabaseObject -Exactly -Scope It -Times 1
 
-                    $script:mockMethodGrantRanTimes | Should -Be 0
-                    $script:mockMethodDenyRanTimes  | Should -Be 1
+                    $script:mockMethodGrantRanTimes | Should-Be 0
+                    $script:mockMethodDenyRanTimes  | Should-Be 1
                 }
             }
 
@@ -2446,10 +2448,10 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
                 It 'Should set the permissions without throwing an exception' {
                     $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Get-DatabaseObject -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-DatabaseObject -Exactly -Scope It -Times 1
 
-                    $script:mockMethodGrantRanTimes | Should -Be 0
-                    $script:mockMethodDenyRanTimes  | Should -Be 1
+                    $script:mockMethodGrantRanTimes | Should-Be 0
+                    $script:mockMethodDenyRanTimes  | Should-Be 1
                 }
             }
         }
@@ -2539,9 +2541,9 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
                 It 'Should revoke the permissions without throwing an exception' {
                     $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Get-DatabaseObject -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-DatabaseObject -Exactly -Scope It -Times 1
 
-                    $script:mockMethodRevokeRanTimes | Should -Be 1
+                    $script:mockMethodRevokeRanTimes | Should-Be 1
                 }
             }
 
@@ -2592,9 +2594,9 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
                 It 'Should revoke the permissions without throwing an exception' {
                     $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Get-DatabaseObject -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-DatabaseObject -Exactly -Scope It -Times 1
 
-                    $script:mockMethodRevokeRanTimes | Should -Be 1
+                    $script:mockMethodRevokeRanTimes | Should-Be 1
                 }
             }
 
@@ -2645,9 +2647,9 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
                 It 'Should revoke the permissions without throwing an exception' {
                     $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Get-DatabaseObject -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-DatabaseObject -Exactly -Scope It -Times 1
 
-                    $script:mockMethodRevokeRanTimes | Should -Be 1
+                    $script:mockMethodRevokeRanTimes | Should-Be 1
                 }
             }
         }
@@ -2728,7 +2730,7 @@ Describe 'SqlDatabaseObjectPermission\Set-TargetResource' -Tag 'Set' {
                     $mockSetTargetResourceParameters.DatabaseName
                 )
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw $mockErrorMessage
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw $mockErrorMessage
             }
         }
     }
@@ -2795,7 +2797,7 @@ Describe 'SqlDatabaseObjectPermission\Get-DatabaseObject' -Tag 'Helper' {
             }
 
             # The methods that was mocked returns the expect object type.
-            Get-DatabaseObject @getDatabaseObjectParameters | Should -Be $ObjectType
+            Get-DatabaseObject @getDatabaseObjectParameters | Should-Be $ObjectType
         }
     }
 }
@@ -2816,7 +2818,7 @@ Describe 'SqlDatabaseObjectPermission\Assert-PermissionEnsureProperty' -Tag 'Hel
                     } `
                     -ClientOnly
 
-                { Assert-PermissionEnsureProperty -Permission $mockPermission } | Should -Not -Throw
+                $null = & ({ Assert-PermissionEnsureProperty -Permission $mockPermission })
             }
         }
     }
@@ -2839,7 +2841,7 @@ Describe 'SqlDatabaseObjectPermission\Assert-PermissionEnsureProperty' -Tag 'Hel
                 $mockErrorMessage = $script:localizedData.InvalidPermissionValue
 
                 { Assert-PermissionEnsureProperty -Permission $mockPermission } |
-                    Should -Throw -ExpectedMessage '*Delete,Insert,Select*'
+                    Should-Throw -ExceptionMessage '*Delete,Insert,Select*'
             }
         }
 
@@ -2858,7 +2860,7 @@ Describe 'SqlDatabaseObjectPermission\Assert-PermissionEnsureProperty' -Tag 'Hel
                     -ClientOnly
 
                 { Assert-PermissionEnsureProperty -Permission $mockPermission } |
-                    Should -Throw -ExpectedMessage '*Delete Insert*'
+                    Should-Throw -ExceptionMessage '*Delete Insert*'
             }
         }
     }

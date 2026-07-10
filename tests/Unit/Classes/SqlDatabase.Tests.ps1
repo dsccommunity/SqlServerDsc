@@ -48,13 +48,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     # Unload the stub module.
     Remove-SqlModuleStub -Name $script:stubModuleName
@@ -76,14 +78,14 @@ Describe 'SqlDatabase' {
         It 'Should have a default or empty constructor' {
             InModuleScope -ScriptBlock {
                 $instance = [SqlDatabase]::new()
-                $instance | Should -Not -BeNullOrEmpty
+                $instance | Should-BeTruthy
             }
         }
 
         It 'Should be the correct type' {
             InModuleScope -ScriptBlock {
                 $instance = [SqlDatabase]::new()
-                $instance.GetType().Name | Should -Be 'SqlDatabase'
+                $instance.GetType().Name | Should-Be 'SqlDatabase'
             }
         }
     }
@@ -126,13 +128,13 @@ Describe 'SqlDatabase\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $currentState = $script:mockSqlDatabaseInstance.Get()
 
-                    $currentState.InstanceName | Should -Be 'NamedInstance'
-                    $currentState.Name | Should -Be 'TestDatabase'
-                    $currentState.ServerName | Should -Be (Get-ComputerName)
-                    $currentState.Credential | Should -BeNullOrEmpty
-                    $currentState.Reasons | Should -BeNullOrEmpty
-                    $currentState.Collation | Should -Be 'SQL_Latin1_General_CP1_CI_AS'
-                    $currentState.RecoveryModel | Should -Be 'Full'
+                    $currentState.InstanceName | Should-Be 'NamedInstance'
+                    $currentState.Name | Should-Be 'TestDatabase'
+                    $currentState.ServerName | Should-Be (Get-ComputerName)
+                    $currentState.Credential | Should-BeFalsy
+                    $currentState.Reasons | Should-BeFalsy
+                    $currentState.Collation | Should-Be 'SQL_Latin1_General_CP1_CI_AS'
+                    $currentState.RecoveryModel | Should-Be 'Full'
                 }
             }
 
@@ -170,13 +172,13 @@ Describe 'SqlDatabase\Get()' -Tag 'Get' {
                     InModuleScope -ScriptBlock {
                         $currentState = $script:mockSqlDatabaseInstance.Get()
 
-                        $currentState.InstanceName | Should -Be 'NamedInstance'
-                        $currentState.Name | Should -Be 'TestDatabase'
-                        $currentState.ServerName | Should -Be (Get-ComputerName)
-                        $currentState.Reasons | Should -BeNullOrEmpty
+                        $currentState.InstanceName | Should-Be 'NamedInstance'
+                        $currentState.Name | Should-Be 'TestDatabase'
+                        $currentState.ServerName | Should-Be (Get-ComputerName)
+                        $currentState.Reasons | Should-BeFalsy
 
-                        $currentState.Credential | Should -BeOfType [System.Management.Automation.PSCredential]
-                        $currentState.Credential.UserName | Should -Be 'MyCredentialUserName'
+                        $currentState.Credential | Should-HaveType ([System.Management.Automation.PSCredential])
+                        $currentState.Credential.UserName | Should-Be 'MyCredentialUserName'
                     }
                 }
             }
@@ -219,16 +221,16 @@ Describe 'SqlDatabase\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $currentState = $script:mockSqlDatabaseInstance.Get()
 
-                    $currentState.InstanceName | Should -Be 'NamedInstance'
-                    $currentState.Name | Should -Be 'TestDatabase'
-                    $currentState.ServerName | Should -Be (Get-ComputerName)
-                    $currentState.Credential | Should -BeNullOrEmpty
+                    $currentState.InstanceName | Should-Be 'NamedInstance'
+                    $currentState.Name | Should-Be 'TestDatabase'
+                    $currentState.ServerName | Should-Be (Get-ComputerName)
+                    $currentState.Credential | Should-BeFalsy
 
-                    $currentState.Collation | Should -Be 'SQL_Latin1_General_CP1_CI_AS'
+                    $currentState.Collation | Should-Be 'SQL_Latin1_General_CP1_CI_AS'
 
-                    $currentState.Reasons | Should -HaveCount 1
-                    $currentState.Reasons[0].Code | Should -Be 'SqlDatabase:SqlDatabase:Collation'
-                    $currentState.Reasons[0].Phrase | Should -Be 'The property Collation should be "Finnish_Swedish_CI_AS", but was "SQL_Latin1_General_CP1_CI_AS"'
+                    $currentState.Reasons | Should-BeCollection -Count 1
+                    $currentState.Reasons[0].Code | Should-Be 'SqlDatabase:SqlDatabase:Collation'
+                    $currentState.Reasons[0].Phrase | Should-Be 'The property Collation should be "Finnish_Swedish_CI_AS", but was "SQL_Latin1_General_CP1_CI_AS"'
                 }
             }
         }
@@ -281,7 +283,7 @@ Describe 'SqlDatabase\Set()' -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 $script:mockSqlDatabaseInstance.Set()
 
-                $script:mockMethodModifyCallCount | Should -Be 0
+                $script:mockMethodModifyCallCount | Should-Be 0
             }
         }
     }
@@ -308,7 +310,7 @@ Describe 'SqlDatabase\Set()' -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 $script:mockSqlDatabaseInstance.Set()
 
-                $script:mockMethodModifyCallCount | Should -Be 1
+                $script:mockMethodModifyCallCount | Should-Be 1
             }
         }
     }
@@ -348,7 +350,7 @@ Describe 'SqlDatabase\Test()' -Tag 'Test' {
 
         It 'Should return $true' {
             InModuleScope -ScriptBlock {
-                $script:mockSqlDatabaseInstance.Test() | Should -BeTrue
+                $script:mockSqlDatabaseInstance.Test() | Should-BeTrue
             }
         }
     }
@@ -379,7 +381,7 @@ Describe 'SqlDatabase\Test()' -Tag 'Test' {
 
         It 'Should return $false' {
             InModuleScope -ScriptBlock {
-                $script:mockSqlDatabaseInstance.Test() | Should -BeFalse
+                $script:mockSqlDatabaseInstance.Test() | Should-BeFalse
             }
         }
     }
@@ -410,12 +412,12 @@ Describe 'SqlDatabase\GetCurrentState()' -Tag 'GetCurrentState' {
                     }
                 )
 
-                $currentState.InstanceName | Should -Be 'NamedInstance'
-                $currentState.ServerName | Should -Be (Get-ComputerName)
-                $currentState.Credential | Should -BeNullOrEmpty
+                $currentState.InstanceName | Should-Be 'NamedInstance'
+                $currentState.ServerName | Should-Be (Get-ComputerName)
+                $currentState.Credential | Should-BeFalsy
 
                 # Database doesn't exist, so Name should not be in current state
-                $currentState.Keys | Should -Not -Contain 'Name'
+                $currentState.Keys | Should-NotContainCollection 'Name'
             }
         }
 
@@ -434,11 +436,11 @@ Describe 'SqlDatabase\GetCurrentState()' -Tag 'GetCurrentState' {
                         }
                     )
 
-                    $currentState.InstanceName | Should -Be 'NamedInstance'
-                    $currentState.ServerName | Should -Be (Get-ComputerName)
+                    $currentState.InstanceName | Should-Be 'NamedInstance'
+                    $currentState.ServerName | Should-Be (Get-ComputerName)
 
-                    $currentState.Credential | Should -BeOfType [System.Management.Automation.PSCredential]
-                    $currentState.Credential.UserName | Should -Be 'MyCredentialUserName'
+                    $currentState.Credential | Should-HaveType ([System.Management.Automation.PSCredential])
+                    $currentState.Credential.UserName | Should-Be 'MyCredentialUserName'
                 }
             }
         }
@@ -484,18 +486,18 @@ Describe 'SqlDatabase\GetCurrentState()' -Tag 'GetCurrentState' {
                     }
                 )
 
-                $currentState.InstanceName | Should -Be 'NamedInstance'
-                $currentState.ServerName | Should -Be (Get-ComputerName)
-                $currentState.Credential | Should -BeNullOrEmpty
-                $currentState.Name | Should -Be 'TestDatabase'
-                $currentState.Collation | Should -Be 'SQL_Latin1_General_CP1_CI_AS'
-                $currentState.CompatibilityLevel | Should -Be 'Version150'
-                $currentState.RecoveryModel | Should -Be 'Full'
-                $currentState.OwnerName | Should -Be 'sa'
-                $currentState.SnapshotIsolation | Should -BeFalse
-                $currentState.AutoClose | Should -BeFalse
-                $currentState.AutoShrink | Should -BeFalse
-                $currentState.ReadOnly | Should -BeFalse
+                $currentState.InstanceName | Should-Be 'NamedInstance'
+                $currentState.ServerName | Should-Be (Get-ComputerName)
+                $currentState.Credential | Should-BeFalsy
+                $currentState.Name | Should-Be 'TestDatabase'
+                $currentState.Collation | Should-Be 'SQL_Latin1_General_CP1_CI_AS'
+                $currentState.CompatibilityLevel | Should-Be 'Version150'
+                $currentState.RecoveryModel | Should-Be 'Full'
+                $currentState.OwnerName | Should-Be 'sa'
+                $currentState.SnapshotIsolation | Should-BeFalse
+                $currentState.AutoClose | Should-BeFalse
+                $currentState.AutoShrink | Should-BeFalse
+                $currentState.ReadOnly | Should-BeFalse
             }
         }
     }
@@ -531,7 +533,7 @@ Describe 'SqlDatabase\Modify()' -Tag 'Modify' {
                         }
                     )
 
-                    Should -Invoke -CommandName Remove-SqlDscDatabase -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Remove-SqlDscDatabase -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -563,7 +565,7 @@ Describe 'SqlDatabase\Modify()' -Tag 'Modify' {
                         }
                     )
 
-                    Should -Invoke -CommandName New-SqlDscDatabase -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName New-SqlDscDatabase -Exactly -Scope It -Times 1
                 }
             }
 
@@ -597,7 +599,7 @@ Describe 'SqlDatabase\Modify()' -Tag 'Modify' {
                         )
 
                         # New-SqlDscDatabase handles OwnerName directly, so Get-SqlDscDatabase is not called.
-                        Should -Invoke -CommandName New-SqlDscDatabase -Exactly -Times 1 -Scope It
+                        Should-Invoke -CommandName New-SqlDscDatabase -Exactly -Scope It -Times 1
                     }
                 }
             }
@@ -640,8 +642,8 @@ Describe 'SqlDatabase\Modify()' -Tag 'Modify' {
                             }
                         )
 
-                        Should -Invoke -CommandName New-SqlDscDatabase -Exactly -Times 1 -Scope It
-                        Should -Invoke -CommandName Enable-SqlDscDatabaseSnapshotIsolation -Exactly -Times 1 -Scope It
+                        Should-Invoke -CommandName New-SqlDscDatabase -Exactly -Scope It -Times 1
+                        Should-Invoke -CommandName Enable-SqlDscDatabaseSnapshotIsolation -Exactly -Scope It -Times 1
                     }
                 }
             }
@@ -682,10 +684,10 @@ Describe 'SqlDatabase\Modify()' -Tag 'Modify' {
                         }
                     )
 
-                    Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Set-SqlDscDatabaseProperty -ParameterFilter {
+                    Should-Invoke -CommandName Get-SqlDscDatabase -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Set-SqlDscDatabaseProperty -Exactly -ParameterFilter {
                         $Collation -eq 'Finnish_Swedish_CI_AS'
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -725,10 +727,10 @@ Describe 'SqlDatabase\Modify()' -Tag 'Modify' {
                         }
                     )
 
-                    Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Set-SqlDscDatabaseProperty -ParameterFilter {
+                    Should-Invoke -CommandName Get-SqlDscDatabase -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Set-SqlDscDatabaseProperty -Exactly -ParameterFilter {
                         $RecoveryModel -eq [Microsoft.SqlServer.Management.Smo.RecoveryModel]::Simple
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -773,7 +775,7 @@ Describe 'SqlDatabase\Modify()' -Tag 'Modify' {
                         }
                     )
 
-                    Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-SqlDscDatabase -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -813,8 +815,8 @@ Describe 'SqlDatabase\Modify()' -Tag 'Modify' {
                         }
                     )
 
-                    Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Enable-SqlDscDatabaseSnapshotIsolation -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-SqlDscDatabase -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Enable-SqlDscDatabaseSnapshotIsolation -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -854,8 +856,8 @@ Describe 'SqlDatabase\Modify()' -Tag 'Modify' {
                         }
                     )
 
-                    Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Disable-SqlDscDatabaseSnapshotIsolation -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-SqlDscDatabase -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Disable-SqlDscDatabaseSnapshotIsolation -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -895,10 +897,10 @@ Describe 'SqlDatabase\Modify()' -Tag 'Modify' {
                         }
                     )
 
-                    Should -Invoke -CommandName Get-SqlDscDatabase -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Set-SqlDscDatabaseProperty -ParameterFilter {
+                    Should-Invoke -CommandName Get-SqlDscDatabase -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Set-SqlDscDatabaseProperty -Exactly -ParameterFilter {
                         $AutoClose -eq $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -943,7 +945,7 @@ Describe 'SqlDatabase\AssertProperties()' -Tag 'AssertProperties' {
                             CatalogCollation = 'SqlLatin1GeneralCp1CiAs'
                         }
                     )
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
@@ -985,7 +987,7 @@ Describe 'SqlDatabase\AssertProperties()' -Tag 'AssertProperties' {
                             IsLedger = $true
                         }
                     )
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
@@ -1026,7 +1028,7 @@ Describe 'SqlDatabase\AssertProperties()' -Tag 'AssertProperties' {
                             Collation = 'Invalid_Collation'
                         }
                     )
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
@@ -1064,7 +1066,7 @@ Describe 'SqlDatabase\AssertProperties()' -Tag 'AssertProperties' {
                             CompatibilityLevel = 'Version80'
                         }
                     )
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }

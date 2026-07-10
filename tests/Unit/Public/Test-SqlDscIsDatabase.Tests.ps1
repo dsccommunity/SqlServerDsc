@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -65,11 +67,11 @@ Describe 'Test-SqlDscIsDatabase' -Tag 'Public' {
 
             $result = Test-SqlDscIsDatabase -ServerObject $mockServerObject -Name 'TestDatabase'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
 
-            Should -Invoke -CommandName Get-SqlDscDatabase -ParameterFilter {
+            Should-Invoke -CommandName Get-SqlDscDatabase -Exactly -ParameterFilter {
                 $ServerObject -eq $mockServerObject -and $Name -eq 'TestDatabase' -and $Refresh -eq $false
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should return false when database does not exist' {
@@ -79,11 +81,11 @@ Describe 'Test-SqlDscIsDatabase' -Tag 'Public' {
 
             $result = Test-SqlDscIsDatabase -ServerObject $mockServerObject -Name 'NonExistentDatabase'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
 
-            Should -Invoke -CommandName Get-SqlDscDatabase -ParameterFilter {
+            Should-Invoke -CommandName Get-SqlDscDatabase -Exactly -ParameterFilter {
                 $ServerObject -eq $mockServerObject -and $Name -eq 'NonExistentDatabase' -and $Refresh -eq $false
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should call Refresh when Refresh parameter is specified' {
@@ -93,11 +95,11 @@ Describe 'Test-SqlDscIsDatabase' -Tag 'Public' {
 
             $result = Test-SqlDscIsDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Refresh
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
 
-            Should -Invoke -CommandName Get-SqlDscDatabase -ParameterFilter {
+            Should-Invoke -CommandName Get-SqlDscDatabase -Exactly -ParameterFilter {
                 $ServerObject -eq $mockServerObject -and $Name -eq 'TestDatabase' -and $Refresh -eq $true
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should support pipeline input' {
@@ -107,11 +109,11 @@ Describe 'Test-SqlDscIsDatabase' -Tag 'Public' {
 
             $result = $mockServerObject | Test-SqlDscIsDatabase -Name 'TestDatabase'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
 
-            Should -Invoke -CommandName Get-SqlDscDatabase -ParameterFilter {
+            Should-Invoke -CommandName Get-SqlDscDatabase -Exactly -ParameterFilter {
                 $ServerObject -eq $mockServerObject -and $Name -eq 'TestDatabase' -and $Refresh -eq $false
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 
@@ -129,28 +131,28 @@ Describe 'Test-SqlDscIsDatabase' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscIsDatabase').Parameters['ServerObject']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscIsDatabase').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Refresh as an optional parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscIsDatabase').Parameters['Refresh']
-            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
 
         It 'Should have ServerObject accept pipeline input' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscIsDatabase').Parameters['ServerObject']
-            $parameterInfo.Attributes.ValueFromPipeline | Should -BeTrue
+            $parameterInfo.Attributes.ValueFromPipeline | Should-All -FilterScript { $_ | Should-BeTrue }
         }
     }
 }

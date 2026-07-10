@@ -58,14 +58,14 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         It 'Should enable the specified login' {
             # Verify login is initially disabled
             $loginBefore = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
-            $loginBefore.IsDisabled | Should -BeTrue
+            $loginBefore.IsDisabled | Should-BeTrue
 
             # Enable the login
             Enable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force -ErrorAction 'Stop'
 
             # Verify login is now enabled
             $loginAfter = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
-            $loginAfter.IsDisabled | Should -BeFalse
+            $loginAfter.IsDisabled | Should-BeFalse
         }
 
         It 'Should enable the login with Refresh parameter' {
@@ -74,7 +74,7 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify login is enabled
             $loginAfter = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
-            $loginAfter.IsDisabled | Should -BeFalse
+            $loginAfter.IsDisabled | Should-BeFalse
         }
 
         It 'Should accept ServerObject from pipeline' {
@@ -83,7 +83,7 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify login is enabled
             $loginAfter = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
-            $loginAfter.IsDisabled | Should -BeFalse
+            $loginAfter.IsDisabled | Should-BeFalse
         }
     }
 
@@ -99,7 +99,7 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify login is enabled
             $loginAfter = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
-            $loginAfter.IsDisabled | Should -BeFalse
+            $loginAfter.IsDisabled | Should-BeFalse
         }
 
         It 'Should accept LoginObject from pipeline' {
@@ -109,14 +109,14 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify login is enabled
             $loginAfter = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
-            $loginAfter.IsDisabled | Should -BeFalse
+            $loginAfter.IsDisabled | Should-BeFalse
         }
     }
 
     Context 'When enabling a non-existent login' {
         It 'Should throw an error for non-existent login' {
             { Enable-SqlDscLogin -ServerObject $script:serverObject -Name 'NonExistentLogin' -Force -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
     }
 }

@@ -45,9 +45,9 @@ Describe 'PostInstallationConfiguration' -Tag @('Integration_SQL2017', 'Integrat
             $serviceName = "MSSQL`$$script:instanceName"
             $service = Get-CimInstance -ClassName 'Win32_Service' -Filter "Name='$serviceName'" -ErrorAction 'Stop'
 
-            $service | Should -Not -BeNullOrEmpty
-            $service.State | Should -Be 'Running'
-            $service.StartName | Should -BeLike "*\$script:serviceAccountName"
+            $service | Should-BeTruthy
+            $service.State | Should-Be 'Running'
+            $service.StartName | Should-BeLikeString "*\$script:serviceAccountName"
         }
 
         It 'Should create a self-signed certificate for SQL Server encryption' {
@@ -72,8 +72,8 @@ Describe 'PostInstallationConfiguration' -Tag @('Integration_SQL2017', 'Integrat
 
             $script:certificate = New-SelfSignedCertificate @certificateParams -ErrorAction 'Stop'
 
-            $script:certificate | Should -Not -BeNullOrEmpty
-            $script:certificate.Thumbprint | Should -Not -BeNullOrEmpty
+            $script:certificate | Should-BeTruthy
+            $script:certificate.Thumbprint | Should-BeTruthy
             $script:certificateThumbprint = $script:certificate.Thumbprint
         }
 
@@ -82,7 +82,7 @@ Describe 'PostInstallationConfiguration' -Tag @('Integration_SQL2017', 'Integrat
 
             Export-Certificate -Cert $script:certificate -FilePath $script:certificatePath -ErrorAction 'Stop'
 
-            Test-Path -Path $script:certificatePath | Should -BeTrue
+            Test-Path -Path $script:certificatePath | Should-BeTrue
         }
 
         It 'Should import certificate to Trusted Root Certification Authorities' {
@@ -91,7 +91,7 @@ Describe 'PostInstallationConfiguration' -Tag @('Integration_SQL2017', 'Integrat
 
             # Verify certificate is in trusted root
             $trustedCert = Get-ChildItem -Path 'Cert:\LocalMachine\Root' | Where-Object -FilterScript { $_.Thumbprint -eq $script:certificateThumbprint }
-            $trustedCert | Should -Not -BeNullOrEmpty
+            $trustedCert | Should-BeTruthy
         }
 
         It 'Should grant SQL Server service account permission to certificate private key' {
@@ -106,7 +106,7 @@ Describe 'PostInstallationConfiguration' -Tag @('Integration_SQL2017', 'Integrat
             $privateKeyFile = Join-Path -Path "$env:ALLUSERSPROFILE\Microsoft\Crypto\RSA\MachineKeys" -ChildPath $privateKeyPath
 
             # Verify the private key file exists
-            Test-Path -Path $privateKeyFile | Should -BeTrue
+            Test-Path -Path $privateKeyFile | Should-BeTrue
 
             # Grant read permission to the SQL Server service account
             $acl = Get-Acl -Path $privateKeyFile -ErrorAction 'Stop'
@@ -123,7 +123,7 @@ Describe 'PostInstallationConfiguration' -Tag @('Integration_SQL2017', 'Integrat
             $serviceAccountAccess = $updatedAcl.Access | Where-Object -FilterScript {
                 $_.IdentityReference -like "*$script:serviceAccountName*" -and $_.FileSystemRights -match 'Read'
             }
-            $serviceAccountAccess | Should -Not -BeNullOrEmpty
+            $serviceAccountAccess | Should-BeTruthy
         }
 
         It 'Should configure SQL Server instance to use the certificate' {
@@ -141,7 +141,7 @@ Describe 'PostInstallationConfiguration' -Tag @('Integration_SQL2017', 'Integrat
 
             # Verify the certificate was set
             $setCertificate = Get-ItemProperty -Path $actualRegistryPath -Name 'Certificate' -ErrorAction 'Stop'
-            $setCertificate.Certificate | Should -Be $thumbprintValue
+            $setCertificate.Certificate | Should-Be $thumbprintValue
         }
 
         It 'Should restart SQL Server service to apply certificate changes' {
@@ -159,7 +159,7 @@ Describe 'PostInstallationConfiguration' -Tag @('Integration_SQL2017', 'Integrat
                 $retryCount++
             } while ($service.Status -ne 'Running' -and $retryCount -lt $maxRetries)
 
-            $service.Status | Should -Be 'Running'
+            $service.Status | Should-Be 'Running'
 
             Write-Verbose -Message "SQL Server instance $script:instanceName restarted with SSL certificate configuration" -Verbose
         }
@@ -173,7 +173,7 @@ Describe 'PostInstallationConfiguration' -Tag @('Integration_SQL2017', 'Integrat
             $serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:instanceName -Credential $credential -ErrorAction 'Stop'
 
             # The server should be online
-            $serverObject.Status.ToString() | Should -Match '^Online$'
+            $serverObject.Status.ToString() | Should-MatchString '^Online$'
 
             # Clean up
             Disconnect-SqlDscDatabaseEngine -ServerObject $serverObject -ErrorAction 'Stop'
@@ -201,9 +201,9 @@ WHERE session_id = @@SPID
             $result = Invoke-SqlDscQuery -ServerObject $serverObject -DatabaseName 'master' -Query $encryptionQuery -PassThru -Force -ErrorAction 'Stop'
 
             # Verify the connection is encrypted
-            $result | Should -Not -BeNullOrEmpty
-            $result.Tables[0].Rows.Count | Should -Be 1
-            $result.Tables[0].Rows[0]['encrypt_option'] | Should -Be 'TRUE'
+            $result | Should-BeTruthy
+            $result.Tables[0].Rows.Count | Should-Be 1
+            $result.Tables[0].Rows[0]['encrypt_option'] | Should-Be 'TRUE'
 
             # Clean up
             Disconnect-SqlDscDatabaseEngine -ServerObject $serverObject -ErrorAction 'Stop'

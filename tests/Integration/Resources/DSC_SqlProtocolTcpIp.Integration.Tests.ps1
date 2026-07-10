@@ -97,13 +97,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.IpAddressGroup | Should -Be 'IP1'
-            $resourceCurrentState.Enabled | Should -BeTrue
-            $resourceCurrentState.IpAddress | Should -Be $ConfigurationData.AllNodes.IpAddress
+            $resourceCurrentState.IpAddressGroup | Should-Be 'IP1'
+            $resourceCurrentState.Enabled | Should-BeTrue
+            $resourceCurrentState.IpAddress | Should-Be $ConfigurationData.AllNodes.IpAddress
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 }

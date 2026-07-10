@@ -48,9 +48,9 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         }
 
         It 'Should return a string containing T-SQL' {
-            $script:rightsScript | Should -Not -BeNullOrEmpty
+            $script:rightsScript | Should-BeTruthy
             # The script should contain permission grants
-            $script:rightsScript | Should -Match 'GRANT|CREATE USER|ALTER'
+            $script:rightsScript | Should-MatchString 'GRANT|CREATE USER|ALTER'
         }
     }
 
@@ -70,8 +70,8 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         }
 
         It 'Should return a string containing T-SQL' {
-            $script:rightsScript | Should -Not -BeNullOrEmpty
-            $script:rightsScript | Should -Match 'GRANT|CREATE USER|ALTER'
+            $script:rightsScript | Should-BeTruthy
+            $script:rightsScript | Should-MatchString 'GRANT|CREATE USER|ALTER'
         }
     }
 
@@ -91,8 +91,8 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         }
 
         It 'Should return a string containing T-SQL' {
-            $script:rightsScript | Should -Not -BeNullOrEmpty
-            $script:rightsScript | Should -Match 'GRANT|CREATE USER|ALTER'
+            $script:rightsScript | Should-BeTruthy
+            $script:rightsScript | Should-MatchString 'GRANT|CREATE USER|ALTER'
         }
     }
 
@@ -112,8 +112,8 @@ Describe 'Request-SqlDscRSDatabaseRightsScript' {
         }
 
         It 'Should return a string containing T-SQL' {
-            $script:rightsScript | Should -Not -BeNullOrEmpty
-            $script:rightsScript | Should -Match 'GRANT|CREATE USER|ALTER'
+            $script:rightsScript | Should-BeTruthy
+            $script:rightsScript | Should-MatchString 'GRANT|CREATE USER|ALTER'
         }
     }
 }

@@ -39,13 +39,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -61,8 +63,8 @@ Describe 'SqlReason' -Tag 'SqlReason' {
         }
 
         It 'Should be of the correct type' {
-            $script:mockSqlReasonInstance | Should -Not -BeNullOrEmpty
-            $script:mockSqlReasonInstance.GetType().Name | Should -Be 'SqlReason'
+            $script:mockSqlReasonInstance | Should-BeTruthy
+            $script:mockSqlReasonInstance.GetType().Name | Should-Be 'SqlReason'
         }
     }
 
@@ -81,8 +83,8 @@ Describe 'SqlReason' -Tag 'SqlReason' {
         }
 
         It 'Should be able read the values from instance' {
-            $script:mockSqlReasonInstance.Code | Should -Be 'SqlAudit:SqlAudit:Ensure'
-            $script:mockSqlReasonInstance.Phrase | Should -Be 'The property Ensure should be "Present", but was "Absent"'
+            $script:mockSqlReasonInstance.Code | Should-Be 'SqlAudit:SqlAudit:Ensure'
+            $script:mockSqlReasonInstance.Phrase | Should-Be 'The property Ensure should be "Present", but was "Absent"'
         }
     }
 }

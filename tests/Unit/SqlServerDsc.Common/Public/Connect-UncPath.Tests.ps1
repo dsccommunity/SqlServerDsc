@@ -68,13 +68,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:subModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:subModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:subModuleName -All | Remove-Module -Force
@@ -153,7 +155,7 @@ Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
 
             $null = Connect-UncPath @connectUncPathParameters -ErrorAction 'Stop'
 
-            Should -Invoke -CommandName New-SmbMapping -ParameterFilter {
+            Should-Invoke -CommandName New-SmbMapping -Exactly -ParameterFilter {
                 <#
                     Due to issue https://github.com/pester/Pester/issues/1542
                     we must use `$null -ne $UserName` instead of
@@ -161,7 +163,7 @@ Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
                 #>
                 $RemotePath -eq $mockSourcePathUNC `
                     -and $null -eq $UserName
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 
@@ -174,10 +176,10 @@ Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
 
             $null = Connect-UncPath @connectUncPathParameters -ErrorAction 'Stop'
 
-            Should -Invoke -CommandName New-SmbMapping -ParameterFilter {
+            Should-Invoke -CommandName New-SmbMapping -Exactly -ParameterFilter {
                 $RemotePath -eq $mockSourcePathUNC `
                     -and $UserName -eq $mockShareCredentialUserName
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 
@@ -190,10 +192,10 @@ Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
 
             $null = Connect-UncPath @connectUncPathParameters -ErrorAction 'Stop'
 
-            Should -Invoke -CommandName New-SmbMapping -ParameterFilter {
+            Should-Invoke -CommandName New-SmbMapping -Exactly -ParameterFilter {
                 $RemotePath -eq $mockSourcePathUNC `
                     -and $UserName -eq $mockFqdnShareCredentialUserName
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 
@@ -206,7 +208,7 @@ Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
             }
 
             $connectUncPathResult = Connect-UncPath @connectUncPathParameters
-            $connectUncPathResult.RemotePath | Should -Be $mockSourcePathUNC
+            $connectUncPathResult.RemotePath | Should-Be $mockSourcePathUNC
         }
     }
 }

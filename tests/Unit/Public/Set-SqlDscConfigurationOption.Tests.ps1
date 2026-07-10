@@ -36,12 +36,14 @@ BeforeAll {
     Add-Type -Path "$PSScriptRoot/../Stubs/SMO.cs"
 
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'Env:\SqlServerDscCI' -ErrorAction 'SilentlyContinue'
 }
@@ -60,41 +62,41 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
     Context 'When command has correct parameter properties' {
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscConfigurationOption').Parameters['ServerObject']
-            $parameterInfo.Attributes.Mandatory | Should -Contain $true
+            $parameterInfo.Attributes.Mandatory | Should-ContainCollection $true
         }
 
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscConfigurationOption').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should -Contain $true
+            $parameterInfo.Attributes.Mandatory | Should-ContainCollection $true
         }
 
         It 'Should have Value as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscConfigurationOption').Parameters['Value']
-            $parameterInfo.Attributes.Mandatory | Should -Contain $true
+            $parameterInfo.Attributes.Mandatory | Should-ContainCollection $true
         }
 
         It 'Should have Force as an optional parameter' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscConfigurationOption').Parameters['Force']
-            $parameterInfo.Attributes.Mandatory | Should -Not -Contain $true
+            $parameterInfo.Attributes.Mandatory | Should-NotContainCollection $true
         }
 
         It 'Should have ServerObject accepting pipeline input' {
             $parameterInfo = (Get-Command -Name 'Set-SqlDscConfigurationOption').Parameters['ServerObject']
-            $parameterInfo.Attributes.ValueFromPipeline | Should -Contain $true
+            $parameterInfo.Attributes.ValueFromPipeline | Should-ContainCollection $true
         }
 
         It 'Should support ShouldProcess' {
             $commandInfo = Get-Command -Name 'Set-SqlDscConfigurationOption'
-            $commandInfo.Parameters.ContainsKey('WhatIf') | Should -BeTrue
-            $commandInfo.Parameters.ContainsKey('Confirm') | Should -BeTrue
+            $commandInfo.Parameters.ContainsKey('WhatIf') | Should-BeTrue
+            $commandInfo.Parameters.ContainsKey('Confirm') | Should-BeTrue
         }
 
         It 'Should have ConfirmImpact set to High' {
@@ -103,7 +105,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
             $function = Get-Item "Function:\Set-SqlDscConfigurationOption"
             $attributes = $function.ScriptBlock.Attributes
             $cmdletBindingAttribute = $attributes | Where-Object { $_ -is [System.Management.Automation.CmdletBindingAttribute] }
-            $cmdletBindingAttribute.ConfirmImpact | Should -Be 'High'
+            $cmdletBindingAttribute.ConfirmImpact | Should-Be 'High'
         }
     }
 
@@ -138,8 +140,8 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
         It 'Should set configuration option value successfully' {
             $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 4 -Confirm:$false
 
-            $script:mockConfigurationOption.ConfigValue | Should -Be 4
-            Should -Invoke -CommandName Write-Information -Times 1 -Exactly
+            $script:mockConfigurationOption.ConfigValue | Should-Be 4
+            Should-Invoke -CommandName Write-Information -Exactly -Times 1
         }
 
         It 'Should call Configuration.Alter() method' {
@@ -149,7 +151,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
 
             $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 8 -Confirm:$false
 
-            $script:mockAlterCalled | Should -BeTrue
+            $script:mockAlterCalled | Should-BeTrue
         }
 
         It 'Should work with pipeline input' {
@@ -157,7 +159,7 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
 
             $null = $script:mockServerObject | Set-SqlDscConfigurationOption -Name 'max degree of parallelism' -Value 16 -Confirm:$false
 
-            $script:mockConfigurationOption.ConfigValue | Should -Be 16
+            $script:mockConfigurationOption.ConfigValue | Should-Be 16
         }
     }
 
@@ -182,19 +184,19 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
         It 'Should throw error when configuration option does not exist' {
             $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'NonExistentOption' -Value 1 -Confirm:$false
 
-            Should -Invoke -CommandName Write-Error -Times 1 -Exactly -ParameterFilter {
+            Should-Invoke -CommandName Write-Error -Exactly -ParameterFilter {
                 $Message -match "There is no configuration option with the name 'NonExistentOption'"
-            }
+            } -Times 1
         }
 
         It 'Should use correct error details for missing configuration option' {
             $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'InvalidOption' -Value 1 -Confirm:$false
 
-            Should -Invoke -CommandName Write-Error -Times 1 -Exactly -ParameterFilter {
+            Should-Invoke -CommandName Write-Error -Exactly -ParameterFilter {
                 $Category -eq 'InvalidOperation' -and
                 $ErrorId -eq 'SSDCO0001' -and
                 $TargetObject -eq 'InvalidOption'
-            }
+            } -Times 1
         }
     }
 
@@ -226,27 +228,27 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
         It 'Should throw error when value is below minimum' {
             $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value -1 -Confirm:$false
 
-            Should -Invoke -CommandName Write-Error -Times 1 -Exactly -ParameterFilter {
+            Should-Invoke -CommandName Write-Error -Exactly -ParameterFilter {
                 $Message -match "The value '-1' for configuration option 'max degree of parallelism' is outside the valid range of 0 to 32767"
-            }
+            } -Times 1
         }
 
         It 'Should throw error when value is above maximum' {
             $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 40000 -Confirm:$false
 
-            Should -Invoke -CommandName Write-Error -Times 1 -Exactly -ParameterFilter {
+            Should-Invoke -CommandName Write-Error -Exactly -ParameterFilter {
                 $Message -match "The value '40000' for configuration option 'max degree of parallelism' is outside the valid range of 0 to 32767"
-            }
+            } -Times 1
         }
 
         It 'Should use correct error details for invalid value' {
             $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 50000 -Confirm:$false
 
-            Should -Invoke -CommandName Write-Error -Times 1 -Exactly -ParameterFilter {
+            Should-Invoke -CommandName Write-Error -Exactly -ParameterFilter {
                 $Category -eq 'InvalidArgument' -and
                 $ErrorId -eq 'SSDCO0002' -and
                 $TargetObject -eq 50000
-            }
+            } -Times 1
         }
 
         It 'Should accept value at minimum boundary' {
@@ -259,8 +261,8 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
 
             $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 0 -Confirm:$false
 
-            Should -Invoke -CommandName Write-Error -Times 0 -Exactly
-            $script:mockConfigurationOption.ConfigValue | Should -Be 0
+            Should-Invoke -CommandName Write-Error -Exactly -Times 0
+            $script:mockConfigurationOption.ConfigValue | Should-Be 0
         }
 
         It 'Should accept value at maximum boundary' {
@@ -273,8 +275,8 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
 
             $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 32767 -Confirm:$false
 
-            Should -Invoke -CommandName Write-Error -Times 0 -Exactly
-            $script:mockConfigurationOption.ConfigValue | Should -Be 32767
+            Should-Invoke -CommandName Write-Error -Exactly -Times 0
+            $script:mockConfigurationOption.ConfigValue | Should-Be 32767
         }
     }
 
@@ -317,8 +319,8 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
             # This should not throw, but should generate an error record via Write-Error
             Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 4 -Confirm:$false -ErrorAction SilentlyContinue
 
-            # Should -Invoke doesn't always work with Write-Error, so check error was generated another way
-            Should -Invoke -CommandName Write-Error -Times 1 -Exactly
+            # Should-Invoke doesn't always work with Write-Error, so check error was generated another way
+            Should-Invoke -CommandName Write-Error -Exactly -Times 1
         }
 
         It 'Should use correct error details when Alter fails' {
@@ -329,11 +331,11 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
                 # Ignore any exceptions for this test
             }
 
-            Should -Invoke -CommandName Write-Error -Times 1 -Exactly -ParameterFilter {
+            Should-Invoke -CommandName Write-Error -Exactly -ParameterFilter {
                 $Category -eq 'InvalidOperation' -and
                 $ErrorId -eq 'SSDCO0003' -and
                 $TargetObject -eq 'max degree of parallelism'
-            }
+            } -Times 1
         }
     }
 
@@ -372,8 +374,8 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
 
             $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 4 -WhatIf
 
-            $script:mockAlterCalled | Should -BeFalse
-            $script:mockConfigurationOption.ConfigValue | Should -Be $originalValue
+            $script:mockAlterCalled | Should-BeFalse
+            $script:mockConfigurationOption.ConfigValue | Should-Be $originalValue
         }
     }
 
@@ -408,8 +410,8 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
             # This test ensures Force parameter is handled correctly in the begin block
             $null = Set-SqlDscConfigurationOption -ServerObject $script:mockServerObject -Name 'max degree of parallelism' -Value 4 -Force
 
-            $script:mockConfigurationOption.ConfigValue | Should -Be 4
-            Should -Invoke -CommandName Write-Information -Times 1 -Exactly
+            $script:mockConfigurationOption.ConfigValue | Should-Be 4
+            Should-Invoke -CommandName Write-Information -Exactly -Times 1
         }
     }
 
@@ -448,9 +450,9 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
         It 'Should use correct ShouldProcess messages' {
             InModuleScope -ScriptBlock {
                 # Verify localized strings exist for ShouldProcess
-                $script:localizedData.ConfigurationOption_Set_ShouldProcessDescription | Should -Be "Set configuration option '{0}' to '{1}' on server '{2}'."
-                $script:localizedData.ConfigurationOption_Set_ShouldProcessConfirmation | Should -Be "Are you sure you want to set configuration option '{0}' to '{1}'?"
-                $script:localizedData.ConfigurationOption_Set_ShouldProcessCaption | Should -Be 'Set configuration option'
+                $script:localizedData.ConfigurationOption_Set_ShouldProcessDescription | Should-Be "Set configuration option '{0}' to '{1}' on server '{2}'."
+                $script:localizedData.ConfigurationOption_Set_ShouldProcessConfirmation | Should-Be "Are you sure you want to set configuration option '{0}' to '{1}'?"
+                $script:localizedData.ConfigurationOption_Set_ShouldProcessCaption | Should-Be 'Set configuration option'
             }
         }
     }
@@ -468,10 +470,10 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
         It 'Should use correct localized error messages' {
             InModuleScope -ScriptBlock {
                 # Verify localized strings exist
-                $script:localizedData.ConfigurationOption_Set_Missing | Should -Be "There is no configuration option with the name '{0}'."
-                $script:localizedData.ConfigurationOption_Set_InvalidValue | Should -Be "The value '{1}' for configuration option '{0}' is outside the valid range of {2} to {3}."
-                $script:localizedData.ConfigurationOption_Set_Failed | Should -Be "Failed to set configuration option '{0}' to '{1}'. {2}"
-                $script:localizedData.ConfigurationOption_Set_Success | Should -Be "Successfully set configuration option '{0}' to '{1}' on server '{2}'."
+                $script:localizedData.ConfigurationOption_Set_Missing | Should-Be "There is no configuration option with the name '{0}'."
+                $script:localizedData.ConfigurationOption_Set_InvalidValue | Should-Be "The value '{1}' for configuration option '{0}' is outside the valid range of {2} to {3}."
+                $script:localizedData.ConfigurationOption_Set_Failed | Should-Be "Failed to set configuration option '{0}' to '{1}'. {2}"
+                $script:localizedData.ConfigurationOption_Set_Success | Should-Be "Successfully set configuration option '{0}' to '{1}' on server '{2}'."
             }
         }
     }
@@ -534,15 +536,15 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
             $inputScript = 'Set-SqlDscConfigurationOption -ServerObject $global:TestServerObject -Name max'
             $result = TabExpansion2 -inputScript $inputScript -cursorColumn $inputScript.Length
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.CompletionMatches | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
+            $result.CompletionMatches | Should-BeTruthy
 
             # Should find the max server memory option
             $maxMemoryMatch = $result.CompletionMatches | Where-Object {
                 $_.CompletionText -eq "'max server memory (MB)'"
             }
-            $maxMemoryMatch | Should -Not -BeNullOrEmpty
-            $maxMemoryMatch.ToolTip | Should -Match "Current: 2048"
+            $maxMemoryMatch | Should-BeTruthy
+            $maxMemoryMatch.ToolTip | Should-MatchString "Current: 2048"
         }
 
         It 'Should provide Value parameter completions through TabExpansion2' {
@@ -550,22 +552,22 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
             $inputScript = 'Set-SqlDscConfigurationOption -ServerObject $global:TestServerObject -Name "max server memory (MB)" -Value '
             $result = TabExpansion2 -inputScript $inputScript -cursorColumn $inputScript.Length
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.CompletionMatches | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
+            $result.CompletionMatches | Should-BeTruthy
 
             # Should find current value and other suggestions
             $currentValueMatch = $result.CompletionMatches | Where-Object {
                 $_.CompletionText -eq '2048' -and $_.ToolTip -match "Current ConfigValue"
             }
-            $currentValueMatch | Should -Not -BeNullOrEmpty
+            $currentValueMatch | Should-BeTruthy
         }
 
         It 'Should handle partial Name completions through TabExpansion2' {
             $inputScript = 'Set-SqlDscConfigurationOption -ServerObject $global:TestServerObject -Name cost'
             $result = TabExpansion2 -inputScript $inputScript -cursorColumn $inputScript.Length
 
-            $result.CompletionMatches | Should -HaveCount 1
-            $result.CompletionMatches[0].CompletionText | Should -Be "'cost threshold for parallelism'"
+            $result.CompletionMatches | Should-BeCollection -Count 1
+            $result.CompletionMatches[0].CompletionText | Should-Be "'cost threshold for parallelism'"
         }
 
         It 'Should execute Name argument completer code when retrieving command metadata' {
@@ -581,8 +583,8 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
                 ServerObject = $script:mockServerForTabCompletion
             }
 
-            $completions | Should -Not -BeNullOrEmpty
-            $completions[0].CompletionText | Should -Be "'max server memory (MB)'"
+            $completions | Should-BeTruthy
+            $completions[0].CompletionText | Should-Be "'max server memory (MB)'"
         }
 
         It 'Should execute Value argument completer code when retrieving command metadata' {
@@ -595,8 +597,8 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
                 Name = 'max server memory (MB)'
             }
 
-            $completions | Should -Not -BeNullOrEmpty
-            $completions | Where-Object { $_.ToolTip -match "Current ConfigValue: 2048" } | Should -Not -BeNullOrEmpty
+            $completions | Should-BeTruthy
+            $completions | Where-Object { $_.ToolTip -match "Current ConfigValue: 2048" } | Should-BeTruthy
         }
 
         It 'Should handle tab completion errors gracefully' {
@@ -615,8 +617,8 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
                 Should not throw an error and should return empty from argument completer, but then
                 TabExpansion2 itself returns some default completions (like filesystem paths).
             #>
-            $result | Should -BeOfType ([System.Management.Automation.CommandCompletion])
-            $result.CompletionMatches.ListItemText | Should -Be 'tests'
+            $result | Should-HaveType ([System.Management.Automation.CommandCompletion])
+            $result.CompletionMatches.ListItemText | Should-Be 'tests'
         }
 
         It 'Should handle missing ServerObject in tab completion gracefully' {
@@ -628,8 +630,8 @@ Describe 'Set-SqlDscConfigurationOption' -Tag 'Public' {
                 Should not throw an error and should return empty from argument completer, but then
                 TabExpansion2 itself returns some default completions (like filesystem paths).
             #>
-            $result | Should -BeOfType ([System.Management.Automation.CommandCompletion])
-            $result.CompletionMatches.ListItemText | Should -Be 'tests'
+            $result | Should-HaveType ([System.Management.Automation.CommandCompletion])
+            $result.CompletionMatches.ListItemText | Should-Be 'tests'
         }
     }
 }

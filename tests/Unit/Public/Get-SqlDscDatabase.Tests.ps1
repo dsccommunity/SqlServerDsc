@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -67,9 +69,9 @@ Describe 'Get-SqlDscDatabase' -Tag 'Public' {
         It 'Should return all databases when no Name parameter is specified' {
             $result = Get-SqlDscDatabase -ServerObject $mockServerObject
 
-            $result | Should -HaveCount 2
-            $result[0].Name | Should -Be 'master'
-            $result[1].Name | Should -Be 'TestDatabase'
+            $result | Should-BeCollection -Count 2
+            $result[0].Name | Should-Be 'master'
+            $result[1].Name | Should-Be 'TestDatabase'
         }
 
         It 'Should call Refresh when Refresh parameter is specified' {
@@ -87,8 +89,8 @@ Describe 'Get-SqlDscDatabase' -Tag 'Public' {
 
             $result = Get-SqlDscDatabase -ServerObject $mockServerObjectWithRefresh -Refresh
 
-            $result | Should -HaveCount 1
-            $script:refreshCalled | Should -BeTrue
+            $result | Should-BeCollection -Count 1
+            $script:refreshCalled | Should-BeTrue
         }
     }
 
@@ -109,8 +111,8 @@ Describe 'Get-SqlDscDatabase' -Tag 'Public' {
         It 'Should return the specified database when it exists' {
             $result = Get-SqlDscDatabase -ServerObject $mockServerObject -Name 'master'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'master'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'master'
         }
 
         It 'Should throw the correct error when the specified database does not exist' {
@@ -118,13 +120,13 @@ Describe 'Get-SqlDscDatabase' -Tag 'Public' {
             $expectedMessage = 'Database ''NonExistentDatabase'' was not found.'
 
             { Get-SqlDscDatabase -ServerObject $mockServerObject -Name 'NonExistentDatabase' -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage $expectedMessage
+                Should-Throw -ExceptionMessage $expectedMessage
         }
 
         It 'Should return empty result when ignoring the error' {
             $result = Get-SqlDscDatabase -ServerObject $mockServerObject -Name 'NonExistentDatabase' -ErrorAction 'SilentlyContinue'
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -142,23 +144,23 @@ Describe 'Get-SqlDscDatabase' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscDatabase').Parameters['ServerObject']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Name as a non-mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscDatabase').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
 
         It 'Should have Refresh as a non-mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscDatabase').Parameters['Refresh']
-            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
     }
 }

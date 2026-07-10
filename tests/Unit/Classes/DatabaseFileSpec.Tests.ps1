@@ -34,13 +34,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -65,8 +67,8 @@ Describe 'DatabaseFileSpec' -Tag 'DatabaseFileSpec' {
             InModuleScope -ScriptBlock {
                 $instance = [DatabaseFileSpec]::new('MyFile', 'D:\SQLData\MyFile.mdf')
 
-                $instance.Name | Should -Be 'MyFile'
-                $instance.FileName | Should -Be 'D:\SQLData\MyFile.mdf'
+                $instance.Name | Should-Be 'MyFile'
+                $instance.FileName | Should-Be 'D:\SQLData\MyFile.mdf'
             }
         }
     }
@@ -83,13 +85,13 @@ Describe 'DatabaseFileSpec' -Tag 'DatabaseFileSpec' {
                 $instance.GrowthType = 'MB'
                 $instance.IsPrimaryFile = $true
 
-                $instance.Name | Should -Be 'DataFile1'
-                $instance.FileName | Should -Be 'C:\Data\DataFile1.ndf'
-                $instance.Size | Should -Be 100.0
-                $instance.MaxSize | Should -Be 1000.0
-                $instance.Growth | Should -Be 10.0
-                $instance.GrowthType | Should -Be 'MB'
-                $instance.IsPrimaryFile | Should -BeTrue
+                $instance.Name | Should-Be 'DataFile1'
+                $instance.FileName | Should-Be 'C:\Data\DataFile1.ndf'
+                $instance.Size | Should-Be 100.0
+                $instance.MaxSize | Should-Be 1000.0
+                $instance.Growth | Should-Be 10.0
+                $instance.GrowthType | Should-Be 'MB'
+                $instance.IsPrimaryFile | Should-BeTrue
             }
         }
     }
@@ -99,13 +101,13 @@ Describe 'DatabaseFileSpec' -Tag 'DatabaseFileSpec' {
             InModuleScope -ScriptBlock {
                 $instance = [DatabaseFileSpec]::new()
 
-                $instance.Name | Should -BeNullOrEmpty
-                $instance.FileName | Should -BeNullOrEmpty
-                $instance.Size | Should -BeNullOrEmpty
-                $instance.MaxSize | Should -BeNullOrEmpty
-                $instance.Growth | Should -BeNullOrEmpty
-                $instance.GrowthType | Should -BeNullOrEmpty
-                $instance.IsPrimaryFile | Should -BeFalse
+                $instance.Name | Should-BeFalsy
+                $instance.FileName | Should-BeFalsy
+                $instance.Size | Should-BeFalsy
+                $instance.MaxSize | Should-BeFalsy
+                $instance.Growth | Should-BeFalsy
+                $instance.GrowthType | Should-BeFalsy
+                $instance.IsPrimaryFile | Should-BeFalse
             }
         }
     }
@@ -122,13 +124,13 @@ Describe 'DatabaseFileSpec' -Tag 'DatabaseFileSpec' {
                     GrowthType = 'Percent'
                 }
 
-                $instance.Name | Should -Be 'SecondaryFile'
-                $instance.FileName | Should -Be 'E:\Data\SecondaryFile.ndf'
-                $instance.Size | Should -Be 50.0
-                $instance.MaxSize | Should -Be 500.0
-                $instance.Growth | Should -Be 5.0
-                $instance.GrowthType | Should -Be 'Percent'
-                $instance.IsPrimaryFile | Should -BeFalse
+                $instance.Name | Should-Be 'SecondaryFile'
+                $instance.FileName | Should-Be 'E:\Data\SecondaryFile.ndf'
+                $instance.Size | Should-Be 50.0
+                $instance.MaxSize | Should-Be 500.0
+                $instance.Growth | Should-Be 5.0
+                $instance.GrowthType | Should-Be 'Percent'
+                $instance.IsPrimaryFile | Should-BeFalse
             }
         }
     }
@@ -142,9 +144,9 @@ Describe 'DatabaseFileSpec' -Tag 'DatabaseFileSpec' {
                     IsPrimaryFile = $true
                 }
 
-                $instance.Name | Should -Be 'PrimaryFile'
-                $instance.FileName | Should -Be 'C:\Data\MyDB.mdf'
-                $instance.IsPrimaryFile | Should -BeTrue
+                $instance.Name | Should-Be 'PrimaryFile'
+                $instance.FileName | Should-Be 'C:\Data\MyDB.mdf'
+                $instance.IsPrimaryFile | Should-BeTrue
             }
         }
     }
@@ -155,7 +157,7 @@ Describe 'DatabaseFileSpec' -Tag 'DatabaseFileSpec' {
                 $instance = [DatabaseFileSpec]::new()
                 $instance.GrowthType = 'MB'
 
-                $instance.GrowthType | Should -Be 'MB'
+                $instance.GrowthType | Should-Be 'MB'
             }
         }
 
@@ -164,7 +166,7 @@ Describe 'DatabaseFileSpec' -Tag 'DatabaseFileSpec' {
                 $instance = [DatabaseFileSpec]::new()
                 $instance.GrowthType = 'Percent'
 
-                $instance.GrowthType | Should -Be 'Percent'
+                $instance.GrowthType | Should-Be 'Percent'
             }
         }
 
@@ -173,7 +175,7 @@ Describe 'DatabaseFileSpec' -Tag 'DatabaseFileSpec' {
                 $instance = [DatabaseFileSpec]::new()
                 $instance.GrowthType = 'KB'
 
-                $instance.GrowthType | Should -Be 'KB'
+                $instance.GrowthType | Should-Be 'KB'
             }
         }
     }

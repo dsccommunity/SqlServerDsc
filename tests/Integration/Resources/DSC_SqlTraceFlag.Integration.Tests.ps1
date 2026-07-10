@@ -97,18 +97,18 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.TraceFlags | Should -HaveCount 1
-            $resourceCurrentState.TraceFlags | Should -Contain '2371'
-            $resourceCurrentState.TraceFlagsToInclude | Should -BeNullOrEmpty
-            $resourceCurrentState.TraceFlagsToExclude | Should -BeNullOrEmpty
-            $resourceCurrentState.RestartService | Should -BeNullOrEmpty
-            $resourceCurrentState.RestartTimeout | Should -BeNullOrEmpty
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.TraceFlags | Should-BeCollection -Count 1
+            $resourceCurrentState.TraceFlags | Should-ContainCollection '2371'
+            $resourceCurrentState.TraceFlagsToInclude | Should-BeFalsy
+            $resourceCurrentState.TraceFlagsToExclude | Should-BeFalsy
+            $resourceCurrentState.RestartService | Should-BeFalsy
+            $resourceCurrentState.RestartTimeout | Should-BeFalsy
         }
 
         It 'Should return ''True'' when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -154,19 +154,19 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.TraceFlags | Should -HaveCount 2
-            $resourceCurrentState.TraceFlags | Should -Contain '3226'
-            $resourceCurrentState.TraceFlags | Should -Contain '4199'
-            $resourceCurrentState.TraceFlagsToInclude | Should -BeNullOrEmpty
-            $resourceCurrentState.TraceFlagsToExclude | Should -BeNullOrEmpty
-            $resourceCurrentState.RestartService | Should -BeNullOrEmpty
-            $resourceCurrentState.RestartTimeout | Should -BeNullOrEmpty
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.TraceFlags | Should-BeCollection -Count 2
+            $resourceCurrentState.TraceFlags | Should-ContainCollection '3226'
+            $resourceCurrentState.TraceFlags | Should-ContainCollection '4199'
+            $resourceCurrentState.TraceFlagsToInclude | Should-BeFalsy
+            $resourceCurrentState.TraceFlagsToExclude | Should-BeFalsy
+            $resourceCurrentState.RestartService | Should-BeFalsy
+            $resourceCurrentState.RestartTimeout | Should-BeFalsy
         }
 
         It 'Should return ''True'' when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -212,18 +212,18 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.TraceFlags | Should -HaveCount 1
-            $resourceCurrentState.TraceFlags | Should -Contain '3226'
-            $resourceCurrentState.TraceFlagsToInclude | Should -BeNullOrEmpty
-            $resourceCurrentState.TraceFlagsToExclude | Should -BeNullOrEmpty
-            $resourceCurrentState.RestartService | Should -BeNullOrEmpty
-            $resourceCurrentState.RestartTimeout | Should -BeNullOrEmpty
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.TraceFlags | Should-BeCollection -Count 1
+            $resourceCurrentState.TraceFlags | Should-ContainCollection '3226'
+            $resourceCurrentState.TraceFlagsToInclude | Should-BeFalsy
+            $resourceCurrentState.TraceFlagsToExclude | Should-BeFalsy
+            $resourceCurrentState.RestartService | Should-BeFalsy
+            $resourceCurrentState.RestartTimeout | Should-BeFalsy
         }
 
         It 'Should return ''True'' when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -269,19 +269,19 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.TraceFlags | Should -HaveCount 2
-            $resourceCurrentState.TraceFlags | Should -Contain '3226'
-            $resourceCurrentState.TraceFlags | Should -Contain '4199'
-            $resourceCurrentState.TraceFlagsToInclude | Should -BeNullOrEmpty
-            $resourceCurrentState.TraceFlagsToExclude | Should -BeNullOrEmpty
-            $resourceCurrentState.RestartService | Should -BeNullOrEmpty
-            $resourceCurrentState.RestartTimeout | Should -BeNullOrEmpty
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.TraceFlags | Should-BeCollection -Count 2
+            $resourceCurrentState.TraceFlags | Should-ContainCollection '3226'
+            $resourceCurrentState.TraceFlags | Should-ContainCollection '4199'
+            $resourceCurrentState.TraceFlagsToInclude | Should-BeFalsy
+            $resourceCurrentState.TraceFlagsToExclude | Should-BeFalsy
+            $resourceCurrentState.RestartService | Should-BeFalsy
+            $resourceCurrentState.RestartTimeout | Should-BeFalsy
         }
 
         It 'Should return ''True'' when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -327,18 +327,18 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.TraceFlags | Should -HaveCount 0
-            $resourceCurrentState.TraceFlags | Should -BeNullOrEmpty
-            $resourceCurrentState.TraceFlagsToInclude | Should -BeNullOrEmpty
-            $resourceCurrentState.TraceFlagsToExclude | Should -BeNullOrEmpty
-            $resourceCurrentState.RestartService | Should -BeNullOrEmpty
-            $resourceCurrentState.RestartTimeout | Should -BeNullOrEmpty
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.TraceFlags | Should-BeCollection -Count 0
+            $resourceCurrentState.TraceFlags | Should-BeFalsy
+            $resourceCurrentState.TraceFlagsToInclude | Should-BeFalsy
+            $resourceCurrentState.TraceFlagsToExclude | Should-BeFalsy
+            $resourceCurrentState.RestartService | Should-BeFalsy
+            $resourceCurrentState.RestartTimeout | Should-BeFalsy
         }
 
         It 'Should return ''True'' when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -384,18 +384,18 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.TraceFlags | Should -HaveCount 0
-            $resourceCurrentState.TraceFlags | Should -BeNullOrEmpty
-            $resourceCurrentState.TraceFlagsToInclude | Should -BeNullOrEmpty
-            $resourceCurrentState.TraceFlagsToExclude | Should -BeNullOrEmpty
-            $resourceCurrentState.RestartService | Should -BeNullOrEmpty
-            $resourceCurrentState.RestartTimeout | Should -BeNullOrEmpty
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.TraceFlags | Should-BeCollection -Count 0
+            $resourceCurrentState.TraceFlags | Should-BeFalsy
+            $resourceCurrentState.TraceFlagsToInclude | Should-BeFalsy
+            $resourceCurrentState.TraceFlagsToExclude | Should-BeFalsy
+            $resourceCurrentState.RestartService | Should-BeFalsy
+            $resourceCurrentState.RestartTimeout | Should-BeFalsy
         }
 
         It 'Should return ''True'' when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -441,18 +441,18 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.TraceFlags | Should -HaveCount 1
-            $resourceCurrentState.TraceFlags | Should -Contain '4199'
-            $resourceCurrentState.TraceFlagsToInclude | Should -BeNullOrEmpty
-            $resourceCurrentState.TraceFlagsToExclude | Should -BeNullOrEmpty
-            $resourceCurrentState.RestartService | Should -BeNullOrEmpty
-            $resourceCurrentState.RestartTimeout | Should -BeNullOrEmpty
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.TraceFlags | Should-BeCollection -Count 1
+            $resourceCurrentState.TraceFlags | Should-ContainCollection '4199'
+            $resourceCurrentState.TraceFlagsToInclude | Should-BeFalsy
+            $resourceCurrentState.TraceFlagsToExclude | Should-BeFalsy
+            $resourceCurrentState.RestartService | Should-BeFalsy
+            $resourceCurrentState.RestartTimeout | Should-BeFalsy
         }
 
         It 'Should return ''True'' when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -498,18 +498,18 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.TraceFlags | Should -HaveCount 0
-            $resourceCurrentState.TraceFlags | Should -BeNullOrEmpty
-            $resourceCurrentState.TraceFlagsToInclude | Should -BeNullOrEmpty
-            $resourceCurrentState.TraceFlagsToExclude | Should -BeNullOrEmpty
-            $resourceCurrentState.RestartService | Should -BeNullOrEmpty
-            $resourceCurrentState.RestartTimeout | Should -BeNullOrEmpty
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.TraceFlags | Should-BeCollection -Count 0
+            $resourceCurrentState.TraceFlags | Should-BeFalsy
+            $resourceCurrentState.TraceFlagsToInclude | Should-BeFalsy
+            $resourceCurrentState.TraceFlagsToExclude | Should-BeFalsy
+            $resourceCurrentState.RestartService | Should-BeFalsy
+            $resourceCurrentState.RestartTimeout | Should-BeFalsy
         }
 
         It 'Should return ''True'' when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 }

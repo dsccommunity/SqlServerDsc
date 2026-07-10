@@ -47,7 +47,7 @@ Describe 'Repair-SqlDscReportingService' -Tag @('Integration_SQL2017', 'Integrat
     It 'Should have the Reporting Services service running' {
         $getServiceResult = Get-Service -Name 'SQLServerReportingServices' -ErrorAction 'Stop'
 
-        $getServiceResult.Status | Should -Be 'Running'
+        $getServiceResult.Status | Should-Be 'Running'
     }
 
     Context 'When repairing Reporting Services' {
@@ -69,8 +69,8 @@ Describe 'Repair-SqlDscReportingService' -Tag @('Integration_SQL2017', 'Integrat
         It 'Should still have the SQL Server Reporting Services service running after repair' {
             $getServiceResult = Get-Service -Name 'SQLServerReportingServices' -ErrorAction 'Stop'
 
-            $getServiceResult | Should -Not -BeNullOrEmpty
-            $getServiceResult.Status | Should -Be 'Running'
+            $getServiceResult | Should-BeTruthy
+            $getServiceResult.Status | Should-Be 'Running'
         }
     }
 }

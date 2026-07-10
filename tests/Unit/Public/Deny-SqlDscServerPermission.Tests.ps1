@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -66,30 +68,30 @@ Describe 'Deny-SqlDscServerPermission' -Tag 'Public' {
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
     Context 'When testing parameter properties' {
         It 'Should have Login as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Deny-SqlDscServerPermission').Parameters['Login']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have ServerRole as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Deny-SqlDscServerPermission').Parameters['ServerRole']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Permission as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Deny-SqlDscServerPermission').Parameters['Permission']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Force as an optional parameter' {
             $parameterInfo = (Get-Command -Name 'Deny-SqlDscServerPermission').Parameters['Force']
-            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
     }
 
@@ -144,7 +146,7 @@ Describe 'Deny-SqlDscServerPermission' -Tag 'Public' {
                 mockLogin = $mockLogin
             } -ScriptBlock {
                 { Deny-SqlDscServerPermission -Login $mockLogin -Permission ConnectSql -Force } |
-                    Should -Throw -ExpectedMessage '*Failed to deny server permissions*'
+                    Should-Throw -ExceptionMessage '*Failed to deny server permissions*'
             }
         }
     }

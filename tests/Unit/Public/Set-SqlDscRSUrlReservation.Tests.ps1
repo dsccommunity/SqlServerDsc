@@ -32,7 +32,8 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
@@ -40,7 +41,8 @@ AfterAll {
 
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 }
 
 Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
@@ -59,7 +61,7 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
                     Expression = { $_.ToString() }
                 }
 
-            $result.ParameterListAsString | Should -Be $expectedParameters
+            $result.ParameterListAsString | Should-Be $expectedParameters
         }
 
         It 'Should have the correct parameters in parameter set Recreate' {
@@ -72,11 +74,11 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
                     Expression = { $_.ToString() }
                 }
 
-            $result.ParameterListAsString | Should -Be $expectedParameters
+            $result.ParameterListAsString | Should-Be $expectedParameters
         }
 
         It 'Should have Set as the default parameter set' {
-            $command.DefaultParameterSet | Should -Be 'Set'
+            $command.DefaultParameterSet | Should-Be 'Set'
         }
     }
 
@@ -101,9 +103,9 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
         It 'Should not add or remove any URLs when current matches desired' {
             $mockCimInstance | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80', 'https://+:443' -Force
 
-            Should -Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 1
-            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 0
-            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 0
+            Should-Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 1
+            Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 0
+            Should-Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 0
         }
     }
 
@@ -128,11 +130,11 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
         It 'Should add the new URL' {
             $mockCimInstance | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80', 'https://+:443' -Force
 
-            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+            Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                 $UrlString -eq 'https://+:443'
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 0
+            Should-Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 0
         }
     }
 
@@ -157,11 +159,11 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
         It 'Should remove the URL not in the desired list' {
             $mockCimInstance | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80' -Force
 
-            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+            Should-Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                 $UrlString -eq 'https://+:443'
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 0
+            Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 0
         }
     }
 
@@ -186,13 +188,13 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
         It 'Should add new and remove old URLs' {
             $mockCimInstance | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80', 'https://+:443' -Force
 
-            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+            Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                 $UrlString -eq 'https://+:443'
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+            Should-Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                 $UrlString -eq 'http://+:8080'
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -217,8 +219,8 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
         It 'Should return the configuration CIM instance' {
             $result = $mockCimInstance | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80' -Force -PassThru
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -243,9 +245,9 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
         It 'Should pass Lcid to Add-SqlDscRSUrlReservation' {
             $mockCimInstance | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80' -Lcid 1031 -Force
 
-            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+            Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                 $Lcid -eq 1031
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -263,9 +265,9 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
         It 'Should not call any modification commands' {
             $mockCimInstance | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80' -WhatIf
 
-            Should -Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 0
-            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 0
-            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 0
+            Should-Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 0
+            Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 0
+            Should-Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 0
         }
     }
 
@@ -288,9 +290,9 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
         }
 
         It 'Should set URL reservations' {
-            { Set-SqlDscRSUrlReservation -Configuration $mockCimInstance -Application 'ReportServerWebService' -UrlString 'http://+:80' -Force } | Should -Not -Throw
+            $null = & ({ Set-SqlDscRSUrlReservation -Configuration $mockCimInstance -Application 'ReportServerWebService' -UrlString 'http://+:80' -Force })
 
-            Should -Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 1
+            Should-Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 1
         }
     }
 
@@ -315,8 +317,8 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
         It 'Should add all specified URLs' {
             $mockCimInstance | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80', 'https://+:443' -Force
 
-            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 2
-            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 0
+            Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 2
+            Should-Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 0
         }
     }
 
@@ -341,8 +343,8 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
         It 'Should add all specified URLs' {
             $mockCimInstance | Set-SqlDscRSUrlReservation -Application 'ReportServerWebService' -UrlString 'http://+:80' -Force
 
-            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 1
-            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 0
+            Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 1
+            Should-Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 0
         }
     }
 
@@ -368,49 +370,49 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
         It 'Should remove and re-add all existing URL reservations' {
             $mockCimInstance | Set-SqlDscRSUrlReservation -RecreateExisting -Force
 
-            Should -Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 4 -Scope It
-            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 4 -Scope It
+            Should-Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Scope It -Times 4
+            Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Scope It -Times 4
         }
 
         It 'Should remove each URL reservation before re-adding' {
             $mockCimInstance | Set-SqlDscRSUrlReservation -RecreateExisting -Force
 
-            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+            Should-Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                 $Application -eq 'ReportServerWebService' -and $UrlString -eq 'http://+:80'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
 
-            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+            Should-Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                 $Application -eq 'ReportServerWebService' -and $UrlString -eq 'https://+:443'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
 
-            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+            Should-Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                 $Application -eq 'ReportServerWebApp' -and $UrlString -eq 'http://+:80'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
 
-            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+            Should-Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                 $Application -eq 'ReportServerWebApp' -and $UrlString -eq 'https://+:443'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should re-add each URL reservation' {
             $mockCimInstance | Set-SqlDscRSUrlReservation -RecreateExisting -Force
 
-            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+            Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                 $Application -eq 'ReportServerWebService' -and $UrlString -eq 'http://+:80'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
 
-            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+            Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                 $Application -eq 'ReportServerWebService' -and $UrlString -eq 'https://+:443'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
 
-            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+            Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                 $Application -eq 'ReportServerWebApp' -and $UrlString -eq 'http://+:80'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
 
-            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+            Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                 $Application -eq 'ReportServerWebApp' -and $UrlString -eq 'https://+:443'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 
@@ -436,9 +438,9 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
         It 'Should pass Lcid to Add-SqlDscRSUrlReservation' {
             $mockCimInstance | Set-SqlDscRSUrlReservation -RecreateExisting -Lcid 1031 -Force
 
-            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+            Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                 $Lcid -eq 1031
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -464,8 +466,8 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
         It 'Should return the configuration CIM instance' {
             $result = $mockCimInstance | Set-SqlDscRSUrlReservation -RecreateExisting -Force -PassThru
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -491,9 +493,9 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
         It 'Should not call any modification commands' {
             $mockCimInstance | Set-SqlDscRSUrlReservation -RecreateExisting -Force
 
-            Should -Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 1
-            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 0
-            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 0
+            Should-Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 1
+            Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 0
+            Should-Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 0
         }
     }
 
@@ -511,9 +513,9 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
         It 'Should not call any modification commands' {
             $mockCimInstance | Set-SqlDscRSUrlReservation -RecreateExisting -WhatIf
 
-            Should -Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 0
-            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 0
-            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 0
+            Should-Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 0
+            Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 0
+            Should-Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 0
         }
     }
 
@@ -539,9 +541,9 @@ Describe 'Set-SqlDscRSUrlReservation' -Tag 'Public' {
         It 'Should not call any modification commands' {
             $mockCimInstance | Set-SqlDscRSUrlReservation -RecreateExisting -Force
 
-            Should -Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 1
-            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 0
-            Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 0
+            Should-Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 1
+            Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Times 0
+            Should-Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Times 0
         }
     }
 }

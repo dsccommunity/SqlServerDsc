@@ -32,13 +32,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -58,8 +60,8 @@ Describe 'Set-SqlDscRSUnattendedExecutionAccount' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -80,16 +82,16 @@ Describe 'Set-SqlDscRSUnattendedExecutionAccount' {
         It 'Should set unattended execution account without errors' {
             $mockCimInstance | Set-SqlDscRSUnattendedExecutionAccount -Credential $mockCredential -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'SetUnattendedExecutionAccount' -and
                 $Arguments.UserName -eq 'DOMAIN\ExecutionAccount'
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should not return anything by default' {
             $result = $mockCimInstance | Set-SqlDscRSUnattendedExecutionAccount -Credential $mockCredential -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -110,8 +112,8 @@ Describe 'Set-SqlDscRSUnattendedExecutionAccount' {
         It 'Should return the configuration CIM instance' {
             $result = $mockCimInstance | Set-SqlDscRSUnattendedExecutionAccount -Credential $mockCredential -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -132,7 +134,7 @@ Describe 'Set-SqlDscRSUnattendedExecutionAccount' {
         It 'Should set unattended execution account without confirmation' {
             $mockCimInstance | Set-SqlDscRSUnattendedExecutionAccount -Credential $mockCredential -Force
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -153,7 +155,7 @@ Describe 'Set-SqlDscRSUnattendedExecutionAccount' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Set-SqlDscRSUnattendedExecutionAccount -Credential $mockCredential -Confirm:$false } | Should -Throw -ErrorId 'SSRSUEA0001,Set-SqlDscRSUnattendedExecutionAccount'
+            { $mockCimInstance | Set-SqlDscRSUnattendedExecutionAccount -Credential $mockCredential -Confirm:$false } | Should-Throw -FullyQualifiedErrorId 'SSRSUEA0001,Set-SqlDscRSUnattendedExecutionAccount'
         }
     }
 
@@ -174,7 +176,7 @@ Describe 'Set-SqlDscRSUnattendedExecutionAccount' {
         It 'Should not call Invoke-RsCimMethod' {
             $mockCimInstance | Set-SqlDscRSUnattendedExecutionAccount -Credential $mockCredential -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
         }
     }
 
@@ -195,7 +197,7 @@ Describe 'Set-SqlDscRSUnattendedExecutionAccount' {
         It 'Should set unattended execution account' {
             Set-SqlDscRSUnattendedExecutionAccount -Configuration $mockCimInstance -Credential $mockCredential -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 }

@@ -68,13 +68,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:subModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:subModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:subModuleName -All | Remove-Module -Force
@@ -91,12 +93,12 @@ Describe 'SqlServerDsc.Common\ConvertTo-ServerInstanceName' -Tag 'ConvertToServe
     It 'Should return correct service instance for a default instance' {
         $result = ConvertTo-ServerInstanceName -InstanceName 'MSSQLSERVER' -ServerName $mockComputerName
 
-        $result | Should -BeExactly $mockComputerName
+        $result | Should-BeString -CaseSensitive $mockComputerName
     }
 
     It 'Should return correct service instance for a name instance' {
         $result = ConvertTo-ServerInstanceName -InstanceName 'MyInstance' -ServerName $mockComputerName
 
-        $result | Should -BeExactly ('{0}\{1}' -f $mockComputerName, 'MyInstance')
+        $result | Should-BeString -CaseSensitive ('{0}\{1}' -f $mockComputerName, 'MyInstance')
     }
 }

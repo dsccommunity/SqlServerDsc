@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -78,7 +80,7 @@ Describe 'Backup-SqlDscDatabase' -Tag 'Public' {
             }
 
             { Backup-SqlDscDatabase -ServerObject $mockServerObject -Name 'NonExistentDatabase' -BackupFile 'C:\Backups\Test.bak' -Force } |
-                Should -Throw -ExpectedMessage ('*{0}*' -f $expectedMessage) -ErrorId 'BSDD0001,Backup-SqlDscDatabase'
+                Should-Throw -ExceptionMessage ('*{0}*' -f $expectedMessage) -FullyQualifiedErrorId 'BSDD0001,Backup-SqlDscDatabase'
         }
     }
 
@@ -106,7 +108,7 @@ Describe 'Backup-SqlDscDatabase' -Tag 'Public' {
             }
 
             { Backup-SqlDscDatabase -ServerObject $mockServerObject -Name 'SimpleDatabase' -BackupFile 'C:\Backups\Test.trn' -BackupType 'Log' -Force } |
-                Should -Throw -ExpectedMessage ('*{0}*' -f $expectedMessage) -ErrorId 'BSDD0002,Backup-SqlDscDatabase'
+                Should-Throw -ExceptionMessage ('*{0}*' -f $expectedMessage) -FullyQualifiedErrorId 'BSDD0002,Backup-SqlDscDatabase'
         }
     }
 
@@ -134,7 +136,7 @@ Describe 'Backup-SqlDscDatabase' -Tag 'Public' {
             }
 
             { Backup-SqlDscDatabase -ServerObject $mockServerObject -Name 'OfflineDatabase' -BackupFile 'C:\Backups\Test.bak' -Force } |
-                Should -Throw -ExpectedMessage ('*{0}*' -f $expectedMessage) -ErrorId 'BSDD0003,Backup-SqlDscDatabase'
+                Should-Throw -ExceptionMessage ('*{0}*' -f $expectedMessage) -FullyQualifiedErrorId 'BSDD0003,Backup-SqlDscDatabase'
         }
     }
 
@@ -154,55 +156,55 @@ Describe 'Backup-SqlDscDatabase' -Tag 'Public' {
         It 'Should perform full backup successfully using database object' {
             $result = Backup-SqlDscDatabase -DatabaseObject $mockDatabaseObject -BackupFile 'C:\Backups\TestDatabase.bak' -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform differential backup successfully' {
             $result = Backup-SqlDscDatabase -DatabaseObject $mockDatabaseObject -BackupFile 'C:\Backups\TestDatabase_Diff.bak' -BackupType 'Differential' -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform log backup successfully' {
             $result = Backup-SqlDscDatabase -DatabaseObject $mockDatabaseObject -BackupFile 'C:\Backups\TestDatabase.trn' -BackupType 'Log' -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform backup with CopyOnly option' {
             $result = Backup-SqlDscDatabase -DatabaseObject $mockDatabaseObject -BackupFile 'C:\Backups\TestDatabase.bak' -CopyOnly -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform backup with Compress option' {
             $result = Backup-SqlDscDatabase -DatabaseObject $mockDatabaseObject -BackupFile 'C:\Backups\TestDatabase.bak' -Compress -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform backup with Checksum option' {
             $result = Backup-SqlDscDatabase -DatabaseObject $mockDatabaseObject -BackupFile 'C:\Backups\TestDatabase.bak' -Checksum -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform backup with Description option' {
             $result = Backup-SqlDscDatabase -DatabaseObject $mockDatabaseObject -BackupFile 'C:\Backups\TestDatabase.bak' -Description 'Test backup description' -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform backup with RetainDays option' {
             $result = Backup-SqlDscDatabase -DatabaseObject $mockDatabaseObject -BackupFile 'C:\Backups\TestDatabase.bak' -RetainDays 30 -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should perform backup with Initialize option' {
             $result = Backup-SqlDscDatabase -DatabaseObject $mockDatabaseObject -BackupFile 'C:\Backups\TestDatabase.bak' -Initialize -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -236,8 +238,8 @@ Describe 'Backup-SqlDscDatabase' -Tag 'Public' {
 
             $result = Backup-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\TestDatabase.bak' -Refresh -Force
 
-            $result | Should -BeNullOrEmpty
-            $script:refreshCalled | Should -BeTrue
+            $result | Should-BeFalsy
+            $script:refreshCalled | Should-BeTrue
         }
     }
 
@@ -267,23 +269,23 @@ Describe 'Backup-SqlDscDatabase' -Tag 'Public' {
         It 'Should return database object when PassThru is specified with ServerObject' {
             $result = Backup-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -BackupFile 'C:\Backups\TestDatabase.bak' -PassThru -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
-            $result.Name | Should -Be 'TestDatabase'
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Database'
+            $result.Name | Should-Be 'TestDatabase'
         }
 
         It 'Should return database object when PassThru is specified with DatabaseObject' {
             $result = Backup-SqlDscDatabase -DatabaseObject $mockDatabaseObject -BackupFile 'C:\Backups\TestDatabase.bak' -PassThru -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
-            $result.Name | Should -Be 'TestDatabase'
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Database'
+            $result.Name | Should-Be 'TestDatabase'
         }
 
         It 'Should not return anything when PassThru is not specified' {
             $result = Backup-SqlDscDatabase -DatabaseObject $mockDatabaseObject -BackupFile 'C:\Backups\TestDatabase.bak' -Force
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -301,8 +303,8 @@ Describe 'Backup-SqlDscDatabase' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have the correct parameters in parameter set DatabaseObject' -ForEach @(
@@ -318,20 +320,20 @@ Describe 'Backup-SqlDscDatabase' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have default parameter set as ServerObject' {
             $result = Get-Command -Name 'Backup-SqlDscDatabase'
-            $result.DefaultParameterSet | Should -Be 'ServerObject'
+            $result.DefaultParameterSet | Should-Be 'ServerObject'
         }
 
         It 'Should have BackupType parameter with valid values' {
             $result = (Get-Command -Name 'Backup-SqlDscDatabase').Parameters['BackupType']
-            $result.Attributes.ValidValues | Should -Contain 'Full'
-            $result.Attributes.ValidValues | Should -Contain 'Differential'
-            $result.Attributes.ValidValues | Should -Contain 'Log'
+            $result.Attributes.ValidValues | Should-ContainCollection 'Full'
+            $result.Attributes.ValidValues | Should-ContainCollection 'Differential'
+            $result.Attributes.ValidValues | Should-ContainCollection 'Log'
         }
     }
 }

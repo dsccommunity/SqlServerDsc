@@ -44,13 +44,13 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'I
 
                 $result = ConvertFrom-SqlDscDatabasePermission -Permission $databasePermission -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]
-                $result.Connect | Should -BeTrue
-                $result.Select | Should -BeTrue
-                $result.Update | Should -BeFalse
-                $result.Insert | Should -BeFalse
-                $result.Delete | Should -BeFalse
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.DatabasePermissionSet])
+                $result.Connect | Should-BeTrue
+                $result.Select | Should-BeTrue
+                $result.Update | Should-BeFalse
+                $result.Insert | Should-BeFalse
+                $result.Delete | Should-BeFalse
             }
         }
 
@@ -65,14 +65,14 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'I
 
                 $result = ConvertFrom-SqlDscDatabasePermission -Permission $databasePermission -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]
-                $result.Connect | Should -BeTrue
-                $result.Select | Should -BeTrue
-                $result.Update | Should -BeTrue
-                $result.Insert | Should -BeTrue
-                $result.Delete | Should -BeFalse
-                $result.Alter | Should -BeFalse
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.DatabasePermissionSet])
+                $result.Connect | Should-BeTrue
+                $result.Select | Should-BeTrue
+                $result.Update | Should-BeTrue
+                $result.Insert | Should-BeTrue
+                $result.Delete | Should-BeFalse
+                $result.Alter | Should-BeFalse
             }
         }
 
@@ -87,12 +87,12 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'I
 
                 $result = ConvertFrom-SqlDscDatabasePermission -Permission $databasePermission -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]
-                $result.Alter | Should -BeTrue
-                $result.CreateTable | Should -BeTrue
-                $result.Connect | Should -BeFalse
-                $result.Select | Should -BeFalse
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.DatabasePermissionSet])
+                $result.Alter | Should-BeTrue
+                $result.CreateTable | Should-BeTrue
+                $result.Connect | Should-BeFalse
+                $result.Select | Should-BeFalse
             }
         }
 
@@ -107,12 +107,12 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'I
 
                 $result = ConvertFrom-SqlDscDatabasePermission -Permission $databasePermission -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]
-                $result.Delete | Should -BeTrue
-                $result.Execute | Should -BeTrue
-                $result.Connect | Should -BeFalse
-                $result.Select | Should -BeFalse
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.DatabasePermissionSet])
+                $result.Delete | Should-BeTrue
+                $result.Execute | Should-BeTrue
+                $result.Connect | Should-BeFalse
+                $result.Select | Should-BeFalse
             }
         }
 
@@ -127,11 +127,11 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'I
 
                 $result = $databasePermission | ConvertFrom-SqlDscDatabasePermission -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]
-                $result.Connect | Should -BeTrue
-                $result.ViewDefinition | Should -BeTrue
-                $result.Select | Should -BeFalse
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.DatabasePermissionSet])
+                $result.Connect | Should-BeTrue
+                $result.ViewDefinition | Should-BeTrue
+                $result.Select | Should-BeFalse
             }
         }
 
@@ -153,15 +153,15 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'I
                 $result = $databasePermissions | ConvertFrom-SqlDscDatabasePermission -ErrorAction 'Stop'
 
                 # The command combines all permissions into a single DatabasePermissionSet
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.DatabasePermissionSet])
 
                 # All permissions from both objects should be set to true
-                $result.Connect | Should -BeTrue
-                $result.Select | Should -BeTrue
-                $result.Update | Should -BeTrue
-                $result.Insert | Should -BeFalse
-                $result.Delete | Should -BeFalse
+                $result.Connect | Should-BeTrue
+                $result.Select | Should-BeTrue
+                $result.Update | Should-BeTrue
+                $result.Insert | Should-BeFalse
+                $result.Delete | Should-BeFalse
             }
         }
 
@@ -204,16 +204,16 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'I
                 $result = ConvertFrom-SqlDscDatabasePermission -Permission $databasePermission -ErrorAction 'Stop'
 
                 # Verify the result has the expected SMO properties
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.DatabasePermissionSet])
 
                 # Verify it has the correct SMO properties and methods available
-                $result | Get-Member -Name 'Connect' -MemberType Property | Should -Not -BeNullOrEmpty
-                $result | Get-Member -Name 'Select' -MemberType Property | Should -Not -BeNullOrEmpty
-                $result | Get-Member -Name 'ToString' -MemberType Method | Should -Not -BeNullOrEmpty
+                $result | Get-Member -Name 'Connect' -MemberType Property | Should-BeTruthy
+                $result | Get-Member -Name 'Select' -MemberType Property | Should-BeTruthy
+                $result | Get-Member -Name 'ToString' -MemberType Method | Should-BeTruthy
 
                 # Verify ToString() method works
-                $result.ToString() | Should -Not -BeNullOrEmpty
+                $result.ToString() | Should-BeTruthy
             }
         }
     }

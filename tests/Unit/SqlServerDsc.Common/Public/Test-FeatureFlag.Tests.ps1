@@ -68,13 +68,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:subModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:subModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:subModuleName -All | Remove-Module -Force
@@ -86,19 +88,19 @@ AfterAll {
 Describe 'Test-FeatureFlag' -Tag 'TestFeatureFlag' {
     Context 'When no feature flags was provided' {
         It 'Should return $false' {
-            Test-FeatureFlag -FeatureFlag $null -TestFlag 'MyFlag' | Should -BeFalse
+            Test-FeatureFlag -FeatureFlag $null -TestFlag 'MyFlag' | Should-BeFalse
         }
     }
 
     Context 'When feature flags was provided' {
         It 'Should return $true' {
-            Test-FeatureFlag -FeatureFlag @('FirstFlag', 'SecondFlag') -TestFlag 'SecondFlag' | Should -BeTrue
+            Test-FeatureFlag -FeatureFlag @('FirstFlag', 'SecondFlag') -TestFlag 'SecondFlag' | Should-BeTrue
         }
     }
 
     Context 'When feature flags was provided, but missing' {
         It 'Should return $false' {
-            Test-FeatureFlag -FeatureFlag @('MyFlag2') -TestFlag 'MyFlag' | Should -BeFalse
+            Test-FeatureFlag -FeatureFlag @('MyFlag2') -TestFlag 'MyFlag' | Should-BeFalse
         }
     }
 }

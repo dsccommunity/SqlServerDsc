@@ -251,7 +251,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
         # Make sure the module was installed.
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -261,8 +261,8 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         It 'Should have TLS 1.2 enabled on the node' -Tag @('Integration_SQL2025') {
             # Test-TlsProtocol returns $true when the protocol is enabled.
             # Assert for both Server and Client registry keys.
-            (Test-TlsProtocol -Protocol 'Tls12') | Should -BeTrue
-            (Test-TlsProtocol -Protocol 'Tls12' -Client) | Should -BeTrue
+            (Test-TlsProtocol -Protocol 'Tls12') | Should-BeTrue
+            (Test-TlsProtocol -Protocol 'Tls12' -Client) | Should-BeTrue
         }
     }
 
@@ -318,77 +318,77 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Action                     | Should -Be 'Install'
-            $resourceCurrentState.AgtSvcAccount              | Should -BeNullOrEmpty
-            $resourceCurrentState.AgtSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlAgentServicePrimaryAccountUserName -Leaf))
-            $resourceCurrentState.AgtSvcStartupType          | Should -Be 'Automatic'
-            $resourceCurrentState.ASServerMode               | Should -BeNullOrEmpty
-            $resourceCurrentState.ASBackupDir                | Should -BeNullOrEmpty
-            $resourceCurrentState.ASCollation                | Should -BeNullOrEmpty
-            $resourceCurrentState.ASConfigDir                | Should -BeNullOrEmpty
-            $resourceCurrentState.ASDataDir                  | Should -BeNullOrEmpty
-            $resourceCurrentState.ASLogDir                   | Should -BeNullOrEmpty
-            $resourceCurrentState.ASTempDir                  | Should -BeNullOrEmpty
-            $resourceCurrentState.ASSvcAccount               | Should -BeNullOrEmpty
-            $resourceCurrentState.ASSvcAccountUsername       | Should -BeNullOrEmpty
-            $resourceCurrentState.ASSysAdminAccounts         | Should -BeNullOrEmpty
-            $resourceCurrentState.BrowserSvcStartupType      | Should -BeNullOrEmpty
-            $resourceCurrentState.ErrorReporting             | Should -BeNullOrEmpty
-            $resourceCurrentState.FailoverClusterGroupName   | Should -BeNullOrEmpty
-            $resourceCurrentState.FailoverClusterIPAddress   | Should -BeNullOrEmpty
-            $resourceCurrentState.FailoverClusterNetworkName | Should -BeNullOrEmpty
-            $resourceCurrentState.Features                   | Should -Be $ConfigurationData.AllNodes.DatabaseEngineNamedInstanceFeatures
-            $resourceCurrentState.ForceReboot                | Should -BeNullOrEmpty
-            $resourceCurrentState.FTSvcAccount               | Should -BeNullOrEmpty
-            $resourceCurrentState.FTSvcAccountUsername       | Should -BeNullOrEmpty
-            $resourceCurrentState.InstallSharedDir           | Should -Be $ConfigurationData.AllNodes.InstallSharedDir
-            $resourceCurrentState.InstallSharedWOWDir        | Should -Be $ConfigurationData.AllNodes.InstallSharedWOWDir
-            $resourceCurrentState.InstallSQLDataDir          | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSQLDataDir -ChildPath "$($ConfigurationData.AllNodes.SqlServerInstanceIdPrefix).$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\MSSQL")
-            $resourceCurrentState.InstanceDir                | Should -Be $ConfigurationData.AllNodes.InstanceDir
-            $resourceCurrentState.InstanceID                 | Should -Be $ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName
-            $resourceCurrentState.InstanceName               | Should -Be $ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName
-            $resourceCurrentState.ISSvcAccount               | Should -BeNullOrEmpty
-            $resourceCurrentState.ISSvcAccountUsername       | Should -BeNullOrEmpty
-            $resourceCurrentState.ProductKey                 | Should -BeNullOrEmpty
-            $resourceCurrentState.RSSvcAccount               | Should -BeNullOrEmpty
-            $resourceCurrentState.RSSvcAccountUsername       | Should -BeNullOrEmpty
-            $resourceCurrentState.SAPwd                      | Should -BeNullOrEmpty
-            $resourceCurrentState.SecurityMode               | Should -Be 'SQL'
-            $resourceCurrentState.SetupProcessTimeout        | Should -BeNullOrEmpty
-            $resourceCurrentState.SourceCredential           | Should -BeNullOrEmpty
-            $resourceCurrentState.SourcePath                 | Should -Be "$($ConfigurationData.AllNodes.DriveLetter):\"
-            $resourceCurrentState.SQLCollation               | Should -Be $ConfigurationData.AllNodes.Collation
-            $resourceCurrentState.SQLSvcAccount              | Should -BeNullOrEmpty
-            $resourceCurrentState.SQLSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlServicePrimaryAccountUserName -Leaf))
-            $resourceCurrentState.SqlSvcStartupType          | Should -Be 'Automatic'
-            $resourceCurrentState.SQLTempDBDir               | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSQLDataDir -ChildPath "$($ConfigurationData.AllNodes.SqlServerInstanceIdPrefix).$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\MSSQL\Data")
-            $resourceCurrentState.SqlTempDbFileCount         | Should -Be $ConfigurationData.AllNodes.SqlTempDbFileCount
-            $resourceCurrentState.SqlTempDbFileSize          | Should -Be $ConfigurationData.AllNodes.SqlTempDbFileSize
-            $resourceCurrentState.SqlTempDbFileGrowth        | Should -Be $ConfigurationData.AllNodes.SqlTempDbFileGrowth
-            $resourceCurrentState.SQLTempDbLogDir            | Should -BeNullOrEmpty
-            $resourceCurrentState.SqlTempDbLogFileSize       | Should -Be $ConfigurationData.AllNodes.SqlTempDbLogFileSize
-            $resourceCurrentState.SqlTempDbLogFileGrowth     | Should -Be $ConfigurationData.AllNodes.SqlTempDbLogFileGrowth
-            $resourceCurrentState.SQLUserDBDir               | Should -Be $ConfigurationData.AllNodes.SQLUserDBDir
-            $resourceCurrentState.SQLUserDBLogDir            | Should -Be $ConfigurationData.AllNodes.SQLUserDBLogDir
-            $resourceCurrentState.SQLBackupDir               | Should -Be $ConfigurationData.AllNodes.SQLBackupDir
-            $resourceCurrentState.SQMReporting               | Should -BeNullOrEmpty
-            $resourceCurrentState.SuppressReboot             | Should -BeNullOrEmpty
-            $resourceCurrentState.UpdateEnabled              | Should -BeNullOrEmpty
-            $resourceCurrentState.UpdateSource               | Should -BeNullOrEmpty
-            $resourceCurrentState.UseEnglish                 | Should -BeTrue
+            $resourceCurrentState.Action                     | Should-Be 'Install'
+            $resourceCurrentState.AgtSvcAccount              | Should-BeFalsy
+            $resourceCurrentState.AgtSvcAccountUsername      | Should-Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlAgentServicePrimaryAccountUserName -Leaf))
+            $resourceCurrentState.AgtSvcStartupType          | Should-Be 'Automatic'
+            $resourceCurrentState.ASServerMode               | Should-BeFalsy
+            $resourceCurrentState.ASBackupDir                | Should-BeFalsy
+            $resourceCurrentState.ASCollation                | Should-BeFalsy
+            $resourceCurrentState.ASConfigDir                | Should-BeFalsy
+            $resourceCurrentState.ASDataDir                  | Should-BeFalsy
+            $resourceCurrentState.ASLogDir                   | Should-BeFalsy
+            $resourceCurrentState.ASTempDir                  | Should-BeFalsy
+            $resourceCurrentState.ASSvcAccount               | Should-BeFalsy
+            $resourceCurrentState.ASSvcAccountUsername       | Should-BeFalsy
+            $resourceCurrentState.ASSysAdminAccounts         | Should-BeFalsy
+            $resourceCurrentState.BrowserSvcStartupType      | Should-BeFalsy
+            $resourceCurrentState.ErrorReporting             | Should-BeFalsy
+            $resourceCurrentState.FailoverClusterGroupName   | Should-BeFalsy
+            $resourceCurrentState.FailoverClusterIPAddress   | Should-BeFalsy
+            $resourceCurrentState.FailoverClusterNetworkName | Should-BeFalsy
+            $resourceCurrentState.Features                   | Should-Be $ConfigurationData.AllNodes.DatabaseEngineNamedInstanceFeatures
+            $resourceCurrentState.ForceReboot                | Should-BeFalsy
+            $resourceCurrentState.FTSvcAccount               | Should-BeFalsy
+            $resourceCurrentState.FTSvcAccountUsername       | Should-BeFalsy
+            $resourceCurrentState.InstallSharedDir           | Should-Be $ConfigurationData.AllNodes.InstallSharedDir
+            $resourceCurrentState.InstallSharedWOWDir        | Should-Be $ConfigurationData.AllNodes.InstallSharedWOWDir
+            $resourceCurrentState.InstallSQLDataDir          | Should-Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSQLDataDir -ChildPath "$($ConfigurationData.AllNodes.SqlServerInstanceIdPrefix).$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\MSSQL")
+            $resourceCurrentState.InstanceDir                | Should-Be $ConfigurationData.AllNodes.InstanceDir
+            $resourceCurrentState.InstanceID                 | Should-Be $ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName
+            $resourceCurrentState.InstanceName               | Should-Be $ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName
+            $resourceCurrentState.ISSvcAccount               | Should-BeFalsy
+            $resourceCurrentState.ISSvcAccountUsername       | Should-BeFalsy
+            $resourceCurrentState.ProductKey                 | Should-BeFalsy
+            $resourceCurrentState.RSSvcAccount               | Should-BeFalsy
+            $resourceCurrentState.RSSvcAccountUsername       | Should-BeFalsy
+            $resourceCurrentState.SAPwd                      | Should-BeFalsy
+            $resourceCurrentState.SecurityMode               | Should-Be 'SQL'
+            $resourceCurrentState.SetupProcessTimeout        | Should-BeFalsy
+            $resourceCurrentState.SourceCredential           | Should-BeFalsy
+            $resourceCurrentState.SourcePath                 | Should-Be "$($ConfigurationData.AllNodes.DriveLetter):\"
+            $resourceCurrentState.SQLCollation               | Should-Be $ConfigurationData.AllNodes.Collation
+            $resourceCurrentState.SQLSvcAccount              | Should-BeFalsy
+            $resourceCurrentState.SQLSvcAccountUsername      | Should-Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlServicePrimaryAccountUserName -Leaf))
+            $resourceCurrentState.SqlSvcStartupType          | Should-Be 'Automatic'
+            $resourceCurrentState.SQLTempDBDir               | Should-Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSQLDataDir -ChildPath "$($ConfigurationData.AllNodes.SqlServerInstanceIdPrefix).$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)\MSSQL\Data")
+            $resourceCurrentState.SqlTempDbFileCount         | Should-Be $ConfigurationData.AllNodes.SqlTempDbFileCount
+            $resourceCurrentState.SqlTempDbFileSize          | Should-Be $ConfigurationData.AllNodes.SqlTempDbFileSize
+            $resourceCurrentState.SqlTempDbFileGrowth        | Should-Be $ConfigurationData.AllNodes.SqlTempDbFileGrowth
+            $resourceCurrentState.SQLTempDbLogDir            | Should-BeFalsy
+            $resourceCurrentState.SqlTempDbLogFileSize       | Should-Be $ConfigurationData.AllNodes.SqlTempDbLogFileSize
+            $resourceCurrentState.SqlTempDbLogFileGrowth     | Should-Be $ConfigurationData.AllNodes.SqlTempDbLogFileGrowth
+            $resourceCurrentState.SQLUserDBDir               | Should-Be $ConfigurationData.AllNodes.SQLUserDBDir
+            $resourceCurrentState.SQLUserDBLogDir            | Should-Be $ConfigurationData.AllNodes.SQLUserDBLogDir
+            $resourceCurrentState.SQLBackupDir               | Should-Be $ConfigurationData.AllNodes.SQLBackupDir
+            $resourceCurrentState.SQMReporting               | Should-BeFalsy
+            $resourceCurrentState.SuppressReboot             | Should-BeFalsy
+            $resourceCurrentState.UpdateEnabled              | Should-BeFalsy
+            $resourceCurrentState.UpdateSource               | Should-BeFalsy
+            $resourceCurrentState.UseEnglish                 | Should-BeTrue
 
             # Verify all the accounts are returned in the property SQLSysAdminAccounts.
-            $ConfigurationData.AllNodes.SqlAdministratorAccountUserName | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
-            $ConfigurationData.AllNodes.SqlInstallAccountUserName | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
-            "NT SERVICE\MSSQL`$$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)" | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
-            "NT SERVICE\SQLAgent`$$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)" | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
-            'NT SERVICE\SQLWriter' | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
-            'NT SERVICE\Winmgmt' | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
-            'sa' | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
+            $resourceCurrentState.SQLSysAdminAccounts | Should-ContainCollection ($ConfigurationData.AllNodes.SqlAdministratorAccountUserName)
+            $resourceCurrentState.SQLSysAdminAccounts | Should-ContainCollection ($ConfigurationData.AllNodes.SqlInstallAccountUserName)
+            $resourceCurrentState.SQLSysAdminAccounts | Should-ContainCollection ("NT SERVICE\MSSQL`$$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)")
+            $resourceCurrentState.SQLSysAdminAccounts | Should-ContainCollection ("NT SERVICE\SQLAgent`$$($ConfigurationData.AllNodes.DatabaseEngineNamedInstanceName)")
+            $resourceCurrentState.SQLSysAdminAccounts | Should-ContainCollection ('NT SERVICE\SQLWriter')
+            $resourceCurrentState.SQLSysAdminAccounts | Should-ContainCollection ('NT SERVICE\Winmgmt')
+            $resourceCurrentState.SQLSysAdminAccounts | Should-ContainCollection ('sa')
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -477,72 +477,72 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Action                     | Should -Be 'Install'
-            $resourceCurrentState.AgtSvcAccount              | Should -BeNullOrEmpty
-            $resourceCurrentState.AgtSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlAgentServicePrimaryAccountUserName -Leaf))
-            $resourceCurrentState.ASServerMode               | Should -BeNullOrEmpty
-            $resourceCurrentState.ASBackupDir                | Should -BeNullOrEmpty
-            $resourceCurrentState.ASCollation                | Should -BeNullOrEmpty
-            $resourceCurrentState.ASConfigDir                | Should -BeNullOrEmpty
-            $resourceCurrentState.ASDataDir                  | Should -BeNullOrEmpty
-            $resourceCurrentState.ASLogDir                   | Should -BeNullOrEmpty
-            $resourceCurrentState.ASTempDir                  | Should -BeNullOrEmpty
-            $resourceCurrentState.ASSvcAccount               | Should -BeNullOrEmpty
-            $resourceCurrentState.ASSvcAccountUsername       | Should -BeNullOrEmpty
-            $resourceCurrentState.ASSysAdminAccounts         | Should -BeNullOrEmpty
-            $resourceCurrentState.BrowserSvcStartupType      | Should -BeNullOrEmpty
-            $resourceCurrentState.ErrorReporting             | Should -BeNullOrEmpty
-            $resourceCurrentState.FailoverClusterGroupName   | Should -BeNullOrEmpty
-            $resourceCurrentState.FailoverClusterIPAddress   | Should -BeNullOrEmpty
-            $resourceCurrentState.FailoverClusterNetworkName | Should -BeNullOrEmpty
-            $resourceCurrentState.Features                   | Should -Be $ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceFeatures
-            $resourceCurrentState.ForceReboot                | Should -BeNullOrEmpty
-            $resourceCurrentState.FTSvcAccount               | Should -BeNullOrEmpty
-            $resourceCurrentState.FTSvcAccountUsername       | Should -BeNullOrEmpty
-            $resourceCurrentState.InstallSharedDir           | Should -Be $ConfigurationData.AllNodes.InstallSharedDir
-            $resourceCurrentState.InstallSharedWOWDir        | Should -Be $ConfigurationData.AllNodes.InstallSharedWOWDir
-            $resourceCurrentState.InstallSQLDataDir          | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.SqlServerInstanceIdPrefix).$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL")
-            $resourceCurrentState.InstanceDir                | Should -Be $ConfigurationData.AllNodes.InstallSharedDir
-            $resourceCurrentState.InstanceID                 | Should -Be $ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName
-            $resourceCurrentState.InstanceName               | Should -Be $ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName
-            $resourceCurrentState.ISSvcAccount               | Should -BeNullOrEmpty
-            $resourceCurrentState.ISSvcAccountUsername       | Should -BeNullOrEmpty
-            $resourceCurrentState.ProductKey                 | Should -BeNullOrEmpty
-            $resourceCurrentState.RSSvcAccount               | Should -BeNullOrEmpty
-            $resourceCurrentState.RSSvcAccountUsername       | Should -BeNullOrEmpty
-            $resourceCurrentState.SAPwd                      | Should -BeNullOrEmpty
-            $resourceCurrentState.SecurityMode               | Should -BeNullOrEmpty
-            $resourceCurrentState.SetupProcessTimeout        | Should -BeNullOrEmpty
-            $resourceCurrentState.SourceCredential           | Should -BeNullOrEmpty
-            $resourceCurrentState.SourcePath                 | Should -Be "$($ConfigurationData.AllNodes.DriveLetter):\"
-            $resourceCurrentState.SQLBackupDir               | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.SqlServerInstanceIdPrefix).$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL\Backup")
-            $resourceCurrentState.SQLCollation               | Should -Be $ConfigurationData.AllNodes.Collation
-            $resourceCurrentState.SQLSvcAccount              | Should -BeNullOrEmpty
-            $resourceCurrentState.SQLSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlServicePrimaryAccountUserName -Leaf))
-            $resourceCurrentState.SQLTempDBDir               | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.SqlServerInstanceIdPrefix).$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL\Data")
-            $resourceCurrentState.SQLTempDBLogDir            | Should -BeNullOrEmpty
-            $resourceCurrentState.SQMReporting               | Should -BeNullOrEmpty
-            $resourceCurrentState.SuppressReboot             | Should -BeNullOrEmpty
-            $resourceCurrentState.UpdateEnabled              | Should -BeNullOrEmpty
-            $resourceCurrentState.UpdateSource               | Should -BeNullOrEmpty
-            $resourceCurrentState.UseEnglish                 | Should -BeFalse
+            $resourceCurrentState.Action                     | Should-Be 'Install'
+            $resourceCurrentState.AgtSvcAccount              | Should-BeFalsy
+            $resourceCurrentState.AgtSvcAccountUsername      | Should-Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlAgentServicePrimaryAccountUserName -Leaf))
+            $resourceCurrentState.ASServerMode               | Should-BeFalsy
+            $resourceCurrentState.ASBackupDir                | Should-BeFalsy
+            $resourceCurrentState.ASCollation                | Should-BeFalsy
+            $resourceCurrentState.ASConfigDir                | Should-BeFalsy
+            $resourceCurrentState.ASDataDir                  | Should-BeFalsy
+            $resourceCurrentState.ASLogDir                   | Should-BeFalsy
+            $resourceCurrentState.ASTempDir                  | Should-BeFalsy
+            $resourceCurrentState.ASSvcAccount               | Should-BeFalsy
+            $resourceCurrentState.ASSvcAccountUsername       | Should-BeFalsy
+            $resourceCurrentState.ASSysAdminAccounts         | Should-BeFalsy
+            $resourceCurrentState.BrowserSvcStartupType      | Should-BeFalsy
+            $resourceCurrentState.ErrorReporting             | Should-BeFalsy
+            $resourceCurrentState.FailoverClusterGroupName   | Should-BeFalsy
+            $resourceCurrentState.FailoverClusterIPAddress   | Should-BeFalsy
+            $resourceCurrentState.FailoverClusterNetworkName | Should-BeFalsy
+            $resourceCurrentState.Features                   | Should-Be $ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceFeatures
+            $resourceCurrentState.ForceReboot                | Should-BeFalsy
+            $resourceCurrentState.FTSvcAccount               | Should-BeFalsy
+            $resourceCurrentState.FTSvcAccountUsername       | Should-BeFalsy
+            $resourceCurrentState.InstallSharedDir           | Should-Be $ConfigurationData.AllNodes.InstallSharedDir
+            $resourceCurrentState.InstallSharedWOWDir        | Should-Be $ConfigurationData.AllNodes.InstallSharedWOWDir
+            $resourceCurrentState.InstallSQLDataDir          | Should-Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.SqlServerInstanceIdPrefix).$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL")
+            $resourceCurrentState.InstanceDir                | Should-Be $ConfigurationData.AllNodes.InstallSharedDir
+            $resourceCurrentState.InstanceID                 | Should-Be $ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName
+            $resourceCurrentState.InstanceName               | Should-Be $ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName
+            $resourceCurrentState.ISSvcAccount               | Should-BeFalsy
+            $resourceCurrentState.ISSvcAccountUsername       | Should-BeFalsy
+            $resourceCurrentState.ProductKey                 | Should-BeFalsy
+            $resourceCurrentState.RSSvcAccount               | Should-BeFalsy
+            $resourceCurrentState.RSSvcAccountUsername       | Should-BeFalsy
+            $resourceCurrentState.SAPwd                      | Should-BeFalsy
+            $resourceCurrentState.SecurityMode               | Should-BeFalsy
+            $resourceCurrentState.SetupProcessTimeout        | Should-BeFalsy
+            $resourceCurrentState.SourceCredential           | Should-BeFalsy
+            $resourceCurrentState.SourcePath                 | Should-Be "$($ConfigurationData.AllNodes.DriveLetter):\"
+            $resourceCurrentState.SQLBackupDir               | Should-Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.SqlServerInstanceIdPrefix).$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL\Backup")
+            $resourceCurrentState.SQLCollation               | Should-Be $ConfigurationData.AllNodes.Collation
+            $resourceCurrentState.SQLSvcAccount              | Should-BeFalsy
+            $resourceCurrentState.SQLSvcAccountUsername      | Should-Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlServicePrimaryAccountUserName -Leaf))
+            $resourceCurrentState.SQLTempDBDir               | Should-Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.SqlServerInstanceIdPrefix).$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL\Data")
+            $resourceCurrentState.SQLTempDBLogDir            | Should-BeFalsy
+            $resourceCurrentState.SQMReporting               | Should-BeFalsy
+            $resourceCurrentState.SuppressReboot             | Should-BeFalsy
+            $resourceCurrentState.UpdateEnabled              | Should-BeFalsy
+            $resourceCurrentState.UpdateSource               | Should-BeFalsy
+            $resourceCurrentState.UseEnglish                 | Should-BeFalse
 
             # Regression test for issue #1287
-            $resourceCurrentState.SQLUserDBDir               | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.SqlServerInstanceIdPrefix).$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL\DATA\")
-            $resourceCurrentState.SQLUserDBLogDir            | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.SqlServerInstanceIdPrefix).$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL\DATA\")
+            $resourceCurrentState.SQLUserDBDir               | Should-Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.SqlServerInstanceIdPrefix).$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL\DATA\")
+            $resourceCurrentState.SQLUserDBLogDir            | Should-Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.SqlServerInstanceIdPrefix).$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)\MSSQL\DATA\")
 
             # Verify all the accounts are returned in the property SQLSysAdminAccounts.
-            $ConfigurationData.AllNodes.SqlAdministratorAccountUserName | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
-            $ConfigurationData.AllNodes.SqlInstallAccountUserName | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
-            "NT SERVICE\$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)" | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
-            'NT SERVICE\SQLSERVERAGENT' | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
-            'NT SERVICE\SQLWriter' | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
-            'NT SERVICE\Winmgmt' | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
-            'sa' | Should -BeIn $resourceCurrentState.SQLSysAdminAccounts
+            $resourceCurrentState.SQLSysAdminAccounts | Should-ContainCollection ($ConfigurationData.AllNodes.SqlAdministratorAccountUserName)
+            $resourceCurrentState.SQLSysAdminAccounts | Should-ContainCollection ($ConfigurationData.AllNodes.SqlInstallAccountUserName)
+            $resourceCurrentState.SQLSysAdminAccounts | Should-ContainCollection ("NT SERVICE\$($ConfigurationData.AllNodes.DatabaseEngineDefaultInstanceName)")
+            $resourceCurrentState.SQLSysAdminAccounts | Should-ContainCollection ('NT SERVICE\SQLSERVERAGENT')
+            $resourceCurrentState.SQLSysAdminAccounts | Should-ContainCollection ('NT SERVICE\SQLWriter')
+            $resourceCurrentState.SQLSysAdminAccounts | Should-ContainCollection ('NT SERVICE\Winmgmt')
+            $resourceCurrentState.SQLSysAdminAccounts | Should-ContainCollection ('sa')
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -631,27 +631,27 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Action                     | Should -Be 'Install'
-            $resourceCurrentState.AgtSvcAccount              | Should -BeNullOrEmpty
-            $resourceCurrentState.AgtSvcAccountUsername      | Should -BeNullOrEmpty
-            $resourceCurrentState.ASServerMode               | Should -Be $ConfigurationData.AllNodes.AnalysisServicesMultiServerMode
-            $resourceCurrentState.ASBackupDir                | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesMultiInstanceName)\OLAP\Backup")
-            $resourceCurrentState.ASCollation                | Should -Be $ConfigurationData.AllNodes.Collation
-            $resourceCurrentState.ASConfigDir                | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesMultiInstanceName)\OLAP\Config")
-            $resourceCurrentState.ASDataDir                  | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesMultiInstanceName)\OLAP\Data")
-            $resourceCurrentState.ASLogDir                   | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesMultiInstanceName)\OLAP\Log")
-            $resourceCurrentState.ASTempDir                  | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesMultiInstanceName)\OLAP\Temp")
-            $resourceCurrentState.ASSvcAccount               | Should -BeNullOrEmpty
-            $resourceCurrentState.ASSvcAccountUsername       | Should -Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlServicePrimaryAccountUserName -Leaf))
-            $resourceCurrentState.ASSysAdminAccounts         | Should -Be @(
+            $resourceCurrentState.Action                     | Should-Be 'Install'
+            $resourceCurrentState.AgtSvcAccount              | Should-BeFalsy
+            $resourceCurrentState.AgtSvcAccountUsername      | Should-BeFalsy
+            $resourceCurrentState.ASServerMode               | Should-Be $ConfigurationData.AllNodes.AnalysisServicesMultiServerMode
+            $resourceCurrentState.ASBackupDir                | Should-Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesMultiInstanceName)\OLAP\Backup")
+            $resourceCurrentState.ASCollation                | Should-Be $ConfigurationData.AllNodes.Collation
+            $resourceCurrentState.ASConfigDir                | Should-Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesMultiInstanceName)\OLAP\Config")
+            $resourceCurrentState.ASDataDir                  | Should-Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesMultiInstanceName)\OLAP\Data")
+            $resourceCurrentState.ASLogDir                   | Should-Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesMultiInstanceName)\OLAP\Log")
+            $resourceCurrentState.ASTempDir                  | Should-Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesMultiInstanceName)\OLAP\Temp")
+            $resourceCurrentState.ASSvcAccount               | Should-BeFalsy
+            $resourceCurrentState.ASSvcAccountUsername       | Should-Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlServicePrimaryAccountUserName -Leaf))
+            $resourceCurrentState.ASSysAdminAccounts         | Should-BeCollection @(
                 $ConfigurationData.AllNodes.SqlAdministratorAccountUserName,
                 "NT SERVICE\SSASTELEMETRY`$$($ConfigurationData.AllNodes.AnalysisServicesMultiInstanceName)"
             )
-            $resourceCurrentState.BrowserSvcStartupType      | Should -BeNullOrEmpty
-            $resourceCurrentState.ErrorReporting             | Should -BeNullOrEmpty
-            $resourceCurrentState.FailoverClusterGroupName   | Should -BeNullOrEmpty
-            $resourceCurrentState.FailoverClusterIPAddress   | Should -BeNullOrEmpty
-            $resourceCurrentState.FailoverClusterNetworkName | Should -BeNullOrEmpty
+            $resourceCurrentState.BrowserSvcStartupType      | Should-BeFalsy
+            $resourceCurrentState.ErrorReporting             | Should-BeFalsy
+            $resourceCurrentState.FailoverClusterGroupName   | Should-BeFalsy
+            $resourceCurrentState.FailoverClusterIPAddress   | Should-BeFalsy
+            $resourceCurrentState.FailoverClusterNetworkName | Should-BeFalsy
 
             if ($script:sqlVersion -in @('160','170'))
             {
@@ -660,49 +660,49 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     Thus they are not installed with the Database Engine instance DSCSQLTEST
                     in prior test, so this test do not find them already installed.
                 #>
-                $resourceCurrentState.Features | Should -Be 'AS'
+                $resourceCurrentState.Features | Should-Be 'AS'
             }
             else
             {
-                $resourceCurrentState.Features | Should -Be 'AS,CONN,BC,SDK'
+                $resourceCurrentState.Features | Should-Be 'AS,CONN,BC,SDK'
             }
 
-            $resourceCurrentState.ForceReboot                | Should -BeNullOrEmpty
-            $resourceCurrentState.FTSvcAccount               | Should -BeNullOrEmpty
-            $resourceCurrentState.FTSvcAccountUsername       | Should -BeNullOrEmpty
-            $resourceCurrentState.InstallSharedDir           | Should -Be $ConfigurationData.AllNodes.InstallSharedDir
-            $resourceCurrentState.InstallSharedWOWDir        | Should -Be $ConfigurationData.AllNodes.InstallSharedWOWDir
-            $resourceCurrentState.InstallSQLDataDir          | Should -BeNullOrEmpty
-            $resourceCurrentState.InstanceDir                | Should -BeNullOrEmpty
-            $resourceCurrentState.InstanceID                 | Should -BeNullOrEmpty
-            $resourceCurrentState.InstanceName               | Should -Be $ConfigurationData.AllNodes.AnalysisServicesMultiInstanceName
-            $resourceCurrentState.ISSvcAccount               | Should -BeNullOrEmpty
-            $resourceCurrentState.ISSvcAccountUsername       | Should -BeNullOrEmpty
-            $resourceCurrentState.ProductKey                 | Should -BeNullOrEmpty
-            $resourceCurrentState.RSSvcAccount               | Should -BeNullOrEmpty
-            $resourceCurrentState.RSSvcAccountUsername       | Should -BeNullOrEmpty
-            $resourceCurrentState.SAPwd                      | Should -BeNullOrEmpty
-            $resourceCurrentState.SecurityMode               | Should -BeNullOrEmpty
-            $resourceCurrentState.SetupProcessTimeout        | Should -BeNullOrEmpty
-            $resourceCurrentState.SourceCredential           | Should -BeNullOrEmpty
-            $resourceCurrentState.SourcePath                 | Should -Be "$($ConfigurationData.AllNodes.DriveLetter):\"
-            $resourceCurrentState.SQLBackupDir               | Should -BeNullOrEmpty
-            $resourceCurrentState.SQLCollation               | Should -BeNullOrEmpty
-            $resourceCurrentState.SQLSvcAccount              | Should -BeNullOrEmpty
-            $resourceCurrentState.SQLSvcAccountUsername      | Should -BeNullOrEmpty
-            $resourceCurrentState.SQLSysAdminAccounts        | Should -BeNullOrEmpty
-            $resourceCurrentState.SQLTempDBDir               | Should -BeNullOrEmpty
-            $resourceCurrentState.SQLTempDBLogDir            | Should -BeNullOrEmpty
-            $resourceCurrentState.SQLUserDBDir               | Should -BeNullOrEmpty
-            $resourceCurrentState.SQLUserDBLogDir            | Should -BeNullOrEmpty
-            $resourceCurrentState.SQMReporting               | Should -BeNullOrEmpty
-            $resourceCurrentState.SuppressReboot             | Should -BeNullOrEmpty
-            $resourceCurrentState.UpdateEnabled              | Should -BeNullOrEmpty
-            $resourceCurrentState.UpdateSource               | Should -BeNullOrEmpty
+            $resourceCurrentState.ForceReboot                | Should-BeFalsy
+            $resourceCurrentState.FTSvcAccount               | Should-BeFalsy
+            $resourceCurrentState.FTSvcAccountUsername       | Should-BeFalsy
+            $resourceCurrentState.InstallSharedDir           | Should-Be $ConfigurationData.AllNodes.InstallSharedDir
+            $resourceCurrentState.InstallSharedWOWDir        | Should-Be $ConfigurationData.AllNodes.InstallSharedWOWDir
+            $resourceCurrentState.InstallSQLDataDir          | Should-BeFalsy
+            $resourceCurrentState.InstanceDir                | Should-BeFalsy
+            $resourceCurrentState.InstanceID                 | Should-BeFalsy
+            $resourceCurrentState.InstanceName               | Should-Be $ConfigurationData.AllNodes.AnalysisServicesMultiInstanceName
+            $resourceCurrentState.ISSvcAccount               | Should-BeFalsy
+            $resourceCurrentState.ISSvcAccountUsername       | Should-BeFalsy
+            $resourceCurrentState.ProductKey                 | Should-BeFalsy
+            $resourceCurrentState.RSSvcAccount               | Should-BeFalsy
+            $resourceCurrentState.RSSvcAccountUsername       | Should-BeFalsy
+            $resourceCurrentState.SAPwd                      | Should-BeFalsy
+            $resourceCurrentState.SecurityMode               | Should-BeFalsy
+            $resourceCurrentState.SetupProcessTimeout        | Should-BeFalsy
+            $resourceCurrentState.SourceCredential           | Should-BeFalsy
+            $resourceCurrentState.SourcePath                 | Should-Be "$($ConfigurationData.AllNodes.DriveLetter):\"
+            $resourceCurrentState.SQLBackupDir               | Should-BeFalsy
+            $resourceCurrentState.SQLCollation               | Should-BeFalsy
+            $resourceCurrentState.SQLSvcAccount              | Should-BeFalsy
+            $resourceCurrentState.SQLSvcAccountUsername      | Should-BeFalsy
+            $resourceCurrentState.SQLSysAdminAccounts        | Should-BeFalsy
+            $resourceCurrentState.SQLTempDBDir               | Should-BeFalsy
+            $resourceCurrentState.SQLTempDBLogDir            | Should-BeFalsy
+            $resourceCurrentState.SQLUserDBDir               | Should-BeFalsy
+            $resourceCurrentState.SQLUserDBLogDir            | Should-BeFalsy
+            $resourceCurrentState.SQMReporting               | Should-BeFalsy
+            $resourceCurrentState.SuppressReboot             | Should-BeFalsy
+            $resourceCurrentState.UpdateEnabled              | Should-BeFalsy
+            $resourceCurrentState.UpdateSource               | Should-BeFalsy
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -791,27 +791,27 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Action                     | Should -Be 'Install'
-            $resourceCurrentState.AgtSvcAccount              | Should -BeNullOrEmpty
-            $resourceCurrentState.AgtSvcAccountUsername      | Should -BeNullOrEmpty
-            $resourceCurrentState.ASServerMode               | Should -Be $ConfigurationData.AllNodes.AnalysisServicesTabularServerMode
-            $resourceCurrentState.ASBackupDir                | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Backup")
-            $resourceCurrentState.ASCollation                | Should -Be $ConfigurationData.AllNodes.Collation
-            $resourceCurrentState.ASConfigDir                | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Config")
-            $resourceCurrentState.ASDataDir                  | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Data")
-            $resourceCurrentState.ASLogDir                   | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Log")
-            $resourceCurrentState.ASTempDir                  | Should -Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Temp")
-            $resourceCurrentState.ASSvcAccount               | Should -BeNullOrEmpty
-            $resourceCurrentState.ASSvcAccountUsername       | Should -Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlServicePrimaryAccountUserName -Leaf))
-            $resourceCurrentState.ASSysAdminAccounts         | Should -Be @(
+            $resourceCurrentState.Action                     | Should-Be 'Install'
+            $resourceCurrentState.AgtSvcAccount              | Should-BeFalsy
+            $resourceCurrentState.AgtSvcAccountUsername      | Should-BeFalsy
+            $resourceCurrentState.ASServerMode               | Should-Be $ConfigurationData.AllNodes.AnalysisServicesTabularServerMode
+            $resourceCurrentState.ASBackupDir                | Should-Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Backup")
+            $resourceCurrentState.ASCollation                | Should-Be $ConfigurationData.AllNodes.Collation
+            $resourceCurrentState.ASConfigDir                | Should-Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Config")
+            $resourceCurrentState.ASDataDir                  | Should-Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Data")
+            $resourceCurrentState.ASLogDir                   | Should-Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Log")
+            $resourceCurrentState.ASTempDir                  | Should-Be (Join-Path -Path $ConfigurationData.AllNodes.InstallSharedDir -ChildPath "$($ConfigurationData.AllNodes.AnalysisServiceInstanceIdPrefix).$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)\OLAP\Temp")
+            $resourceCurrentState.ASSvcAccount               | Should-BeFalsy
+            $resourceCurrentState.ASSvcAccountUsername       | Should-Be ('.\{0}' -f (Split-Path -Path $ConfigurationData.AllNodes.SqlServicePrimaryAccountUserName -Leaf))
+            $resourceCurrentState.ASSysAdminAccounts         | Should-BeCollection @(
                 $ConfigurationData.AllNodes.SqlAdministratorAccountUserName,
                 "NT SERVICE\SSASTELEMETRY`$$($ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName)"
             )
-            $resourceCurrentState.BrowserSvcStartupType      | Should -BeNullOrEmpty
-            $resourceCurrentState.ErrorReporting             | Should -BeNullOrEmpty
-            $resourceCurrentState.FailoverClusterGroupName   | Should -BeNullOrEmpty
-            $resourceCurrentState.FailoverClusterIPAddress   | Should -BeNullOrEmpty
-            $resourceCurrentState.FailoverClusterNetworkName | Should -BeNullOrEmpty
+            $resourceCurrentState.BrowserSvcStartupType      | Should-BeFalsy
+            $resourceCurrentState.ErrorReporting             | Should-BeFalsy
+            $resourceCurrentState.FailoverClusterGroupName   | Should-BeFalsy
+            $resourceCurrentState.FailoverClusterIPAddress   | Should-BeFalsy
+            $resourceCurrentState.FailoverClusterNetworkName | Should-BeFalsy
 
             if ($script:sqlVersion -in @('160','170'))
             {
@@ -820,49 +820,49 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     Thus they are not installed with the Database Engine instance DSCSQLTEST
                     in prior test, so this test do not find them already installed.
                 #>
-                $resourceCurrentState.Features | Should -Be 'AS'
+                $resourceCurrentState.Features | Should-Be 'AS'
             }
             else
             {
-                $resourceCurrentState.Features | Should -Be 'AS,CONN,BC,SDK'
+                $resourceCurrentState.Features | Should-Be 'AS,CONN,BC,SDK'
             }
 
-            $resourceCurrentState.ForceReboot                | Should -BeNullOrEmpty
-            $resourceCurrentState.FTSvcAccount               | Should -BeNullOrEmpty
-            $resourceCurrentState.FTSvcAccountUsername       | Should -BeNullOrEmpty
-            $resourceCurrentState.InstallSharedDir           | Should -Be $ConfigurationData.AllNodes.InstallSharedDir
-            $resourceCurrentState.InstallSharedWOWDir        | Should -Be $ConfigurationData.AllNodes.InstallSharedWOWDir
-            $resourceCurrentState.InstallSQLDataDir          | Should -BeNullOrEmpty
-            $resourceCurrentState.InstanceDir                | Should -BeNullOrEmpty
-            $resourceCurrentState.InstanceID                 | Should -BeNullOrEmpty
-            $resourceCurrentState.InstanceName               | Should -Be $ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName
-            $resourceCurrentState.ISSvcAccount               | Should -BeNullOrEmpty
-            $resourceCurrentState.ISSvcAccountUsername       | Should -BeNullOrEmpty
-            $resourceCurrentState.ProductKey                 | Should -BeNullOrEmpty
-            $resourceCurrentState.RSSvcAccount               | Should -BeNullOrEmpty
-            $resourceCurrentState.RSSvcAccountUsername       | Should -BeNullOrEmpty
-            $resourceCurrentState.SAPwd                      | Should -BeNullOrEmpty
-            $resourceCurrentState.SecurityMode               | Should -BeNullOrEmpty
-            $resourceCurrentState.SetupProcessTimeout        | Should -BeNullOrEmpty
-            $resourceCurrentState.SourceCredential           | Should -BeNullOrEmpty
-            $resourceCurrentState.SourcePath                 | Should -Be "$($ConfigurationData.AllNodes.DriveLetter):\"
-            $resourceCurrentState.SQLBackupDir               | Should -BeNullOrEmpty
-            $resourceCurrentState.SQLCollation               | Should -BeNullOrEmpty
-            $resourceCurrentState.SQLSvcAccount              | Should -BeNullOrEmpty
-            $resourceCurrentState.SQLSvcAccountUsername      | Should -BeNullOrEmpty
-            $resourceCurrentState.SQLSysAdminAccounts        | Should -BeNullOrEmpty
-            $resourceCurrentState.SQLTempDBDir               | Should -BeNullOrEmpty
-            $resourceCurrentState.SQLTempDBLogDir            | Should -BeNullOrEmpty
-            $resourceCurrentState.SQLUserDBDir               | Should -BeNullOrEmpty
-            $resourceCurrentState.SQLUserDBLogDir            | Should -BeNullOrEmpty
-            $resourceCurrentState.SQMReporting               | Should -BeNullOrEmpty
-            $resourceCurrentState.SuppressReboot             | Should -BeNullOrEmpty
-            $resourceCurrentState.UpdateEnabled              | Should -BeNullOrEmpty
-            $resourceCurrentState.UpdateSource               | Should -BeNullOrEmpty
+            $resourceCurrentState.ForceReboot                | Should-BeFalsy
+            $resourceCurrentState.FTSvcAccount               | Should-BeFalsy
+            $resourceCurrentState.FTSvcAccountUsername       | Should-BeFalsy
+            $resourceCurrentState.InstallSharedDir           | Should-Be $ConfigurationData.AllNodes.InstallSharedDir
+            $resourceCurrentState.InstallSharedWOWDir        | Should-Be $ConfigurationData.AllNodes.InstallSharedWOWDir
+            $resourceCurrentState.InstallSQLDataDir          | Should-BeFalsy
+            $resourceCurrentState.InstanceDir                | Should-BeFalsy
+            $resourceCurrentState.InstanceID                 | Should-BeFalsy
+            $resourceCurrentState.InstanceName               | Should-Be $ConfigurationData.AllNodes.AnalysisServicesTabularInstanceName
+            $resourceCurrentState.ISSvcAccount               | Should-BeFalsy
+            $resourceCurrentState.ISSvcAccountUsername       | Should-BeFalsy
+            $resourceCurrentState.ProductKey                 | Should-BeFalsy
+            $resourceCurrentState.RSSvcAccount               | Should-BeFalsy
+            $resourceCurrentState.RSSvcAccountUsername       | Should-BeFalsy
+            $resourceCurrentState.SAPwd                      | Should-BeFalsy
+            $resourceCurrentState.SecurityMode               | Should-BeFalsy
+            $resourceCurrentState.SetupProcessTimeout        | Should-BeFalsy
+            $resourceCurrentState.SourceCredential           | Should-BeFalsy
+            $resourceCurrentState.SourcePath                 | Should-Be "$($ConfigurationData.AllNodes.DriveLetter):\"
+            $resourceCurrentState.SQLBackupDir               | Should-BeFalsy
+            $resourceCurrentState.SQLCollation               | Should-BeFalsy
+            $resourceCurrentState.SQLSvcAccount              | Should-BeFalsy
+            $resourceCurrentState.SQLSvcAccountUsername      | Should-BeFalsy
+            $resourceCurrentState.SQLSysAdminAccounts        | Should-BeFalsy
+            $resourceCurrentState.SQLTempDBDir               | Should-BeFalsy
+            $resourceCurrentState.SQLTempDBLogDir            | Should-BeFalsy
+            $resourceCurrentState.SQLUserDBDir               | Should-BeFalsy
+            $resourceCurrentState.SQLUserDBLogDir            | Should-BeFalsy
+            $resourceCurrentState.SQMReporting               | Should-BeFalsy
+            $resourceCurrentState.SuppressReboot             | Should-BeFalsy
+            $resourceCurrentState.UpdateEnabled              | Should-BeFalsy
+            $resourceCurrentState.UpdateSource               | Should-BeFalsy
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 

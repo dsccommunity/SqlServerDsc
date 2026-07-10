@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'Env:\SqlServerDscCI' -ErrorAction 'SilentlyContinue'
 }
@@ -66,8 +68,8 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -75,29 +77,29 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Remove-SqlDscAgentOperator').Parameters['ServerObject']
             $byNameParameterSet = $parameterInfo.ParameterSets['ByName']
-            $byNameParameterSet.IsMandatory | Should -BeTrue
+            $byNameParameterSet.IsMandatory | Should-BeTrue
         }
 
         It 'Should have ServerObject accept pipeline input' {
             $parameterInfo = (Get-Command -Name 'Remove-SqlDscAgentOperator').Parameters['ServerObject']
-            $parameterInfo.Attributes.ValueFromPipeline | Should -BeTrue
+            $parameterInfo.Attributes.ValueFromPipeline | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have OperatorObject as a mandatory parameter in ByObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Remove-SqlDscAgentOperator').Parameters['OperatorObject']
             $byObjectParameterSet = $parameterInfo.ParameterSets['ByObject']
-            $byObjectParameterSet.IsMandatory | Should -BeTrue
+            $byObjectParameterSet.IsMandatory | Should-BeTrue
         }
 
         It 'Should have OperatorObject accept pipeline input in ByObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Remove-SqlDscAgentOperator').Parameters['OperatorObject']
-            $parameterInfo.Attributes.ValueFromPipeline | Should -BeTrue
+            $parameterInfo.Attributes.ValueFromPipeline | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Name as a mandatory parameter in ByName parameter set' {
             $parameterInfo = (Get-Command -Name 'Remove-SqlDscAgentOperator').Parameters['Name']
             $byNameParameterSet = $parameterInfo.ParameterSets['ByName']
-            $byNameParameterSet.IsMandatory | Should -BeTrue
+            $byNameParameterSet.IsMandatory | Should-BeTrue
         }
     }
 
@@ -139,12 +141,12 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
 
             $null = Remove-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator'
 
-            $script:mockMethodDropCallCount | Should -Be 1
+            $script:mockMethodDropCallCount | Should-Be 1
         }
 
         It 'Should throw when operator does not exist and ErrorAction is Stop' {
             { Remove-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'NonExistentOperator' -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage "*NonExistentOperator*not found*"
+                Should-Throw -ExceptionMessage "*NonExistentOperator*not found*"
         }
 
         It 'Should not throw when using SilentlyContinue and operator does not exist' {
@@ -157,7 +159,7 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
 
                 $null = Remove-SqlDscAgentOperator -WhatIf -ServerObject $script:mockServerObject -Name 'TestOperator'
 
-                $script:mockMethodDropCallCount | Should -Be 0
+                $script:mockMethodDropCallCount | Should-Be 0
             }
         }
 
@@ -167,7 +169,7 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
 
                 $script:mockServerObject | Remove-SqlDscAgentOperator -Force -Name 'TestOperator'
 
-                $script:mockMethodDropCallCount | Should -Be 1
+                $script:mockMethodDropCallCount | Should-Be 1
             }
         }
     }
@@ -201,7 +203,7 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
 
             $null = Remove-SqlDscAgentOperator -Force -OperatorObject $script:mockOperator
 
-            $script:mockMethodDropCallCount | Should -Be 1
+            $script:mockMethodDropCallCount | Should-Be 1
         }
 
         Context 'When passing parameter OperatorObject over the pipeline' {
@@ -210,7 +212,7 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
 
                 $script:mockOperator | Remove-SqlDscAgentOperator -Force
 
-                $script:mockMethodDropCallCount | Should -Be 1
+                $script:mockMethodDropCallCount | Should-Be 1
             }
         }
     }
@@ -247,7 +249,7 @@ Describe 'Remove-SqlDscAgentOperator' -Tag 'Public' {
 
         It 'Should throw when drop operation fails' {
             { Remove-SqlDscAgentOperator -Force -ServerObject $script:mockServerObject -Name 'TestOperator' -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage '*Failed to remove SQL Agent Operator ''TestOperator''*'
+                Should-Throw -ExceptionMessage '*Failed to remove SQL Agent Operator ''TestOperator''*'
         }
     }
 }

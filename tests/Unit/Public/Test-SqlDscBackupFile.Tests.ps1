@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -76,13 +78,13 @@ Describe 'Test-SqlDscBackupFile' -Tag 'Public' {
         It 'Should return true for a valid backup file' {
             $result = Test-SqlDscBackupFile -ServerObject $mockServerObject -BackupFile 'C:\Backups\ValidBackup.bak'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should return true when FileNumber is specified' {
             $result = Test-SqlDscBackupFile -ServerObject $mockServerObject -BackupFile 'C:\Backups\ValidBackup.bak' -FileNumber 2
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
     }
 
@@ -113,13 +115,13 @@ Describe 'Test-SqlDscBackupFile' -Tag 'Public' {
         It 'Should return false for an invalid backup file' {
             $result = Test-SqlDscBackupFile -ServerObject $mockServerObject -BackupFile 'C:\Backups\InvalidBackup.bak'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
 
         It 'Should return false when FileNumber is specified' {
             $result = Test-SqlDscBackupFile -ServerObject $mockServerObject -BackupFile 'C:\Backups\InvalidBackup.bak' -FileNumber 2
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 
@@ -148,7 +150,7 @@ Describe 'Test-SqlDscBackupFile' -Tag 'Public' {
         }
 
         It 'Should throw a localized error' {
-            { Test-SqlDscBackupFile -ServerObject $mockServerObject -BackupFile 'C:\Backups\CorruptBackup.bak' } | Should -Throw -ErrorId 'TSBF0004,Test-SqlDscBackupFile'
+            { Test-SqlDscBackupFile -ServerObject $mockServerObject -BackupFile 'C:\Backups\CorruptBackup.bak' } | Should-Throw -FullyQualifiedErrorId 'TSBF0004,Test-SqlDscBackupFile'
         }
     }
 
@@ -161,7 +163,7 @@ Describe 'Test-SqlDscBackupFile' -Tag 'Public' {
         It 'Should accept ServerObject from pipeline' {
             $result = $mockServerObject | Test-SqlDscBackupFile -BackupFile 'C:\Backups\ValidBackup.bak'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 
@@ -178,28 +180,28 @@ Describe 'Test-SqlDscBackupFile' -Tag 'Public' {
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have mandatory ServerObject parameter' {
             $result = (Get-Command -Name 'Test-SqlDscBackupFile').Parameters['ServerObject']
-            $result.Attributes.Mandatory | Should -BeTrue
+            $result.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have mandatory BackupFile parameter' {
             $result = (Get-Command -Name 'Test-SqlDscBackupFile').Parameters['BackupFile']
-            $result.Attributes.Mandatory | Should -BeTrue
+            $result.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have optional FileNumber parameter' {
             $result = (Get-Command -Name 'Test-SqlDscBackupFile').Parameters['FileNumber']
-            $result.Attributes.Mandatory | Should -BeFalse
+            $result.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
 
         It 'Should output Boolean type' {
             $result = Get-Command -Name 'Test-SqlDscBackupFile'
-            $result.OutputType.Type | Should -Contain ([System.Boolean])
+            $result.OutputType.Type | Should-ContainCollection ([System.Boolean])
         }
     }
 }

@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -70,8 +72,8 @@ Describe 'Get-SqlDscAudit' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When no audit exist' {
@@ -96,14 +98,14 @@ Describe 'Get-SqlDscAudit' -Tag 'Public' {
 
             It 'Should throw the correct error' {
                 { Get-SqlDscAudit @mockDefaultParameters -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage ($mockErrorMessage -f 'Log1')
+                    Should-Throw -ExceptionMessage ($mockErrorMessage -f 'Log1')
             }
         }
 
         Context 'When ignoring the error' {
             It 'Should not throw an exception and return $null' {
                 Get-SqlDscAudit @mockDefaultParameters -ErrorAction 'SilentlyContinue' |
-                    Should -BeNullOrEmpty
+                    Should-BeFalsy
             }
         }
     }
@@ -132,16 +134,16 @@ Describe 'Get-SqlDscAudit' -Tag 'Public' {
         It 'Should return the correct values' {
             $result = Get-SqlDscAudit @mockDefaultParameters
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Audit'
-            $result.Name | Should -Be 'Log1'
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Audit'
+            $result.Name | Should-Be 'Log1'
         }
 
         Context 'When passing parameter ServerObject over the pipeline' {
             It 'Should return the correct values' {
                 $result = $mockServerObject | Get-SqlDscAudit -Name 'Log1'
 
-                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Audit'
-                $result.Name | Should -Be 'Log1'
+                $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Audit'
+                $result.Name | Should-Be 'Log1'
             }
         }
     }
@@ -177,10 +179,12 @@ Describe 'Get-SqlDscAudit' -Tag 'Public' {
         It 'Should return the correct values' {
             $result = Get-SqlDscAudit @mockDefaultParameters
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Audit'
-            $result | Should -HaveCount 2
-            $result.Name | Should -Contain 'Log1'
-            $result.Name | Should -Contain 'Log2'
+            $result | Should-HaveType 'System.Object[]'
+            $result | Should-BeCollection -Count 2
+            $result[0] | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Audit'
+            $result[1] | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Audit'
+            $result.Name | Should-ContainCollection 'Log1'
+            $result.Name | Should-ContainCollection 'Log2'
         }
     }
 }

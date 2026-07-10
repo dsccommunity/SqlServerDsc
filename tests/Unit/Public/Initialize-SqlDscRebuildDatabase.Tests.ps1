@@ -35,7 +35,8 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
@@ -69,8 +70,8 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When setup action is ''RebuildDatabase''' {
@@ -102,14 +103,14 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Initialize-SqlDscRebuildDatabase -Confirm:$false @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=RebuildDatabase'
-                        $ArgumentList | Should -MatchExactly '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/ACTION=RebuildDatabase'
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' # cspell: disable-line
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -117,14 +118,14 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Initialize-SqlDscRebuildDatabase -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=RebuildDatabase'
-                        $ArgumentList | Should -MatchExactly '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/ACTION=RebuildDatabase'
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' # cspell: disable-line
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -132,7 +133,7 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Initialize-SqlDscRebuildDatabase -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -207,12 +208,12 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag 'Public' {
 
                 Initialize-SqlDscRebuildDatabase @installSqlDscServerParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly $MockExpectedRegEx
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                    $ArgumentList | Should-MatchString -CaseSensitive $MockExpectedRegEx
 
                     # Return $true if none of the above throw.
                     $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
     }

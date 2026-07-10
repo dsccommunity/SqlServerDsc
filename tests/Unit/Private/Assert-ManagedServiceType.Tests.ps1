@@ -38,13 +38,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -94,7 +96,7 @@ Describe 'Assert-ManagedServiceType' -Tag 'Private' {
                     {
                         $MockServiceObject |
                             Assert-ManagedServiceType -ServiceType 'SqlServerAgent' -ErrorAction 'Stop'
-                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    } | Should-Throw -ExceptionMessage $mockErrorMessage
                 }
             }
         }
@@ -111,7 +113,7 @@ Describe 'Assert-ManagedServiceType' -Tag 'Private' {
                     {
                         $MockServiceObject |
                             Assert-ManagedServiceType -ServiceType 'SqlServerAgent' -ErrorAction 'SilentlyContinue'
-                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    } | Should-Throw -ExceptionMessage $mockErrorMessage
                 }
             }
         }

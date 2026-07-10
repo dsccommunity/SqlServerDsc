@@ -34,12 +34,14 @@ BeforeAll {
     Add-Type -Path "$PSScriptRoot/../Stubs/SMO.cs"
 
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 }
 
 Describe 'Remove-SqlDscAgentAlert' -Tag 'Public' {
@@ -60,8 +62,8 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Public' {
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -69,25 +71,25 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Public' {
         It 'Should have ServerObject as a mandatory parameter in ServerObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Remove-SqlDscAgentAlert').Parameters['ServerObject']
             $serverObjectParameterSet = $parameterInfo.ParameterSets['ServerObject']
-            $serverObjectParameterSet.IsMandatory | Should -BeTrue
+            $serverObjectParameterSet.IsMandatory | Should-BeTrue
         }
 
         It 'Should have AlertObject as a mandatory parameter in AlertObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Remove-SqlDscAgentAlert').Parameters['AlertObject']
             $alertObjectParameterSet = $parameterInfo.ParameterSets['AlertObject']
-            $alertObjectParameterSet.IsMandatory | Should -BeTrue
+            $alertObjectParameterSet.IsMandatory | Should-BeTrue
         }
 
         It 'Should support ShouldProcess' {
             $commandInfo = Get-Command -Name 'Remove-SqlDscAgentAlert'
-            $commandInfo.Parameters.ContainsKey('WhatIf') | Should -BeTrue
-            $commandInfo.Parameters.ContainsKey('Confirm') | Should -BeTrue
+            $commandInfo.Parameters.ContainsKey('WhatIf') | Should-BeTrue
+            $commandInfo.Parameters.ContainsKey('Confirm') | Should-BeTrue
         }
 
         It 'Should have ConfirmImpact set to High' {
             $commandInfo = Get-Command -Name 'Remove-SqlDscAgentAlert'
-            $commandInfo.Parameters['WhatIf'].Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] } | Should -Not -BeNullOrEmpty
-            $commandInfo.Parameters['Confirm'].Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] } | Should -Not -BeNullOrEmpty
+            $commandInfo.Parameters['WhatIf'].Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] } | Should-BeTruthy
+            $commandInfo.Parameters['Confirm'].Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] } | Should-BeTruthy
         }
     }
 
@@ -121,7 +123,7 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Public' {
         It 'Should remove alert successfully' {
             $null = Remove-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Force
 
-            Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
+            Should-Invoke -CommandName 'Get-AgentAlertObject' -Exactly -Times 1
         }
 
         It 'Should refresh server object when Refresh is specified' {
@@ -176,7 +178,7 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Public' {
         It 'Should not throw error when alert does not exist' {
             $null = Remove-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'NonExistentAlert' -Force
 
-            Should -Invoke -CommandName 'Get-AgentAlertObject' -Times 1 -Exactly
+            Should-Invoke -CommandName 'Get-AgentAlertObject' -Exactly -Times 1
         }
     }
 
@@ -212,11 +214,11 @@ Describe 'Remove-SqlDscAgentAlert' -Tag 'Public' {
 
         It 'Should throw correct error when removal fails' {
             $errorRecord = { Remove-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert' -Force } |
-                Should -Throw -PassThru
+                Should-Throw
 
-            $errorRecord.Exception.Message | Should -BeLike '*Failed to remove*TestAlert*'
-            $errorRecord.Exception | Should -BeOfType [System.InvalidOperationException]
-            $errorRecord.FullyQualifiedErrorId | Should -Be 'RSAA0005,Remove-SqlDscAgentAlert'
+            $errorRecord.Exception.Message | Should-BeLikeString '*Failed to remove*TestAlert*'
+            $errorRecord.Exception | Should-HaveType ([System.InvalidOperationException])
+            $errorRecord.FullyQualifiedErrorId | Should-Be 'RSAA0005,Remove-SqlDscAgentAlert'
         }
     }
 

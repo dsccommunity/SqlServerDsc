@@ -34,13 +34,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -49,7 +51,7 @@ Describe 'Get-SqlDscServerProtocolName' -Tag 'Public' {
     Context 'When testing localized strings' {
         It 'Should have localized string for getting protocol mappings' {
             InModuleScope -ScriptBlock {
-                $script:localizedData.ServerProtocolName_GetProtocolMappings | Should -Not -BeNullOrEmpty
+                $script:localizedData.ServerProtocolName_GetProtocolMappings | Should-BeTruthy
             }
         }
     }
@@ -58,28 +60,28 @@ Describe 'Get-SqlDscServerProtocolName' -Tag 'Public' {
         It 'Should return correct mapping for TcpIp protocol' {
             $result = Get-SqlDscServerProtocolName -ProtocolName 'TcpIp'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TcpIp'
-            $result.DisplayName | Should -Be 'TCP/IP'
-            $result.ShortName | Should -Be 'Tcp'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TcpIp'
+            $result.DisplayName | Should-Be 'TCP/IP'
+            $result.ShortName | Should-Be 'Tcp'
         }
 
         It 'Should return correct mapping for NamedPipes protocol' {
             $result = Get-SqlDscServerProtocolName -ProtocolName 'NamedPipes'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'NamedPipes'
-            $result.DisplayName | Should -Be 'Named Pipes'
-            $result.ShortName | Should -Be 'Np'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'NamedPipes'
+            $result.DisplayName | Should-Be 'Named Pipes'
+            $result.ShortName | Should-Be 'Np'
         }
 
         It 'Should return correct mapping for SharedMemory protocol' {
             $result = Get-SqlDscServerProtocolName -ProtocolName 'SharedMemory'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'SharedMemory'
-            $result.DisplayName | Should -Be 'Shared Memory'
-            $result.ShortName | Should -Be 'Sm'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'SharedMemory'
+            $result.DisplayName | Should-Be 'Shared Memory'
+            $result.ShortName | Should-Be 'Sm'
         }
     }
 
@@ -87,28 +89,28 @@ Describe 'Get-SqlDscServerProtocolName' -Tag 'Public' {
         It 'Should return correct mapping for TCP/IP display name' {
             $result = Get-SqlDscServerProtocolName -DisplayName 'TCP/IP'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TcpIp'
-            $result.DisplayName | Should -Be 'TCP/IP'
-            $result.ShortName | Should -Be 'Tcp'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TcpIp'
+            $result.DisplayName | Should-Be 'TCP/IP'
+            $result.ShortName | Should-Be 'Tcp'
         }
 
         It 'Should return correct mapping for Named Pipes display name' {
             $result = Get-SqlDscServerProtocolName -DisplayName 'Named Pipes'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'NamedPipes'
-            $result.DisplayName | Should -Be 'Named Pipes'
-            $result.ShortName | Should -Be 'Np'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'NamedPipes'
+            $result.DisplayName | Should-Be 'Named Pipes'
+            $result.ShortName | Should-Be 'Np'
         }
 
         It 'Should return correct mapping for Shared Memory display name' {
             $result = Get-SqlDscServerProtocolName -DisplayName 'Shared Memory'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'SharedMemory'
-            $result.DisplayName | Should -Be 'Shared Memory'
-            $result.ShortName | Should -Be 'Sm'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'SharedMemory'
+            $result.DisplayName | Should-Be 'Shared Memory'
+            $result.ShortName | Should-Be 'Sm'
         }
     }
 
@@ -116,28 +118,28 @@ Describe 'Get-SqlDscServerProtocolName' -Tag 'Public' {
         It 'Should return correct mapping for Tcp short name' {
             $result = Get-SqlDscServerProtocolName -ShortName 'Tcp'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TcpIp'
-            $result.DisplayName | Should -Be 'TCP/IP'
-            $result.ShortName | Should -Be 'Tcp'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TcpIp'
+            $result.DisplayName | Should-Be 'TCP/IP'
+            $result.ShortName | Should-Be 'Tcp'
         }
 
         It 'Should return correct mapping for Np short name' {
             $result = Get-SqlDscServerProtocolName -ShortName 'Np'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'NamedPipes'
-            $result.DisplayName | Should -Be 'Named Pipes'
-            $result.ShortName | Should -Be 'Np'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'NamedPipes'
+            $result.DisplayName | Should-Be 'Named Pipes'
+            $result.ShortName | Should-Be 'Np'
         }
 
         It 'Should return correct mapping for Sm short name' {
             $result = Get-SqlDscServerProtocolName -ShortName 'Sm'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'SharedMemory'
-            $result.DisplayName | Should -Be 'Shared Memory'
-            $result.ShortName | Should -Be 'Sm'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'SharedMemory'
+            $result.DisplayName | Should-Be 'Shared Memory'
+            $result.ShortName | Should-Be 'Sm'
         }
     }
 
@@ -145,30 +147,30 @@ Describe 'Get-SqlDscServerProtocolName' -Tag 'Public' {
         It 'Should return all three protocol mappings' {
             $result = Get-SqlDscServerProtocolName -All
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -HaveCount 3
+            $result | Should-BeTruthy
+            $result | Should-BeCollection -Count 3
 
             $tcpMapping = $result | Where-Object -FilterScript { $_.Name -eq 'TcpIp' }
-            $tcpMapping | Should -Not -BeNullOrEmpty
-            $tcpMapping.DisplayName | Should -Be 'TCP/IP'
-            $tcpMapping.ShortName | Should -Be 'Tcp'
+            $tcpMapping | Should-BeTruthy
+            $tcpMapping.DisplayName | Should-Be 'TCP/IP'
+            $tcpMapping.ShortName | Should-Be 'Tcp'
 
             $npMapping = $result | Where-Object -FilterScript { $_.Name -eq 'NamedPipes' }
-            $npMapping | Should -Not -BeNullOrEmpty
-            $npMapping.DisplayName | Should -Be 'Named Pipes'
-            $npMapping.ShortName | Should -Be 'Np'
+            $npMapping | Should-BeTruthy
+            $npMapping.DisplayName | Should-Be 'Named Pipes'
+            $npMapping.ShortName | Should-Be 'Np'
 
             $smMapping = $result | Where-Object -FilterScript { $_.Name -eq 'SharedMemory' }
-            $smMapping | Should -Not -BeNullOrEmpty
-            $smMapping.DisplayName | Should -Be 'Shared Memory'
-            $smMapping.ShortName | Should -Be 'Sm'
+            $smMapping | Should-BeTruthy
+            $smMapping.DisplayName | Should-Be 'Shared Memory'
+            $smMapping.ShortName | Should-Be 'Sm'
         }
 
         It 'Should return all protocol mappings when no parameters are specified' {
             $result = Get-SqlDscServerProtocolName
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -HaveCount 3
+            $result | Should-BeTruthy
+            $result | Should-BeCollection -Count 3
         }
     }
 
@@ -197,36 +199,36 @@ Describe 'Get-SqlDscServerProtocolName' -Tag 'Public' {
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have ProtocolName as a mandatory parameter in ByProtocolName parameter set' {
             $parameterSets = (Get-Command -Name 'Get-SqlDscServerProtocolName').ParameterSets
             $byProtocolNameSet = $parameterSets | Where-Object -FilterScript { $_.Name -eq 'ByProtocolName' }
             $protocolNameParam = $byProtocolNameSet.Parameters | Where-Object -FilterScript { $_.Name -eq 'ProtocolName' }
-            $protocolNameParam.IsMandatory | Should -BeTrue
+            $protocolNameParam.IsMandatory | Should-BeTrue
         }
 
         It 'Should have DisplayName as a mandatory parameter in ByDisplayName parameter set' {
             $parameterSets = (Get-Command -Name 'Get-SqlDscServerProtocolName').ParameterSets
             $byDisplayNameSet = $parameterSets | Where-Object -FilterScript { $_.Name -eq 'ByDisplayName' }
             $displayNameParam = $byDisplayNameSet.Parameters | Where-Object -FilterScript { $_.Name -eq 'DisplayName' }
-            $displayNameParam.IsMandatory | Should -BeTrue
+            $displayNameParam.IsMandatory | Should-BeTrue
         }
 
         It 'Should have ShortName as a mandatory parameter in ByShortName parameter set' {
             $parameterSets = (Get-Command -Name 'Get-SqlDscServerProtocolName').ParameterSets
             $byShortNameSet = $parameterSets | Where-Object -FilterScript { $_.Name -eq 'ByShortName' }
             $shortNameParam = $byShortNameSet.Parameters | Where-Object -FilterScript { $_.Name -eq 'ShortName' }
-            $shortNameParam.IsMandatory | Should -BeTrue
+            $shortNameParam.IsMandatory | Should-BeTrue
         }
 
         It 'Should have All as an optional parameter in All parameter set' {
             $parameterSets = (Get-Command -Name 'Get-SqlDscServerProtocolName').ParameterSets
             $allSet = $parameterSets | Where-Object -FilterScript { $_.Name -eq 'All' }
             $allParam = $allSet.Parameters | Where-Object -FilterScript { $_.Name -eq 'All' }
-            $allParam.IsMandatory | Should -BeFalse
+            $allParam.IsMandatory | Should-BeFalse
         }
     }
 }

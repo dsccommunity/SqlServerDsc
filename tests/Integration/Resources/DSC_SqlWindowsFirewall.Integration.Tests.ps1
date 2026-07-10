@@ -130,18 +130,18 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Features | Should -Be 'SQLENGINE'
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.SourcePath | Should -Be $ConfigurationData.AllNodes.SourcePath
-            $resourceCurrentState.DatabaseEngineFirewall | Should -BeTrue
-            $resourceCurrentState.BrowserFirewall | Should -BeTrue
-            $resourceCurrentState.ReportingServicesFirewall | Should -BeFalse
-            $resourceCurrentState.AnalysisServicesFirewall | Should -BeFalse
-            $resourceCurrentState.IntegrationServicesFirewall | Should -BeFalse
+            $resourceCurrentState.Features | Should-Be 'SQLENGINE'
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.SourcePath | Should-Be $ConfigurationData.AllNodes.SourcePath
+            $resourceCurrentState.DatabaseEngineFirewall | Should-BeTrue
+            $resourceCurrentState.BrowserFirewall | Should-BeTrue
+            $resourceCurrentState.ReportingServicesFirewall | Should-BeFalse
+            $resourceCurrentState.AnalysisServicesFirewall | Should-BeFalse
+            $resourceCurrentState.IntegrationServicesFirewall | Should-BeFalse
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 }

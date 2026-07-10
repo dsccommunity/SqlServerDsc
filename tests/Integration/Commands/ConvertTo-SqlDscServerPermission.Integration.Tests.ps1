@@ -53,7 +53,7 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integ
 
             $result = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $emptyCollection
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should accept empty collection through pipeline' {
@@ -61,7 +61,7 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integ
 
             $result = $emptyCollection | ConvertTo-SqlDscServerPermission
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -73,16 +73,16 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integ
             $result = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $serverPermissionInfo
 
             # Validate the result structure
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
 
             # Each result should have State and Permission properties
             foreach ($permission in $result)
             {
-                $permission.State | Should -Not -BeNullOrEmpty
-                $permission.Permission | Should -Not -BeNullOrEmpty
+                $permission.State | Should-BeTruthy
+                $permission.Permission | Should-BeTruthy
 
                 # Validate that permission state is one of the expected values
-                $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
+                @('Grant', 'Deny', 'GrantWithGrant') | Should-ContainCollection ($permission.State)
             }
         }
 
@@ -93,16 +93,16 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integ
             $result = $serverPermissionInfo | ConvertTo-SqlDscServerPermission
 
             # Validate the result structure
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
 
             # Each result should have State and Permission properties
             foreach ($permission in $result)
             {
-                $permission.State | Should -Not -BeNullOrEmpty
-                $permission.Permission | Should -Not -BeNullOrEmpty
+                $permission.State | Should-BeTruthy
+                $permission.Permission | Should-BeTruthy
 
                 # Validate that permission state is one of the expected values
-                $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
+                @('Grant', 'Deny', 'GrantWithGrant') | Should-ContainCollection ($permission.State)
             }
         }
     }
@@ -115,16 +115,16 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integ
             $result = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $serverPermissionInfo
 
             # Validate the result structure
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
 
             # Each result should have State and Permission properties
             foreach ($permission in $result)
             {
-                $permission.State | Should -Not -BeNullOrEmpty
-                $permission.Permission | Should -Not -BeNullOrEmpty
+                $permission.State | Should-BeTruthy
+                $permission.Permission | Should-BeTruthy
 
                 # Validate that permission state is one of the expected values
-                $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
+                @('Grant', 'Deny', 'GrantWithGrant') | Should-ContainCollection ($permission.State)
             }
         }
     }
@@ -137,16 +137,16 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integ
             $result = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $serverPermissionInfo
 
             # Validate the result structure
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
 
             # Each result should have State and Permission properties
             foreach ($permission in $result)
             {
-                $permission.State | Should -Not -BeNullOrEmpty
-                $permission.Permission | Should -Not -BeNullOrEmpty
+                $permission.State | Should-BeTruthy
+                $permission.Permission | Should-BeTruthy
 
                 # Validate that permission state is one of the expected values
-                $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
+                @('Grant', 'Deny', 'GrantWithGrant') | Should-ContainCollection ($permission.State)
             }
         }
 
@@ -157,23 +157,23 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integ
             $result = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $serverPermissionInfo
 
             # Validate the result structure
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
 
             # Each result should have State and Permission properties
             foreach ($permission in $result)
             {
-                $permission.State | Should -Not -BeNullOrEmpty
-                $permission.Permission | Should -Not -BeNullOrEmpty
+                $permission.State | Should-BeTruthy
+                $permission.Permission | Should-BeTruthy
 
                 # Validate that permission state is one of the expected values
-                $permission.State | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
+                @('Grant', 'Deny', 'GrantWithGrant') | Should-ContainCollection ($permission.State)
             }
 
             # Verify that the CreateEndpoint permission granted by Grant-SqlDscServerPermission test is present
             $grantPermission = $result | Where-Object { $_.State -eq 'Grant' }
 
-            $grantPermission | Should -Not -BeNullOrEmpty
-            $grantPermission.Permission | Should -Contain 'CreateEndpoint' -Because 'CreateEndpoint permission should have been granted by Grant-SqlDscServerPermission integration test'
+            $grantPermission | Should-BeTruthy
+            $grantPermission.Permission | Should-ContainCollection 'CreateEndpoint' -Because 'CreateEndpoint permission should have been granted by Grant-SqlDscServerPermission integration test'
         }
     }
 
@@ -190,8 +190,8 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integ
             foreach ($state in $uniqueStates)
             {
                 $permissionsForState = $result | Where-Object { $_.State -eq $state }
-                $permissionsForState | Should -HaveCount 1
-                $permissionsForState[0].Permission | Should -Not -BeNullOrEmpty
+                $permissionsForState | Should-BeCollection -Count 1
+                $permissionsForState[0].Permission | Should-BeTruthy
             }
         }
     }

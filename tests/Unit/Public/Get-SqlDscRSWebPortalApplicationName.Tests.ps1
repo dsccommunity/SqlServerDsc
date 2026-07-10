@@ -32,13 +32,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -58,8 +60,8 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -100,7 +102,7 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
 
             $result = $mockSetupConfiguration | Get-SqlDscRSWebPortalApplicationName
 
-            $result | Should -Be $ExpectedApplicationName
+            $result | Should-Be $ExpectedApplicationName
         }
     }
 
@@ -131,7 +133,7 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
 
             $result = $mockSetupConfiguration | Get-SqlDscRSWebPortalApplicationName
 
-            $result | Should -Be $ExpectedApplicationName
+            $result | Should-Be $ExpectedApplicationName
         }
     }
 
@@ -147,7 +149,7 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
 
             $result = $mockSetupConfiguration | Get-SqlDscRSWebPortalApplicationName
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -165,7 +167,7 @@ Describe 'Get-SqlDscRSWebPortalApplicationName' {
 
             $result = Get-SqlDscRSWebPortalApplicationName -SetupConfiguration $mockSetupConfiguration
 
-            $result | Should -Be 'ReportServerWebApp'
+            $result | Should-Be 'ReportServerWebApp'
         }
     }
 }

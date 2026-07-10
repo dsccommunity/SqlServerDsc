@@ -68,13 +68,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:subModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:subModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:subModuleName -All | Remove-Module -Force
@@ -103,10 +105,10 @@ Describe 'SqlServerDsc.Common\Update-AvailabilityGroupReplica' -Tag 'UpdateAvail
                 $mockLocalizedString -f $availabilityReplica.Name
             )
 
-            $mockErrorRecord.Exception.Message | Should -Not -BeNullOrEmpty
+            $mockErrorRecord.Exception.Message | Should-BeTruthy
 
             { Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityReplica } |
-                Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
+                Should-Throw -ExceptionMessage ($mockErrorRecord.Exception.Message + '*')
         }
     }
 }

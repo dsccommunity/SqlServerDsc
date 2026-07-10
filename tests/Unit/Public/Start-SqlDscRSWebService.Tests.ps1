@@ -32,13 +32,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -58,8 +60,8 @@ Describe 'Start-SqlDscRSWebService' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -89,20 +91,20 @@ Describe 'Start-SqlDscRSWebService' {
         It 'Should start web service without errors' {
             $null = $mockCimInstance | Start-SqlDscRSWebService -Confirm:$false
 
-            Should -Invoke -CommandName Get-RSServiceState -ParameterFilter {
+            Should-Invoke -CommandName Get-RSServiceState -Exactly -ParameterFilter {
                 $EnableWebService -eq $true
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'SetServiceState' -and
                 $Arguments.EnableWebService -eq $true
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should not return anything' {
             $result = $mockCimInstance | Start-SqlDscRSWebService -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -132,7 +134,7 @@ Describe 'Start-SqlDscRSWebService' {
         It 'Should start web service without confirmation' {
             $null = $mockCimInstance | Start-SqlDscRSWebService -Force
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -151,8 +153,8 @@ Describe 'Start-SqlDscRSWebService' {
         It 'Should not call Invoke-RsCimMethod' {
             $mockCimInstance | Start-SqlDscRSWebService -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
-            Should -Invoke -CommandName Get-RSServiceState -Exactly -Times 0
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+            Should-Invoke -CommandName Get-RSServiceState -Exactly -Times 0
         }
     }
 
@@ -182,7 +184,7 @@ Describe 'Start-SqlDscRSWebService' {
         It 'Should start web service' {
             $null = Start-SqlDscRSWebService -Configuration $mockCimInstance -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -206,7 +208,7 @@ Describe 'Start-SqlDscRSWebService' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Start-SqlDscRSWebService -Confirm:$false } | Should -Throw -ErrorId 'SSRSWBS0001,Start-SqlDscRSWebService'
+            { $mockCimInstance | Start-SqlDscRSWebService -Confirm:$false } | Should-Throw -FullyQualifiedErrorId 'SSRSWBS0001,Start-SqlDscRSWebService'
         }
     }
 }

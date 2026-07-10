@@ -68,13 +68,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:subModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:subModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:subModuleName -All | Remove-Module -Force
@@ -123,10 +125,10 @@ Describe 'SqlServerDsc.Common\Get-PrimaryReplicaServerObject' -Tag 'GetPrimaryRe
         It 'Should return the same server object that was supplied' {
             $result = Get-PrimaryReplicaServerObject -ServerObject $mockServerObject -AvailabilityGroup $mockAvailabilityGroup
 
-            $result.DomainInstanceName | Should -Be $mockServerObject.DomainInstanceName
-            $result.DomainInstanceName | Should -Be $mockAvailabilityGroup.PrimaryReplicaServerName
+            $result.DomainInstanceName | Should-Be $mockServerObject.DomainInstanceName
+            $result.DomainInstanceName | Should-Be $mockAvailabilityGroup.PrimaryReplicaServerName
 
-            Should -Invoke -CommandName Connect-SQL -Scope It -Times 0 -Exactly
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 0
         }
 
         It 'Should return the same server object that was supplied when the PrimaryReplicaServerNameProperty is empty' {
@@ -134,10 +136,10 @@ Describe 'SqlServerDsc.Common\Get-PrimaryReplicaServerObject' -Tag 'GetPrimaryRe
 
             $result = Get-PrimaryReplicaServerObject -ServerObject $mockServerObject -AvailabilityGroup $mockAvailabilityGroup
 
-            $result.DomainInstanceName | Should -Be $mockServerObject.DomainInstanceName
-            $result.DomainInstanceName | Should -Not -Be $mockAvailabilityGroup.PrimaryReplicaServerName
+            $result.DomainInstanceName | Should-Be $mockServerObject.DomainInstanceName
+            $result.DomainInstanceName | Should-NotBe $mockAvailabilityGroup.PrimaryReplicaServerName
 
-            Should -Invoke -CommandName Connect-SQL -Scope It -Times 0 -Exactly
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 0
         }
     }
 
@@ -147,10 +149,10 @@ Describe 'SqlServerDsc.Common\Get-PrimaryReplicaServerObject' -Tag 'GetPrimaryRe
 
             $result = Get-PrimaryReplicaServerObject -ServerObject $mockServerObject -AvailabilityGroup $mockAvailabilityGroup
 
-            $result.DomainInstanceName | Should -Not -Be $mockServerObject.DomainInstanceName
-            $result.DomainInstanceName | Should -Be $mockAvailabilityGroup.PrimaryReplicaServerName
+            $result.DomainInstanceName | Should-NotBe $mockServerObject.DomainInstanceName
+            $result.DomainInstanceName | Should-Be $mockAvailabilityGroup.PrimaryReplicaServerName
 
-            Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 }

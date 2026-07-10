@@ -32,7 +32,8 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 
     # Create stub for Get-Service in module scope for cross-platform testing
     InModuleScope -ScriptBlock {
@@ -80,7 +81,8 @@ BeforeAll {
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -104,8 +106,8 @@ Describe 'Restart-SqlDscRSService' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -128,34 +130,34 @@ Describe 'Restart-SqlDscRSService' {
         }
 
         It 'Should restart the service without errors' {
-            { Restart-SqlDscRSService -ServiceName $mockServiceName -Confirm:$false } | Should -Not -Throw
+            $null = & ({ Restart-SqlDscRSService -ServiceName $mockServiceName -Confirm:$false })
 
-            Should -Invoke -CommandName Get-Service -ParameterFilter {
+            Should-Invoke -CommandName Get-Service -Exactly -ParameterFilter {
                 $Name -eq $mockServiceName
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Stop-Service -Exactly -Times 1
-            Should -Invoke -CommandName Start-Service -Exactly -Times 1
+            Should-Invoke -CommandName Stop-Service -Exactly -Times 1
+            Should-Invoke -CommandName Start-Service -Exactly -Times 1
         }
 
         It 'Should not return anything by default' {
             $result = Restart-SqlDscRSService -ServiceName $mockServiceName -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
 
         It 'Should not wait when WaitTime is 0' {
             Restart-SqlDscRSService -ServiceName $mockServiceName -WaitTime 0 -Confirm:$false
 
-            Should -Invoke -CommandName Start-Sleep -Exactly -Times 0
+            Should-Invoke -CommandName Start-Sleep -Exactly -Times 0
         }
 
         It 'Should wait when WaitTime is specified' {
             Restart-SqlDscRSService -ServiceName $mockServiceName -WaitTime 30 -Confirm:$false
 
-            Should -Invoke -CommandName Start-Sleep -ParameterFilter {
+            Should-Invoke -CommandName Start-Sleep -Exactly -ParameterFilter {
                 $Seconds -eq 30
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -182,20 +184,20 @@ Describe 'Restart-SqlDscRSService' {
         }
 
         It 'Should restart the service using the ServiceName from configuration' {
-            { $mockCimInstance | Restart-SqlDscRSService -Confirm:$false } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Restart-SqlDscRSService -Confirm:$false })
 
-            Should -Invoke -CommandName Get-Service -ParameterFilter {
+            Should-Invoke -CommandName Get-Service -Exactly -ParameterFilter {
                 $Name -eq $mockServiceName
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Stop-Service -Exactly -Times 1
-            Should -Invoke -CommandName Start-Service -Exactly -Times 1
+            Should-Invoke -CommandName Stop-Service -Exactly -Times 1
+            Should-Invoke -CommandName Start-Service -Exactly -Times 1
         }
 
         It 'Should not return anything by default' {
             $result = $mockCimInstance | Restart-SqlDscRSService -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -224,9 +226,9 @@ Describe 'Restart-SqlDscRSService' {
         It 'Should return the configuration CIM instance' {
             $result = $mockCimInstance | Restart-SqlDscRSService -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
-            $result.ServiceName | Should -Be $mockServiceName
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
+            $result.ServiceName | Should-Be $mockServiceName
         }
     }
 
@@ -248,10 +250,10 @@ Describe 'Restart-SqlDscRSService' {
         }
 
         It 'Should restart service without confirmation' {
-            { Restart-SqlDscRSService -ServiceName $mockServiceName -Force } | Should -Not -Throw
+            $null = & ({ Restart-SqlDscRSService -ServiceName $mockServiceName -Force })
 
-            Should -Invoke -CommandName Stop-Service -Exactly -Times 1
-            Should -Invoke -CommandName Start-Service -Exactly -Times 1
+            Should-Invoke -CommandName Stop-Service -Exactly -Times 1
+            Should-Invoke -CommandName Start-Service -Exactly -Times 1
         }
     }
 
@@ -279,10 +281,10 @@ Describe 'Restart-SqlDscRSService' {
         }
 
         It 'Should restart the main service and dependent services' {
-            { Restart-SqlDscRSService -ServiceName $mockServiceName -Confirm:$false } | Should -Not -Throw
+            $null = & ({ Restart-SqlDscRSService -ServiceName $mockServiceName -Confirm:$false })
 
             # Main service restart + dependent service restart
-            Should -Invoke -CommandName Start-Service -Exactly -Times 2
+            Should-Invoke -CommandName Start-Service -Exactly -Times 2
         }
     }
 
@@ -310,10 +312,10 @@ Describe 'Restart-SqlDscRSService' {
         }
 
         It 'Should not restart stopped dependent services' {
-            { Restart-SqlDscRSService -ServiceName $mockServiceName -Confirm:$false } | Should -Not -Throw
+            $null = & ({ Restart-SqlDscRSService -ServiceName $mockServiceName -Confirm:$false })
 
             # Only main service restart, not the stopped dependent service
-            Should -Invoke -CommandName Start-Service -Exactly -Times 1
+            Should-Invoke -CommandName Start-Service -Exactly -Times 1
         }
     }
 
@@ -337,8 +339,8 @@ Describe 'Restart-SqlDscRSService' {
         It 'Should not call Stop-Service or Start-Service' {
             Restart-SqlDscRSService -ServiceName $mockServiceName -WhatIf
 
-            Should -Invoke -CommandName Stop-Service -Exactly -Times 0
-            Should -Invoke -CommandName Start-Service -Exactly -Times 0
+            Should-Invoke -CommandName Stop-Service -Exactly -Times 0
+            Should-Invoke -CommandName Start-Service -Exactly -Times 0
         }
     }
 }

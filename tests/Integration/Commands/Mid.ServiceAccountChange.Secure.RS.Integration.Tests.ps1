@@ -78,7 +78,7 @@ Describe 'Mid.ServiceAccountChange.Secure.RS' -Tag @('Integration_PowerBI') {
         }
 
         It 'Should have the expected service account set' {
-            $script:serviceAccount | Should -BeExactly $script:expectedServiceAccount -Because 'the service account should have been changed by Set-SqlDscRSServiceAccount'
+            $script:serviceAccount | Should-BeString -CaseSensitive $script:expectedServiceAccount -Because 'the service account should have been changed by Set-SqlDscRSServiceAccount'
         }
 
         It 'Should create a SQL Server login for the new service account' {
@@ -89,7 +89,7 @@ Describe 'Mid.ServiceAccountChange.Secure.RS' -Tag @('Integration_PowerBI') {
             $script:databaseRightsScript = $script:configuration |
                 Request-SqlDscRSDatabaseRightsScript -DatabaseName $script:databaseName -UserName $script:serviceAccount -ErrorAction 'Stop'
 
-            $script:databaseRightsScript | Should -Not -BeNullOrEmpty -Because 'the database rights script should be generated'
+            $script:databaseRightsScript | Should-BeTruthy -Because 'the database rights script should be generated'
         }
 
         It 'Should execute the database rights script against the database' {

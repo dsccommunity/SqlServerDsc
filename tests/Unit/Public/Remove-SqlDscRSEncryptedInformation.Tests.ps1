@@ -32,13 +32,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -58,8 +60,8 @@ Describe 'Remove-SqlDscRSEncryptedInformation' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -75,15 +77,15 @@ Describe 'Remove-SqlDscRSEncryptedInformation' {
         It 'Should remove encrypted information without errors' {
             $null = $mockCimInstance | Remove-SqlDscRSEncryptedInformation -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'DeleteEncryptedInformation'
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should not return anything by default' {
             $result = $mockCimInstance | Remove-SqlDscRSEncryptedInformation -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -99,8 +101,8 @@ Describe 'Remove-SqlDscRSEncryptedInformation' {
         It 'Should return the configuration CIM instance' {
             $result = $mockCimInstance | Remove-SqlDscRSEncryptedInformation -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -116,7 +118,7 @@ Describe 'Remove-SqlDscRSEncryptedInformation' {
         It 'Should remove encrypted information without confirmation' {
             $null = $mockCimInstance | Remove-SqlDscRSEncryptedInformation -Force
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -132,7 +134,7 @@ Describe 'Remove-SqlDscRSEncryptedInformation' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Remove-SqlDscRSEncryptedInformation -Confirm:$false } | Should -Throw -ErrorId 'RRSREI0001,Remove-SqlDscRSEncryptedInformation'
+            { $mockCimInstance | Remove-SqlDscRSEncryptedInformation -Confirm:$false } | Should-Throw -FullyQualifiedErrorId 'RRSREI0001,Remove-SqlDscRSEncryptedInformation'
         }
     }
 
@@ -148,7 +150,7 @@ Describe 'Remove-SqlDscRSEncryptedInformation' {
         It 'Should not call Invoke-RsCimMethod' {
             $mockCimInstance | Remove-SqlDscRSEncryptedInformation -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
         }
     }
 
@@ -164,7 +166,7 @@ Describe 'Remove-SqlDscRSEncryptedInformation' {
         It 'Should remove encrypted information' {
             $null = Remove-SqlDscRSEncryptedInformation -Configuration $mockCimInstance -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 }

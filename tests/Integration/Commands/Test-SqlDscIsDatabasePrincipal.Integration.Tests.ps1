@@ -92,29 +92,29 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag @('Integration_SQL2017', 'Integra
         It 'Should return True when database user exists' {
             $result = Test-SqlDscIsDatabasePrincipal -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $script:testUserName
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeTrue
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeTrue
         }
 
         It 'Should return False when database user does not exist' {
             $result = Test-SqlDscIsDatabasePrincipal -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name 'NonExistentUser'
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeFalse
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeFalse
         }
 
         It 'Should return False when database user exists but ExcludeUsers is specified' {
             $result = Test-SqlDscIsDatabasePrincipal -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $script:testUserName -ExcludeUsers
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeFalse
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeFalse
         }
 
         It 'Should return True for dbo user' {
             $result = Test-SqlDscIsDatabasePrincipal -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name 'dbo'
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeTrue
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeTrue
         }
     }
 
@@ -122,37 +122,37 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag @('Integration_SQL2017', 'Integra
         It 'Should return True when database role exists' {
             $result = Test-SqlDscIsDatabasePrincipal -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $script:testRoleName
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeTrue
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeTrue
         }
 
         It 'Should return True when fixed role exists' {
             # Test with built-in db_datareader role
             $result = Test-SqlDscIsDatabasePrincipal -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name 'db_datareader'
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeTrue
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeTrue
         }
 
         It 'Should return False when fixed role exists but ExcludeFixedRoles is specified' {
             $result = Test-SqlDscIsDatabasePrincipal -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name 'db_datareader' -ExcludeFixedRoles
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeFalse
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeFalse
         }
 
         It 'Should return False when database role exists but ExcludeRoles is specified' {
             $result = Test-SqlDscIsDatabasePrincipal -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $script:testRoleName -ExcludeRoles
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeFalse
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeFalse
         }
 
         It 'Should return True for user-defined role when ExcludeFixedRoles is specified' {
             $result = Test-SqlDscIsDatabasePrincipal -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $script:testRoleName -ExcludeFixedRoles
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeTrue
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeTrue
         }
     }
 
@@ -160,15 +160,15 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag @('Integration_SQL2017', 'Integra
         It 'Should return True when application role exists' {
             $result = Test-SqlDscIsDatabasePrincipal -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $script:testAppRoleName
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeTrue
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeTrue
         }
 
         It 'Should return False when application role exists but ExcludeApplicationRoles is specified' {
             $result = Test-SqlDscIsDatabasePrincipal -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $script:testAppRoleName -ExcludeApplicationRoles
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeFalse
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeFalse
         }
     }
 
@@ -176,16 +176,16 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag @('Integration_SQL2017', 'Integra
         It 'Should return False when principal exists but all types are excluded' {
             $result = Test-SqlDscIsDatabasePrincipal -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $script:testUserName -ExcludeUsers -ExcludeRoles -ExcludeApplicationRoles
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeFalse
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeFalse
         }
 
         It 'Should work with combination of exclusion parameters' {
             # Test role when users and app roles are excluded
             $result = Test-SqlDscIsDatabasePrincipal -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $script:testRoleName -ExcludeUsers -ExcludeApplicationRoles
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeTrue
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeTrue
         }
     }
 
@@ -193,14 +193,14 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag @('Integration_SQL2017', 'Integra
         It 'Should accept ServerObject from pipeline' {
             $result = $script:serverObject | Test-SqlDscIsDatabasePrincipal -DatabaseName $script:testDatabaseName -Name $script:testUserName
 
-            $result | Should -BeOfType [System.Boolean]
-            $result | Should -BeTrue
+            $result | Should-HaveType ([System.Boolean])
+            $result | Should-BeTrue
         }
     }
 
     Context 'When testing error conditions' {
         It 'Should throw when database does not exist' {
-            { Test-SqlDscIsDatabasePrincipal -ServerObject $script:serverObject -DatabaseName 'NonExistentDatabase' -Name 'SomePrincipal' -ErrorAction 'Stop' } | Should -Throw
+            { Test-SqlDscIsDatabasePrincipal -ServerObject $script:serverObject -DatabaseName 'NonExistentDatabase' -Name 'SomePrincipal' -ErrorAction 'Stop' } | Should-Throw
         }
     }
 
@@ -210,9 +210,9 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag @('Integration_SQL2017', 'Integra
             $result1 = Test-SqlDscIsDatabasePrincipal -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName.ToUpper() -Name $script:testUserName
             $result2 = Test-SqlDscIsDatabasePrincipal -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName.ToLower() -Name $script:testUserName
 
-            $result1 | Should -BeOfType [System.Boolean]
-            $result2 | Should -BeOfType [System.Boolean]
-            $result1 | Should -Be $result2
+            $result1 | Should-HaveType ([System.Boolean])
+            $result2 | Should-HaveType ([System.Boolean])
+            $result1 | Should-Be $result2
         }
 
         It 'Should handle case differences correctly for principal names' {
@@ -220,9 +220,9 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag @('Integration_SQL2017', 'Integra
             $result1 = Test-SqlDscIsDatabasePrincipal -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $script:testUserName.ToUpper()
             $result2 = Test-SqlDscIsDatabasePrincipal -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $script:testUserName.ToLower()
 
-            $result1 | Should -BeOfType [System.Boolean]
-            $result2 | Should -BeOfType [System.Boolean]
-            $result1 | Should -Be $result2
+            $result1 | Should-HaveType ([System.Boolean])
+            $result2 | Should-HaveType ([System.Boolean])
+            $result1 | Should-Be $result2
         }
     }
 }

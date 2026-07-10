@@ -35,13 +35,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 }
 
 Describe 'Get-AgentAlertObject' -Tag 'Private' {
@@ -72,9 +74,9 @@ Describe 'Get-AgentAlertObject' -Tag 'Private' {
             InModuleScope -ScriptBlock {
                 $result = Get-AgentAlertObject -ServerObject $script:mockServerObject -Name 'TestAlert'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be 'TestAlert'
-                $result.Severity | Should -Be '16'
+                $result | Should-BeTruthy
+                $result.Name | Should-Be 'TestAlert'
+                $result.Severity | Should-Be '16'
             }
         }
 
@@ -82,7 +84,7 @@ Describe 'Get-AgentAlertObject' -Tag 'Private' {
             InModuleScope -ScriptBlock {
                 $result = Get-AgentAlertObject -ServerObject $script:mockServerObject -Name 'NonExistentAlert'
 
-                $result | Should -BeNull
+                $result | Should-BeFalsy
             }
         }
     }
@@ -107,7 +109,7 @@ Describe 'Get-AgentAlertObject' -Tag 'Private' {
             InModuleScope -ScriptBlock {
                 $result = Get-AgentAlertObject -ServerObject $script:mockEmptyServerObject -Name 'TestAlert'
 
-                $result | Should -BeNull
+                $result | Should-BeFalsy
             }
         }
     }

@@ -68,12 +68,12 @@ Describe 'Grant-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integrati
             # Verify the permission was granted
             $permission = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
-            $permission | Should -Not -BeNullOrEmpty
+            $permission | Should-BeTruthy
             $grantedPermissions = $permission | Where-Object { $_.PermissionState -eq 'Grant' }
 
             $expectedPermission = $grantedPermissions | Where-Object { $_.PermissionType.ViewServerState -eq $true }
-            $expectedPermission | Should -HaveCount 1
-            $expectedPermission.PermissionType.ViewServerState | Should -BeTrue
+            $expectedPermission | Should-BeCollection -Count 1
+            $expectedPermission.PermissionType.ViewServerState | Should-BeTrue
         }
 
         It 'Should grant multiple permissions successfully' {
@@ -82,16 +82,16 @@ Describe 'Grant-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integrati
             # Verify the permissions were granted
             $permission = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
-            $permission | Should -Not -BeNullOrEmpty
+            $permission | Should-BeTruthy
             $grantedPermissions = $permission | Where-Object { $_.PermissionState -eq 'Grant' }
 
             $expectedPermission = $grantedPermissions | Where-Object { $_.PermissionType.ViewServerState -eq $true }
-            $expectedPermission | Should -HaveCount 1
-            $expectedPermission.PermissionType.ViewServerState | Should -BeTrue
+            $expectedPermission | Should-BeCollection -Count 1
+            $expectedPermission.PermissionType.ViewServerState | Should-BeTrue
 
             $expectedPermission = $grantedPermissions | Where-Object { $_.PermissionType.ViewAnyDatabase -eq $true }
-            $expectedPermission | Should -HaveCount 1
-            $expectedPermission.PermissionType.ViewAnyDatabase | Should -BeTrue
+            $expectedPermission | Should-BeCollection -Count 1
+            $expectedPermission.PermissionType.ViewAnyDatabase | Should-BeTrue
         }
 
         It 'Should grant permissions with WithGrant option' {
@@ -100,12 +100,12 @@ Describe 'Grant-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integrati
             # Verify the permission was granted with grant option
             $permission = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
-            $permission | Should -Not -BeNullOrEmpty
+            $permission | Should-BeTruthy
             $grantedPermissions = $permission | Where-Object { $_.PermissionState -eq 'GrantWithGrant' }
 
             $expectedPermission = $grantedPermissions | Where-Object { $_.PermissionType.CreateAnyDatabase -eq $true }
-            $expectedPermission | Should -HaveCount 1
-            $expectedPermission.PermissionType.CreateAnyDatabase | Should -BeTrue
+            $expectedPermission | Should-BeCollection -Count 1
+            $expectedPermission.PermissionType.CreateAnyDatabase | Should-BeTrue
         }
 
         It 'Should accept Login from pipeline' {
@@ -114,12 +114,12 @@ Describe 'Grant-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integrati
             # Verify the permission was granted
             $permission = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testLoginName -ErrorAction 'Stop'
 
-            $permission | Should -Not -BeNullOrEmpty
+            $permission | Should-BeTruthy
             $grantedPermissions = $permission | Where-Object { $_.PermissionState -eq 'Grant' }
 
             $expectedPermission = $grantedPermissions | Where-Object { $_.PermissionType.ViewAnyDefinition -eq $true }
-            $expectedPermission | Should -HaveCount 1
-            $expectedPermission.PermissionType.ViewAnyDefinition | Should -BeTrue
+            $expectedPermission | Should-BeCollection -Count 1
+            $expectedPermission.PermissionType.ViewAnyDefinition | Should-BeTrue
         }
     }
 
@@ -139,12 +139,12 @@ Describe 'Grant-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integrati
             # Verify the permission was granted
             $permission = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
 
-            $permission | Should -Not -BeNullOrEmpty
+            $permission | Should-BeTruthy
             $grantedPermissions = $permission | Where-Object { $_.PermissionState -eq 'Grant' }
 
             $expectedPermission = $grantedPermissions | Where-Object { $_.PermissionType.ViewServerState -eq $true }
-            $expectedPermission | Should -HaveCount 1
-            $expectedPermission.PermissionType.ViewServerState | Should -BeTrue
+            $expectedPermission | Should-BeCollection -Count 1
+            $expectedPermission.PermissionType.ViewServerState | Should-BeTrue
         }
 
         It 'Should grant persistent CreateEndpoint permission to role for other tests' {
@@ -155,12 +155,12 @@ Describe 'Grant-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integrati
             # Verify the permission was granted - this permission will remain persistent for other integration tests
             $permission = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Stop'
 
-            $permission | Should -Not -BeNullOrEmpty
+            $permission | Should-BeTruthy
             $grantedPermissions = $permission | Where-Object { $_.PermissionState -eq 'Grant' }
 
             $expectedPermission = $grantedPermissions | Where-Object { $_.PermissionType.CreateEndpoint -eq $true }
-            $expectedPermission | Should -HaveCount 1
-            $expectedPermission.PermissionType.CreateEndpoint | Should -BeTrue
+            $expectedPermission | Should-BeCollection -Count 1
+            $expectedPermission.PermissionType.CreateEndpoint | Should-BeTrue
         }
     }
 }

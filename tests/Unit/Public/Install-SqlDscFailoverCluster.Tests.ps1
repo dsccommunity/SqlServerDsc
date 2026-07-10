@@ -35,7 +35,8 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
@@ -69,8 +70,8 @@ Describe 'Install-SqlDscFailoverCluster' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When setup action is ''InstallFailoverCluster''' {
@@ -108,18 +109,18 @@ Describe 'Install-SqlDscFailoverCluster' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscFailoverCluster -Confirm:$false @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=InstallFailoverCluster'
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="MSSQLSERVER"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE'
-                        $ArgumentList | Should -MatchExactly '\/INSTALLSQLDATADIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "DOMAIN\\SQLAdmins"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/FAILOVERCLUSTERNETWORKNAME="TestCluster01A"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/FAILOVERCLUSTERIPADDRESSES="IPv4;192.168.0.46;ClusterNetwork1;255.255.255.0"' # cspell: disable-line
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/ACTION=InstallFailoverCluster'
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/INSTANCENAME="MSSQLSERVER"' # cspell: disable-line
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/FEATURES=SQLENGINE'
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/INSTALLSQLDATADIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "DOMAIN\\SQLAdmins"' # cspell: disable-line
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/FAILOVERCLUSTERNETWORKNAME="TestCluster01A"' # cspell: disable-line
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/FAILOVERCLUSTERIPADDRESSES="IPv4;192.168.0.46;ClusterNetwork1;255.255.255.0"' # cspell: disable-line
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -127,14 +128,14 @@ Describe 'Install-SqlDscFailoverCluster' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscFailoverCluster -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=InstallFailoverCluster'
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="MSSQLSERVER"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE'
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/ACTION=InstallFailoverCluster'
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/INSTANCENAME="MSSQLSERVER"' # cspell: disable-line
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/FEATURES=SQLENGINE'
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -142,7 +143,7 @@ Describe 'Install-SqlDscFailoverCluster' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscFailoverCluster -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -172,14 +173,14 @@ Describe 'Install-SqlDscFailoverCluster' -Tag 'Public' {
             It 'Should call the mock with the correct argument string' {
                 Install-SqlDscFailoverCluster @mockDefaultParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly '\/ACTION=InstallFailoverCluster'
-                    $ArgumentList | Should -MatchExactly '\/FAILOVERCLUSTERGROUP="SQL Server \(MSSQLSERVER\)"' # cspell: disable-line
-                    $ArgumentList | Should -MatchExactly '\/FAILOVERCLUSTERDISKS="SysData;UserData;UserLogs"' # cspell: disable-line
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                    $ArgumentList | Should-MatchString -CaseSensitive '\/ACTION=InstallFailoverCluster'
+                    $ArgumentList | Should-MatchString -CaseSensitive '\/FAILOVERCLUSTERGROUP="SQL Server \(MSSQLSERVER\)"' # cspell: disable-line
+                    $ArgumentList | Should-MatchString -CaseSensitive '\/FAILOVERCLUSTERDISKS="SysData;UserData;UserLogs"' # cspell: disable-line
 
                     # Return $true if none of the above throw.
                     $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
     }

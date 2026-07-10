@@ -68,13 +68,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:subModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:subModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:subModuleName -All | Remove-Module -Force
@@ -130,13 +132,11 @@ Describe 'SqlServerDsc.Common\Get-SqlInstanceMajorVersion' -Tag 'GetSqlInstanceM
     Context 'When calling Get-SqlInstanceMajorVersion' {
         It 'Should return the correct major SQL version number' {
             $result = Get-SqlInstanceMajorVersion -InstanceName $mockInstanceName
-            $result | Should -Be $mockSqlMajorVersion
+            $result | Should-Be $mockSqlMajorVersion
 
-            Should -Invoke -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It `
-                -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_InstanceNames_SQL
+            Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_InstanceNames_SQL -Scope It -Times 1
 
-            Should -Invoke -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It `
-                -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_FullInstanceId_Setup
+            Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_FullInstanceId_Setup -Scope It -Times 1
         }
     }
 
@@ -156,15 +156,13 @@ Describe 'SqlServerDsc.Common\Get-SqlInstanceMajorVersion' -Tag 'GetSqlInstanceM
                 $mockLocalizedString -f $mockInstanceName
             )
 
-            $mockErrorMessage | Should -Not -BeNullOrEmpty
+            $mockErrorMessage | Should-BeTruthy
 
-            { Get-SqlInstanceMajorVersion -InstanceName $mockInstanceName } | Should -Throw -ExpectedMessage $mockErrorMessage
+            { Get-SqlInstanceMajorVersion -InstanceName $mockInstanceName } | Should-Throw -ExceptionMessage $mockErrorMessage
 
-            Should -Invoke -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It `
-                -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_InstanceNames_SQL
+            Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_InstanceNames_SQL -Scope It -Times 1
 
-            Should -Invoke -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It `
-                -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_FullInstanceId_Setup
+            Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter $mockGetItemProperty_ParameterFilter_MicrosoftSQLServer_FullInstanceId_Setup -Scope It -Times 1
         }
     }
 }

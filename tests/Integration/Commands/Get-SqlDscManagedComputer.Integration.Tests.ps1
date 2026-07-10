@@ -43,9 +43,9 @@ Describe 'Get-SqlDscManagedComputer' -Tag @('Integration_SQL2017', 'Integration_
         It 'Should return the managed computer object for the local computer' {
             $result = Get-SqlDscManagedComputer -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer])
-            $result.Name | Should -Be $script:mockServerName
+            $result | Should-BeTruthy
+            $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer])
+            $result.Name | Should-Be $script:mockServerName
         }
     }
 
@@ -53,9 +53,9 @@ Describe 'Get-SqlDscManagedComputer' -Tag @('Integration_SQL2017', 'Integration_
         It 'Should return the managed computer object for the specified server' {
             $result = Get-SqlDscManagedComputer -ServerName $script:mockServerName -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer])
-            $result.Name | Should -Be $script:mockServerName
+            $result | Should-BeTruthy
+            $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer])
+            $result.Name | Should-Be $script:mockServerName
         }
     }
 
@@ -64,24 +64,24 @@ Describe 'Get-SqlDscManagedComputer' -Tag @('Integration_SQL2017', 'Integration_
             $result = Get-SqlDscManagedComputer -ServerName $script:mockServerName -ErrorAction 'Stop'
 
             # Verify it's a proper SMO ManagedComputer object
-            $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer])
+            $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer])
 
             # Verify key properties exist
-            $result.Name | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:mockServerName
+            $result.Name | Should-BeTruthy
+            $result.Name | Should-Be $script:mockServerName
 
             # Verify ServerInstances collection is accessible
-            $result.ServerInstances | Should -Not -BeNullOrEmpty
-            $result.ServerInstances.Count | Should -BeGreaterThan 0
+            $result.ServerInstances | Should-BeTruthy
+            $result.ServerInstances.Count | Should-BeGreaterThan 0
 
             # Verify Services collection is accessible
-            $result.Services | Should -Not -BeNullOrEmpty
-            $result.Services.Count | Should -BeGreaterThan 0
+            $result.Services | Should-BeTruthy
+            $result.Services.Count | Should-BeGreaterThan 0
 
             # Verify the DSCSQLTEST instance is present in the ServerInstances collection
             $testInstance = $result.ServerInstances | Where-Object -FilterScript { $_.Name -eq 'DSCSQLTEST' }
-            $testInstance | Should -Not -BeNullOrEmpty
-            $testInstance.Name | Should -Be 'DSCSQLTEST'
+            $testInstance | Should-BeTruthy
+            $testInstance.Name | Should-Be 'DSCSQLTEST'
         }
     }
 
@@ -92,10 +92,10 @@ Describe 'Get-SqlDscManagedComputer' -Tag @('Integration_SQL2017', 'Integration_
             # Test pipeline compatibility
             $result = $managedComputer | Get-SqlDscManagedComputerInstance -InstanceName 'DSCSQLTEST' -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance])
-            $result.Name | Should -Be 'DSCSQLTEST'
-            $result.Parent.Name | Should -Be $script:mockServerName
+            $result | Should-BeTruthy
+            $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance])
+            $result.Name | Should-Be 'DSCSQLTEST'
+            $result.Parent.Name | Should-Be $script:mockServerName
         }
     }
 
@@ -105,9 +105,9 @@ Describe 'Get-SqlDscManagedComputer' -Tag @('Integration_SQL2017', 'Integration_
             # even for non-existent servers (SMO behavior)
             $result = Get-SqlDscManagedComputer -ServerName 'NonExistentServer123' -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType ([Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer])
-            $result.Name | Should -Be 'NonExistentServer123'
+            $result | Should-BeTruthy
+            $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer])
+            $result.Name | Should-Be 'NonExistentServer123'
         }
     }
 }

@@ -38,13 +38,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -77,8 +79,8 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When connecting to an instance' {
@@ -102,7 +104,7 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag 'Public' {
 
             Connect-SqlDscDatabaseEngine @mockConnectSqlDscDatabaseEngineParameters
 
-            Should -Invoke -CommandName Connect-Sql -ParameterFilter {
+            Should-Invoke -CommandName Connect-Sql -ParameterFilter {
                 $ServerName -eq 'MyServer' -and
                 $InstanceName -eq 'MyInstance' -and
                 $Credential -eq $mockCredentials -and
@@ -120,7 +122,7 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag 'Public' {
 
             Connect-SqlDscDatabaseEngine @mockConnectSqlDscDatabaseEngineParameters
 
-            Should -Invoke -CommandName Connect-Sql -ParameterFilter {
+            Should-Invoke -CommandName Connect-Sql -ParameterFilter {
                 $ServerName -eq 'MyServer' -and
                 $InstanceName -eq 'MyInstance' -and
                 $Protocol -eq 'tcp'
@@ -136,7 +138,7 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag 'Public' {
 
             Connect-SqlDscDatabaseEngine @mockConnectSqlDscDatabaseEngineParameters
 
-            Should -Invoke -CommandName Connect-Sql -ParameterFilter {
+            Should-Invoke -CommandName Connect-Sql -ParameterFilter {
                 $ServerName -eq 'MyServer' -and
                 $InstanceName -eq 'MSSQLSERVER' -and
                 $Port -eq 1433
@@ -153,7 +155,7 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag 'Public' {
 
             Connect-SqlDscDatabaseEngine @mockConnectSqlDscDatabaseEngineParameters
 
-            Should -Invoke -CommandName Connect-Sql -ParameterFilter {
+            Should-Invoke -CommandName Connect-Sql -ParameterFilter {
                 $ServerName -eq '192.168.1.1' -and
                 $InstanceName -eq 'MyInstance' -and
                 $Protocol -eq 'tcp' -and

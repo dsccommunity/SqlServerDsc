@@ -34,13 +34,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -60,11 +62,11 @@ Describe 'ConvertTo-SqlDscEditionName' {
         It 'Should return the correct information' {
             $result = ConvertTo-SqlDscEditionName -Id $testEditionId
 
-            $result.EditionId | Should -Be $mockExpectedResult.EditionId
-            $result.Edition | Should -Be $mockExpectedResult.Edition
-            $result.EditionName | Should -Be $mockExpectedResult.EditionName
+            $result.EditionId | Should-Be $mockExpectedResult.EditionId
+            $result.Edition | Should-Be $mockExpectedResult.Edition
+            $result.EditionName | Should-Be $mockExpectedResult.EditionName
 
-            $result | Should -BeOfType 'System.Management.Automation.PSCustomObject'
+            $result | Should-HaveType 'System.Management.Automation.PSCustomObject'
         }
     }
 
@@ -81,9 +83,9 @@ Describe 'ConvertTo-SqlDscEditionName' {
         It 'Should return the correct information' {
             $result = ConvertTo-SqlDscEditionName -Id $testEditionId
 
-            $result.EditionId | Should -Be $mockExpectedResult.EditionId
-            $result.Edition | Should -Be $mockExpectedResult.Edition
-            $result.EditionName | Should -Be $mockExpectedResult.EditionName
+            $result.EditionId | Should-Be $mockExpectedResult.EditionId
+            $result.Edition | Should-Be $mockExpectedResult.Edition
+            $result.EditionName | Should-Be $mockExpectedResult.EditionName
         }
     }
 
@@ -100,9 +102,9 @@ Describe 'ConvertTo-SqlDscEditionName' {
         It 'Should return Unknown for unknown EditionId' {
             $result = ConvertTo-SqlDscEditionName -Id $testEditionId
 
-            $result.EditionId | Should -Be $mockExpectedResult.EditionId
-            $result.Edition | Should -Be $mockExpectedResult.Edition
-            $result.EditionName | Should -Be $mockExpectedResult.EditionName
+            $result.EditionId | Should-Be $mockExpectedResult.EditionId
+            $result.Edition | Should-Be $mockExpectedResult.Edition
+            $result.EditionName | Should-Be $mockExpectedResult.EditionName
         }
     }
 }

@@ -89,14 +89,14 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
                 }
 
                 # Verify the login was created
-                Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName | Should -BeTrue
+                Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName | Should-BeTrue
 
                 # Verify the login type
                 $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
-                $loginObject.LoginType | Should -Be 'SqlLogin'
+                $loginObject.LoginType | Should-Be 'SqlLogin'
 
                 # Verify the default database
-                $loginObject.DefaultDatabase | Should -Be 'master'
+                $loginObject.DefaultDatabase | Should-Be 'master'
             }
 
             It 'Should create a SQL Server login with custom default database' {
@@ -105,7 +105,7 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
                 $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -SqlLogin -SecurePassword $script:testPassword -DefaultDatabase 'tempdb' -Force
 
                 $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
-                $loginObject.DefaultDatabase | Should -Be 'tempdb'
+                $loginObject.DefaultDatabase | Should-Be 'tempdb'
             }
 
             It 'Should create a SQL Server login with PassThru parameter' {
@@ -113,9 +113,9 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
                 $result = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -SqlLogin -SecurePassword $script:testPassword -PassThru -Force
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be $script:testLoginName
-                $result.LoginType | Should -Be 'SqlLogin'
+                $result | Should-BeTruthy
+                $result.Name | Should-Be $script:testLoginName
+                $result.LoginType | Should-Be 'SqlLogin'
             }
 
             It 'Should create a disabled SQL Server login' {
@@ -124,7 +124,7 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
                 $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -SqlLogin -SecurePassword $script:testPassword -Disabled -Force
 
                 $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
-                $loginObject.IsDisabled | Should -BeTrue
+                $loginObject.IsDisabled | Should-BeTrue
             }
 
             It 'Should throw an error when trying to create a login that already exists' {
@@ -134,7 +134,7 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
                 $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -SqlLogin -SecurePassword $script:testPassword -Force
 
                 # Then try to create it again, which should throw
-                { New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -SqlLogin -SecurePassword $script:testPassword -Force } | Should -Throw
+                { New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -SqlLogin -SecurePassword $script:testPassword -Force } | Should-Throw
             }
         }
 
@@ -151,10 +151,10 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
                 # Using the SqlIntegrationTest user created by Prerequisites integration test
                 $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsUserName -WindowsUser -Force
 
-                Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testWindowsUserName | Should -BeTrue
+                Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testWindowsUserName | Should-BeTrue
 
                 $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsUserName
-                $loginObject.LoginType | Should -Be 'WindowsUser'
+                $loginObject.LoginType | Should-Be 'WindowsUser'
             }
         }
 
@@ -167,10 +167,10 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
                     $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName -WindowsGroup -Force
                 }
 
-                Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName | Should -BeTrue
+                Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName | Should-BeTrue
 
                 $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName
-                $loginObject.LoginType | Should -Be 'WindowsGroup'
+                $loginObject.LoginType | Should-Be 'WindowsGroup'
             }
         }
 
@@ -190,7 +190,7 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
             It 'Should create a login with Force parameter without confirmation prompt' {
                 $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:forceLoginName -SqlLogin -SecurePassword $script:testPassword -Force
 
-                Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:forceLoginName | Should -BeTrue
+                Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:forceLoginName | Should-BeTrue
             }
         }
 
@@ -200,7 +200,7 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
 
                 $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $whatIfLoginName -SqlLogin -SecurePassword $script:testPassword -WhatIf
 
-                Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $whatIfLoginName | Should -BeFalse
+                Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $whatIfLoginName | Should-BeFalse
             }
         }
     }

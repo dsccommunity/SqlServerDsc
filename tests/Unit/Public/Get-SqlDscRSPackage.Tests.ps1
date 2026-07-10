@@ -34,13 +34,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -66,11 +68,11 @@ Describe 'Get-SqlDscRSPackage' -Tag 'Public' {
             It 'Should return the version information' {
                 $result = Get-SqlDscRSPackage -FilePath $script:mockFilePath
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.ProductName | Should -Be 'Microsoft SQL Server Reporting Services'
-                $result.ProductVersion | Should -Be '15.0.8963.8162'
+                $result | Should-BeTruthy
+                $result.ProductName | Should-Be 'Microsoft SQL Server Reporting Services'
+                $result.ProductVersion | Should-Be '15.0.8963.8162'
 
-                Should -Invoke -CommandName Get-FileVersion -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-FileVersion -Exactly -Scope It -Times 1
             }
         }
 
@@ -93,11 +95,11 @@ Describe 'Get-SqlDscRSPackage' -Tag 'Public' {
             It 'Should return the version information' {
                 $result = Get-SqlDscRSPackage -FilePath $script:mockFilePath
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.ProductName | Should -Be 'Microsoft Power BI Report Server'
-                $result.ProductVersion | Should -Be '15.0.1111.1234'
+                $result | Should-BeTruthy
+                $result.ProductName | Should-Be 'Microsoft Power BI Report Server'
+                $result.ProductVersion | Should-Be '15.0.1111.1234'
 
-                Should -Invoke -CommandName Get-FileVersion -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-FileVersion -Exactly -Scope It -Times 1
             }
         }
 
@@ -127,7 +129,7 @@ Describe 'Get-SqlDscRSPackage' -Tag 'Public' {
                     $script:localizedData.Get_SqlDscRSPackage_InvalidProductName -f 'Some Other Product', ($validProductNames -join "', '")
                 }
 
-                { Get-SqlDscRSPackage -FilePath $script:mockFilePath } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { Get-SqlDscRSPackage -FilePath $script:mockFilePath } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
 
@@ -150,11 +152,11 @@ Describe 'Get-SqlDscRSPackage' -Tag 'Public' {
             It 'Should return the version information without throwing' {
                 $result = Get-SqlDscRSPackage -FilePath $script:mockFilePath -Force
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.ProductName | Should -Be 'Some Other Product'
-                $result.ProductVersion | Should -Be '1.0.0.0'
+                $result | Should-BeTruthy
+                $result.ProductName | Should-Be 'Some Other Product'
+                $result.ProductVersion | Should-Be '1.0.0.0'
 
-                Should -Invoke -CommandName Get-FileVersion -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-FileVersion -Exactly -Scope It -Times 1
             }
         }
     }
@@ -173,27 +175,27 @@ Describe 'Get-SqlDscRSPackage' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have the correct parameters' {
             $commandInfo = Get-Command -Name 'Get-SqlDscRSPackage'
 
-            $commandInfo.Parameters['FilePath'] | Should -Not -BeNullOrEmpty
-            $commandInfo.Parameters['Force'] | Should -Not -BeNullOrEmpty
+            $commandInfo.Parameters['FilePath'] | Should-BeTruthy
+            $commandInfo.Parameters['Force'] | Should-BeTruthy
         }
 
         It 'Should have FilePath as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRSPackage').Parameters['FilePath']
             $allParameterSets = $parameterInfo.ParameterSets['__AllParameterSets']
-            $allParameterSets.IsMandatory | Should -BeTrue
+            $allParameterSets.IsMandatory | Should-BeTrue
         }
 
         It 'Should have Force as a non-mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRSPackage').Parameters['Force']
             $allParameterSets = $parameterInfo.ParameterSets['__AllParameterSets']
-            $allParameterSets.IsMandatory | Should -BeFalse
+            $allParameterSets.IsMandatory | Should-BeFalse
         }
     }
 }

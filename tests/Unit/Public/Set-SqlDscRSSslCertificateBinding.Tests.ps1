@@ -32,13 +32,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -66,8 +68,8 @@ Describe 'Set-SqlDscRSSslCertificateBinding' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -88,8 +90,8 @@ Describe 'Set-SqlDscRSSslCertificateBinding' {
         It 'Should add the SSL certificate binding' {
             $mockCimInstance | Set-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash 'AABBCCDD' -Confirm:$false
 
-            Should -Invoke -CommandName Add-SqlDscRSSslCertificateBinding -Exactly -Times 1
-            Should -Invoke -CommandName Remove-SqlDscRSSslCertificateBinding -Exactly -Times 0
+            Should-Invoke -CommandName Add-SqlDscRSSslCertificateBinding -Exactly -Times 1
+            Should-Invoke -CommandName Remove-SqlDscRSSslCertificateBinding -Exactly -Times 0
         }
     }
 
@@ -117,8 +119,8 @@ Describe 'Set-SqlDscRSSslCertificateBinding' {
         It 'Should remove existing and add new SSL certificate binding' {
             $mockCimInstance | Set-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash 'AABBCCDD' -Confirm:$false
 
-            Should -Invoke -CommandName Remove-SqlDscRSSslCertificateBinding -Exactly -Times 1
-            Should -Invoke -CommandName Add-SqlDscRSSslCertificateBinding -Exactly -Times 1
+            Should-Invoke -CommandName Remove-SqlDscRSSslCertificateBinding -Exactly -Times 1
+            Should-Invoke -CommandName Add-SqlDscRSSslCertificateBinding -Exactly -Times 1
         }
     }
 
@@ -146,8 +148,8 @@ Describe 'Set-SqlDscRSSslCertificateBinding' {
         It 'Should not add or remove any bindings' {
             $mockCimInstance | Set-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash 'AABBCCDD' -Confirm:$false
 
-            Should -Invoke -CommandName Add-SqlDscRSSslCertificateBinding -Exactly -Times 0
-            Should -Invoke -CommandName Remove-SqlDscRSSslCertificateBinding -Exactly -Times 0
+            Should-Invoke -CommandName Add-SqlDscRSSslCertificateBinding -Exactly -Times 0
+            Should-Invoke -CommandName Remove-SqlDscRSSslCertificateBinding -Exactly -Times 0
         }
     }
 
@@ -168,8 +170,8 @@ Describe 'Set-SqlDscRSSslCertificateBinding' {
         It 'Should return the configuration CIM instance' {
             $result = $mockCimInstance | Set-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash 'AABBCCDD' -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -190,7 +192,7 @@ Describe 'Set-SqlDscRSSslCertificateBinding' {
         It 'Should set SSL certificate binding without confirmation' {
             $mockCimInstance | Set-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash 'AABBCCDD' -Force
 
-            Should -Invoke -CommandName Add-SqlDscRSSslCertificateBinding -Exactly -Times 1
+            Should-Invoke -CommandName Add-SqlDscRSSslCertificateBinding -Exactly -Times 1
         }
     }
 
@@ -211,8 +213,8 @@ Describe 'Set-SqlDscRSSslCertificateBinding' {
         It 'Should not add or remove any bindings' {
             $mockCimInstance | Set-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash 'AABBCCDD' -WhatIf
 
-            Should -Invoke -CommandName Add-SqlDscRSSslCertificateBinding -Exactly -Times 0
-            Should -Invoke -CommandName Remove-SqlDscRSSslCertificateBinding -Exactly -Times 0
+            Should-Invoke -CommandName Add-SqlDscRSSslCertificateBinding -Exactly -Times 0
+            Should-Invoke -CommandName Remove-SqlDscRSSslCertificateBinding -Exactly -Times 0
         }
     }
 
@@ -233,7 +235,7 @@ Describe 'Set-SqlDscRSSslCertificateBinding' {
         It 'Should set SSL certificate binding' {
             Set-SqlDscRSSslCertificateBinding -Configuration $mockCimInstance -Application 'ReportServerWebService' -CertificateHash 'AABBCCDD' -Confirm:$false
 
-            Should -Invoke -CommandName Get-SqlDscRSSslCertificateBinding -Exactly -Times 1
+            Should-Invoke -CommandName Get-SqlDscRSSslCertificateBinding -Exactly -Times 1
         }
     }
 
@@ -254,9 +256,9 @@ Describe 'Set-SqlDscRSSslCertificateBinding' {
         It 'Should use custom IP address and port' {
             $mockCimInstance | Set-SqlDscRSSslCertificateBinding -Application 'ReportServerWebService' -CertificateHash 'AABBCCDD' -IPAddress '192.168.1.1' -Port 8443 -Confirm:$false
 
-            Should -Invoke -CommandName Add-SqlDscRSSslCertificateBinding -ParameterFilter {
+            Should-Invoke -CommandName Add-SqlDscRSSslCertificateBinding -Exactly -ParameterFilter {
                 $IPAddress -eq '192.168.1.1' -and $Port -eq 8443
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 }

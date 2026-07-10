@@ -38,13 +38,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -79,8 +81,8 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When executing a query that cannot return any results' {
@@ -121,9 +123,9 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                     It 'Should execute the query without throwing and without returning any result' {
                         $result = Invoke-SqlDscQuery -ServerObject $mockServerObject -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -Confirm:$false
 
-                        $result | Should -BeNullOrEmpty
+                        $result | Should-BeFalsy
 
-                        $mockMethodExecuteNonQueryCallCount | Should -Be 1
+                        $mockMethodExecuteNonQueryCallCount | Should-Be 1
                     }
                 }
 
@@ -131,9 +133,9 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                     It 'Should execute the query without throwing and without returning any result' {
                         $result = Invoke-SqlDscQuery -ServerObject $mockServerObject -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -Force
 
-                        $result | Should -BeNullOrEmpty
+                        $result | Should-BeFalsy
 
-                        $mockMethodExecuteNonQueryCallCount | Should -Be 1
+                        $mockMethodExecuteNonQueryCallCount | Should-Be 1
                     }
                 }
 
@@ -141,9 +143,9 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                     It 'Should execute the query without throwing and without returning any result' {
                         $result = Invoke-SqlDscQuery -ServerObject $mockServerObject -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -WhatIf
 
-                        $result | Should -BeNullOrEmpty
+                        $result | Should-BeFalsy
 
-                        $mockMethodExecuteNonQueryCallCount | Should -Be 0
+                        $mockMethodExecuteNonQueryCallCount | Should-Be 0
                     }
                 }
 
@@ -151,9 +153,9 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                     It 'Should execute the query without throwing and without returning any result' {
                         $result = $mockServerObject | Invoke-SqlDscQuery -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -Force
 
-                        $result | Should -BeNullOrEmpty
+                        $result | Should-BeFalsy
 
-                        $mockMethodExecuteNonQueryCallCount | Should -Be 1
+                        $mockMethodExecuteNonQueryCallCount | Should-Be 1
                     }
                 }
             }
@@ -162,9 +164,9 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                 It 'Should execute the query without throwing and without returning any result' {
                     $result = Invoke-SqlDscQuery -StatementTimeout 900 -ServerObject $mockServerObject -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -Force
 
-                    $result | Should -BeNullOrEmpty
+                    $result | Should-BeFalsy
 
-                    $mockMethodExecuteNonQueryCallCount | Should -Be 1
+                    $mockMethodExecuteNonQueryCallCount | Should-Be 1
                 }
             }
 
@@ -172,9 +174,9 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                 It 'Should execute the query without throwing and without returning any result' {
                     $result = Invoke-SqlDscQuery -RedactText @('MyString') -ServerObject $mockServerObject -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -Force
 
-                    $result | Should -BeNullOrEmpty
+                    $result | Should-BeFalsy
 
-                    $mockMethodExecuteNonQueryCallCount | Should -Be 1
+                    $mockMethodExecuteNonQueryCallCount | Should-Be 1
                 }
             }
         }
@@ -194,22 +196,22 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
             It 'Should execute the query without throwing and without returning any result' {
                 $result = Invoke-SqlDscQuery -ServerName 'localhost' -InstanceName 'INSTANCE' -LoginType 'WindowsUser' -Credential $mockSqlCredential -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -Force
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
 
-                $mockMethodExecuteNonQueryCallCount | Should -Be 1
+                $mockMethodExecuteNonQueryCallCount | Should-Be 1
 
-                Should -Invoke -CommandName Connect-SqlDscDatabaseEngine -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SqlDscDatabaseEngine -Exactly -Scope It -Times 1
             }
 
             Context 'When calling the command with optional parameter Encrypt' {
                 It 'Should execute the query without throwing and without returning any result' {
                     $result = Invoke-SqlDscQuery -Encrypt -ServerName 'localhost' -InstanceName 'INSTANCE' -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -Force
 
-                    $result | Should -BeNullOrEmpty
+                    $result | Should-BeFalsy
 
-                    $mockMethodExecuteNonQueryCallCount | Should -Be 1
+                    $mockMethodExecuteNonQueryCallCount | Should-Be 1
 
-                    Should -Invoke -CommandName Connect-SqlDscDatabaseEngine -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Connect-SqlDscDatabaseEngine -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -253,9 +255,9 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                     It 'Should execute the query without throwing and return the expected data set' {
                         $result = Invoke-SqlDscQuery -PassThru -ServerObject $mockServerObject -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -Confirm:$false
 
-                        $result | Should -HaveType [System.Data.DataSet]
+                        $result | Should-HaveType ([System.Data.DataSet])
 
-                        $mockMethodExecuteWithResultsCallCount | Should -Be 1
+                        $mockMethodExecuteWithResultsCallCount | Should-Be 1
                     }
                 }
 
@@ -263,9 +265,9 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                     It 'Should execute the query without throwing and return the expected data set' {
                         $result = Invoke-SqlDscQuery -PassThru -ServerObject $mockServerObject -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -Force
 
-                        $result | Should -HaveType [System.Data.DataSet]
+                        $result | Should-HaveType ([System.Data.DataSet])
 
-                        $mockMethodExecuteWithResultsCallCount | Should -Be 1
+                        $mockMethodExecuteWithResultsCallCount | Should-Be 1
                     }
                 }
 
@@ -273,9 +275,9 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                     It 'Should execute the query without throwing and return the expected data set' {
                         $result = Invoke-SqlDscQuery -PassThru -ServerObject $mockServerObject -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -WhatIf
 
-                        $result | Should -BeNullOrEmpty
+                        $result | Should-BeFalsy
 
-                        $mockMethodExecuteWithResultsCallCount | Should -Be 0
+                        $mockMethodExecuteWithResultsCallCount | Should-Be 0
                     }
                 }
 
@@ -283,9 +285,9 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                     It 'Should execute the query without throwing and return the expected data set' {
                         $result = $mockServerObject | Invoke-SqlDscQuery -PassThru -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -Force
 
-                        $result | Should -HaveType [System.Data.DataSet]
+                        $result | Should-HaveType ([System.Data.DataSet])
 
-                        $mockMethodExecuteWithResultsCallCount | Should -Be 1
+                        $mockMethodExecuteWithResultsCallCount | Should-Be 1
                     }
                 }
             }
@@ -337,9 +339,9 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                 It 'Should throw the correct error' {
                     {
                         Invoke-SqlDscQuery @mockInvokeSqlDscQueryParameters
-                    } | Should -Throw -ExpectedMessage '*Mocked error*'
+                    } | Should-Throw -ExceptionMessage '*Mocked error*'
 
-                    $mockMethodExecuteWithResultsCallCount | Should -Be 1
+                    $mockMethodExecuteWithResultsCallCount | Should-Be 1
                 }
             }
 
@@ -347,9 +349,9 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                 It 'Should throw the correct error' {
                     {
                         Invoke-SqlDscQuery @mockInvokeSqlDscQueryParameters
-                    } | Should -Throw -ExpectedMessage '*Mocked error*'
+                    } | Should-Throw -ExceptionMessage '*Mocked error*'
 
-                    $mockMethodExecuteWithResultsCallCount | Should -Be 1
+                    $mockMethodExecuteWithResultsCallCount | Should-Be 1
                 }
             }
         }
@@ -370,9 +372,9 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                 It 'Should not throw an exception and does not return any result' {
                     $result = Invoke-SqlDscQuery @mockInvokeSqlDscQueryParameters
 
-                    $result | Should -BeNullOrEmpty
+                    $result | Should-BeFalsy
 
-                    $mockMethodExecuteWithResultsCallCount | Should -Be 1
+                    $mockMethodExecuteWithResultsCallCount | Should-Be 1
                 }
             }
 
@@ -380,9 +382,9 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                 It 'Should not throw an exception and does not return any result' {
                     $result = Invoke-SqlDscQuery @mockInvokeSqlDscQueryParameters
 
-                    $result | Should -BeNullOrEmpty
+                    $result | Should-BeFalsy
 
-                    $mockMethodExecuteWithResultsCallCount | Should -Be 1
+                    $mockMethodExecuteWithResultsCallCount | Should-Be 1
                 }
             }
         }

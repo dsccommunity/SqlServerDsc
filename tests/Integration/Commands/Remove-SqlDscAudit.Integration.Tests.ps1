@@ -58,32 +58,32 @@ Describe 'Remove-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         It 'Should remove an audit successfully' {
             # Verify audit exists before removal
             $existingAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
-            $existingAudit | Should -Not -BeNullOrEmpty
+            $existingAudit | Should-BeTruthy
 
             # Remove the audit
             $null = Remove-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Force -ErrorAction 'Stop'
 
             # Verify audit no longer exists
             $removedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'SilentlyContinue'
-            $removedAudit | Should -BeNullOrEmpty
+            $removedAudit | Should-BeFalsy
         }
 
         It 'Should throw error when trying to remove non-existent audit' {
             { Remove-SqlDscAudit -ServerObject $script:serverObject -Name 'NonExistentAudit' -Force -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
 
         It 'Should support the Refresh parameter' {
             # Verify audit exists before removal
             $existingAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
-            $existingAudit | Should -Not -BeNullOrEmpty
+            $existingAudit | Should-BeTruthy
 
             # Remove the audit with Refresh parameter
             $null = Remove-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Refresh -Force -ErrorAction 'Stop'
 
             # Verify audit no longer exists
             $removedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'SilentlyContinue'
-            $removedAudit | Should -BeNullOrEmpty
+            $removedAudit | Should-BeFalsy
         }
     }
 
@@ -96,26 +96,26 @@ Describe 'Remove-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
         It 'Should remove an audit using audit object' {
             $auditObject = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction 'Stop'
-            $auditObject | Should -Not -BeNullOrEmpty
+            $auditObject | Should-BeTruthy
 
             # Remove the audit using audit object
             $null = Remove-SqlDscAudit -AuditObject $auditObject -Force -ErrorAction 'Stop'
 
             # Verify audit no longer exists
             $removedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction 'SilentlyContinue'
-            $removedAudit | Should -BeNullOrEmpty
+            $removedAudit | Should-BeFalsy
         }
 
         It 'Should support pipeline input with audit object' {
             $auditObject = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction 'Stop'
-            $auditObject | Should -Not -BeNullOrEmpty
+            $auditObject | Should-BeTruthy
 
             # Remove the audit using pipeline
             $auditObject | Remove-SqlDscAudit -Force -ErrorAction 'Stop'
 
             # Verify audit no longer exists
             $removedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction 'SilentlyContinue'
-            $removedAudit | Should -BeNullOrEmpty
+            $removedAudit | Should-BeFalsy
         }
     }
 
@@ -129,14 +129,14 @@ Describe 'Remove-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
         It 'Should support pipeline input with server object' {
             # Verify audit exists before removal
             $existingAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForPipeline -ErrorAction 'Stop'
-            $existingAudit | Should -Not -BeNullOrEmpty
+            $existingAudit | Should-BeTruthy
 
             # Remove the audit using pipeline with server object
             $script:serverObject | Remove-SqlDscAudit -Name $script:testAuditNameForPipeline -Force -ErrorAction 'Stop'
 
             # Verify audit no longer exists
             $removedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForPipeline -ErrorAction 'SilentlyContinue'
-            $removedAudit | Should -BeNullOrEmpty
+            $removedAudit | Should-BeFalsy
         }
     }
 
@@ -159,7 +159,7 @@ Describe 'Remove-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             foreach ($auditName in $script:testAuditNames)
             {
                 $existingAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $auditName -ErrorAction 'Stop'
-                $existingAudit | Should -Not -BeNullOrEmpty
+                $existingAudit | Should-BeTruthy
             }
 
             # Remove the audits
@@ -172,7 +172,7 @@ Describe 'Remove-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             foreach ($auditName in $script:testAuditNames)
             {
                 $removedAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $auditName -ErrorAction 'SilentlyContinue'
-                $removedAudit | Should -BeNullOrEmpty
+                $removedAudit | Should-BeFalsy
             }
         }
     }

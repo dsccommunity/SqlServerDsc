@@ -32,13 +32,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -58,8 +60,8 @@ Describe 'Remove-SqlDscRSEncryptionKey' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -76,16 +78,16 @@ Describe 'Remove-SqlDscRSEncryptionKey' {
         It 'Should remove encrypted content without errors' {
             $null = $mockCimInstance | Remove-SqlDscRSEncryptionKey -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'DeleteEncryptionKey' -and
                 $Arguments.InstallationID -eq 'Test-Installation-ID'
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should not return anything by default' {
             $result = $mockCimInstance | Remove-SqlDscRSEncryptionKey -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -102,8 +104,8 @@ Describe 'Remove-SqlDscRSEncryptionKey' {
         It 'Should return the configuration CIM instance' {
             $result = $mockCimInstance | Remove-SqlDscRSEncryptionKey -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -120,7 +122,7 @@ Describe 'Remove-SqlDscRSEncryptionKey' {
         It 'Should remove encrypted content without confirmation' {
             $null = $mockCimInstance | Remove-SqlDscRSEncryptionKey -Force
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -137,7 +139,7 @@ Describe 'Remove-SqlDscRSEncryptionKey' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Remove-SqlDscRSEncryptionKey -Confirm:$false } | Should -Throw -ErrorId 'RRSEK0001,Remove-SqlDscRSEncryptionKey'
+            { $mockCimInstance | Remove-SqlDscRSEncryptionKey -Confirm:$false } | Should-Throw -FullyQualifiedErrorId 'RRSEK0001,Remove-SqlDscRSEncryptionKey'
         }
     }
 
@@ -154,7 +156,7 @@ Describe 'Remove-SqlDscRSEncryptionKey' {
         It 'Should not call Invoke-RsCimMethod' {
             $mockCimInstance | Remove-SqlDscRSEncryptionKey -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
         }
     }
 
@@ -171,7 +173,7 @@ Describe 'Remove-SqlDscRSEncryptionKey' {
         It 'Should remove encrypted content' {
             $null = Remove-SqlDscRSEncryptionKey -Configuration $mockCimInstance -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 }

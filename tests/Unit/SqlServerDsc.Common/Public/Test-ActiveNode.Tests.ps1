@@ -68,13 +68,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:subModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:subModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:subModuleName -All | Remove-Module -Force
@@ -94,7 +96,7 @@ Describe 'SqlServerDsc.Common\Test-ActiveNode' -Tag 'TestActiveNode' {
         }
 
         It 'Should return $true' {
-            Test-ActiveNode -ServerObject $mockServerObject | Should -BeTrue
+            Test-ActiveNode -ServerObject $mockServerObject | Should-BeTrue
         }
     }
 
@@ -115,7 +117,7 @@ Describe 'SqlServerDsc.Common\Test-ActiveNode' -Tag 'TestActiveNode' {
         ) {
             $mockServerObject.ComputerNamePhysicalNetBIOS = $ComputerNamePhysicalNetBIOS
 
-            Test-ActiveNode -ServerObject $mockServerObject | Should -Be $Result
+            Test-ActiveNode -ServerObject $mockServerObject | Should-Be $Result
         }
     }
 }

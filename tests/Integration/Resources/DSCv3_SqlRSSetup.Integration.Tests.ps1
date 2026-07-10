@@ -105,7 +105,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_Po
 
             Write-Verbose -Message "Result:`n$($result | ConvertTo-Json | Out-String)" -Verbose
 
-            $result.inDesiredState | Should -BeFalse
+            $result.inDesiredState | Should-BeFalse
         }
     }
 
@@ -169,7 +169,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_Po
 
             Write-Verbose -Message "Result:`n$($result | ConvertTo-Json | Out-String)" -Verbose
 
-            $result.inDesiredState | Should -BeTrue
+            $result.inDesiredState | Should-BeTrue
         }
     }
 }

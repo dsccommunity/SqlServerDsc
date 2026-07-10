@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -104,14 +106,14 @@ Describe 'Remove-SqlDscRole' -Tag 'Public' {
 
             Remove-SqlDscRole -ServerObject $mockServerWithRefresh -Name 'CustomRole' -Refresh -Force
 
-            $script:refreshCalled | Should -BeTrue
+            $script:refreshCalled | Should-BeTrue
         }
 
         It 'Should throw an error when role does not exist' {
             Mock -CommandName 'Write-Verbose'
 
             { Remove-SqlDscRole -ServerObject $mockServerObject -Name 'NonExistentRole' -Force } |
-                Should -Throw '*was not found*'
+                Should-Throw '*was not found*'
         }
     }
 
@@ -160,14 +162,14 @@ Describe 'Remove-SqlDscRole' -Tag 'Public' {
             Mock -CommandName 'Write-Verbose'
 
             { Remove-SqlDscRole -ServerObject $mockServerObject -Name 'sysadmin' -Force } |
-                Should -Throw '*Cannot remove built-in*'
+                Should-Throw '*Cannot remove built-in*'
         }
 
         It 'Should throw an error when trying to remove a built-in role using RoleObject' {
             Mock -CommandName 'Write-Verbose'
 
             { Remove-SqlDscRole -RoleObject $mockBuiltInRole -Force } |
-                Should -Throw '*Cannot remove built-in*'
+                Should-Throw '*Cannot remove built-in*'
         }
     }
 
@@ -198,7 +200,7 @@ Describe 'Remove-SqlDscRole' -Tag 'Public' {
             Mock -CommandName 'Write-Verbose'
 
             { Remove-SqlDscRole -ServerObject $mockServerObject -Name 'CustomRole' -Force } |
-                Should -Throw '*Failed to remove*'
+                Should-Throw '*Failed to remove*'
         }
     }
 
@@ -220,36 +222,36 @@ Describe 'Remove-SqlDscRole' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have ServerObject as a mandatory parameter in ServerObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Remove-SqlDscRole').Parameters['ServerObject']
             $serverObjectParameterSet = $parameterInfo.ParameterSets['ServerObject']
-            $serverObjectParameterSet.IsMandatory | Should -BeTrue
+            $serverObjectParameterSet.IsMandatory | Should-BeTrue
         }
 
         It 'Should have Name as a mandatory parameter in ServerObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Remove-SqlDscRole').Parameters['Name']
             $nameParameterSet = $parameterInfo.ParameterSets['ServerObject']
-            $nameParameterSet.IsMandatory | Should -BeTrue
+            $nameParameterSet.IsMandatory | Should-BeTrue
         }
 
         It 'Should have RoleObject as a mandatory parameter in RoleObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Remove-SqlDscRole').Parameters['RoleObject']
             $roleObjectParameterSet = $parameterInfo.ParameterSets['RoleObject']
-            $roleObjectParameterSet.IsMandatory | Should -BeTrue
+            $roleObjectParameterSet.IsMandatory | Should-BeTrue
         }
 
         It 'Should have Force as a non-mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Remove-SqlDscRole').Parameters['Force']
-            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
 
         It 'Should have Refresh as a non-mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Remove-SqlDscRole').Parameters['Refresh']
-            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
     }
 }

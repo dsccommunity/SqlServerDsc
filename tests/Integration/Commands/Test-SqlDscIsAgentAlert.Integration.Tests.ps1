@@ -62,13 +62,13 @@ Describe 'Test-SqlDscIsAgentAlert' -Tag @('Integration_SQL2017', 'Integration_SQ
         It 'Should return true for existing alert' {
             $result = $script:sqlServerObject | Test-SqlDscIsAgentAlert -Name 'IntegrationTest_SeverityAlert' -ErrorAction 'Stop'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should return false for non-existent alert' {
             $result = $script:sqlServerObject | Test-SqlDscIsAgentAlert -Name 'NonExistentAlert' -ErrorAction 'Stop'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 }

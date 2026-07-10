@@ -34,13 +34,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -226,44 +228,44 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             # Execute the command
             $result = Get-SqlDscRSSetupConfiguration
 
-            $result | Should -HaveCount 2
+            $result | Should-BeCollection -Count 2
 
-            $result[0].InstanceName | Should -Be $mockSSRSInstance.InstanceName
-            $result[0].InstallFolder | Should -Be $mockInstallFolder
-            $result[0].ServiceName | Should -Be $mockServiceName
-            $result[0].VirtualRootServer | Should -Be $mockVirtualRootServer
-            $result[0].ConfigFilePath | Should -Be $mockConfigFilePath
-            $result[0].ErrorDumpDirectory | Should -Be $mockErrorDumpDirectory
-            $result[0].CustomerFeedback | Should -Be $mockCustomerFeedback
-            $result[0].EnableErrorReporting | Should -Be $mockEnableErrorReporting
-            $result[0].CurrentVersion | Should -Be $mockCurrentVersion
-            $result[0].ProductVersion | Should -Be $mockProductVersion
-            $result[0].EditionID | Should -Be 2176971986
-            $result[0].EditionName | Should -Be 'SQL Server Developer'
-            $result[0].IsSharePointIntegrated | Should -BeFalse
-            $result[0].InstanceId | Should -Be 'SSRS'
+            $result[0].InstanceName | Should-Be $mockSSRSInstance.InstanceName
+            $result[0].InstallFolder | Should-Be $mockInstallFolder
+            $result[0].ServiceName | Should-Be $mockServiceName
+            $result[0].VirtualRootServer | Should-Be $mockVirtualRootServer
+            $result[0].ConfigFilePath | Should-Be $mockConfigFilePath
+            $result[0].ErrorDumpDirectory | Should-Be $mockErrorDumpDirectory
+            $result[0].CustomerFeedback | Should-Be $mockCustomerFeedback
+            $result[0].EnableErrorReporting | Should-Be $mockEnableErrorReporting
+            $result[0].CurrentVersion | Should-Be $mockCurrentVersion
+            $result[0].ProductVersion | Should-Be $mockProductVersion
+            $result[0].EditionID | Should-Be 2176971986
+            $result[0].EditionName | Should-Be 'SQL Server Developer'
+            $result[0].IsSharePointIntegrated | Should-BeFalse
+            $result[0].InstanceId | Should-Be 'SSRS'
 
-            $result[1].InstanceName | Should -Be $mockPBIRSInstance.InstanceName
-            $result[1].InstallFolder | Should -Be $mockInstallFolder
-            $result[1].ServiceName | Should -Be $mockServiceName
-            $result[1].VirtualRootServer | Should -Be $mockVirtualRootServer
-            $result[1].ConfigFilePath | Should -Be $mockConfigFilePath
-            $result[1].ErrorDumpDirectory | Should -Be $mockErrorDumpDirectory
-            $result[1].CustomerFeedback | Should -Be $mockCustomerFeedback
-            $result[1].EnableErrorReporting | Should -Be $mockEnableErrorReporting
-            $result[1].CurrentVersion | Should -Be $mockCurrentVersion
-            $result[1].ProductVersion | Should -Be $mockProductVersion
-            $result[1].EditionID | Should -Be 2176971986
-            $result[1].EditionName | Should -Be 'SQL Server Developer'
-            $result[1].IsSharePointIntegrated | Should -BeFalse
-            $result[1].InstanceId | Should -Be 'PBIRS'
+            $result[1].InstanceName | Should-Be $mockPBIRSInstance.InstanceName
+            $result[1].InstallFolder | Should-Be $mockInstallFolder
+            $result[1].ServiceName | Should-Be $mockServiceName
+            $result[1].VirtualRootServer | Should-Be $mockVirtualRootServer
+            $result[1].ConfigFilePath | Should-Be $mockConfigFilePath
+            $result[1].ErrorDumpDirectory | Should-Be $mockErrorDumpDirectory
+            $result[1].CustomerFeedback | Should-Be $mockCustomerFeedback
+            $result[1].EnableErrorReporting | Should-Be $mockEnableErrorReporting
+            $result[1].CurrentVersion | Should-Be $mockCurrentVersion
+            $result[1].ProductVersion | Should-Be $mockProductVersion
+            $result[1].EditionID | Should-Be 2176971986
+            $result[1].EditionName | Should-Be 'SQL Server Developer'
+            $result[1].IsSharePointIntegrated | Should-BeFalse
+            $result[1].InstanceId | Should-Be 'PBIRS'
 
-            Should -Invoke -CommandName Get-SqlDscInstalledInstance -ParameterFilter {
+            Should-Invoke -CommandName Get-SqlDscInstalledInstance -Exactly -ParameterFilter {
                 $ServiceType -eq 'ReportingServices' -and
                 -not $PSBoundParameters.ContainsKey('InstanceName')
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Get-RegistryPropertyValue -Exactly -Times 18
+            Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -Times 18
         }
     }
 
@@ -306,14 +308,14 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
         It 'Should return the correct instance' {
             $result = Get-SqlDscRSSetupConfiguration -InstanceName 'SSRS'
 
-            $result.InstanceName | Should -Be 'SSRS'
+            $result.InstanceName | Should-Be 'SSRS'
 
-            Should -Invoke -CommandName Get-SqlDscInstalledInstance -ParameterFilter {
+            Should-Invoke -CommandName Get-SqlDscInstalledInstance -Exactly -ParameterFilter {
                 $ServiceType -eq 'ReportingServices' -and
                 $InstanceName -eq 'SSRS'
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Get-RegistryPropertyValue -Exactly -Times 10
+            Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -Times 10
         }
     }
 
@@ -328,7 +330,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             It 'Should return an empty array' {
                 $result = Get-SqlDscRSSetupConfiguration
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
             }
         }
 
@@ -343,7 +345,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
                 # Execute the command
                 $result = Get-SqlDscRSSetupConfiguration -InstanceName 'NonExistentInstance'
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
             }
         }
     }
@@ -370,18 +372,18 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
         It 'Should return null for registry values' {
             $result = Get-SqlDscRSSetupConfiguration -InstanceName 'SSRS'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
-            $result.InstallFolder | Should -BeNullOrEmpty
-            $result.ServiceName | Should -BeNullOrEmpty
-            $result.VirtualRootServer | Should -BeNullOrEmpty
-            $result.ConfigFilePath | Should -BeNullOrEmpty
-            $result.ErrorDumpDirectory | Should -BeNullOrEmpty
-            $result.CustomerFeedback | Should -BeNullOrEmpty
-            $result.EnableErrorReporting | Should -BeNullOrEmpty
-            $result.CurrentVersion | Should -BeNullOrEmpty
-            $result.ProductVersion | Should -BeNullOrEmpty
-            $result.InstanceId | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
+            $result.InstallFolder | Should-BeFalsy
+            $result.ServiceName | Should-BeFalsy
+            $result.VirtualRootServer | Should-BeFalsy
+            $result.ConfigFilePath | Should-BeFalsy
+            $result.ErrorDumpDirectory | Should-BeFalsy
+            $result.CustomerFeedback | Should-BeFalsy
+            $result.EnableErrorReporting | Should-BeFalsy
+            $result.CurrentVersion | Should-BeFalsy
+            $result.ProductVersion | Should-BeFalsy
+            $result.InstanceId | Should-Be 'SSRS'
         }
     }
 
@@ -492,78 +494,78 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
         It 'Should use InstanceId in registry paths and return correct configuration' {
             $result = Get-SqlDscRSSetupConfiguration -InstanceName 'MSSQLSERVER'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'MSSQLSERVER'
-            $result.InstanceId | Should -Be 'MSRS13.MSSQLSERVER'
-            $result.InstallFolder | Should -Be $mockSQLPath.TrimEnd('\')
-            $result.ServiceName | Should -Be $mockServiceName
-            $result.VirtualRootServer | Should -Be $mockVirtualRootServer
-            $result.ConfigFilePath | Should -Be $mockConfigFilePath
-            $result.ErrorDumpDirectory | Should -Be $mockErrorDumpDirectory
-            $result.CustomerFeedback | Should -Be $mockCustomerFeedback
-            $result.EnableErrorReporting | Should -Be $mockEnableErrorReporting
-            $result.CurrentVersion | Should -Be $mockCurrentVersion
-            $result.ProductVersion | Should -Be $mockProductVersion
-            $result.EditionID | Should -Be 610778273
-            $result.EditionName | Should -Be 'SQL Server Developer'
-            $result.IsSharePointIntegrated | Should -BeFalse
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'MSSQLSERVER'
+            $result.InstanceId | Should-Be 'MSRS13.MSSQLSERVER'
+            $result.InstallFolder | Should-Be $mockSQLPath.TrimEnd('\')
+            $result.ServiceName | Should-Be $mockServiceName
+            $result.VirtualRootServer | Should-Be $mockVirtualRootServer
+            $result.ConfigFilePath | Should-Be $mockConfigFilePath
+            $result.ErrorDumpDirectory | Should-Be $mockErrorDumpDirectory
+            $result.CustomerFeedback | Should-Be $mockCustomerFeedback
+            $result.EnableErrorReporting | Should-Be $mockEnableErrorReporting
+            $result.CurrentVersion | Should-Be $mockCurrentVersion
+            $result.ProductVersion | Should-Be $mockProductVersion
+            $result.EditionID | Should-Be 610778273
+            $result.EditionName | Should-Be 'SQL Server Developer'
+            $result.IsSharePointIntegrated | Should-BeFalse
 
             # Verify that registry paths used InstanceId, not InstanceName
-            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+            Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -ParameterFilter {
                 $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
                 $Name -eq 'InstallRootDirectory'
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+            Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -ParameterFilter {
                 $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
                 $Name -eq 'SQLPath'
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+            Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -ParameterFilter {
                 $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
                 $Name -eq 'ServiceName'
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+            Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -ParameterFilter {
                 $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
                 $Name -eq 'RSVirtualRootServer'
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+            Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -ParameterFilter {
                 $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\Setup' -and
                 $Name -eq 'RsConfigFilePath'
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+            Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -ParameterFilter {
                 $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\CPE' -and
                 $Name -eq 'ErrorDumpDir'
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+            Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -ParameterFilter {
                 $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\CPE' -and
                 $Name -eq 'CustomerFeedback'
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+            Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -ParameterFilter {
                 $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\CPE' -and
                 $Name -eq 'EnableErrorReporting'
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+            Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -ParameterFilter {
                 $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\MSSQLServer\CurrentVersion' -and
                 $Name -eq 'CurrentVersion'
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+            Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -ParameterFilter {
                 $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.MSSQLSERVER\MSSQLServer\CurrentVersion' -and
                 $Name -eq 'ProductVersion'
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+            Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -ParameterFilter {
                 $Path -like 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQLSERVER*'
-            } -Exactly -Times 0
+            } -Times 0
 
-            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1
+            Should-Invoke -CommandName Get-CimInstance -Exactly -Times 1
         }
     }
 
@@ -605,7 +607,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
         It 'Should return correct install folder' {
             $result = Get-SqlDscRSSetupConfiguration -InstanceName 'MSSQLSERVER'
 
-            $result.InstallFolder | Should -Be $mockSQLPath
+            $result.InstallFolder | Should-Be $mockSQLPath
 
         }
     }

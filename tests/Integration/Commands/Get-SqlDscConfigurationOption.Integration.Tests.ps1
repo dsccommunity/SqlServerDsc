@@ -71,21 +71,21 @@ Describe 'Get-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
                 Casting to array to ensure we get the count on Windows PowerShell
                 when there is only one configuration option.
             #>
-            @($result).Count | Should -BeGreaterOrEqual 1
-            @($result)[0] | Should -BeOfType 'PSCustomObject'
-            @($result)[0].PSTypeNames[0] | Should -Be 'SqlDsc.ConfigurationOption'
+            @($result).Count | Should-BeGreaterThanOrEqual 1
+            @($result)[0] | Should-HaveType 'PSCustomObject'
+            @($result)[0].PSTypeNames[0] | Should-Be 'SqlDsc.ConfigurationOption'
         }
 
         It 'Should return configuration options with expected properties' {
             $result = Get-SqlDscConfigurationOption -ServerObject $script:serverObject
 
             $firstOption = @($result)[0]
-            $firstOption.Name | Should -Not -BeNullOrEmpty
-            $firstOption.PSObject.Properties.Name | Should -Contain 'RunValue'
-            $firstOption.PSObject.Properties.Name | Should -Contain 'ConfigValue'
-            $firstOption.PSObject.Properties.Name | Should -Contain 'Minimum'
-            $firstOption.PSObject.Properties.Name | Should -Contain 'Maximum'
-            $firstOption.PSObject.Properties.Name | Should -Contain 'IsDynamic'
+            $firstOption.Name | Should-BeTruthy
+            $firstOption.PSObject.Properties.Name | Should-ContainCollection 'RunValue'
+            $firstOption.PSObject.Properties.Name | Should-ContainCollection 'ConfigValue'
+            $firstOption.PSObject.Properties.Name | Should-ContainCollection 'Minimum'
+            $firstOption.PSObject.Properties.Name | Should-ContainCollection 'Maximum'
+            $firstOption.PSObject.Properties.Name | Should-ContainCollection 'IsDynamic'
         }
     }
 
@@ -93,26 +93,26 @@ Describe 'Get-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
         It 'Should return the Agent XPs configuration option with expected values' {
             $result = Get-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'PSCustomObject'
-            $result.PSTypeNames[0] | Should -Be 'SqlDsc.ConfigurationOption'
-            $result.Name | Should -Be 'Agent XPs'
-            $result.RunValue | Should -Be 1
-            $result.ConfigValue | Should -Be 1
-            $result.Minimum | Should -Be 0
-            $result.Maximum | Should -Be 1
-            $result.IsDynamic | Should -BeTrue
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'PSCustomObject'
+            $result.PSTypeNames[0] | Should-Be 'SqlDsc.ConfigurationOption'
+            $result.Name | Should-Be 'Agent XPs'
+            $result.RunValue | Should-Be 1
+            $result.ConfigValue | Should-Be 1
+            $result.Minimum | Should-Be 0
+            $result.Maximum | Should-Be 1
+            $result.IsDynamic | Should-BeTrue
         }
 
         It 'Should throw an error when the configuration option does not exist' {
             { Get-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'NonExistentOption' -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
 
         It 'Should return null when the configuration option does not exist and error action is SilentlyContinue' {
             $result = Get-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'NonExistentOption' -ErrorAction 'SilentlyContinue'
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -120,8 +120,8 @@ Describe 'Get-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
         It 'Should return configuration options that match the wildcard pattern' {
             $result = Get-SqlDscConfigurationOption -ServerObject $script:serverObject -Name '*XP*'
 
-            @($result).Count | Should -BeGreaterOrEqual 1
-            $result | Where-Object -FilterScript { $_.Name -eq 'Agent XPs' } | Should -Not -BeNullOrEmpty
+            @($result).Count | Should-BeGreaterThanOrEqual 1
+            $result | Where-Object -FilterScript { $_.Name -eq 'Agent XPs' } | Should-BeTruthy
         }
     }
 
@@ -129,11 +129,11 @@ Describe 'Get-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
         It 'Should return raw SMO ConfigProperty objects' {
             $result = Get-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Raw
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
-            $result.DisplayName | Should -Be 'Agent XPs'
-            $result.RunValue | Should -Be 1
-            $result.ConfigValue | Should -Be 1
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
+            $result.DisplayName | Should-Be 'Agent XPs'
+            $result.RunValue | Should-Be 1
+            $result.ConfigValue | Should-Be 1
         }
     }
 
@@ -142,9 +142,9 @@ Describe 'Get-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
             $resultWithoutRefresh = Get-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs'
             $resultWithRefresh = Get-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Refresh
 
-            $resultWithoutRefresh.Name | Should -Be $resultWithRefresh.Name
-            $resultWithoutRefresh.RunValue | Should -Be $resultWithRefresh.RunValue
-            $resultWithoutRefresh.ConfigValue | Should -Be $resultWithRefresh.ConfigValue
+            $resultWithoutRefresh.Name | Should-Be $resultWithRefresh.Name
+            $resultWithoutRefresh.RunValue | Should-Be $resultWithRefresh.RunValue
+            $resultWithoutRefresh.ConfigValue | Should-Be $resultWithRefresh.ConfigValue
         }
     }
 
@@ -152,10 +152,10 @@ Describe 'Get-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integrat
         It 'Should accept ServerObject from pipeline' {
             $result = $script:serverObject | Get-SqlDscConfigurationOption -Name 'Agent XPs'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'PSCustomObject'
-            $result.Name | Should -Be 'Agent XPs'
-            $result.RunValue | Should -Be 1
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'PSCustomObject'
+            $result.Name | Should-Be 'Agent XPs'
+            $result.RunValue | Should-Be 1
         }
     }
 }
