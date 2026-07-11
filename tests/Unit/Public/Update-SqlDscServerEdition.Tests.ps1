@@ -107,13 +107,13 @@ Describe 'Update-SqlDscServerEdition' -Tag 'Public' {
                     Update-SqlDscServerEdition -Confirm:$false @mockDefaultParameters
 
                     Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=EditionUpgrade'
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="MSSQLSERVER"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/PID="12345-12345-12345-12345-12345"'
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/ACTION=EditionUpgrade'
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/INSTANCENAME="MSSQLSERVER"' # cspell: disable-line
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/PID="12345-12345-12345-12345-12345"'
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Scope It -Times 1          } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -122,11 +122,11 @@ Describe 'Update-SqlDscServerEdition' -Tag 'Public' {
                     Update-SqlDscServerEdition -Force @mockDefaultParameters
 
                     Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=EditionUpgrade'
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/ACTION=EditionUpgrade'
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Scope It -Times 1s 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -171,11 +171,11 @@ Describe 'Update-SqlDscServerEdition' -Tag 'Public' {
                 Update-SqlDscServerEdition @updateSqlDscServerEditionParameters
 
                 Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly $MockExpectedRegEx
+                    $ArgumentList | Should-MatchString -CaseSensitive $MockExpectedRegEx
 
                     # Return $true if none of the above throw.
                     $true
-                } -Scope It -Times 1s 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 

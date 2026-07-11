@@ -138,7 +138,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.WorkingDirectory | Should-Be 'C:\Temp'
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
@@ -193,7 +193,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.WorkingDirectory | Should-Be 'C:\Temp'
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
@@ -248,7 +248,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.WorkingDirectory | Should-BeFalsy
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
@@ -303,7 +303,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.WorkingDirectory | Should-BeFalsy
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }

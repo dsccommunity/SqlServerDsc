@@ -101,7 +101,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Path | Should-Be $ConfigurationData.AllNodes.DataFilePath
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
@@ -152,7 +152,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Path | Should-Be $ConfigurationData.AllNodes.LogFilePath
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
@@ -204,7 +204,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Path | Should-Be $ConfigurationData.AllNodes.BackupFilePath.TrimEnd('\')
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }

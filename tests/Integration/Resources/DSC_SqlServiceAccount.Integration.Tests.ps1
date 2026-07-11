@@ -143,7 +143,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.ServiceAccountName | Should-Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $ConfigurationData.AllNodes.SqlSecondary_UserName -Leaf))
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
@@ -194,7 +194,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.ServiceAccountName | Should-Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $ConfigurationData.AllNodes.SqlAgentSecondary_UserName -Leaf))
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
@@ -245,7 +245,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.ServiceAccountName | Should-Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $ConfigurationData.AllNodes.SqlPrimary_UserName -Leaf))
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
@@ -296,7 +296,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.ServiceAccountName | Should-Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $ConfigurationData.AllNodes.SqlAgentPrimary_UserName -Leaf))
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
@@ -380,7 +380,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.ServiceAccountName | Should-Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $ConfigurationData.AllNodes.SqlSecondary_UserName -Leaf))
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
@@ -431,7 +431,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.ServiceAccountName | Should-Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $ConfigurationData.AllNodes.SqlAgentSecondary_UserName -Leaf))
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
@@ -482,7 +482,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.ServiceAccountName | Should-Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $ConfigurationData.AllNodes.SqlPrimary_UserName -Leaf))
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
@@ -533,7 +533,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.ServiceAccountName | Should-Be ('{0}\{1}' -f $env:COMPUTERNAME, (Split-Path -Path $ConfigurationData.AllNodes.SqlAgentPrimary_UserName -Leaf))
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }

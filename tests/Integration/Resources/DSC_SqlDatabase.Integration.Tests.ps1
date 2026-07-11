@@ -107,7 +107,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.OwnerName | Should-Be ('{0}\SqlAdmin' -f $env:COMPUTERNAME)
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
@@ -161,7 +161,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Collation | Should-Be $ConfigurationData.AllNodes.Collation
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
@@ -215,7 +215,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.CompatibilityLevel | Should-Be $ConfigurationData.AllNodes.CompatibilityLevel
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
@@ -269,7 +269,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.RecoveryModel | Should-Be $ConfigurationData.AllNodes.RecoveryModel
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
@@ -323,7 +323,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.OwnerName | Should-Be $ConfigurationData.AllNodes.OwnerName
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
@@ -377,7 +377,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.SnapshotIsolation | Should-Be $ConfigurationData.AllNodes.SnapshotIsolation
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
@@ -435,7 +435,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.SnapshotIsolation | Should-BeFalsy
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }

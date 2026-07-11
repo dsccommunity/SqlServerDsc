@@ -153,7 +153,7 @@ Describe "$($script:dscResourceName)_Integration" -Skip  {
             $resourceCurrentState.Ensure | Should-Be 'Present'
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
@@ -203,7 +203,7 @@ Describe "$($script:dscResourceName)_Integration" -Skip  {
             $resourceCurrentState.Ensure | Should-Be 'Absent'
         }
 
-        It 'Should return $true when Test-DscConfiguration is run' {
+        It 'Should return True when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
