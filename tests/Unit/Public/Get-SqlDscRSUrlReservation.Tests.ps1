@@ -32,13 +32,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -64,8 +66,8 @@ Describe 'Get-SqlDscRSUrlReservation' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -83,13 +85,13 @@ Describe 'Get-SqlDscRSUrlReservation' {
         It 'Should return URL reservations without errors' {
             $result = $mockCimInstance | Get-SqlDscRSUrlReservation
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Application | Should -HaveCount 2
-            $result.UrlString | Should -HaveCount 2
+            $result | Should-BeTruthy
+            $result.Application | Should-BeCollection -Count 2
+            $result.UrlString | Should-BeCollection -Count 2
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'ListReservedUrls'
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -107,10 +109,10 @@ Describe 'Get-SqlDscRSUrlReservation' {
         It 'Should get URL reservations' {
             $result = Get-SqlDscRSUrlReservation -Configuration $mockCimInstance
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Application | Should -Contain 'ReportServerWebService'
+            $result | Should-BeTruthy
+            $result.Application | Should-ContainCollection 'ReportServerWebService'
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -122,7 +124,7 @@ Describe 'Get-SqlDscRSUrlReservation' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Get-SqlDscRSUrlReservation } | Should -Throw -ErrorId 'GSRUR0001,Get-SqlDscRSUrlReservation'
+            { $mockCimInstance | Get-SqlDscRSUrlReservation } | Should-Throw -FullyQualifiedErrorId 'GSRUR0001,Get-SqlDscRSUrlReservation'
         }
     }
 
@@ -134,7 +136,7 @@ Describe 'Get-SqlDscRSUrlReservation' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Get-SqlDscRSUrlReservation } | Should -Throw -ErrorId 'GSRUR0001,Get-SqlDscRSUrlReservation'
+            { $mockCimInstance | Get-SqlDscRSUrlReservation } | Should-Throw -FullyQualifiedErrorId 'GSRUR0001,Get-SqlDscRSUrlReservation'
         }
     }
 }

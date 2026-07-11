@@ -79,29 +79,30 @@ END
     It 'Should get all alerts' {
         $alerts = $script:sqlServerObject | Get-SqlDscAgentAlert
 
-        $alerts | Should -Not -BeNullOrEmpty
-        $alerts | Should -BeOfType [Microsoft.SqlServer.Management.Smo.Agent.Alert]
+        $alerts | Should-BeTruthy
+        $alerts | Should-HaveType 'System.Object[]'
+        $alerts[0] | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Agent.Alert'
     }
 
     It 'Should get specific alert by name' {
         $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_GetAlert1'
 
-        $alert | Should -Not -BeNullOrEmpty
-        $alert.Name | Should -Be 'IntegrationTest_GetAlert1'
-        $alert.Severity | Should -Be 16
+        $alert | Should-BeTruthy
+        $alert.Name | Should-Be 'IntegrationTest_GetAlert1'
+        $alert.Severity | Should-Be 16
     }
 
     It 'Should return null for non-existent alert' {
         $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'NonExistentAlert'
 
-        $alert | Should -BeNull
+        $alert | Should-BeFalsy
     }
 
     It 'Should get alert with message ID' {
         $alert = $script:sqlServerObject | Get-SqlDscAgentAlert -Name 'IntegrationTest_GetAlert2'
 
-        $alert | Should -Not -BeNullOrEmpty
-        $alert.Name | Should -Be 'IntegrationTest_GetAlert2'
-        $alert.MessageId | Should -Be 50001
+        $alert | Should-BeTruthy
+        $alert.Name | Should-Be 'IntegrationTest_GetAlert2'
+        $alert.MessageId | Should-Be 50001
     }
 }

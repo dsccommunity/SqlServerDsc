@@ -51,7 +51,7 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integr
         It 'Should have the default instance SQL Server service started' {
             $getServiceResult = Get-Service -Name 'MSSQLSERVER' -ErrorAction 'Stop'
 
-            $getServiceResult.Status | Should -Be 'Running'
+            $getServiceResult.Status | Should-Be 'Running'
         }
 
         Context 'When disconnecting using Force parameter' {
@@ -67,13 +67,13 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integr
 
                 $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+                $sqlServerObject.Status.ToString() | Should-MatchString '^Online$'
 
                 # Test the disconnect functionality
                 Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject -Force -ErrorAction 'Stop'
 
                 # After disconnect, the connection should be closed
-                $sqlServerObject.ConnectionContext.IsOpen | Should -BeFalse
+                $sqlServerObject.ConnectionContext.IsOpen | Should-BeFalse
             }
         }
 
@@ -90,13 +90,13 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integr
 
                 $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+                $sqlServerObject.Status.ToString() | Should-MatchString '^Online$'
 
                 # Test the disconnect functionality via pipeline
                 $sqlServerObject | Disconnect-SqlDscDatabaseEngine -Force -ErrorAction 'Stop'
 
                 # After disconnect, the connection should be closed
-                $sqlServerObject.ConnectionContext.IsOpen | Should -BeFalse
+                $sqlServerObject.ConnectionContext.IsOpen | Should-BeFalse
             }
         }
     }
@@ -105,7 +105,7 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integr
         It 'Should have the named instance SQL Server service started' {
             $getServiceResult = Get-Service -Name 'MSSQL$DSCSQLTEST' -ErrorAction 'Stop'
 
-            $getServiceResult.Status | Should -Be 'Running'
+            $getServiceResult.Status | Should-Be 'Running'
         }
 
         Context 'When disconnecting using Windows authentication' {
@@ -122,13 +122,13 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integr
 
                 $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+                $sqlServerObject.Status.ToString() | Should-MatchString '^Online$'
 
                 # Test the disconnect functionality
                 Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject -Force -ErrorAction 'Stop'
 
                 # After disconnect, the connection should be closed
-                $sqlServerObject.ConnectionContext.IsOpen | Should -BeFalse
+                $sqlServerObject.ConnectionContext.IsOpen | Should-BeFalse
             }
         }
 
@@ -147,13 +147,13 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2017', 'Integr
 
                 $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+                $sqlServerObject.Status.ToString() | Should-MatchString '^Online$'
 
                 # Test the disconnect functionality
                 Disconnect-SqlDscDatabaseEngine -ServerObject $sqlServerObject -Force -ErrorAction 'Stop'
 
                 # After disconnect, the connection should be closed
-                $sqlServerObject.ConnectionContext.IsOpen | Should -BeFalse
+                $sqlServerObject.ConnectionContext.IsOpen | Should-BeFalse
             }
         }
     }

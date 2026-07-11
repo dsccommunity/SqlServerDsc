@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -62,26 +64,26 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
         It 'Should create a FileGroup successfully' {
             $result = New-SqlDscFileGroup -Database $mockDatabaseObject -Name 'MyFileGroup' -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
-            $result.Name | Should -Be 'MyFileGroup'
-            $result.Parent | Should -Be $mockDatabaseObject
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.FileGroup'
+            $result.Name | Should-Be 'MyFileGroup'
+            $result.Parent | Should-Be $mockDatabaseObject
         }
 
         It 'Should create a PRIMARY FileGroup successfully' {
             $result = New-SqlDscFileGroup -Database $mockDatabaseObject -Name 'PRIMARY' -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'PRIMARY'
-            $result.Parent | Should -Be $mockDatabaseObject
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'PRIMARY'
+            $result.Parent | Should-Be $mockDatabaseObject
         }
 
         It 'Should support Force parameter to bypass confirmation' {
             $result = New-SqlDscFileGroup -Database $mockDatabaseObject -Name 'ForcedFileGroup' -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'ForcedFileGroup'
-            $result.Parent | Should -Be $mockDatabaseObject
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'ForcedFileGroup'
+            $result.Parent | Should-Be $mockDatabaseObject
         }
 
         It 'Should throw terminating error when Database object has no Parent property set' {
@@ -89,13 +91,13 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
             $mockDatabaseWithoutParent.Name = 'TestDatabaseNoParent'
 
             { New-SqlDscFileGroup -Database $mockDatabaseWithoutParent -Name 'InvalidFileGroup' -Confirm:$false } |
-                Should -Throw -ExpectedMessage '*must have a Server object attached to the Parent property*' -ErrorId 'NSDFG0003,New-SqlDscFileGroup'
+                Should-Throw -ExceptionMessage '*must have a Server object attached to the Parent property*' -FullyQualifiedErrorId 'NSDFG0003,New-SqlDscFileGroup'
         }
 
         It 'Should return null when WhatIf is specified' {
             $result = New-SqlDscFileGroup -Database $mockDatabaseObject -Name 'WhatIfFileGroup' -WhatIf
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -103,18 +105,18 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
         It 'Should create a standalone FileGroup without a Database' {
             $result = New-SqlDscFileGroup -Name 'StandaloneFileGroup'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
-            $result.Name | Should -Be 'StandaloneFileGroup'
-            $result.Parent | Should -BeNullOrEmpty
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.FileGroup'
+            $result.Name | Should-Be 'StandaloneFileGroup'
+            $result.Parent | Should-BeFalsy
         }
 
         It 'Should create a standalone PRIMARY FileGroup' {
             $result = New-SqlDscFileGroup -Name 'PRIMARY'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'PRIMARY'
-            $result.Parent | Should -BeNullOrEmpty
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'PRIMARY'
+            $result.Parent | Should-BeFalsy
         }
     }
 
@@ -123,12 +125,12 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
             InModuleScope -ScriptBlock {
                 $result = New-SqlDscFileGroup -Name 'MyFileGroup' -AsSpec
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.GetType().Name | Should -Be 'DatabaseFileGroupSpec'
-                $result.Name | Should -Be 'MyFileGroup'
-                $result.Files | Should -BeNullOrEmpty
-                $result.ReadOnly | Should -BeFalse
-                $result.IsDefault | Should -BeFalse
+                $result | Should-BeTruthy
+                $result.GetType().Name | Should-Be 'DatabaseFileGroupSpec'
+                $result.Name | Should-Be 'MyFileGroup'
+                $result.Files | Should-BeFalsy
+                $result.ReadOnly | Should-BeFalse
+                $result.IsDefault | Should-BeFalse
             }
         }
 
@@ -136,11 +138,11 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
             InModuleScope -ScriptBlock {
                 $result = New-SqlDscFileGroup -Name 'ReadOnlyFileGroup' -AsSpec -ReadOnly
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.GetType().Name | Should -Be 'DatabaseFileGroupSpec'
-                $result.Name | Should -Be 'ReadOnlyFileGroup'
-                $result.ReadOnly | Should -BeTrue
-                $result.IsDefault | Should -BeFalse
+                $result | Should-BeTruthy
+                $result.GetType().Name | Should-Be 'DatabaseFileGroupSpec'
+                $result.Name | Should-Be 'ReadOnlyFileGroup'
+                $result.ReadOnly | Should-BeTrue
+                $result.IsDefault | Should-BeFalse
             }
         }
 
@@ -148,11 +150,11 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
             InModuleScope -ScriptBlock {
                 $result = New-SqlDscFileGroup -Name 'PRIMARY' -AsSpec -IsDefault
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.GetType().Name | Should -Be 'DatabaseFileGroupSpec'
-                $result.Name | Should -Be 'PRIMARY'
-                $result.IsDefault | Should -BeTrue
-                $result.ReadOnly | Should -BeFalse
+                $result | Should-BeTruthy
+                $result.GetType().Name | Should-Be 'DatabaseFileGroupSpec'
+                $result.Name | Should-Be 'PRIMARY'
+                $result.IsDefault | Should-BeTrue
+                $result.ReadOnly | Should-BeFalse
             }
         }
 
@@ -169,12 +171,12 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
 
                 $result = New-SqlDscFileGroup -Name 'DataFileGroup' -AsSpec -Files @($mockFileSpec1, $mockFileSpec2)
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.GetType().Name | Should -Be 'DatabaseFileGroupSpec'
-                $result.Name | Should -Be 'DataFileGroup'
-                $result.Files | Should -HaveCount 2
-                $result.Files[0].Name | Should -Be 'TestFile1'
-                $result.Files[1].Name | Should -Be 'TestFile2'
+                $result | Should-BeTruthy
+                $result.GetType().Name | Should-Be 'DatabaseFileGroupSpec'
+                $result.Name | Should-Be 'DataFileGroup'
+                $result.Files | Should-BeCollection -Count 2
+                $result.Files[0].Name | Should-Be 'TestFile1'
+                $result.Files[1].Name | Should-Be 'TestFile2'
             }
         }
 
@@ -186,12 +188,12 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
 
                 $result = New-SqlDscFileGroup -Name 'PRIMARY' -AsSpec -Files @($mockFileSpec) -IsDefault -ReadOnly
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.GetType().Name | Should -Be 'DatabaseFileGroupSpec'
-                $result.Name | Should -Be 'PRIMARY'
-                $result.Files | Should -HaveCount 1
-                $result.IsDefault | Should -BeTrue
-                $result.ReadOnly | Should -BeTrue
+                $result | Should-BeTruthy
+                $result.GetType().Name | Should-Be 'DatabaseFileGroupSpec'
+                $result.Name | Should-Be 'PRIMARY'
+                $result.Files | Should-BeCollection -Count 1
+                $result.IsDefault | Should-BeTrue
+                $result.ReadOnly | Should-BeTrue
             }
         }
     }
@@ -225,14 +227,14 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
 
             $result = New-SqlDscFileGroup -Database $mockDatabaseObject -FileGroupSpec $mockFileGroupSpec -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
-            $result.Name | Should -Be 'SpecFileGroup'
-            $result.Parent | Should -Be $mockDatabaseObject
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.FileGroup'
+            $result.Name | Should-Be 'SpecFileGroup'
+            $result.Parent | Should-Be $mockDatabaseObject
 
-            Should -Invoke -CommandName ConvertTo-SqlDscFileGroup -ParameterFilter {
+            Should-Invoke -CommandName ConvertTo-SqlDscFileGroup -Exactly -ParameterFilter {
                 $DatabaseObject -eq $mockDatabaseObject -and $FileGroupSpec.Name -eq 'SpecFileGroup'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should create a FileGroup from a FileGroupSpec with properties set' {
@@ -246,14 +248,14 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
 
             $result = New-SqlDscFileGroup -Database $mockDatabaseObject -FileGroupSpec $mockFileGroupSpec -Force
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.FileGroup'
-            $result.Name | Should -Be 'ReadOnlySpec'
-            $result.ReadOnly | Should -BeTrue
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.FileGroup'
+            $result.Name | Should-Be 'ReadOnlySpec'
+            $result.ReadOnly | Should-BeTrue
 
-            Should -Invoke -CommandName ConvertTo-SqlDscFileGroup -ParameterFilter {
+            Should-Invoke -CommandName ConvertTo-SqlDscFileGroup -Exactly -ParameterFilter {
                 $DatabaseObject -eq $mockDatabaseObject -and $FileGroupSpec.ReadOnly -eq $true
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should throw terminating error when Database object has no Parent property set' {
@@ -267,7 +269,7 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
             }
 
             { New-SqlDscFileGroup -Database $mockDatabaseWithoutParent -FileGroupSpec $mockFileGroupSpec -Confirm:$false } |
-                Should -Throw -ExpectedMessage '*must have a Server object attached to the Parent property*' -ErrorId 'NSDFG0003,New-SqlDscFileGroup'
+                Should-Throw -ExceptionMessage '*must have a Server object attached to the Parent property*' -FullyQualifiedErrorId 'NSDFG0003,New-SqlDscFileGroup'
         }
 
         It 'Should return null when WhatIf is specified' {
@@ -279,7 +281,7 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
 
             $result = New-SqlDscFileGroup -Database $mockDatabaseObject -FileGroupSpec $mockFileGroupSpec -WhatIf
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -309,119 +311,119 @@ Describe 'New-SqlDscFileGroup' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have Database as a mandatory parameter in WithDatabase parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscFileGroup').Parameters['Database']
             $parameterSetInfo = $parameterInfo.ParameterSets['WithDatabase']
-            $parameterSetInfo.IsMandatory | Should -BeTrue
+            $parameterSetInfo.IsMandatory | Should-BeTrue
         }
 
         It 'Should have Database as a mandatory parameter in WithDatabaseFromSpec parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscFileGroup').Parameters['Database']
             $parameterSetInfo = $parameterInfo.ParameterSets['WithDatabaseFromSpec']
-            $parameterSetInfo.IsMandatory | Should -BeTrue
+            $parameterSetInfo.IsMandatory | Should-BeTrue
         }
 
         It 'Should have Database parameter not be in Standalone parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscFileGroup').Parameters['Database']
-            $parameterInfo.ParameterSets.Keys | Should -Not -Contain 'Standalone'
+            $parameterInfo.ParameterSets.Keys | Should-NotContainCollection 'Standalone'
         }
 
         It 'Should have Database parameter not be in AsSpec parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscFileGroup').Parameters['Database']
-            $parameterInfo.ParameterSets.Keys | Should -Not -Contain 'AsSpec'
+            $parameterInfo.ParameterSets.Keys | Should-NotContainCollection 'AsSpec'
         }
 
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscFileGroup').Parameters['Name']
-            $parameterInfo.Attributes.Mandatory | Should -Contain $true
+            $parameterInfo.Attributes.Mandatory | Should-ContainCollection $true
         }
 
         It 'Should have Name parameter in WithDatabase parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscFileGroup').Parameters['Name']
-            $parameterInfo.ParameterSets.Keys | Should -Contain 'WithDatabase'
+            $parameterInfo.ParameterSets.Keys | Should-ContainCollection 'WithDatabase'
         }
 
         It 'Should have Name parameter in Standalone parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscFileGroup').Parameters['Name']
-            $parameterInfo.ParameterSets.Keys | Should -Contain 'Standalone'
+            $parameterInfo.ParameterSets.Keys | Should-ContainCollection 'Standalone'
         }
 
         It 'Should have Name parameter in AsSpec parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscFileGroup').Parameters['Name']
-            $parameterInfo.ParameterSets.Keys | Should -Contain 'AsSpec'
+            $parameterInfo.ParameterSets.Keys | Should-ContainCollection 'AsSpec'
         }
 
         It 'Should have Name parameter not be in WithDatabaseFromSpec parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscFileGroup').Parameters['Name']
-            $parameterInfo.ParameterSets.Keys | Should -Not -Contain 'WithDatabaseFromSpec'
+            $parameterInfo.ParameterSets.Keys | Should-NotContainCollection 'WithDatabaseFromSpec'
         }
 
         It 'Should have FileGroupSpec as a mandatory parameter in WithDatabaseFromSpec parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscFileGroup').Parameters['FileGroupSpec']
             $parameterSetInfo = $parameterInfo.ParameterSets['WithDatabaseFromSpec']
-            $parameterSetInfo.IsMandatory | Should -BeTrue
+            $parameterSetInfo.IsMandatory | Should-BeTrue
         }
 
         It 'Should have AsSpec as a mandatory parameter in AsSpec parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscFileGroup').Parameters['AsSpec']
             $parameterSetInfo = $parameterInfo.ParameterSets['AsSpec']
-            $parameterSetInfo.IsMandatory | Should -BeTrue
+            $parameterSetInfo.IsMandatory | Should-BeTrue
         }
 
         It 'Should have Files parameter only in AsSpec parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscFileGroup').Parameters['Files']
-            $parameterInfo.ParameterSets.Keys | Should -Contain 'AsSpec'
-            $parameterInfo.ParameterSets.Keys | Should -HaveCount 1
+            $parameterInfo.ParameterSets.Keys | Should-ContainCollection 'AsSpec'
+            $parameterInfo.ParameterSets.Keys | Should-BeCollection -Count 1
         }
 
         It 'Should have ReadOnly parameter only in AsSpec parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscFileGroup').Parameters['ReadOnly']
-            $parameterInfo.ParameterSets.Keys | Should -Contain 'AsSpec'
-            $parameterInfo.ParameterSets.Keys | Should -HaveCount 1
+            $parameterInfo.ParameterSets.Keys | Should-ContainCollection 'AsSpec'
+            $parameterInfo.ParameterSets.Keys | Should-BeCollection -Count 1
         }
 
         It 'Should have IsDefault parameter only in AsSpec parameter set' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscFileGroup').Parameters['IsDefault']
-            $parameterInfo.ParameterSets.Keys | Should -Contain 'AsSpec'
-            $parameterInfo.ParameterSets.Keys | Should -HaveCount 1
+            $parameterInfo.ParameterSets.Keys | Should-ContainCollection 'AsSpec'
+            $parameterInfo.ParameterSets.Keys | Should-BeCollection -Count 1
         }
 
         It 'Should have four parameter sets (WithDatabase, WithDatabaseFromSpec, AsSpec, Standalone)' {
             $command = Get-Command -Name 'New-SqlDscFileGroup'
-            $command.ParameterSets.Count | Should -Be 4
-            $command.ParameterSets.Name | Should -Contain 'WithDatabase'
-            $command.ParameterSets.Name | Should -Contain 'WithDatabaseFromSpec'
-            $command.ParameterSets.Name | Should -Contain 'AsSpec'
-            $command.ParameterSets.Name | Should -Contain 'Standalone'
+            $command.ParameterSets.Count | Should-Be 4
+            $command.ParameterSets.Name | Should-ContainCollection 'WithDatabase'
+            $command.ParameterSets.Name | Should-ContainCollection 'WithDatabaseFromSpec'
+            $command.ParameterSets.Name | Should-ContainCollection 'AsSpec'
+            $command.ParameterSets.Name | Should-ContainCollection 'Standalone'
         }
 
         It 'Should have Standalone as the default parameter set' {
             $command = Get-Command -Name 'New-SqlDscFileGroup'
-            $command.DefaultParameterSet | Should -Be 'Standalone'
+            $command.DefaultParameterSet | Should-Be 'Standalone'
         }
 
         It 'Should support ShouldProcess' {
             $command = Get-Command -Name 'New-SqlDscFileGroup'
-            $command.Parameters.ContainsKey('WhatIf') | Should -BeTrue
-            $command.Parameters.ContainsKey('Confirm') | Should -BeTrue
+            $command.Parameters.ContainsKey('WhatIf') | Should-BeTrue
+            $command.Parameters.ContainsKey('Confirm') | Should-BeTrue
         }
 
         It 'Should have Force parameter only in WithDatabase and WithDatabaseFromSpec parameter sets' {
             $parameterInfo = (Get-Command -Name 'New-SqlDscFileGroup').Parameters['Force']
-            $parameterInfo | Should -Not -BeNullOrEmpty
-            $parameterInfo.ParameterSets.Keys | Should -Contain 'WithDatabase'
-            $parameterInfo.ParameterSets.Keys | Should -Contain 'WithDatabaseFromSpec'
-            $parameterInfo.ParameterSets.Keys | Should -HaveCount 2
+            $parameterInfo | Should-BeTruthy
+            $parameterInfo.ParameterSets.Keys | Should-ContainCollection 'WithDatabase'
+            $parameterInfo.ParameterSets.Keys | Should-ContainCollection 'WithDatabaseFromSpec'
+            $parameterInfo.ParameterSets.Keys | Should-BeCollection -Count 2
         }
 
         It 'Should have ConfirmImpact set to High' {
             $command = Get-Command -Name 'New-SqlDscFileGroup'
             $command.ScriptBlock.Attributes | Where-Object { $_.TypeId.Name -eq 'CmdletBindingAttribute' } |
-                ForEach-Object { $_.ConfirmImpact } | Should -Be 'High'
+                ForEach-Object { $_.ConfirmImpact } | Should-Be 'High'
         }
     }
 }

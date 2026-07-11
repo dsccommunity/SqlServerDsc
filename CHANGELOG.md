@@ -5,8 +5,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- SqlServerDsc
+  - Added adapted resource manifest generation to the build pipeline.
+
 ### Fixed
 
+- DSC_SqlRS and DSC_SqlWindowsFirewall
+  - Fixed a duplicated word in localized `TestFailedAfterSet` messages.
+- SqlServerDsc
+  - Updated unit test mocks for compatibility with Pester 6 (`6.0.0`):
+    added forwarding default mocks so cmdlet calls that no longer
+    fall through to the real command in Pester 6 behave as before, added a
+    `$null` default mock for `Get-RegistryPropertyValue` and a default
+    `Get-PrimaryReplicaServerObject` mock, and merged a duplicate `AfterAll`
+    block.
 - SqlScript
   - Fixed logic in `Get-TargetResource` and `Set-TargetResource` to throw an error
     when the SQL script file is missing, instead of incorrectly reporting success
@@ -22,6 +36,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- SqlServerDsc
+  - Bump GitHub actions checkout to v7
+  - Update tests to Pester 6 syntax where supported.
+  - Added Windows user credential format guidance to the credential overview
+    documentation. ([issue #1768](https://github.com/dsccommunity/SqlServerDsc/issues/1768))
 - SqlScript
   - Added integration test configuration that creates script files and executes
     the resource in a single configuration using `DependsOn`.
@@ -48,7 +67,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added SChannelDsc as a required module for integration tests and enabled the
     prerequisites tests `Ensure TLS 1.2 is enabled`  ([issue #2441](https://github.com/dsccommunity/SqlServerDsc/issues/2441)).
 - `SqlLogin`
-  - Added parameter `Language` to allow setting the default language used by the login.
+  - Added parameter `Language` to allow setting the default language used by the
+    login.
 
 ## [17.5.0] - 2026-01-30
 

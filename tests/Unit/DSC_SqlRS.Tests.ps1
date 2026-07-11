@@ -51,13 +51,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:dscResourceName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 
@@ -195,11 +197,11 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
 
                 $resultGetTargetResource = Get-TargetResource @mockDefaultParameters
 
-                $resultGetTargetResource.InstanceName | Should -Be $mockNamedInstanceName
-                $resultGetTargetResource.DatabaseServerName | Should -Be $mockReportingServicesDatabaseServerName
-                $resultGetTargetResource.DatabaseInstanceName | Should -Be $mockReportingServicesDatabaseNamedInstanceName
-                $resultGetTargetResource.Encrypt | Should -Be 'Optional'
-                $resultGetTargetResource | Should -BeOfType [System.Collections.Hashtable]
+                $resultGetTargetResource.InstanceName | Should-Be $mockNamedInstanceName
+                $resultGetTargetResource.DatabaseServerName | Should-Be $mockReportingServicesDatabaseServerName
+                $resultGetTargetResource.DatabaseInstanceName | Should-Be $mockReportingServicesDatabaseNamedInstanceName
+                $resultGetTargetResource.Encrypt | Should-Be 'Optional'
+                $resultGetTargetResource | Should-HaveType ([System.Collections.Hashtable])
             }
         }
 
@@ -214,15 +216,15 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
 
                 $resultGetTargetResource = Get-TargetResource @mockDefaultParameters
 
-                $resultGetTargetResource.IsInitialized | Should -BeTrue
-                $resultGetTargetResource.ReportServerVirtualDirectory | Should -Be $mockVirtualDirectoryReportServerName
-                $resultGetTargetResource.ReportsVirtualDirectory | Should -Be $mockVirtualDirectoryReportManagerName
-                $resultGetTargetResource.ReportServerReservedUrl | Should -Be $mockReportServerApplicationUrl
-                $resultGetTargetResource.ReportsReservedUrl | Should -Be $mockReportsApplicationUrl
-                $resultGetTargetResource.UseSsl | Should -BeFalse
+                $resultGetTargetResource.IsInitialized | Should-BeTrue
+                $resultGetTargetResource.ReportServerVirtualDirectory | Should-Be $mockVirtualDirectoryReportServerName
+                $resultGetTargetResource.ReportsVirtualDirectory | Should-Be $mockVirtualDirectoryReportManagerName
+                $resultGetTargetResource.ReportServerReservedUrl | Should-Be $mockReportServerApplicationUrl
+                $resultGetTargetResource.ReportsReservedUrl | Should-Be $mockReportsApplicationUrl
+                $resultGetTargetResource.UseSsl | Should-BeFalse
             }
 
-            Should -Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Scope It -Times 1
         }
 
         Context 'When SSL is not used' {
@@ -236,7 +238,7 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
 
                     $resultGetTargetResource = Get-TargetResource @mockDefaultParameters
 
-                    $resultGetTargetResource.UseSsl | Should -BeFalse
+                    $resultGetTargetResource.UseSsl | Should-BeFalse
                 }
             }
         }
@@ -252,7 +254,7 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
 
                     $resultGetTargetResource = Get-TargetResource @mockDefaultParameters
 
-                    $resultGetTargetResource.UseSsl | Should -BeTrue
+                    $resultGetTargetResource.UseSsl | Should-BeTrue
                 }
             }
         }
@@ -294,10 +296,10 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
 
                 $resultGetTargetResource = Get-TargetResource @testParameters
 
-                $resultGetTargetResource.InstanceName | Should -Be $mockDefaultInstanceName
-                $resultGetTargetResource.DatabaseServerName | Should -Be $mockReportingServicesDatabaseServerName
-                $resultGetTargetResource.DatabaseInstanceName | Should -Be $mockReportingServicesDatabaseDefaultInstanceName
-                $resultGetTargetResource | Should -BeOfType [System.Collections.Hashtable]
+                $resultGetTargetResource.InstanceName | Should-Be $mockDefaultInstanceName
+                $resultGetTargetResource.DatabaseServerName | Should-Be $mockReportingServicesDatabaseServerName
+                $resultGetTargetResource.DatabaseInstanceName | Should-Be $mockReportingServicesDatabaseDefaultInstanceName
+                $resultGetTargetResource | Should-HaveType ([System.Collections.Hashtable])
             }
         }
 
@@ -307,14 +309,14 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
 
                 $resultGetTargetResource = Get-TargetResource @testParameters
 
-                $resultGetTargetResource.IsInitialized | Should -BeFalse
-                $resultGetTargetResource.ReportServerVirtualDirectory | Should -BeNullOrEmpty
-                $resultGetTargetResource.ReportsVirtualDirectory | Should -BeNullOrEmpty
-                $resultGetTargetResource.ReportServerReservedUrl | Should -BeNullOrEmpty
-                $resultGetTargetResource.ReportsReservedUrl | Should -BeNullOrEmpty
+                $resultGetTargetResource.IsInitialized | Should-BeFalse
+                $resultGetTargetResource.ReportServerVirtualDirectory | Should-BeFalsy
+                $resultGetTargetResource.ReportsVirtualDirectory | Should-BeFalsy
+                $resultGetTargetResource.ReportServerReservedUrl | Should-BeFalsy
+                $resultGetTargetResource.ReportsReservedUrl | Should-BeFalsy
             }
 
-            Should -Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Get-SqlDscRSUrlReservation -Exactly -Scope It -Times 0
         }
 
         # Regression test for issue #822.
@@ -329,7 +331,7 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
 
                     $resultGetTargetResource = Get-TargetResource @testParameters
 
-                    $resultGetTargetResource.IsInitialized | Should -BeFalse
+                    $resultGetTargetResource.IsInitialized | Should-BeFalse
                 }
             }
         }
@@ -346,7 +348,7 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
 
                     $resultGetTargetResource = Get-TargetResource @testParameters
 
-                    $resultGetTargetResource.IsInitialized | Should -BeFalse
+                    $resultGetTargetResource.IsInitialized | Should-BeFalse
                 }
             }
         }
@@ -363,7 +365,7 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Get-TargetResource @mockDefaultParameters } | Should -Throw -ExpectedMessage ('*' + ($script:localizedData.ReportingServicesNotFound -f $mockDefaultParameters.InstanceName))
+                { Get-TargetResource @mockDefaultParameters } | Should-Throw -ExceptionMessage ('*' + ($script:localizedData.ReportingServicesNotFound -f $mockDefaultParameters.InstanceName))
             }
         }
     }
@@ -568,35 +570,35 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $null = Set-TargetResource @mockDefaultParameters
                 }
 
-                Should -Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Scope It -Times 1
 
-                Should -Invoke -CommandName Initialize-SqlDscRS -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Initialize-SqlDscRS -Exactly -Scope It -Times 1
 
-                Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Scope It -Times 1
 
-                Should -Invoke -CommandName Request-SqlDscRSDatabaseRightsScript -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Request-SqlDscRSDatabaseRightsScript -Exactly -Scope It -Times 1
 
-                Should -Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Scope It -Times 1
 
-                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscRSVirtualDirectory -Exactly -ParameterFilter {
                     $Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscRSVirtualDirectory -Exactly -ParameterFilter {
                     $Application -eq $mockReportsApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                     $Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                     $Application -eq $mockReportsApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It
-                Should -Invoke -CommandName Restart-SqlDscRSService -Exactly -Times 2 -Scope It
+                Should-Invoke -CommandName Get-CimInstance -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 2
+                Should-Invoke -CommandName Restart-SqlDscRSService -Exactly -Scope It -Times 2
             }
 
             Context 'When there is no Reporting Services instance after Set-TargetResource has been called' {
@@ -618,11 +620,11 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                             Encrypt              = 'Mandatory'
                         }
 
-                        { Set-TargetResource @mockDefaultParameters } | Should -Throw -ExpectedMessage ('*' + $script:localizedData.TestFailedAfterSet)
+                        { Set-TargetResource @mockDefaultParameters } | Should-Throw -ExceptionMessage ('*' + $script:localizedData.TestFailedAfterSet)
 
-                        Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+                        Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                             $PesterBoundParameters.Keys -contains 'Encrypt'
-                        } -Times 2 -Exactly -Scope It
+                        } -Scope It -Times 2
                     }
                 }
             }
@@ -645,7 +647,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                             UseSsl               = $true
                         }
 
-                        { Set-TargetResource @mockDefaultParameters } | Should -Throw ('*' + 'Unable to find WMI object Win32_OperatingSystem.')
+                        { Set-TargetResource @mockDefaultParameters } | Should-Throw ('*' + 'Unable to find WMI object Win32_OperatingSystem.')
                     }
                 }
             }
@@ -705,7 +707,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                             DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
                         }
 
-                        { Set-TargetResource @mockDefaultParameters } | Should -Throw -ExpectedMessage ('*' + ($script:localizedData.ServiceNameIsNullOrEmpty -f $mockNamedInstanceName))
+                        { Set-TargetResource @mockDefaultParameters } | Should-Throw -ExceptionMessage ('*' + ($script:localizedData.ServiceNameIsNullOrEmpty -f $mockNamedInstanceName))
                     }
                 }
 
@@ -743,7 +745,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                             DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
                         }
 
-                        { Set-TargetResource @mockDefaultParameters } | Should -Throw -ExpectedMessage ('*' + ($script:localizedData.ServiceNameIsNullOrEmpty -f $mockNamedInstanceName))
+                        { Set-TargetResource @mockDefaultParameters } | Should-Throw -ExceptionMessage ('*' + ($script:localizedData.ServiceNameIsNullOrEmpty -f $mockNamedInstanceName))
                     }
                 }
             }
@@ -804,43 +806,43 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             It 'Should configure Reporting Service without throwing an error' {
                 $null = Set-TargetResource @testParameters
 
-                Should -Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Scope It -Times 1
 
-                Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+                Should-Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                     $Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+                Should-Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                     $Application -eq $mockReportsApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Initialize-SqlDscRS -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Initialize-SqlDscRS -Exactly -Scope It -Times 0
 
-                Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Scope It -Times 0
 
-                Should -Invoke -CommandName Request-SqlDscRSDatabaseRightsScript -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Request-SqlDscRSDatabaseRightsScript -Exactly -Scope It -Times 0
 
-                Should -Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Scope It -Times 0
 
-                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscRSVirtualDirectory -Exactly -ParameterFilter {
                     $Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscRSVirtualDirectory -Exactly -ParameterFilter {
                     $Application -eq $mockReportsApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                     $Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                     $Application -eq $mockReportsApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Restart-SqlDscRSService -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-CimInstance -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Restart-SqlDscRSService -Exactly -Scope It -Times 1
             }
         }
 
@@ -900,43 +902,43 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             It 'Should configure Reporting Service without throwing an error' {
                 $null = Set-TargetResource @testParameters
 
-                Should -Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Scope It -Times 1
 
-                Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+                Should-Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                     $Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Remove-SqlDscRSUrlReservation -ParameterFilter {
+                Should-Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                     $Application -eq $mockReportsApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Initialize-SqlDscRS -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Initialize-SqlDscRS -Exactly -Scope It -Times 0
 
-                Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Scope It -Times 0
 
-                Should -Invoke -CommandName Request-SqlDscRSDatabaseRightsScript -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Request-SqlDscRSDatabaseRightsScript -Exactly -Scope It -Times 0
 
-                Should -Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Scope It -Times 0
 
-                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscRSVirtualDirectory -Exactly -ParameterFilter {
                     $Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscRSVirtualDirectory -Exactly -ParameterFilter {
                     $Application -eq $mockReportsApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                     $Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                     $Application -eq $mockReportsApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Restart-SqlDscRSService -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Get-CimInstance -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Restart-SqlDscRSService -Exactly -Scope It -Times 0
             }
         }
 
@@ -986,37 +988,37 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             It 'Should configure Reporting Service without throwing an error' {
                 $null = Set-TargetResource @defaultParameters
 
-                Should -Invoke -CommandName Initialize-SqlDscRS -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Initialize-SqlDscRS -Exactly -Scope It -Times 1
 
-                Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Scope It -Times 1
 
-                Should -Invoke -CommandName Request-SqlDscRSDatabaseRightsScript -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Request-SqlDscRSDatabaseRightsScript -Exactly -Scope It -Times 1
 
-                Should -Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Scope It -Times 1
 
-                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscRSVirtualDirectory -Exactly -ParameterFilter {
                     $Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscRSVirtualDirectory -Exactly -ParameterFilter {
                     $Application -eq $mockReportsApplicationNameLegacy
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                     $Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+                Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                     $Application -eq $mockReportsApplicationNameLegacy
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It
-                Should -Invoke -CommandName Restart-SqlDscRSService -Exactly -Times 2 -Scope It
+                Should-Invoke -CommandName Get-CimInstance -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 2
+                Should-Invoke -CommandName Restart-SqlDscRSService -Exactly -Scope It -Times 2
 
-                Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+                Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                     $PesterBoundParameters.Keys -notcontains 'Encrypt'
-                } -Times 2 -Exactly -Scope It
+                } -Scope It -Times 2
             }
         }
     }
@@ -1088,36 +1090,36 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         It 'Should configure Reporting Service without throwing an error' {
             $null = Set-TargetResource @defaultParameters
 
-            Should -Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Times 0 -Scope It
-            Should -Invoke -CommandName Disable-SqlDscRsSecureConnection -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Enable-SqlDscRsSecureConnection -Exactly -Scope It -Times 0
+            Should-Invoke -CommandName Disable-SqlDscRsSecureConnection -Exactly -Scope It -Times 0
 
-            Should -Invoke -CommandName Initialize-SqlDscRS -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Initialize-SqlDscRS -Exactly -Scope It -Times 0
 
-            Should -Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Scope It -Times 1
 
-            Should -Invoke -CommandName Request-SqlDscRSDatabaseRightsScript -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Request-SqlDscRSDatabaseRightsScript -Exactly -Scope It -Times 1
 
-            Should -Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Scope It -Times 1
 
-            Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+            Should-Invoke -CommandName Set-SqlDscRSVirtualDirectory -Exactly -ParameterFilter {
                 $Application -eq $mockReportServerApplicationName
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
 
-            Should -Invoke -CommandName Set-SqlDscRSVirtualDirectory -ParameterFilter {
+            Should-Invoke -CommandName Set-SqlDscRSVirtualDirectory -Exactly -ParameterFilter {
                 $Application -eq $mockReportsApplicationName
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
 
-            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+            Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                 $Application -eq $mockReportServerApplicationName
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
 
-            Should -Invoke -CommandName Add-SqlDscRSUrlReservation -ParameterFilter {
+            Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -ParameterFilter {
                 $Application -eq $mockReportsApplicationName
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
 
-            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It
-            Should -Invoke -CommandName Restart-SqlDscRSService -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-CimInstance -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 2
+            Should-Invoke -CommandName Restart-SqlDscRSService -Exactly -Scope It -Times 1
         }
     }
 }
@@ -1146,7 +1148,7 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
 
                     $resultTestTargetResource = Test-TargetResource @testParameters
 
-                    $resultTestTargetResource | Should -BeFalse
+                    $resultTestTargetResource | Should-BeFalse
                 }
             }
         }
@@ -1174,7 +1176,7 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
 
                     $resultTestTargetResource = Test-TargetResource @testParameters
 
-                    $resultTestTargetResource | Should -BeFalse
+                    $resultTestTargetResource | Should-BeFalse
                 }
             }
         }
@@ -1202,7 +1204,7 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
 
                     $resultTestTargetResource = Test-TargetResource @testParameters
 
-                    $resultTestTargetResource | Should -BeFalse
+                    $resultTestTargetResource | Should-BeFalse
                 }
             }
         }
@@ -1231,7 +1233,7 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
                     }
 
                     $resultTestTargetResource = Test-TargetResource @testParameters
-                    $resultTestTargetResource | Should -BeFalse
+                    $resultTestTargetResource | Should-BeFalse
                 }
             }
         }
@@ -1261,7 +1263,7 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
 
                     $resultTestTargetResource = Test-TargetResource @testParameters
 
-                    $resultTestTargetResource | Should -BeFalse
+                    $resultTestTargetResource | Should-BeFalse
                 }
             }
         }
@@ -1289,7 +1291,7 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
 
                     $resultTestTargetResource = Test-TargetResource @testParameters
 
-                    $resultTestTargetResource | Should -BeFalse
+                    $resultTestTargetResource | Should-BeFalse
                 }
             }
         }
@@ -1317,7 +1319,7 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
 
                     $resultTestTargetResource = Test-TargetResource @testParameters
 
-                    $resultTestTargetResource | Should -BeFalse
+                    $resultTestTargetResource | Should-BeFalse
                 }
             }
         }
@@ -1345,7 +1347,7 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
 
                     $resultTestTargetResource = Test-TargetResource @testParameters
 
-                    $resultTestTargetResource | Should -BeFalse
+                    $resultTestTargetResource | Should-BeFalse
                 }
             }
         }
@@ -1372,7 +1374,7 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
 
                 $resultTestTargetResource = Test-TargetResource @defaultParameters
 
-                $resultTestTargetResource | Should -BeTrue
+                $resultTestTargetResource | Should-BeTrue
             }
         }
     }

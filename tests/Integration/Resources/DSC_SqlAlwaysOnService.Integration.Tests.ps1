@@ -150,11 +150,11 @@ Describe "$($script:dscResourceName)_Integration" -Skip  {
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
+            $resourceCurrentState.Ensure | Should-Be 'Present'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -200,11 +200,11 @@ Describe "$($script:dscResourceName)_Integration" -Skip  {
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Absent'
+            $resourceCurrentState.Ensure | Should-Be 'Absent'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 

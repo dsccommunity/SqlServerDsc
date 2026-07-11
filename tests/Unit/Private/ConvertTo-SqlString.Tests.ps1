@@ -32,13 +32,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -51,7 +53,7 @@ Describe 'ConvertTo-SqlString' -Tag 'Private' {
 
                 $result = ConvertTo-SqlString -Text "O'Brien"
 
-                $result | Should -Be "O''Brien"
+                $result | Should-Be "O''Brien"
             }
         }
 
@@ -61,7 +63,7 @@ Describe 'ConvertTo-SqlString' -Tag 'Private' {
 
                 $result = ConvertTo-SqlString -Text "O'Brien's"
 
-                $result | Should -Be "O''Brien''s"
+                $result | Should-Be "O''Brien''s"
             }
         }
 
@@ -71,7 +73,7 @@ Describe 'ConvertTo-SqlString' -Tag 'Private' {
 
                 $result = ConvertTo-SqlString -Text 'Smith'
 
-                $result | Should -Be 'Smith'
+                $result | Should-Be 'Smith'
             }
         }
     }
@@ -83,7 +85,7 @@ Describe 'ConvertTo-SqlString' -Tag 'Private' {
 
                 $result = ConvertTo-SqlString -Text "Pass'word;--123"
 
-                $result | Should -Be "Pass''word;--123"
+                $result | Should-Be "Pass''word;--123"
             }
         }
 
@@ -93,7 +95,7 @@ Describe 'ConvertTo-SqlString' -Tag 'Private' {
 
                 $result = ConvertTo-SqlString -Text "'''"
 
-                $result | Should -Be "''''''"
+                $result | Should-Be "''''''"
             }
         }
 
@@ -103,7 +105,7 @@ Describe 'ConvertTo-SqlString' -Tag 'Private' {
 
                 $result = ConvertTo-SqlString -Text ''
 
-                $result | Should -Be ''
+                $result | Should-Be ''
             }
         }
     }
@@ -119,10 +121,10 @@ Describe 'ConvertTo-SqlString' -Tag 'Private' {
                 $query = ConvertTo-EscapedQueryString -Query "EXECUTE sp_test @password = N'{0}';" -Argument $password
 
                 # The escaped password should appear in the query
-                $query | Should -BeLike "*$escapedPassword*"
+                $query | Should-BeLikeString "*$escapedPassword*"
 
                 # The escaped password should be "Pass''word;123"
-                $escapedPassword | Should -Be "Pass''word;123"
+                $escapedPassword | Should-Be "Pass''word;123"
             }
         }
     }

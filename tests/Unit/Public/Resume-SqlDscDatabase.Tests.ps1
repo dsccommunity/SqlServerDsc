@@ -45,13 +45,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -75,8 +77,8 @@ Describe 'Resume-SqlDscDatabase' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -88,19 +90,19 @@ Describe 'Resume-SqlDscDatabase' -Tag 'Public' {
         It 'Should have ServerObject as a mandatory parameter in ServerObjectSet' {
             $parameterInfo = $command.Parameters['ServerObject']
 
-            $parameterInfo.ParameterSets['ServerObjectSet'].IsMandatory | Should -BeTrue
+            $parameterInfo.ParameterSets['ServerObjectSet'].IsMandatory | Should-BeTrue
         }
 
         It 'Should have Name as a mandatory parameter in ServerObjectSet' {
             $parameterInfo = $command.Parameters['Name']
 
-            $parameterInfo.ParameterSets['ServerObjectSet'].IsMandatory | Should -BeTrue
+            $parameterInfo.ParameterSets['ServerObjectSet'].IsMandatory | Should-BeTrue
         }
 
         It 'Should have DatabaseObject as a mandatory parameter in DatabaseObjectSet' {
             $parameterInfo = $command.Parameters['DatabaseObject']
 
-            $parameterInfo.ParameterSets['DatabaseObjectSet'].IsMandatory | Should -BeTrue
+            $parameterInfo.ParameterSets['DatabaseObjectSet'].IsMandatory | Should-BeTrue
         }
     }
 
@@ -120,9 +122,9 @@ Describe 'Resume-SqlDscDatabase' -Tag 'Public' {
         It 'Should bring the database online and not throw' {
             $null = Resume-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force
 
-            $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
+            $mockDatabaseObject.Status | Should-Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
 
-            Should -Invoke -CommandName 'Get-SqlDscDatabase' -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName 'Get-SqlDscDatabase' -Exactly -Scope It -Times 1
         }
 
         It 'Should call Get-SqlDscDatabase with Refresh when specified' {
@@ -130,9 +132,9 @@ Describe 'Resume-SqlDscDatabase' -Tag 'Public' {
 
             $null = Resume-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Refresh -Force
 
-            Should -Invoke -CommandName 'Get-SqlDscDatabase' -ParameterFilter {
+            Should-Invoke -CommandName 'Get-SqlDscDatabase' -Exactly -ParameterFilter {
                 $Refresh -eq $true
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should return the database object when PassThru is specified' {
@@ -140,8 +142,8 @@ Describe 'Resume-SqlDscDatabase' -Tag 'Public' {
 
             $result = Resume-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -PassThru -Force
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
-            $result.Name | Should -Be 'TestDatabase'
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Database'
+            $result.Name | Should-Be 'TestDatabase'
         }
 
         It 'Should not bring the database online when database is already online' {
@@ -149,7 +151,7 @@ Describe 'Resume-SqlDscDatabase' -Tag 'Public' {
 
             $null = Resume-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force
 
-            $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
+            $mockDatabaseObject.Status | Should-Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
         }
     }
 
@@ -165,7 +167,7 @@ Describe 'Resume-SqlDscDatabase' -Tag 'Public' {
         It 'Should bring the database online using DatabaseObject parameter' {
             $null = Resume-SqlDscDatabase -DatabaseObject $mockDatabaseObject -Force
 
-            $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
+            $mockDatabaseObject.Status | Should-Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
         }
 
         It 'Should return the database object when PassThru is specified' {
@@ -173,8 +175,8 @@ Describe 'Resume-SqlDscDatabase' -Tag 'Public' {
 
             $result = Resume-SqlDscDatabase -DatabaseObject $mockDatabaseObject -PassThru -Force
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
-            $result.Name | Should -Be 'TestDatabase'
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Database'
+            $result.Name | Should-Be 'TestDatabase'
         }
     }
 
@@ -194,7 +196,7 @@ Describe 'Resume-SqlDscDatabase' -Tag 'Public' {
         It 'Should bring the database online via pipeline' {
             $null = $mockServerObject | Resume-SqlDscDatabase -Name 'TestDatabase' -Force
 
-            $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
+            $mockDatabaseObject.Status | Should-Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
         }
     }
 
@@ -210,7 +212,7 @@ Describe 'Resume-SqlDscDatabase' -Tag 'Public' {
         It 'Should bring the database online via pipeline' {
             $null = $mockDatabaseObject | Resume-SqlDscDatabase -Force
 
-            $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
+            $mockDatabaseObject.Status | Should-Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal)
         }
     }
 
@@ -230,7 +232,7 @@ Describe 'Resume-SqlDscDatabase' -Tag 'Public' {
         It 'Should not bring the database online when WhatIf is specified' {
             $null = Resume-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -WhatIf
 
-            $mockDatabaseObject.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
+            $mockDatabaseObject.Status | Should-Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Offline)
         }
     }
 
@@ -253,7 +255,7 @@ Describe 'Resume-SqlDscDatabase' -Tag 'Public' {
         }
 
         It 'Should throw a terminating error when SetOnline fails' {
-            { Resume-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force } | Should -Throw -ExpectedMessage '*Failed to bring database*online*'
+            { Resume-SqlDscDatabase -ServerObject $mockServerObject -Name 'TestDatabase' -Force } | Should-Throw -ExceptionMessage '*Failed to bring database*online*'
         }
     }
 }

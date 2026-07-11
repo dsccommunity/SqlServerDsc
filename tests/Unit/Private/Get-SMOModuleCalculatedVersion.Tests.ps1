@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -59,7 +61,7 @@ Describe 'Get-SMOModuleCalculatedVersion' -Tag 'Private' {
                     Version = [Version]::new(21, 1, 18068)
                 }
 
-                $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '21.1.18068'
+                $sqlServerModule | Get-SMOModuleCalculatedVersion | Should-Be '21.1.18068'
             }
         }
 
@@ -78,7 +80,7 @@ Describe 'Get-SMOModuleCalculatedVersion' -Tag 'Private' {
                         }
                     }
 
-                    $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '22.0.49-preview1'
+                    $sqlServerModule | Get-SMOModuleCalculatedVersion | Should-Be '22.0.49-preview1'
                 }
             }
         }
@@ -94,7 +96,7 @@ Describe 'Get-SMOModuleCalculatedVersion' -Tag 'Private' {
                     Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
                 }
 
-                $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '13.0'
+                $sqlServerModule | Get-SMOModuleCalculatedVersion | Should-Be '13.0'
             }
         }
     }
@@ -109,7 +111,7 @@ Describe 'Get-SMOModuleCalculatedVersion' -Tag 'Private' {
                     Version = [Version]::new(1, 0, 0)
                 }
 
-                $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '1.0.0'
+                $sqlServerModule | Get-SMOModuleCalculatedVersion | Should-Be '1.0.0'
             }
         }
 
@@ -128,7 +130,7 @@ Describe 'Get-SMOModuleCalculatedVersion' -Tag 'Private' {
                         }
                     }
 
-                    $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '1.0.0-preview1'
+                    $sqlServerModule | Get-SMOModuleCalculatedVersion | Should-Be '1.0.0-preview1'
                 }
             }
         }

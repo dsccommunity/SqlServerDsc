@@ -79,48 +79,48 @@ Describe 'Get-SqlDscBackupFileList' -Tag @('Integration_SQL2017', 'Integration_S
         It 'Should return file list with correct properties' {
             $result = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:testBackupFile
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -BeGreaterOrEqual 2 # At least data and log file
+            $result | Should-BeTruthy
+            $result.Count | Should-BeGreaterThanOrEqual 2 # At least data and log file
 
             # Verify first file has expected properties
-            $result[0].LogicalName | Should -Not -BeNullOrEmpty
-            $result[0].PhysicalName | Should -Not -BeNullOrEmpty
-            $result[0].Type | Should -BeIn @('D', 'L')
+            $result[0].LogicalName | Should-BeTruthy
+            $result[0].PhysicalName | Should-BeTruthy
+            @('D', 'L') | Should-ContainCollection ($result[0].Type)
         }
 
         It 'Should return BackupFileSpec objects' {
             $result = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:testBackupFile
 
-            $result[0].GetType().Name | Should -Be 'BackupFileSpec'
+            $result[0].GetType().Name | Should-Be 'BackupFileSpec'
         }
 
         It 'Should return data file with type D' {
             $result = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:testBackupFile
 
             $dataFile = $result | Where-Object -FilterScript { $_.Type -eq 'D' }
-            $dataFile | Should -Not -BeNullOrEmpty
-            $dataFile.PhysicalName | Should -Match '\.mdf$'
+            $dataFile | Should-BeTruthy
+            $dataFile.PhysicalName | Should-MatchString '\.mdf$'
         }
 
         It 'Should return log file with type L' {
             $result = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:testBackupFile
 
             $logFile = $result | Where-Object -FilterScript { $_.Type -eq 'L' }
-            $logFile | Should -Not -BeNullOrEmpty
-            $logFile.PhysicalName | Should -Match '\.ldf$'
+            $logFile | Should-BeTruthy
+            $logFile.PhysicalName | Should-MatchString '\.ldf$'
         }
 
         It 'Should work with pipeline input' {
             $result = $script:serverObject | Get-SqlDscBackupFileList -BackupFile $script:testBackupFile
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Count | Should -BeGreaterOrEqual 2
+            $result | Should-BeTruthy
+            $result.Count | Should-BeGreaterThanOrEqual 2
         }
 
         It 'Should work with FileNumber parameter' {
             $result = Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:testBackupFile -FileNumber 1
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
         }
     }
 
@@ -139,7 +139,7 @@ Describe 'Get-SqlDscBackupFileList' -Tag @('Integration_SQL2017', 'Integration_S
         }
 
         It 'Should throw an error for an invalid backup file' {
-            { Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:invalidBackupFile } | Should -Throw -ErrorId 'GSBFL0002,Get-SqlDscBackupFileList'
+            { Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $script:invalidBackupFile } | Should-Throw -FullyQualifiedErrorId 'GSBFL0002,Get-SqlDscBackupFileList'
         }
     }
 
@@ -147,7 +147,7 @@ Describe 'Get-SqlDscBackupFileList' -Tag @('Integration_SQL2017', 'Integration_S
         It 'Should throw an error for a non-existent backup file' {
             $nonExistentFile = Join-Path -Path $script:backupDirectory -ChildPath 'NonExistentBackupForFileList_12345.bak'
 
-            { Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $nonExistentFile } | Should -Throw -ErrorId 'GSBFL0002,Get-SqlDscBackupFileList'
+            { Get-SqlDscBackupFileList -ServerObject $script:serverObject -BackupFile $nonExistentFile } | Should-Throw -FullyQualifiedErrorId 'GSBFL0002,Get-SqlDscBackupFileList'
         }
     }
 }

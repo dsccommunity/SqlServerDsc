@@ -94,15 +94,15 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag @('Integration_SQL2017', 'Integration
         It 'Should create a database snapshot successfully with minimal parameters' {
             $result = New-SqlDscDatabaseSnapshot -ServerObject $script:serverObject -Name $script:testSnapshotName -DatabaseName $script:persistentSourceDatabase -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:testSnapshotName
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
-            $result.DatabaseSnapshotBaseName | Should -Be $script:persistentSourceDatabase
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:testSnapshotName
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Database'
+            $result.DatabaseSnapshotBaseName | Should-Be $script:persistentSourceDatabase
 
             # Verify the snapshot exists
             $createdSnapshot = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testSnapshotName -Refresh -ErrorAction 'Stop'
-            $createdSnapshot | Should -Not -BeNullOrEmpty
-            $createdSnapshot.DatabaseSnapshotBaseName | Should -Be $script:persistentSourceDatabase
+            $createdSnapshot | Should-BeTruthy
+            $createdSnapshot.DatabaseSnapshotBaseName | Should-Be $script:persistentSourceDatabase
         }
 
         It 'Should throw error when trying to create a snapshot that already exists' {
@@ -111,7 +111,7 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag @('Integration_SQL2017', 'Integration
 
             # Then try to create it again - should throw
             { New-SqlDscDatabaseSnapshot -ServerObject $script:serverObject -Name $script:testSnapshotName -DatabaseName $script:persistentSourceDatabase -Force -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
     }
 
@@ -134,15 +134,15 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag @('Integration_SQL2017', 'Integration
         It 'Should create a database snapshot from DatabaseObject successfully' {
             $result = New-SqlDscDatabaseSnapshot -DatabaseObject $script:sourceDatabaseObject -Name $script:testSnapshotNameFromDbObject -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:testSnapshotNameFromDbObject
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
-            $result.DatabaseSnapshotBaseName | Should -Be $script:persistentSourceDatabase
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:testSnapshotNameFromDbObject
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Database'
+            $result.DatabaseSnapshotBaseName | Should-Be $script:persistentSourceDatabase
 
             # Verify the snapshot exists
             $createdSnapshot = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testSnapshotNameFromDbObject -Refresh -ErrorAction 'Stop'
-            $createdSnapshot | Should -Not -BeNullOrEmpty
-            $createdSnapshot.DatabaseSnapshotBaseName | Should -Be $script:persistentSourceDatabase
+            $createdSnapshot | Should-BeTruthy
+            $createdSnapshot.DatabaseSnapshotBaseName | Should-Be $script:persistentSourceDatabase
         }
     }
 
@@ -190,20 +190,20 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag @('Integration_SQL2017', 'Integration
             # Create snapshot with custom file group
             $result = New-SqlDscDatabaseSnapshot -ServerObject $script:serverObject -Name $script:testSnapshotNameWithFileGroup -DatabaseName $script:persistentSourceDatabase -FileGroup @($primaryFileGroupSpec) -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:testSnapshotNameWithFileGroup
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Database'
-            $result.DatabaseSnapshotBaseName | Should -Be $script:persistentSourceDatabase
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:testSnapshotNameWithFileGroup
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Database'
+            $result.DatabaseSnapshotBaseName | Should-Be $script:persistentSourceDatabase
 
             # Verify the snapshot exists with correct file configuration
             $createdSnapshot = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testSnapshotNameWithFileGroup -Refresh -ErrorAction 'Stop'
-            $createdSnapshot | Should -Not -BeNullOrEmpty
-            $createdSnapshot.DatabaseSnapshotBaseName | Should -Be $script:persistentSourceDatabase
+            $createdSnapshot | Should-BeTruthy
+            $createdSnapshot.DatabaseSnapshotBaseName | Should-Be $script:persistentSourceDatabase
 
             # Verify the sparse file was created with the correct path
-            $createdSnapshot.FileGroups['PRIMARY'] | Should -Not -BeNullOrEmpty
-            $createdSnapshot.FileGroups['PRIMARY'].Files.Count | Should -BeGreaterThan 0
-            $createdSnapshot.FileGroups['PRIMARY'].Files[0].FileName | Should -Be $sparseFilePath
+            $createdSnapshot.FileGroups['PRIMARY'] | Should-BeTruthy
+            $createdSnapshot.FileGroups['PRIMARY'].Files.Count | Should-BeGreaterThan 0
+            $createdSnapshot.FileGroups['PRIMARY'].Files[0].FileName | Should-Be $sparseFilePath
         }
     }
 
@@ -224,9 +224,9 @@ Describe 'New-SqlDscDatabaseSnapshot' -Tag @('Integration_SQL2017', 'Integration
         It 'Should refresh the database collection before creating snapshot' {
             $result = New-SqlDscDatabaseSnapshot -ServerObject $script:serverObject -Name $script:refreshTestSnapshotName -DatabaseName $script:persistentSourceDatabase -Refresh -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:refreshTestSnapshotName
-            $result.DatabaseSnapshotBaseName | Should -Be $script:persistentSourceDatabase
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:refreshTestSnapshotName
+            $result.DatabaseSnapshotBaseName | Should-Be $script:persistentSourceDatabase
         }
     }
 }

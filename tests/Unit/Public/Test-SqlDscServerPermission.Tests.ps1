@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -74,53 +76,53 @@ Describe 'Test-SqlDscServerPermission' -Tag 'Public' {
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
     Context 'When testing parameter properties' {
         It 'Should have Login as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscServerPermission').Parameters['Login']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have ServerRole as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscServerPermission').Parameters['ServerRole']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Grant as a mandatory parameter in Grant parameter sets' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscServerPermission').Parameters['Grant']
             $grantParameterSetAttributes = $parameterInfo.Attributes | Where-Object { $_.GetType().Name -eq 'ParameterAttribute' -and ($_.ParameterSetName -eq 'LoginGrant' -or $_.ParameterSetName -eq 'ServerRoleGrant') }
-            $grantParameterSetAttributes.Mandatory | Should -BeTrue
+            $grantParameterSetAttributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Deny as a mandatory parameter in Deny parameter sets' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscServerPermission').Parameters['Deny']
             $denyParameterSetAttributes = $parameterInfo.Attributes | Where-Object { $_.GetType().Name -eq 'ParameterAttribute' -and ($_.ParameterSetName -eq 'LoginDeny' -or $_.ParameterSetName -eq 'ServerRoleDeny') }
-            $denyParameterSetAttributes.Mandatory | Should -BeTrue
+            $denyParameterSetAttributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Permission as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscServerPermission').Parameters['Permission']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Permission parameter allow empty collections' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscServerPermission').Parameters['Permission']
             $allowEmptyCollectionAttribute = $parameterInfo.Attributes | Where-Object { $_.GetType().Name -eq 'AllowEmptyCollectionAttribute' }
-            $allowEmptyCollectionAttribute | Should -Not -BeNullOrEmpty
+            $allowEmptyCollectionAttribute | Should-BeTruthy
         }
 
         It 'Should have WithGrant as an optional parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscServerPermission').Parameters['WithGrant']
-            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
 
         It 'Should have ExactMatch as an optional parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscServerPermission').Parameters['ExactMatch']
-            $parameterInfo.Attributes.Mandatory | Should -BeFalse
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeFalse }
         }
     }
 
@@ -172,7 +174,7 @@ Describe 'Test-SqlDscServerPermission' -Tag 'Public' {
             } -ScriptBlock {
                 $result = Test-SqlDscServerPermission -Login $mockLogin -Grant -Permission ConnectSql
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
         }
 
@@ -182,7 +184,7 @@ Describe 'Test-SqlDscServerPermission' -Tag 'Public' {
             } -ScriptBlock {
                 $result = Test-SqlDscServerPermission -Login $mockLogin -Deny -Permission ConnectSql
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
         }
 
@@ -192,7 +194,7 @@ Describe 'Test-SqlDscServerPermission' -Tag 'Public' {
             } -ScriptBlock {
                 $result = Test-SqlDscServerPermission -ServerRole $mockServerRole -Grant -Permission ConnectSql
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
         }
 
@@ -202,7 +204,7 @@ Describe 'Test-SqlDscServerPermission' -Tag 'Public' {
             } -ScriptBlock {
                 $result = Test-SqlDscServerPermission -ServerRole $mockServerRole -Deny -Permission ConnectSql
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
         }
 
@@ -212,7 +214,7 @@ Describe 'Test-SqlDscServerPermission' -Tag 'Public' {
             } -ScriptBlock {
                 $result = Test-SqlDscServerPermission -Login $mockLogin -Grant -Permission ConnectSql -WithGrant
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
         }
 
@@ -222,11 +224,11 @@ Describe 'Test-SqlDscServerPermission' -Tag 'Public' {
             } -ScriptBlock {
                 $null = Test-SqlDscServerPermission -Login $mockLogin -Grant -Permission ConnectSql
 
-                Should -Invoke -CommandName Get-SqlDscServerPermission -Times 1 -ParameterFilter {
+                Should-Invoke -CommandName Get-SqlDscServerPermission -ParameterFilter {
                     $ServerObject -ne $null -and
                     $Name -eq 'TestUser' -and
                     $ErrorAction -eq 'Stop'
-                }
+                } -Times 1
             }
         }
     }
@@ -270,7 +272,7 @@ Describe 'Test-SqlDscServerPermission' -Tag 'Public' {
             } -ScriptBlock {
                 $result = Test-SqlDscServerPermission -Login $mockLogin -Grant -Permission ConnectSql
 
-                $result | Should -BeFalse
+                $result | Should-BeFalse
             }
         }
     }
@@ -293,7 +295,7 @@ Describe 'Test-SqlDscServerPermission' -Tag 'Public' {
             } -ScriptBlock {
                 $result = Test-SqlDscServerPermission -Login $mockLogin -Grant -Permission ConnectSql
 
-                $result | Should -BeFalse
+                $result | Should-BeFalse
             }
         }
     }
@@ -319,7 +321,7 @@ Describe 'Test-SqlDscServerPermission' -Tag 'Public' {
                 } -ScriptBlock {
                     $result = Test-SqlDscServerPermission -Login $mockLogin -Grant -Permission @()
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -358,7 +360,7 @@ Describe 'Test-SqlDscServerPermission' -Tag 'Public' {
                 } -ScriptBlock {
                     $result = Test-SqlDscServerPermission -Login $mockLogin -Grant -Permission @()
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -395,7 +397,7 @@ Describe 'Test-SqlDscServerPermission' -Tag 'Public' {
                 } -ScriptBlock {
                     $result = Test-SqlDscServerPermission -Login $mockLogin -Grant -Permission @()
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -441,7 +443,7 @@ Describe 'Test-SqlDscServerPermission' -Tag 'Public' {
             } -ScriptBlock {
                 $result = $mockLogin | Test-SqlDscServerPermission -Grant -Permission ConnectSql
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
         }
 
@@ -451,7 +453,7 @@ Describe 'Test-SqlDscServerPermission' -Tag 'Public' {
             } -ScriptBlock {
                 $result = $mockServerRole | Test-SqlDscServerPermission -Grant -Permission ConnectSql
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
         }
     }
@@ -544,7 +546,7 @@ Describe 'Test-SqlDscServerPermission' -Tag 'Public' {
 
                 $result = Test-SqlDscServerPermission @testParameters
 
-                $result | Should -Be $Expected -Because $Description
+                $result | Should-Be $Expected -Because $Description
             }
         }
     }

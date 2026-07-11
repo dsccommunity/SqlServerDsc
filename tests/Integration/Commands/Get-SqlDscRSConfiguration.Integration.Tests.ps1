@@ -36,10 +36,10 @@ Describe 'Get-SqlDscRSConfiguration' {
         It 'Should return the configuration CIM instance for SSRS instance' {
             $result = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
-            $result.SecureConnectionLevel | Should -BeIn @(0, 1, 2)
-            $result | Should -BeOfType 'Microsoft.Management.Infrastructure.CimInstance'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
+            @(0, 1, 2) | Should-ContainCollection ($result.SecureConnectionLevel)
+            $result | Should-HaveType 'Microsoft.Management.Infrastructure.CimInstance'
         }
     }
 
@@ -47,10 +47,10 @@ Describe 'Get-SqlDscRSConfiguration' {
         It 'Should return the configuration CIM instance for SSRS instance' {
             $result = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
-            $result.SecureConnectionLevel | Should -BeIn @(0, 1, 2)
-            $result | Should -BeOfType 'Microsoft.Management.Infrastructure.CimInstance'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
+            @(0, 1, 2) | Should-ContainCollection ($result.SecureConnectionLevel)
+            $result | Should-HaveType 'Microsoft.Management.Infrastructure.CimInstance'
         }
     }
 
@@ -58,10 +58,10 @@ Describe 'Get-SqlDscRSConfiguration' {
         It 'Should return the configuration CIM instance for SSRS instance' {
             $result = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
-            $result.SecureConnectionLevel | Should -BeIn @(0, 1, 2)
-            $result | Should -BeOfType 'Microsoft.Management.Infrastructure.CimInstance'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
+            @(0, 1, 2) | Should-ContainCollection ($result.SecureConnectionLevel)
+            $result | Should-HaveType 'Microsoft.Management.Infrastructure.CimInstance'
         }
     }
 
@@ -69,10 +69,10 @@ Describe 'Get-SqlDscRSConfiguration' {
         It 'Should return the configuration CIM instance for PBIRS instance' {
             $result = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'PBIRS'
-            $result.SecureConnectionLevel | Should -BeIn @(0, 1, 2)
-            $result | Should -BeOfType 'Microsoft.Management.Infrastructure.CimInstance'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'PBIRS'
+            @(0, 1, 2) | Should-ContainCollection ($result.SecureConnectionLevel)
+            $result | Should-HaveType 'Microsoft.Management.Infrastructure.CimInstance'
         }
     }
 
@@ -84,8 +84,8 @@ Describe 'Get-SqlDscRSConfiguration' {
 
             $result = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -Version $version
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 }

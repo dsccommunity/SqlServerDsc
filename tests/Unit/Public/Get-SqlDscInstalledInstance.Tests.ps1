@@ -34,13 +34,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -67,8 +69,8 @@ Describe 'Get-SqlDscInstalledInstance' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When no SQL Server instances are installed' {
@@ -80,7 +82,7 @@ Describe 'Get-SqlDscInstalledInstance' -Tag 'Public' {
 
         It 'Should return an empty array' {
             $result = Get-SqlDscInstalledInstance
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -164,10 +166,10 @@ Describe 'Get-SqlDscInstalledInstance' -Tag 'Public' {
 
             It 'Should return all instances' {
                 $result = Get-SqlDscInstalledInstance
-                $result | Should -HaveCount 5
-                $result.Where({ $_.ServiceType -eq 'DatabaseEngine' }) | Should -HaveCount 2
-                $result.Where({ $_.ServiceType -eq 'AnalysisServices' }) | Should -HaveCount 2
-                $result.Where({ $_.ServiceType -eq 'ReportingServices' }) | Should -HaveCount 1
+                $result | Should-BeCollection -Count 5
+                $result.Where({ $_.ServiceType -eq 'DatabaseEngine' }) | Should-BeCollection -Count 2
+                $result.Where({ $_.ServiceType -eq 'AnalysisServices' }) | Should-BeCollection -Count 2
+                $result.Where({ $_.ServiceType -eq 'ReportingServices' }) | Should-BeCollection -Count 1
             }
         }
 
@@ -182,17 +184,17 @@ Describe 'Get-SqlDscInstalledInstance' -Tag 'Public' {
 
             It 'Should return only instances matching the specified name' {
                 $result = Get-SqlDscInstalledInstance -InstanceName 'MSSQLSERVER'
-                $result | Should -HaveCount 2
+                $result | Should-BeCollection -Count 2
                 $result | ForEach-Object -Process {
-                    $_.InstanceName | Should -Be 'MSSQLSERVER'
+                    $_.InstanceName | Should-Be 'MSSQLSERVER'
                 }
             }
 
             It 'Should return only the specified named instance' {
                 $result = Get-SqlDscInstalledInstance -InstanceName 'NAMED1'
-                $result | Should -HaveCount 1
-                $result.InstanceName | Should -Be 'NAMED1'
-                $result.ServiceType | Should -Be 'DatabaseEngine'
+                $result | Should-BeCollection -Count 1
+                $result.InstanceName | Should-Be 'NAMED1'
+                $result.ServiceType | Should-Be 'DatabaseEngine'
             }
         }
 
@@ -207,31 +209,31 @@ Describe 'Get-SqlDscInstalledInstance' -Tag 'Public' {
 
             It 'Should return only DatabaseEngine instances' {
                 $result = Get-SqlDscInstalledInstance -ServiceType 'DatabaseEngine'
-                $result | Should -HaveCount 2
+                $result | Should-BeCollection -Count 2
                 $result | ForEach-Object -Process {
-                    $_.ServiceType | Should -Be 'DatabaseEngine'
+                    $_.ServiceType | Should-Be 'DatabaseEngine'
                 }
             }
 
             It 'Should return only AnalysisServices instances' {
                 $result = Get-SqlDscInstalledInstance -ServiceType 'AnalysisServices'
-                $result | Should -HaveCount 2
+                $result | Should-BeCollection -Count 2
                 $result | ForEach-Object -Process {
-                    $_.ServiceType | Should -Be 'AnalysisServices'
+                    $_.ServiceType | Should-Be 'AnalysisServices'
                 }
             }
 
             It 'Should return only ReportingServices instances' {
                 $result = Get-SqlDscInstalledInstance -ServiceType 'ReportingServices'
-                $result | Should -HaveCount 1
-                $result.ServiceType | Should -Be 'ReportingServices'
+                $result | Should-BeCollection -Count 1
+                $result.ServiceType | Should-Be 'ReportingServices'
             }
 
             It 'Should return multiple service types when specified' {
                 $result = Get-SqlDscInstalledInstance -ServiceType 'DatabaseEngine', 'ReportingServices'
-                $result | Should -HaveCount 3
-                $result.ServiceType | Should -Contain 'DatabaseEngine'
-                $result.ServiceType | Should -Contain 'ReportingServices'
+                $result | Should-BeCollection -Count 3
+                $result.ServiceType | Should-ContainCollection 'DatabaseEngine'
+                $result.ServiceType | Should-ContainCollection 'ReportingServices'
             }
         }
 
@@ -246,9 +248,9 @@ Describe 'Get-SqlDscInstalledInstance' -Tag 'Public' {
 
             It 'Should return only instances matching both filters' {
                 $result = Get-SqlDscInstalledInstance -InstanceName 'MSSQLSERVER' -ServiceType 'DatabaseEngine'
-                $result | Should -HaveCount 1
-                $result.InstanceName | Should -Be 'MSSQLSERVER'
-                $result.ServiceType | Should -Be 'DatabaseEngine'
+                $result | Should-BeCollection -Count 1
+                $result.InstanceName | Should-Be 'MSSQLSERVER'
+                $result.ServiceType | Should-Be 'DatabaseEngine'
             }
         }
     }

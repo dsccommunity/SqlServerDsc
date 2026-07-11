@@ -64,16 +64,16 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integrat
             $result = Save-SqlDscSqlServerMediaFile -Url $script:directIsoUrl -DestinationPath $script:directIsoTestPath -FileName $script:expectedFileName -Force -Quiet -ErrorAction 'Stop'
 
             # Verify the result is a FileInfo object
-            $result | Should -BeOfType [System.IO.FileInfo]
+            $result | Should-HaveType ([System.IO.FileInfo])
 
             # Verify the file was downloaded
-            $result.Name | Should -Be $script:expectedFileName
-            $result.Exists | Should -BeTrue
-            $result.Length | Should -BeGreaterThan 0
+            $result.Name | Should-Be $script:expectedFileName
+            $result.Exists | Should-BeTrue
+            $result.Length | Should-BeGreaterThan 0
 
             # Verify the file is in the expected location
             $expectedPath = Join-Path -Path $script:directIsoTestPath -ChildPath $script:expectedFileName
-            Test-Path -Path $expectedPath | Should -BeTrue
+            Test-Path -Path $expectedPath | Should-BeTrue
         }
 
         It 'Should overwrite existing file when Force parameter is used' {
@@ -90,18 +90,18 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integrat
             'dummy content for overwrite test' | Out-File -FilePath $dummyFilePath -Encoding UTF8
 
             # Verify the dummy file exists and get its original size
-            Test-Path -Path $dummyFilePath | Should -BeTrue
+            Test-Path -Path $dummyFilePath | Should-BeTrue
             $originalSize = (Get-Item -Path $dummyFilePath).Length
 
             # Download with SkipExecution and Force should overwrite the dummy file
             $result = Save-SqlDscSqlServerMediaFile -Url $executableUrl -DestinationPath $overwriteTestPath -FileName $targetFileName -SkipExecution -Force -Quiet -ErrorAction 'Stop'
 
             # Verify the file was overwritten (should be much larger than the dummy content)
-            $result | Should -BeOfType [System.IO.FileInfo]
-            $result.Name | Should -Be $targetFileName
-            $result.Exists | Should -BeTrue
-            $result.Length | Should -BeGreaterThan $originalSize
-            $result.Length | Should -BeGreaterThan 1000000  # Executable should be at least 1MB
+            $result | Should-HaveType ([System.IO.FileInfo])
+            $result.Name | Should-Be $targetFileName
+            $result.Exists | Should-BeTrue
+            $result.Length | Should-BeGreaterThan $originalSize
+            $result.Length | Should-BeGreaterThan 1000000  # Executable should be at least 1MB
         }
     }
 
@@ -121,19 +121,19 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integrat
             $result = Save-SqlDscSqlServerMediaFile -Url $script:executableUrl -DestinationPath $script:executableTestPath -FileName $script:expectedIsoFileName -Language 'en-US' -Force -Quiet -ErrorAction 'Stop'
 
             # Verify the result is a FileInfo object pointing to the ISO
-            $result | Should -BeOfType [System.IO.FileInfo]
-            $result.Name | Should -Be $script:expectedIsoFileName
-            $result.Extension | Should -Be '.iso'
-            $result.Exists | Should -BeTrue
-            $result.Length | Should -BeGreaterThan 0
+            $result | Should-HaveType ([System.IO.FileInfo])
+            $result.Name | Should-Be $script:expectedIsoFileName
+            $result.Extension | Should-Be '.iso'
+            $result.Exists | Should-BeTrue
+            $result.Length | Should-BeGreaterThan 0
 
             # Verify the executable was cleaned up (should not exist)
             $executablePath = [System.IO.Path]::ChangeExtension($result.FullName, 'exe')
-            Test-Path -Path $executablePath | Should -BeFalse
+            Test-Path -Path $executablePath | Should-BeFalse
 
             # Verify only one ISO file exists in the directory
             $isoFiles = Get-ChildItem -Path $script:executableTestPath -Filter '*.iso'
-            $isoFiles.Count | Should -Be 1
+            $isoFiles.Count | Should-Be 1
         }
     }
 
@@ -152,15 +152,15 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integrat
             $result = Save-SqlDscSqlServerMediaFile -Url $script:rsExecutableUrl -DestinationPath $script:skipExecutionTestPath -FileName $script:expectedExecutableFileName -SkipExecution -Force -Quiet -ErrorAction 'Stop'
 
             # Verify the result is a FileInfo object pointing to the executable
-            $result | Should -BeOfType [System.IO.FileInfo]
-            $result.Name | Should -Be $script:expectedExecutableFileName
-            $result.Extension | Should -Be '.exe'
-            $result.Exists | Should -BeTrue
-            $result.Length | Should -BeGreaterThan 0
+            $result | Should-HaveType ([System.IO.FileInfo])
+            $result.Name | Should-Be $script:expectedExecutableFileName
+            $result.Extension | Should-Be '.exe'
+            $result.Exists | Should-BeTrue
+            $result.Length | Should-BeGreaterThan 0
 
             # Verify no ISO files were created
             $isoFiles = Get-ChildItem -Path $script:skipExecutionTestPath -Filter '*.iso' -ErrorAction SilentlyContinue
-            $isoFiles.Count | Should -Be 0
+            $isoFiles.Count | Should-Be 0
         }
     }
 
@@ -179,21 +179,21 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integrat
             'dummy iso content 2' | Out-File -FilePath $dummyIso2Path -Encoding UTF8
 
             # Verify the dummy ISO files exist
-            Test-Path -Path $dummyIso1Path | Should -BeTrue
-            Test-Path -Path $dummyIso2Path | Should -BeTrue
+            Test-Path -Path $dummyIso1Path | Should-BeTrue
+            Test-Path -Path $dummyIso2Path | Should-BeTrue
 
             # This should succeed - the command no longer blocks on non-target ISO files
             $targetFileName = 'new-download.iso'
             $result = Save-SqlDscSqlServerMediaFile -Url $script:directIsoUrl -DestinationPath $script:errorTestPath -FileName $targetFileName -Force -Quiet -ErrorAction 'Stop'
 
             # Verify the download succeeded
-            $result | Should -BeOfType [System.IO.FileInfo]
-            $result.Name | Should -Be $targetFileName
-            $result.Exists | Should -BeTrue
+            $result | Should-HaveType ([System.IO.FileInfo])
+            $result.Name | Should-Be $targetFileName
+            $result.Exists | Should-BeTrue
 
             # Verify the other ISO files still exist (they should not be affected)
-            Test-Path -Path $dummyIso1Path | Should -BeTrue
-            Test-Path -Path $dummyIso2Path | Should -BeTrue
+            Test-Path -Path $dummyIso1Path | Should-BeTrue
+            Test-Path -Path $dummyIso2Path | Should-BeTrue
 
             # Clean up
             Remove-Item -Path $dummyIso1Path -Force -ErrorAction SilentlyContinue
@@ -212,18 +212,18 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integrat
             'dummy iso content for force overwrite test' | Out-File -FilePath $dummyIsoPath -Encoding UTF8
 
             # Verify the dummy file exists and get its original size
-            Test-Path -Path $dummyIsoPath | Should -BeTrue
+            Test-Path -Path $dummyIsoPath | Should-BeTrue
             $originalSize = (Get-Item -Path $dummyIsoPath).Length
 
             # Download with Force parameter should overwrite the existing ISO file
             $result = Save-SqlDscSqlServerMediaFile -Url $script:directIsoUrl -DestinationPath $forceOverwriteTestPath -FileName $targetFileName -Force -Quiet -ErrorAction 'Stop'
 
             # Verify the file was overwritten (should be much larger than the dummy content)
-            $result | Should -BeOfType [System.IO.FileInfo]
-            $result.Name | Should -Be $targetFileName
-            $result.Exists | Should -BeTrue
-            $result.Length | Should -BeGreaterThan $originalSize
-            $result.Length | Should -BeGreaterThan 1000000  # Real ISO should be at least 1MB
+            $result | Should-HaveType ([System.IO.FileInfo])
+            $result.Name | Should-Be $targetFileName
+            $result.Exists | Should-BeTrue
+            $result.Length | Should-BeGreaterThan $originalSize
+            $result.Length | Should-BeGreaterThan 1000000  # Real ISO should be at least 1MB
 
             # Clean up
             Remove-Item -Path $forceOverwriteTestPath -Recurse -Force -ErrorAction SilentlyContinue
@@ -233,7 +233,7 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integrat
             # Test with an invalid URL
             {
                 Save-SqlDscSqlServerMediaFile -Url 'https://invalid.example.com/nonexistent.iso' -DestinationPath $script:errorTestPath -FileName 'invalid-test.iso' -Force -Quiet -ErrorAction 'Stop'
-            } | Should -Throw
+            } | Should-Throw
         }
     }
 
@@ -253,8 +253,8 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag @('Integration_SQL2017', 'Integrat
 
             # On Windows, this should work. On Linux/CI, it will be skipped.
             if ($result) {
-                $result | Should -BeOfType [System.IO.FileInfo]
-                $result.Name | Should -Be 'SQL2019-fr.iso'
+                $result | Should-HaveType ([System.IO.FileInfo])
+                $result.Name | Should-Be 'SQL2019-fr.iso'
             }
         }
     }

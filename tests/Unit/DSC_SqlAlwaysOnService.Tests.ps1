@@ -48,13 +48,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:dscResourceName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 
@@ -119,10 +121,10 @@ Describe 'SqlAlwaysOnService\Get-TargetResource' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be 'Absent'
+                        $result.Ensure | Should-Be 'Absent'
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
 
                 It 'Should return the same values as passed as parameters' {
@@ -131,8 +133,8 @@ Describe 'SqlAlwaysOnService\Get-TargetResource' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                        $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                        $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                        $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                     }
                 }
 
@@ -142,8 +144,8 @@ Describe 'SqlAlwaysOnService\Get-TargetResource' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be $mockGetTargetResourceParameters.Ensure
-                        $result.RestartTimeout | Should -Not -BeNullOrEmpty
+                        $result.Ensure | Should-Be $mockGetTargetResourceParameters.Ensure
+                        $result.RestartTimeout | Should-BeTruthy
                     }
                 }
             }
@@ -170,10 +172,10 @@ Describe 'SqlAlwaysOnService\Get-TargetResource' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be 'Present'
+                        $result.Ensure | Should-Be 'Present'
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
 
                 It 'Should return the same values as passed as parameters' {
@@ -182,8 +184,8 @@ Describe 'SqlAlwaysOnService\Get-TargetResource' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                        $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                        $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                        $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                     }
                 }
 
@@ -193,8 +195,8 @@ Describe 'SqlAlwaysOnService\Get-TargetResource' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be $mockGetTargetResourceParameters.Ensure
-                        $result.RestartTimeout | Should -Not -BeNullOrEmpty
+                        $result.Ensure | Should-Be $mockGetTargetResourceParameters.Ensure
+                        $result.RestartTimeout | Should-BeTruthy
                     }
                 }
             }
@@ -224,7 +226,7 @@ Describe 'SqlAlwaysOnService\Get-TargetResource' {
                         $null = Get-TargetResource @mockGetTargetResourceParameters
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
 
                 It 'Should return that HADR is disabled' {
@@ -234,10 +236,10 @@ Describe 'SqlAlwaysOnService\Get-TargetResource' {
                         # Get the current state
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be 'Absent'
+                        $result.Ensure | Should-Be 'Absent'
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -292,10 +294,10 @@ Describe 'SqlAlwaysOnService\Test-TargetResource' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeTrue
+                        $result | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Scope It -Times 1 -Exactly
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -320,10 +322,10 @@ Describe 'SqlAlwaysOnService\Test-TargetResource' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeTrue
+                        $result | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Scope It -Times 1 -Exactly
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -361,10 +363,10 @@ Describe 'SqlAlwaysOnService\Test-TargetResource' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Scope It -Times 1 -Exactly
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -389,10 +391,10 @@ Describe 'SqlAlwaysOnService\Test-TargetResource' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Scope It -Times 1 -Exactly
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -449,9 +451,9 @@ Describe 'SqlAlwaysOnService\Set-TargetResource' {
                         $null = Set-TargetResource @mockSetTargetResourceParameters
                     }
 
-                    Should -Invoke -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                    Should -Invoke -CommandName Disable-SqlAlwaysOn -Scope It -Times 1 -Exactly
-                    Should -Invoke -CommandName Restart-SqlService -Scope It -Times 1 -Exactly
+                    Should-Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Disable-SqlAlwaysOn -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 1
                 }
             }
 
@@ -473,9 +475,9 @@ Describe 'SqlAlwaysOnService\Set-TargetResource' {
                         $null = Set-TargetResource @mockSetTargetResourceParameters
                     }
 
-                    Should -Invoke -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                    Should -Invoke -CommandName Enable-SqlAlwaysOn -Scope It -Times 1 -Exactly
-                    Should -Invoke -CommandName Restart-SqlService -Scope It -Times 1 -Exactly
+                    Should-Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Enable-SqlAlwaysOn -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 1
                 }
             }
 
@@ -500,7 +502,7 @@ Describe 'SqlAlwaysOnService\Set-TargetResource' {
                             $script:mockSetTargetResourceParameters.InstanceName
                         )
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                     }
                 }
             }

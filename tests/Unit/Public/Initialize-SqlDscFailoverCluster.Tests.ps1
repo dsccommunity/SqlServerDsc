@@ -35,7 +35,8 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
@@ -69,8 +70,8 @@ Describe 'Initialize-SqlDscFailoverCluster' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When setup action is ''PrepareFailoverCluster''' {
@@ -104,14 +105,14 @@ Describe 'Initialize-SqlDscFailoverCluster' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Initialize-SqlDscFailoverCluster -Confirm:$false @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=PrepareFailoverCluster'
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="MSSQLSERVER"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE'
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/ACTION=PrepareFailoverCluster'
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/INSTANCENAME="MSSQLSERVER"' # cspell: disable-line
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/FEATURES=SQLENGINE'
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -119,12 +120,12 @@ Describe 'Initialize-SqlDscFailoverCluster' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Initialize-SqlDscFailoverCluster -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=PrepareFailoverCluster'
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/ACTION=PrepareFailoverCluster'
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -132,7 +133,7 @@ Describe 'Initialize-SqlDscFailoverCluster' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Initialize-SqlDscFailoverCluster -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -298,12 +299,12 @@ Describe 'Initialize-SqlDscFailoverCluster' -Tag 'Public' {
 
                 Initialize-SqlDscFailoverCluster @initializeSqlDscFailoverClusterParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly $MockExpectedRegEx
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                    $ArgumentList | Should-MatchString -CaseSensitive $MockExpectedRegEx
 
                     # Return $true if none of the above throw.
                     $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
     }

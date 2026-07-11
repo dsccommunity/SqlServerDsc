@@ -48,13 +48,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:dscResourceName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 
@@ -136,11 +138,11 @@ Describe 'SqlEndpointPermission\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                        $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                        $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                        $result.Principal | Should -Be $mockGetTargetResourceParameters.Principal
-                        $result.Permission | Should -Be 'CONNECT'
+                        $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                        $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                        $result.Name | Should-Be $mockGetTargetResourceParameters.Name
+                        $result.Principal | Should-Be $mockGetTargetResourceParameters.Principal
+                        $result.Permission | Should-Be 'CONNECT'
                     }
                 }
             }
@@ -154,11 +156,11 @@ Describe 'SqlEndpointPermission\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                        $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                        $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                        $result.Principal | Should -Be $mockGetTargetResourceParameters.Principal
-                        $result.Permission | Should -BeNullOrEmpty
+                        $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                        $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                        $result.Name | Should-Be $mockGetTargetResourceParameters.Name
+                        $result.Principal | Should-Be $mockGetTargetResourceParameters.Principal
+                        $result.Permission | Should-BeFalsy
                     }
                 }
             }
@@ -183,7 +185,7 @@ Describe 'SqlEndpointPermission\Get-TargetResource' -Tag 'Get' {
                         ($script:localizedData.EndpointNotFound -f 'MissingEndpoint')
                     )
 
-                    { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                    { Get-TargetResource @mockGetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
                 }
             }
         }
@@ -231,7 +233,7 @@ Describe 'SqlEndpointPermission\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -259,7 +261,7 @@ Describe 'SqlEndpointPermission\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -288,7 +290,7 @@ Describe 'SqlEndpointPermission\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -331,7 +333,7 @@ Describe 'SqlEndpointPermission\Set-TargetResource' -Tag 'Set' {
 
                     $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -354,7 +356,7 @@ Describe 'SqlEndpointPermission\Set-TargetResource' -Tag 'Set' {
 
                     $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -432,11 +434,11 @@ Describe 'SqlEndpointPermission\Set-TargetResource' -Tag 'Set' {
 
                     $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName New-Object -Exactly -Scope It -Times 1
 
-                    $mockMethodGrantWasRun | Should -Be 1
-                    $mockMethodRevokeWasRun | Should -Be 0
+                    $mockMethodGrantWasRun | Should-Be 1
+                    $mockMethodRevokeWasRun | Should-Be 0
                 }
             }
         }
@@ -459,11 +461,11 @@ Describe 'SqlEndpointPermission\Set-TargetResource' -Tag 'Set' {
 
                     $null = Set-TargetResource @mockSetTargetResourceParameters -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName New-Object -Exactly -Scope It -Times 1
 
-                    $mockMethodRevokeWasRun | Should -Be 1
-                    $mockMethodGrantWasRun | Should -Be 0
+                    $mockMethodRevokeWasRun | Should-Be 1
+                    $mockMethodGrantWasRun | Should-Be 0
                 }
             }
         }
@@ -487,7 +489,7 @@ Describe 'SqlEndpointPermission\Set-TargetResource' -Tag 'Set' {
 
                     $mockErrorMessage = $script:localizedData.EndpointNotFound -f 'MissingEndpoint'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                 }
             }
         }

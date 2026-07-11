@@ -47,7 +47,7 @@ Describe 'Repair-SqlDscPowerBIReportServer' -Tag @('Integration_PowerBI') {
     It 'Should have the BI Report Server service running' {
         $getServiceResult = Get-Service -Name 'PowerBIReportServer' -ErrorAction 'Stop'
 
-        $getServiceResult.Status | Should -Be 'Running'
+        $getServiceResult.Status | Should-Be 'Running'
     }
 
     Context 'When repairing BI Report Server' {
@@ -69,8 +69,8 @@ Describe 'Repair-SqlDscPowerBIReportServer' -Tag @('Integration_PowerBI') {
         It 'Should still have a Power BI Report Server service running after repair' {
             $getServiceResult = Get-Service -Name 'PowerBIReportServer' -ErrorAction 'Stop'
 
-            $getServiceResult | Should -Not -BeNullOrEmpty
-            $getServiceResult.Status | Should -Be 'Running'
+            $getServiceResult | Should-BeTruthy
+            $getServiceResult.Status | Should-Be 'Running'
         }
     }
 }

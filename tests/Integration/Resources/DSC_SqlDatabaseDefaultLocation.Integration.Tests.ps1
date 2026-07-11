@@ -97,12 +97,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Type | Should -Be 'Data'
-            $resourceCurrentState.Path | Should -Be $ConfigurationData.AllNodes.DataFilePath
+            $resourceCurrentState.Type | Should-Be 'Data'
+            $resourceCurrentState.Path | Should-Be $ConfigurationData.AllNodes.DataFilePath
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -148,12 +148,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Type | Should -Be 'Log'
-            $resourceCurrentState.Path | Should -Be $ConfigurationData.AllNodes.LogFilePath
+            $resourceCurrentState.Type | Should-Be 'Log'
+            $resourceCurrentState.Path | Should-Be $ConfigurationData.AllNodes.LogFilePath
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -199,13 +199,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Type | Should -Be 'Backup'
+            $resourceCurrentState.Type | Should-Be 'Backup'
             # Ending backslash is removed because of regression test for issue #1307.
-            $resourceCurrentState.Path | Should -Be $ConfigurationData.AllNodes.BackupFilePath.TrimEnd('\')
+            $resourceCurrentState.Path | Should-Be $ConfigurationData.AllNodes.BackupFilePath.TrimEnd('\')
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 }

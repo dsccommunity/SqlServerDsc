@@ -76,8 +76,8 @@ Describe 'Import-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integrati
             Import-SqlDscPreferredModule -ErrorAction 'Stop'
 
             $importedModule = Get-Module -Name @('SqlServer', 'SQLPS') | Select-Object -First 1
-            $importedModule | Should -Not -BeNullOrEmpty
-            $importedModule.Name | Should -BeIn @('SqlServer', 'SQLPS')
+            $importedModule | Should-BeTruthy
+            @('SqlServer', 'SQLPS') | Should-ContainCollection ($importedModule.Name)
         }
     }
 
@@ -100,8 +100,8 @@ Describe 'Import-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integrati
             Import-SqlDscPreferredModule -Force -ErrorAction 'Stop'
             $secondImport = Get-Module -Name @('SqlServer', 'SQLPS') | Select-Object -First 1
 
-            $secondImport | Should -Not -BeNullOrEmpty
-            $secondImport.Name | Should -Be $firstImport.Name
+            $secondImport | Should-BeTruthy
+            $secondImport.Name | Should-Be $firstImport.Name
         }
     }
 
@@ -123,8 +123,8 @@ Describe 'Import-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integrati
             $null = Import-SqlDscPreferredModule -Name 'SQLPS' -ErrorAction 'Stop'
 
             $importedModule = Get-Module -Name 'SQLPS'
-            $importedModule | Should -Not -BeNullOrEmpty
-            $importedModule.Name | Should -Be 'SQLPS'
+            $importedModule | Should-BeTruthy
+            $importedModule.Name | Should-Be 'SQLPS'
         }
 
         It 'Should import SqlServer when specifically requested' {
@@ -139,8 +139,8 @@ Describe 'Import-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integrati
             $null = Import-SqlDscPreferredModule -Name 'SqlServer' -ErrorAction 'Stop'
 
             $importedModule = Get-Module -Name 'SqlServer'
-            $importedModule | Should -Not -BeNullOrEmpty
-            $importedModule.Name | Should -Be 'SqlServer'
+            $importedModule | Should-BeTruthy
+            $importedModule.Name | Should-Be 'SqlServer'
         }
     }
 
@@ -169,8 +169,8 @@ Describe 'Import-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integrati
             $null = Import-SqlDscPreferredModule -ErrorAction 'Stop'
 
             $importedModule = Get-Module -Name @('SqlServer', 'SQLPS') | Select-Object -First 1
-            $importedModule | Should -Not -BeNullOrEmpty
-            $importedModule.Name | Should -Be 'SqlServer'
+            $importedModule | Should-BeTruthy
+            $importedModule.Name | Should-Be 'SqlServer'
         }
     }
 
@@ -183,7 +183,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integrati
         It 'Should handle the case when neither preferred module is available gracefully' {
             # This test verifies error handling when no SQL modules are available
             # We can't easily simulate this in CI where modules are installed, so we test with a non-existent module
-            { Import-SqlDscPreferredModule -Name 'NonExistentSqlModule' -ErrorAction 'Stop' } | Should -Throw
+            { Import-SqlDscPreferredModule -Name 'NonExistentSqlModule' -ErrorAction 'Stop' } | Should-Throw
         }
     }
 }

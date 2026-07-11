@@ -41,22 +41,22 @@ Describe 'Prerequisites' {
         It 'Should create SqlInstall user' {
             $user = New-LocalUser -Name 'SqlInstall' -Password $password -FullName 'SQL Install User' -Description 'User for SQL installation.'
 
-            $user.Name | Should -Be 'SqlInstall'
-            (Get-LocalUser -Name 'SqlInstall').Name | Should -Be 'SqlInstall'
+            $user.Name | Should-Be 'SqlInstall'
+            (Get-LocalUser -Name 'SqlInstall').Name | Should-Be 'SqlInstall'
         }
 
         It 'Should create SqlAdmin user' {
             $user = New-LocalUser -Name 'SqlAdmin' -Password $password -FullName 'SQL Admin User' -Description 'User for SQL administration.'
 
-            $user.Name | Should -Be 'SqlAdmin'
-            (Get-LocalUser -Name 'SqlAdmin').Name | Should -Be 'SqlAdmin'
+            $user.Name | Should-Be 'SqlAdmin'
+            (Get-LocalUser -Name 'SqlAdmin').Name | Should-Be 'SqlAdmin'
         }
 
         It 'Should create SqlIntegrationTest user' {
             $user = New-LocalUser -Name 'SqlIntegrationTest' -Password $password -FullName 'SQL Integration Test User' -Description 'User for SQL integration testing.'
 
-            $user.Name | Should -Be 'SqlIntegrationTest'
-            (Get-LocalUser -Name 'SqlIntegrationTest').Name | Should -Be 'SqlIntegrationTest'
+            $user.Name | Should-Be 'SqlIntegrationTest'
+            (Get-LocalUser -Name 'SqlIntegrationTest').Name | Should-Be 'SqlIntegrationTest'
         }
     }
 
@@ -68,36 +68,36 @@ Describe 'Prerequisites' {
         It 'Should create svc-SqlPrimary user' {
             $user = New-LocalUser -Name 'svc-SqlPrimary' -Password $password -FullName 'svc-SqlPrimary' -Description 'Runs the SQL Server service.'
 
-            $user.Name | Should -Be 'svc-SqlPrimary'
-            (Get-LocalUser -Name 'svc-SqlPrimary').Name | Should -Be 'svc-SqlPrimary'
+            $user.Name | Should-Be 'svc-SqlPrimary'
+            (Get-LocalUser -Name 'svc-SqlPrimary').Name | Should-Be 'svc-SqlPrimary'
         }
 
         It 'Should create svc-SqlAgentPri user' {
             $user = New-LocalUser -Name 'svc-SqlAgentPri' -Password $password -FullName 'svc-SqlAgentPri' -Description 'Runs the SQL Server Agent service.'
 
-            $user.Name | Should -Be 'svc-SqlAgentPri'
-            (Get-LocalUser -Name 'svc-SqlAgentPri').Name | Should -Be 'svc-SqlAgentPri'
+            $user.Name | Should-Be 'svc-SqlAgentPri'
+            (Get-LocalUser -Name 'svc-SqlAgentPri').Name | Should-Be 'svc-SqlAgentPri'
         }
 
         It 'Should create svc-SqlSecondary user' {
             $user = New-LocalUser -Name 'svc-SqlSecondary' -Password $password -FullName 'svc-SqlSecondary' -Description 'Runs the SQL Server service.'
 
-            $user.Name | Should -Be 'svc-SqlSecondary'
-            (Get-LocalUser -Name 'svc-SqlSecondary').Name | Should -Be 'svc-SqlSecondary'
+            $user.Name | Should-Be 'svc-SqlSecondary'
+            (Get-LocalUser -Name 'svc-SqlSecondary').Name | Should-Be 'svc-SqlSecondary'
         }
 
         It 'Should create svc-SqlAgentSec user' {
             $user = New-LocalUser -Name 'svc-SqlAgentSec' -Password $password -FullName 'svc-SqlAgentSec' -Description 'Runs the SQL Server Agent service.'
 
-            $user.Name | Should -Be 'svc-SqlAgentSec'
-            (Get-LocalUser -Name 'svc-SqlAgentSec').Name | Should -Be 'svc-SqlAgentSec'
+            $user.Name | Should-Be 'svc-SqlAgentSec'
+            (Get-LocalUser -Name 'svc-SqlAgentSec').Name | Should-Be 'svc-SqlAgentSec'
         }
 
         It 'Should create svc-RS user' -Tag @('Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
             $user = New-LocalUser -Name 'svc-RS' -Password $password -FullName 'svc-RS' -Description 'Runs the Reporting Services service.'
 
-            $user.Name | Should -Be 'svc-RS'
-            (Get-LocalUser -Name 'svc-RS').Name | Should -Be 'svc-RS'
+            $user.Name | Should-Be 'svc-RS'
+            (Get-LocalUser -Name 'svc-RS').Name | Should-Be 'svc-RS'
         }
     }
 
@@ -105,8 +105,8 @@ Describe 'Prerequisites' {
         It 'Should create SqlIntegrationTestGroup group' {
             $group = New-LocalGroup -Name 'SqlIntegrationTestGroup' -Description 'Local Windows group for SQL integration testing.'
 
-            $group.Name | Should -Be 'SqlIntegrationTestGroup'
-            (Get-LocalGroup -Name 'SqlIntegrationTestGroup').Name | Should -Be 'SqlIntegrationTestGroup'
+            $group.Name | Should-Be 'SqlIntegrationTestGroup'
+            (Get-LocalGroup -Name 'SqlIntegrationTestGroup').Name | Should-Be 'SqlIntegrationTestGroup'
         }
     }
 
@@ -118,7 +118,7 @@ Describe 'Prerequisites' {
             # Verify if user is part of local administrator group
             $adminGroup = Get-LocalGroup -Name 'Administrators'
             $adminGroupMembers = Get-LocalGroupMember -Group $adminGroup
-            $adminGroupMembers.Name | Should -Contain ('{0}\SqlInstall' -f (Get-ComputerName))
+            $adminGroupMembers.Name | Should-ContainCollection ('{0}\SqlInstall' -f (Get-ComputerName))
         }
 
         It 'Should add SqlIntegrationTest to SqlIntegrationTestGroup group' {
@@ -128,7 +128,7 @@ Describe 'Prerequisites' {
             # Verify if user is part of the local group
             $testGroup = Get-LocalGroup -Name 'SqlIntegrationTestGroup'
             $testGroupMembers = Get-LocalGroupMember -Group $testGroup
-            $testGroupMembers.Name | Should -Contain ('{0}\SqlIntegrationTest' -f (Get-ComputerName))
+            $testGroupMembers.Name | Should-ContainCollection ('{0}\SqlIntegrationTest' -f (Get-ComputerName))
         }
     }
 
@@ -138,7 +138,7 @@ Describe 'Prerequisites' {
 
             $script:mediaFile = Save-SqlDscSqlServerMediaFile -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
 
-            $mediaFile.Name | Should -Be 'media.iso'
+            $mediaFile.Name | Should-Be 'media.iso'
         }
 
         It 'Should download SQL Server 2017 media' -Tag @('Integration_SQL2017', 'Integration_SQL2017_RS') {
@@ -146,7 +146,7 @@ Describe 'Prerequisites' {
 
             $script:mediaFile = Save-SqlDscSqlServerMediaFile -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
 
-            $mediaFile.Name | Should -Be 'media.iso'
+            $mediaFile.Name | Should-Be 'media.iso'
         }
 
         It 'Should download SQL Server 2019 media' -Tag @('Integration_SQL2019', 'Integration_SQL2019_RS') {
@@ -154,7 +154,7 @@ Describe 'Prerequisites' {
 
             $script:mediaFile = Save-SqlDscSqlServerMediaFile -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
 
-            $mediaFile.Name | Should -Be 'media.iso'
+            $mediaFile.Name | Should-Be 'media.iso'
         }
 
         It 'Should download SQL Server 2022 media' -Tag @('Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2022_RS') {
@@ -162,7 +162,7 @@ Describe 'Prerequisites' {
 
             $script:mediaFile = Save-SqlDscSqlServerMediaFile -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
 
-            $mediaFile.Name | Should -Be 'media.iso'
+            $mediaFile.Name | Should-Be 'media.iso'
         }
 
         It 'Should download SQL Server 2025 media' -Tag @('Integration_SQL2025') {
@@ -170,31 +170,31 @@ Describe 'Prerequisites' {
 
             $script:mediaFile = Save-SqlDscSqlServerMediaFile -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
 
-            $mediaFile.Name | Should -Be 'media.iso'
+            $mediaFile.Name | Should-Be 'media.iso'
         }
     }
 
     Context 'Mount SQL Server media' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
         It 'Should mount the media to a drive letter' {
             $mountedImage = Mount-DiskImage -ImagePath $script:mediaFile
-            $mountedImage | Should -BeOfType 'Microsoft.Management.Infrastructure.CimInstance'
+            $mountedImage | Should-HaveType 'Microsoft.Management.Infrastructure.CimInstance'
 
             $mountedVolume = Get-Volume -DiskImage $mountedImage
-            $mountedVolume.DriveLetter | Should -Not -BeNullOrEmpty
+            $mountedVolume.DriveLetter | Should-BeTruthy
 
             $env:IsoDriveLetter = $mountedVolume.DriveLetter
-            $env:IsoDriveLetter | Should -Not -BeNullOrEmpty
+            $env:IsoDriveLetter | Should-BeTruthy
 
             $env:IsoDrivePath = (Get-PSDrive -Name $env:IsoDriveLetter).Root
-            $env:IsoDrivePath | Should -Be ('{0}:\' -f $env:IsoDriveLetter)
+            $env:IsoDrivePath | Should-Be ('{0}:\' -f $env:IsoDriveLetter)
         }
 
         It 'Should have set environment variable for drive letter' {
-            $env:IsoDriveLetter | Should -Not -BeNullOrEmpty
+            $env:IsoDriveLetter | Should-BeTruthy
         }
 
         It 'Should have set environment variable for drive path' {
-            $env:IsoDrivePath | Should -Be ('{0}:\' -f $env:IsoDriveLetter)
+            $env:IsoDrivePath | Should-Be ('{0}:\' -f $env:IsoDriveLetter)
         }
     }
 
@@ -202,60 +202,60 @@ Describe 'Prerequisites' {
         It 'Should have the minimum required version of Microsoft.PowerShell.PSResourceGet' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
             $module = Get-Module -Name 'Microsoft.PowerShell.PSResourceGet' -ListAvailable
 
-            $module.Count | Should -BeGreaterOrEqual 1
+            $module.Count | Should-BeGreaterThanOrEqual 1
             #$module.Version -ge '1.0.4.1' | Should -BeTrue
         }
 
         It 'Should have a resource repository PSGallery with correct URI' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_SQL2025', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
             $resourceRepository = Get-PSResourceRepository -Name 'PSGallery'
 
-            $resourceRepository | Should -HaveCount 1
-            $resourceRepository.Uri | Should -Be 'https://www.powershellgallery.com/api/v2'
+            $resourceRepository | Should-BeCollection -Count 1
+            $resourceRepository.Uri | Should-Be 'https://www.powershellgallery.com/api/v2'
         }
 
         It 'Should install SqlServer module version 21.1.18256' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019') {
             #Install-Module -Name 'SqlServer' -RequiredVersion '21.1.18256' -Force -ErrorAction 'Stop'
             $module = Install-PSResource -Name 'SqlServer' -Version '21.1.18256' -Scope 'AllUsers' -TrustRepository -ErrorAction 'Stop' -Confirm:$false -PassThru
 
-            $module | Should -HaveCount 1
-            $module.Version -eq '21.1.18256' | Should -BeTrue
+            $module | Should-BeCollection -Count 1
+            $module.Version -eq '21.1.18256' | Should-BeTrue
         }
 
         It 'Should have SqlServer module version 21.1.18256 available' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019') {
             $module = Get-Module -Name 'SqlServer' -ListAvailable
 
-            $module | Should -HaveCount 1
-            $module.Version -eq '21.1.18256' | Should -BeTrue
+            $module | Should-BeCollection -Count 1
+            $module.Version -eq '21.1.18256' | Should-BeTrue
         }
 
         It 'Should install SqlServer module version 22.2.0' -Tag @('Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
             #Install-Module -Name 'SqlServer' -RequiredVersion '22.2.0' -Force -ErrorAction 'Stop'
             $module = Install-PSResource -Name 'SqlServer' -Version '22.2.0' -Scope 'AllUsers' -TrustRepository -ErrorAction 'Stop' -Confirm:$false -PassThru
 
-            $module | Should -HaveCount 1
-            $module.Version -eq '22.2.0' | Should -BeTrue
+            $module | Should-BeCollection -Count 1
+            $module.Version -eq '22.2.0' | Should-BeTrue
         }
 
         It 'Should have SqlServer module version 22.2.0 available' -Tag @('Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
             $module = Get-Module -Name 'SqlServer' -ListAvailable
 
-            $module | Should -HaveCount 1
-            $module.Version -eq '22.2.0' | Should -BeTrue
+            $module | Should-BeCollection -Count 1
+            $module.Version -eq '22.2.0' | Should-BeTrue
         }
 
         It 'Should install SqlServer module version 22.4.5.1' -Tag @('Integration_SQL2025') {
             #Install-Module -Name 'SqlServer' -RequiredVersion '22.4.5.1' -Force -ErrorAction 'Stop'
             $module = Install-PSResource -Name 'SqlServer' -Version '22.4.5.1' -Scope 'AllUsers' -TrustRepository -ErrorAction 'Stop' -Confirm:$false -PassThru
 
-            $module | Should -HaveCount 1
-            $module.Version -eq '22.4.5.1' | Should -BeTrue
+            $module | Should-BeCollection -Count 1
+            $module.Version -eq '22.4.5.1' | Should-BeTrue
         }
 
         It 'Should have SqlServer module version 22.4.5.1 available' -Tag @('Integration_SQL2025') {
             $module = Get-Module -Name 'SqlServer' -ListAvailable
 
-            $module | Should -HaveCount 1
-            $module.Version -eq '22.4.5.1' | Should -BeTrue
+            $module | Should-BeCollection -Count 1
+            $module.Version -eq '22.4.5.1' | Should-BeTrue
         }
     }
 
@@ -265,7 +265,7 @@ Describe 'Prerequisites' {
             # TODO: This fails on Appveyor, but works locally when debugging on AppVeyor. Investigate why.
             $result = Invoke-Command -ComputerName 'localhost' -ScriptBlock { 1 } -ErrorAction 'Stop'
 
-            $result | Should -Be 1
+            $result | Should-Be 1
         }
     }
 
@@ -275,8 +275,8 @@ Describe 'Prerequisites' {
         It 'Should have TLS 1.2 enabled on the node' -Tag @('Integration_SQL2025') {
             # Test-TlsProtocol returns $true when the protocol is enabled.
             # Assert for both Server and Client registry keys.
-            (Test-TlsProtocol -Protocol 'Tls12') | Should -BeTrue
-            (Test-TlsProtocol -Protocol 'Tls12' -Client) | Should -BeTrue
+            (Test-TlsProtocol -Protocol 'Tls12') | Should-BeTrue
+            (Test-TlsProtocol -Protocol 'Tls12' -Client) | Should-BeTrue
         }
     }
 
@@ -288,7 +288,7 @@ Describe 'Prerequisites' {
             # Put the executable in a temporary folder that can be accessed by other tests
             $script:mediaFile = Save-SqlDscSqlServerMediaFile -SkipExecution -Url $url -FileName 'SQLServerReportingServices.exe' -DestinationPath (Get-TemporaryFolder) -Force -Quiet -ErrorAction 'Stop'
 
-            $mediaFile.Name | Should -Be 'SQLServerReportingServices.exe'
+            $mediaFile.Name | Should-Be 'SQLServerReportingServices.exe'
         }
     }
 
@@ -300,7 +300,7 @@ Describe 'Prerequisites' {
             # Put the executable in a temporary folder that can be accessed by other tests
             $script:mediaFile = Save-SqlDscSqlServerMediaFile -SkipExecution -Url $url -FileName 'SQLServerReportingServices.exe' -DestinationPath (Get-TemporaryFolder) -Force -Quiet -ErrorAction 'Stop'
 
-            $mediaFile.Name | Should -Be 'SQLServerReportingServices.exe'
+            $mediaFile.Name | Should-Be 'SQLServerReportingServices.exe'
         }
     }
 
@@ -312,7 +312,7 @@ Describe 'Prerequisites' {
             # Put the executable in a temporary folder that can be accessed by other tests
             $script:mediaFile = Save-SqlDscSqlServerMediaFile -SkipExecution -Url $url -FileName 'SQLServerReportingServices.exe' -DestinationPath (Get-TemporaryFolder) -Force -Quiet -ErrorAction 'Stop'
 
-            $mediaFile.Name | Should -Be 'SQLServerReportingServices.exe'
+            $mediaFile.Name | Should-Be 'SQLServerReportingServices.exe'
         }
     }
 
@@ -326,7 +326,7 @@ Describe 'Prerequisites' {
             # Put the executable in a temporary folder that can be accessed by other tests
             $script:mediaFile = Save-SqlDscSqlServerMediaFile -SkipExecution -Url $url -FileName 'PowerBIReportServer.exe' -DestinationPath (Get-TemporaryFolder) -Force -Quiet -ErrorAction 'Stop'
 
-            $mediaFile.Name | Should -Be 'PowerBIReportServer.exe'
+            $mediaFile.Name | Should-Be 'PowerBIReportServer.exe'
         }
     }
 }

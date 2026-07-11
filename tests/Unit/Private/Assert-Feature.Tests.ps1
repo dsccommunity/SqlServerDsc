@@ -34,13 +34,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -85,7 +87,7 @@ Describe 'Assert-Feature' -Tag 'Private' {
 
                         {
                             Assert-Feature -Feature 'RS' -ProductVersion 14
-                        } | Should -Throw -ExpectedMessage ($script:localizedData.Feature_Assert_NotSupportedFeature -f 'RS', 14)
+                        } | Should-Throw -ExceptionMessage ($script:localizedData.Feature_Assert_NotSupportedFeature -f 'RS', 14)
                     }
                 }
             }
@@ -97,7 +99,7 @@ Describe 'Assert-Feature' -Tag 'Private' {
 
                         {
                             'RS' | Assert-Feature -ProductVersion 14
-                        } | Should -Throw -ExpectedMessage ($script:localizedData.Feature_Assert_NotSupportedFeature -f 'RS', 14)
+                        } | Should-Throw -ExceptionMessage ($script:localizedData.Feature_Assert_NotSupportedFeature -f 'RS', 14)
                     }
                 }
             }
@@ -111,7 +113,7 @@ Describe 'Assert-Feature' -Tag 'Private' {
 
                         {
                             Assert-Feature -Feature @('RS', 'SQLENGINE') -ProductVersion 14
-                        } | Should -Throw -ExpectedMessage ($script:localizedData.Feature_Assert_NotSupportedFeature -f 'RS', 14)
+                        } | Should-Throw -ExceptionMessage ($script:localizedData.Feature_Assert_NotSupportedFeature -f 'RS', 14)
                     }
                 }
             }
@@ -123,7 +125,7 @@ Describe 'Assert-Feature' -Tag 'Private' {
 
                         {
                             'RS', 'SQLENGINE' | Assert-Feature -ProductVersion 14
-                        } | Should -Throw -ExpectedMessage ($script:localizedData.Feature_Assert_NotSupportedFeature -f 'RS', 14)
+                        } | Should-Throw -ExceptionMessage ($script:localizedData.Feature_Assert_NotSupportedFeature -f 'RS', 14)
                     }
                 }
             }

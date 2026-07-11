@@ -35,13 +35,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -69,8 +71,8 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     BeforeAll {
@@ -157,7 +159,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
 
             $null = Import-SqlDscPreferredModule
 
-            Should -Invoke -CommandName Import-Module -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Import-Module -Exactly -Scope It -Times 0
         }
     }
 
@@ -182,7 +184,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         It 'Should use the already loaded module and not call Import-Module' {
             $null = Import-SqlDscPreferredModule
 
-            Should -Invoke -CommandName Import-Module -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Import-Module -Exactly -Scope It -Times 0
         }
     }
 
@@ -206,10 +208,10 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         It 'Should import the SqlServer module without throwing' {
             $null = Import-SqlDscPreferredModule
 
-            Should -Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Push-Location -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Pop-Location -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Import-Module -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Push-Location -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Pop-Location -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Import-Module -Exactly -Scope It -Times 1
         }
     }
 
@@ -232,10 +234,10 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         It 'Should import the SqlServer module without throwing' {
             $null = Import-SqlDscPreferredModule -Name 'OtherModule'
 
-            Should -Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Push-Location -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Pop-Location -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Import-Module -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Push-Location -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Pop-Location -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Import-Module -Exactly -Scope It -Times 1
         }
     }
 
@@ -259,14 +261,14 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         It 'Should import the SQLPS module without throwing' {
             $null = Import-SqlDscPreferredModule -Force
 
-            Should -Invoke -CommandName Get-SqlDscPreferredModule -ParameterFilter {
+            Should-Invoke -CommandName Get-SqlDscPreferredModule -Exactly -ParameterFilter {
                 $PesterBoundParameters.ContainsKey('Refresh') -and $Refresh -eq $true
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
 
-            Should -Invoke -CommandName Push-Location -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Pop-Location -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Remove-Module -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Import-Module -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Push-Location -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Pop-Location -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Remove-Module -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Import-Module -Exactly -Scope It -Times 1
         }
     }
 
@@ -282,13 +284,13 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
                 $script:localizedData.PreferredModule_FailedFinding
             }
 
-            { Import-SqlDscPreferredModule } | Should -Throw -ExpectedMessage $mockErrorMessage
+            { Import-SqlDscPreferredModule } | Should-Throw -ExceptionMessage $mockErrorMessage
 
-            Should -Invoke -CommandName Get-Module -Exactly -Times 0 -Scope It
-            Should -Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Push-Location -Exactly -Times 0 -Scope It
-            Should -Invoke -CommandName Pop-Location -Exactly -Times 0 -Scope It
-            Should -Invoke -CommandName Import-Module -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Get-Module -Exactly -Scope It -Times 0
+            Should-Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Push-Location -Exactly -Scope It -Times 0
+            Should-Invoke -CommandName Pop-Location -Exactly -Scope It -Times 0
+            Should-Invoke -CommandName Import-Module -Exactly -Scope It -Times 0
         }
     }
 
@@ -312,12 +314,12 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         It 'Should import the SQLPD module without throwing' {
             $null = Import-SqlDscPreferredModule -Name 'OtherModule' -Force
 
-            Should -Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-Module -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Remove-Module -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Push-Location -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Pop-Location -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Import-Module -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-Module -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Remove-Module -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Push-Location -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Pop-Location -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Import-Module -Exactly -Scope It -Times 1
         }
     }
 }

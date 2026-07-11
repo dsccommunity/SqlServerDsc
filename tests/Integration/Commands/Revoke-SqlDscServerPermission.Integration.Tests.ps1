@@ -76,7 +76,7 @@ Describe 'Revoke-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integrat
             # Test that it's no longer granted
             $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('ViewAnyDatabase') -ErrorAction 'Stop'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
 
         It 'Should accept Login from pipeline' {
@@ -89,7 +89,7 @@ Describe 'Revoke-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integrat
 
             # Verify the permission was revoked
             $result = Test-SqlDscServerPermission -Login $loginObject -Grant -Permission @('ViewAnyDefinition') -ErrorAction 'Stop'
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 
@@ -108,7 +108,7 @@ Describe 'Revoke-SqlDscServerPermission' -Tag @('Integration_SQL2017', 'Integrat
             # Test that it's no longer granted
             $result = Test-SqlDscServerPermission -ServerRole $roleObject -Grant -Permission @('ViewServerState') -ErrorAction 'Stop'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 }

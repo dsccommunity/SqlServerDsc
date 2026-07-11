@@ -58,8 +58,8 @@ Describe 'Set-SqlDscRSUrlReservation' {
                 }
             }
 
-            $currentUrls | Should -Contain $script:testUrl1
-            $currentUrls | Should -Contain $script:testUrl2
+            $currentUrls | Should-ContainCollection $script:testUrl1
+            $currentUrls | Should-ContainCollection $script:testUrl2
         }
 
         It 'Should set URL reservations using pipeline' {
@@ -80,7 +80,7 @@ Describe 'Set-SqlDscRSUrlReservation' {
                 }
             }
 
-            $currentUrls | Should -Contain $script:testUrl1
+            $currentUrls | Should-ContainCollection $script:testUrl1
         }
     }
 
@@ -110,8 +110,8 @@ Describe 'Set-SqlDscRSUrlReservation' {
                 }
             }
 
-            $currentUrls | Should -Contain $script:testUrl1
-            $currentUrls | Should -Contain $script:testUrl2
+            $currentUrls | Should-ContainCollection $script:testUrl1
+            $currentUrls | Should-ContainCollection $script:testUrl2
         }
 
         It 'Should set URL reservations using pipeline' {
@@ -132,7 +132,7 @@ Describe 'Set-SqlDscRSUrlReservation' {
                 }
             }
 
-            $currentUrls | Should -Contain $script:testUrl1
+            $currentUrls | Should-ContainCollection $script:testUrl1
         }
     }
 
@@ -162,8 +162,8 @@ Describe 'Set-SqlDscRSUrlReservation' {
                 }
             }
 
-            $currentUrls | Should -Contain $script:testUrl1
-            $currentUrls | Should -Contain $script:testUrl2
+            $currentUrls | Should-ContainCollection $script:testUrl1
+            $currentUrls | Should-ContainCollection $script:testUrl2
         }
 
         It 'Should set URL reservations using pipeline' {
@@ -184,7 +184,7 @@ Describe 'Set-SqlDscRSUrlReservation' {
                 }
             }
 
-            $currentUrls | Should -Contain $script:testUrl1
+            $currentUrls | Should-ContainCollection $script:testUrl1
         }
     }
 
@@ -215,8 +215,8 @@ Describe 'Set-SqlDscRSUrlReservation' {
                 }
             }
 
-            $currentUrls | Should -Contain $script:testUrl1
-            $currentUrls | Should -Contain $script:testUrl2
+            $currentUrls | Should-ContainCollection $script:testUrl1
+            $currentUrls | Should-ContainCollection $script:testUrl2
         }
 
         It 'Should set URL reservations using pipeline' {
@@ -237,7 +237,7 @@ Describe 'Set-SqlDscRSUrlReservation' {
                 }
             }
 
-            $currentUrls | Should -Contain $script:testUrl1
+            $currentUrls | Should-ContainCollection $script:testUrl1
         }
     }
 }

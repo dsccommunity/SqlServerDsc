@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -64,18 +66,18 @@ Describe 'ConvertFrom-SqlDscServerPermission' -Tag 'Public' {
     It 'Should return the correct values' {
         $mockResult = ConvertFrom-SqlDscServerPermission -Permission $mockPermission
 
-        $mockResult.ConnectSql | Should -BeTrue
-        $mockResult.AlterAnyAvailabilityGroup | Should -BeTrue
-        $mockResult.AlterAnyLogin | Should -BeFalse
+        $mockResult.ConnectSql | Should-BeTrue
+        $mockResult.AlterAnyAvailabilityGroup | Should-BeTrue
+        $mockResult.AlterAnyLogin | Should-BeNull
     }
 
     Context 'When passing ServerPermissionInfo over the pipeline' {
         It 'Should return the correct values' {
             $mockResult = $mockPermission | ConvertFrom-SqlDscServerPermission
 
-            $mockResult.ConnectSql | Should -BeTrue
-            $mockResult.AlterAnyAvailabilityGroup | Should -BeTrue
-            $mockResult.AlterAnyLogin | Should -BeFalse
+            $mockResult.ConnectSql | Should-BeTrue
+            $mockResult.AlterAnyAvailabilityGroup | Should-BeTrue
+            $mockResult.AlterAnyLogin | Should-BeNull
         }
     }
 }

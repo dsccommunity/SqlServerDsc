@@ -37,12 +37,14 @@ BeforeAll {
     Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../Stubs') -ChildPath 'SMO.cs')
 
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -89,8 +91,8 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     It 'Should have the correct command metadata' {
@@ -99,9 +101,9 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
         $cmdletBindingAttribute = $command.ScriptBlock.Attributes |
             Where-Object -FilterScript { $_ -is [System.Management.Automation.CmdletBindingAttribute] }
 
-        $cmdletBindingAttribute.SupportsShouldProcess | Should -BeTrue
-        $cmdletBindingAttribute.ConfirmImpact | Should -Be 'Medium'
-        $cmdletBindingAttribute.DefaultParameterSetName | Should -Be 'WindowsUser'
+        $cmdletBindingAttribute.SupportsShouldProcess | Should-BeTrue
+        $cmdletBindingAttribute.ConfirmImpact | Should-Be 'Medium'
+        $cmdletBindingAttribute.DefaultParameterSetName | Should-Be 'WindowsUser'
     }
 
     It 'Should have correct parameter attributes for parameter set <ParameterSetName>' -ForEach @(
@@ -275,12 +277,12 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             $parameterAttribute = & $getParameterAttribute -ParameterName $parameterTest.ParameterName -ParameterSetName $ParameterSetName
 
             if ($parameterTest.ContainsKey('ShouldExist') -and $parameterTest.ShouldExist -eq $false) {
-                $parameterAttribute | Should -BeNullOrEmpty -Because "Parameter '$($parameterTest.ParameterName)' should not exist in parameter set '$ParameterSetName'"
+                $parameterAttribute | Should-BeFalsy -Because "Parameter '$($parameterTest.ParameterName)' should not exist in parameter set '$ParameterSetName'"
             } else {
-                $parameterAttribute | Should -Not -BeNullOrEmpty -Because "Parameter '$($parameterTest.ParameterName)' should exist in parameter set '$ParameterSetName'"
-                $parameterAttribute.Mandatory | Should -Be $parameterTest.IsMandatory -Because "Parameter '$($parameterTest.ParameterName)' mandatory setting should be $($parameterTest.IsMandatory) in parameter set '$ParameterSetName'"
-                $parameterAttribute.ValueFromPipeline | Should -Be $parameterTest.ValueFromPipeline -Because "Parameter '$($parameterTest.ParameterName)' ValueFromPipeline setting should be $($parameterTest.ValueFromPipeline) in parameter set '$ParameterSetName'"
-                $parameterAttribute.ValueFromPipelineByPropertyName | Should -Be $parameterTest.ValueFromPipelineByPropertyName -Because "Parameter '$($parameterTest.ParameterName)' ValueFromPipelineByPropertyName setting should be $($parameterTest.ValueFromPipelineByPropertyName) in parameter set '$ParameterSetName'"
+                $parameterAttribute | Should-BeTruthy -Because "Parameter '$($parameterTest.ParameterName)' should exist in parameter set '$ParameterSetName'"
+                $parameterAttribute.Mandatory | Should-Be $parameterTest.IsMandatory -Because "Parameter '$($parameterTest.ParameterName)' mandatory setting should be $($parameterTest.IsMandatory) in parameter set '$ParameterSetName'"
+                $parameterAttribute.ValueFromPipeline | Should-Be $parameterTest.ValueFromPipeline -Because "Parameter '$($parameterTest.ParameterName)' ValueFromPipeline setting should be $($parameterTest.ValueFromPipeline) in parameter set '$ParameterSetName'"
+                $parameterAttribute.ValueFromPipelineByPropertyName | Should-Be $parameterTest.ValueFromPipelineByPropertyName -Because "Parameter '$($parameterTest.ParameterName)' ValueFromPipelineByPropertyName setting should be $($parameterTest.ValueFromPipelineByPropertyName) in parameter set '$ParameterSetName'"
             }
         }
     }
@@ -303,7 +305,7 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             It 'Should create a SQL Server login and invoke Test-SqlDscIsLogin' {
                 $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'TestLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -Confirm:$false
 
-                Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Test-SqlDscIsLogin -Exactly -Scope It -Times 1
             }
         }
 
@@ -311,10 +313,10 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             It 'Should create a Windows user login and return the created object' {
                 $result = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'DOMAIN\TestUser' -WindowsUser -PassThru -Confirm:$false
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.MockCreateCalled | Should -BeTrue
+                $result | Should-BeTruthy
+                $result.MockCreateCalled | Should-BeTrue
 
-                Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Test-SqlDscIsLogin -Exactly -Scope It -Times 1
             }
         }
 
@@ -328,9 +330,9 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             }
 
             It 'Should throw an error when login already exists' {
-                { New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'ExistingLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -Confirm:$false } | Should -Throw -ExpectedMessage '*already exists*'
+                { New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'ExistingLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -Confirm:$false } | Should-Throw -ExceptionMessage '*already exists*'
 
-                Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Test-SqlDscIsLogin -Exactly -Scope It -Times 1
             }
         }
 
@@ -342,17 +344,17 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             It 'Should return the login object when PassThru is specified' {
                 $result = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'TestLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -PassThru -Confirm:$false
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.MockCreateCalled | Should -BeTrue
+                $result | Should-BeTruthy
+                $result.MockCreateCalled | Should-BeTrue
 
-                Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Test-SqlDscIsLogin -Exactly -Scope It -Times 1
             }
 
             It 'Should not return a login object when PassThru is not specified' {
                 $result = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'TestLogin2' -SqlLogin -SecurePassword $script:mockSecurePassword -Confirm:$false
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
 
-                Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Test-SqlDscIsLogin -Exactly -Scope It -Times 1
             }
         }
 
@@ -360,10 +362,10 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             It 'Should create a certificate login and return the created object' {
                 $result = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'CertLogin' -Certificate -CertificateName 'MyCert' -PassThru -Confirm:$false
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.MockCreateCalled | Should -BeTrue
+                $result | Should-BeTruthy
+                $result.MockCreateCalled | Should-BeTrue
 
-                Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Test-SqlDscIsLogin -Exactly -Scope It -Times 1
             }
         }
 
@@ -371,10 +373,10 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             It 'Should create an asymmetric key login and return the created object' {
                 $result = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'KeyLogin' -AsymmetricKey -AsymmetricKeyName 'MyKey' -PassThru -Confirm:$false
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.MockCreateCalled | Should -BeTrue
+                $result | Should-BeTruthy
+                $result.MockCreateCalled | Should-BeTrue
 
-                Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Test-SqlDscIsLogin -Exactly -Scope It -Times 1
             }
         }
 
@@ -382,10 +384,10 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             It 'Should create a Windows group login and return the created object' {
                 $result = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'NT AUTHORITY\SYSTEM' -WindowsGroup -PassThru -Confirm:$false
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.MockCreateCalled | Should -BeTrue
+                $result | Should-BeTruthy
+                $result.MockCreateCalled | Should-BeTrue
 
-                Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Test-SqlDscIsLogin -Exactly -Scope It -Times 1
             }
         }
 
@@ -397,7 +399,7 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             It 'Should create when Force is used' {
                 $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'ForceLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -Force
 
-                Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Test-SqlDscIsLogin -Exactly -Scope It -Times 1
             }
         }
 
@@ -409,10 +411,10 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             It 'Should set custom language on login object' {
                 $login = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'LangLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -DefaultLanguage 'Swedish' -PassThru -Confirm:$false
 
-                $login.Language | Should -Be 'Swedish'
-                $login.MockCreateCalled | Should -BeTrue
+                $login.Language | Should-Be 'Swedish'
+                $login.MockCreateCalled | Should-BeTrue
 
-                Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Test-SqlDscIsLogin -Exactly -Scope It -Times 1
             }
         }
 
@@ -424,7 +426,7 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             It 'Should set MustChange login create option' {
                 $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'MustChangeLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -MustChangePassword -Confirm:$false
 
-                Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Test-SqlDscIsLogin -Exactly -Scope It -Times 1
             }
         }
 
@@ -436,7 +438,7 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             It 'Should set IsHashed login create option' {
                 $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'HashedLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -IsHashed -Confirm:$false
 
-                Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Test-SqlDscIsLogin -Exactly -Scope It -Times 1
             }
         }
 
@@ -448,9 +450,9 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             It 'Should call Disable method on login object and set IsDisabled property' {
                 $login = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'DisabledLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -Disabled -PassThru -Confirm:$false
 
-                $login.IsDisabled | Should -BeTrue
+                $login.IsDisabled | Should-BeTrue
 
-                Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Test-SqlDscIsLogin -Exactly -Scope It -Times 1
             }
         }
 
@@ -463,42 +465,42 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
                 $login = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'ComplexLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -MustChangePassword -Disabled -DefaultLanguage 'English' -DefaultDatabase 'tempdb' -PasswordExpirationEnabled -PasswordPolicyEnforced -PassThru -Confirm:$false
 
                 # Basic smoke assertions
-                $login | Should -Not -BeNullOrEmpty
-                $login.MockCreateCalled | Should -BeTrue
+                $login | Should-BeTruthy
+                $login.MockCreateCalled | Should-BeTrue
                 # LoginType is set to SqlLogin for both regular and hashed SQL logins
-                $login.LoginType | Should -Be 'SqlLogin'
+                $login.LoginType | Should-Be 'SqlLogin'
 
                 # Options that New-SqlDscLogin assigns directly to the login object
-                $login.DefaultDatabase | Should -Be 'tempdb'
-                $login.Language | Should -Be 'English'
-                $login.PasswordExpirationEnabled | Should -BeTrue
-                $login.PasswordPolicyEnforced | Should -BeTrue
+                $login.DefaultDatabase | Should-Be 'tempdb'
+                $login.Language | Should-Be 'English'
+                $login.PasswordExpirationEnabled | Should-BeTrue
+                $login.PasswordPolicyEnforced | Should-BeTrue
 
                 # Disabled should invoke Disable() on the login object
-                $login.IsDisabled | Should -BeTrue
+                $login.IsDisabled | Should-BeTrue
 
                 # The created login should reference the same Server object passed in
-                $login.Parent | Should -Be $script:mockServerObject
+                $login.Parent | Should-Be $script:mockServerObject
 
-                Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Test-SqlDscIsLogin -Exactly -Scope It -Times 1
             }
 
             It 'Should handle hashed SQL login with compatible options' {
                 $login = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'HashedLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -IsHashed -Disabled -DefaultLanguage 'English' -DefaultDatabase 'tempdb' -PassThru -Confirm:$false
 
-                $login | Should -Not -BeNullOrEmpty
-                $login.MockCreateCalled | Should -BeTrue
-                $login.LoginType | Should -Be 'SqlLogin'
+                $login | Should-BeTruthy
+                $login.MockCreateCalled | Should-BeTrue
+                $login.LoginType | Should-Be 'SqlLogin'
 
                 # Hashed logins still set language/default database and can be disabled
-                $login.DefaultDatabase | Should -Be 'tempdb'
-                $login.Language | Should -Be 'English'
-                $login.IsDisabled | Should -BeTrue
+                $login.DefaultDatabase | Should-Be 'tempdb'
+                $login.Language | Should-Be 'English'
+                $login.IsDisabled | Should-BeTrue
 
                 # Parent/server reference check
-                $login.Parent | Should -Be $script:mockServerObject
+                $login.Parent | Should-Be $script:mockServerObject
 
-                Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Test-SqlDscIsLogin -Exactly -Scope It -Times 1
             }
         }
 
@@ -520,19 +522,19 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             It 'Should create login with MustChangePassword option' {
                 $null = New-SqlDscLogin -ServerObject $mockServerObject -Name 'NewLogin' -SqlLogin -SecurePassword $mockSecurePassword -MustChangePassword
 
-                Should -Invoke -CommandName Test-SqlDscIsLogin -ParameterFilter $mockTestSqlDscIsLoginParameterFilter -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Test-SqlDscIsLogin -Exactly -ParameterFilter $mockTestSqlDscIsLoginParameterFilter -Scope It -Times 1
             }
 
             It 'Should create login with IsHashed option' {
                 $null = New-SqlDscLogin -ServerObject $mockServerObject -Name 'NewLogin' -SqlLogin -SecurePassword $mockSecurePassword -IsHashed
 
-                Should -Invoke -CommandName Test-SqlDscIsLogin -ParameterFilter $mockTestSqlDscIsLoginParameterFilter -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Test-SqlDscIsLogin -Exactly -ParameterFilter $mockTestSqlDscIsLoginParameterFilter -Scope It -Times 1
             }
 
             It 'Should create disabled login' {
                 $null = New-SqlDscLogin -ServerObject $mockServerObject -Name 'NewLogin' -SqlLogin -SecurePassword $mockSecurePassword -Disabled
 
-                Should -Invoke -CommandName Test-SqlDscIsLogin -ParameterFilter $mockTestSqlDscIsLoginParameterFilter -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Test-SqlDscIsLogin -Exactly -ParameterFilter $mockTestSqlDscIsLoginParameterFilter -Scope It -Times 1
             }
         }
     }

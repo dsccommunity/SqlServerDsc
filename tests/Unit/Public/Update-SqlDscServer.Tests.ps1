@@ -35,7 +35,8 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
@@ -69,8 +70,8 @@ Describe 'Update-SqlDscServer' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When setup action is ''Upgrade''' {
@@ -102,13 +103,13 @@ Describe 'Update-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Update-SqlDscServer -Confirm:$false -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=Upgrade'
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="MSSQLSERVER"' # cspell: disable-line
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/ACTION=Upgrade'
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/INSTANCENAME="MSSQLSERVER"' # cspell: disable-line
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -116,12 +117,12 @@ Describe 'Update-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Update-SqlDscServer -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=Upgrade'
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList | Should-MatchString -CaseSensitive '\/ACTION=Upgrade'
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -129,7 +130,7 @@ Describe 'Update-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Update-SqlDscServer -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -231,12 +232,12 @@ Describe 'Update-SqlDscServer' -Tag 'Public' {
 
                 Update-SqlDscServer @updateSqlDscServerParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly $MockExpectedRegEx
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                    $ArgumentList | Should-MatchString -CaseSensitive $MockExpectedRegEx
 
                     # Return $true if none of the above throw.
                     $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -258,9 +259,9 @@ Describe 'Update-SqlDscServer' -Tag 'Public' {
 
                 Update-SqlDscServer @updateSqlDscServerParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                     $Timeout -eq 3600
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
     }

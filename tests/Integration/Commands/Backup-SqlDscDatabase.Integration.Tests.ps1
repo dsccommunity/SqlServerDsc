@@ -90,7 +90,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
             $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:fullBackupFile -Force -ErrorAction 'Stop'
 
             # Verify the backup file was created
-            Test-Path -Path $script:fullBackupFile | Should -BeTrue
+            Test-Path -Path $script:fullBackupFile | Should-BeTrue
         }
     }
 
@@ -113,7 +113,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
             $null = $script:testDatabase | Backup-SqlDscDatabase -BackupFile $script:fullBackupFileFromObject -Force -ErrorAction 'Stop'
 
             # Verify the backup file was created
-            Test-Path -Path $script:fullBackupFileFromObject | Should -BeTrue
+            Test-Path -Path $script:fullBackupFileFromObject | Should-BeTrue
         }
     }
 
@@ -133,7 +133,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
             $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:copyOnlyBackupFile -CopyOnly -Force -ErrorAction 'Stop'
 
             # Verify the backup file was created
-            Test-Path -Path $script:copyOnlyBackupFile | Should -BeTrue
+            Test-Path -Path $script:copyOnlyBackupFile | Should-BeTrue
         }
     }
 
@@ -162,7 +162,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
             $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:diffBackupFile -BackupType 'Differential' -Force -ErrorAction 'Stop'
 
             # Verify the backup file was created
-            Test-Path -Path $script:diffBackupFile | Should -BeTrue
+            Test-Path -Path $script:diffBackupFile | Should-BeTrue
         }
     }
 
@@ -191,7 +191,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
             $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:logBackupFile -BackupType 'Log' -Force -ErrorAction 'Stop'
 
             # Verify the backup file was created
-            Test-Path -Path $script:logBackupFile | Should -BeTrue
+            Test-Path -Path $script:logBackupFile | Should-BeTrue
         }
     }
 
@@ -211,7 +211,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
             $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:compressedBackupFile -Compress -Checksum -Force -ErrorAction 'Stop'
 
             # Verify the backup file was created
-            Test-Path -Path $script:compressedBackupFile | Should -BeTrue
+            Test-Path -Path $script:compressedBackupFile | Should-BeTrue
         }
     }
 
@@ -231,7 +231,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
             $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:backupWithDescFile -Description 'Integration test backup' -RetainDays 7 -Force -ErrorAction 'Stop'
 
             # Verify the backup file was created
-            Test-Path -Path $script:backupWithDescFile | Should -BeTrue
+            Test-Path -Path $script:backupWithDescFile | Should-BeTrue
         }
     }
 
@@ -240,7 +240,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
             $nonExistentDbName = 'NonExistentDatabase_' + (Get-Random)
             $backupFile = Join-Path -Path $script:backupDirectory -ChildPath ($nonExistentDbName + '.bak')
 
-            { Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $nonExistentDbName -BackupFile $backupFile -Force } | Should -Throw -ErrorId 'BSDD0001,Backup-SqlDscDatabase'
+            { Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $nonExistentDbName -BackupFile $backupFile -Force } | Should-Throw -FullyQualifiedErrorId 'BSDD0001,Backup-SqlDscDatabase'
         }
     }
 
@@ -262,7 +262,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
         It 'Should throw an error when trying to perform a log backup on Simple recovery model database' {
             $logBackupFile = Join-Path -Path $script:backupDirectory -ChildPath ($script:simpleDbName + '.trn')
 
-            { Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:simpleDbName -BackupFile $logBackupFile -BackupType 'Log' -Force } | Should -Throw -ErrorId 'BSDD0002,Backup-SqlDscDatabase'
+            { Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:simpleDbName -BackupFile $logBackupFile -BackupType 'Log' -Force } | Should-Throw -FullyQualifiedErrorId 'BSDD0002,Backup-SqlDscDatabase'
         }
     }
 
@@ -284,7 +284,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
         It 'Should overwrite existing backup file when Initialize is specified' {
             $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:initializeBackupFile -Initialize -Force -ErrorAction 'Stop'
 
-            Test-Path -Path $script:initializeBackupFile | Should -BeTrue
+            Test-Path -Path $script:initializeBackupFile | Should-BeTrue
         }
     }
 
@@ -303,7 +303,7 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
         It 'Should perform a backup successfully with Refresh parameter' {
             $null = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:refreshBackupFile -Refresh -Force -ErrorAction 'Stop'
 
-            Test-Path -Path $script:refreshBackupFile | Should -BeTrue
+            Test-Path -Path $script:refreshBackupFile | Should-BeTrue
         }
     }
 
@@ -322,8 +322,8 @@ Describe 'Backup-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL2
         It 'Should return database object when PassThru is specified' {
             $result = Backup-SqlDscDatabase -ServerObject $script:serverObject -Name $script:testDatabaseName -BackupFile $script:passThruBackupFile -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:testDatabaseName
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:testDatabaseName
         }
     }
 }

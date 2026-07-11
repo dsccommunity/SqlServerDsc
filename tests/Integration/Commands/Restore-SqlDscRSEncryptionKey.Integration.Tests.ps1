@@ -61,13 +61,13 @@ Describe 'Restore-SqlDscRSEncryptionKey' {
         }
 
         It 'Should verify the encryption key backup file exists from previous backup test' {
-            Test-Path -Path $script:backupPath | Should -BeTrue -Because 'the encryption key backup should have been created by the Backup-SqlDscRSEncryptionKey test'
+            Test-Path -Path $script:backupPath | Should-BeTrue -Because 'the encryption key backup should have been created by the Backup-SqlDscRSEncryptionKey test'
         }
 
         It 'Should restore the encryption key from the persistent backup location' {
             $result = $script:configuration | Restore-SqlDscRSEncryptionKey -Password $script:securePassword -Path $script:backupPath -Force -PassThru -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty -Because 'the restore should return the configuration object when using PassThru'
+            $result | Should-BeTruthy -Because 'the restore should return the configuration object when using PassThru'
         }
     }
 }

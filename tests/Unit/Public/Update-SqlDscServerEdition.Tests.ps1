@@ -35,13 +35,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -69,8 +71,8 @@ Describe 'Update-SqlDscServerEdition' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When setup action is ''EditionUpgrade''' {
@@ -104,14 +106,14 @@ Describe 'Update-SqlDscServerEdition' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Update-SqlDscServerEdition -Confirm:$false @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList | Should -MatchExactly '\/ACTION=EditionUpgrade'
                         $ArgumentList | Should -MatchExactly '\/INSTANCENAME="MSSQLSERVER"' # cspell: disable-line
                         $ArgumentList | Should -MatchExactly '\/PID="12345-12345-12345-12345-12345"'
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1          } -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -119,12 +121,12 @@ Describe 'Update-SqlDscServerEdition' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Update-SqlDscServerEdition -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList | Should -MatchExactly '\/ACTION=EditionUpgrade'
 
                         # Return $true if none of the above throw.
                         $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1s 1 -Scope It
                 }
             }
 
@@ -132,7 +134,7 @@ Describe 'Update-SqlDscServerEdition' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Update-SqlDscServerEdition -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -168,12 +170,12 @@ Describe 'Update-SqlDscServerEdition' -Tag 'Public' {
 
                 Update-SqlDscServerEdition @updateSqlDscServerEditionParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                     $ArgumentList | Should -MatchExactly $MockExpectedRegEx
 
                     # Return $true if none of the above throw.
                     $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1s 1 -Scope It
             }
         }
 
@@ -196,9 +198,9 @@ Describe 'Update-SqlDscServerEdition' -Tag 'Public' {
 
                 Update-SqlDscServerEdition @updateSqlDscServerEditionParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                     $Timeout -eq 3600
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
     }

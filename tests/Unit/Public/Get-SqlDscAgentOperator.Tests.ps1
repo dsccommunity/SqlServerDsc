@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'Env:\SqlServerDscCI' -ErrorAction 'SilentlyContinue'
 }
@@ -66,26 +68,26 @@ Describe 'Get-SqlDscAgentOperator' -Tag 'Public' {
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
     Context 'When command has correct parameter properties' {
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscAgentOperator').Parameters['ServerObject']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have ServerObject accept pipeline input' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscAgentOperator').Parameters['ServerObject']
-            $parameterInfo.Attributes.ValueFromPipeline | Should -BeTrue
+            $parameterInfo.Attributes.ValueFromPipeline | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Name as a mandatory parameter in ByName parameter set' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscAgentOperator').Parameters['Name']
             $byNameParameterSet = $parameterInfo.ParameterSets['ByName']
-            $byNameParameterSet.IsMandatory | Should -BeTrue
+            $byNameParameterSet.IsMandatory | Should-BeTrue
         }
     }
 
@@ -117,9 +119,9 @@ Describe 'Get-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should return all operators when no name is specified' {
             $result = Get-SqlDscAgentOperator -ServerObject $script:mockServerObject
 
-            $result | Should -HaveCount 2
-            $result[0].Name | Should -Be 'Operator1'
-            $result[1].Name | Should -Be 'Operator2'
+            $result | Should-BeCollection -Count 2
+            $result[0].Name | Should-Be 'Operator1'
+            $result[1].Name | Should-Be 'Operator2'
         }
     }
 
@@ -146,15 +148,15 @@ Describe 'Get-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should return specific operator when name matches' {
             $result = Get-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'TestOperator'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestOperator'
-            $result.EmailAddress | Should -Be 'test@contoso.com'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestOperator'
+            $result.EmailAddress | Should-Be 'test@contoso.com'
         }
 
         It 'Should return null when operator does not exist' {
             $result = Get-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'NonExistentOperator'
 
-            $result | Should -BeNull
+            $result | Should-BeFalsy
         }
     }
 
@@ -174,7 +176,7 @@ Describe 'Get-SqlDscAgentOperator' -Tag 'Public' {
 
         It 'Should accept server object from pipeline' {
             $result = $script:mockServerObject | Get-SqlDscAgentOperator
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 }

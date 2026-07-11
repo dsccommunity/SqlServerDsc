@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -114,8 +116,8 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When setting an audit by an ServerObject' {
@@ -156,10 +158,10 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                 Set-SqlDscAudit -Confirm:$false -QueueDelay 1000 @mockDefaultParameters
 
                 # This is the object created by the mock and modified by the command.
-                $mockAuditObject.Name | Should -Be 'Log1'
-                $mockAuditObject.QueueDelay | Should -Be 1000
+                $mockAuditObject.Name | Should-Be 'Log1'
+                $mockAuditObject.QueueDelay | Should-Be 1000
 
-                $mockMethodAlterCallCount | Should -Be 1
+                $mockMethodAlterCallCount | Should-Be 1
             }
         }
 
@@ -168,10 +170,10 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                 Set-SqlDscAudit -Force -QueueDelay 1000 @mockDefaultParameters
 
                 # This is the object created by the mock and modified by the command.
-                $mockAuditObject.Name | Should -Be 'Log1'
-                $mockAuditObject.QueueDelay | Should -Be 1000
+                $mockAuditObject.Name | Should-Be 'Log1'
+                $mockAuditObject.QueueDelay | Should-Be 1000
 
-                $mockMethodAlterCallCount | Should -Be 1
+                $mockMethodAlterCallCount | Should-Be 1
             }
         }
 
@@ -180,10 +182,10 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                 Set-SqlDscAudit -WhatIf -QueueDelay 1000 @mockDefaultParameters
 
                 # This is the object created by the mock and modified by the command.
-                $mockAuditObject.Name | Should -Be 'Log1'
-                $mockAuditObject.QueueDelay | Should -BeNullOrEmpty
+                $mockAuditObject.Name | Should-Be 'Log1'
+                $mockAuditObject.QueueDelay | Should-BeFalsy
 
-                $mockMethodAlterCallCount | Should -Be 0
+                $mockMethodAlterCallCount | Should-Be 0
             }
         }
 
@@ -192,10 +194,10 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                 $mockServerObject | Set-SqlDscAudit -Name 'Log1' -QueueDelay 1000 -Force
 
                 # This is the object created by the mock and modified by the command.
-                $mockAuditObject.Name | Should -Be 'Log1'
-                $mockAuditObject.QueueDelay | Should -Be 1000
+                $mockAuditObject.Name | Should-Be 'Log1'
+                $mockAuditObject.QueueDelay | Should-Be 1000
 
-                $mockMethodAlterCallCount | Should -Be 1
+                $mockMethodAlterCallCount | Should-Be 1
             }
         }
     }
@@ -227,10 +229,10 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                 Set-SqlDscAudit -Confirm:$false -QueueDelay 1000 @mockDefaultParameters
 
                 # This is the object created by the mock and modified by the command.
-                $mockAuditObject.Name | Should -Be 'Log1'
-                $mockAuditObject.QueueDelay | Should -Be 1000
+                $mockAuditObject.Name | Should-Be 'Log1'
+                $mockAuditObject.QueueDelay | Should-Be 1000
 
-                $mockMethodAlterCallCount | Should -Be 1
+                $mockMethodAlterCallCount | Should-Be 1
             }
         }
 
@@ -239,10 +241,10 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                 Set-SqlDscAudit -Force -QueueDelay 1000 @mockDefaultParameters
 
                 # This is the object created by the mock and modified by the command.
-                $mockAuditObject.Name | Should -Be 'Log1'
-                $mockAuditObject.QueueDelay | Should -Be 1000
+                $mockAuditObject.Name | Should-Be 'Log1'
+                $mockAuditObject.QueueDelay | Should-Be 1000
 
-                $mockMethodAlterCallCount | Should -Be 1
+                $mockMethodAlterCallCount | Should-Be 1
             }
         }
 
@@ -251,10 +253,10 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                 Set-SqlDscAudit -WhatIf -QueueDelay 1000 @mockDefaultParameters
 
                 # This is the object created by the mock and modified by the command.
-                $mockAuditObject.Name | Should -Be 'Log1'
-                $mockAuditObject.QueueDelay | Should -BeNullOrEmpty
+                $mockAuditObject.Name | Should-Be 'Log1'
+                $mockAuditObject.QueueDelay | Should-BeFalsy
 
-                $mockMethodAlterCallCount | Should -Be 0
+                $mockMethodAlterCallCount | Should-Be 0
             }
         }
 
@@ -263,10 +265,10 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                 $mockAuditObject | Set-SqlDscAudit -QueueDelay 1000 -Force
 
                 # This is the object created by the mock and modified by the command.
-                $mockAuditObject.Name | Should -Be 'Log1'
-                $mockAuditObject.QueueDelay | Should -Be 1000
+                $mockAuditObject.Name | Should-Be 'Log1'
+                $mockAuditObject.QueueDelay | Should-Be 1000
 
-                $mockMethodAlterCallCount | Should -Be 1
+                $mockMethodAlterCallCount | Should-Be 1
             }
         }
     }
@@ -291,7 +293,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
 
             $mockErrorMessage = "Cannot validate argument on parameter 'Path'. " + ($mockErrorMessage -f (Get-TemporaryFolder))
 
-            { Set-SqlDscAudit @mockNewSqlDscAuditParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+            { Set-SqlDscAudit @mockNewSqlDscAuditParameters } | Should-Throw -ExceptionMessage $mockErrorMessage
         }
     }
 
@@ -308,7 +310,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                 $script:localizedData.Audit_MaximumFileSizeParameterValueInvalid
             }
 
-            { Set-SqlDscAudit @mockNewSqlDscAuditParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+            { Set-SqlDscAudit @mockNewSqlDscAuditParameters } | Should-Throw -ExceptionMessage $mockErrorMessage
         }
     }
 
@@ -325,7 +327,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                 $script:localizedData.Audit_QueueDelayParameterValueInvalid
             }
 
-            { Set-SqlDscAudit @mockNewSqlDscAuditParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+            { Set-SqlDscAudit @mockNewSqlDscAuditParameters } | Should-Throw -ExceptionMessage $mockErrorMessage
         }
     }
 
@@ -358,10 +360,10 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
             Set-SqlDscAudit -Path (Get-TemporaryFolder) @mockDefaultParameters
 
             # This is the object created by the mock and modified by the command.
-            $mockAuditObject.Name | Should -Be 'Log1'
-            $mockAuditObject.FilePath | Should -Be (Get-TemporaryFolder)
+            $mockAuditObject.Name | Should-Be 'Log1'
+            $mockAuditObject.FilePath | Should-Be (Get-TemporaryFolder)
 
-            $mockMethodAlterCallCount | Should -Be 1
+            $mockMethodAlterCallCount | Should-Be 1
         }
     }
 
@@ -394,11 +396,11 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
             Set-SqlDscAudit -MaximumFileSize 1000 -MaximumFileSizeUnit 'Megabyte' @mockDefaultParameters
 
             # This is the object created by the mock and modified by the command.
-            $mockAuditObject.Name | Should -Be 'Log1'
-            $mockAuditObject.MaximumFileSize | Should -Be 1000
-            $mockAuditObject.MaximumFileSizeUnit | Should -Be 'Mb'
+            $mockAuditObject.Name | Should-Be 'Log1'
+            $mockAuditObject.MaximumFileSize | Should-Be 1000
+            $mockAuditObject.MaximumFileSizeUnit | Should-Be 'Mb'
 
-            $mockMethodAlterCallCount | Should -Be 1
+            $mockMethodAlterCallCount | Should-Be 1
         }
     }
 
@@ -431,10 +433,10 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
             Set-SqlDscAudit -MaximumFiles 2 @mockDefaultParameters
 
             # This is the object created by the mock and modified by the command.
-            $mockAuditObject.Name | Should -Be 'Log1'
-            $mockAuditObject.MaximumFiles | Should -Be 2
+            $mockAuditObject.Name | Should-Be 'Log1'
+            $mockAuditObject.MaximumFiles | Should-Be 2
 
-            $mockMethodAlterCallCount | Should -Be 1
+            $mockMethodAlterCallCount | Should-Be 1
         }
     }
 
@@ -467,11 +469,11 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
             Set-SqlDscAudit -MaximumFiles 2 -ReserveDiskSpace @mockDefaultParameters
 
             # This is the object created by the mock and modified by the command.
-            $mockAuditObject.Name | Should -Be 'Log1'
-            $mockAuditObject.MaximumFiles | Should -Be 2
-            $mockAuditObject.ReserveDiskSpace | Should -BeTrue
+            $mockAuditObject.Name | Should-Be 'Log1'
+            $mockAuditObject.MaximumFiles | Should-Be 2
+            $mockAuditObject.ReserveDiskSpace | Should-BeTrue
 
-            $mockMethodAlterCallCount | Should -Be 1
+            $mockMethodAlterCallCount | Should-Be 1
         }
 
         Context 'When ReserveDiskSpace is set to $false' {
@@ -479,11 +481,11 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                 Set-SqlDscAudit -MaximumFiles 2 -ReserveDiskSpace:$false @mockDefaultParameters
 
                 # This is the object created by the mock and modified by the command.
-                $mockAuditObject.Name | Should -Be 'Log1'
-                $mockAuditObject.MaximumFiles | Should -Be 2
-                $mockAuditObject.ReserveDiskSpace | Should -BeFalse
+                $mockAuditObject.Name | Should-Be 'Log1'
+                $mockAuditObject.MaximumFiles | Should-Be 2
+                $mockAuditObject.ReserveDiskSpace | Should-BeFalse
 
-                $mockMethodAlterCallCount | Should -Be 1
+                $mockMethodAlterCallCount | Should-Be 1
             }
         }
     }
@@ -517,10 +519,10 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
             Set-SqlDscAudit -MaximumRolloverFiles 2 @mockDefaultParameters
 
             # This is the object created by the mock and modified by the command.
-            $mockAuditObject.Name | Should -Be 'Log1'
-            $mockAuditObject.MaximumRolloverFiles | Should -Be 2
+            $mockAuditObject.Name | Should-Be 'Log1'
+            $mockAuditObject.MaximumRolloverFiles | Should-Be 2
 
-            $mockMethodAlterCallCount | Should -Be 1
+            $mockMethodAlterCallCount | Should-Be 1
         }
     }
 
@@ -587,23 +589,22 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
         It 'Should recreate the audit with the new GUID when AllowAuditGuidChange is specified' {
             $result = Set-SqlDscAudit -AuditGuid 'b5962b93-a359-42ef-bf1e-193e8a5f6222' -AllowAuditGuidChange -PassThru @mockDefaultParameters
 
-            # Debug: Check what we got back
-            $result | Should -Not -BeNullOrEmpty -Because 'PassThru should return the audit object'
-            $result.Name | Should -Be 'Log1' -Because 'The audit name should match'
-            $result.Guid | Should -Be 'b5962b93-a359-42ef-bf1e-193e8a5f6222' -Because 'The GUID should be set to the new value'
+            $result | Should-BeTruthy -Because 'PassThru should return the audit object'
+            $result.Name | Should-Be 'Log1' -Because 'The audit name should match'
+            $result.Guid | Should-Be 'b5962b93-a359-42ef-bf1e-193e8a5f6222' -Because 'The GUID should be set to the new value'
 
             # Verify the helper function was called with correct GUID
-            Should -Invoke -CommandName ConvertTo-AuditNewParameterSet -Exactly -Times 1 -Scope It -ParameterFilter {
+            Should-Invoke -CommandName ConvertTo-AuditNewParameterSet -Exactly -ParameterFilter {
                 $AuditGuid -eq 'b5962b93-a359-42ef-bf1e-193e8a5f6222'
-            }
+            } -Scope It -Times 1
 
             # Verify the audit was removed
-            Should -Invoke -CommandName Remove-SqlDscAudit -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Remove-SqlDscAudit -Exactly -Scope It -Times 1
 
             # Verify the audit was recreated with PassThru and the correct GUID
-            Should -Invoke -CommandName New-SqlDscAudit -Exactly -Times 1 -Scope It -ParameterFilter {
+            Should-Invoke -CommandName New-SqlDscAudit -Exactly -ParameterFilter {
                 $PassThru.IsPresent -and $AuditGuid -eq 'b5962b93-a359-42ef-bf1e-193e8a5f6222'
-            }
+            } -Scope It -Times 1
         }
 
         Context 'When AuditGuid is same as existing GUID' {
@@ -613,12 +614,12 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                 Set-SqlDscAudit -AuditGuid 'b5962b93-a359-42ef-bf1e-193e8a5f6222' -AllowAuditGuidChange @mockDefaultParameters
 
                 # Should not invoke helper functions when GUID is not changing
-                Should -Invoke -CommandName ConvertTo-AuditNewParameterSet -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Remove-SqlDscAudit -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName New-SqlDscAudit -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName ConvertTo-AuditNewParameterSet -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Remove-SqlDscAudit -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName New-SqlDscAudit -Exactly -Scope It -Times 0
 
                 # Alter() is still called even when no property values change
-                $mockMethodAlterCallCount | Should -Be 1 -Because 'Alter() is always called in the normal update path'
+                $mockMethodAlterCallCount | Should-Be 1 -Because 'Alter() is always called in the normal update path'
             }
         }
 
@@ -632,15 +633,15 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                 Set-SqlDscAudit -AuditGuid 'b5962b93-a359-42ef-bf1e-193e8a5f6222' -QueueDelay 1000 -AllowAuditGuidChange @mockDefaultParameters
 
                 # Should not invoke helper functions when GUID is not changing
-                Should -Invoke -CommandName ConvertTo-AuditNewParameterSet -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Remove-SqlDscAudit -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName New-SqlDscAudit -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName ConvertTo-AuditNewParameterSet -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Remove-SqlDscAudit -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName New-SqlDscAudit -Exactly -Scope It -Times 0
 
                 # Verify the property was updated
-                $mockAuditObject.QueueDelay | Should -Be 1000 -Because 'QueueDelay should be updated to the new value'
+                $mockAuditObject.QueueDelay | Should-Be 1000 -Because 'QueueDelay should be updated to the new value'
 
                 # Alter() should be called to persist the property change
-                $mockMethodAlterCallCount | Should -Be 1 -Because 'Alter() is called to update the property'
+                $mockMethodAlterCallCount | Should-Be 1 -Because 'Alter() is called to update the property'
             }
         }
 
@@ -654,7 +655,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                 }
 
                 { Set-SqlDscAudit -AuditGuid 'b5962b93-a359-42ef-bf1e-193e8a5f6222' @mockDefaultParameters } |
-                    Should -Throw -ExpectedMessage $mockErrorMessage
+                    Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
 
@@ -666,7 +667,7 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                 $mockErrorMessage = $mockErrorMessage -replace '\[', '`['
 
                 { Set-SqlDscAudit -AuditGuid 'not a guid' @mockDefaultParameters } |
-                    Should -Throw -ExpectedMessage ($mockErrorMessage + '*')
+                    Should-Throw -ExceptionMessage ($mockErrorMessage + '*')
             }
         }
     }
@@ -711,10 +712,10 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
                 Set-SqlDscAudit -OnFailure $MockOnFailureValue @mockDefaultParameters
 
                 # This is the object created by the mock and modified by the command.
-                $mockAuditObject.Name | Should -Be 'Log1'
-                $mockAuditObject.OnFailure | Should -Be $MockOnFailureValue
+                $mockAuditObject.Name | Should-Be 'Log1'
+                $mockAuditObject.OnFailure | Should-Be $MockOnFailureValue
 
-                $mockMethodAlterCallCount | Should -Be 1
+                $mockMethodAlterCallCount | Should-Be 1
             }
         }
     }
@@ -748,10 +749,10 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
             Set-SqlDscAudit -QueueDelay 1000 @mockDefaultParameters
 
             # This is the object created by the mock and modified by the command.
-            $mockAuditObject.Name | Should -Be 'Log1'
-            $mockAuditObject.QueueDelay | Should -Be 1000
+            $mockAuditObject.Name | Should-Be 'Log1'
+            $mockAuditObject.QueueDelay | Should-Be 1000
 
-            $mockMethodAlterCallCount | Should -Be 1
+            $mockMethodAlterCallCount | Should-Be 1
         }
     }
 
@@ -784,10 +785,10 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
             Set-SqlDscAudit -AuditFilter "([server_principal_name] like '%ADMINISTRATOR'" @mockDefaultParameters
 
             # This is the object created by the mock and modified by the command.
-            $mockAuditObject.Name | Should -Be 'Log1'
-            $mockAuditObject.Filter | Should -Be "([server_principal_name] like '%ADMINISTRATOR'"
+            $mockAuditObject.Name | Should-Be 'Log1'
+            $mockAuditObject.Filter | Should-Be "([server_principal_name] like '%ADMINISTRATOR'"
 
-            $mockMethodAlterCallCount | Should -Be 1
+            $mockMethodAlterCallCount | Should-Be 1
         }
     }
 
@@ -819,10 +820,10 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
         It 'Should call the mocked method and have correct values in the object' {
             $newSqlDscAuditResult = Set-SqlDscAudit -QueueDelay 1000 -PassThru @mockDefaultParameters
 
-            $newSqlDscAuditResult.Name | Should -Be 'Log1'
-            $newSqlDscAuditResult.QueueDelay | Should -Be 1000
+            $newSqlDscAuditResult.Name | Should-Be 'Log1'
+            $newSqlDscAuditResult.QueueDelay | Should-Be 1000
 
-            $mockMethodAlterCallCount | Should -Be 1
+            $mockMethodAlterCallCount | Should-Be 1
         }
     }
 
@@ -858,11 +859,11 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
         It 'Should call the mocked method and have correct values in the object' {
             Set-SqlDscAudit -QueueDelay 1000 -Refresh @mockDefaultParameters
 
-            $mockAuditObject.Name | Should -Be 'Log1'
-            $mockAuditObject.QueueDelay | Should -Be 1000
+            $mockAuditObject.Name | Should-Be 'Log1'
+            $mockAuditObject.QueueDelay | Should-Be 1000
 
-            $mockMethodAlterCallCount | Should -Be 1
-            $mockMethodRefreshCallCount | Should -Be 1
+            $mockMethodAlterCallCount | Should-Be 1
+            $mockMethodRefreshCallCount | Should-Be 1
         }
     }
 
@@ -932,25 +933,25 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
             $result = Set-SqlDscAudit -AuditGuid 'b5962b93-a359-42ef-bf1e-193e8a5f6222' -AllowAuditGuidChange -QueueDelay 1000 -PassThru @mockDefaultParameters
 
             # Verify the helper function was called with correct GUID
-            Should -Invoke -CommandName ConvertTo-AuditNewParameterSet -Exactly -Times 1 -Scope It -ParameterFilter {
+            Should-Invoke -CommandName ConvertTo-AuditNewParameterSet -Exactly -ParameterFilter {
                 $AuditGuid -eq 'b5962b93-a359-42ef-bf1e-193e8a5f6222'
-            }
+            } -Scope It -Times 1
 
             # Verify the audit was removed
-            Should -Invoke -CommandName Remove-SqlDscAudit -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Remove-SqlDscAudit -Exactly -Scope It -Times 1
 
             # Verify the audit was recreated with PassThru and the correct GUID
-            Should -Invoke -CommandName New-SqlDscAudit -Exactly -Times 1 -Scope It -ParameterFilter {
+            Should-Invoke -CommandName New-SqlDscAudit -Exactly -ParameterFilter {
                 $PassThru.IsPresent -and $AuditGuid -eq 'b5962b93-a359-42ef-bf1e-193e8a5f6222'
-            }
+            } -Scope It -Times 1
 
             # The result should not be null
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'Log1'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'Log1'
 
             # The QueueDelay should be set (via recursive call to Set-SqlDscAudit)
-            $result.QueueDelay | Should -Be 1000
-            $result.Guid | Should -Be 'b5962b93-a359-42ef-bf1e-193e8a5f6222' -Because 'The GUID should be set to the new value'
+            $result.QueueDelay | Should-Be 1000
+            $result.Guid | Should-Be 'b5962b93-a359-42ef-bf1e-193e8a5f6222' -Because 'The GUID should be set to the new value'
         }
     }
 
@@ -982,16 +983,16 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
         }
 
         It 'Should call the mocked method and have correct values in the object' {
-            $mockAuditObject.MaximumRolloverFiles | Should -Be 10 -Because 'there has to be a value greater than 0 in the object that is passed to the command in this test'
+            $mockAuditObject.MaximumRolloverFiles | Should-Be 10 -Because 'there has to be a value greater than 0 in the object that is passed to the command in this test'
 
             Set-SqlDscAudit -MaximumFiles 2 @mockDefaultParameters
 
             # This is the object created by the mock and modified by the command.
-            $mockAuditObject.Name | Should -Be 'Log1'
-            $mockAuditObject.MaximumRolloverFiles | Should -Be 0
-            $mockAuditObject.MaximumFiles | Should -Be 2
+            $mockAuditObject.Name | Should-Be 'Log1'
+            $mockAuditObject.MaximumRolloverFiles | Should-Be 0
+            $mockAuditObject.MaximumFiles | Should-Be 2
 
-            $mockMethodAlterCallCount | Should -Be 2 -Because 'the call to Alter() need to happen twice, first to set MaximumRolloverFiles to 0, then another to set MaximumFiles to the new value'
+            $mockMethodAlterCallCount | Should-Be 2 -Because 'the call to Alter() need to happen twice, first to set MaximumRolloverFiles to 0, then another to set MaximumFiles to the new value'
         }
     }
 
@@ -1023,16 +1024,16 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
         }
 
         It 'Should call the mocked method and have correct values in the object' {
-            $mockAuditObject.MaximumFiles | Should -Be 10 -Because 'there has to be a value greater than 0 in the object that is passed to the command in this test'
+            $mockAuditObject.MaximumFiles | Should-Be 10 -Because 'there has to be a value greater than 0 in the object that is passed to the command in this test'
 
             Set-SqlDscAudit -MaximumRolloverFiles 2 @mockDefaultParameters
 
             # This is the object created by the mock and modified by the command.
-            $mockAuditObject.Name | Should -Be 'Log1'
-            $mockAuditObject.MaximumFiles | Should -Be 0
-            $mockAuditObject.MaximumRolloverFiles | Should -Be 2
+            $mockAuditObject.Name | Should-Be 'Log1'
+            $mockAuditObject.MaximumFiles | Should-Be 0
+            $mockAuditObject.MaximumRolloverFiles | Should-Be 2
 
-            $mockMethodAlterCallCount | Should -Be 2 -Because 'the call to Alter() need to happen twice, first to set MaximumFiles to 0, then another to set MaximumRolloverFiles to the new value'
+            $mockMethodAlterCallCount | Should-Be 2 -Because 'the call to Alter() need to happen twice, first to set MaximumFiles to 0, then another to set MaximumRolloverFiles to the new value'
         }
     }
 }

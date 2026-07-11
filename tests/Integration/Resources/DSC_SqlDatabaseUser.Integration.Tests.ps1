@@ -97,21 +97,21 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
-            $resourceCurrentState.UserType | Should -Be $ConfigurationData.AllNodes.User1_UserType
-            $resourceCurrentState.LoginName | Should -Be $ConfigurationData.AllNodes.User1_LoginName
-            $resourceCurrentState.AsymmetricKeyName | Should -BeNullOrEmpty
-            $resourceCurrentState.CertificateName | Should -BeNullOrEmpty
-            $resourceCurrentState.AuthenticationType | Should -Be 'Windows'
-            $resourceCurrentState.LoginType | Should -Be 'WindowsUser'
+            $resourceCurrentState.Ensure | Should-Be 'Present'
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
+            $resourceCurrentState.UserType | Should-Be $ConfigurationData.AllNodes.User1_UserType
+            $resourceCurrentState.LoginName | Should-Be $ConfigurationData.AllNodes.User1_LoginName
+            $resourceCurrentState.AsymmetricKeyName | Should-BeFalsy
+            $resourceCurrentState.CertificateName | Should-BeFalsy
+            $resourceCurrentState.AuthenticationType | Should-Be 'Windows'
+            $resourceCurrentState.LoginType | Should-Be 'WindowsUser'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -157,21 +157,21 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User2_Name
-            $resourceCurrentState.UserType | Should -Be $ConfigurationData.AllNodes.User2_UserType
-            $resourceCurrentState.LoginName | Should -Be $ConfigurationData.AllNodes.User2_LoginName
-            $resourceCurrentState.AsymmetricKeyName | Should -BeNullOrEmpty
-            $resourceCurrentState.CertificateName | Should -BeNullOrEmpty
-            $resourceCurrentState.AuthenticationType | Should -Be 'Instance'
-            $resourceCurrentState.LoginType | Should -Be 'SqlLogin'
+            $resourceCurrentState.Ensure | Should-Be 'Present'
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User2_Name
+            $resourceCurrentState.UserType | Should-Be $ConfigurationData.AllNodes.User2_UserType
+            $resourceCurrentState.LoginName | Should-Be $ConfigurationData.AllNodes.User2_LoginName
+            $resourceCurrentState.AsymmetricKeyName | Should-BeFalsy
+            $resourceCurrentState.CertificateName | Should-BeFalsy
+            $resourceCurrentState.AuthenticationType | Should-Be 'Instance'
+            $resourceCurrentState.LoginType | Should-Be 'SqlLogin'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -217,21 +217,21 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User3_Name
-            $resourceCurrentState.UserType | Should -Be $ConfigurationData.AllNodes.User3_UserType
-            $resourceCurrentState.LoginName | Should -BeNullOrEmpty
-            $resourceCurrentState.AsymmetricKeyName | Should -BeNullOrEmpty
-            $resourceCurrentState.CertificateName | Should -BeNullOrEmpty
-            $resourceCurrentState.AuthenticationType | Should -Be 'None'
-            $resourceCurrentState.LoginType | Should -Be 'SqlLogin'
+            $resourceCurrentState.Ensure | Should-Be 'Present'
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User3_Name
+            $resourceCurrentState.UserType | Should-Be $ConfigurationData.AllNodes.User3_UserType
+            $resourceCurrentState.LoginName | Should-BeFalsy
+            $resourceCurrentState.AsymmetricKeyName | Should-BeFalsy
+            $resourceCurrentState.CertificateName | Should-BeFalsy
+            $resourceCurrentState.AuthenticationType | Should-Be 'None'
+            $resourceCurrentState.LoginType | Should-Be 'SqlLogin'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -277,21 +277,21 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User4_Name
-            $resourceCurrentState.UserType | Should -Be $ConfigurationData.AllNodes.User4_UserType
-            $resourceCurrentState.LoginName | Should -Be $ConfigurationData.AllNodes.User4_LoginName
-            $resourceCurrentState.AsymmetricKeyName | Should -BeNullOrEmpty
-            $resourceCurrentState.CertificateName | Should -BeNullOrEmpty
-            $resourceCurrentState.AuthenticationType | Should -Be 'Windows'
-            $resourceCurrentState.LoginType | Should -Be 'WindowsGroup'
+            $resourceCurrentState.Ensure | Should-Be 'Present'
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User4_Name
+            $resourceCurrentState.UserType | Should-Be $ConfigurationData.AllNodes.User4_UserType
+            $resourceCurrentState.LoginName | Should-Be $ConfigurationData.AllNodes.User4_LoginName
+            $resourceCurrentState.AsymmetricKeyName | Should-BeFalsy
+            $resourceCurrentState.CertificateName | Should-BeFalsy
+            $resourceCurrentState.AuthenticationType | Should-Be 'Windows'
+            $resourceCurrentState.LoginType | Should-Be 'WindowsGroup'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -337,21 +337,21 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User4_Name
-            $resourceCurrentState.UserType | Should -Be 'NoLogin'
-            $resourceCurrentState.LoginName | Should -BeNullOrEmpty
-            $resourceCurrentState.AsymmetricKeyName | Should -BeNullOrEmpty
-            $resourceCurrentState.CertificateName | Should -BeNullOrEmpty
-            $resourceCurrentState.AuthenticationType | Should -Be 'None'
-            $resourceCurrentState.LoginType | Should -Be 'SqlLogin'
+            $resourceCurrentState.Ensure | Should-Be 'Present'
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User4_Name
+            $resourceCurrentState.UserType | Should-Be 'NoLogin'
+            $resourceCurrentState.LoginName | Should-BeFalsy
+            $resourceCurrentState.AsymmetricKeyName | Should-BeFalsy
+            $resourceCurrentState.CertificateName | Should-BeFalsy
+            $resourceCurrentState.AuthenticationType | Should-Be 'None'
+            $resourceCurrentState.LoginType | Should-Be 'SqlLogin'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -397,21 +397,21 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Absent'
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User4_Name
-            $resourceCurrentState.UserType | Should -BeNullOrEmpty
-            $resourceCurrentState.LoginName | Should -BeNullOrEmpty
-            $resourceCurrentState.AsymmetricKeyName | Should -BeNullOrEmpty
-            $resourceCurrentState.CertificateName | Should -BeNullOrEmpty
-            $resourceCurrentState.AuthenticationType | Should -BeNullOrEmpty
-            $resourceCurrentState.UserType | Should -BeNullOrEmpty
+            $resourceCurrentState.Ensure | Should-Be 'Absent'
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User4_Name
+            $resourceCurrentState.UserType | Should-BeFalsy
+            $resourceCurrentState.LoginName | Should-BeFalsy
+            $resourceCurrentState.AsymmetricKeyName | Should-BeFalsy
+            $resourceCurrentState.CertificateName | Should-BeFalsy
+            $resourceCurrentState.AuthenticationType | Should-BeFalsy
+            $resourceCurrentState.UserType | Should-BeFalsy
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -457,21 +457,21 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User5_Name
-            $resourceCurrentState.UserType | Should -Be $ConfigurationData.AllNodes.User5_UserType
-            $resourceCurrentState.LoginName | Should -BeNullOrEmpty
-            $resourceCurrentState.AsymmetricKeyName | Should -BeNullOrEmpty
-            $resourceCurrentState.CertificateName | Should -Be $ConfigurationData.AllNodes.CertificateName
-            $resourceCurrentState.AuthenticationType | Should -Be 'None'
-            $resourceCurrentState.LoginType | Should -Be 'Certificate'
+            $resourceCurrentState.Ensure | Should-Be 'Present'
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User5_Name
+            $resourceCurrentState.UserType | Should-Be $ConfigurationData.AllNodes.User5_UserType
+            $resourceCurrentState.LoginName | Should-BeFalsy
+            $resourceCurrentState.AsymmetricKeyName | Should-BeFalsy
+            $resourceCurrentState.CertificateName | Should-Be $ConfigurationData.AllNodes.CertificateName
+            $resourceCurrentState.AuthenticationType | Should-Be 'None'
+            $resourceCurrentState.LoginType | Should-Be 'Certificate'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -517,21 +517,21 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User6_Name
-            $resourceCurrentState.UserType | Should -Be $ConfigurationData.AllNodes.User6_UserType
-            $resourceCurrentState.LoginName | Should -BeNullOrEmpty
-            $resourceCurrentState.AsymmetricKeyName | Should -Be $ConfigurationData.AllNodes.AsymmetricKeyName
-            $resourceCurrentState.CertificateName | Should -BeNullOrEmpty
-            $resourceCurrentState.AuthenticationType | Should -Be 'None'
-            $resourceCurrentState.LoginType | Should -Be 'AsymmetricKey'
+            $resourceCurrentState.Ensure | Should-Be 'Present'
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User6_Name
+            $resourceCurrentState.UserType | Should-Be $ConfigurationData.AllNodes.User6_UserType
+            $resourceCurrentState.LoginName | Should-BeFalsy
+            $resourceCurrentState.AsymmetricKeyName | Should-Be $ConfigurationData.AllNodes.AsymmetricKeyName
+            $resourceCurrentState.CertificateName | Should-BeFalsy
+            $resourceCurrentState.AuthenticationType | Should-Be 'None'
+            $resourceCurrentState.LoginType | Should-Be 'AsymmetricKey'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 }

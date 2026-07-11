@@ -60,7 +60,7 @@ Describe 'Set-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             # Verify it's set
             $result = Get-SqlDscTraceFlag -ServerName $script:mockServerName -InstanceName $script:mockInstanceName
-            $result | Should -Contain 3226
+            $result | Should-ContainCollection 3226
         }
 
         It 'Should set multiple trace flags and verify the change' {
@@ -72,7 +72,7 @@ Describe 'Set-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
             $result = Get-SqlDscTraceFlag -ServerName $script:mockServerName -InstanceName $script:mockInstanceName
             foreach ($flag in $testTraceFlags)
             {
-                $result | Should -Contain $flag
+                $result | Should-ContainCollection $flag
             }
         }
 
@@ -82,15 +82,15 @@ Describe 'Set-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             # Verify it's set
             $result = Get-SqlDscTraceFlag -ServerName $script:mockServerName -InstanceName $script:mockInstanceName
-            $result | Should -Contain 3226
+            $result | Should-ContainCollection 3226
 
             # Now replace with different trace flag
             Set-SqlDscTraceFlag -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -TraceFlag 1222 -Force -ErrorAction 'Stop'
 
             # Verify the old flag is gone and new one is present
             $result = Get-SqlDscTraceFlag -ServerName $script:mockServerName -InstanceName $script:mockInstanceName
-            $result | Should -Contain 1222
-            $result | Should -Not -Contain 3226
+            $result | Should-ContainCollection 1222
+            $result | Should-NotContainCollection 3226
         }
 
         It 'Should clear all trace flags when passing empty array' {
@@ -99,15 +99,15 @@ Describe 'Set-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             # Verify they're set
             $result = Get-SqlDscTraceFlag -ServerName $script:mockServerName -InstanceName $script:mockInstanceName
-            $result | Should -Contain 3226
-            $result | Should -Contain 1222
+            $result | Should-ContainCollection 3226
+            $result | Should-ContainCollection 1222
 
             # Now clear all trace flags
             Set-SqlDscTraceFlag -ServerName $script:mockServerName -InstanceName $script:mockInstanceName -TraceFlag @() -Force -ErrorAction 'Stop'
 
             # Verify they're cleared
             $result = Get-SqlDscTraceFlag -ServerName $script:mockServerName -InstanceName $script:mockInstanceName
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -123,15 +123,15 @@ Describe 'Set-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
             $currentFlags = Get-SqlDscTraceFlag -ServerName $script:mockServerName -InstanceName $script:mockInstanceName
             if ($originalFlags)
             {
-                $currentFlags | Should -HaveCount $originalFlags.Count
+                $currentFlags | Should-BeCollection -Count $originalFlags.Count
                 foreach ($flag in $originalFlags)
                 {
-                    $currentFlags | Should -Contain $flag
+                    $currentFlags | Should-ContainCollection $flag
                 }
             }
             else
             {
-                $currentFlags | Should -BeNullOrEmpty
+                $currentFlags | Should-BeFalsy
             }
         }
     }
@@ -140,27 +140,27 @@ Describe 'Set-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
         It 'Should accept ServiceObject from pipeline and set trace flags' {
             # Get the service object
             $serviceObject = Get-SqlDscManagedComputerService -ServiceType 'DatabaseEngine' -InstanceName $script:mockInstanceName -ServerName $script:mockServerName -ErrorAction 'Stop'
-            $serviceObject | Should -Not -BeNullOrEmpty
+            $serviceObject | Should-BeTruthy
 
             # Set trace flag using pipeline
             $serviceObject | Set-SqlDscTraceFlag -TraceFlag 3226 -Force -ErrorAction 'Stop'
 
             # Verify it's set
             $result = Get-SqlDscTraceFlag -ServerName $script:mockServerName -InstanceName $script:mockInstanceName
-            $result | Should -Contain 3226
+            $result | Should-ContainCollection 3226
         }
 
         It 'Should accept ServiceObject parameter directly' {
             # Get the service object
             $serviceObject = Get-SqlDscManagedComputerService -ServiceType 'DatabaseEngine' -InstanceName $script:mockInstanceName -ServerName $script:mockServerName -ErrorAction 'Stop'
-            $serviceObject | Should -Not -BeNullOrEmpty
+            $serviceObject | Should-BeTruthy
 
             # Set trace flag using direct parameter
             Set-SqlDscTraceFlag -ServiceObject $serviceObject -TraceFlag 1222 -Force -ErrorAction 'Stop'
 
             # Verify it's set
             $result = Get-SqlDscTraceFlag -ServerName $script:mockServerName -InstanceName $script:mockInstanceName
-            $result | Should -Contain 1222
+            $result | Should-ContainCollection 1222
         }
     }
 
@@ -173,7 +173,7 @@ Describe 'Set-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             # Verify it's set
             $result = Get-SqlDscTraceFlag -InstanceName $script:mockInstanceName
-            $result | Should -Contain 3226
+            $result | Should-ContainCollection 3226
         }
     }
 }

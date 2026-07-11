@@ -44,7 +44,7 @@ Describe 'Get-SqlDscInstalledInstance' {
                 Casting to array to ensure we get the count on Windows PowerShell
                 when there is only one instance.
             #>
-            @($result).Count | Should -BeGreaterOrEqual 1
+            @($result).Count | Should-BeGreaterThanOrEqual 1
         }
     }
 
@@ -52,14 +52,14 @@ Describe 'Get-SqlDscInstalledInstance' {
         It 'Should return the specified instance when it exists' {
             $result = Get-SqlDscInstalledInstance -InstanceName 'PBIRS'
 
-            $result | Should -BeOfType ([System.Management.Automation.PSCustomObject])
-            $result.InstanceName | Should -Be 'PBIRS'
+            $result | Should-HaveType ([System.Management.Automation.PSCustomObject])
+            $result.InstanceName | Should-Be 'PBIRS'
         }
 
         It 'Should return an empty array when the instance does not exist' {
             $result = Get-SqlDscInstalledInstance -InstanceName 'NonExistentInstance'
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -67,8 +67,8 @@ Describe 'Get-SqlDscInstalledInstance' {
         It 'Should filter instances by DatabaseEngine service type' {
             $result = Get-SqlDscInstalledInstance -ServiceType 'ReportingServices'
 
-            $result.InstanceName | Should -Be 'PBIRS'
-            $result.ServiceType | Should -Be 'ReportingServices'
+            $result.InstanceName | Should-Be 'PBIRS'
+            $result.ServiceType | Should-Be 'ReportingServices'
         }
 
         It 'Should filter instances by multiple service types' {
@@ -77,7 +77,7 @@ Describe 'Get-SqlDscInstalledInstance' {
             # All returned instances should be of specified types
             foreach ($instance in $result)
             {
-                $instance.ServiceType | Should -BeIn @('DatabaseEngine', 'AnalysisServices')
+                @('DatabaseEngine', 'AnalysisServices') | Should-ContainCollection ($instance.ServiceType)
             }
         }
     }
@@ -86,14 +86,14 @@ Describe 'Get-SqlDscInstalledInstance' {
         It 'Should filter instances by DatabaseEngine service type' {
             $result = Get-SqlDscInstalledInstance -InstanceName 'PBIRS' -ServiceType 'ReportingServices'
 
-            $result.InstanceName | Should -Be 'PBIRS'
-            $result.ServiceType | Should -Be 'ReportingServices'
+            $result.InstanceName | Should-Be 'PBIRS'
+            $result.ServiceType | Should-Be 'ReportingServices'
         }
 
         It 'Should return empty when instance name and service type do not match' {
             $result = Get-SqlDscInstalledInstance -InstanceName 'PBIRS' -ServiceType 'DatabaseEngine'
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 }

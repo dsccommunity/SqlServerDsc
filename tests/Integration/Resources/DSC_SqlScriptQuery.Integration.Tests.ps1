@@ -134,17 +134,17 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 throw $_
             }
 
-            $resultObject.Name | Should -Be $ConfigurationData.AllNodes.Database1Name
+            $resultObject.Name | Should-Be $ConfigurationData.AllNodes.Database1Name
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.GetQuery -replace '\r\n', "`n" | Should -Be ($ConfigurationData.AllNodes.GetQuery -replace '\r\n', "`n")
-            $resourceCurrentState.TestQuery -replace '\r\n', "`n" | Should -Be ($ConfigurationData.AllNodes.TestQuery -replace '\r\n', "`n")
-            $resourceCurrentState.SetQuery -replace '\r\n', "`n" | Should -Be ($ConfigurationData.AllNodes.SetQuery -replace '\r\n', "`n")
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.GetQuery -replace '\r\n', "`n" | Should-Be ($ConfigurationData.AllNodes.GetQuery -replace '\r\n', "`n")
+            $resourceCurrentState.TestQuery -replace '\r\n', "`n" | Should-Be ($ConfigurationData.AllNodes.TestQuery -replace '\r\n', "`n")
+            $resourceCurrentState.SetQuery -replace '\r\n', "`n" | Should-Be ($ConfigurationData.AllNodes.SetQuery -replace '\r\n', "`n")
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -190,16 +190,16 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.GetResult | Should -Match $ConfigurationData.AllNodes.Database2Name
-            $resourceCurrentState.GetQuery -replace '\r\n', "`n" | Should -Be ($ConfigurationData.AllNodes.GetQuery -replace '\r\n', "`n")
-            $resourceCurrentState.TestQuery -replace '\r\n', "`n" | Should -Be ($ConfigurationData.AllNodes.TestQuery -replace '\r\n', "`n")
-            $resourceCurrentState.SetQuery -replace '\r\n', "`n" | Should -Be ($ConfigurationData.AllNodes.SetQuery -replace '\r\n', "`n")
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.GetResult | Should-MatchString $ConfigurationData.AllNodes.Database2Name
+            $resourceCurrentState.GetQuery -replace '\r\n', "`n" | Should-Be ($ConfigurationData.AllNodes.GetQuery -replace '\r\n', "`n")
+            $resourceCurrentState.TestQuery -replace '\r\n', "`n" | Should-Be ($ConfigurationData.AllNodes.TestQuery -replace '\r\n', "`n")
+            $resourceCurrentState.SetQuery -replace '\r\n', "`n" | Should-Be ($ConfigurationData.AllNodes.SetQuery -replace '\r\n', "`n")
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -282,17 +282,17 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 throw $_
             }
 
-            $resultObject.Name | Should -Be $ConfigurationData.AllNodes.Database3Name
+            $resultObject.Name | Should-Be $ConfigurationData.AllNodes.Database3Name
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.GetQuery -replace '\r\n', "`n" | Should -Be ($ConfigurationData.AllNodes.GetQuery -replace '\r\n', "`n")
-            $resourceCurrentState.TestQuery -replace '\r\n', "`n" | Should -Be ($ConfigurationData.AllNodes.TestQuery -replace '\r\n', "`n")
-            $resourceCurrentState.SetQuery -replace '\r\n', "`n" | Should -Be ($ConfigurationData.AllNodes.SetQuery -replace '\r\n', "`n")
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.GetQuery -replace '\r\n', "`n" | Should-Be ($ConfigurationData.AllNodes.GetQuery -replace '\r\n', "`n")
+            $resourceCurrentState.TestQuery -replace '\r\n', "`n" | Should-Be ($ConfigurationData.AllNodes.TestQuery -replace '\r\n', "`n")
+            $resourceCurrentState.SetQuery -replace '\r\n', "`n" | Should-Be ($ConfigurationData.AllNodes.SetQuery -replace '\r\n', "`n")
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 

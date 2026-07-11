@@ -72,63 +72,65 @@ Describe 'Get-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Integrati
             It 'Should return permissions for dbo user in master database' {
                 $result = Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName 'master' -Name 'dbo'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo])
             }
 
             It 'Should return permissions for dbo user in master database using pipeline' {
                 $result = $script:serverObject | Get-SqlDscDatabasePermission -DatabaseName 'master' -Name 'dbo'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo])
             }
 
             It 'Should return permissions for public role in master database' {
                 $result = Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName 'master' -Name 'public'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([System.Object[]])
+                $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo])
             }
 
             It 'Should return permissions for test user in test database' {
                 $result = Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $script:testUserName
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([System.Object[]])
+                $result[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo])
 
                 # Verify that the Connect and Select permissions we granted are present
                 $connectPermission = $result | Where-Object { $_.PermissionType.Connect -eq $true }
                 $selectPermission = $result | Where-Object { $_.PermissionType.Select -eq $true }
 
-                $connectPermission | Should -Not -BeNullOrEmpty -Because 'Connect permission should have been granted to test user'
-                $connectPermission.PermissionState | Should -Be 'Grant'
+                $connectPermission | Should-BeTruthy -Because 'Connect permission should have been granted to test user'
+                $connectPermission.PermissionState | Should-Be 'Grant'
 
-                $selectPermission | Should -Not -BeNullOrEmpty -Because 'Select permission should have been granted to test user'
-                $selectPermission.PermissionState | Should -Be 'Grant'
+                $selectPermission | Should-BeTruthy -Because 'Select permission should have been granted to test user'
+                $selectPermission.PermissionState | Should-Be 'Grant'
             }
         }
 
         Context 'When getting permissions for invalid principals' {
             It 'Should throw error for non-existent database with ErrorAction Stop' {
                 { Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName 'NonExistentDatabase123' -Name 'dbo' -ErrorAction 'Stop' } |
-                    Should -Throw
+                    Should-Throw
             }
 
             It 'Should return null for non-existent database with ErrorAction SilentlyContinue' {
                 $result = Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName 'NonExistentDatabase123' -Name 'dbo' -ErrorAction 'SilentlyContinue'
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
             }
 
             It 'Should throw error for non-existent principal with ErrorAction Stop' {
                 { Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName 'master' -Name 'NonExistentUser123' -ErrorAction 'Stop' } |
-                    Should -Throw
+                    Should-Throw
             }
 
             It 'Should return null for non-existent principal with ErrorAction SilentlyContinue' {
                 $result = Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName 'master' -Name 'NonExistentUser123' -ErrorAction 'SilentlyContinue'
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
             }
         }
 
@@ -139,27 +141,27 @@ Describe 'Get-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Integrati
             }
 
             It 'Should return DatabasePermissionInfo objects with PermissionState property' {
-                $script:testPermissions | Should -Not -BeNullOrEmpty
+                $script:testPermissions | Should-BeTruthy
 
                 foreach ($permission in $script:testPermissions) {
-                    $permission.PermissionState | Should -BeIn @('Grant', 'Deny', 'GrantWithGrant')
+                    @('Grant', 'Deny', 'GrantWithGrant') | Should-ContainCollection ($permission.PermissionState)
                 }
             }
 
             It 'Should return DatabasePermissionInfo objects with PermissionType property' {
-                $script:testPermissions | Should -Not -BeNullOrEmpty
+                $script:testPermissions | Should-BeTruthy
 
                 foreach ($permission in $script:testPermissions) {
-                    $permission.PermissionType | Should -Not -BeNullOrEmpty
-                    $permission.PermissionType | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]
+                    $permission.PermissionType | Should-BeTruthy
+                    $permission.PermissionType | Should-HaveType ([Microsoft.SqlServer.Management.Smo.DatabasePermissionSet])
                 }
             }
 
             It 'Should return DatabasePermissionInfo objects with Grantee property' {
-                $script:testPermissions | Should -Not -BeNullOrEmpty
+                $script:testPermissions | Should-BeTruthy
 
                 foreach ($permission in $script:testPermissions) {
-                    $permission.Grantee | Should -Be $script:testUserName
+                    $permission.Grantee | Should-Be $script:testUserName
                 }
             }
         }
@@ -183,7 +185,7 @@ Describe 'Get-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Integrati
                 $result = Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name 'db_datareader' -ErrorAction 'SilentlyContinue'
 
                 # Fixed roles are excluded by default, so result should be null
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
             }
 
             It 'Should work with non-fixed database roles when they exist' {
@@ -199,13 +201,13 @@ Describe 'Get-SqlDscDatabasePermission' -Tag @('Integration_SQL2017', 'Integrati
                 # Test getting permissions for the custom role
                 $result = Get-SqlDscDatabasePermission -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Name $script:customRoleName -Refresh
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo])
 
                 # Verify the Connect permission we granted is present
                 $connectPermission = $result | Where-Object { $_.PermissionType.Connect -eq $true }
-                $connectPermission | Should -Not -BeNullOrEmpty
-                $connectPermission.PermissionState | Should -Be 'Grant'
+                $connectPermission | Should-BeTruthy
+                $connectPermission.PermissionState | Should-Be 'Grant'
             }
         }
     }

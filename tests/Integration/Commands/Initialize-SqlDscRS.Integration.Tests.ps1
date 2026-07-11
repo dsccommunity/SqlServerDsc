@@ -48,7 +48,7 @@ Describe 'Initialize-SqlDscRS' {
         }
 
         It 'Should return initialization status' {
-            $script:isInitialized | Should -BeOfType [System.Boolean]
+            $script:isInitialized | Should-HaveType ([System.Boolean])
         }
 
         It 'Should initialize or return already initialized' -Skip:$script:isInitialized {
@@ -67,7 +67,7 @@ Describe 'Initialize-SqlDscRS' {
             # Verify configuration is still accessible after restart
             $result = Get-SqlDscRSConfiguration -InstanceName $script:configuration.InstanceName -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
         }
     }
 
@@ -78,7 +78,7 @@ Describe 'Initialize-SqlDscRS' {
         }
 
         It 'Should return initialization status' {
-            $script:isInitialized | Should -BeOfType [System.Boolean]
+            $script:isInitialized | Should-HaveType ([System.Boolean])
         }
 
         It 'Should initialize or return already initialized' -Skip:$script:isInitialized {
@@ -96,7 +96,7 @@ Describe 'Initialize-SqlDscRS' {
             # Verify configuration is still accessible after restart
             $result = Get-SqlDscRSConfiguration -InstanceName $script:configuration.InstanceName -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
         }
     }
 
@@ -107,7 +107,7 @@ Describe 'Initialize-SqlDscRS' {
         }
 
         It 'Should return initialization status' {
-            $script:isInitialized | Should -BeOfType [System.Boolean]
+            $script:isInitialized | Should-HaveType ([System.Boolean])
         }
 
         It 'Should initialize or return already initialized' -Skip:$script:isInitialized {
@@ -125,7 +125,7 @@ Describe 'Initialize-SqlDscRS' {
             # Verify configuration is still accessible after restart
             $result = Get-SqlDscRSConfiguration -InstanceName $script:configuration.InstanceName -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
         }
     }
 
@@ -136,7 +136,7 @@ Describe 'Initialize-SqlDscRS' {
         }
 
         It 'Should return initialization status' {
-            $script:isInitialized | Should -BeOfType [System.Boolean]
+            $script:isInitialized | Should-HaveType ([System.Boolean])
         }
 
         It 'Should initialize or return already initialized' -Skip:$script:isInitialized {
@@ -154,7 +154,7 @@ Describe 'Initialize-SqlDscRS' {
             # Verify configuration is still accessible after restart
             $result = Get-SqlDscRSConfiguration -InstanceName $script:configuration.InstanceName -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
         }
     }
 }

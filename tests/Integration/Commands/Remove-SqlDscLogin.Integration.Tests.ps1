@@ -59,14 +59,14 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify the login exists
             $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName
-            $loginExists | Should -BeTrue
+            $loginExists | Should-BeTrue
 
             # Remove the login
             $script:serverObject | Remove-SqlDscLogin -Name $script:testLoginName -Force
 
             # Verify the login is removed
             $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName
-            $loginExists | Should -BeFalse
+            $loginExists | Should-BeFalse
         }
 
         It 'Should handle WhatIf parameter correctly' {
@@ -78,7 +78,7 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify the login still exists
             $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName
-            $loginExists | Should -BeTrue
+            $loginExists | Should-BeTrue
         }
 
         It 'Should throw an error when the login does not exist' {
@@ -91,7 +91,7 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             # Try to remove a non-existent login
             {
                 $script:serverObject | Remove-SqlDscLogin -Name $script:testLoginName -Force -ErrorAction 'Stop'
-            } | Should -Throw
+            } | Should-Throw
         }
     }
 
@@ -110,14 +110,14 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify the login exists
             $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName2
-            $loginExists | Should -BeTrue
+            $loginExists | Should-BeTrue
 
             # Remove the login using LoginObject
             $loginObject | Remove-SqlDscLogin -Force
 
             # Verify the login is removed
             $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName2
-            $loginExists | Should -BeFalse
+            $loginExists | Should-BeFalse
         }
 
         It 'Should handle pipeline input correctly' {
@@ -126,14 +126,14 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify the login exists
             $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName2
-            $loginExists | Should -BeTrue
+            $loginExists | Should-BeTrue
 
             # Get the login object and remove it via pipeline
             Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName2 | Remove-SqlDscLogin -Force
 
             # Verify the login is removed
             $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName2
-            $loginExists | Should -BeFalse
+            $loginExists | Should-BeFalse
         }
     }
 
@@ -149,14 +149,14 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify the login exists
             $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName3
-            $loginExists | Should -BeTrue
+            $loginExists | Should-BeTrue
 
             # Remove the login with Refresh parameter
             $script:serverObject | Remove-SqlDscLogin -Name $script:testLoginName3 -Refresh -Force
 
             # Verify the login is removed
             $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName3
-            $loginExists | Should -BeFalse
+            $loginExists | Should-BeFalse
         }
     }
 
@@ -191,21 +191,21 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify the login exists
             $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName4
-            $loginExists | Should -BeTrue
+            $loginExists | Should-BeTrue
 
             # Connect using the test login to create an active session
             $script:activeConnection = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -LoginType 'SqlLogin' -Credential $script:testCredential4 -ErrorAction 'Stop'
 
             # Verify there is an active session for this login
             $processes = $script:serverObject.EnumProcesses($script:testLoginName4)
-            $processes.Rows.Count | Should -BeGreaterThan 0 -Because 'There should be at least one active session for the login'
+            $processes.Rows.Count | Should-BeGreaterThan 0 -Because 'There should be at least one active session for the login'
 
             # Remove the login with KillActiveSessions - should succeed
             $script:serverObject | Remove-SqlDscLogin -Name $script:testLoginName4 -KillActiveSessions -Force
 
             # Verify the login is removed
             $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName4
-            $loginExists | Should -BeFalse
+            $loginExists | Should-BeFalse
         }
 
         It 'Should fail to remove a login with active sessions when not using KillActiveSessions parameter' {
@@ -214,17 +214,17 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify the login exists
             $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName4
-            $loginExists | Should -BeTrue
+            $loginExists | Should-BeTrue
 
             # Connect using the test login to create an active session
             $script:activeConnection = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -LoginType 'SqlLogin' -Credential $script:testCredential4 -ErrorAction 'Stop'
 
             # Verify there is an active session for this login
             $processes = $script:serverObject.EnumProcesses($script:testLoginName4)
-            $processes.Rows.Count | Should -BeGreaterThan 0 -Because 'There should be at least one active session for the login'
+            $processes.Rows.Count | Should-BeGreaterThan 0 -Because 'There should be at least one active session for the login'
 
             # Try to remove the login without KillActiveSessions - should fail
-            { $script:serverObject | Remove-SqlDscLogin -Name $script:testLoginName4 -Force -ErrorAction 'Stop' } | Should -Throw
+            { $script:serverObject | Remove-SqlDscLogin -Name $script:testLoginName4 -Force -ErrorAction 'Stop' } | Should-Throw
         }
     }
 }

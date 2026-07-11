@@ -51,9 +51,9 @@ Describe 'Get-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             # The result should be either null/empty or an array of UInt32 values
             if ($result) {
-                @($result) | Should -BeOfType [System.UInt32]
+                @($result) | Should-HaveType ([System.UInt32])
             } else {
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
             }
         }
     }
@@ -64,9 +64,9 @@ Describe 'Get-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             # The result should be either null/empty or an array of UInt32 values
             if ($result) {
-                @($result) | Should -BeOfType [System.UInt32]
+                @($result) | Should-HaveType ([System.UInt32])
             } else {
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
             }
         }
 
@@ -75,9 +75,9 @@ Describe 'Get-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             # The result should be either null/empty or an array of UInt32 values
             if ($result) {
-                @($result) | Should -BeOfType [System.UInt32]
+                @($result) | Should-HaveType ([System.UInt32])
             } else {
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
             }
         }
     }
@@ -88,9 +88,9 @@ Describe 'Get-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             # The result should be either null/empty or an array of UInt32 values
             if ($result) {
-                @($result) | Should -BeOfType [System.UInt32]
+                @($result) | Should-HaveType ([System.UInt32])
             } else {
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
             }
         }
     }
@@ -106,13 +106,13 @@ Describe 'Get-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
     Context 'When testing error handling' {
         It 'Should throw an error when specifying an invalid instance name' {
             { Get-SqlDscTraceFlag -InstanceName 'InvalidInstance' -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
 
         It 'Should return empty result when specifying an invalid instance name with SilentlyContinue' {
             $result = Get-SqlDscTraceFlag -InstanceName 'InvalidInstance' -ErrorAction 'SilentlyContinue'
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -123,14 +123,14 @@ Describe 'Get-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             # Both results should be of the same type (both null or both arrays)
             if ($null -eq $resultByServerName) {
-                $resultByServiceObject | Should -BeNullOrEmpty
+                $resultByServiceObject | Should-BeFalsy
             } else {
-                $resultByServiceObject | Should -Not -BeNullOrEmpty
-                @($resultByServerName).Count | Should -Be @($resultByServiceObject).Count
+                $resultByServiceObject | Should-BeTruthy
+                @($resultByServerName).Count | Should-Be @($resultByServiceObject).Count
 
                 # If both have trace flags, they should be the same
                 if (@($resultByServerName).Count -gt 0) {
-                    Compare-Object -ReferenceObject @($resultByServerName) -DifferenceObject @($resultByServiceObject) | Should -BeNullOrEmpty
+                    Compare-Object -ReferenceObject @($resultByServerName) -DifferenceObject @($resultByServiceObject) | Should-BeFalsy
                 }
             }
         }

@@ -34,13 +34,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -129,7 +131,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                         MediaPath          = $TestDrive
                         $MockParameterName = 'Value'
                     } -SetupAction 'NotUsed'
-                } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
+                } | Should-Throw -FullyQualifiedErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
             }
         }
     }
@@ -175,7 +177,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                     $MockParameters.Role = 'SPI_AS_NewFarm'
 
                     Assert-SetupActionProperties -Property $MockParameters -SetupAction 'NotUsed'
-                } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
+                } | Should-Throw -FullyQualifiedErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
             }
         }
     }
@@ -188,7 +190,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                         MediaPath    = $TestDrive
                         SecurityMode = 'SQL'
                     } -SetupAction 'NotUsed'
-                } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
+                } | Should-Throw -FullyQualifiedErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
             }
         }
     }
@@ -216,7 +218,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                         MediaPath       = $TestDrive
                         FileStreamLevel = $MockFileStreamLevel
                     } -SetupAction 'NotUsed'
-                } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
+                } | Should-Throw -FullyQualifiedErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
             }
         }
     }
@@ -254,7 +256,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                         MediaPath          = $TestDrive
                         $MockParameterName = 'AccountName'
                     } -SetupAction 'NotUsed'
-                } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
+                } | Should-Throw -FullyQualifiedErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
             }
         }
     }
@@ -422,7 +424,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                     )
 
                     Assert-SetupActionProperties -Property $MockParameters -SetupAction 'NotUsed'
-                } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
+                } | Should-Throw -FullyQualifiedErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
             }
         }
     }
@@ -552,7 +554,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                         MediaPath = $TestDrive
                         Features = $MockFeature
                     } -SetupAction $MockSetupAction
-                } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
+                } | Should-Throw -FullyQualifiedErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
             }
         }
     }
@@ -572,7 +574,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                         MediaPath    = $TestDrive
                         ASServerMode = 'PowerPivot'
                     } -SetupAction $MockSetupAction
-                } | Should -Throw -ErrorId 'ASAP0001,Assert-SetupActionProperties' # cSpell: disable-line
+                } | Should-Throw -FullyQualifiedErrorId 'ASAP0001,Assert-SetupActionProperties' # cSpell: disable-line
             }
         }
     }
@@ -589,7 +591,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                         MediaPath     = $TestDrive
                         RsInstallMode = 'DefaultNativeMode'
                     } -SetupAction $MockSetupAction
-                } | Should -Throw -ErrorId 'ASAP0002,Assert-SetupActionProperties' # cSpell: disable-line
+                } | Should-Throw -FullyQualifiedErrorId 'ASAP0002,Assert-SetupActionProperties' # cSpell: disable-line
             }
         }
     }
@@ -610,7 +612,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                         MediaPath = $TestDrive
                         AllowDqRemoval = $true
                     } -SetupAction 'Upgrade'
-                } | Should -Throw -ErrorId 'ASAP0003,Assert-SetupActionProperties' # cSpell: disable-line
+                } | Should-Throw -FullyQualifiedErrorId 'ASAP0003,Assert-SetupActionProperties' # cSpell: disable-line
             }
         }
     }

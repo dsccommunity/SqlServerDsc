@@ -34,7 +34,7 @@ BeforeAll {
 Describe 'Get-SqlDscRSPackage' {
     Context 'When getting package information for a non-existing file' -Tag @('Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS', 'Integration_PowerBI') {
         It 'Should throw an error when the file does not exist' {
-            { Get-SqlDscRSPackage -FilePath 'C:\NonExistent\SQLServerReportingServices.exe' -ErrorAction 'Stop' } | Should -Throw
+            { Get-SqlDscRSPackage -FilePath 'C:\NonExistent\SQLServerReportingServices.exe' -ErrorAction 'Stop' } | Should-Throw
         }
     }
 
@@ -47,10 +47,10 @@ Describe 'Get-SqlDscRSPackage' {
         It 'Should return the package information for SSRS' {
             $result = Get-SqlDscRSPackage -FilePath $script:reportingServicesExecutable -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.ProductName | Should -Be 'Microsoft SQL Server Reporting Services'
-            $result.FileVersion | Should -Not -BeNullOrEmpty
-            $result.ProductVersion | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
+            $result.ProductName | Should-Be 'Microsoft SQL Server Reporting Services'
+            $result.FileVersion | Should-BeTruthy
+            $result.ProductVersion | Should-BeTruthy
         }
     }
 
@@ -63,24 +63,24 @@ Describe 'Get-SqlDscRSPackage' {
         It 'Should return the package information for PBIRS' {
             $result = Get-SqlDscRSPackage -FilePath $script:powerBIReportServerExecutable -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.ProductName | Should -Be 'Microsoft Power BI Report Server'
-            $result.FileVersion | Should -Not -BeNullOrEmpty
-            $result.ProductVersion | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
+            $result.ProductName | Should-Be 'Microsoft Power BI Report Server'
+            $result.FileVersion | Should-BeTruthy
+            $result.ProductVersion | Should-BeTruthy
         }
     }
 
     Context 'When file has an invalid product name' -Tag @('Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS', 'Integration_PowerBI') {
         It 'Should throw an error without Force parameter' {
             # Use an executable that exists but has a different product name
-            { Get-SqlDscRSPackage -FilePath 'C:\Windows\System32\notepad.exe' -ErrorAction 'Stop' } | Should -Throw
+            { Get-SqlDscRSPackage -FilePath 'C:\Windows\System32\notepad.exe' -ErrorAction 'Stop' } | Should-Throw
         }
 
         It 'Should return version information with Force parameter' {
             $result = Get-SqlDscRSPackage -FilePath 'C:\Windows\System32\notepad.exe' -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.FileVersion | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
+            $result.FileVersion | Should-BeTruthy
         }
     }
 
@@ -93,8 +93,8 @@ Describe 'Get-SqlDscRSPackage' {
         It 'Should return file version information with Force parameter' {
             $result = Get-SqlDscRSPackage -FilePath $script:reportingServicesExecutable -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.FileVersion | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
+            $result.FileVersion | Should-BeTruthy
         }
     }
 }

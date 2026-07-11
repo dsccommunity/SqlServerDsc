@@ -68,13 +68,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:subModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:subModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:subModuleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:subModuleName -All | Remove-Module -Force
@@ -149,7 +151,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
             It 'Should restart SQL Service and running SQL Agent service' {
                 $null = Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -ErrorAction 'Stop'
 
-                Should -Invoke -CommandName Connect-SQL -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     <#
                         Make sure we assert just the first call to Connect-SQL.
 
@@ -157,19 +159,19 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
                         we cannot use `$PSBoundParameters.ContainsKey('ErrorAction') -eq $false`.
                     #>
                     $ErrorAction -ne 'SilentlyContinue'
-                } -Scope It -Exactly -Times 1
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Restart-SqlClusterService -Scope It -Exactly -Times 0 -ModuleName $subModuleName
-                Should -Invoke -CommandName Get-Service -Scope It -Exactly -Times 1
-                Should -Invoke -CommandName Restart-Service -Scope It -Exactly -Times 1
-                Should -Invoke -CommandName Start-Service -Scope It -Exactly -Times 1
+                Should-Invoke -CommandName Restart-SqlClusterService -Exactly -ModuleName $subModuleName -Scope It -Times 0
+                Should-Invoke -CommandName Get-Service -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Restart-Service -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Start-Service -Exactly -Scope It -Times 1
             }
 
             Context 'When skipping the cluster check' {
                 It 'Should restart SQL Service and running SQL Agent service' {
                     $null = Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -SkipClusterCheck -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Connect-SQL -ParameterFilter {
+                    Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                         <#
                             Make sure we assert just the first call to Connect-SQL.
 
@@ -177,12 +179,12 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
                             we cannot use `$PSBoundParameters.ContainsKey('ErrorAction') -eq $false`.
                         #>
                         $ErrorAction -ne 'SilentlyContinue'
-                    } -Scope It -Exactly -Times 0
+                    } -Scope It -Times 0
 
-                    Should -Invoke -CommandName Restart-SqlClusterService -Scope It -Exactly -Times 0 -ModuleName $subModuleName
-                    Should -Invoke -CommandName Get-Service -Scope It -Exactly -Times 1
-                    Should -Invoke -CommandName Restart-Service -Scope It -Exactly -Times 1
-                    Should -Invoke -CommandName Start-Service -Scope It -Exactly -Times 1
+                    Should-Invoke -CommandName Restart-SqlClusterService -Exactly -ModuleName $subModuleName -Scope It -Times 0
+                    Should-Invoke -CommandName Get-Service -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Restart-Service -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Start-Service -Exactly -Scope It -Times 1
                 }
             }
 
@@ -190,7 +192,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
                 It 'Should restart SQL Service and running SQL Agent service and not wait for the SQL Server instance to come back online' {
                     $null = Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -SkipWaitForOnline -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Connect-SQL -ParameterFilter {
+                    Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                         <#
                             Make sure we assert just the first call to Connect-SQL.
 
@@ -198,9 +200,9 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
                             we cannot use `$PSBoundParameters.ContainsKey('ErrorAction') -eq $false`.
                         #>
                         $ErrorAction -ne 'SilentlyContinue'
-                    } -Scope It -Exactly -Times 1
+                    } -Scope It -Times 1
 
-                    Should -Invoke -CommandName Connect-SQL -ParameterFilter {
+                    Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                         <#
                             Make sure we assert the second call to Connect-SQL
 
@@ -208,12 +210,12 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
                             we cannot use `$PSBoundParameters.ContainsKey('ErrorAction') -eq $true`.
                         #>
                         $ErrorAction -eq 'SilentlyContinue'
-                    } -Scope It -Exactly -Times 0
+                    } -Scope It -Times 0
 
-                    Should -Invoke -CommandName Restart-SqlClusterService -Scope It -Exactly -Times 0 -ModuleName $subModuleName
-                    Should -Invoke -CommandName Get-Service -Scope It -Exactly -Times 1
-                    Should -Invoke -CommandName Restart-Service -Scope It -Exactly -Times 1
-                    Should -Invoke -CommandName Start-Service -Scope It -Exactly -Times 1
+                    Should-Invoke -CommandName Restart-SqlClusterService -Exactly -ModuleName $subModuleName -Scope It -Times 0
+                    Should-Invoke -CommandName Get-Service -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Restart-Service -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Start-Service -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -238,7 +240,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
             It 'Should just call Restart-SqlClusterService to restart the SQL Server cluster instance' {
                 $null = Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -ErrorAction 'Stop'
 
-                Should -Invoke -CommandName Connect-SQL -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     <#
                         Make sure we assert just the first call to Connect-SQL.
 
@@ -246,25 +248,25 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
                         we cannot use `$PSBoundParameters.ContainsKey('ErrorAction') -eq $false`.
                     #>
                     $ErrorAction -ne 'SilentlyContinue'
-                } -Scope It -Exactly -Times 1
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Restart-SqlClusterService -Scope It -Exactly -Times 1 -ModuleName $subModuleName
-                Should -Invoke -CommandName Get-Service -Scope It -Exactly -Times 0
-                Should -Invoke -CommandName Restart-Service -Scope It -Exactly -Times 0
-                Should -Invoke -CommandName Start-Service -Scope It -Exactly -Times 0
+                Should-Invoke -CommandName Restart-SqlClusterService -Exactly -ModuleName $subModuleName -Scope It -Times 1
+                Should-Invoke -CommandName Get-Service -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Restart-Service -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Start-Service -Exactly -Scope It -Times 0
             }
 
             Context 'When passing the Timeout value' {
                 It 'Should just call Restart-SqlClusterService with the correct parameter' {
                     $null = Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -Timeout 120 -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Restart-SqlClusterService -ParameterFilter {
+                    Should-Invoke -CommandName Restart-SqlClusterService -Exactly -ModuleName $subModuleName -ParameterFilter {
                         <#
                             Due to issue https://github.com/pester/Pester/issues/1542
                             we cannot use `$PSBoundParameters.ContainsKey('Timeout') -eq $true`.
                         #>
                         $null -ne $Timeout
-                    } -Scope It -Exactly -Times 1 -ModuleName $subModuleName
+                    } -Scope It -Times 1
                 }
             }
 
@@ -272,13 +274,13 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
                 It 'Should just call Restart-SqlClusterService with the correct parameter' {
                     $null = Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -OwnerNode @('TestNode') -ErrorAction 'Stop'
 
-                    Should -Invoke -CommandName Restart-SqlClusterService -ParameterFilter {
+                    Should-Invoke -CommandName Restart-SqlClusterService -Exactly -ModuleName $subModuleName -ParameterFilter {
                         <#
                             Due to issue https://github.com/pester/Pester/issues/1542
                             we cannot use `$PSBoundParameters.ContainsKey('OwnerNode') -eq $true`.
                         #>
                         $null -ne $OwnerNode
-                    } -Scope It -Exactly -Times 1 -ModuleName $subModuleName
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -310,9 +312,9 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
             It 'Should restart SQL Service and not try to restart missing SQL Agent service' {
                 $null = Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'NOAGENT' -SkipClusterCheck -ErrorAction 'Stop'
 
-                Should -Invoke -CommandName Get-Service -Scope It -Exactly -Times 1
-                Should -Invoke -CommandName Restart-Service -Scope It -Exactly -Times 1
-                Should -Invoke -CommandName Start-Service -Scope It -Exactly -Times 0
+                Should-Invoke -CommandName Get-Service -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Restart-Service -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Start-Service -Exactly -Scope It -Times 0
             }
         }
 
@@ -350,9 +352,9 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
             It 'Should restart SQL Service and not try to restart stopped SQL Agent service' {
                 $null = Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'STOPPEDAGENT' -SkipClusterCheck -ErrorAction 'Stop'
 
-                Should -Invoke -CommandName Get-Service -Scope It -Exactly -Times 1
-                Should -Invoke -CommandName Restart-Service -Scope It -Exactly -Times 1
-                Should -Invoke -CommandName Start-Service -Scope It -Exactly -Times 0
+                Should-Invoke -CommandName Get-Service -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Restart-Service -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Start-Service -Exactly -Scope It -Times 0
             }
         }
 
@@ -392,17 +394,17 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
                         ($mockLocalizedString -f (Get-ComputerName), 'MSSQLSERVER', 4) + '*Mock connection error*'
                     )
 
-                    $mockErrorMessage.Exception.Message | Should -Not -BeNullOrEmpty
+                    $mockErrorMessage.Exception.Message | Should-BeTruthy
 
                     {
                         Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -Timeout 4 -SkipClusterCheck
-                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    } | Should-Throw -ExceptionMessage $mockErrorMessage
 
                     <#
                         Not using -Exactly to handle when CI is slower, result is
                         that there are 3 calls to Connect-SQL.
                     #>
-                    Should -Invoke -CommandName Connect-SQL -ParameterFilter {
+                    Should-Invoke -CommandName Connect-SQL -ParameterFilter {
                         <#
                             Make sure we assert the second call to Connect-SQL
 
@@ -453,17 +455,17 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
                         $mockLocalizedString -f (Get-ComputerName), 'MSSQLSERVER', 4
                     )
 
-                    $mockErrorMessage.Exception.Message | Should -Not -BeNullOrEmpty
+                    $mockErrorMessage.Exception.Message | Should-BeTruthy
 
                     {
                         Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -Timeout 4 -SkipClusterCheck
-                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    } | Should-Throw -ExceptionMessage $mockErrorMessage
 
                     <#
                         Not using -Exactly to handle when CI is slower, result is
                         that there are 3 calls to Connect-SQL.
                     #>
-                    Should -Invoke -CommandName Connect-SQL -ParameterFilter {
+                    Should-Invoke -CommandName Connect-SQL -ParameterFilter {
                         <#
                             Make sure we assert the second call to Connect-SQL
 

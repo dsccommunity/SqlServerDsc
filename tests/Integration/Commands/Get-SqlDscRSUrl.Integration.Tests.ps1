@@ -40,29 +40,29 @@ Describe 'Get-SqlDscRSUrl' {
         It 'Should return Report Server URLs using pipeline' {
             $result = $script:setupConfiguration | Get-SqlDscRSUrl -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
         }
 
         It 'Should return Report Server URLs using SetupConfiguration parameter' {
             $result = Get-SqlDscRSUrl -SetupConfiguration $script:setupConfiguration -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
         }
 
         It 'Should return ReportServerUri objects with expected properties' {
             $result = $script:setupConfiguration | Get-SqlDscRSUrl -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result[0].PSObject.Properties.Name | Should -Contain 'InstanceName'
-            $result[0].PSObject.Properties.Name | Should -Contain 'ApplicationName'
-            $result[0].PSObject.Properties.Name | Should -Contain 'Uri'
+            $result | Should-BeTruthy
+            $result[0].PSObject.Properties.Name | Should-ContainCollection 'InstanceName'
+            $result[0].PSObject.Properties.Name | Should-ContainCollection 'ApplicationName'
+            $result[0].PSObject.Properties.Name | Should-ContainCollection 'Uri'
         }
 
         It 'Should return URLs for the correct instance' {
             $result = $script:setupConfiguration | Get-SqlDscRSUrl -ErrorAction 'Stop'
 
             $result | ForEach-Object -Process {
-                $_.InstanceName | Should -Be 'SSRS'
+                $_.InstanceName | Should-Be 'SSRS'
             }
         }
 
@@ -73,8 +73,8 @@ Describe 'Get-SqlDscRSUrl' {
                 $_.ApplicationName -eq 'ReportServerWebService'
             }
 
-            $webServiceUrls | Should -Not -BeNullOrEmpty -Because 'ReportServerWebService should have URLs configured'
-            $webServiceUrls[0].Uri | Should -Match '^https?://' -Because 'URL should be a valid HTTP or HTTPS URL'
+            $webServiceUrls | Should-BeTruthy -Because 'ReportServerWebService should have URLs configured'
+            $webServiceUrls[0].Uri | Should-MatchString '^https?://' -Because 'URL should be a valid HTTP or HTTPS URL'
         }
 
         It 'Should return URLs for ReportServerWebApp application' {
@@ -84,8 +84,8 @@ Describe 'Get-SqlDscRSUrl' {
                 $_.ApplicationName -eq 'ReportServerWebApp'
             }
 
-            $webAppUrls | Should -Not -BeNullOrEmpty -Because 'ReportServerWebApp should have URLs configured'
-            $webAppUrls[0].Uri | Should -Match '^https?://' -Because 'URL should be a valid HTTP or HTTPS URL'
+            $webAppUrls | Should-BeTruthy -Because 'ReportServerWebApp should have URLs configured'
+            $webAppUrls[0].Uri | Should-MatchString '^https?://' -Because 'URL should be a valid HTTP or HTTPS URL'
         }
     }
 
@@ -97,29 +97,29 @@ Describe 'Get-SqlDscRSUrl' {
         It 'Should return Report Server URLs using pipeline' {
             $result = $script:setupConfiguration | Get-SqlDscRSUrl -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
         }
 
         It 'Should return Report Server URLs using SetupConfiguration parameter' {
             $result = Get-SqlDscRSUrl -SetupConfiguration $script:setupConfiguration -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
         }
 
         It 'Should return ReportServerUri objects with expected properties' {
             $result = $script:setupConfiguration | Get-SqlDscRSUrl -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result[0].PSObject.Properties.Name | Should -Contain 'InstanceName'
-            $result[0].PSObject.Properties.Name | Should -Contain 'ApplicationName'
-            $result[0].PSObject.Properties.Name | Should -Contain 'Uri'
+            $result | Should-BeTruthy
+            $result[0].PSObject.Properties.Name | Should-ContainCollection 'InstanceName'
+            $result[0].PSObject.Properties.Name | Should-ContainCollection 'ApplicationName'
+            $result[0].PSObject.Properties.Name | Should-ContainCollection 'Uri'
         }
 
         It 'Should return URLs for the correct instance' {
             $result = $script:setupConfiguration | Get-SqlDscRSUrl -ErrorAction 'Stop'
 
             $result | ForEach-Object -Process {
-                $_.InstanceName | Should -Be 'PBIRS'
+                $_.InstanceName | Should-Be 'PBIRS'
             }
         }
 
@@ -130,8 +130,8 @@ Describe 'Get-SqlDscRSUrl' {
                 $_.ApplicationName -eq 'ReportServerWebService'
             }
 
-            $webServiceUrls | Should -Not -BeNullOrEmpty -Because 'ReportServerWebService should have URLs configured'
-            $webServiceUrls[0].Uri | Should -Match '^https?://' -Because 'URL should be a valid HTTP or HTTPS URL'
+            $webServiceUrls | Should-BeTruthy -Because 'ReportServerWebService should have URLs configured'
+            $webServiceUrls[0].Uri | Should-MatchString '^https?://' -Because 'URL should be a valid HTTP or HTTPS URL'
         }
 
         It 'Should return URLs for ReportServerWebApp application' {
@@ -141,8 +141,8 @@ Describe 'Get-SqlDscRSUrl' {
                 $_.ApplicationName -eq 'ReportServerWebApp'
             }
 
-            $webAppUrls | Should -Not -BeNullOrEmpty -Because 'ReportServerWebApp should have URLs configured'
-            $webAppUrls[0].Uri | Should -Match '^https?://' -Because 'URL should be a valid HTTP or HTTPS URL'
+            $webAppUrls | Should-BeTruthy -Because 'ReportServerWebApp should have URLs configured'
+            $webAppUrls[0].Uri | Should-MatchString '^https?://' -Because 'URL should be a valid HTTP or HTTPS URL'
         }
     }
 
@@ -150,7 +150,7 @@ Describe 'Get-SqlDscRSUrl' {
         It 'Should return URLs for all instances via pipeline' {
             $result = Get-SqlDscRSSetupConfiguration | Get-SqlDscRSUrl -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
+            $result | Should-BeTruthy
         }
     }
 }

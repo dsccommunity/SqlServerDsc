@@ -122,8 +122,10 @@ AfterAll {
     Run only for standalone versions of Microsoft SQL Server Reporting Services.
     Older versions of Reporting Services (eg. 2016) are integration tested in
     separate tests (part of resource SqlSetup).
+
+    TODO: Remove the `-Skip` on AppVeyor when the build image can support this integration test.
 #>
-Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') -Skip:($env:APPVEYOR) {
+Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') -Skip:([System.Boolean] $env:APPVEYOR) {
     BeforeAll {
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }
@@ -177,12 +179,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
             ## Uncomment this line to see the registry key values.
             #Write-Verbose -Message ((reg query "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server" /s) | Out-String) -Verbose
 
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.InstallFolder | Should -Be $ConfigurationData.AllNodes.InstallFolder
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.InstallFolder | Should-Be $ConfigurationData.AllNodes.InstallFolder
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 

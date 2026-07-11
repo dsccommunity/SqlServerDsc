@@ -34,12 +34,14 @@ BeforeAll {
     Add-Type -Path "$PSScriptRoot/../Stubs/SMO.cs"
 
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 }
 
 Describe 'Get-SqlDscAgentAlert' -Tag 'Public' {
@@ -60,26 +62,27 @@ Describe 'Get-SqlDscAgentAlert' -Tag 'Public' {
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
     Context 'When command has correct parameter properties' {
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscAgentAlert').Parameters['ServerObject']
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            #Write-Verbose ((Get-Command -Name 'Get-SqlDscAgentAlert').ParameterSets.Parameters['ServerObject'] | Out-String) -Verbose
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have ServerObject accept pipeline input' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscAgentAlert').Parameters['ServerObject']
-            $parameterInfo.Attributes.ValueFromPipeline | Should -BeTrue
+            $parameterInfo.Attributes.ValueFromPipeline | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Name as a mandatory parameter in ByName parameter set' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscAgentAlert').Parameters['Name']
             $byNameParameterSet = $parameterInfo.ParameterSets['ByName']
-            $byNameParameterSet.IsMandatory | Should -BeTrue
+            $byNameParameterSet.IsMandatory | Should-BeTrue
         }
     }
 
@@ -111,9 +114,9 @@ Describe 'Get-SqlDscAgentAlert' -Tag 'Public' {
         It 'Should return all alerts when no name is specified' {
             $result = Get-SqlDscAgentAlert -ServerObject $script:mockServerObject
 
-            $result | Should -HaveCount 2
-            $result[0].Name | Should -Be 'Alert1'
-            $result[1].Name | Should -Be 'Alert2'
+            $result | Should-BeCollection -Count 2
+            $result[0].Name | Should-Be 'Alert1'
+            $result[1].Name | Should-Be 'Alert2'
         }
     }
 
@@ -140,15 +143,15 @@ Describe 'Get-SqlDscAgentAlert' -Tag 'Public' {
         It 'Should return specific alert when name matches' {
             $result = Get-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'TestAlert'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestAlert'
-            $result.Severity | Should -Be 16
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestAlert'
+            $result.Severity | Should-Be 16
         }
 
         It 'Should return null when alert does not exist' {
             $result = Get-SqlDscAgentAlert -ServerObject $script:mockServerObject -Name 'NonExistentAlert'
 
-            $result | Should -BeNull
+            $result | Should-BeFalsy
         }
     }
 
@@ -168,7 +171,7 @@ Describe 'Get-SqlDscAgentAlert' -Tag 'Public' {
 
         It 'Should accept server object from pipeline' {
             $result = $script:mockServerObject | Get-SqlDscAgentAlert
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 }

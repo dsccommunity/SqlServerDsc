@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -74,8 +76,8 @@ Describe 'Enable-SqlDscAudit' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When enabling an audit by ServerObject' {
@@ -107,7 +109,7 @@ Describe 'Enable-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Enable-SqlDscAudit -Confirm:$false @mockDefaultParameters
 
-                $mockMethodEnableCallCount | Should -Be 1
+                $mockMethodEnableCallCount | Should-Be 1
             }
         }
 
@@ -115,7 +117,7 @@ Describe 'Enable-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Enable-SqlDscAudit -Force @mockDefaultParameters
 
-                $mockMethodEnableCallCount | Should -Be 1
+                $mockMethodEnableCallCount | Should-Be 1
             }
         }
 
@@ -123,7 +125,7 @@ Describe 'Enable-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Enable-SqlDscAudit -WhatIf @mockDefaultParameters
 
-                $mockMethodEnableCallCount | Should -Be 0
+                $mockMethodEnableCallCount | Should-Be 0
             }
         }
 
@@ -131,7 +133,7 @@ Describe 'Enable-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 $mockServerObject | Enable-SqlDscAudit -Name 'Log1' -Force
 
-                $mockMethodEnableCallCount | Should -Be 1
+                $mockMethodEnableCallCount | Should-Be 1
             }
         }
     }
@@ -162,7 +164,7 @@ Describe 'Enable-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Enable-SqlDscAudit -Confirm:$false @mockDefaultParameters
 
-                $mockMethodEnableCallCount | Should -Be 1
+                $mockMethodEnableCallCount | Should-Be 1
             }
         }
 
@@ -170,7 +172,7 @@ Describe 'Enable-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Enable-SqlDscAudit -Force @mockDefaultParameters
 
-                $mockMethodEnableCallCount | Should -Be 1
+                $mockMethodEnableCallCount | Should-Be 1
             }
         }
 
@@ -178,7 +180,7 @@ Describe 'Enable-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Enable-SqlDscAudit -WhatIf @mockDefaultParameters
 
-                $mockMethodEnableCallCount | Should -Be 0
+                $mockMethodEnableCallCount | Should-Be 0
             }
         }
 
@@ -186,7 +188,7 @@ Describe 'Enable-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 $mockAuditObject | Enable-SqlDscAudit -Force
 
-                $mockMethodEnableCallCount | Should -Be 1
+                $mockMethodEnableCallCount | Should-Be 1
             }
         }
     }

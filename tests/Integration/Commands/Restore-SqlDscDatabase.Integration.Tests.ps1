@@ -159,8 +159,8 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
 
             # Verify the database was restored
             $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:restoreDbName -ErrorAction 'SilentlyContinue'
-            $restoredDb | Should -Not -BeNullOrEmpty
-            $restoredDb.Name | Should -Be $script:restoreDbName
+            $restoredDb | Should-BeTruthy
+            $restoredDb.Name | Should-Be $script:restoreDbName
         }
     }
 
@@ -211,8 +211,8 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             # Ensure the database exists and is online before attempting replace
             $script:serverObject.Databases.Refresh()
             $existingDb = $script:serverObject.Databases[$script:replaceDbName]
-            $existingDb | Should -Not -BeNullOrEmpty -Because 'Database should exist before replace operation'
-            $existingDb.Status | Should -Be 'Normal' -Because 'Database should be online before replace operation'
+            $existingDb | Should-BeTruthy -Because 'Database should exist before replace operation'
+            $existingDb.Status | Should-Be 'Normal' -Because 'Database should be online before replace operation'
 
             # When replacing a database, do not specify RelocateFile - SQL Server will use existing file locations
             $null = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:replaceDbName -BackupFile $script:fullBackupFile -ReplaceDatabase -Force -ErrorAction 'Stop'
@@ -220,7 +220,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             # Verify the database still exists
             $script:serverObject.Databases.Refresh()
             $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:replaceDbName -ErrorAction 'SilentlyContinue'
-            $restoredDb | Should -Not -BeNullOrEmpty
+            $restoredDb | Should-BeTruthy
         }
     }
 
@@ -270,8 +270,10 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             # Refresh to get current state
             $script:serverObject.Databases.Refresh()
             $restoredDb = $script:serverObject.Databases[$script:noRecoveryDbName]
-            $restoredDb | Should -Not -BeNullOrEmpty
-            $restoredDb.Status | Should -Match 'Restoring'
+            $restoredDb | Should-BeTruthy
+            $restoredDb.Status | Should-Any -FilterScript {
+                $_.ToString() | Should-MatchString 'Restoring'
+            }
         }
     }
 
@@ -320,7 +322,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
 
             # Verify the database was restored
             $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:relocateDbName -Refresh -ErrorAction 'SilentlyContinue'
-            $restoredDb | Should -Not -BeNullOrEmpty
+            $restoredDb | Should-BeTruthy
         }
     }
 
@@ -367,8 +369,8 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
         It 'Should return database object when PassThru is specified' {
             $result = Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:passThruDbName -BackupFile $script:fullBackupFile -RelocateFile $script:passThruRelocateFiles -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be $script:passThruDbName
+            $result | Should-BeTruthy
+            $result.Name | Should-Be $script:passThruDbName
         }
     }
 
@@ -427,7 +429,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
 
             # Verify the database was restored
             $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:checksumDbName -Refresh -ErrorAction 'SilentlyContinue'
-            $restoredDb | Should -Not -BeNullOrEmpty
+            $restoredDb | Should-BeTruthy
         }
     }
 
@@ -475,7 +477,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
                 $existingRelocateFiles += $relocateFile
             }
 
-            { Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:existingDbName -BackupFile $script:fullBackupFile -RelocateFile $existingRelocateFiles -Force -ErrorAction 'Stop' } | Should -Throw -ErrorId 'RSDD0001,Restore-SqlDscDatabase'
+            { Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $script:existingDbName -BackupFile $script:fullBackupFile -RelocateFile $existingRelocateFiles -Force -ErrorAction 'Stop' } | Should-Throw -FullyQualifiedErrorId 'RSDD0001,Restore-SqlDscDatabase'
         }
     }
 
@@ -484,7 +486,7 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             $dbName = 'SqlDscInvalidStandby_' + (Get-Random)
             $standbyFile = Join-Path -Path $script:backupDirectory -ChildPath 'standby.ldf'
 
-            { Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $dbName -BackupFile $script:fullBackupFile -NoRecovery -Standby $standbyFile -Force -ErrorAction 'Stop' } | Should -Throw -ErrorId 'RSDD0006,Restore-SqlDscDatabase'
+            { Restore-SqlDscDatabase -ServerObject $script:serverObject -Name $dbName -BackupFile $script:fullBackupFile -NoRecovery -Standby $standbyFile -Force -ErrorAction 'Stop' } | Should-Throw -FullyQualifiedErrorId 'RSDD0006,Restore-SqlDscDatabase'
         }
     }
 
@@ -533,8 +535,8 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
 
             $script:serverObject.Databases.Refresh()
             $restoredDb = $script:serverObject.Databases[$script:sequenceDbName]
-            $restoredDb | Should -Not -BeNullOrEmpty
-            $restoredDb.Status | Should -Match 'Restoring'
+            $restoredDb | Should-BeTruthy
+            $restoredDb.Status | Should-Any -FilterScript { $_.ToString() | Should-MatchString 'Restoring' }
         }
 
         It 'Should restore differential backup with NoRecovery' {
@@ -542,8 +544,8 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
 
             $script:serverObject.Databases.Refresh()
             $restoredDb = $script:serverObject.Databases[$script:sequenceDbName]
-            $restoredDb | Should -Not -BeNullOrEmpty
-            $restoredDb.Status | Should -Match 'Restoring'
+            $restoredDb | Should-BeTruthy
+            $restoredDb.Status | Should-Any -FilterScript { $_.ToString() | Should-MatchString 'Restoring' }
         }
 
         It 'Should restore log backup and bring database online' {
@@ -553,11 +555,11 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
             # Refresh and verify the database is online
             $script:serverObject.Databases.Refresh()
             $restoredDb = $script:serverObject.Databases[$script:sequenceDbName]
-            $restoredDb | Should -Not -BeNullOrEmpty
+            $restoredDb | Should-BeTruthy
 
             # Refresh the database object itself to get the latest status
             $restoredDb.Refresh()
-            $restoredDb.Status | Should -Be 'Normal'
+            $restoredDb.Status | Should-Be 'Normal'
         }
     }
 
@@ -615,15 +617,15 @@ Describe 'Restore-SqlDscDatabase' -Tag @('Integration_SQL2017', 'Integration_SQL
 
             # Get the database object using Get-SqlDscDatabase to ensure all properties are properly loaded
             $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:standbyDbName -Refresh -ErrorAction 'Stop'
-            $restoredDb | Should -Not -BeNullOrEmpty
+            $restoredDb | Should-BeTruthy
 
             # Database should be online and in standby/read-only state
-            $restoredDb.Status | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal -bor [Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Standby) -Because 'Database should be online in standby mode'
-            $restoredDb.ReadOnly | Should -BeTrue -Because 'Database should be read-only in standby mode'
+            $restoredDb.Status | Should-Be ([Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Normal -bor [Microsoft.SqlServer.Management.Smo.DatabaseStatus]::Standby) -Because 'Database should be online in standby mode'
+            $restoredDb.ReadOnly | Should-BeTrue -Because 'Database should be read-only in standby mode'
 
             # Verify standby file exists and has content
-            Test-Path -Path $script:standbyFile | Should -BeTrue -Because 'Standby undo file should exist'
-            (Get-Item -Path $script:standbyFile).Length | Should -BeGreaterThan 0 -Because 'Standby file should have content'
+            Test-Path -Path $script:standbyFile | Should-BeTrue -Because 'Standby undo file should exist'
+            (Get-Item -Path $script:standbyFile).Length | Should-BeGreaterThan 0 -Because 'Standby file should have content'
         }
     }
 
@@ -731,20 +733,20 @@ INSERT INTO dbo.TestData (Id, InsertTime, Value) VALUES (1, GETDATE(), 'Initial'
             # Refresh and verify the database is online
             $script:serverObject.Databases.Refresh()
             $restoredDb = $script:serverObject.Databases[$script:pitDbName]
-            $restoredDb | Should -Not -BeNullOrEmpty
+            $restoredDb | Should-BeTruthy
 
             $restoredDb.Refresh()
-            $restoredDb.Status | Should -Be 'Normal' -Because 'Database should be online after point-in-time restore'
+            $restoredDb.Status | Should-Be 'Normal' -Because 'Database should be online after point-in-time restore'
 
             # Verify data reflects the point-in-time (only initial record should exist)
             $query = "SELECT COUNT(*) AS RecordCount FROM dbo.TestData WHERE Id = 1;"
             $result = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:pitDbName -Query $query -PassThru -Force -ErrorAction 'Stop'
-            $result.Tables[0].Rows[0].RecordCount | Should -Be 1 -Because 'Initial record should exist'
+            $result.Tables[0].Rows[0].RecordCount | Should-Be 1 -Because 'Initial record should exist'
 
             # Verify the second record (inserted after point-in-time) should NOT exist
             $query = "SELECT COUNT(*) AS RecordCount FROM dbo.TestData WHERE Id = 2;"
             $result = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:pitDbName -Query $query -PassThru -Force -ErrorAction 'Stop'
-            $result.Tables[0].Rows[0].RecordCount | Should -Be 0 -Because 'Record inserted after point-in-time should not exist'
+            $result.Tables[0].Rows[0].RecordCount | Should-Be 0 -Because 'Record inserted after point-in-time should not exist'
         }
     }
 
@@ -817,8 +819,8 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
 
             # Verify the database was restored
             $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:fileNumberDbName -Refresh -ErrorAction 'SilentlyContinue'
-            $restoredDb | Should -Not -BeNullOrEmpty
-            $restoredDb.Name | Should -Be $script:fileNumberDbName
+            $restoredDb | Should-BeTruthy
+            $restoredDb.Name | Should-Be $script:fileNumberDbName
         }
     }
 
@@ -882,7 +884,7 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
 
             # Verify the database was restored
             $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $blockSizeDbName -Refresh -ErrorAction 'SilentlyContinue'
-            $restoredDb | Should -Not -BeNullOrEmpty
+            $restoredDb | Should-BeTruthy
         }
 
         It 'Should restore database with BufferCount parameter' {
@@ -903,7 +905,7 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
 
             # Verify the database was restored
             $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $bufferCountDbName -Refresh -ErrorAction 'SilentlyContinue'
-            $restoredDb | Should -Not -BeNullOrEmpty
+            $restoredDb | Should-BeTruthy
         }
 
         It 'Should restore database with MaxTransferSize parameter' {
@@ -924,7 +926,7 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
 
             # Verify the database was restored
             $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $maxTransferDbName -Refresh -ErrorAction 'SilentlyContinue'
-            $restoredDb | Should -Not -BeNullOrEmpty
+            $restoredDb | Should-BeTruthy
         }
 
         It 'Should restore database with all performance tuning parameters combined' {
@@ -945,7 +947,7 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
 
             # Verify the database was restored
             $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $combinedDbName -Refresh -ErrorAction 'SilentlyContinue'
-            $restoredDb | Should -Not -BeNullOrEmpty
+            $restoredDb | Should-BeTruthy
         }
     }
 
@@ -998,22 +1000,22 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
 
             # Get the database object using Get-SqlDscDatabase to ensure all properties are properly loaded
             $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:restrictedUserDbName -Refresh -ErrorAction 'Stop'
-            $restoredDb | Should -Not -BeNullOrEmpty
+            $restoredDb | Should-BeTruthy
 
             # Verify the database is in restricted user mode
             # UserAccess enum: Single = 0, Restricted = 1, Multiple = 2
-            $restoredDb.UserAccess | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseUserAccess]::Restricted) -Because 'Database should be in restricted user access mode'
+            $restoredDb.UserAccess | Should-Be ([Microsoft.SqlServer.Management.Smo.DatabaseUserAccess]::Restricted) -Because 'Database should be in restricted user access mode'
         }
 
         It 'Should verify sysadmin can access restricted database' {
             # Verify the database exists and is in restricted mode
             $restoredDb = Get-SqlDscDatabase -ServerObject $script:serverObject -Name $script:restrictedUserDbName -Refresh -ErrorAction 'Stop'
-            $restoredDb.UserAccess | Should -Be ([Microsoft.SqlServer.Management.Smo.DatabaseUserAccess]::Restricted)
+            $restoredDb.UserAccess | Should-Be ([Microsoft.SqlServer.Management.Smo.DatabaseUserAccess]::Restricted)
 
             # Verify that sysadmin can access the restricted database
             $query = "SELECT name FROM sys.databases WHERE name = N'$($script:restrictedUserDbName)';"
             $result = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'master' -Query $query -PassThru -Force -ErrorAction 'Stop'
-            $result.Tables[0].Rows.Count | Should -Be 1 -Because 'Sysadmin should be able to see the restricted database'
+            $result.Tables[0].Rows.Count | Should-Be 1 -Because 'Sysadmin should be able to see the restricted database'
         }
 
         Context 'When verifying restricted database access with low-privilege user' {
@@ -1054,11 +1056,11 @@ WITH NOINIT, NOSKIP, REWIND, NOUNLOAD, STATS = 10;
                 # The database should be visible in sys.databases (restricted mode doesn't hide metadata)
                 $query = "SELECT name FROM sys.databases WHERE name = N'$($script:restrictedUserDbName)';"
                 $result = Invoke-SqlDscQuery -ServerObject $script:lowPrivServerObject -DatabaseName 'master' -Query $query -PassThru -Force -ErrorAction 'Stop'
-                $result.Tables[0].Rows.Count | Should -Be 1 -Because 'Database metadata should be visible even in restricted mode'
+                $result.Tables[0].Rows.Count | Should-Be 1 -Because 'Database metadata should be visible even in restricted mode'
 
                 # But attempting to USE the database should fail
                 $query = "USE [$($script:restrictedUserDbName)];"
-                { Invoke-SqlDscQuery -ServerObject $script:lowPrivServerObject -DatabaseName 'master' -Query $query -Force -ErrorAction 'Stop' } | Should -Throw -Because 'Low-privilege user should not be able to connect to restricted database'
+                { Invoke-SqlDscQuery -ServerObject $script:lowPrivServerObject -DatabaseName 'master' -Query $query -Force -ErrorAction 'Stop' } | Should-Throw -Because 'Low-privilege user should not be able to connect to restricted database'
             }
         }
     }

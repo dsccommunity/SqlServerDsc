@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -74,8 +76,8 @@ Describe 'Remove-SqlDscLogin' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     It 'Should have the correct command metadata' {
@@ -84,8 +86,8 @@ Describe 'Remove-SqlDscLogin' -Tag 'Public' {
         $cmdletBindingAttribute = $command.ScriptBlock.Attributes |
             Where-Object -FilterScript { $_ -is [System.Management.Automation.CmdletBindingAttribute] }
 
-        $cmdletBindingAttribute.SupportsShouldProcess | Should -BeTrue
-        $cmdletBindingAttribute.ConfirmImpact | Should -Be 'High'
+        $cmdletBindingAttribute.SupportsShouldProcess | Should-BeTrue
+        $cmdletBindingAttribute.ConfirmImpact | Should-Be 'High'
     }
 
     It 'Should have correct parameter attributes for parameter set <ParameterSetName>' -ForEach @(
@@ -130,11 +132,11 @@ Describe 'Remove-SqlDscLogin' -Tag 'Public' {
             $parameterAttribute = & $getParameterAttribute -ParameterName $parameterTest.ParameterName -ParameterSetName $ParameterSetName
 
             if ($parameterTest.ContainsKey('ShouldExist') -and $parameterTest.ShouldExist -eq $false) {
-                $parameterAttribute | Should -BeNullOrEmpty -Because "Parameter '$($parameterTest.ParameterName)' should not exist in parameter set '$ParameterSetName'"
+                $parameterAttribute | Should-BeFalsy -Because "Parameter '$($parameterTest.ParameterName)' should not exist in parameter set '$ParameterSetName'"
             } else {
-                $parameterAttribute | Should -Not -BeNullOrEmpty -Because "Parameter '$($parameterTest.ParameterName)' should exist in parameter set '$ParameterSetName'"
-                $parameterAttribute.Mandatory | Should -Be $parameterTest.IsMandatory -Because "Parameter '$($parameterTest.ParameterName)' mandatory setting should be $($parameterTest.IsMandatory) in parameter set '$ParameterSetName'"
-                $parameterAttribute.ValueFromPipeline | Should -Be $parameterTest.ValueFromPipeline -Because "Parameter '$($parameterTest.ParameterName)' ValueFromPipeline setting should be $($parameterTest.ValueFromPipeline) in parameter set '$ParameterSetName'"
+                $parameterAttribute | Should-BeTruthy -Because "Parameter '$($parameterTest.ParameterName)' should exist in parameter set '$ParameterSetName'"
+                $parameterAttribute.Mandatory | Should-Be $parameterTest.IsMandatory -Because "Parameter '$($parameterTest.ParameterName)' mandatory setting should be $($parameterTest.IsMandatory) in parameter set '$ParameterSetName'"
+                $parameterAttribute.ValueFromPipeline | Should-Be $parameterTest.ValueFromPipeline -Because "Parameter '$($parameterTest.ParameterName)' ValueFromPipeline setting should be $($parameterTest.ValueFromPipeline) in parameter set '$ParameterSetName'"
             }
         }
     }
@@ -168,7 +170,7 @@ Describe 'Remove-SqlDscLogin' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Remove-SqlDscLogin -Confirm:$false @mockDefaultParameters
 
-                $mockMethodDropCallCount | Should -Be 1
+                $mockMethodDropCallCount | Should-Be 1
             }
         }
 
@@ -176,7 +178,7 @@ Describe 'Remove-SqlDscLogin' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Remove-SqlDscLogin -Force @mockDefaultParameters
 
-                $mockMethodDropCallCount | Should -Be 1
+                $mockMethodDropCallCount | Should-Be 1
             }
         }
 
@@ -184,7 +186,7 @@ Describe 'Remove-SqlDscLogin' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Remove-SqlDscLogin -WhatIf @mockDefaultParameters
 
-                $mockMethodDropCallCount | Should -Be 0
+                $mockMethodDropCallCount | Should-Be 0
             }
         }
 
@@ -192,7 +194,7 @@ Describe 'Remove-SqlDscLogin' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 $mockServerObject | Remove-SqlDscLogin -Name 'TestLogin' -Force
 
-                $mockMethodDropCallCount | Should -Be 1
+                $mockMethodDropCallCount | Should-Be 1
             }
         }
 
@@ -200,7 +202,7 @@ Describe 'Remove-SqlDscLogin' -Tag 'Public' {
             It 'Should call Get-SqlDscLogin with Refresh parameter' {
                 $mockServerObject | Remove-SqlDscLogin -Name 'TestLogin' -Refresh -Force
 
-                Should -Invoke -CommandName Get-SqlDscLogin -ParameterFilter {
+                Should-Invoke -CommandName Get-SqlDscLogin -ParameterFilter {
                     $Refresh -eq $true
                 }
             }
@@ -233,7 +235,7 @@ Describe 'Remove-SqlDscLogin' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Remove-SqlDscLogin -Confirm:$false @mockDefaultParameters
 
-                $mockMethodDropCallCount | Should -Be 1
+                $mockMethodDropCallCount | Should-Be 1
             }
         }
 
@@ -241,7 +243,7 @@ Describe 'Remove-SqlDscLogin' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Remove-SqlDscLogin -Force @mockDefaultParameters
 
-                $mockMethodDropCallCount | Should -Be 1
+                $mockMethodDropCallCount | Should-Be 1
             }
         }
 
@@ -249,7 +251,7 @@ Describe 'Remove-SqlDscLogin' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Remove-SqlDscLogin -WhatIf @mockDefaultParameters
 
-                $mockMethodDropCallCount | Should -Be 0
+                $mockMethodDropCallCount | Should-Be 0
             }
         }
 
@@ -257,7 +259,7 @@ Describe 'Remove-SqlDscLogin' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 $mockLoginObject | Remove-SqlDscLogin -Force
 
-                $mockMethodDropCallCount | Should -Be 1
+                $mockMethodDropCallCount | Should-Be 1
             }
         }
     }
@@ -281,7 +283,7 @@ Describe 'Remove-SqlDscLogin' -Tag 'Public' {
         }
 
         It 'Should throw the correct error when Drop() method fails' {
-            { Remove-SqlDscLogin -Force @mockDefaultParameters } | Should -Throw -ExpectedMessage '*Removal of the login ''TestLogin'' failed*'
+            { Remove-SqlDscLogin -Force @mockDefaultParameters } | Should-Throw -ExceptionMessage '*Removal of the login ''TestLogin'' failed*'
         }
     }
 
@@ -315,7 +317,7 @@ Describe 'Remove-SqlDscLogin' -Tag 'Public' {
             It 'Should kill active sessions and drop the login' {
                 Remove-SqlDscLogin -Force @mockDefaultParametersWithProcesses
 
-                $script:mockMethodDropCallCount | Should -Be 1
+                $script:mockMethodDropCallCount | Should-Be 1
             }
         }
 
@@ -338,7 +340,7 @@ Describe 'Remove-SqlDscLogin' -Tag 'Public' {
             It 'Should not kill sessions or drop the login' {
                 Remove-SqlDscLogin -WhatIf @mockDefaultParametersWhatIf
 
-                $script:mockMethodDropCallCount | Should -Be 0
+                $script:mockMethodDropCallCount | Should-Be 0
             }
         }
 
@@ -361,13 +363,13 @@ Describe 'Remove-SqlDscLogin' -Tag 'Public' {
             It 'Should kill active sessions and drop the login' {
                 Remove-SqlDscLogin -ServerObject $mockServerObjectWithProcesses -Name 'TestLogin' -KillActiveSessions -Force
 
-                $script:mockMethodDropCallCount | Should -Be 1
+                $script:mockMethodDropCallCount | Should-Be 1
             }
 
             It 'Should not kill sessions or drop the login when using WhatIf' {
                 Remove-SqlDscLogin -ServerObject $mockServerObjectWithProcesses -Name 'TestLogin' -KillActiveSessions -Force -WhatIf
 
-                $script:mockMethodDropCallCount | Should -Be 0
+                $script:mockMethodDropCallCount | Should-Be 0
             }
         }
 
@@ -401,7 +403,7 @@ Describe 'Remove-SqlDscLogin' -Tag 'Public' {
             It 'Should drop the login without attempting to kill any sessions' {
                 Remove-SqlDscLogin -LoginObject $script:mockLoginObjectNoProcesses -KillActiveSessions -Force
 
-                $script:mockMethodDropCallCount | Should -Be 1
+                $script:mockMethodDropCallCount | Should-Be 1
             }
         }
     }

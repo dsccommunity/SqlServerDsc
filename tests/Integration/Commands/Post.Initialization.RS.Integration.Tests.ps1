@@ -54,13 +54,13 @@ Describe 'Post.Initialization.RS' {
         It 'Should have an initialized instance' {
             $isInitialized = $script:configuration | Test-SqlDscRSInitialized -ErrorAction 'Stop'
 
-            $isInitialized | Should -BeTrue
+            $isInitialized | Should-BeTrue
         }
 
         It 'Should have URL reservations configured' {
-            $script:urlReservations | Should -Not -BeNullOrEmpty
-            $script:urlReservations.Application | Should -Not -BeNullOrEmpty -Because 'URL reservations should have applications configured'
-            $script:urlReservations.UrlString | Should -Not -BeNullOrEmpty -Because 'URL reservations should have URL strings configured'
+            $script:urlReservations | Should-BeTruthy
+            $script:urlReservations.Application | Should-BeTruthy -Because 'URL reservations should have applications configured'
+            $script:urlReservations.UrlString | Should-BeTruthy -Because 'URL reservations should have URL strings configured'
         }
 
         It 'Should have all configured sites accessible' {
@@ -71,16 +71,16 @@ Describe 'Post.Initialization.RS' {
             # Verify we got results for the expected applications
             $expectedApplications = $script:urlReservations.Application | Select-Object -Unique
 
-            $results | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
-            $results | Should -HaveCount $expectedApplications.Count -Because "we expect results for each unique application ($($expectedApplications -join ', '))"
+            $results | Should-BeTruthy -Because 'the command should return site accessibility results'
+            $results | Should-BeCollection -Because "we expect results for each unique application ($($expectedApplications -join ', '))" -Count $expectedApplications.Count
 
             foreach ($application in $expectedApplications)
             {
                 $siteResult = $results | Where-Object -FilterScript { $_.Site -eq $application }
 
-                $siteResult | Should -Not -BeNullOrEmpty -Because "the '$application' site should have a result"
-                $siteResult.Accessible | Should -BeTrue -Because "the '$application' site should be accessible"
-                $siteResult.StatusCode | Should -Be 200 -Because "the '$application' site should return HTTP 200"
+                $siteResult | Should-BeTruthy -Because "the '$application' site should have a result"
+                $siteResult.Accessible | Should-BeTrue -Because "the '$application' site should be accessible"
+                $siteResult.StatusCode | Should-Be 200 -Because "the '$application' site should return HTTP 200"
             }
         }
     }
@@ -98,13 +98,13 @@ Describe 'Post.Initialization.RS' {
         It 'Should have an initialized instance' {
             $isInitialized = $script:configuration | Test-SqlDscRSInitialized -ErrorAction 'Stop'
 
-            $isInitialized | Should -BeTrue
+            $isInitialized | Should-BeTrue
         }
 
         It 'Should have URL reservations configured' {
-            $script:urlReservations | Should -Not -BeNullOrEmpty
-            $script:urlReservations.Application | Should -Not -BeNullOrEmpty -Because 'URL reservations should have applications configured'
-            $script:urlReservations.UrlString | Should -Not -BeNullOrEmpty -Because 'URL reservations should have URL strings configured'
+            $script:urlReservations | Should-BeTruthy
+            $script:urlReservations.Application | Should-BeTruthy -Because 'URL reservations should have applications configured'
+            $script:urlReservations.UrlString | Should-BeTruthy -Because 'URL reservations should have URL strings configured'
         }
 
         It 'Should have all configured sites accessible' {
@@ -115,16 +115,16 @@ Describe 'Post.Initialization.RS' {
             # Verify we got results for the expected applications
             $expectedApplications = $script:urlReservations.Application | Select-Object -Unique
 
-            $results | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
-            $results | Should -HaveCount $expectedApplications.Count -Because "we expect results for each unique application ($($expectedApplications -join ', '))"
+            $results | Should-BeTruthy -Because 'the command should return site accessibility results'
+            $results | Should-BeCollection -Because "we expect results for each unique application ($($expectedApplications -join ', '))" -Count $expectedApplications.Count
 
             foreach ($application in $expectedApplications)
             {
                 $siteResult = $results | Where-Object -FilterScript { $_.Site -eq $application }
 
-                $siteResult | Should -Not -BeNullOrEmpty -Because "the '$application' site should have a result"
-                $siteResult.Accessible | Should -BeTrue -Because "the '$application' site should be accessible"
-                $siteResult.StatusCode | Should -Be 200 -Because "the '$application' site should return HTTP 200"
+                $siteResult | Should-BeTruthy -Because "the '$application' site should have a result"
+                $siteResult.Accessible | Should-BeTrue -Because "the '$application' site should be accessible"
+                $siteResult.StatusCode | Should-Be 200 -Because "the '$application' site should return HTTP 200"
             }
         }
     }
@@ -142,13 +142,13 @@ Describe 'Post.Initialization.RS' {
         It 'Should have an initialized instance' {
             $isInitialized = $script:configuration | Test-SqlDscRSInitialized -ErrorAction 'Stop'
 
-            $isInitialized | Should -BeTrue
+            $isInitialized | Should-BeTrue
         }
 
         It 'Should have URL reservations configured' {
-            $script:urlReservations | Should -Not -BeNullOrEmpty
-            $script:urlReservations.Application | Should -Not -BeNullOrEmpty -Because 'URL reservations should have applications configured'
-            $script:urlReservations.UrlString | Should -Not -BeNullOrEmpty -Because 'URL reservations should have URL strings configured'
+            $script:urlReservations | Should-BeTruthy
+            $script:urlReservations.Application | Should-BeTruthy -Because 'URL reservations should have applications configured'
+            $script:urlReservations.UrlString | Should-BeTruthy -Because 'URL reservations should have URL strings configured'
         }
 
         It 'Should have all configured sites accessible' {
@@ -159,16 +159,16 @@ Describe 'Post.Initialization.RS' {
             # Verify we got results for the expected applications
             $expectedApplications = $script:urlReservations.Application | Select-Object -Unique
 
-            $results | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
-            $results | Should -HaveCount $expectedApplications.Count -Because "we expect results for each unique application ($($expectedApplications -join ', '))"
+            $results | Should-BeTruthy -Because 'the command should return site accessibility results'
+            $results | Should-BeCollection -Because "we expect results for each unique application ($($expectedApplications -join ', '))" -Count $expectedApplications.Count
 
             foreach ($application in $expectedApplications)
             {
                 $siteResult = $results | Where-Object -FilterScript { $_.Site -eq $application }
 
-                $siteResult | Should -Not -BeNullOrEmpty -Because "the '$application' site should have a result"
-                $siteResult.Accessible | Should -BeTrue -Because "the '$application' site should be accessible"
-                $siteResult.StatusCode | Should -Be 200 -Because "the '$application' site should return HTTP 200"
+                $siteResult | Should-BeTruthy -Because "the '$application' site should have a result"
+                $siteResult.Accessible | Should-BeTrue -Because "the '$application' site should be accessible"
+                $siteResult.StatusCode | Should-Be 200 -Because "the '$application' site should return HTTP 200"
             }
         }
     }
@@ -186,13 +186,13 @@ Describe 'Post.Initialization.RS' {
         It 'Should have an initialized instance' {
             $isInitialized = $script:configuration | Test-SqlDscRSInitialized -ErrorAction 'Stop'
 
-            $isInitialized | Should -BeTrue
+            $isInitialized | Should-BeTrue
         }
 
         It 'Should have URL reservations configured' {
-            $script:urlReservations | Should -Not -BeNullOrEmpty
-            $script:urlReservations.Application | Should -Not -BeNullOrEmpty -Because 'URL reservations should have applications configured'
-            $script:urlReservations.UrlString | Should -Not -BeNullOrEmpty -Because 'URL reservations should have URL strings configured'
+            $script:urlReservations | Should-BeTruthy
+            $script:urlReservations.Application | Should-BeTruthy -Because 'URL reservations should have applications configured'
+            $script:urlReservations.UrlString | Should-BeTruthy -Because 'URL reservations should have URL strings configured'
         }
 
         It 'Should have all configured sites accessible' {
@@ -203,16 +203,16 @@ Describe 'Post.Initialization.RS' {
             # Verify we got results for the expected applications
             $expectedApplications = $script:urlReservations.Application | Select-Object -Unique
 
-            $results | Should -Not -BeNullOrEmpty -Because 'the command should return site accessibility results'
-            $results | Should -HaveCount $expectedApplications.Count -Because "we expect results for each unique application ($($expectedApplications -join ', '))"
+            $results | Should-BeTruthy -Because 'the command should return site accessibility results'
+            $results | Should-BeCollection -Because "we expect results for each unique application ($($expectedApplications -join ', '))" -Count $expectedApplications.Count
 
             foreach ($application in $expectedApplications)
             {
                 $siteResult = $results | Where-Object -FilterScript { $_.Site -eq $application }
 
-                $siteResult | Should -Not -BeNullOrEmpty -Because "the '$application' site should have a result"
-                $siteResult.Accessible | Should -BeTrue -Because "the '$application' site should be accessible"
-                $siteResult.StatusCode | Should -Be 200 -Because "the '$application' site should return HTTP 200"
+                $siteResult | Should-BeTruthy -Because "the '$application' site should have a result"
+                $siteResult.Accessible | Should-BeTrue -Because "the '$application' site should be accessible"
+                $siteResult.StatusCode | Should-Be 200 -Because "the '$application' site should return HTTP 200"
             }
         }
     }

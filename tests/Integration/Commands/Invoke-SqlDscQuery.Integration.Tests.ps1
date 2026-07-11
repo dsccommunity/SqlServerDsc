@@ -93,18 +93,18 @@ INSERT INTO TestTable (Name, Value) VALUES ('Test1', 100), ('Test2', 200), ('Tes
             It 'Should return results when using PassThru parameter' {
                 $result = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query 'SELECT * FROM TestTable' -PassThru -Force -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType 'System.Data.DataSet'
-                $result.Tables[0].Rows.Count | Should -BeGreaterOrEqual 3
+                $result | Should-BeTruthy
+                $result | Should-HaveType 'System.Data.DataSet'
+                $result.Tables[0].Rows.Count | Should-BeGreaterThanOrEqual 3
             }
 
             It 'Should return specific results when querying with WHERE clause' {
                 $result = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query "SELECT Name FROM TestTable WHERE Name = 'Test1'" -PassThru -Force -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType 'System.Data.DataSet'
-                $result.Tables[0].Rows.Count | Should -Be 1
-                $result.Tables[0].Rows[0]['Name'] | Should -Be 'Test1'
+                $result | Should-BeTruthy
+                $result | Should-HaveType 'System.Data.DataSet'
+                $result.Tables[0].Rows.Count | Should-Be 1
+                $result.Tables[0].Rows[0]['Name'] | Should-Be 'Test1'
             }
         }
 
@@ -122,9 +122,9 @@ INSERT INTO TestTable (Name, Value) VALUES ('Test1', 100), ('Test2', 200), ('Tes
             It 'Should execute query when ServerObject is passed through pipeline' {
                 $result = $script:serverObject | Invoke-SqlDscQuery -DatabaseName $script:testDatabaseName -Query 'SELECT COUNT(*) as RecordCount FROM TestTable' -PassThru -Force -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType 'System.Data.DataSet'
-                $result.Tables[0].Rows[0]['RecordCount'] | Should -BeGreaterOrEqual 3
+                $result | Should-BeTruthy
+                $result | Should-HaveType 'System.Data.DataSet'
+                $result.Tables[0].Rows[0]['RecordCount'] | Should-BeGreaterThanOrEqual 3
             }
         }
     }
@@ -140,9 +140,9 @@ INSERT INTO TestTable (Name, Value) VALUES ('Test1', 100), ('Test2', 200), ('Tes
             It 'Should return results when using PassThru parameter' {
                 $result = Invoke-SqlDscQuery -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential -DatabaseName $script:testDatabaseName -Query 'SELECT Name, Value FROM TestTable ORDER BY ID' -PassThru -Force -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType 'System.Data.DataSet'
-                $result.Tables[0].Rows.Count | Should -BeGreaterOrEqual 3
+                $result | Should-BeTruthy
+                $result | Should-HaveType 'System.Data.DataSet'
+                $result.Tables[0].Rows.Count | Should-BeGreaterThanOrEqual 3
             }
         }
 
@@ -169,19 +169,19 @@ INSERT INTO TestTable (Name, Value) VALUES ('Test1', 100), ('Test2', 200), ('Tes
         It 'Should throw error when querying non-existent database' {
             {
                 Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'NonExistentDatabase' -Query 'SELECT 1' -Force -ErrorAction 'Stop'
-            } | Should -Throw
+            } | Should-Throw
         }
 
         It 'Should throw error when executing invalid SQL query' {
             {
                 Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query 'INVALID SQL SYNTAX' -Force -ErrorAction 'Stop'
-            } | Should -Throw
+            } | Should-Throw
         }
 
         It 'Should throw error when querying non-existent table' {
             {
                 Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query 'SELECT * FROM NonExistentTable' -Force -ErrorAction 'Stop'
-            } | Should -Throw
+            } | Should-Throw
         }
     }
 
@@ -189,18 +189,18 @@ INSERT INTO TestTable (Name, Value) VALUES ('Test1', 100), ('Test2', 200), ('Tes
         It 'Should execute query against master database' {
             $result = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'master' -Query 'SELECT name FROM sys.databases WHERE name = ''master''' -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'System.Data.DataSet'
-            $result.Tables[0].Rows.Count | Should -Be 1
-            $result.Tables[0].Rows[0]['name'] | Should -Be 'master'
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'System.Data.DataSet'
+            $result.Tables[0].Rows.Count | Should-Be 1
+            $result.Tables[0].Rows[0]['name'] | Should-Be 'master'
         }
 
         It 'Should execute query against msdb database' {
             $result = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'msdb' -Query 'SELECT COUNT(*) as TableCount FROM INFORMATION_SCHEMA.TABLES' -PassThru -Force -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'System.Data.DataSet'
-            $result.Tables[0].Rows[0]['TableCount'] | Should -BeGreaterThan 0
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'System.Data.DataSet'
+            $result.Tables[0].Rows[0]['TableCount'] | Should-BeGreaterThan 0
         }
     }
 
@@ -217,7 +217,7 @@ INSERT INTO TestTable (Name, Value) VALUES ('Test1', 100), ('Test2', 200), ('Tes
             $finalResult = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName $script:testDatabaseName -Query 'SELECT COUNT(*) as RecordCount FROM TestTable' -PassThru -Force -ErrorAction 'Stop'
             $finalCount = $finalResult.Tables[0].Rows[0]['RecordCount']
 
-            $finalCount | Should -Be $initialCount
+            $finalCount | Should-Be $initialCount
         }
     }
 }

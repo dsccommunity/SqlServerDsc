@@ -48,13 +48,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:dscResourceName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 
@@ -97,20 +99,20 @@ Describe 'SqlProtocolTcpIp\Get-TargetResource' -Tag 'Get' {
 
                     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-                    $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
+                    $getTargetResourceResult.InstanceName | Should-Be $mockInstanceName
                     # IP address group should always be returned with the correct casing.
-                    $getTargetResourceResult.IpAddressGroup | Should -BeExactly 'IPAll'
+                    $getTargetResourceResult.IpAddressGroup | Should-BeString -CaseSensitive 'IPAll'
                     # Use the helper function from inside the module (DscResource.Common).
-                    $getTargetResourceResult.ServerName | Should -Be (Get-ComputerName)
-                    $getTargetResourceResult.SuppressRestart | Should -BeFalse
-                    $getTargetResourceResult.RestartTimeout | Should -Be 120
-                    $getTargetResourceResult.Enabled | Should -BeFalse
-                    $getTargetResourceResult.IPAddress | Should -BeNullOrEmpty
-                    $getTargetResourceResult.UseTcpDynamicPort | Should -BeFalse
-                    $getTargetResourceResult.TcpPort | Should -BeNullOrEmpty
-                    $getTargetResourceResult.IsActive | Should -BeFalse
-                    $getTargetResourceResult.AddressFamily | Should -BeNullOrEmpty
-                    $getTargetResourceResult.TcpDynamicPort | Should -BeNullOrEmpty
+                    $getTargetResourceResult.ServerName | Should-Be (Get-ComputerName)
+                    $getTargetResourceResult.SuppressRestart | Should-BeFalse
+                    $getTargetResourceResult.RestartTimeout | Should-Be 120
+                    $getTargetResourceResult.Enabled | Should-BeFalse
+                    $getTargetResourceResult.IPAddress | Should-BeFalsy
+                    $getTargetResourceResult.UseTcpDynamicPort | Should-BeFalse
+                    $getTargetResourceResult.TcpPort | Should-BeFalsy
+                    $getTargetResourceResult.IsActive | Should-BeFalse
+                    $getTargetResourceResult.AddressFamily | Should-BeFalsy
+                    $getTargetResourceResult.TcpDynamicPort | Should-BeFalsy
                 }
             }
         }
@@ -144,7 +146,7 @@ Describe 'SqlProtocolTcpIp\Get-TargetResource' -Tag 'Get' {
                     $null = Get-TargetResource @getTargetResourceParameters
                 }
 
-                Should -Invoke -CommandName Write-Warning
+                Should-Invoke -CommandName Write-Warning
             }
         }
     }
@@ -183,19 +185,19 @@ Describe 'SqlProtocolTcpIp\Get-TargetResource' -Tag 'Get' {
 
                         $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-                        $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
-                        $getTargetResourceResult.IpAddressGroup | Should -BeExactly 'IPAll'
+                        $getTargetResourceResult.InstanceName | Should-Be $mockInstanceName
+                        $getTargetResourceResult.IpAddressGroup | Should-BeString -CaseSensitive 'IPAll'
                         # Use the helper function from inside the module (DscResource.Common).
-                        $getTargetResourceResult.ServerName | Should -Be (Get-ComputerName)
-                        $getTargetResourceResult.SuppressRestart | Should -BeFalse
-                        $getTargetResourceResult.RestartTimeout | Should -Be 120
-                        $getTargetResourceResult.Enabled | Should -BeFalse
-                        $getTargetResourceResult.IPAddress | Should -BeNullOrEmpty
-                        $getTargetResourceResult.UseTcpDynamicPort | Should -BeTrue
-                        $getTargetResourceResult.TcpPort | Should -BeNullOrEmpty
-                        $getTargetResourceResult.IsActive | Should -BeFalse
-                        $getTargetResourceResult.AddressFamily | Should -BeNullOrEmpty
-                        $getTargetResourceResult.TcpDynamicPort | Should -BeExactly '0'
+                        $getTargetResourceResult.ServerName | Should-Be (Get-ComputerName)
+                        $getTargetResourceResult.SuppressRestart | Should-BeFalse
+                        $getTargetResourceResult.RestartTimeout | Should-Be 120
+                        $getTargetResourceResult.Enabled | Should-BeFalse
+                        $getTargetResourceResult.IPAddress | Should-BeFalsy
+                        $getTargetResourceResult.UseTcpDynamicPort | Should-BeTrue
+                        $getTargetResourceResult.TcpPort | Should-BeFalsy
+                        $getTargetResourceResult.IsActive | Should-BeFalse
+                        $getTargetResourceResult.AddressFamily | Should-BeFalsy
+                        $getTargetResourceResult.TcpDynamicPort | Should-BeString -CaseSensitive '0'
                     }
                 }
             }
@@ -232,19 +234,19 @@ Describe 'SqlProtocolTcpIp\Get-TargetResource' -Tag 'Get' {
 
                         $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-                        $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
-                        $getTargetResourceResult.IpAddressGroup | Should -BeExactly 'IPAll'
+                        $getTargetResourceResult.InstanceName | Should-Be $mockInstanceName
+                        $getTargetResourceResult.IpAddressGroup | Should-BeString -CaseSensitive 'IPAll'
                         # Use the helper function from inside the module (DscResource.Common).
-                        $getTargetResourceResult.ServerName | Should -Be (Get-ComputerName)
-                        $getTargetResourceResult.SuppressRestart | Should -BeFalse
-                        $getTargetResourceResult.RestartTimeout | Should -Be 120
-                        $getTargetResourceResult.Enabled | Should -BeFalse
-                        $getTargetResourceResult.IPAddress | Should -BeNullOrEmpty
-                        $getTargetResourceResult.UseTcpDynamicPort | Should -BeFalse
-                        $getTargetResourceResult.TcpPort | Should -BeExactly '1433,1500,1501'
-                        $getTargetResourceResult.IsActive | Should -BeFalse
-                        $getTargetResourceResult.AddressFamily | Should -BeNullOrEmpty
-                        $getTargetResourceResult.TcpDynamicPort | Should -BeNullOrEmpty
+                        $getTargetResourceResult.ServerName | Should-Be (Get-ComputerName)
+                        $getTargetResourceResult.SuppressRestart | Should-BeFalse
+                        $getTargetResourceResult.RestartTimeout | Should-Be 120
+                        $getTargetResourceResult.Enabled | Should-BeFalse
+                        $getTargetResourceResult.IPAddress | Should-BeFalsy
+                        $getTargetResourceResult.UseTcpDynamicPort | Should-BeFalse
+                        $getTargetResourceResult.TcpPort | Should-BeString -CaseSensitive '1433,1500,1501'
+                        $getTargetResourceResult.IsActive | Should-BeFalse
+                        $getTargetResourceResult.AddressFamily | Should-BeFalsy
+                        $getTargetResourceResult.TcpDynamicPort | Should-BeFalsy
                     }
                 }
             }
@@ -293,19 +295,19 @@ Describe 'SqlProtocolTcpIp\Get-TargetResource' -Tag 'Get' {
 
                         $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-                        $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
-                        $getTargetResourceResult.IpAddressGroup | Should -BeExactly 'IP1'
+                        $getTargetResourceResult.InstanceName | Should-Be $mockInstanceName
+                        $getTargetResourceResult.IpAddressGroup | Should-BeString -CaseSensitive 'IP1'
                         # Use the helper function from inside the module (DscResource.Common).
-                        $getTargetResourceResult.ServerName | Should -Be (Get-ComputerName)
-                        $getTargetResourceResult.SuppressRestart | Should -BeFalse
-                        $getTargetResourceResult.RestartTimeout | Should -Be 120
-                        $getTargetResourceResult.Enabled | Should -BeTrue
-                        $getTargetResourceResult.IPAddress | Should -Be 'fe80::7894:a6b6:59dd:c8ff%9'
-                        $getTargetResourceResult.UseTcpDynamicPort | Should -BeTrue
-                        $getTargetResourceResult.TcpPort | Should -BeNullOrEmpty
-                        $getTargetResourceResult.IsActive | Should -BeTrue
-                        $getTargetResourceResult.AddressFamily | Should -Be 'InterNetworkV6'
-                        $getTargetResourceResult.TcpDynamicPort | Should -BeExactly '0'
+                        $getTargetResourceResult.ServerName | Should-Be (Get-ComputerName)
+                        $getTargetResourceResult.SuppressRestart | Should-BeFalse
+                        $getTargetResourceResult.RestartTimeout | Should-Be 120
+                        $getTargetResourceResult.Enabled | Should-BeTrue
+                        $getTargetResourceResult.IPAddress | Should-Be 'fe80::7894:a6b6:59dd:c8ff%9'
+                        $getTargetResourceResult.UseTcpDynamicPort | Should-BeTrue
+                        $getTargetResourceResult.TcpPort | Should-BeFalsy
+                        $getTargetResourceResult.IsActive | Should-BeTrue
+                        $getTargetResourceResult.AddressFamily | Should-Be 'InterNetworkV6'
+                        $getTargetResourceResult.TcpDynamicPort | Should-BeString -CaseSensitive '0'
                     }
                 }
             }
@@ -352,19 +354,19 @@ Describe 'SqlProtocolTcpIp\Get-TargetResource' -Tag 'Get' {
 
                         $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-                        $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
-                        $getTargetResourceResult.IpAddressGroup | Should -BeExactly 'IP1'
+                        $getTargetResourceResult.InstanceName | Should-Be $mockInstanceName
+                        $getTargetResourceResult.IpAddressGroup | Should-BeString -CaseSensitive 'IP1'
                         # Use the helper function from inside the module (DscResource.Common).
-                        $getTargetResourceResult.ServerName | Should -Be (Get-ComputerName)
-                        $getTargetResourceResult.SuppressRestart | Should -BeFalse
-                        $getTargetResourceResult.RestartTimeout | Should -Be 120
-                        $getTargetResourceResult.Enabled | Should -BeTrue
-                        $getTargetResourceResult.IPAddress | Should -Be 'fe80::7894:a6b6:59dd:c8ff%9'
-                        $getTargetResourceResult.UseTcpDynamicPort | Should -BeFalse
-                        $getTargetResourceResult.TcpPort | Should -BeExactly '1433,1500,1501'
-                        $getTargetResourceResult.IsActive | Should -BeTrue
-                        $getTargetResourceResult.AddressFamily | Should -Be 'InterNetworkV6'
-                        $getTargetResourceResult.TcpDynamicPort | Should -BeNullOrEmpty
+                        $getTargetResourceResult.ServerName | Should-Be (Get-ComputerName)
+                        $getTargetResourceResult.SuppressRestart | Should-BeFalse
+                        $getTargetResourceResult.RestartTimeout | Should-Be 120
+                        $getTargetResourceResult.Enabled | Should-BeTrue
+                        $getTargetResourceResult.IPAddress | Should-Be 'fe80::7894:a6b6:59dd:c8ff%9'
+                        $getTargetResourceResult.UseTcpDynamicPort | Should-BeFalse
+                        $getTargetResourceResult.TcpPort | Should-BeString -CaseSensitive '1433,1500,1501'
+                        $getTargetResourceResult.IsActive | Should-BeTrue
+                        $getTargetResourceResult.AddressFamily | Should-Be 'InterNetworkV6'
+                        $getTargetResourceResult.TcpDynamicPort | Should-BeFalsy
                     }
                 }
             }
@@ -395,10 +397,10 @@ Describe 'SqlProtocolTcpIp\Test-TargetResource' -Tag 'Test' {
                 }
 
                 $testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
-                $testTargetResourceResult | Should -BeTrue
+                $testTargetResourceResult | Should-BeTrue
             }
 
-            Should -Invoke -CommandName Compare-TargetResourceState -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Compare-TargetResourceState -Exactly -Scope It -Times 1
         }
     }
 
@@ -424,10 +426,10 @@ Describe 'SqlProtocolTcpIp\Test-TargetResource' -Tag 'Test' {
                 }
 
                 $testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
-                $testTargetResourceResult | Should -BeFalse
+                $testTargetResourceResult | Should-BeFalse
             }
 
-            Should -Invoke -CommandName Compare-TargetResourceState -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Compare-TargetResourceState -Exactly -Scope It -Times 1
         }
     }
 }
@@ -451,7 +453,7 @@ Describe 'SqlProtocolTcpIp\Compare-TargetResourceState' -Tag 'Compare' {
                     TcpPort        = '1433'
                 }
 
-                { Compare-ResourcePropertyState @testTargetResourceParameters } | Should -Throw
+                { Compare-ResourcePropertyState @testTargetResourceParameters } | Should-Throw
             }
         }
     }
@@ -483,16 +485,16 @@ Describe 'SqlProtocolTcpIp\Compare-TargetResourceState' -Tag 'Compare' {
                         }
 
                         $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                        $compareTargetResourceStateResult | Should -HaveCount 1
+                        $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                         $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'UseTcpDynamicPort' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -BeTrue
-                        $comparedReturnValue.Actual | Should -BeTrue
-                        $comparedReturnValue.InDesiredState | Should -BeTrue
+                        $comparedReturnValue | Should-BeTruthy
+                        $comparedReturnValue.Expected | Should-BeTrue
+                        $comparedReturnValue.Actual | Should-BeTrue
+                        $comparedReturnValue.InDesiredState | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -521,16 +523,16 @@ Describe 'SqlProtocolTcpIp\Compare-TargetResourceState' -Tag 'Compare' {
                         }
 
                         $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                        $compareTargetResourceStateResult | Should -HaveCount 1
+                        $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                         $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'TcpPort' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -Be '1433'
-                        $comparedReturnValue.Actual | Should -Be '1433'
-                        $comparedReturnValue.InDesiredState | Should -BeTrue
+                        $comparedReturnValue | Should-BeTruthy
+                        $comparedReturnValue.Expected | Should-Be '1433'
+                        $comparedReturnValue.Actual | Should-Be '1433'
+                        $comparedReturnValue.InDesiredState | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -569,28 +571,28 @@ Describe 'SqlProtocolTcpIp\Compare-TargetResourceState' -Tag 'Compare' {
                         }
 
                         $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                        $compareTargetResourceStateResult | Should -HaveCount 3
+                        $compareTargetResourceStateResult | Should-BeCollection -Count 3
 
                         $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'UseTcpDynamicPort' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -BeTrue
-                        $comparedReturnValue.Actual | Should -BeTrue
-                        $comparedReturnValue.InDesiredState | Should -BeTrue
+                        $comparedReturnValue | Should-BeTruthy
+                        $comparedReturnValue.Expected | Should-BeTrue
+                        $comparedReturnValue.Actual | Should-BeTrue
+                        $comparedReturnValue.InDesiredState | Should-BeTrue
 
                         $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -BeTrue
-                        $comparedReturnValue.Actual | Should -BeTrue
-                        $comparedReturnValue.InDesiredState | Should -BeTrue
+                        $comparedReturnValue | Should-BeTruthy
+                        $comparedReturnValue.Expected | Should-BeTrue
+                        $comparedReturnValue.Actual | Should-BeTrue
+                        $comparedReturnValue.InDesiredState | Should-BeTrue
 
                         $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'IPAddress' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -Be $MockIPAddress
-                        $comparedReturnValue.Actual | Should -Be $MockIPAddress
-                        $comparedReturnValue.InDesiredState | Should -BeTrue
+                        $comparedReturnValue | Should-BeTruthy
+                        $comparedReturnValue.Expected | Should-Be $MockIPAddress
+                        $comparedReturnValue.Actual | Should-Be $MockIPAddress
+                        $comparedReturnValue.InDesiredState | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -627,28 +629,28 @@ Describe 'SqlProtocolTcpIp\Compare-TargetResourceState' -Tag 'Compare' {
                         }
 
                         $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                        $compareTargetResourceStateResult | Should -HaveCount 3
+                        $compareTargetResourceStateResult | Should-BeCollection -Count 3
 
                         $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'TcpPort' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -Be '1433'
-                        $comparedReturnValue.Actual | Should -Be '1433'
-                        $comparedReturnValue.InDesiredState | Should -BeTrue
+                        $comparedReturnValue | Should-BeTruthy
+                        $comparedReturnValue.Expected | Should-Be '1433'
+                        $comparedReturnValue.Actual | Should-Be '1433'
+                        $comparedReturnValue.InDesiredState | Should-BeTrue
 
                         $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -BeTrue
-                        $comparedReturnValue.Actual | Should -BeTrue
-                        $comparedReturnValue.InDesiredState | Should -BeTrue
+                        $comparedReturnValue | Should-BeTruthy
+                        $comparedReturnValue.Expected | Should-BeTrue
+                        $comparedReturnValue.Actual | Should-BeTrue
+                        $comparedReturnValue.InDesiredState | Should-BeTrue
 
                         $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'IPAddress' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -Be $mockIpAddress
-                        $comparedReturnValue.Actual | Should -Be $mockIpAddress
-                        $comparedReturnValue.InDesiredState | Should -BeTrue
+                        $comparedReturnValue | Should-BeTruthy
+                        $comparedReturnValue.Expected | Should-Be $mockIpAddress
+                        $comparedReturnValue.Actual | Should-Be $mockIpAddress
+                        $comparedReturnValue.InDesiredState | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -681,16 +683,16 @@ Describe 'SqlProtocolTcpIp\Compare-TargetResourceState' -Tag 'Compare' {
                         }
 
                         $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                        $compareTargetResourceStateResult | Should -HaveCount 1
+                        $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                         $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'UseTcpDynamicPort' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -BeTrue
-                        $comparedReturnValue.Actual | Should -BeFalse
-                        $comparedReturnValue.InDesiredState | Should -BeFalse
+                        $comparedReturnValue | Should-BeTruthy
+                        $comparedReturnValue.Expected | Should-BeTrue
+                        $comparedReturnValue.Actual | Should-BeFalse
+                        $comparedReturnValue.InDesiredState | Should-BeFalse
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -719,16 +721,16 @@ Describe 'SqlProtocolTcpIp\Compare-TargetResourceState' -Tag 'Compare' {
                         }
 
                         $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                        $compareTargetResourceStateResult | Should -HaveCount 1
+                        $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                         $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'TcpPort' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -Be '1433'
-                        $comparedReturnValue.Actual | Should -BeNullOrEmpty
-                        $comparedReturnValue.InDesiredState | Should -BeFalse
+                        $comparedReturnValue | Should-BeTruthy
+                        $comparedReturnValue.Expected | Should-Be '1433'
+                        $comparedReturnValue.Actual | Should-BeFalsy
+                        $comparedReturnValue.InDesiredState | Should-BeFalse
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -767,28 +769,28 @@ Describe 'SqlProtocolTcpIp\Compare-TargetResourceState' -Tag 'Compare' {
                         }
 
                         $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                        $compareTargetResourceStateResult | Should -HaveCount 3
+                        $compareTargetResourceStateResult | Should-BeCollection -Count 3
 
                         $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'UseTcpDynamicPort' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -BeTrue
-                        $comparedReturnValue.Actual | Should -BeFalse
-                        $comparedReturnValue.InDesiredState | Should -BeFalse
+                        $comparedReturnValue | Should-BeTruthy
+                        $comparedReturnValue.Expected | Should-BeTrue
+                        $comparedReturnValue.Actual | Should-BeFalse
+                        $comparedReturnValue.InDesiredState | Should-BeFalse
 
                         $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -BeTrue
-                        $comparedReturnValue.Actual | Should -BeTrue
-                        $comparedReturnValue.InDesiredState | Should -BeTrue
+                        $comparedReturnValue | Should-BeTruthy
+                        $comparedReturnValue.Expected | Should-BeTrue
+                        $comparedReturnValue.Actual | Should-BeTrue
+                        $comparedReturnValue.InDesiredState | Should-BeTrue
 
                         $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'IPAddress' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -Be $mockIpAddress
-                        $comparedReturnValue.Actual | Should -Be $mockIpAddress
-                        $comparedReturnValue.InDesiredState | Should -BeTrue
+                        $comparedReturnValue | Should-BeTruthy
+                        $comparedReturnValue.Expected | Should-Be $mockIpAddress
+                        $comparedReturnValue.Actual | Should-Be $mockIpAddress
+                        $comparedReturnValue.InDesiredState | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -825,28 +827,28 @@ Describe 'SqlProtocolTcpIp\Compare-TargetResourceState' -Tag 'Compare' {
                         }
 
                         $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                        $compareTargetResourceStateResult | Should -HaveCount 3
+                        $compareTargetResourceStateResult | Should-BeCollection -Count 3
 
                         $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'TcpPort' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -Be '1433'
-                        $comparedReturnValue.Actual | Should -BeNullOrEmpty
-                        $comparedReturnValue.InDesiredState | Should -BeFalse
+                        $comparedReturnValue | Should-BeTruthy
+                        $comparedReturnValue.Expected | Should-Be '1433'
+                        $comparedReturnValue.Actual | Should-BeFalsy
+                        $comparedReturnValue.InDesiredState | Should-BeFalse
 
                         $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -BeTrue
-                        $comparedReturnValue.Actual | Should -BeTrue
-                        $comparedReturnValue.InDesiredState | Should -BeTrue
+                        $comparedReturnValue | Should-BeTruthy
+                        $comparedReturnValue.Expected | Should-BeTrue
+                        $comparedReturnValue.Actual | Should-BeTrue
+                        $comparedReturnValue.InDesiredState | Should-BeTrue
 
                         $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'IPAddress' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -Be $mockIpAddress
-                        $comparedReturnValue.Actual | Should -Be $mockIpAddress
-                        $comparedReturnValue.InDesiredState | Should -BeTrue
+                        $comparedReturnValue | Should-BeTruthy
+                        $comparedReturnValue.Expected | Should-Be $mockIpAddress
+                        $comparedReturnValue.Actual | Should-Be $mockIpAddress
+                        $comparedReturnValue.InDesiredState | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -877,28 +879,28 @@ Describe 'SqlProtocolTcpIp\Compare-TargetResourceState' -Tag 'Compare' {
                         }
 
                         $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                        $compareTargetResourceStateResult | Should -HaveCount 3
+                        $compareTargetResourceStateResult | Should-BeCollection -Count 3
 
                         $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'TcpPort' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -Be '1433'
-                        $comparedReturnValue.Actual | Should -Be '1433'
-                        $comparedReturnValue.InDesiredState | Should -BeTrue
+                        $comparedReturnValue | Should-BeTruthy
+                        $comparedReturnValue.Expected | Should-Be '1433'
+                        $comparedReturnValue.Actual | Should-Be '1433'
+                        $comparedReturnValue.InDesiredState | Should-BeTrue
 
                         $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -BeTrue
-                        $comparedReturnValue.Actual | Should -BeTrue
-                        $comparedReturnValue.InDesiredState | Should -BeTrue
+                        $comparedReturnValue | Should-BeTruthy
+                        $comparedReturnValue.Expected | Should-BeTrue
+                        $comparedReturnValue.Actual | Should-BeTrue
+                        $comparedReturnValue.InDesiredState | Should-BeTrue
 
                         $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'IPAddress' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -Be 'fe80::7894:a6b6:59dd:c8ff%9'
-                        $comparedReturnValue.Actual | Should -Be '10.0.0.1'
-                        $comparedReturnValue.InDesiredState | Should -BeFalse
+                        $comparedReturnValue | Should-BeTruthy
+                        $comparedReturnValue.Expected | Should-Be 'fe80::7894:a6b6:59dd:c8ff%9'
+                        $comparedReturnValue.Actual | Should-Be '10.0.0.1'
+                        $comparedReturnValue.InDesiredState | Should-BeFalse
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -927,16 +929,16 @@ Describe 'SqlProtocolTcpIp\Compare-TargetResourceState' -Tag 'Compare' {
                         }
 
                         $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                        $compareTargetResourceStateResult | Should -HaveCount 1
+                        $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                         $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
-                        $comparedReturnValue | Should -Not -BeNullOrEmpty
-                        $comparedReturnValue.Expected | Should -BeTrue
-                        $comparedReturnValue.Actual | Should -BeFalse
-                        $comparedReturnValue.InDesiredState | Should -BeFalse
+                        $comparedReturnValue | Should-BeTruthy
+                        $comparedReturnValue.Expected | Should-BeTrue
+                        $comparedReturnValue.Actual | Should-BeFalse
+                        $comparedReturnValue.InDesiredState | Should-BeFalse
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -975,7 +977,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                 }
 
                 { Set-TargetResource @setTargetResourceParameters } |
-                    Should -Throw -ExpectedMessage $mockErrorRecord.Exception.Message
+                    Should-Throw -ExceptionMessage $mockErrorRecord.Exception.Message
             }
         }
     }
@@ -1018,7 +1020,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                 }
 
                 { Set-TargetResource @setTargetResourceParameters } |
-                    Should -Throw -ExpectedMessage $mockErrorRecord.Exception.Message
+                    Should-Throw -ExceptionMessage $mockErrorRecord.Exception.Message
             }
         }
     }
@@ -1046,7 +1048,7 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                 $null = Set-TargetResource @setTargetResourceParameters
             }
 
-            Should -Invoke -CommandName Compare-TargetResourceState -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Compare-TargetResourceState -Exactly -Scope It -Times 1
         }
     }
 
@@ -1117,10 +1119,10 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                         Addition evaluation is done in the mock to test if the
                         object is set correctly.
                     #>
-                    $script:wasMethodAlterCalled | Should -BeTrue
+                    $script:wasMethodAlterCalled | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 1
             }
         }
 
@@ -1190,10 +1192,10 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                         Addition evaluation is done in the mock to test if the
                         object is set correctly.
                     #>
-                    $script:wasMethodAlterCalled | Should -BeTrue
+                    $script:wasMethodAlterCalled | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 1
             }
         }
 
@@ -1261,10 +1263,10 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                             Addition evaluation is done in the mock to test if the
                             object is set correctly.
                         #>
-                        $script:wasMethodAlterCalled | Should -BeTrue
+                        $script:wasMethodAlterCalled | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1331,10 +1333,10 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                             Addition evaluation is done in the mock to test if the
                             object is set correctly.
                         #>
-                        $script:wasMethodAlterCalled | Should -BeTrue
+                        $script:wasMethodAlterCalled | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1407,10 +1409,10 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                             Addition evaluation is done in the mock to test if the
                             object is set correctly.
                         #>
-                        $script:wasMethodAlterCalled | Should -BeTrue
+                        $script:wasMethodAlterCalled | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1457,8 +1459,8 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                         $null = Set-TargetResource @setTargetResourceParameters
                     }
 
-                    Should -Invoke -CommandName Restart-SqlService -Exactly -Times 0 -Scope It
-                    Should -Invoke -CommandName Write-Warning -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 0
+                    Should-Invoke -CommandName Write-Warning -Exactly -Scope It -Times 1
                 }
             }
         }

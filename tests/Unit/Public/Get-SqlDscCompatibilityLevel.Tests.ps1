@@ -35,13 +35,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -65,8 +67,8 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -84,15 +86,15 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag 'Public' {
             It 'Should return all supported compatibility levels from 100 to 160' {
                 $result = Get-SqlDscCompatibilityLevel -ServerObject $mockServerObject
 
-                $result | Should -Contain 'Version100'
-                $result | Should -Contain 'Version110'
-                $result | Should -Contain 'Version120'
-                $result | Should -Contain 'Version130'
-                $result | Should -Contain 'Version140'
-                $result | Should -Contain 'Version150'
-                $result | Should -Contain 'Version160'
-                $result | Should -Not -Contain 'Version90'
-                $result | Should -Not -Contain 'Version80'
+                $result | Should-ContainCollection 'Version100'
+                $result | Should-ContainCollection 'Version110'
+                $result | Should-ContainCollection 'Version120'
+                $result | Should-ContainCollection 'Version130'
+                $result | Should-ContainCollection 'Version140'
+                $result | Should-ContainCollection 'Version150'
+                $result | Should-ContainCollection 'Version160'
+                $result | Should-NotContainCollection 'Version90'
+                $result | Should-NotContainCollection 'Version80'
             }
         }
 
@@ -104,16 +106,16 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag 'Public' {
             It 'Should return all supported compatibility levels from 100 to 170' {
                 $result = Get-SqlDscCompatibilityLevel -ServerObject $mockServerObject
 
-                $result | Should -Contain 'Version100'
-                $result | Should -Contain 'Version110'
-                $result | Should -Contain 'Version120'
-                $result | Should -Contain 'Version130'
-                $result | Should -Contain 'Version140'
-                $result | Should -Contain 'Version150'
-                $result | Should -Contain 'Version160'
-                $result | Should -Contain 'Version170'
-                $result | Should -Not -Contain 'Version90'
-                $result | Should -Not -Contain 'Version80'
+                $result | Should-ContainCollection 'Version100'
+                $result | Should-ContainCollection 'Version110'
+                $result | Should-ContainCollection 'Version120'
+                $result | Should-ContainCollection 'Version130'
+                $result | Should-ContainCollection 'Version140'
+                $result | Should-ContainCollection 'Version150'
+                $result | Should-ContainCollection 'Version160'
+                $result | Should-ContainCollection 'Version170'
+                $result | Should-NotContainCollection 'Version90'
+                $result | Should-NotContainCollection 'Version80'
             }
         }
 
@@ -125,14 +127,14 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag 'Public' {
             It 'Should return all supported compatibility levels from 100 to 150' {
                 $result = Get-SqlDscCompatibilityLevel -ServerObject $mockServerObject
 
-                $result | Should -Contain 'Version100'
-                $result | Should -Contain 'Version110'
-                $result | Should -Contain 'Version120'
-                $result | Should -Contain 'Version130'
-                $result | Should -Contain 'Version140'
-                $result | Should -Contain 'Version150'
-                $result | Should -Not -Contain 'Version160'
-                $result | Should -Not -Contain 'Version90'
+                $result | Should-ContainCollection 'Version100'
+                $result | Should-ContainCollection 'Version110'
+                $result | Should-ContainCollection 'Version120'
+                $result | Should-ContainCollection 'Version130'
+                $result | Should-ContainCollection 'Version140'
+                $result | Should-ContainCollection 'Version150'
+                $result | Should-NotContainCollection 'Version160'
+                $result | Should-NotContainCollection 'Version90'
             }
         }
 
@@ -144,11 +146,11 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag 'Public' {
             It 'Should return all supported compatibility levels from 90 to 110' {
                 $result = Get-SqlDscCompatibilityLevel -ServerObject $mockServerObject
 
-                $result | Should -Contain 'Version90'
-                $result | Should -Contain 'Version100'
-                $result | Should -Contain 'Version110'
-                $result | Should -Not -Contain 'Version120'
-                $result | Should -Not -Contain 'Version80'
+                $result | Should-ContainCollection 'Version90'
+                $result | Should-ContainCollection 'Version100'
+                $result | Should-ContainCollection 'Version110'
+                $result | Should-NotContainCollection 'Version120'
+                $result | Should-NotContainCollection 'Version80'
             }
         }
 
@@ -160,10 +162,10 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag 'Public' {
             It 'Should return all supported compatibility levels from 80 to 100' {
                 $result = Get-SqlDscCompatibilityLevel -ServerObject $mockServerObject
 
-                $result | Should -Contain 'Version80'
-                $result | Should -Contain 'Version90'
-                $result | Should -Contain 'Version100'
-                $result | Should -Not -Contain 'Version110'
+                $result | Should-ContainCollection 'Version80'
+                $result | Should-ContainCollection 'Version90'
+                $result | Should-ContainCollection 'Version100'
+                $result | Should-NotContainCollection 'Version110'
             }
         }
 
@@ -179,12 +181,12 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag 'Public' {
 
                 # Should contain warnings
                 $warnings = $result | Where-Object -FilterScript { $_ -is [System.Management.Automation.WarningRecord] }
-                $warnings | Should -Not -BeNullOrEmpty
-                $warnings[0].Message | Should -Match 'SMO library does not support SQL Server major version 18'
+                $warnings | Should-BeTruthy
+                $warnings[0].Message | Should-MatchString 'SMO library does not support SQL Server major version 18'
 
                 # Should still return compatibility levels up to what SMO knows
                 $compatLevels = $result | Where-Object -FilterScript { $_ -is [System.String] }
-                $compatLevels | Should -Contain 'Version100'
+                $compatLevels | Should-ContainCollection 'Version100'
             }
         }
     }
@@ -194,14 +196,14 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag 'Public' {
             It 'Should return all supported compatibility levels from 100 to 160' {
                 $result = Get-SqlDscCompatibilityLevel -Version '16.0.1000.6'
 
-                $result | Should -Contain 'Version100'
-                $result | Should -Contain 'Version110'
-                $result | Should -Contain 'Version120'
-                $result | Should -Contain 'Version130'
-                $result | Should -Contain 'Version140'
-                $result | Should -Contain 'Version150'
-                $result | Should -Contain 'Version160'
-                $result | Should -Not -Contain 'Version90'
+                $result | Should-ContainCollection 'Version100'
+                $result | Should-ContainCollection 'Version110'
+                $result | Should-ContainCollection 'Version120'
+                $result | Should-ContainCollection 'Version130'
+                $result | Should-ContainCollection 'Version140'
+                $result | Should-ContainCollection 'Version150'
+                $result | Should-ContainCollection 'Version160'
+                $result | Should-NotContainCollection 'Version90'
             }
         }
 
@@ -209,15 +211,15 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag 'Public' {
             It 'Should return all supported compatibility levels from 100 to 170' {
                 $result = Get-SqlDscCompatibilityLevel -Version '17.0.1000.0'
 
-                $result | Should -Contain 'Version100'
-                $result | Should -Contain 'Version110'
-                $result | Should -Contain 'Version120'
-                $result | Should -Contain 'Version130'
-                $result | Should -Contain 'Version140'
-                $result | Should -Contain 'Version150'
-                $result | Should -Contain 'Version160'
-                $result | Should -Contain 'Version170'
-                $result | Should -Not -Contain 'Version90'
+                $result | Should-ContainCollection 'Version100'
+                $result | Should-ContainCollection 'Version110'
+                $result | Should-ContainCollection 'Version120'
+                $result | Should-ContainCollection 'Version130'
+                $result | Should-ContainCollection 'Version140'
+                $result | Should-ContainCollection 'Version150'
+                $result | Should-ContainCollection 'Version160'
+                $result | Should-ContainCollection 'Version170'
+                $result | Should-NotContainCollection 'Version90'
             }
         }
 
@@ -225,9 +227,9 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag 'Public' {
             It 'Should return all supported compatibility levels from 100 to 150' {
                 $result = Get-SqlDscCompatibilityLevel -Version '15.0.2000.5'
 
-                $result | Should -Contain 'Version100'
-                $result | Should -Contain 'Version150'
-                $result | Should -Not -Contain 'Version160'
+                $result | Should-ContainCollection 'Version100'
+                $result | Should-ContainCollection 'Version150'
+                $result | Should-NotContainCollection 'Version160'
             }
         }
 
@@ -235,11 +237,11 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag 'Public' {
             It 'Should return all supported compatibility levels from 90 to 110' {
                 $result = Get-SqlDscCompatibilityLevel -Version '11.0.2100.60'
 
-                $result | Should -Contain 'Version90'
-                $result | Should -Contain 'Version100'
-                $result | Should -Contain 'Version110'
-                $result | Should -Not -Contain 'Version120'
-                $result | Should -Not -Contain 'Version80'
+                $result | Should-ContainCollection 'Version90'
+                $result | Should-ContainCollection 'Version100'
+                $result | Should-ContainCollection 'Version110'
+                $result | Should-NotContainCollection 'Version120'
+                $result | Should-NotContainCollection 'Version80'
             }
         }
 
@@ -247,10 +249,10 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag 'Public' {
             It 'Should return all supported compatibility levels from 80 to 100' {
                 $result = Get-SqlDscCompatibilityLevel -Version '10.50.1600.1'
 
-                $result | Should -Contain 'Version80'
-                $result | Should -Contain 'Version90'
-                $result | Should -Contain 'Version100'
-                $result | Should -Not -Contain 'Version110'
+                $result | Should-ContainCollection 'Version80'
+                $result | Should-ContainCollection 'Version90'
+                $result | Should-ContainCollection 'Version100'
+                $result | Should-NotContainCollection 'Version110'
             }
         }
     }
@@ -265,8 +267,8 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag 'Public' {
         It 'Should accept ServerObject from pipeline' {
             $result = $mockServerObject | Get-SqlDscCompatibilityLevel
 
-            $result | Should -Contain 'Version160'
-            $result | Should -Contain 'Version100'
+            $result | Should-ContainCollection 'Version160'
+            $result | Should-ContainCollection 'Version100'
         }
     }
 }

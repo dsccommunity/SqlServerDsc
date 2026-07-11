@@ -55,13 +55,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -81,8 +83,8 @@ Describe 'Request-SqlDscRSDatabaseScript' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -114,20 +116,20 @@ Describe 'Request-SqlDscRSDatabaseScript' {
         }
 
         It 'Should generate script without errors' {
-            { $mockCimInstance | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'GenerateDatabaseCreationScript' -and
                 $Arguments.DatabaseName -eq 'ReportServer' -and
                 $Arguments.IsSharePointMode -eq $false -and
                 $Arguments.Lcid -eq 1033
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should return the script as a string' {
             $result = $mockCimInstance | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer'
 
-            $result | Should -Be 'CREATE DATABASE [ReportServer]'
+            $result | Should-Be 'CREATE DATABASE [ReportServer]'
         }
     }
 
@@ -153,11 +155,11 @@ Describe 'Request-SqlDscRSDatabaseScript' {
         }
 
         It 'Should use the specified Lcid' {
-            { $mockCimInstance | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' -Lcid 1053 } | Should -Not -Throw
+            $null = & ({ $mockCimInstance | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' -Lcid 1053 })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $Arguments.Lcid -eq 1053
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -189,9 +191,9 @@ Describe 'Request-SqlDscRSDatabaseScript' {
         }
 
         It 'Should generate script' {
-            { Request-SqlDscRSDatabaseScript -Configuration $mockCimInstance -DatabaseName 'ReportServer' } | Should -Not -Throw
+            $null = & ({ Request-SqlDscRSDatabaseScript -Configuration $mockCimInstance -DatabaseName 'ReportServer' })
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -221,7 +223,7 @@ Describe 'Request-SqlDscRSDatabaseScript' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' } | Should -Throw -ErrorId 'RSRDBS0001,Request-SqlDscRSDatabaseScript'
+            { $mockCimInstance | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' } | Should-Throw -FullyQualifiedErrorId 'RSRDBS0001,Request-SqlDscRSDatabaseScript'
         }
     }
 
@@ -241,7 +243,7 @@ Describe 'Request-SqlDscRSDatabaseScript' {
         }
 
         It 'Should throw a terminating error with the correct error ID' {
-            { $mockCimInstance | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' } | Should -Throw -ErrorId 'RSRDBS0002,Request-SqlDscRSDatabaseScript'
+            { $mockCimInstance | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' } | Should-Throw -FullyQualifiedErrorId 'RSRDBS0002,Request-SqlDscRSDatabaseScript'
         }
     }
 
@@ -258,7 +260,7 @@ Describe 'Request-SqlDscRSDatabaseScript' {
         }
 
         It 'Should throw a terminating error with the correct error ID' {
-            { $mockCimInstance | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' } | Should -Throw -ErrorId 'RSRDBS0002,Request-SqlDscRSDatabaseScript'
+            { $mockCimInstance | Request-SqlDscRSDatabaseScript -DatabaseName 'ReportServer' } | Should-Throw -FullyQualifiedErrorId 'RSRDBS0002,Request-SqlDscRSDatabaseScript'
         }
     }
 }

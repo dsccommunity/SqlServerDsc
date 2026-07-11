@@ -38,13 +38,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'Env:\SqlServerDscCI' -ErrorAction 'SilentlyContinue'
 }
@@ -71,8 +73,8 @@ Describe 'Get-AgentOperatorObject' -Tag 'Private' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'TestOperator'
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be 'TestOperator'
+                $result | Should-BeTruthy
+                $result.Name | Should-Be 'TestOperator'
             }
         }
     }
@@ -93,7 +95,7 @@ Describe 'Get-AgentOperatorObject' -Tag 'Private' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'NonExistentOperator' -ErrorAction 'SilentlyContinue'
-                $result | Should -BeNull
+                $result | Should-BeFalsy
             }
         }
 
@@ -102,7 +104,7 @@ Describe 'Get-AgentOperatorObject' -Tag 'Private' {
                 Set-StrictMode -Version 1.0
 
                 { Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'NonExistentOperator' -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage "*NonExistentOperator*not found*"
+                    Should-Throw -ExceptionMessage "*NonExistentOperator*not found*"
             }
         }
     }
@@ -128,8 +130,8 @@ Describe 'Get-AgentOperatorObject' -Tag 'Private' {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-AgentOperatorObject -ServerObject $mockServerObject -Name 'TestOperator' -Refresh
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be 'TestOperator'
+                $result | Should-BeTruthy
+                $result.Name | Should-Be 'TestOperator'
             }
         }
     }

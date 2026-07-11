@@ -51,7 +51,7 @@ Describe 'Remove-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL
 
             # Assert - Verify the trace flag was removed
             $currentTraceFlags = Get-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
-            $currentTraceFlags | Should -Not -Contain $script:singleTestTraceFlag
+            $currentTraceFlags | Should-NotContainCollection $script:singleTestTraceFlag
         }
 
         It 'Should remove multiple trace flags without error' {
@@ -65,7 +65,7 @@ Describe 'Remove-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL
             $currentTraceFlags = Get-SqlDscTraceFlag -ServerName $script:mockComputerName -InstanceName $script:mockInstanceName -ErrorAction 'Stop'
             foreach ($traceFlag in $script:testTraceFlags)
             {
-                $currentTraceFlags | Should -Not -Contain $traceFlag
+                $currentTraceFlags | Should-NotContainCollection $traceFlag
             }
         }
 
@@ -90,12 +90,12 @@ Describe 'Remove-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL
 
             foreach ($removedFlag in $flagsToRemove)
             {
-                $currentTraceFlags | Should -Not -Contain $removedFlag
+                $currentTraceFlags | Should-NotContainCollection $removedFlag
             }
 
             foreach ($keptFlag in $flagsToKeep)
             {
-                $currentTraceFlags | Should -Contain $keptFlag
+                $currentTraceFlags | Should-ContainCollection $keptFlag
             }
 
             # Clean up - Remove remaining test flags
@@ -118,7 +118,7 @@ Describe 'Remove-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL
 
             # Assert - Verify the trace flag was removed
             $currentTraceFlags = Get-SqlDscTraceFlag -ServiceObject $script:serviceObject -ErrorAction 'Stop'
-            $currentTraceFlags | Should -Not -Contain $script:singleTestTraceFlag
+            $currentTraceFlags | Should-NotContainCollection $script:singleTestTraceFlag
         }
 
         It 'Should remove multiple trace flags using ServiceObject parameter' {
@@ -132,7 +132,7 @@ Describe 'Remove-SqlDscTraceFlag' -Tag @('Integration_SQL2017', 'Integration_SQL
             $currentTraceFlags = Get-SqlDscTraceFlag -ServiceObject $script:serviceObject -ErrorAction 'Stop'
             foreach ($traceFlag in $script:testTraceFlags)
             {
-                $currentTraceFlags | Should -Not -Contain $traceFlag
+                $currentTraceFlags | Should-NotContainCollection $traceFlag
             }
         }
     }

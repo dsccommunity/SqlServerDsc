@@ -31,13 +31,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -76,14 +78,14 @@ Describe 'Get-CommandParameter' -Tag 'Private' {
                 $commandInfo = Get-Command Test-Function
                 $result = Get-CommandParameter -Command $commandInfo
 
-                $result | Should -Contain 'RequiredParam'
-                $result | Should -Contain 'OptionalParam1'
-                $result | Should -Contain 'OptionalParam2'
-                $result | Should -Contain 'PassThru'
-                $result | Should -Contain 'Force'
-                $result | Should -Not -Contain 'Verbose'
-                $result | Should -Not -Contain 'Debug'
-                $result | Should -Not -Contain 'ErrorAction'
+                $result | Should-ContainCollection 'RequiredParam'
+                $result | Should-ContainCollection 'OptionalParam1'
+                $result | Should-ContainCollection 'OptionalParam2'
+                $result | Should-ContainCollection 'PassThru'
+                $result | Should-ContainCollection 'Force'
+                $result | Should-NotContainCollection 'Verbose'
+                $result | Should-NotContainCollection 'Debug'
+                $result | Should-NotContainCollection 'ErrorAction'
             }
         }
 
@@ -119,13 +121,13 @@ Describe 'Get-CommandParameter' -Tag 'Private' {
                 $commandInfo = Get-Command Test-Function
                 $result = Get-CommandParameter -Command $commandInfo -Exclude @('RequiredParam', 'PassThru', 'Force')
 
-                $result | Should -Not -Contain 'RequiredParam'
-                $result | Should -Contain 'OptionalParam1'
-                $result | Should -Contain 'OptionalParam2'
-                $result | Should -Not -Contain 'PassThru'
-                $result | Should -Not -Contain 'Force'
-                $result | Should -Not -Contain 'Verbose'
-                $result | Should -Not -Contain 'Debug'
+                $result | Should-NotContainCollection 'RequiredParam'
+                $result | Should-ContainCollection 'OptionalParam1'
+                $result | Should-ContainCollection 'OptionalParam2'
+                $result | Should-NotContainCollection 'PassThru'
+                $result | Should-NotContainCollection 'Force'
+                $result | Should-NotContainCollection 'Verbose'
+                $result | Should-NotContainCollection 'Debug'
             }
         }
 
@@ -161,7 +163,7 @@ Describe 'Get-CommandParameter' -Tag 'Private' {
                 $commandInfo = Get-Command Test-Function
                 $result = Get-CommandParameter -Command $commandInfo -Exclude @('RequiredParam', 'OptionalParam1', 'OptionalParam2', 'PassThru', 'Force')
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
             }
         }
 
@@ -172,7 +174,7 @@ Describe 'Get-CommandParameter' -Tag 'Private' {
                 $commandInfo = Get-Command Test-EmptyFunction
                 $result = Get-CommandParameter -Command $commandInfo
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
             }
         }
     }

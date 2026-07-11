@@ -75,10 +75,10 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
 
             Write-Verbose -Message "Result:`n$($result | ConvertTo-Json -Depth 5 | Out-String)" -Verbose
 
-            $result.actualState.Name | Should -Be 'model'
-            $result.actualState.InstanceName | Should -Be $script:instanceName
-            $result.actualState.Ensure | Should -Be 'Present'
-            $result.actualState.RecoveryModel | Should -BeIn @('Full', 'Simple', 'BulkLogged')
+            $result.actualState.Name | Should-Be 'model'
+            $result.actualState.InstanceName | Should-Be $script:instanceName
+            $result.actualState.Ensure | Should-Be 'Present'
+            @('Full', 'Simple', 'BulkLogged') | Should-ContainCollection ($result.actualState.RecoveryModel)
         }
 
         It 'Should return the expected current state for the master database' {
@@ -101,9 +101,9 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
 
             Write-Verbose -Message "Result:`n$($result | ConvertTo-Json -Depth 5 | Out-String)" -Verbose
 
-            $result.actualState.Name | Should -Be 'master'
-            $result.actualState.InstanceName | Should -Be $script:instanceName
-            $result.actualState.Ensure | Should -Be 'Present'
+            $result.actualState.Name | Should-Be 'master'
+            $result.actualState.InstanceName | Should-Be $script:instanceName
+            $result.actualState.Ensure | Should-Be 'Present'
         }
     }
 
@@ -128,7 +128,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
 
             Write-Verbose -Message "Result:`n$($result | ConvertTo-Json -Depth 5 | Out-String)" -Verbose
 
-            $result.inDesiredState | Should -BeTrue
+            $result.inDesiredState | Should-BeTrue
         }
 
         It 'Should return false when the database is not in the desired state' {
@@ -152,7 +152,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
 
             Write-Verbose -Message "Result:`n$($result | ConvertTo-Json -Depth 5 | Out-String)" -Verbose
 
-            $result.inDesiredState | Should -BeFalse
+            $result.inDesiredState | Should-BeFalse
         }
     }
 
@@ -177,8 +177,8 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
 
             Write-Verbose -Message "Result:`n$($result | ConvertTo-Json -Depth 5 | Out-String)" -Verbose
 
-            $result.actualState.Name | Should -Be 'NonExistentDatabase_DSCv3Test'
-            $result.actualState.Ensure | Should -Be 'Absent'
+            $result.actualState.Name | Should-Be 'NonExistentDatabase_DSCv3Test'
+            $result.actualState.Ensure | Should-Be 'Absent'
         }
     }
 
@@ -204,7 +204,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
 
             Write-Verbose -Message "Result:`n$($result | ConvertTo-Json -Depth 5 | Out-String)" -Verbose
 
-            $result.inDesiredState | Should -BeFalse
+            $result.inDesiredState | Should-BeFalse
         }
     }
 
@@ -230,7 +230,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
 
             Write-Verbose -Message "Result:`n$($result | ConvertTo-Json -Depth 5 | Out-String)" -Verbose
 
-            $result.afterState.RecoveryModel | Should -Be 'Simple'
+            $result.afterState.RecoveryModel | Should-Be 'Simple'
         }
     }
 
@@ -256,7 +256,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
 
             Write-Verbose -Message "Result:`n$($result | ConvertTo-Json -Depth 5 | Out-String)" -Verbose
 
-            $result.inDesiredState | Should -BeTrue
+            $result.inDesiredState | Should-BeTrue
         }
     }
 }

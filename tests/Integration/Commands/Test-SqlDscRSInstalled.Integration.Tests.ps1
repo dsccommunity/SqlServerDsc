@@ -37,7 +37,7 @@ Describe 'Test-SqlDscRSInstalled' {
             # We'll test with a fake instance name that we know doesn't exist.
             $result = Test-SqlDscRSInstalled -InstanceName 'FAKE_RS_INSTANCE'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 
@@ -46,7 +46,7 @@ Describe 'Test-SqlDscRSInstalled' {
             # We'll test with a real instance name that we know exists.
             $result = Test-SqlDscRSInstalled -InstanceName 'SSRS'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
     }
 
@@ -55,7 +55,7 @@ Describe 'Test-SqlDscRSInstalled' {
             # We'll test with a real instance name that we know exists. cSpell:ignore PBIRS
             $result = Test-SqlDscRSInstalled -InstanceName 'PBIRS'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
     }
 }

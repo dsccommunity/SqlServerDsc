@@ -38,13 +38,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -56,7 +58,7 @@ Describe 'ConvertTo-RedactedText' -Tag 'Private' {
 
             $result = ConvertTo-RedactedText -Text 'My secret phrase: secret123 secret456' -RedactPhrase 'secret123'
 
-            $result | Should -Be 'My secret phrase: ******* secret456'
+            $result | Should-Be 'My secret phrase: ******* secret456'
         }
     }
 
@@ -66,7 +68,7 @@ Describe 'ConvertTo-RedactedText' -Tag 'Private' {
 
             $result = ConvertTo-RedactedText -Text 'My secret phrase: secret123 secret456' -RedactPhrase 'secret123', 'secret456'
 
-            $result | Should -Be 'My secret phrase: ******* *******'
+            $result | Should-Be 'My secret phrase: ******* *******'
         }
     }
 
@@ -80,7 +82,7 @@ secret123
 secret456
 '@ -RedactPhrase 'secret123', 'secret456'
 
-            $result | Should -Be @'
+            $result | Should-Be @'
 My secret phrase:
 *******
 *******
@@ -94,7 +96,7 @@ My secret phrase:
 
             $result = ConvertTo-RedactedText -RedactWith '----' -Text 'My secret phrase: secret123' -RedactPhrase 'secret123'
 
-            $result | Should -Be 'My secret phrase: ----'
+            $result | Should-Be 'My secret phrase: ----'
         }
     }
 
@@ -105,7 +107,7 @@ My secret phrase:
             # CSpell: disable-next
             $result = ConvertTo-RedactedText -Text 'My secret phrase: ^s/d(ecret)123' -RedactPhrase '^s/d(ecret)123'
 
-            $result | Should -Be 'My secret phrase: *******'
+            $result | Should-Be 'My secret phrase: *******'
         }
     }
 }

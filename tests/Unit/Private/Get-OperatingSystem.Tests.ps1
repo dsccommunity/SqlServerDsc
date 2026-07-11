@@ -30,7 +30,8 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 
     $env:SqlServerDscCI = $true
 
@@ -74,7 +75,8 @@ AfterAll {
 
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 }
 
 Describe 'Get-OperatingSystem' -Tag 'Private' {
@@ -93,15 +95,15 @@ Describe 'Get-OperatingSystem' -Tag 'Private' {
             InModuleScope -ScriptBlock {
                 $result = Get-OperatingSystem
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.OSLanguage | Should -Be 1033
-                $result.Caption | Should -Be 'Microsoft Windows Server 2022'
+                $result | Should-BeTruthy
+                $result.OSLanguage | Should-Be 1033
+                $result.Caption | Should-Be 'Microsoft Windows Server 2022'
             }
 
-            Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+            Should-Invoke -CommandName Get-CimInstance -Exactly -ParameterFilter {
                 $ClassName -eq 'Win32_OperatingSystem' -and
                 $Namespace -eq 'root/cimv2'
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -114,7 +116,7 @@ Describe 'Get-OperatingSystem' -Tag 'Private' {
 
         It 'Should throw a terminating error' {
             InModuleScope -ScriptBlock {
-                { Get-OperatingSystem } | Should -Throw -ErrorId 'GOS0001,Get-OperatingSystem'
+                { Get-OperatingSystem } | Should-Throw -FullyQualifiedErrorId 'GOS0001,Get-OperatingSystem'
             }
         }
     }

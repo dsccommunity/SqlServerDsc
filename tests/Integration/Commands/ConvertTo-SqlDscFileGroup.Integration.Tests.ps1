@@ -73,11 +73,11 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_
 
             $result = ConvertTo-SqlDscFileGroup -DatabaseObject $script:testDatabase -FileGroupSpec $fileGroupSpec
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.FileGroup]
-            $result.Name | Should -Be 'TestFileGroup'
-            $result.Files.Count | Should -Be 1
-            $result.Files[0].Name | Should -Be 'TestFile'
+            $result | Should-BeTruthy
+            $result | Should-HaveType ([Microsoft.SqlServer.Management.Smo.FileGroup])
+            $result.Name | Should-Be 'TestFileGroup'
+            $result.Files.Count | Should-Be 1
+            $result.Files[0].Name | Should-Be 'TestFile'
         }
 
         It 'Should convert a DatabaseFileGroupSpec with multiple files to a FileGroup object' {
@@ -87,10 +87,10 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_
 
             $result = ConvertTo-SqlDscFileGroup -DatabaseObject $script:testDatabase -FileGroupSpec $fileGroupSpec
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Files.Count | Should -Be 2
-            $result.Files[0].Name | Should -Be 'TestFile1'
-            $result.Files[1].Name | Should -Be 'TestFile2'
+            $result | Should-BeTruthy
+            $result.Files.Count | Should-Be 2
+            $result.Files[0].Name | Should-Be 'TestFile1'
+            $result.Files[1].Name | Should-Be 'TestFile2'
         }
 
         It 'Should convert a DatabaseFileGroupSpec with ReadOnly to a FileGroup object' {
@@ -99,8 +99,8 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_
 
             $result = ConvertTo-SqlDscFileGroup -DatabaseObject $script:testDatabase -FileGroupSpec $fileGroupSpec
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.ReadOnly | Should -Be $true
+            $result | Should-BeTruthy
+            $result.ReadOnly | Should-Be $true
         }
 
         It 'Should convert a DatabaseFileGroupSpec with IsDefault to a FileGroup object' {
@@ -109,8 +109,8 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_
 
             $result = ConvertTo-SqlDscFileGroup -DatabaseObject $script:testDatabase -FileGroupSpec $fileGroupSpec
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.IsDefault | Should -Be $true
+            $result | Should-BeTruthy
+            $result.IsDefault | Should-Be $true
         }
 
         It 'Should convert a DatabaseFileGroupSpec with multiple file properties to a FileGroup object' {
@@ -120,13 +120,13 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_
 
             $result = ConvertTo-SqlDscFileGroup -DatabaseObject $script:testDatabase -FileGroupSpec $fileGroupSpec
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Name | Should -Be 'TestFileGroup'
-            $result.Files.Count | Should -Be 2
-            $result.Files[0].Size | Should -Be 100
-            $result.Files[0].MaxSize | Should -Be 1000
-            $result.Files[1].Growth | Should -Be 10
-            $result.Files[1].GrowthType | Should -Be 'Percent'
+            $result | Should-BeTruthy
+            $result.Name | Should-Be 'TestFileGroup'
+            $result.Files.Count | Should-Be 2
+            $result.Files[0].Size | Should-Be 100
+            $result.Files[0].MaxSize | Should-Be 1000
+            $result.Files[1].Growth | Should-Be 10
+            $result.Files[1].GrowthType | Should-Be 'Percent'
         }
 
         It 'Should preserve file properties when converting FileGroup with complex file configurations' {
@@ -136,23 +136,23 @@ Describe 'ConvertTo-SqlDscFileGroup' -Tag @('Integration_SQL2017', 'Integration_
 
             $result = ConvertTo-SqlDscFileGroup -DatabaseObject $script:testDatabase -FileGroupSpec $fileGroupSpec
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.Files.Count | Should -Be 2
+            $result | Should-BeTruthy
+            $result.Files.Count | Should-Be 2
 
             # Verify primary file properties
-            $result.Files[0].Name | Should -Be 'PrimaryFile'
-            $result.Files[0].IsPrimaryFile | Should -Be $true
-            $result.Files[0].Size | Should -Be 200
-            $result.Files[0].MaxSize | Should -Be 2000
-            $result.Files[0].Growth | Should -Be 20
-            $result.Files[0].GrowthType | Should -Be 'KB'
+            $result.Files[0].Name | Should-Be 'PrimaryFile'
+            $result.Files[0].IsPrimaryFile | Should-Be $true
+            $result.Files[0].Size | Should-Be 200
+            $result.Files[0].MaxSize | Should-Be 2000
+            $result.Files[0].Growth | Should-Be 20
+            $result.Files[0].GrowthType | Should-Be 'KB'
 
             # Verify secondary file properties
-            $result.Files[1].Name | Should -Be 'SecondaryFile'
-            $result.Files[1].Size | Should -Be 100
-            $result.Files[1].MaxSize | Should -Be 1000
-            $result.Files[1].Growth | Should -Be 10
-            $result.Files[1].GrowthType | Should -Be 'Percent'
+            $result.Files[1].Name | Should-Be 'SecondaryFile'
+            $result.Files[1].Size | Should-Be 100
+            $result.Files[1].MaxSize | Should-Be 1000
+            $result.Files[1].Growth | Should-Be 10
+            $result.Files[1].GrowthType | Should-Be 'Percent'
         }
     }
 }

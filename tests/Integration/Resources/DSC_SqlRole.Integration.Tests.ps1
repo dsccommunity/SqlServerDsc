@@ -97,15 +97,15 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role1Name
-            $resourceCurrentState.Members | Should -Be $ConfigurationData.AllNodes.User4Name
-            $resourceCurrentState.MembersToInclude | Should -BeNullOrEmpty
-            $resourceCurrentState.MembersToExclude | Should -BeNullOrEmpty
+            $resourceCurrentState.Ensure | Should-Be 'Present'
+            $resourceCurrentState.ServerRoleName | Should-Be $ConfigurationData.AllNodes.Role1Name
+            $resourceCurrentState.Members | Should-Be $ConfigurationData.AllNodes.User4Name
+            $resourceCurrentState.MembersToInclude | Should-BeFalsy
+            $resourceCurrentState.MembersToExclude | Should-BeFalsy
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -BeTrue
+            Test-DscConfiguration -Verbose | Should-BeTrue
         }
     }
 
@@ -151,15 +151,15 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role2Name
-            $resourceCurrentState.Members | Should -BeNullOrEmpty
-            $resourceCurrentState.MembersToInclude | Should -BeNullOrEmpty
-            $resourceCurrentState.MembersToExclude | Should -BeNullOrEmpty
+            $resourceCurrentState.Ensure | Should-Be 'Present'
+            $resourceCurrentState.ServerRoleName | Should-Be $ConfigurationData.AllNodes.Role2Name
+            $resourceCurrentState.Members | Should-BeFalsy
+            $resourceCurrentState.MembersToInclude | Should-BeFalsy
+            $resourceCurrentState.MembersToExclude | Should-BeFalsy
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -BeTrue
+            Test-DscConfiguration -Verbose | Should-BeTrue
         }
     }
 
@@ -205,18 +205,18 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role3Name
-            $resourceCurrentState.Members | Should -Be @(
+            $resourceCurrentState.Ensure | Should-Be 'Present'
+            $resourceCurrentState.ServerRoleName | Should-Be $ConfigurationData.AllNodes.Role3Name
+            $resourceCurrentState.Members | Should-Be @(
                 $ConfigurationData.AllNodes.User1Name
                 $ConfigurationData.AllNodes.User2Name
             )
-            $resourceCurrentState.MembersToInclude | Should -BeNullOrEmpty
-            $resourceCurrentState.MembersToExclude | Should -BeNullOrEmpty
+            $resourceCurrentState.MembersToInclude | Should-BeFalsy
+            $resourceCurrentState.MembersToExclude | Should-BeFalsy
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -BeTrue
+            Test-DscConfiguration -Verbose | Should-BeTrue
         }
     }
 
@@ -262,20 +262,20 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role1Name
+            $resourceCurrentState.Ensure | Should-Be 'Present'
+            $resourceCurrentState.ServerRoleName | Should-Be $ConfigurationData.AllNodes.Role1Name
 
-            $resourceCurrentState.Members | Should -Be @(
+            $resourceCurrentState.Members | Should-Be @(
                 $ConfigurationData.AllNodes.User1Name
                 $ConfigurationData.AllNodes.User2Name
             )
 
-            $resourceCurrentState.MembersToInclude | Should -BeNullOrEmpty
-            $resourceCurrentState.MembersToExclude | Should -BeNullOrEmpty
+            $resourceCurrentState.MembersToInclude | Should-BeFalsy
+            $resourceCurrentState.MembersToExclude | Should-BeFalsy
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -BeTrue
+            Test-DscConfiguration -Verbose | Should-BeTrue
         }
     }
 
@@ -321,21 +321,21 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role2Name
+            $resourceCurrentState.Ensure | Should-Be 'Present'
+            $resourceCurrentState.ServerRoleName | Should-Be $ConfigurationData.AllNodes.Role2Name
 
-            $resourceCurrentState.Members | Should -Be @(
+            $resourceCurrentState.Members | Should-Be @(
                 $ConfigurationData.AllNodes.User1Name
                 $ConfigurationData.AllNodes.User2Name
                 $ConfigurationData.AllNodes.User4Name
             )
 
-            $resourceCurrentState.MembersToInclude | Should -BeNullOrEmpty
-            $resourceCurrentState.MembersToExclude | Should -BeNullOrEmpty
+            $resourceCurrentState.MembersToInclude | Should-BeFalsy
+            $resourceCurrentState.MembersToExclude | Should-BeFalsy
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -BeTrue
+            Test-DscConfiguration -Verbose | Should-BeTrue
         }
     }
 
@@ -381,15 +381,15 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role2Name
-            $resourceCurrentState.Members | Should -Be $ConfigurationData.AllNodes.User4Name
-            $resourceCurrentState.MembersToInclude | Should -BeNullOrEmpty
-            $resourceCurrentState.MembersToExclude | Should -BeNullOrEmpty
+            $resourceCurrentState.Ensure | Should-Be 'Present'
+            $resourceCurrentState.ServerRoleName | Should-Be $ConfigurationData.AllNodes.Role2Name
+            $resourceCurrentState.Members | Should-Be $ConfigurationData.AllNodes.User4Name
+            $resourceCurrentState.MembersToInclude | Should-BeFalsy
+            $resourceCurrentState.MembersToExclude | Should-BeFalsy
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -BeTrue
+            Test-DscConfiguration -Verbose | Should-BeTrue
         }
     }
 
@@ -435,15 +435,15 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Absent'
-            $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role3Name
-            $resourceCurrentState.Members | Should -BeNullOrEmpty
-            $resourceCurrentState.MembersToInclude | Should -BeNullOrEmpty
-            $resourceCurrentState.MembersToExclude | Should -BeNullOrEmpty
+            $resourceCurrentState.Ensure | Should-Be 'Absent'
+            $resourceCurrentState.ServerRoleName | Should-Be $ConfigurationData.AllNodes.Role3Name
+            $resourceCurrentState.Members | Should-BeFalsy
+            $resourceCurrentState.MembersToInclude | Should-BeFalsy
+            $resourceCurrentState.MembersToExclude | Should-BeFalsy
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -BeTrue
+            Test-DscConfiguration -Verbose | Should-BeTrue
         }
     }
 
@@ -492,10 +492,10 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 $_.ServerRoleName -eq $testRoleName
             }
 
-            $currentState.Ensure | Should -Be 'Present'
-            $currentState.Members | Should -BeNullOrEmpty
-            $currentState.MembersToInclude | Should -BeNullOrEmpty
-            $currentState.MembersToExclude | Should -BeNullOrEmpty
+            $currentState.Ensure | Should-Be 'Present'
+            $currentState.Members | Should-BeFalsy
+            $currentState.MembersToInclude | Should-BeFalsy
+            $currentState.MembersToExclude | Should-BeFalsy
         }
 
         It "Should have set the resource and all values should match for $($ConfigurationData.AllNodes.Role5Name)." {
@@ -508,10 +508,10 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 $_.ServerRoleName -eq $testRoleName
             }
 
-            $currentState.Ensure | Should -Be 'Present'
-            $currentState.Members | Should -Be @($testMemberName)
-            $currentState.MembersToInclude | Should -BeNullOrEmpty
-            $currentState.MembersToExclude | Should -BeNullOrEmpty
+            $currentState.Ensure | Should-Be 'Present'
+            $currentState.Members | Should-Be @($testMemberName)
+            $currentState.MembersToInclude | Should-BeFalsy
+            $currentState.MembersToExclude | Should-BeFalsy
         }
     }
 
@@ -560,10 +560,10 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 $_.ServerRoleName -eq $testRoleName
             }
 
-            $currentState.Ensure | Should -Be 'Present'
-            $currentState.Members | Should -BeNullOrEmpty
-            $currentState.MembersToInclude | Should -BeNullOrEmpty
-            $currentState.MembersToExclude | Should -BeNullOrEmpty
+            $currentState.Ensure | Should-Be 'Present'
+            $currentState.Members | Should-BeFalsy
+            $currentState.MembersToInclude | Should-BeFalsy
+            $currentState.MembersToExclude | Should-BeFalsy
         }
     }
 }

@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -63,7 +65,7 @@ Describe 'Test-SqlDscIsRole' -Tag 'Public' {
         It 'Should return $false' {
             $result = Test-SqlDscIsRole -ServerObject $mockServerObject -Name 'UnknownUser'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 
@@ -81,14 +83,14 @@ Describe 'Test-SqlDscIsRole' -Tag 'Public' {
         It 'Should return $true' {
             $result = Test-SqlDscIsRole -ServerObject $mockServerObject -Name 'JuniorDBA'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         Context 'When passing ServerObject over the pipeline' {
             It 'Should return $true' {
                 $result = $mockServerObject | Test-SqlDscIsRole -Name 'JuniorDBA'
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
         }
     }

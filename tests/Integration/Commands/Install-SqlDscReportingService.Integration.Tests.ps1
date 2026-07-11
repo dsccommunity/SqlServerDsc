@@ -62,8 +62,8 @@ Describe 'Install-SqlDscReportingService' -Tag @('Integration_SQL2017_RS', 'Inte
             # Validate the Reporting Services installation
             $reportServerService = Get-Service -Name 'SQLServerReportingServices'
 
-            $reportServerService | Should -Not -BeNullOrEmpty
-            $reportServerService.Status | Should -Be 'Running'
+            $reportServerService | Should-BeTruthy
+            $reportServerService.Status | Should-Be 'Running'
         }
 
         It 'Should stop the Reporting Services service' {
@@ -72,7 +72,7 @@ Describe 'Install-SqlDscReportingService' -Tag @('Integration_SQL2017_RS', 'Inte
 
             write-verbose -Message ($stopServiceResult | Out-String) -Verbose
 
-            $stopServiceResult.Status | Should -Be 'Stopped'
+            $stopServiceResult.Status | Should-Be 'Stopped'
         }
     }
 }

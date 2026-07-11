@@ -39,13 +39,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -61,8 +63,8 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
         }
 
         It 'Should be of the correct type' {
-            $script:mockServerPermissionInstance | Should -Not -BeNullOrEmpty
-            $script:mockServerPermissionInstance.GetType().Name | Should -Be 'ServerPermission'
+            $script:mockServerPermissionInstance | Should-BeTruthy
+            $script:mockServerPermissionInstance.GetType().Name | Should-Be 'ServerPermission'
         }
     }
 
@@ -81,8 +83,8 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
         }
 
         It 'Should be able read the values from instance' {
-            $script:mockServerPermissionInstance.State | Should -Be 'Grant'
-            $script:mockServerPermissionInstance.Permission | Should -Be 'ViewServerState'
+            $script:mockServerPermissionInstance.State | Should-Be 'Grant'
+            $script:mockServerPermissionInstance.Permission | Should-Be 'ViewServerState'
         }
     }
 
@@ -103,7 +105,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                         $serverPermissionInstance2.State = 'Grant'
                         $serverPermissionInstance2.Permission = 'ViewServerState'
 
-                        $serverPermissionInstance1 -eq $serverPermissionInstance2 | Should -BeTrue
+                        $serverPermissionInstance1 -eq $serverPermissionInstance2 | Should-BeTrue
                     }
                 }
             }
@@ -123,7 +125,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                         $serverPermissionInstance2.State = 'Grant'
                         $serverPermissionInstance2.Permission = @('ViewServerState', 'AlterAnyAvailabilityGroup')
 
-                        $serverPermissionInstance1 -eq $serverPermissionInstance2 | Should -BeTrue
+                        $serverPermissionInstance1 -eq $serverPermissionInstance2 | Should-BeTrue
                     }
                 }
             }
@@ -156,7 +158,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                 }
 
                 It 'Should return $false' {
-                    $script:mockServerPermissionInstance1 -eq $script:mockServerPermissionInstance2 | Should -BeFalse
+                    $script:mockServerPermissionInstance1 -eq $script:mockServerPermissionInstance2 | Should-BeFalse
                 }
             }
 
@@ -186,7 +188,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                 }
 
                 It 'Should return $false' {
-                    $script:mockServerPermissionInstance1 -eq $script:mockServerPermissionInstance2 | Should -BeFalse
+                    $script:mockServerPermissionInstance1 -eq $script:mockServerPermissionInstance2 | Should-BeFalse
                 }
             }
         }
@@ -217,7 +219,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
             }
 
             It 'Should return $false' {
-                $script:mockServerPermissionInstance1 -eq $script:mockServerPermissionInstance2 | Should -BeFalse
+                $script:mockServerPermissionInstance1 -eq $script:mockServerPermissionInstance2 | Should-BeFalse
             }
         }
     }
@@ -236,7 +238,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                     $serverPermissionInstance2.State = 'Grant'
                     $serverPermissionInstance2.Permission = @('AlterAnyAvailabilityGroup', 'ViewServerState')
 
-                    $serverPermissionInstance1.GetHashCode() | Should -Be $serverPermissionInstance2.GetHashCode()
+                    $serverPermissionInstance1.GetHashCode() | Should-Be $serverPermissionInstance2.GetHashCode()
                 }
             }
         }
@@ -254,7 +256,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                     $serverPermissionInstance2.State = 'Deny'
                     $serverPermissionInstance2.Permission = 'ViewServerState'
 
-                    $serverPermissionInstance1.GetHashCode() | Should -Not -Be $serverPermissionInstance2.GetHashCode()
+                    $serverPermissionInstance1.GetHashCode() | Should-NotBe $serverPermissionInstance2.GetHashCode()
                 }
             }
         }
@@ -272,7 +274,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                     $serverPermissionInstance2.State = 'Grant'
                     $serverPermissionInstance2.Permission = 'AlterAnyAvailabilityGroup'
 
-                    $serverPermissionInstance1.GetHashCode() | Should -Not -Be $serverPermissionInstance2.GetHashCode()
+                    $serverPermissionInstance1.GetHashCode() | Should-NotBe $serverPermissionInstance2.GetHashCode()
                 }
             }
         }
@@ -307,7 +309,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                 $mockErrorMessage = $mockErrorMessage -replace '\[', '`['
                 $mockErrorMessage = $mockErrorMessage -replace '\]', '`]'
 
-                { $mockServerPermissionInstance1.CompareTo('AnyValue') } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { $mockServerPermissionInstance1.CompareTo('AnyValue') } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
 
@@ -349,7 +351,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                         }
                     }
 
-                    $mockServerPermissionInstance1.CompareTo($mockServerPermissionInstance2) | Should -BeLessThan 0
+                    $mockServerPermissionInstance1.CompareTo($mockServerPermissionInstance2) | Should-BeLessThan 0
                 }
             }
         }
@@ -392,7 +394,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                         }
                     }
 
-                    $mockServerPermissionInstance1.CompareTo($mockServerPermissionInstance2) | Should -BeGreaterThan 0
+                    $mockServerPermissionInstance1.CompareTo($mockServerPermissionInstance2) | Should-BeGreaterThan 0
                 }
             }
 
@@ -407,7 +409,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                         }
                     }
 
-                    $mockServerPermissionInstance1.CompareTo($null) | Should -BeGreaterThan 0
+                    $mockServerPermissionInstance1.CompareTo($null) | Should-BeGreaterThan 0
                 }
             }
         }
@@ -450,7 +452,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                         }
                     }
 
-                    $mockServerPermissionInstance1.CompareTo($mockServerPermissionInstance2) | Should -Be 0
+                    $mockServerPermissionInstance1.CompareTo($mockServerPermissionInstance2) | Should-Be 0
                 }
             }
         }
@@ -496,9 +498,9 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
 
                 $mockSortedArray = $mockServerPermissionArray | Sort-Object
 
-                $mockSortedArray[0].State | Should -Be 'Grant'
-                $mockSortedArray[1].State | Should -Be 'GrantWithGrant'
-                $mockSortedArray[2].State | Should -Be 'Deny'
+                $mockSortedArray[0].State | Should-Be 'Grant'
+                $mockSortedArray[1].State | Should-Be 'GrantWithGrant'
+                $mockSortedArray[2].State | Should-Be 'Deny'
             }
         }
     }

@@ -59,9 +59,9 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag @('Integration_SQL2017', 'Integration_S
             It 'Should return the version string' {
                 $result = Invoke-SqlDscScalarQuery -ServerObject $script:serverObject -Query 'SELECT @@VERSION' -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [System.String]
-                $result | Should -BeLike '*Microsoft SQL Server*'
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([System.String])
+                $result | Should-BeLikeString '*Microsoft SQL Server*'
             }
         }
 
@@ -69,7 +69,7 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag @('Integration_SQL2017', 'Integration_S
             It 'Should return the numeric result' {
                 $result = Invoke-SqlDscScalarQuery -ServerObject $script:serverObject -Query 'SELECT 42' -ErrorAction 'Stop'
 
-                $result | Should -Be 42
+                $result | Should-Be 42
             }
         }
 
@@ -77,22 +77,22 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag @('Integration_SQL2017', 'Integration_S
             It 'Should return a DateTime value using SYSDATETIME' {
                 $result = Invoke-SqlDscScalarQuery -ServerObject $script:serverObject -Query 'SELECT SYSDATETIME()' -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [System.DateTime]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([System.DateTime])
             }
 
             It 'Should return a DateTime value using GETDATE' {
                 $result = Invoke-SqlDscScalarQuery -ServerObject $script:serverObject -Query 'SELECT GETDATE()' -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [System.DateTime]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([System.DateTime])
             }
 
             It 'Should return a DateTimeOffset value using SYSDATETIMEOFFSET' {
                 $result = Invoke-SqlDscScalarQuery -ServerObject $script:serverObject -Query 'SELECT SYSDATETIMEOFFSET()' -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [System.DateTimeOffset]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([System.DateTimeOffset])
             }
         }
 
@@ -100,8 +100,8 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag @('Integration_SQL2017', 'Integration_S
             It 'Should execute the query successfully with custom timeout' {
                 $result = Invoke-SqlDscScalarQuery -ServerObject $script:serverObject -Query 'SELECT @@SERVERNAME' -StatementTimeout 30 -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [System.String]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([System.String])
             }
         }
 
@@ -109,8 +109,8 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag @('Integration_SQL2017', 'Integration_S
             It 'Should execute the query successfully' {
                 $result = $script:serverObject | Invoke-SqlDscScalarQuery -Query 'SELECT DB_NAME()' -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [System.String]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([System.String])
             }
         }
 
@@ -118,7 +118,7 @@ Describe 'Invoke-SqlDscScalarQuery' -Tag @('Integration_SQL2017', 'Integration_S
             It 'Should return null' {
                 $result = Invoke-SqlDscScalarQuery -ServerObject $script:serverObject -Query 'SELECT NULL' -ErrorAction 'Stop'
 
-                $result | Should -BeNullOrEmpty
+                Should-HaveType -Actual $result -Expected ([System.DBNull])
             }
         }
     }

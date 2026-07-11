@@ -200,27 +200,27 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.SchemaName | Should -Be $ConfigurationData.AllNodes.SchemaName
-            $resourceCurrentState.ObjectName | Should -Be $ConfigurationData.AllNodes.TableName
-            $resourceCurrentState.ObjectType | Should -Be 'Table'
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
-            $resourceCurrentState.Force | Should -BeFalse
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.SchemaName | Should-Be $ConfigurationData.AllNodes.SchemaName
+            $resourceCurrentState.ObjectName | Should-Be $ConfigurationData.AllNodes.TableName
+            $resourceCurrentState.ObjectType | Should-Be 'Table'
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
+            $resourceCurrentState.Force | Should-BeFalse
 
-            $resourceCurrentState.Permission | Should -HaveCount 1
-            $resourceCurrentState.Permission[0] | Should -BeOfType 'CimInstance'
+            $resourceCurrentState.Permission | Should-BeCollection -Count 1
+            $resourceCurrentState.Permission[0] | Should-HaveType 'CimInstance'
 
             $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'GrantWithGrant' })
-            $grantPermission | Should -Not -BeNullOrEmpty
-            $grantPermission.Ensure | Should -Be 'Present'
-            $grantPermission.Permission | Should -HaveCount 1
-            $grantPermission.Permission | Should -Contain @('Select')
+            $grantPermission | Should-BeTruthy
+            $grantPermission.Ensure | Should-Be 'Present'
+            $grantPermission.Permission | Should-BeCollection -Count 1
+            $grantPermission.Permission | Should-ContainCollection @('Select')
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -271,27 +271,27 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.SchemaName | Should -Be $ConfigurationData.AllNodes.SchemaName
-            $resourceCurrentState.ObjectName | Should -Be $ConfigurationData.AllNodes.TableName
-            $resourceCurrentState.ObjectType | Should -Be 'Table'
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
-            $resourceCurrentState.Force | Should -BeTrue
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.SchemaName | Should-Be $ConfigurationData.AllNodes.SchemaName
+            $resourceCurrentState.ObjectName | Should-Be $ConfigurationData.AllNodes.TableName
+            $resourceCurrentState.ObjectType | Should-Be 'Table'
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
+            $resourceCurrentState.Force | Should-BeTrue
 
-            $resourceCurrentState.Permission | Should -HaveCount 1
-            $resourceCurrentState.Permission[0] | Should -BeOfType 'CimInstance'
+            $resourceCurrentState.Permission | Should-BeCollection -Count 1
+            $resourceCurrentState.Permission[0] | Should-HaveType 'CimInstance'
 
             $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Grant' })
-            $grantPermission | Should -Not -BeNullOrEmpty
-            $grantPermission.Ensure | Should -Be 'Present'
-            $grantPermission.Permission | Should -HaveCount 1
-            $grantPermission.Permission | Should -Contain @('Select')
+            $grantPermission | Should-BeTruthy
+            $grantPermission.Ensure | Should-Be 'Present'
+            $grantPermission.Permission | Should-BeCollection -Count 1
+            $grantPermission.Permission | Should-ContainCollection @('Select')
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -337,26 +337,26 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.SchemaName | Should -Be $ConfigurationData.AllNodes.SchemaName
-            $resourceCurrentState.ObjectName | Should -Be $ConfigurationData.AllNodes.TableName
-            $resourceCurrentState.ObjectType | Should -Be 'Table'
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.SchemaName | Should-Be $ConfigurationData.AllNodes.SchemaName
+            $resourceCurrentState.ObjectName | Should-Be $ConfigurationData.AllNodes.TableName
+            $resourceCurrentState.ObjectType | Should-Be 'Table'
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
 
-            $resourceCurrentState.Permission | Should -HaveCount 1
-            $resourceCurrentState.Permission[0] | Should -BeOfType 'CimInstance'
+            $resourceCurrentState.Permission | Should-BeCollection -Count 1
+            $resourceCurrentState.Permission[0] | Should-HaveType 'CimInstance'
 
             $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Grant' })
-            $grantPermission | Should -Not -BeNullOrEmpty
-            $grantPermission.Ensure | Should -Be 'Absent'
-            $grantPermission.Permission | Should -HaveCount 1
-            $grantPermission.Permission | Should -Contain @('Select')
+            $grantPermission | Should-BeTruthy
+            $grantPermission.Ensure | Should-Be 'Absent'
+            $grantPermission.Permission | Should-BeCollection -Count 1
+            $grantPermission.Permission | Should-ContainCollection @('Select')
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -402,39 +402,39 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.SchemaName | Should -Be $ConfigurationData.AllNodes.SchemaName
-            $resourceCurrentState.ObjectName | Should -Be $ConfigurationData.AllNodes.TableName
-            $resourceCurrentState.ObjectType | Should -Be 'Table'
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.SchemaName | Should-Be $ConfigurationData.AllNodes.SchemaName
+            $resourceCurrentState.ObjectName | Should-Be $ConfigurationData.AllNodes.TableName
+            $resourceCurrentState.ObjectType | Should-Be 'Table'
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
 
-            $resourceCurrentState.Permission | Should -HaveCount 4
-            $resourceCurrentState.Permission[0] | Should -BeOfType 'CimInstance'
-            $resourceCurrentState.Permission[1] | Should -BeOfType 'CimInstance'
-            $resourceCurrentState.Permission[2] | Should -BeOfType 'CimInstance'
-            $resourceCurrentState.Permission[2] | Should -BeOfType 'CimInstance'
+            $resourceCurrentState.Permission | Should-BeCollection -Count 4
+            $resourceCurrentState.Permission[0] | Should-HaveType 'CimInstance'
+            $resourceCurrentState.Permission[1] | Should-HaveType 'CimInstance'
+            $resourceCurrentState.Permission[2] | Should-HaveType 'CimInstance'
+            $resourceCurrentState.Permission[2] | Should-HaveType 'CimInstance'
 
             $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Grant' })
-            $grantPermission | Should -Not -BeNullOrEmpty
-            $grantPermission.Ensure[0] | Should -Be 'Present'
-            $grantPermission.Ensure[1] | Should -Be 'Present'
-            $grantPermission.Permission | Should -HaveCount 2
-            $grantPermission.Permission | Should -Contain @('Select')
-            $grantPermission.Permission | Should -Contain @('Insert')
+            $grantPermission | Should-BeTruthy
+            $grantPermission.Ensure[0] | Should-Be 'Present'
+            $grantPermission.Ensure[1] | Should-Be 'Present'
+            $grantPermission.Permission | Should-BeCollection -Count 2
+            $grantPermission.Permission | Should-ContainCollection @('Select')
+            $grantPermission.Permission | Should-ContainCollection @('Insert')
 
             $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Deny' })
-            $grantPermission | Should -Not -BeNullOrEmpty
-            $grantPermission.Ensure[0] | Should -Be 'Present'
-            $grantPermission.Ensure[1] | Should -Be 'Present'
-            $grantPermission.Permission | Should -HaveCount 2
-            $grantPermission.Permission | Should -Contain @('Delete')
-            $grantPermission.Permission | Should -Contain @('Alter')
+            $grantPermission | Should-BeTruthy
+            $grantPermission.Ensure[0] | Should-Be 'Present'
+            $grantPermission.Ensure[1] | Should-Be 'Present'
+            $grantPermission.Permission | Should-BeCollection -Count 2
+            $grantPermission.Permission | Should-ContainCollection @('Delete')
+            $grantPermission.Permission | Should-ContainCollection @('Alter')
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -480,36 +480,36 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.SchemaName | Should -Be $ConfigurationData.AllNodes.SchemaName
-            $resourceCurrentState.ObjectName | Should -Be $ConfigurationData.AllNodes.TableName
-            $resourceCurrentState.ObjectType | Should -Be 'Table'
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.SchemaName | Should-Be $ConfigurationData.AllNodes.SchemaName
+            $resourceCurrentState.ObjectName | Should-Be $ConfigurationData.AllNodes.TableName
+            $resourceCurrentState.ObjectType | Should-Be 'Table'
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
 
-            $resourceCurrentState.Permission | Should -HaveCount 3
-            $resourceCurrentState.Permission[0] | Should -BeOfType 'CimInstance'
-            $resourceCurrentState.Permission[1] | Should -BeOfType 'CimInstance'
-            $resourceCurrentState.Permission[2] | Should -BeOfType 'CimInstance'
+            $resourceCurrentState.Permission | Should-BeCollection -Count 3
+            $resourceCurrentState.Permission[0] | Should-HaveType 'CimInstance'
+            $resourceCurrentState.Permission[1] | Should-HaveType 'CimInstance'
+            $resourceCurrentState.Permission[2] | Should-HaveType 'CimInstance'
 
             $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Grant' })
-            $grantPermission | Should -Not -BeNullOrEmpty
-            $grantPermission.Ensure | Should -Be 'Present'
-            $grantPermission.Permission | Should -HaveCount 1
-            $grantPermission.Permission | Should -Contain @('Select')
+            $grantPermission | Should-BeTruthy
+            $grantPermission.Ensure | Should-Be 'Present'
+            $grantPermission.Permission | Should-BeCollection -Count 1
+            $grantPermission.Permission | Should-ContainCollection @('Select')
 
             $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Deny' })
-            $grantPermission | Should -Not -BeNullOrEmpty
-            $grantPermission.Ensure[0] | Should -Be 'Absent'
-            $grantPermission.Ensure[1] | Should -Be 'Absent'
-            $grantPermission.Permission | Should -HaveCount 2
-            $grantPermission.Permission | Should -Contain @('Delete')
-            $grantPermission.Permission | Should -Contain @('Alter')
+            $grantPermission | Should-BeTruthy
+            $grantPermission.Ensure[0] | Should-Be 'Absent'
+            $grantPermission.Ensure[1] | Should-Be 'Absent'
+            $grantPermission.Permission | Should-BeCollection -Count 2
+            $grantPermission.Permission | Should-ContainCollection @('Delete')
+            $grantPermission.Permission | Should-ContainCollection @('Alter')
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 }

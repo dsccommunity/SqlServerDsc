@@ -34,13 +34,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -52,8 +54,8 @@ Describe 'BackupFileSpec' -Tag 'BackupFileSpec' {
                 [BackupFileSpec]::new()
             }
 
-            $mockBackupFileSpecInstance | Should -Not -BeNullOrEmpty
-            $mockBackupFileSpecInstance.GetType().Name | Should -Be 'BackupFileSpec'
+            $mockBackupFileSpecInstance | Should-BeTruthy
+            $mockBackupFileSpecInstance.GetType().Name | Should-Be 'BackupFileSpec'
         }
 
         It 'Should be able to instantiate with all parameters and be of the correct type' {
@@ -61,8 +63,8 @@ Describe 'BackupFileSpec' -Tag 'BackupFileSpec' {
                 [BackupFileSpec]::new('MyDatabase', 'C:\Data\MyDatabase.mdf', 'D', 'PRIMARY', 10485760, 1073741824)
             }
 
-            $mockBackupFileSpecInstanceWithParams | Should -Not -BeNullOrEmpty
-            $mockBackupFileSpecInstanceWithParams.GetType().Name | Should -Be 'BackupFileSpec'
+            $mockBackupFileSpecInstanceWithParams | Should-BeTruthy
+            $mockBackupFileSpecInstanceWithParams.GetType().Name | Should-Be 'BackupFileSpec'
         }
     }
 
@@ -78,12 +80,12 @@ Describe 'BackupFileSpec' -Tag 'BackupFileSpec' {
                     536870912
                 )
 
-                $instance.LogicalName | Should -Be 'MyLogFile'
-                $instance.PhysicalName | Should -Be 'L:\Logs\MyLogFile.ldf'
-                $instance.Type | Should -Be 'L'
-                $instance.FileGroupName | Should -Be ''
-                $instance.Size | Should -Be 5242880
-                $instance.MaxSize | Should -Be 536870912
+                $instance.LogicalName | Should-Be 'MyLogFile'
+                $instance.PhysicalName | Should-Be 'L:\Logs\MyLogFile.ldf'
+                $instance.Type | Should-Be 'L'
+                $instance.FileGroupName | Should-Be ''
+                $instance.Size | Should-Be 5242880
+                $instance.MaxSize | Should-Be 536870912
             }
         }
     }
@@ -99,12 +101,12 @@ Describe 'BackupFileSpec' -Tag 'BackupFileSpec' {
                 $instance.Size = 20971520
                 $instance.MaxSize = 2147483648
 
-                $instance.LogicalName | Should -Be 'DataFile1'
-                $instance.PhysicalName | Should -Be 'C:\Data\DataFile1.ndf'
-                $instance.Type | Should -Be 'D'
-                $instance.FileGroupName | Should -Be 'SECONDARY'
-                $instance.Size | Should -Be 20971520
-                $instance.MaxSize | Should -Be 2147483648
+                $instance.LogicalName | Should-Be 'DataFile1'
+                $instance.PhysicalName | Should-Be 'C:\Data\DataFile1.ndf'
+                $instance.Type | Should-Be 'D'
+                $instance.FileGroupName | Should-Be 'SECONDARY'
+                $instance.Size | Should-Be 20971520
+                $instance.MaxSize | Should-Be 2147483648
             }
         }
     }
@@ -114,12 +116,12 @@ Describe 'BackupFileSpec' -Tag 'BackupFileSpec' {
             InModuleScope -ScriptBlock {
                 $instance = [BackupFileSpec]::new()
 
-                $instance.LogicalName | Should -BeNullOrEmpty
-                $instance.PhysicalName | Should -BeNullOrEmpty
-                $instance.Type | Should -BeNullOrEmpty
-                $instance.FileGroupName | Should -BeNullOrEmpty
-                $instance.Size | Should -Be 0
-                $instance.MaxSize | Should -Be 0
+                $instance.LogicalName | Should-BeFalsy
+                $instance.PhysicalName | Should-BeFalsy
+                $instance.Type | Should-BeFalsy
+                $instance.FileGroupName | Should-BeFalsy
+                $instance.Size | Should-Be 0
+                $instance.MaxSize | Should-Be 0
             }
         }
     }

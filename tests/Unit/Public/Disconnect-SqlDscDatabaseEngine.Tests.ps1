@@ -38,13 +38,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -72,8 +74,8 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When disconnecting using a server object' {
@@ -97,7 +99,7 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag 'Public' {
             It 'Should call the correct mock with the expected parameters' {
                 $null = Disconnect-SqlDscDatabaseEngine -ServerObject $mockServerObject -Confirm:$false
 
-                $mockMethodDisconnectCallCount | Should -Be 1
+                $mockMethodDisconnectCallCount | Should-Be 1
             }
         }
 
@@ -105,7 +107,7 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag 'Public' {
             It 'Should call the correct mock with the expected parameters' {
                 $null = Disconnect-SqlDscDatabaseEngine -ServerObject $mockServerObject -Force
 
-                $mockMethodDisconnectCallCount | Should -Be 1
+                $mockMethodDisconnectCallCount | Should-Be 1
             }
         }
 
@@ -113,7 +115,7 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag 'Public' {
             It 'Should call the correct mock with the expected parameters' {
                 $null = Disconnect-SqlDscDatabaseEngine -ServerObject $mockServerObject -WhatIf
 
-                $mockMethodDisconnectCallCount | Should -Be 0
+                $mockMethodDisconnectCallCount | Should-Be 0
             }
         }
 
@@ -121,7 +123,7 @@ Describe 'Disconnect-SqlDscDatabaseEngine' -Tag 'Public' {
             It 'Should call the correct mock with the expected parameters' {
                 $null = $mockServerObject | Disconnect-SqlDscDatabaseEngine -Force
 
-                $mockMethodDisconnectCallCount | Should -Be 1
+                $mockMethodDisconnectCallCount | Should-Be 1
             }
         }
     }

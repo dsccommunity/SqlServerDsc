@@ -66,30 +66,30 @@ Describe 'Get-SqlDscAgentOperator' -Tag 'Integration_SQL2017', 'Integration_SQL2
     It 'Should get all operators' {
         $operators = $script:sqlServerObject | Get-SqlDscAgentOperator -ErrorAction 'Stop'
 
-        $operators | Should -Not -BeNullOrEmpty
-        @($operators)[0] | Should -BeOfType [Microsoft.SqlServer.Management.Smo.Agent.Operator]
+        $operators | Should-BeTruthy
+        @($operators)[0] | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Agent.Operator])
     }
 
     It 'Should get specific operator by name' {
         $operator = $script:sqlServerObject | Get-SqlDscAgentOperator -Name 'IntegrationTest_GetOperator1' -ErrorAction 'Stop'
 
-        $operator | Should -Not -BeNullOrEmpty
-        $operator | Should -BeOfType [Microsoft.SqlServer.Management.Smo.Agent.Operator]
-        $operator.Name | Should -Be 'IntegrationTest_GetOperator1'
-        $operator.EmailAddress | Should -Be 'operator1@contoso.com'
+        $operator | Should-BeTruthy
+        $operator | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Agent.Operator])
+        $operator.Name | Should-Be 'IntegrationTest_GetOperator1'
+        $operator.EmailAddress | Should-Be 'operator1@contoso.com'
     }
 
     It 'Should return nothing when operator does not exist' {
         $operator = $script:sqlServerObject | Get-SqlDscAgentOperator -Name 'NonExistentOperator' -ErrorAction 'Stop'
 
-        $operator | Should -BeNullOrEmpty
+        $operator | Should-BeFalsy
     }
 
     It 'Should get operator using ServerObject parameter directly' {
         $operator = Get-SqlDscAgentOperator -ServerObject $script:sqlServerObject -Name 'IntegrationTest_GetOperator2' -ErrorAction 'Stop'
 
-        $operator | Should -Not -BeNullOrEmpty
-        $operator | Should -BeOfType [Microsoft.SqlServer.Management.Smo.Agent.Operator]
-        $operator.Name | Should -Be 'IntegrationTest_GetOperator2'
+        $operator | Should-BeTruthy
+        $operator | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Agent.Operator])
+        $operator.Name | Should-Be 'IntegrationTest_GetOperator2'
     }
 }

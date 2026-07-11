@@ -111,13 +111,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Thumbprint | Should -Be $env:SqlCertificateThumbprint
-            $resourceCurrentState.ForceEncryption | Should -BeTrue
-            $resourceCurrentState.ServerName | Should -Be 'localhost'
+            $resourceCurrentState.Thumbprint | Should-Be $env:SqlCertificateThumbprint
+            $resourceCurrentState.ForceEncryption | Should-BeTrue
+            $resourceCurrentState.ServerName | Should-Be 'localhost'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 
@@ -163,13 +163,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Thumbprint | Should -Be 'Empty'
-            $resourceCurrentState.ForceEncryption | Should -BeFalse
-            $resourceCurrentState.ServerName | Should -Be 'localhost'
+            $resourceCurrentState.Thumbprint | Should-Be 'Empty'
+            $resourceCurrentState.ForceEncryption | Should-BeFalse
+            $resourceCurrentState.ServerName | Should-Be 'localhost'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should-Be 'True'
         }
     }
 }

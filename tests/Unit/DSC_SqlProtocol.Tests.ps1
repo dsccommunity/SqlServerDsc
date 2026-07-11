@@ -48,13 +48,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:dscResourceName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 
@@ -114,17 +116,17 @@ Describe 'SqlProtocol\Get-TargetResource' -Tag 'Get' {
 
                     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-                    $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
-                    $getTargetResourceResult.ProtocolName | Should -Be 'TcpIp'
+                    $getTargetResourceResult.InstanceName | Should-Be $mockInstanceName
+                    $getTargetResourceResult.ProtocolName | Should-Be 'TcpIp'
                     # Use the helper function from inside the module (DscResource.Common).
-                    $getTargetResourceResult.ServerName | Should -Be (Get-ComputerName)
-                    $getTargetResourceResult.SuppressRestart | Should -BeFalse
-                    $getTargetResourceResult.RestartTimeout | Should -Be 120
-                    $getTargetResourceResult.Enabled | Should -BeFalse
-                    $getTargetResourceResult.ListenOnAllIpAddresses | Should -BeFalse
-                    $getTargetResourceResult.KeepAlive | Should -Be 0
-                    $getTargetResourceResult.PipeName | Should -BeNullOrEmpty
-                    $getTargetResourceResult.HasMultiIPAddresses | Should -BeFalse
+                    $getTargetResourceResult.ServerName | Should-Be (Get-ComputerName)
+                    $getTargetResourceResult.SuppressRestart | Should-BeFalse
+                    $getTargetResourceResult.RestartTimeout | Should-Be 120
+                    $getTargetResourceResult.Enabled | Should-BeFalse
+                    $getTargetResourceResult.ListenOnAllIpAddresses | Should-BeFalse
+                    $getTargetResourceResult.KeepAlive | Should-Be 0
+                    $getTargetResourceResult.PipeName | Should-BeFalsy
+                    $getTargetResourceResult.HasMultiIPAddresses | Should-BeFalse
                 }
             }
         }
@@ -160,17 +162,17 @@ Describe 'SqlProtocol\Get-TargetResource' -Tag 'Get' {
 
                     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-                    $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
-                    $getTargetResourceResult.ProtocolName | Should -Be 'TcpIp'
+                    $getTargetResourceResult.InstanceName | Should-Be $mockInstanceName
+                    $getTargetResourceResult.ProtocolName | Should-Be 'TcpIp'
                     # Use the helper function from inside the module (DscResource.Common).
-                    $getTargetResourceResult.ServerName | Should -Be (Get-ComputerName)
-                    $getTargetResourceResult.SuppressRestart | Should -BeFalse
-                    $getTargetResourceResult.RestartTimeout | Should -Be 120
-                    $getTargetResourceResult.Enabled | Should -BeTrue
-                    $getTargetResourceResult.ListenOnAllIpAddresses | Should -BeTrue
-                    $getTargetResourceResult.KeepAlive | Should -Be 30000
-                    $getTargetResourceResult.PipeName | Should -BeNullOrEmpty
-                    $getTargetResourceResult.HasMultiIPAddresses | Should -BeTrue
+                    $getTargetResourceResult.ServerName | Should-Be (Get-ComputerName)
+                    $getTargetResourceResult.SuppressRestart | Should-BeFalse
+                    $getTargetResourceResult.RestartTimeout | Should-Be 120
+                    $getTargetResourceResult.Enabled | Should-BeTrue
+                    $getTargetResourceResult.ListenOnAllIpAddresses | Should-BeTrue
+                    $getTargetResourceResult.KeepAlive | Should-Be 30000
+                    $getTargetResourceResult.PipeName | Should-BeFalsy
+                    $getTargetResourceResult.HasMultiIPAddresses | Should-BeTrue
                 }
             }
         }
@@ -207,17 +209,17 @@ Describe 'SqlProtocol\Get-TargetResource' -Tag 'Get' {
 
                     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-                    $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
-                    $getTargetResourceResult.ProtocolName | Should -Be 'NamedPipes'
+                    $getTargetResourceResult.InstanceName | Should-Be $mockInstanceName
+                    $getTargetResourceResult.ProtocolName | Should-Be 'NamedPipes'
                     # Use the helper function from inside the module (DscResource.Common).
-                    $getTargetResourceResult.ServerName | Should -Be (Get-ComputerName)
-                    $getTargetResourceResult.SuppressRestart | Should -BeFalse
-                    $getTargetResourceResult.RestartTimeout | Should -Be 120
-                    $getTargetResourceResult.Enabled | Should -BeTrue
-                    $getTargetResourceResult.ListenOnAllIpAddresses | Should -BeFalse
-                    $getTargetResourceResult.KeepAlive | Should -Be 0
-                    $getTargetResourceResult.PipeName | Should -Be $MockPipeName
-                    $getTargetResourceResult.HasMultiIPAddresses | Should -BeFalse
+                    $getTargetResourceResult.ServerName | Should-Be (Get-ComputerName)
+                    $getTargetResourceResult.SuppressRestart | Should-BeFalse
+                    $getTargetResourceResult.RestartTimeout | Should-Be 120
+                    $getTargetResourceResult.Enabled | Should-BeTrue
+                    $getTargetResourceResult.ListenOnAllIpAddresses | Should-BeFalse
+                    $getTargetResourceResult.KeepAlive | Should-Be 0
+                    $getTargetResourceResult.PipeName | Should-Be $MockPipeName
+                    $getTargetResourceResult.HasMultiIPAddresses | Should-BeFalse
                 }
             }
         }
@@ -244,17 +246,17 @@ Describe 'SqlProtocol\Get-TargetResource' -Tag 'Get' {
 
                     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-                    $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
-                    $getTargetResourceResult.ProtocolName | Should -Be 'SharedMemory'
+                    $getTargetResourceResult.InstanceName | Should-Be $mockInstanceName
+                    $getTargetResourceResult.ProtocolName | Should-Be 'SharedMemory'
                     # Use the helper function from inside the module (DscResource.Common).
-                    $getTargetResourceResult.ServerName | Should -Be (Get-ComputerName)
-                    $getTargetResourceResult.SuppressRestart | Should -BeFalse
-                    $getTargetResourceResult.RestartTimeout | Should -Be 120
-                    $getTargetResourceResult.Enabled | Should -BeTrue
-                    $getTargetResourceResult.ListenOnAllIpAddresses | Should -BeFalse
-                    $getTargetResourceResult.KeepAlive | Should -Be 0
-                    $getTargetResourceResult.PipeName | Should -BeNullOrEmpty
-                    $getTargetResourceResult.HasMultiIPAddresses | Should -BeFalse
+                    $getTargetResourceResult.ServerName | Should-Be (Get-ComputerName)
+                    $getTargetResourceResult.SuppressRestart | Should-BeFalse
+                    $getTargetResourceResult.RestartTimeout | Should-Be 120
+                    $getTargetResourceResult.Enabled | Should-BeTrue
+                    $getTargetResourceResult.ListenOnAllIpAddresses | Should-BeFalse
+                    $getTargetResourceResult.KeepAlive | Should-Be 0
+                    $getTargetResourceResult.PipeName | Should-BeFalsy
+                    $getTargetResourceResult.HasMultiIPAddresses | Should-BeFalse
                 }
             }
         }
@@ -283,10 +285,10 @@ Describe 'SqlProtocol\Get-TargetResource' -Tag 'Get' {
 
                     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-                    $getTargetResourceResult.InstanceName | Should -Be $mockInstanceName
-                    $getTargetResourceResult.ProtocolName | Should -Be 'SharedMemory'
-                    $getTargetResourceResult.SuppressRestart | Should -BeTrue
-                    $getTargetResourceResult.RestartTimeout | Should -Be 300
+                    $getTargetResourceResult.InstanceName | Should-Be $mockInstanceName
+                    $getTargetResourceResult.ProtocolName | Should-Be 'SharedMemory'
+                    $getTargetResourceResult.SuppressRestart | Should-BeTrue
+                    $getTargetResourceResult.RestartTimeout | Should-Be 300
                 }
             }
         }
@@ -317,10 +319,10 @@ Describe 'SqlProtocol\Test-TargetResource' -Tag 'Test' {
                 }
 
                 $testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
-                $testTargetResourceResult | Should -BeTrue
+                $testTargetResourceResult | Should-BeTrue
             }
 
-            Should -Invoke -CommandName Compare-TargetResourceState -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Compare-TargetResourceState -Exactly -Scope It -Times 1
         }
     }
 
@@ -346,10 +348,10 @@ Describe 'SqlProtocol\Test-TargetResource' -Tag 'Test' {
                 }
 
                 $testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
-                $testTargetResourceResult | Should -BeFalse
+                $testTargetResourceResult | Should-BeFalse
             }
 
-            Should -Invoke -CommandName Compare-TargetResourceState -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Compare-TargetResourceState -Exactly -Scope It -Times 1
         }
     }
 }
@@ -374,7 +376,7 @@ Describe 'SqlProtocol\Compare-TargetResourceState' -Tag 'Compare' {
                     PipeName               = 'any pipe name'
                 }
 
-                { Compare-ResourcePropertyState @testTargetResourceParameters } | Should -Throw
+                { Compare-ResourcePropertyState @testTargetResourceParameters } | Should-Throw
             }
         }
 
@@ -390,7 +392,7 @@ Describe 'SqlProtocol\Compare-TargetResourceState' -Tag 'Compare' {
                     PipeName     = 'any pipe name'
                 }
 
-                { Compare-ResourcePropertyState @testTargetResourceParameters } | Should -Throw
+                { Compare-ResourcePropertyState @testTargetResourceParameters } | Should-Throw
             }
         }
     }
@@ -407,7 +409,7 @@ Describe 'SqlProtocol\Compare-TargetResourceState' -Tag 'Compare' {
                     PipeName     = 'any pipe name'
                 }
 
-                { Compare-ResourcePropertyState @testTargetResourceParameters } | Should -Throw
+                { Compare-ResourcePropertyState @testTargetResourceParameters } | Should-Throw
             }
         }
 
@@ -422,7 +424,7 @@ Describe 'SqlProtocol\Compare-TargetResourceState' -Tag 'Compare' {
                     KeepAlive    = 30000
                 }
 
-                { Compare-ResourcePropertyState @testTargetResourceParameters } | Should -Throw
+                { Compare-ResourcePropertyState @testTargetResourceParameters } | Should-Throw
             }
         }
 
@@ -437,7 +439,7 @@ Describe 'SqlProtocol\Compare-TargetResourceState' -Tag 'Compare' {
                     ListenOnAllIpAddresses = $true
                 }
 
-                { Compare-ResourcePropertyState @testTargetResourceParameters } | Should -Throw
+                { Compare-ResourcePropertyState @testTargetResourceParameters } | Should-Throw
             }
         }
     }
@@ -469,28 +471,28 @@ Describe 'SqlProtocol\Compare-TargetResourceState' -Tag 'Compare' {
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 3
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 3
 
                     $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.Expected | Should -BeTrue
-                    $comparedReturnValue.Actual | Should -BeTrue
-                    $comparedReturnValue.InDesiredState | Should -BeTrue
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.Expected | Should-BeTrue
+                    $comparedReturnValue.Actual | Should-BeTrue
+                    $comparedReturnValue.InDesiredState | Should-BeTrue
 
                     $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'ListenOnAllIpAddresses' })
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.Expected | Should -BeTrue
-                    $comparedReturnValue.Actual | Should -BeTrue
-                    $comparedReturnValue.InDesiredState | Should -BeTrue
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.Expected | Should-BeTrue
+                    $comparedReturnValue.Actual | Should-BeTrue
+                    $comparedReturnValue.InDesiredState | Should-BeTrue
 
                     $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'KeepAlive' })
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.Expected | Should -Be 30000
-                    $comparedReturnValue.Actual | Should -Be 30000
-                    $comparedReturnValue.InDesiredState | Should -BeTrue
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.Expected | Should-Be 30000
+                    $comparedReturnValue.Actual | Should-Be 30000
+                    $comparedReturnValue.InDesiredState | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -524,22 +526,22 @@ Describe 'SqlProtocol\Compare-TargetResourceState' -Tag 'Compare' {
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 2
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 2
 
                     $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.Expected | Should -BeTrue
-                    $comparedReturnValue.Actual | Should -BeTrue
-                    $comparedReturnValue.InDesiredState | Should -BeTrue
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.Expected | Should-BeTrue
+                    $comparedReturnValue.Actual | Should-BeTrue
+                    $comparedReturnValue.InDesiredState | Should-BeTrue
 
                     $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'PipeName' })
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.Expected | Should -Be $MockPipeName
-                    $comparedReturnValue.Actual | Should -Be $MockPipeName
-                    $comparedReturnValue.InDesiredState | Should -BeTrue
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.Expected | Should-Be $MockPipeName
+                    $comparedReturnValue.Actual | Should-Be $MockPipeName
+                    $comparedReturnValue.InDesiredState | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -565,16 +567,16 @@ Describe 'SqlProtocol\Compare-TargetResourceState' -Tag 'Compare' {
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 1
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                     $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.Expected | Should -BeTrue
-                    $comparedReturnValue.Actual | Should -BeTrue
-                    $comparedReturnValue.InDesiredState | Should -BeTrue
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.Expected | Should-BeTrue
+                    $comparedReturnValue.Actual | Should-BeTrue
+                    $comparedReturnValue.InDesiredState | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -606,28 +608,28 @@ Describe 'SqlProtocol\Compare-TargetResourceState' -Tag 'Compare' {
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 3
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 3
 
                     $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.Expected | Should -BeTrue
-                    $comparedReturnValue.Actual | Should -BeFalse
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.Expected | Should-BeTrue
+                    $comparedReturnValue.Actual | Should-BeFalse
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
 
                     $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'ListenOnAllIpAddresses' })
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.Expected | Should -BeTrue
-                    $comparedReturnValue.Actual | Should -BeFalse
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.Expected | Should-BeTrue
+                    $comparedReturnValue.Actual | Should-BeFalse
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
 
                     $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'KeepAlive' })
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.Expected | Should -Be 50000
-                    $comparedReturnValue.Actual | Should -Be 30000
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.Expected | Should-Be 50000
+                    $comparedReturnValue.Actual | Should-Be 30000
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -663,22 +665,22 @@ Describe 'SqlProtocol\Compare-TargetResourceState' -Tag 'Compare' {
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 2
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 2
 
                     $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.Expected | Should -BeTrue
-                    $comparedReturnValue.Actual | Should -BeFalse
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.Expected | Should-BeTrue
+                    $comparedReturnValue.Actual | Should-BeFalse
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
 
                     $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'PipeName' })
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.Expected | Should -Be $mockExpectedPipeName
-                    $comparedReturnValue.Actual | Should -Be $MockPipeName
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.Expected | Should-Be $mockExpectedPipeName
+                    $comparedReturnValue.Actual | Should-Be $MockPipeName
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -704,16 +706,16 @@ Describe 'SqlProtocol\Compare-TargetResourceState' -Tag 'Compare' {
                     }
 
                     $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
-                    $compareTargetResourceStateResult | Should -HaveCount 1
+                    $compareTargetResourceStateResult | Should-BeCollection -Count 1
 
                     $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Enabled' })
-                    $comparedReturnValue | Should -Not -BeNullOrEmpty
-                    $comparedReturnValue.Expected | Should -BeTrue
-                    $comparedReturnValue.Actual | Should -BeFalse
-                    $comparedReturnValue.InDesiredState | Should -BeFalse
+                    $comparedReturnValue | Should-BeTruthy
+                    $comparedReturnValue.Expected | Should-BeTrue
+                    $comparedReturnValue.Actual | Should-BeFalse
+                    $comparedReturnValue.InDesiredState | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -751,7 +753,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                 }
 
                 { Set-TargetResource @setTargetResourceParameters } |
-                    Should -Throw -ExpectedMessage $mockErrorRecord.Exception.Message
+                    Should-Throw -ExceptionMessage $mockErrorRecord.Exception.Message
             }
         }
     }
@@ -780,7 +782,7 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
                 $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
             }
 
-            Should -Invoke -CommandName Compare-TargetResourceState -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Compare-TargetResourceState -Exactly -Scope It -Times 1
         }
     }
 
@@ -852,10 +854,10 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
 
                         $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
-                        $script:wasMethodAlterCalled | Should -BeTrue
+                        $script:wasMethodAlterCalled | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 1
                 }
             }
 
@@ -911,10 +913,10 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
 
                         $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
-                        $script:wasMethodAlterCalled | Should -BeTrue
+                        $script:wasMethodAlterCalled | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 1
                 }
             }
 
@@ -970,10 +972,10 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
 
                         $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
-                        $script:wasMethodAlterCalled | Should -BeTrue
+                        $script:wasMethodAlterCalled | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1036,10 +1038,10 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
 
                         $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
-                        $script:wasMethodAlterCalled | Should -BeTrue
+                        $script:wasMethodAlterCalled | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Restart-SqlService -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 0
                 }
             }
 
@@ -1097,11 +1099,11 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
 
                         $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
-                        $script:wasMethodAlterCalled | Should -BeTrue
+                        $script:wasMethodAlterCalled | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Restart-SqlService -Exactly -Times 0 -Scope It
-                    Should -Invoke -CommandName Write-Warning -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 0
+                    Should-Invoke -CommandName Write-Warning -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -1164,10 +1166,10 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
 
                         $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
-                        $script:wasMethodAlterCalled | Should -BeTrue
+                        $script:wasMethodAlterCalled | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1221,10 +1223,10 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
 
                         $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
-                        $script:wasMethodAlterCalled | Should -BeTrue
+                        $script:wasMethodAlterCalled | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1278,10 +1280,10 @@ Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
 
                         $null = Set-TargetResource @setTargetResourceParameters -ErrorAction 'Stop'
 
-                        $script:wasMethodAlterCalled | Should -BeTrue
+                        $script:wasMethodAlterCalled | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Restart-SqlService -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 0
                 }
             }
         }

@@ -78,20 +78,20 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag @('Integration_SQL2017', 'Integrati
         It 'Should return the correct compatibility levels based on server version' {
             $result = Get-SqlDscCompatibilityLevel -ServerObject $script:serverObject
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType [System.String]
+            $result | Should-BeTruthy
+            $result | Should-HaveType ([System.Object[]])
 
             # All results should match Version pattern
             foreach ($compatLevel in $result)
             {
-                $compatLevel | Should -Match '^Version\d+$'
+                $compatLevel | Should-MatchString '^Version\d+$'
             }
 
             # Verify the result matches expected compatibility levels
-            $result | Should -HaveCount $script:expectedLevels.Count
+            $result | Should-BeCollection -Count $script:expectedLevels.Count
             foreach ($expectedLevel in $script:expectedLevels)
             {
-                $result | Should -Contain $expectedLevel
+                $result | Should-ContainCollection $expectedLevel
             }
         }
 
@@ -100,14 +100,14 @@ Describe 'Get-SqlDscCompatibilityLevel' -Tag @('Integration_SQL2017', 'Integrati
 
             $result = Get-SqlDscCompatibilityLevel -Version $serverVersion
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType [System.String]
+            $result | Should-BeTruthy
+            $result | Should-HaveType ([System.Object[]])
 
             # Verify the result matches expected compatibility levels
-            $result | Should -HaveCount $script:expectedLevels.Count
+            $result | Should-BeCollection -Count $script:expectedLevels.Count
             foreach ($expectedLevel in $script:expectedLevels)
             {
-                $result | Should -Contain $expectedLevel
+                $result | Should-ContainCollection $expectedLevel
             }
         }
     }

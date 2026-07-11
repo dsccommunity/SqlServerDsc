@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -66,33 +68,33 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag 'Public' {
                 @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
             )
 
-        $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-        $result.ParameterListAsString | Should -Be $ExpectedParameters
+        $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+        $result.ParameterListAsString | Should-Be $ExpectedParameters
     }
 
     It 'Should have ServerObject parameter as mandatory in ServerObject parameter set' {
         $parameterInfo = (Get-Command -Name 'Test-SqlDscIsLoginEnabled').Parameters['ServerObject']
-        $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
     }
 
     It 'Should have Name parameter as mandatory in ServerObject parameter set' {
         $parameterInfo = (Get-Command -Name 'Test-SqlDscIsLoginEnabled').Parameters['Name']
-        $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
     }
 
     It 'Should have LoginObject parameter as mandatory in LoginObject parameter set' {
         $parameterInfo = (Get-Command -Name 'Test-SqlDscIsLoginEnabled').Parameters['LoginObject']
-        $parameterInfo.Attributes.Mandatory | Should -BeTrue
+        $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
     }
 
     It 'Should have ServerObject parameter accept pipeline input' {
         $parameterInfo = (Get-Command -Name 'Test-SqlDscIsLoginEnabled').Parameters['ServerObject']
-        ($parameterInfo.Attributes.ValueFromPipeline -or $parameterInfo.Attributes.ValueFromPipelineByPropertyName) | Should -BeTrue
+        ($parameterInfo.Attributes.ValueFromPipeline -or $parameterInfo.Attributes.ValueFromPipelineByPropertyName) | Should-BeTrue
     }
 
     It 'Should have LoginObject parameter accept pipeline input' {
         $parameterInfo = (Get-Command -Name 'Test-SqlDscIsLoginEnabled').Parameters['LoginObject']
-        ($parameterInfo.Attributes.ValueFromPipeline -or $parameterInfo.Attributes.ValueFromPipelineByPropertyName) | Should -BeTrue
+        ($parameterInfo.Attributes.ValueFromPipeline -or $parameterInfo.Attributes.ValueFromPipelineByPropertyName) | Should-BeTrue
     }
 
     Context 'When using parameter set ServerObject' {
@@ -114,11 +116,11 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag 'Public' {
             It 'Should return $true' {
                 $result = Test-SqlDscIsLoginEnabled -ServerObject $mockServerObject -Name 'TestLogin'
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
 
-                Should -Invoke -CommandName Get-SqlDscLogin -ParameterFilter {
+                Should-Invoke -CommandName Get-SqlDscLogin -Exactly -ParameterFilter {
                     $ServerObject -eq $mockServerObject -and $Name -eq 'TestLogin'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -135,11 +137,11 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag 'Public' {
             It 'Should return $false' {
                 $result = Test-SqlDscIsLoginEnabled -ServerObject $mockServerObject -Name 'TestLogin'
 
-                $result | Should -BeFalse
+                $result | Should-BeFalse
 
-                Should -Invoke -CommandName Get-SqlDscLogin -ParameterFilter {
+                Should-Invoke -CommandName Get-SqlDscLogin -Exactly -ParameterFilter {
                     $ServerObject -eq $mockServerObject -and $Name -eq 'TestLogin'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -156,11 +158,11 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag 'Public' {
             It 'Should pass Refresh parameter to Get-SqlDscLogin' {
                 $result = Test-SqlDscIsLoginEnabled -ServerObject $mockServerObject -Name 'TestLogin' -Refresh
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
 
-                Should -Invoke -CommandName Get-SqlDscLogin -ParameterFilter {
+                Should-Invoke -CommandName Get-SqlDscLogin -Exactly -ParameterFilter {
                     $ServerObject -eq $mockServerObject -and $Name -eq 'TestLogin' -and $Refresh -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
     }
@@ -175,7 +177,7 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag 'Public' {
             It 'Should return $true' {
                 $result = Test-SqlDscIsLoginEnabled -LoginObject $mockLoginObject
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
         }
 
@@ -188,7 +190,7 @@ Describe 'Test-SqlDscIsLoginEnabled' -Tag 'Public' {
             It 'Should return $false' {
                 $result = Test-SqlDscIsLoginEnabled -LoginObject $mockLoginObject
 
-                $result | Should -BeFalse
+                $result | Should-BeFalse
             }
         }
     }

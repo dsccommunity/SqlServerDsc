@@ -32,13 +32,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -66,8 +68,8 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -91,16 +93,16 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
         It 'Should return SSL certificate bindings' {
             $result = $mockCimInstance | Get-SqlDscRSSslCertificateBinding
 
-            $result | Should -HaveCount 2
-            $result[0].Application | Should -Be 'ReportServerWebService'
-            $result[0].CertificateHash | Should -Be 'AABBCCDD'
-            $result[1].Application | Should -Be 'ReportServerWebApp'
-            $result[1].CertificateHash | Should -Be 'EEFFAABB'
+            $result | Should-BeCollection -Count 2
+            $result[0].Application | Should-Be 'ReportServerWebService'
+            $result[0].CertificateHash | Should-Be 'AABBCCDD'
+            $result[1].Application | Should-Be 'ReportServerWebApp'
+            $result[1].CertificateHash | Should-Be 'EEFFAABB'
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'ListSSLCertificateBindings' -and
                 $Arguments.Lcid -eq 1033
-            } -Exactly -Times 1
+            } -Times 1
         }
     }
 
@@ -124,9 +126,9 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
         It 'Should return an empty result' {
             $result = $mockCimInstance | Get-SqlDscRSSslCertificateBinding
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -142,7 +144,7 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | Get-SqlDscRSSslCertificateBinding } | Should -Throw -ErrorId 'GSRSSCB0001,Get-SqlDscRSSslCertificateBinding'
+            { $mockCimInstance | Get-SqlDscRSSslCertificateBinding } | Should-Throw -FullyQualifiedErrorId 'GSRSSCB0001,Get-SqlDscRSSslCertificateBinding'
         }
     }
 
@@ -166,9 +168,9 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
         It 'Should get SSL certificate bindings' {
             $result = Get-SqlDscRSSslCertificateBinding -Configuration $mockCimInstance
 
-            $result | Should -HaveCount 1
+            $result | Should-BeCollection -Count 1
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -192,13 +194,13 @@ Describe 'Get-SqlDscRSSslCertificateBinding' {
         It 'Should use the specified Lcid' {
             $result = $mockCimInstance | Get-SqlDscRSSslCertificateBinding -Lcid 1031
 
-            $result.Lcid | Should -Be 1031
+            $result.Lcid | Should-Be 1031
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $Arguments.Lcid -eq 1031
-            } -Exactly -Times 1
+            } -Times 1
 
-            Should -Invoke -CommandName Get-OperatingSystem -Exactly -Times 0
+            Should-Invoke -CommandName Get-OperatingSystem -Exactly -Times 0
         }
     }
 }

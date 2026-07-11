@@ -36,7 +36,7 @@ Describe 'Test-SqlDscRSInitialized' {
         It 'Should return initialization status' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $result = $configuration | Test-SqlDscRSInitialized -ErrorAction 'Stop'
-            $result | Should -BeOfType [System.Boolean]
+            $result | Should-HaveType ([System.Boolean])
         }
     }
 
@@ -44,7 +44,7 @@ Describe 'Test-SqlDscRSInitialized' {
         It 'Should return initialization status' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $result = $configuration | Test-SqlDscRSInitialized -ErrorAction 'Stop'
-            $result | Should -BeOfType [System.Boolean]
+            $result | Should-HaveType ([System.Boolean])
         }
     }
 
@@ -52,7 +52,7 @@ Describe 'Test-SqlDscRSInitialized' {
         It 'Should return initialization status' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'SSRS' -ErrorAction 'Stop'
             $result = $configuration | Test-SqlDscRSInitialized -ErrorAction 'Stop'
-            $result | Should -BeOfType [System.Boolean]
+            $result | Should-HaveType ([System.Boolean])
         }
     }
 
@@ -60,7 +60,7 @@ Describe 'Test-SqlDscRSInitialized' {
         It 'Should return initialization status' {
             $configuration = Get-SqlDscRSConfiguration -InstanceName 'PBIRS' -ErrorAction 'Stop'
             $result = $configuration | Test-SqlDscRSInitialized -ErrorAction 'Stop'
-            $result | Should -BeOfType [System.Boolean]
+            $result | Should-HaveType ([System.Boolean])
         }
     }
 }

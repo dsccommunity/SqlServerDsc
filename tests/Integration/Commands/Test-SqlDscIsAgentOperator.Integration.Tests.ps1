@@ -57,20 +57,20 @@ Describe 'Test-SqlDscIsAgentOperator' -Tag 'Integration_SQL2017', 'Integration_S
         It 'Should return true for existing operator' {
             # Test for the persistent operator created by New-SqlDscAgentOperator integration test
             $result = Test-SqlDscIsAgentOperator -ServerObject $script:serverObject -Name 'SqlDscIntegrationTestOperator_Persistent' -ErrorAction 'Stop'
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should return false for non-existing operator' {
             # Test for a non-existing operator
             $result = Test-SqlDscIsAgentOperator -ServerObject $script:serverObject -Name 'NonExistentOperator' -ErrorAction 'Stop'
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 
     Context 'When using pipeline input' {
         It 'Should accept ServerObject from pipeline' {
             $result = $script:serverObject | Test-SqlDscIsAgentOperator -Name 'SqlDscIntegrationTestOperator_Persistent' -ErrorAction 'Stop'
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
     }
 }

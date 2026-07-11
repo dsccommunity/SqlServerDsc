@@ -34,13 +34,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -52,8 +54,8 @@ Describe 'DatabaseFileGroupSpec' -Tag 'DatabaseFileGroupSpec' {
                 [DatabaseFileGroupSpec]::new()
             }
 
-            $instance | Should -Not -BeNullOrEmpty
-            $instance.GetType().Name | Should -Be 'DatabaseFileGroupSpec'
+            $instance | Should-BeTruthy
+            $instance.GetType().Name | Should-Be 'DatabaseFileGroupSpec'
         }
 
         It 'Should create an instance with Name only' {
@@ -61,9 +63,9 @@ Describe 'DatabaseFileGroupSpec' -Tag 'DatabaseFileGroupSpec' {
                 [DatabaseFileGroupSpec]::new('PRIMARY')
             }
 
-            $instance | Should -Not -BeNullOrEmpty
-            $instance.GetType().Name | Should -Be 'DatabaseFileGroupSpec'
-            $instance.Name | Should -Be 'PRIMARY'
+            $instance | Should-BeTruthy
+            $instance.GetType().Name | Should-Be 'DatabaseFileGroupSpec'
+            $instance.Name | Should-Be 'PRIMARY'
         }
 
         It 'Should create an instance with Name and Files array' {
@@ -74,12 +76,12 @@ Describe 'DatabaseFileGroupSpec' -Tag 'DatabaseFileGroupSpec' {
                 [DatabaseFileGroupSpec]::new('PRIMARY', $files)
             }
 
-            $instance | Should -Not -BeNullOrEmpty
-            $instance.GetType().Name | Should -Be 'DatabaseFileGroupSpec'
-            $instance.Name | Should -Be 'PRIMARY'
-            $instance.Files | Should -HaveCount 1
-            $instance.Files[0].Name | Should -Be 'File1'
-            $instance.Files[0].FileName | Should -Be 'C:\Data\File1.mdf'
+            $instance | Should-BeTruthy
+            $instance.GetType().Name | Should-Be 'DatabaseFileGroupSpec'
+            $instance.Name | Should-Be 'PRIMARY'
+            $instance.Files | Should-BeCollection -Count 1
+            $instance.Files[0].Name | Should-Be 'File1'
+            $instance.Files[0].FileName | Should-Be 'C:\Data\File1.mdf'
         }
     }
 
@@ -88,8 +90,8 @@ Describe 'DatabaseFileGroupSpec' -Tag 'DatabaseFileGroupSpec' {
             InModuleScope -ScriptBlock {
                 $instance = [DatabaseFileGroupSpec]::new('MyFileGroup')
 
-                $instance.Name | Should -Be 'MyFileGroup'
-                $instance.Files | Should -BeNullOrEmpty
+                $instance.Name | Should-Be 'MyFileGroup'
+                $instance.Files | Should-BeFalsy
             }
         }
     }
@@ -103,10 +105,10 @@ Describe 'DatabaseFileGroupSpec' -Tag 'DatabaseFileGroupSpec' {
                 )
                 $instance = [DatabaseFileGroupSpec]::new('SecondaryFG', $files)
 
-                $instance.Name | Should -Be 'SecondaryFG'
-                $instance.Files | Should -HaveCount 2
-                $instance.Files[0].Name | Should -Be 'File1'
-                $instance.Files[1].Name | Should -Be 'File2'
+                $instance.Name | Should-Be 'SecondaryFG'
+                $instance.Files | Should-BeCollection -Count 2
+                $instance.Files[0].Name | Should-Be 'File1'
+                $instance.Files[1].Name | Should-Be 'File2'
             }
         }
     }
@@ -122,11 +124,11 @@ Describe 'DatabaseFileGroupSpec' -Tag 'DatabaseFileGroupSpec' {
                 $instance.ReadOnly = $true
                 $instance.IsDefault = $true
 
-                $instance.Name | Should -Be 'TestFileGroup'
-                $instance.Files | Should -HaveCount 1
-                $instance.Files[0].Name | Should -Be 'TestFile'
-                $instance.ReadOnly | Should -BeTrue
-                $instance.IsDefault | Should -BeTrue
+                $instance.Name | Should-Be 'TestFileGroup'
+                $instance.Files | Should-BeCollection -Count 1
+                $instance.Files[0].Name | Should-Be 'TestFile'
+                $instance.ReadOnly | Should-BeTrue
+                $instance.IsDefault | Should-BeTrue
             }
         }
     }
@@ -136,10 +138,10 @@ Describe 'DatabaseFileGroupSpec' -Tag 'DatabaseFileGroupSpec' {
             InModuleScope -ScriptBlock {
                 $instance = [DatabaseFileGroupSpec]::new()
 
-                $instance.Name | Should -BeNullOrEmpty
-                $instance.Files | Should -BeNullOrEmpty
-                $instance.ReadOnly | Should -BeFalse
-                $instance.IsDefault | Should -BeFalse
+                $instance.Name | Should-BeFalsy
+                $instance.Files | Should-BeFalsy
+                $instance.ReadOnly | Should-BeFalse
+                $instance.IsDefault | Should-BeFalse
             }
         }
     }
@@ -162,12 +164,12 @@ Describe 'DatabaseFileGroupSpec' -Tag 'DatabaseFileGroupSpec' {
                     IsDefault = $false
                 }
 
-                $instance.Name | Should -Be 'DataFileGroup'
-                $instance.Files | Should -HaveCount 1
-                $instance.Files[0].Name | Should -Be 'DataFile1'
-                $instance.Files[0].FileName | Should -Be 'E:\Data\DataFile1.ndf'
-                $instance.ReadOnly | Should -BeFalse
-                $instance.IsDefault | Should -BeFalse
+                $instance.Name | Should-Be 'DataFileGroup'
+                $instance.Files | Should-BeCollection -Count 1
+                $instance.Files[0].Name | Should-Be 'DataFile1'
+                $instance.Files[0].FileName | Should-Be 'E:\Data\DataFile1.ndf'
+                $instance.ReadOnly | Should-BeFalse
+                $instance.IsDefault | Should-BeFalse
             }
         }
     }
@@ -187,9 +189,9 @@ Describe 'DatabaseFileGroupSpec' -Tag 'DatabaseFileGroupSpec' {
                     IsDefault = $true
                 }
 
-                $instance.Name | Should -Be 'PRIMARY'
-                $instance.Files[0].IsPrimaryFile | Should -BeTrue
-                $instance.IsDefault | Should -BeTrue
+                $instance.Name | Should-Be 'PRIMARY'
+                $instance.Files[0].IsPrimaryFile | Should-BeTrue
+                $instance.IsDefault | Should-BeTrue
             }
         }
     }
@@ -202,8 +204,8 @@ Describe 'DatabaseFileGroupSpec' -Tag 'DatabaseFileGroupSpec' {
                     ReadOnly = $true
                 }
 
-                $instance.Name | Should -Be 'ReadOnlyFG'
-                $instance.ReadOnly | Should -BeTrue
+                $instance.Name | Should-Be 'ReadOnlyFG'
+                $instance.ReadOnly | Should-BeTrue
             }
         }
     }
@@ -222,13 +224,13 @@ Describe 'DatabaseFileGroupSpec' -Tag 'DatabaseFileGroupSpec' {
                     Files = $files
                 }
 
-                $instance.Files | Should -HaveCount 3
-                $instance.Files[0].Name | Should -Be 'File1'
-                $instance.Files[1].Name | Should -Be 'File2'
-                $instance.Files[2].Name | Should -Be 'File3'
-                $instance.Files[0].Size | Should -Be 50.0
-                $instance.Files[1].Size | Should -Be 100.0
-                $instance.Files[2].Size | Should -Be 150.0
+                $instance.Files | Should-BeCollection -Count 3
+                $instance.Files[0].Name | Should-Be 'File1'
+                $instance.Files[1].Name | Should-Be 'File2'
+                $instance.Files[2].Name | Should-Be 'File3'
+                $instance.Files[0].Size | Should-Be 50.0
+                $instance.Files[1].Size | Should-Be 100.0
+                $instance.Files[2].Size | Should-Be 150.0
             }
         }
     }
@@ -240,8 +242,8 @@ Describe 'DatabaseFileGroupSpec' -Tag 'DatabaseFileGroupSpec' {
                     Name = 'EmptyFG'
                 }
 
-                $instance.Name | Should -Be 'EmptyFG'
-                $instance.Files | Should -BeNullOrEmpty
+                $instance.Name | Should-Be 'EmptyFG'
+                $instance.Files | Should-BeFalsy
             }
         }
     }
@@ -265,13 +267,13 @@ Describe 'DatabaseFileGroupSpec' -Tag 'DatabaseFileGroupSpec' {
                 }
 
                 $file = $instance.Files[0]
-                $file.Name | Should -Be 'DetailedFile'
-                $file.FileName | Should -Be 'F:\Data\DetailedFile.ndf'
-                $file.Size | Should -Be 200.0
-                $file.MaxSize | Should -Be 2000.0
-                $file.Growth | Should -Be 20.0
-                $file.GrowthType | Should -Be 'Percent'
-                $file.IsPrimaryFile | Should -BeFalse
+                $file.Name | Should-Be 'DetailedFile'
+                $file.FileName | Should-Be 'F:\Data\DetailedFile.ndf'
+                $file.Size | Should-Be 200.0
+                $file.MaxSize | Should-Be 2000.0
+                $file.Growth | Should-Be 20.0
+                $file.GrowthType | Should-Be 'Percent'
+                $file.IsPrimaryFile | Should-BeFalse
             }
         }
     }

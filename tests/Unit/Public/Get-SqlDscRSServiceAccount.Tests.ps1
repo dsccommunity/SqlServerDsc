@@ -32,13 +32,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -58,8 +60,8 @@ Describe 'Get-SqlDscRSServiceAccount' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -74,7 +76,7 @@ Describe 'Get-SqlDscRSServiceAccount' {
         It 'Should return the service account name' {
             $result = $mockCimInstance | Get-SqlDscRSServiceAccount
 
-            $result | Should -Be 'NT SERVICE\SQLServerReportingServices'
+            $result | Should-Be 'NT SERVICE\SQLServerReportingServices'
         }
     }
 
@@ -89,7 +91,7 @@ Describe 'Get-SqlDscRSServiceAccount' {
         It 'Should return the service account name' {
             $result = Get-SqlDscRSServiceAccount -Configuration $mockCimInstance
 
-            $result | Should -Be 'DOMAIN\ServiceAccount'
+            $result | Should-Be 'DOMAIN\ServiceAccount'
         }
     }
 }

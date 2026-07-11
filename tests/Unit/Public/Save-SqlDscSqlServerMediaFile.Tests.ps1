@@ -35,13 +35,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -69,11 +71,18 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     BeforeAll {
+        # Pester 6 no longer falls through to the real command when a later
+        # -ParameterFilter mock doesn't match. Restore the Pester 5 behavior for
+        # Test-Path so unmatched calls run the real cmdlet.
+        Mock -CommandName Test-Path -MockWith {
+            & (Get-Command -Name 'Test-Path' -CommandType Cmdlet) @PesterBoundParameters
+        }
+
         # Mock the Invoke-WebRequest cmdlet to prevent actual downloads during testing
         Mock -CommandName Invoke-WebRequest
 
@@ -107,7 +116,7 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
         It 'Should call Invoke-WebRequest to download the media file' {
             Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Invoke-WebRequest -Exactly -Scope It -Times 1
         }
     }
 
@@ -125,25 +134,25 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
         It 'Should call Invoke-WebRequest to download the executable file' {
             Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Invoke-WebRequest -Exactly -Scope It -Times 1
         }
 
         It 'Should call Start-Process to initiate download using the downloaded executable file' {
             Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false
 
-            Should -Invoke -CommandName Start-Process -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Start-Process -Exactly -Scope It -Times 1
         }
 
         It 'Should call Remove-Item to remove the executable file' {
             Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false
 
-            Should -Invoke -CommandName Remove-Item -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Remove-Item -Exactly -Scope It -Times 1
         }
 
         It 'Should call Rename-Item to rename the downloaded ISO file to the specified name' {
             Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false
 
-            Should -Invoke -CommandName Rename-Item -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Rename-Item -Exactly -Scope It -Times 1
         }
     }
 
@@ -162,8 +171,8 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
 
             Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.iso' -DestinationPath $TestDrive -Force
 
-            Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Remove-Item -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Invoke-WebRequest -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Remove-Item -Exactly -Scope It -Times 1
         }
     }
 
@@ -173,7 +182,7 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
 
             Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.iso' -DestinationPath $TestDrive -Force
 
-            Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Invoke-WebRequest -Exactly -Scope It -Times 1
         }
     }
 
@@ -183,7 +192,7 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
 
             Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.iso' -DestinationPath $TestDrive -Quiet  -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Invoke-WebRequest -Exactly -Scope It -Times 1
         }
     }
 
@@ -194,8 +203,8 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
 
             Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.exe' -DestinationPath $TestDrive -Language 'fr-FR'  -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-WebRequest -Times 1 -Exactly
-            Should -Invoke -CommandName Start-Process -Times 1 -Exactly
+            Should-Invoke -CommandName Invoke-WebRequest -Exactly -Times 1
+            Should-Invoke -CommandName Start-Process -Exactly -Times 1
         }
     }
 
@@ -225,8 +234,8 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
         It 'Should allow overwriting the existing file with Force parameter' {
             Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.iso' -DestinationPath $DestinationPath -Force
 
-            Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Remove-Item -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Invoke-WebRequest -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Remove-Item -Exactly -Scope It -Times 1
         }
     }
 
@@ -260,14 +269,14 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
         It 'Should allow overwriting the existing file with Force parameter' {
             Save-SqlDscSqlServerMediaFile -Url $exeUrl -DestinationPath $DestinationPath -Force
 
-            Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Remove-Item -ParameterFilter {
+            Should-Invoke -CommandName Invoke-WebRequest -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Remove-Item -Exactly -ParameterFilter {
                 $Path -eq (Join-Path -Path $DestinationPath -ChildPath 'media.iso')
-            } -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Start-Process -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Remove-Item -ParameterFilter {
+            } -Scope It -Times 1
+            Should-Invoke -CommandName Start-Process -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Remove-Item -Exactly -ParameterFilter {
                 $Path -eq (Join-Path -Path $DestinationPath -ChildPath 'media.exe')
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 }

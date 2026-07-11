@@ -53,12 +53,12 @@ Describe 'Get-SqlDscDateTime' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             It 'Should return a DateTime value' {
                 $result = Get-SqlDscDateTime -ServerObject $script:serverObject -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [System.DateTime]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([System.DateTime])
 
                 # Verify the result is close to current time (within 5 minutes)
                 $timeDifference = [Math]::Abs(([System.DateTime]::Now - $result).TotalMinutes)
-                $timeDifference | Should -BeLessThan 5
+                $timeDifference | Should-BeLessThan 5
             }
         }
 
@@ -71,15 +71,15 @@ Describe 'Get-SqlDscDateTime' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             ) {
                 $result = Get-SqlDscDateTime -ServerObject $script:serverObject -DateTimeFunction $DateTimeFunction -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [System.DateTime]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([System.DateTime])
             }
 
             It 'Should return a DateTime value when using SYSDATETIMEOFFSET (converted from DateTimeOffset)' {
                 $result = Get-SqlDscDateTime -ServerObject $script:serverObject -DateTimeFunction 'SYSDATETIMEOFFSET' -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [System.DateTime]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([System.DateTime])
             }
         }
 
@@ -88,13 +88,13 @@ Describe 'Get-SqlDscDateTime' -Tag @('Integration_SQL2017', 'Integration_SQL2019
                 $localTime = Get-SqlDscDateTime -ServerObject $script:serverObject -DateTimeFunction 'SYSDATETIME' -ErrorAction 'Stop'
                 $utcTime = Get-SqlDscDateTime -ServerObject $script:serverObject -DateTimeFunction 'SYSUTCDATETIME' -ErrorAction 'Stop'
 
-                $localTime | Should -BeOfType [System.DateTime]
-                $utcTime | Should -BeOfType [System.DateTime]
+                $localTime | Should-HaveType ([System.DateTime])
+                $utcTime | Should-HaveType ([System.DateTime])
 
                 # Both should be within 1 second of each other when converted to UTC
                 $localTimeUtc = $localTime.ToUniversalTime()
                 $timeDifference = [Math]::Abs(($localTimeUtc - $utcTime).TotalSeconds)
-                $timeDifference | Should -BeLessThan 2
+                $timeDifference | Should-BeLessThan 2
             }
         }
 
@@ -102,8 +102,8 @@ Describe 'Get-SqlDscDateTime' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             It 'Should execute successfully with custom timeout' {
                 $result = Get-SqlDscDateTime -ServerObject $script:serverObject -StatementTimeout 30 -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [System.DateTime]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([System.DateTime])
             }
         }
 
@@ -111,8 +111,8 @@ Describe 'Get-SqlDscDateTime' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             It 'Should execute successfully' {
                 $result = $script:serverObject | Get-SqlDscDateTime -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType [System.DateTime]
+                $result | Should-BeTruthy
+                $result | Should-HaveType ([System.DateTime])
             }
         }
 
@@ -126,8 +126,8 @@ Describe 'Get-SqlDscDateTime' -Tag @('Integration_SQL2017', 'Integration_SQL2019
                 $timeDiff1 = [Math]::Abs(($result2 - $result1).TotalSeconds)
                 $timeDiff2 = [Math]::Abs(($result3 - $result2).TotalSeconds)
 
-                $timeDiff1 | Should -BeLessThan 2
-                $timeDiff2 | Should -BeLessThan 2
+                $timeDiff1 | Should-BeLessThan 2
+                $timeDiff2 | Should-BeLessThan 2
             }
         }
     }

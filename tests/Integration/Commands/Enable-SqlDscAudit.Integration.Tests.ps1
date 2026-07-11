@@ -58,7 +58,7 @@ Describe 'Enable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify audit is created but disabled
             $auditObject = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
-            $auditObject.Enabled | Should -BeFalse
+            $auditObject.Enabled | Should-BeFalse
         }
 
         AfterEach {
@@ -83,12 +83,12 @@ Describe 'Enable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify audit is now enabled
             $enabledAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
-            $enabledAudit.Enabled | Should -BeTrue
+            $enabledAudit.Enabled | Should-BeTrue
         }
 
         It 'Should throw error when trying to enable non-existent audit' {
             { Enable-SqlDscAudit -ServerObject $script:serverObject -Name 'NonExistentAudit' -Force -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
 
         It 'Should support the Refresh parameter' {
@@ -97,7 +97,7 @@ Describe 'Enable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify audit is now enabled
             $enabledAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
-            $enabledAudit.Enabled | Should -BeTrue
+            $enabledAudit.Enabled | Should-BeTrue
         }
 
         It 'Should not fail when enabling an already enabled audit' {
@@ -106,14 +106,14 @@ Describe 'Enable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify audit is enabled
             $enabledAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
-            $enabledAudit.Enabled | Should -BeTrue
+            $enabledAudit.Enabled | Should-BeTrue
 
             # Enable the audit again - should not fail
             $null = Enable-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -Force -ErrorAction 'Stop'
 
             # Verify audit is still enabled
             $stillEnabledAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditName -ErrorAction 'Stop'
-            $stillEnabledAudit.Enabled | Should -BeTrue
+            $stillEnabledAudit.Enabled | Should-BeTrue
         }
     }
 
@@ -125,7 +125,7 @@ Describe 'Enable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify audit is created but disabled
             $auditObject = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction 'Stop'
-            $auditObject.Enabled | Should -BeFalse
+            $auditObject.Enabled | Should-BeFalse
         }
 
         AfterEach {
@@ -146,28 +146,28 @@ Describe 'Enable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
         It 'Should enable an audit using audit object' {
             $auditObject = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction 'Stop'
-            $auditObject | Should -Not -BeNullOrEmpty
-            $auditObject.Enabled | Should -BeFalse
+            $auditObject | Should-BeTruthy
+            $auditObject.Enabled | Should-BeFalse
 
             # Enable the audit using audit object
             $null = Enable-SqlDscAudit -AuditObject $auditObject -Force -ErrorAction 'Stop'
 
             # Verify audit is now enabled
             $enabledAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction 'Stop'
-            $enabledAudit.Enabled | Should -BeTrue
+            $enabledAudit.Enabled | Should-BeTrue
         }
 
         It 'Should support pipeline input with audit object' {
             $auditObject = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction 'Stop'
-            $auditObject | Should -Not -BeNullOrEmpty
-            $auditObject.Enabled | Should -BeFalse
+            $auditObject | Should-BeTruthy
+            $auditObject.Enabled | Should-BeFalse
 
             # Enable the audit using pipeline
             $auditObject | Enable-SqlDscAudit -Force -ErrorAction 'Stop'
 
             # Verify audit is now enabled
             $enabledAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForObject -ErrorAction 'Stop'
-            $enabledAudit.Enabled | Should -BeTrue
+            $enabledAudit.Enabled | Should-BeTrue
         }
     }
 
@@ -179,7 +179,7 @@ Describe 'Enable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify audit is created but disabled
             $auditObject = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForPipeline -ErrorAction 'Stop'
-            $auditObject.Enabled | Should -BeFalse
+            $auditObject.Enabled | Should-BeFalse
         }
 
         AfterEach {
@@ -204,7 +204,7 @@ Describe 'Enable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
             # Verify audit is now enabled
             $enabledAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $script:testAuditNameForPipeline -ErrorAction 'Stop'
-            $enabledAudit.Enabled | Should -BeTrue
+            $enabledAudit.Enabled | Should-BeTrue
         }
     }
 
@@ -222,7 +222,7 @@ Describe 'Enable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
 
                 # Verify audit is created but disabled
                 $auditObject = Get-SqlDscAudit -ServerObject $script:serverObject -Name $auditName -ErrorAction 'Stop'
-                $auditObject.Enabled | Should -BeFalse
+                $auditObject.Enabled | Should-BeFalse
             }
         }
 
@@ -256,7 +256,7 @@ Describe 'Enable-SqlDscAudit' -Tag @('Integration_SQL2017', 'Integration_SQL2019
             foreach ($auditName in $script:testAuditNames)
             {
                 $enabledAudit = Get-SqlDscAudit -ServerObject $script:serverObject -Name $auditName -ErrorAction 'Stop'
-                $enabledAudit.Enabled | Should -BeTrue
+                $enabledAudit.Enabled | Should-BeTrue
             }
         }
     }

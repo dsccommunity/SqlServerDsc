@@ -35,80 +35,80 @@ Describe 'Stop-SqlDscRSWebService' {
     Context 'When stopping web service for SQL Server Reporting Services' -Tag @('Integration_SQL2017_RS') {
         It 'Should stop web service using pipeline' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            { $config | Stop-SqlDscRSWebService -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = & ({ $config | Stop-SqlDscRSWebService -Force -ErrorAction 'Stop' })
 
             # Verify web service is stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.IsWebServiceEnabled | Should -BeFalse
+            $verifyConfig.IsWebServiceEnabled | Should-BeFalse
         }
 
         It 'Should be idempotent when web service is already stopped' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            { $config | Stop-SqlDscRSWebService -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = & ({ $config | Stop-SqlDscRSWebService -Force -ErrorAction 'Stop' })
 
             # Verify web service is still stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.IsWebServiceEnabled | Should -BeFalse
+            $verifyConfig.IsWebServiceEnabled | Should-BeFalse
         }
     }
 
     Context 'When stopping web service for SQL Server Reporting Services' -Tag @('Integration_SQL2019_RS') {
         It 'Should stop web service using pipeline' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            { $config | Stop-SqlDscRSWebService -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = & ({ $config | Stop-SqlDscRSWebService -Force -ErrorAction 'Stop' })
 
             # Verify web service is stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.IsWebServiceEnabled | Should -BeFalse
+            $verifyConfig.IsWebServiceEnabled | Should-BeFalse
         }
 
         It 'Should be idempotent when web service is already stopped' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            { $config | Stop-SqlDscRSWebService -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = & ({ $config | Stop-SqlDscRSWebService -Force -ErrorAction 'Stop' })
 
             # Verify web service is still stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.IsWebServiceEnabled | Should -BeFalse
+            $verifyConfig.IsWebServiceEnabled | Should-BeFalse
         }
     }
 
     Context 'When stopping web service for SQL Server Reporting Services' -Tag @('Integration_SQL2022_RS') {
         It 'Should stop web service using pipeline' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            { $config | Stop-SqlDscRSWebService -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = & ({ $config | Stop-SqlDscRSWebService -Force -ErrorAction 'Stop' })
 
             # Verify web service is stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.IsWebServiceEnabled | Should -BeFalse
+            $verifyConfig.IsWebServiceEnabled | Should-BeFalse
         }
 
         It 'Should be idempotent when web service is already stopped' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            { $config | Stop-SqlDscRSWebService -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = & ({ $config | Stop-SqlDscRSWebService -Force -ErrorAction 'Stop' })
 
             # Verify web service is still stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'SSRS'
-            $verifyConfig.IsWebServiceEnabled | Should -BeFalse
+            $verifyConfig.IsWebServiceEnabled | Should-BeFalse
         }
     }
 
     Context 'When stopping web service for Power BI Report Server' -Tag @('Integration_PowerBI') {
         It 'Should stop web service using pipeline' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
-            { $config | Stop-SqlDscRSWebService -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = & ({ $config | Stop-SqlDscRSWebService -Force -ErrorAction 'Stop' })
 
             # Verify web service is stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
-            $verifyConfig.IsWebServiceEnabled | Should -BeFalse
+            $verifyConfig.IsWebServiceEnabled | Should-BeFalse
         }
 
         It 'Should be idempotent when web service is already stopped' {
             $config = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
-            { $config | Stop-SqlDscRSWebService -Force -ErrorAction 'Stop' } | Should -Not -Throw
+            $null = & ({ $config | Stop-SqlDscRSWebService -Force -ErrorAction 'Stop' })
 
             # Verify web service is still stopped
             $verifyConfig = Get-SqlDscRSConfiguration -InstanceName 'PBIRS'
-            $verifyConfig.IsWebServiceEnabled | Should -BeFalse
+            $verifyConfig.IsWebServiceEnabled | Should-BeFalse
         }
     }
 }

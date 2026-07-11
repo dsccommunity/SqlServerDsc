@@ -58,14 +58,14 @@ Describe 'Disable-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL201
         It 'Should disable the specified login' {
             # Verify login is initially enabled
             $loginBefore = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName
-            $loginBefore.IsDisabled | Should -BeFalse
+            $loginBefore.IsDisabled | Should-BeFalse
 
             # Disable the login
             Disable-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Force -ErrorAction 'Stop'
 
             # Verify login is now disabled
             $loginAfter = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
-            $loginAfter.IsDisabled | Should -BeTrue
+            $loginAfter.IsDisabled | Should-BeTrue
         }
 
         It 'Should disable the login with Refresh parameter' {
@@ -74,7 +74,7 @@ Describe 'Disable-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             # Verify login is disabled
             $loginAfter = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
-            $loginAfter.IsDisabled | Should -BeTrue
+            $loginAfter.IsDisabled | Should-BeTrue
         }
 
         It 'Should accept ServerObject from pipeline' {
@@ -83,7 +83,7 @@ Describe 'Disable-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             # Verify login is disabled
             $loginAfter = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
-            $loginAfter.IsDisabled | Should -BeTrue
+            $loginAfter.IsDisabled | Should-BeTrue
         }
     }
 
@@ -99,7 +99,7 @@ Describe 'Disable-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             # Verify login is disabled
             $loginAfter = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
-            $loginAfter.IsDisabled | Should -BeTrue
+            $loginAfter.IsDisabled | Should-BeTrue
         }
 
         It 'Should accept LoginObject from pipeline' {
@@ -109,14 +109,14 @@ Describe 'Disable-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL201
 
             # Verify login is disabled
             $loginAfter = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName -Refresh
-            $loginAfter.IsDisabled | Should -BeTrue
+            $loginAfter.IsDisabled | Should-BeTrue
         }
     }
 
     Context 'When disabling a non-existent login' {
         It 'Should throw an error for non-existent login' {
             { Disable-SqlDscLogin -ServerObject $script:serverObject -Name 'NonExistentLogin' -Force -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
     }
 }

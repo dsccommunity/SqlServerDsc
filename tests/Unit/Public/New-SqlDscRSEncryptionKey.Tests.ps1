@@ -32,13 +32,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -58,8 +60,8 @@ Describe 'New-SqlDscRSEncryptionKey' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -75,15 +77,15 @@ Describe 'New-SqlDscRSEncryptionKey' {
         It 'Should create new encryption key without errors' {
             $null = $mockCimInstance | New-SqlDscRSEncryptionKey -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -ParameterFilter {
                 $MethodName -eq 'ReencryptSecureInformation'
-            } -Exactly -Times 1
+            } -Times 1
         }
 
         It 'Should not return anything by default' {
             $result = $mockCimInstance | New-SqlDscRSEncryptionKey -Confirm:$false
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -99,8 +101,8 @@ Describe 'New-SqlDscRSEncryptionKey' {
         It 'Should return the configuration CIM instance' {
             $result = $mockCimInstance | New-SqlDscRSEncryptionKey -PassThru -Confirm:$false
 
-            $result | Should -Not -BeNullOrEmpty
-            $result.InstanceName | Should -Be 'SSRS'
+            $result | Should-BeTruthy
+            $result.InstanceName | Should-Be 'SSRS'
         }
     }
 
@@ -116,7 +118,7 @@ Describe 'New-SqlDscRSEncryptionKey' {
         It 'Should create new encryption key without confirmation' {
             $null = $mockCimInstance | New-SqlDscRSEncryptionKey -Force
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 
@@ -132,7 +134,7 @@ Describe 'New-SqlDscRSEncryptionKey' {
         }
 
         It 'Should throw a terminating error' {
-            { $mockCimInstance | New-SqlDscRSEncryptionKey -Confirm:$false } | Should -Throw -ErrorId 'NSRSEK0001,New-SqlDscRSEncryptionKey'
+            { $mockCimInstance | New-SqlDscRSEncryptionKey -Confirm:$false } | Should-Throw -FullyQualifiedErrorId 'NSRSEK0001,New-SqlDscRSEncryptionKey'
         }
     }
 
@@ -148,7 +150,7 @@ Describe 'New-SqlDscRSEncryptionKey' {
         It 'Should not call Invoke-RsCimMethod' {
             $mockCimInstance | New-SqlDscRSEncryptionKey -WhatIf
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 0
         }
     }
 
@@ -164,7 +166,7 @@ Describe 'New-SqlDscRSEncryptionKey' {
         It 'Should create new encryption key' {
             $null = New-SqlDscRSEncryptionKey -Configuration $mockCimInstance -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
+            Should-Invoke -CommandName Invoke-RsCimMethod -Exactly -Times 1
         }
     }
 }

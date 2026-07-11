@@ -12,6 +12,7 @@ BuildWorkflow:
     - Build_Module_ModuleBuilder
     - Build_NestedModules_ModuleBuilder
     - Create_Changelog_Release_Output
+    - Create_DscAdaptedResourceManifests
 
   docs:
     - Clean_WikiContent_Folder
@@ -84,6 +85,8 @@ ModuleBuildTasks:
     - 'Task.*'
   DscResource.Test:
     - 'Task.*'
+  DscResource.Authoring:
+    - 'Task.*'
 
 TaskHeader: |
   param($Path)
@@ -139,6 +142,8 @@ Pester:
     TestResult:
       OutputFormat: NUnitXML
       OutputEncoding: ascii
+    Should:
+      DisableV5: true
   ExcludeFromCodeCoverage:
     - Modules/DscResource.Common
     - Modules/DscResource.Base

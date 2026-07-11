@@ -32,13 +32,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -67,38 +69,38 @@ Describe 'Get-SqlDscRSConfigFile' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have ByInstanceName as the default parameter set' {
             $command = Get-Command -Name 'Get-SqlDscRSConfigFile'
 
-            $command.DefaultParameterSet | Should -Be 'ByInstanceName'
+            $command.DefaultParameterSet | Should-Be 'ByInstanceName'
         }
 
         It 'Should have InstanceName as a mandatory parameter in the ByInstanceName parameter set' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRSConfigFile').Parameters['InstanceName']
 
-            $parameterInfo.Attributes.Where({$_.ParameterSetName -eq 'ByInstanceName'}).Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Where({$_.ParameterSetName -eq 'ByInstanceName'}).Mandatory | Should-BeTrue
         }
 
         It 'Should have SetupConfiguration as a mandatory parameter in the ByConfiguration parameter set' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRSConfigFile').Parameters['SetupConfiguration']
 
-            $parameterInfo.Attributes.Where({$_.ParameterSetName -eq 'ByConfiguration'}).Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Where({$_.ParameterSetName -eq 'ByConfiguration'}).Mandatory | Should-BeTrue
         }
 
         It 'Should accept SetupConfiguration parameter from pipeline' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRSConfigFile').Parameters['SetupConfiguration']
 
-            $parameterInfo.Attributes.ValueFromPipeline | Should -Contain $true
+            $parameterInfo.Attributes.ValueFromPipeline | Should-ContainCollection $true
         }
 
         It 'Should have Path as a mandatory parameter in the ByPath parameter set' {
             $parameterInfo = (Get-Command -Name 'Get-SqlDscRSConfigFile').Parameters['Path']
 
-            $parameterInfo.Attributes.Where({$_.ParameterSetName -eq 'ByPath'}).Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Where({$_.ParameterSetName -eq 'ByPath'}).Mandatory | Should-BeTrue
         }
     }
 
@@ -140,21 +142,21 @@ Describe 'Get-SqlDscRSConfigFile' {
         It 'Should return the configuration file as an XML object' {
             $result = Get-SqlDscRSConfigFile -InstanceName 'SSRS'
 
-            $result | Should -BeOfType 'System.Xml.XmlDocument'
-            $result.Configuration | Should -Not -BeNullOrEmpty
-            $result.Configuration.Dsn | Should -Be 'TestDsn'
-            $result.Configuration.InstanceId | Should -Be 'MSRS13.SSRS'
+            $result | Should-HaveType 'System.Xml.XmlDocument'
+            $result.Configuration | Should-BeTruthy
+            $result.Configuration.Dsn | Should-Be 'TestDsn'
+            $result.Configuration.InstanceId | Should-Be 'MSRS13.SSRS'
 
-            Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-Content -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-Content -Exactly -Scope It -Times 1
         }
 
         It 'Should allow accessing nested XML elements' {
             $result = Get-SqlDscRSConfigFile -InstanceName 'SSRS'
 
-            $result.Configuration.Service.IsSchedulingService | Should -Be 'True'
+            $result.Configuration.Service.IsSchedulingService | Should-Be 'True'
             # Self-closing XML elements exist as empty string, so check with SelectSingleNode
-            $result.SelectSingleNode('//Authentication/AuthenticationTypes/RSWindowsNTLM') | Should -Not -BeNullOrEmpty
+            $result.SelectSingleNode('//Authentication/AuthenticationTypes/RSWindowsNTLM') | Should-BeTruthy
         }
     }
 
@@ -166,9 +168,9 @@ Describe 'Get-SqlDscRSConfigFile' {
         }
 
         It 'Should throw a terminating error' {
-            { Get-SqlDscRSConfigFile -InstanceName 'NonExistent' } | Should -Throw -ErrorId 'GSRSCF0001*'
+            { Get-SqlDscRSConfigFile -InstanceName 'NonExistent' } | Should-Throw -FullyQualifiedErrorId 'GSRSCF0001*'
 
-            Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Scope It -Times 1
         }
     }
 
@@ -185,9 +187,9 @@ Describe 'Get-SqlDscRSConfigFile' {
         }
 
         It 'Should throw a terminating error' {
-            { Get-SqlDscRSConfigFile -InstanceName 'SSRS' } | Should -Throw -ErrorId 'GSRSCF0002*'
+            { Get-SqlDscRSConfigFile -InstanceName 'SSRS' } | Should-Throw -FullyQualifiedErrorId 'GSRSCF0002*'
 
-            Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Scope It -Times 1
         }
     }
 
@@ -210,10 +212,10 @@ Describe 'Get-SqlDscRSConfigFile' {
         }
 
         It 'Should throw a terminating error' {
-            { Get-SqlDscRSConfigFile -InstanceName 'SSRS' } | Should -Throw -ErrorId 'GSRSCF0003*'
+            { Get-SqlDscRSConfigFile -InstanceName 'SSRS' } | Should-Throw -FullyQualifiedErrorId 'GSRSCF0003*'
 
-            Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-Content -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-Content -Exactly -Scope It -Times 1
         }
     }
 
@@ -243,19 +245,19 @@ Describe 'Get-SqlDscRSConfigFile' {
         It 'Should return the configuration file for piped SetupConfiguration' {
             $result = $mockSetupConfiguration | Get-SqlDscRSConfigFile
 
-            $result | Should -BeOfType 'System.Xml.XmlDocument'
-            $result.Configuration.Dsn | Should -Be 'TestDsn'
+            $result | Should-HaveType 'System.Xml.XmlDocument'
+            $result.Configuration.Dsn | Should-Be 'TestDsn'
 
-            Should -Invoke -CommandName Get-Content -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-Content -Exactly -Scope It -Times 1
         }
 
         It 'Should work with SetupConfiguration parameter passed directly' {
             $result = Get-SqlDscRSConfigFile -SetupConfiguration $mockSetupConfiguration
 
-            $result | Should -BeOfType 'System.Xml.XmlDocument'
-            $result.Configuration.InstanceId | Should -Be 'MSRS13.SSRS'
+            $result | Should-HaveType 'System.Xml.XmlDocument'
+            $result.Configuration.InstanceId | Should-Be 'MSRS13.SSRS'
 
-            Should -Invoke -CommandName Get-Content -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-Content -Exactly -Scope It -Times 1
         }
     }
 
@@ -270,7 +272,7 @@ Describe 'Get-SqlDscRSConfigFile' {
         }
 
         It 'Should throw a terminating error' {
-            { Get-SqlDscRSConfigFile -SetupConfiguration $mockSetupConfiguration } | Should -Throw -ErrorId 'GSRSCF0002*'
+            { Get-SqlDscRSConfigFile -SetupConfiguration $mockSetupConfiguration } | Should-Throw -FullyQualifiedErrorId 'GSRSCF0002*'
         }
     }
 
@@ -297,12 +299,12 @@ Describe 'Get-SqlDscRSConfigFile' {
         It 'Should return the configuration file from the specified path' {
             $result = Get-SqlDscRSConfigFile -Path $mockConfigFilePath
 
-            $result | Should -BeOfType 'System.Xml.XmlDocument'
-            $result.Configuration.Dsn | Should -Be 'BackupDsn'
-            $result.Configuration.InstanceId | Should -Be 'MSRS13.BACKUP'
+            $result | Should-HaveType 'System.Xml.XmlDocument'
+            $result.Configuration.Dsn | Should-Be 'BackupDsn'
+            $result.Configuration.InstanceId | Should-Be 'MSRS13.BACKUP'
 
-            Should -Invoke -CommandName Test-Path -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-Content -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Test-Path -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-Content -Exactly -Scope It -Times 1
         }
     }
 
@@ -316,9 +318,9 @@ Describe 'Get-SqlDscRSConfigFile' {
         }
 
         It 'Should throw a terminating error' {
-            { Get-SqlDscRSConfigFile -Path $mockConfigFilePath } | Should -Throw -ErrorId 'GSRSCF0004*'
+            { Get-SqlDscRSConfigFile -Path $mockConfigFilePath } | Should-Throw -FullyQualifiedErrorId 'GSRSCF0004*'
 
-            Should -Invoke -CommandName Test-Path -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Test-Path -Exactly -Scope It -Times 1
         }
     }
 
@@ -354,13 +356,13 @@ Describe 'Get-SqlDscRSConfigFile' {
         It 'Should return the configuration file for PBIRS' {
             $result = Get-SqlDscRSConfigFile -InstanceName 'PBIRS'
 
-            $result | Should -BeOfType 'System.Xml.XmlDocument'
-            $result.Configuration.Dsn | Should -Be 'PBIRSDsn'
-            $result.Configuration.InstanceId | Should -Be 'PBIRS'
-            $result.Configuration.Service.IsDataModelRefreshService | Should -Be 'True'
+            $result | Should-HaveType 'System.Xml.XmlDocument'
+            $result.Configuration.Dsn | Should-Be 'PBIRSDsn'
+            $result.Configuration.InstanceId | Should-Be 'PBIRS'
+            $result.Configuration.Service.IsDataModelRefreshService | Should-Be 'True'
 
-            Should -Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-Content -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-SqlDscRSSetupConfiguration -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-Content -Exactly -Scope It -Times 1
         }
     }
 
@@ -402,8 +404,8 @@ Describe 'Get-SqlDscRSConfigFile' {
 
             $pdfExtension = $result.SelectSingleNode('//Extension[@Name="PDF"]')
 
-            $pdfExtension | Should -Not -BeNullOrEmpty
-            $pdfExtension.Name | Should -Be 'PDF'
+            $pdfExtension | Should-BeTruthy
+            $pdfExtension.Name | Should-Be 'PDF'
         }
 
         It 'Should support SelectNodes XPath queries' {
@@ -411,9 +413,9 @@ Describe 'Get-SqlDscRSConfigFile' {
 
             $extensions = $result.SelectNodes('//Extension[@Name]')
 
-            $extensions.Count | Should -Be 4
-            ($extensions | ForEach-Object { $_.Name }) | Should -Contain 'PDF'
-            ($extensions | ForEach-Object { $_.Name }) | Should -Contain 'Report Server Email'
+            $extensions.Count | Should-Be 4
+            ($extensions | ForEach-Object { $_.Name }) | Should-ContainCollection 'PDF'
+            ($extensions | ForEach-Object { $_.Name }) | Should-ContainCollection 'Report Server Email'
         }
     }
 }

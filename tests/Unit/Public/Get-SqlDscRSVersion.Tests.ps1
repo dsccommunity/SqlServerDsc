@@ -32,13 +32,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -58,8 +60,8 @@ Describe 'Get-SqlDscRSVersion' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
@@ -71,11 +73,11 @@ Describe 'Get-SqlDscRSVersion' {
 
             $result = $mockConfiguration | Get-SqlDscRSVersion
 
-            $result | Should -BeOfType [System.Version]
-            $result.Major | Should -Be 13
-            $result.Minor | Should -Be 0
-            $result.Build | Should -Be 4001
-            $result.Revision | Should -Be 0
+            $result | Should-HaveType ([System.Version])
+            $result.Major | Should-Be 13
+            $result.Minor | Should-Be 0
+            $result.Build | Should-Be 4001
+            $result.Revision | Should-Be 0
         }
 
         It 'Should return the version for SQL Server 2017 (version 14)' {
@@ -85,11 +87,11 @@ Describe 'Get-SqlDscRSVersion' {
 
             $result = $mockConfiguration | Get-SqlDscRSVersion
 
-            $result | Should -BeOfType [System.Version]
-            $result.Major | Should -Be 14
-            $result.Minor | Should -Be 0
-            $result.Build | Should -Be 600
-            $result.Revision | Should -Be 250
+            $result | Should-HaveType ([System.Version])
+            $result.Major | Should-Be 14
+            $result.Minor | Should-Be 0
+            $result.Build | Should-Be 600
+            $result.Revision | Should-Be 250
         }
 
         It 'Should return the version for SQL Server 2019 (version 15)' {
@@ -99,8 +101,8 @@ Describe 'Get-SqlDscRSVersion' {
 
             $result = $mockConfiguration | Get-SqlDscRSVersion
 
-            $result | Should -BeOfType [System.Version]
-            $result.Major | Should -Be 15
+            $result | Should-HaveType ([System.Version])
+            $result.Major | Should-Be 15
         }
 
         It 'Should return the version for SQL Server 2022 (version 16)' {
@@ -110,8 +112,8 @@ Describe 'Get-SqlDscRSVersion' {
 
             $result = $mockConfiguration | Get-SqlDscRSVersion
 
-            $result | Should -BeOfType [System.Version]
-            $result.Major | Should -Be 16
+            $result | Should-HaveType ([System.Version])
+            $result.Major | Should-Be 16
         }
 
         It 'Should return the version for SQL Server 2014 (version 12)' {
@@ -121,8 +123,8 @@ Describe 'Get-SqlDscRSVersion' {
 
             $result = $mockConfiguration | Get-SqlDscRSVersion
 
-            $result | Should -BeOfType [System.Version]
-            $result.Major | Should -Be 12
+            $result | Should-HaveType ([System.Version])
+            $result.Major | Should-Be 12
         }
     }
 
@@ -134,8 +136,8 @@ Describe 'Get-SqlDscRSVersion' {
 
             $mockConfiguration | Get-SqlDscRSVersion -ErrorVariable mockErrorVariable -ErrorAction 'SilentlyContinue'
 
-            $mockErrorVariable | Should -HaveCount 1
-            $mockErrorVariable[0].FullyQualifiedErrorId | Should -Be 'GSRSV0001,Get-SqlDscRSVersion'
+            $mockErrorVariable | Should-BeCollection -Count 1
+            $mockErrorVariable[0].FullyQualifiedErrorId | Should-Be 'GSRSV0001,Get-SqlDscRSVersion'
         }
 
         It 'Should write an error when CurrentVersion is empty' {
@@ -145,8 +147,8 @@ Describe 'Get-SqlDscRSVersion' {
 
             $mockConfiguration | Get-SqlDscRSVersion -ErrorVariable mockErrorVariable -ErrorAction 'SilentlyContinue'
 
-            $mockErrorVariable | Should -HaveCount 1
-            $mockErrorVariable[0].FullyQualifiedErrorId | Should -Be 'GSRSV0001,Get-SqlDscRSVersion'
+            $mockErrorVariable | Should-BeCollection -Count 1
+            $mockErrorVariable[0].FullyQualifiedErrorId | Should-Be 'GSRSV0001,Get-SqlDscRSVersion'
         }
     }
 
@@ -158,8 +160,8 @@ Describe 'Get-SqlDscRSVersion' {
 
             $result = Get-SqlDscRSVersion -Configuration $mockConfiguration
 
-            $result | Should -BeOfType [System.Version]
-            $result.Major | Should -Be 15
+            $result | Should-HaveType ([System.Version])
+            $result.Major | Should-Be 15
         }
     }
 }

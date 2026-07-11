@@ -51,14 +51,14 @@ Describe 'Get-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
                 Casting to array to ensure we get the count on Windows PowerShell
                 when there is only one login.
             #>
-            @($result).Count | Should -BeGreaterOrEqual 1
-            @($result)[0] | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Login'
+            @($result).Count | Should-BeGreaterThanOrEqual 1
+            @($result)[0] | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Login'
         }
 
         It 'Should return system logins including sa' {
             $result = Get-SqlDscLogin -ServerObject $script:serverObject
 
-            $result.Name | Should -Contain 'sa'
+            $result.Name | Should-ContainCollection 'sa'
         }
     }
 
@@ -66,20 +66,20 @@ Describe 'Get-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         It 'Should return the specified login when it exists' {
             $result = Get-SqlDscLogin -ServerObject $script:serverObject -Name 'sa'
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Login'
-            $result.Name | Should -Be 'sa'
-            $result.LoginType | Should -Be 'SqlLogin'
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Login'
+            $result.Name | Should-Be 'sa'
+            $result.LoginType | Should-Be 'SqlLogin'
         }
 
         It 'Should throw an error when the login does not exist' {
             { Get-SqlDscLogin -ServerObject $script:serverObject -Name 'NonExistentLogin' -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage 'There is no login with the name ''NonExistentLogin''.'
+                Should-Throw -ExceptionMessage 'There is no login with the name ''NonExistentLogin''.'
         }
 
         It 'Should return null when the login does not exist and error action is SilentlyContinue' {
             $result = Get-SqlDscLogin -ServerObject $script:serverObject -Name 'NonExistentLogin' -ErrorAction 'SilentlyContinue'
 
-            $result | Should -BeNullOrEmpty
+            $result | Should-BeFalsy
         }
     }
 
@@ -88,7 +88,7 @@ Describe 'Get-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
             $resultWithoutRefresh = Get-SqlDscLogin -ServerObject $script:serverObject
             $resultWithRefresh = Get-SqlDscLogin -ServerObject $script:serverObject -Refresh
 
-            @($resultWithoutRefresh).Count | Should -Be @($resultWithRefresh).Count
+            @($resultWithoutRefresh).Count | Should-Be @($resultWithRefresh).Count
         }
     }
 
@@ -96,8 +96,8 @@ Describe 'Get-SqlDscLogin' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 
         It 'Should accept ServerObject from pipeline' {
             $result = $script:serverObject | Get-SqlDscLogin -Name 'sa'
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Login'
-            $result.Name | Should -Be 'sa'
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Login'
+            $result.Name | Should-Be 'sa'
         }
     }
 }

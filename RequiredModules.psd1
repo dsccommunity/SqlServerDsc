@@ -16,10 +16,7 @@
         back to stable.
     #>
     Pester                         = @{
-        Version    = 'latest'
-        Parameters = @{
-            AllowPrerelease = $true
-        }
+        Version = '6.0.0'
     }
 
     Plaster                        = 'latest'
@@ -75,4 +72,12 @@
 
     # For development
     'Viscalyx.Common'              = 'latest' # Invoke-PesterJob to run tests
+
+    # For producing Microsoft DSC resource manifests
+    'DscResource.Authoring' = @{
+        Version    = 'latest'
+        Parameters = @{
+            AllowPrerelease = $true
+        }
+    }
 }

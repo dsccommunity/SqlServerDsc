@@ -336,13 +336,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'env:SqlServerDscCI'
 }
@@ -385,47 +387,47 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
         It 'Should return true when database exists and no properties specified' {
             $result = Test-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'TestDatabase'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should throw an error when database does not exist' {
-            { Test-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'NonExistentDatabase' } | Should -Throw -ExpectedMessage "Database 'NonExistentDatabase' was not found."
+            { Test-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'NonExistentDatabase' } | Should-Throw -ExceptionMessage "Database 'NonExistentDatabase' was not found."
         }
 
         It 'Should return true when single property matches' {
             $result = Test-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'TestDatabase' -Collation 'SQL_Latin1_General_CP1_CI_AS'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should return false when single property does not match' {
             $result = Test-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'TestDatabase' -Collation 'Different_Collation'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
 
         It 'Should return true when multiple properties match' {
             $result = Test-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'TestDatabase' -Collation 'SQL_Latin1_General_CP1_CI_AS' -CompatibilityLevel 'Version150' -Owner 'sa'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should return false when one of multiple properties does not match' {
             $result = Test-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'TestDatabase' -Collation 'SQL_Latin1_General_CP1_CI_AS' -CompatibilityLevel 'Version140' -Owner 'sa'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
 
         It 'Should return true when boolean property matches' {
             $result = Test-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'TestDatabase' -AutoClose:$false
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should return false when boolean property does not match' {
             $result = Test-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'TestDatabase' -AutoClose:$true
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
 
         It 'Should pass Refresh parameter to Get-SqlDscDatabase when specified' {
@@ -435,9 +437,9 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
 
             Test-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'TestDatabase' -Refresh
 
-            Should -Invoke -CommandName Get-SqlDscDatabase -ParameterFilter {
+            Should-Invoke -CommandName Get-SqlDscDatabase -Exactly -ParameterFilter {
                 $Refresh -eq $true
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should not pass Refresh parameter to Get-SqlDscDatabase when not specified' {
@@ -447,9 +449,9 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
 
             Test-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'TestDatabase'
 
-            Should -Invoke -CommandName Get-SqlDscDatabase -ParameterFilter {
+            Should-Invoke -CommandName Get-SqlDscDatabase -Exactly -ParameterFilter {
                 -not $PSBoundParameters.ContainsKey('Refresh')
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 
@@ -475,37 +477,37 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
         It 'Should return true when no properties specified' {
             $result = Test-SqlDscDatabaseProperty -DatabaseObject $mockExistingDatabase
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should return true when single property matches' {
             $result = Test-SqlDscDatabaseProperty -DatabaseObject $mockExistingDatabase -Collation 'SQL_Latin1_General_CP1_CI_AS'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should return false when single property does not match' {
             $result = Test-SqlDscDatabaseProperty -DatabaseObject $mockExistingDatabase -Collation 'Different_Collation'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
 
         It 'Should return true when multiple properties match' {
             $result = Test-SqlDscDatabaseProperty -DatabaseObject $mockExistingDatabase -Collation 'SQL_Latin1_General_CP1_CI_AS' -CompatibilityLevel 'Version150' -Owner 'sa'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should return false when one of multiple properties does not match' {
             $result = Test-SqlDscDatabaseProperty -DatabaseObject $mockExistingDatabase -Collation 'SQL_Latin1_General_CP1_CI_AS' -CompatibilityLevel 'Version140' -Owner 'sa'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
 
         It 'Should accept pipeline input' {
             $result = $mockExistingDatabase | Test-SqlDscDatabaseProperty -Collation 'SQL_Latin1_General_CP1_CI_AS'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
     }
 
@@ -527,13 +529,13 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
         It 'Should handle string properties correctly when they match' {
             $result = Test-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'TestDatabase' -RecoveryModel 'Full'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should handle string properties correctly when they do not match' {
             $result = Test-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'TestDatabase' -RecoveryModel 'Simple'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 
@@ -559,7 +561,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
         It 'Should throw an exception when property does not exist on the database object' {
             # AcceleratedRecoveryEnabled is not added to the minimal database object
             { Test-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'MinimalDatabase' -AcceleratedRecoveryEnabled:$true -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage "The property 'AcceleratedRecoveryEnabled' does not exist on database 'MinimalDatabase'. This might be due to the property not being supported on this SQL Server version.*"
+                Should-Throw -ExceptionMessage "The property 'AcceleratedRecoveryEnabled' does not exist on database 'MinimalDatabase'. This might be due to the property not being supported on this SQL Server version.*"
         }
 
         It 'Should continue testing other properties after encountering a missing property' {
@@ -567,7 +569,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
             $result = Test-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'MinimalDatabase' -AcceleratedRecoveryEnabled:$true -Collation 'SQL_Latin1_General_CP1_CI_AS' -ErrorAction 'SilentlyContinue'
 
             # Should return true because the existing property (Collation) matches
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should return false when a missing property is tested along with a non-matching property' {
@@ -575,7 +577,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
             $result = Test-SqlDscDatabaseProperty -ServerObject $mockServerObject -Name 'MinimalDatabase' -AcceleratedRecoveryEnabled:$true -Collation 'Different_Collation' -ErrorAction 'SilentlyContinue'
 
             # Should return false because the existing property (Collation) does not match
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 
@@ -597,26 +599,26 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
 
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
 
         It 'Should have ServerObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscDatabaseProperty').Parameters['ServerObject']
 
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have Name as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscDatabaseProperty').Parameters['Name']
 
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
 
         It 'Should have DatabaseObject as a mandatory parameter' {
             $parameterInfo = (Get-Command -Name 'Test-SqlDscDatabaseProperty').Parameters['DatabaseObject']
 
-            $parameterInfo.Attributes.Mandatory | Should -BeTrue
+            $parameterInfo.Attributes.Mandatory | Should-All -FilterScript { $_ | Should-BeTrue }
         }
     }
 
@@ -756,7 +758,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
             @{ ParameterName = 'UserAccess' }
         ) {
             $command = Get-Command -Name 'Test-SqlDscDatabaseProperty'
-            $command.Parameters.Keys | Should -Contain $ParameterName
+            $command.Parameters.Keys | Should-ContainCollection $ParameterName
         }
 
         It 'Should return true when property <PropertyName> matches expected value' -ForEach $script:testCases {
@@ -768,7 +770,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
             }
 
             $result = Test-SqlDscDatabaseProperty @params
-            $result | Should -BeTrue -Because "Property '$PropertyName' with value '$TestValue' should match"
+            $result | Should-BeTrue -Because "Property '$PropertyName' with value '$TestValue' should match"
         }
 
         It 'Should return false when property <PropertyName> does not match expected value' -ForEach $script:mismatchTestCases {
@@ -780,7 +782,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
             }
 
             $result = Test-SqlDscDatabaseProperty @params
-            $result | Should -BeFalse -Because "Property '$PropertyName' with different value should not match"
+            $result | Should-BeFalse -Because "Property '$PropertyName' with different value should not match"
         }
 
         It 'Should test multiple properties together and return true when all match' {
@@ -792,7 +794,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
                 -RecoveryModel 'Full' `
                 -Owner 'sa'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should test multiple properties together and return false when one does not match' {
@@ -804,7 +806,7 @@ Describe 'Test-SqlDscDatabaseProperty' -Tag 'Public' {
                 -RecoveryModel 'Full' `
                 -Owner 'sa'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 }

@@ -37,13 +37,15 @@ BeforeAll {
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-Invoke:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should-NotInvoke:ModuleName'] = $script:moduleName
 }
 
 AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-Invoke:ModuleName')
+    $PSDefaultParameterValues.Remove('Should-NotInvoke:ModuleName')
 
     Remove-Item -Path 'Env:\SqlServerDscCI' -ErrorAction 'SilentlyContinue'
 }
@@ -66,25 +68,25 @@ Describe 'Disable-SqlDscAgentOperator' -Tag 'Public' {
                     @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
                     @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
                 )
-            $result.ParameterSetName | Should -Be $ExpectedParameterSetName
-            $result.ParameterListAsString | Should -Be $ExpectedParameters
+            $result.ParameterSetName | Should-Be $ExpectedParameterSetName
+            $result.ParameterListAsString | Should-Be $ExpectedParameters
         }
     }
 
     Context 'When command has correct parameter properties' {
         It 'Should have ServerObject as a mandatory parameter in ServerObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Disable-SqlDscAgentOperator').Parameters['ServerObject']
-            $parameterInfo.ParameterSets['ServerObject'].IsMandatory | Should -BeTrue
+            $parameterInfo.ParameterSets['ServerObject'].IsMandatory | Should-BeTrue
         }
 
         It 'Should have OperatorObject as a mandatory parameter in OperatorObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Disable-SqlDscAgentOperator').Parameters['OperatorObject']
-            $parameterInfo.ParameterSets['OperatorObject'].IsMandatory | Should -BeTrue
+            $parameterInfo.ParameterSets['OperatorObject'].IsMandatory | Should-BeTrue
         }
 
         It 'Should have Name as a mandatory parameter in ServerObject parameter set' {
             $parameterInfo = (Get-Command -Name 'Disable-SqlDscAgentOperator').Parameters['Name']
-            $parameterInfo.ParameterSets['ServerObject'].IsMandatory | Should -BeTrue
+            $parameterInfo.ParameterSets['ServerObject'].IsMandatory | Should-BeTrue
         }
     }
 
@@ -112,24 +114,24 @@ Describe 'Disable-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should disable the operator successfully' {
             Disable-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'TestOperator' -Force
 
-            $script:mockOperator.Enabled | Should -BeFalse
-            Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1 -Scope It
+            $script:mockOperator.Enabled | Should-BeFalse
+            Should-Invoke -CommandName Get-AgentOperatorObject -Exactly -Scope It -Times 1
         }
 
         It 'Should disable the operator with Refresh parameter' {
             Disable-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'TestOperator' -Refresh -Force
 
-            $script:mockOperator.Enabled | Should -BeFalse
-            Should -Invoke -CommandName Get-AgentOperatorObject -ParameterFilter {
+            $script:mockOperator.Enabled | Should-BeFalse
+            Should-Invoke -CommandName Get-AgentOperatorObject -Exactly -ParameterFilter {
                 $Refresh -eq $true
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should use pipeline input for ServerObject' {
             $script:mockServerObject | Disable-SqlDscAgentOperator -Name 'TestOperator' -Force
 
-            $script:mockOperator.Enabled | Should -BeFalse
-            Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1 -Scope It
+            $script:mockOperator.Enabled | Should-BeFalse
+            Should-Invoke -CommandName Get-AgentOperatorObject -Exactly -Scope It -Times 1
         }
 
         It 'Should throw when operator cannot be found' {
@@ -138,7 +140,7 @@ Describe 'Disable-SqlDscAgentOperator' -Tag 'Public' {
             }
 
             { Disable-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'NonExistentOperator' -Force } |
-                Should -Throw -ExpectedMessage 'Operator not found'
+                Should-Throw -ExceptionMessage 'Operator not found'
         }
 
         It 'Should support WhatIf' {
@@ -146,8 +148,8 @@ Describe 'Disable-SqlDscAgentOperator' -Tag 'Public' {
 
             Disable-SqlDscAgentOperator -ServerObject $script:mockServerObject -Name 'TestOperator' -WhatIf
 
-            $script:mockOperator.Enabled | Should -BeTrue
-            Should -Invoke -CommandName Get-AgentOperatorObject -Exactly -Times 1 -Scope It
+            $script:mockOperator.Enabled | Should-BeTrue
+            Should-Invoke -CommandName Get-AgentOperatorObject -Exactly -Scope It -Times 1
         }
     }
 
@@ -170,7 +172,7 @@ Describe 'Disable-SqlDscAgentOperator' -Tag 'Public' {
         It 'Should disable the operator successfully using OperatorObject' {
             Disable-SqlDscAgentOperator -OperatorObject $script:mockOperator -Force
 
-            $script:mockOperator.Enabled | Should -BeFalse
+            $script:mockOperator.Enabled | Should-BeFalse
         }
 
         It 'Should use pipeline input for OperatorObject' {
@@ -178,7 +180,7 @@ Describe 'Disable-SqlDscAgentOperator' -Tag 'Public' {
 
             $script:mockOperator | Disable-SqlDscAgentOperator -Force
 
-            $script:mockOperator.Enabled | Should -BeFalse
+            $script:mockOperator.Enabled | Should-BeFalse
         }
 
         It 'Should support WhatIf with OperatorObject' {
@@ -186,7 +188,7 @@ Describe 'Disable-SqlDscAgentOperator' -Tag 'Public' {
 
             Disable-SqlDscAgentOperator -OperatorObject $script:mockOperator -WhatIf
 
-            $script:mockOperator.Enabled | Should -BeTrue
+            $script:mockOperator.Enabled | Should-BeTrue
         }
     }
 
@@ -213,7 +215,7 @@ Describe 'Disable-SqlDscAgentOperator' -Tag 'Public' {
 
         It 'Should throw terminating error when disabling fails' {
             { Disable-SqlDscAgentOperator -OperatorObject $script:mockOperator -Force } |
-                Should -Throw -ExpectedMessage "*Failed to disable SQL Agent Operator 'TestOperator'*"
+                Should-Throw -ExceptionMessage "*Failed to disable SQL Agent Operator 'TestOperator'*"
         }
     }
 }

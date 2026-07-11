@@ -36,9 +36,9 @@ Describe 'Get-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_
         It 'Should return a module object when preferred modules are available' {
             $result = Get-SqlDscPreferredModule -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'PSModuleInfo'
-            $result.Name | Should -BeIn @('SqlServer', 'SQLPS')
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'PSModuleInfo'
+            @('SqlServer', 'SQLPS') | Should-ContainCollection ($result.Name)
         }
 
         It 'Should return SqlServer module if available' {
@@ -48,9 +48,9 @@ Describe 'Get-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_
             if ($sqlServerModule) {
                 $result = Get-SqlDscPreferredModule -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be 'SqlServer'
-                $result.Version | Should -Not -BeNullOrEmpty
+                $result | Should-BeTruthy
+                $result.Name | Should-Be 'SqlServer'
+                $result.Version | Should-BeTruthy
             }
             else {
                 Set-ItResult -Skipped -Because 'SqlServer module is not available in test environment'
@@ -63,14 +63,14 @@ Describe 'Get-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_
             if ($availableModules) {
                 $result = Get-SqlDscPreferredModule -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result | Should -BeOfType 'PSModuleInfo'
+                $result | Should-BeTruthy
+                $result | Should-HaveType 'PSModuleInfo'
 
                 # Verify it returns the latest version for the preferred module
                 $sameNameModules = $availableModules | Where-Object { $_.Name -eq $result.Name }
                 if ($sameNameModules.Count -gt 1) {
                     $latestVersion = ($sameNameModules | Sort-Object Version -Descending | Select-Object -First 1).Version
-                    $result.Version | Should -Be $latestVersion
+                    $result.Version | Should-Be $latestVersion
                 }
             }
             else {
@@ -87,8 +87,8 @@ Describe 'Get-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_
             if ($sqlServerModule) {
                 $result = Get-SqlDscPreferredModule -Name @('SqlServer') -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be 'SqlServer'
+                $result | Should-BeTruthy
+                $result.Name | Should-Be 'SqlServer'
             }
             else {
                 Set-ItResult -Skipped -Because 'SqlServer module is not available in test environment'
@@ -98,9 +98,9 @@ Describe 'Get-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_
         It 'Should return null when specified module does not exist' {
             $result = Get-SqlDscPreferredModule -Name @('NonExistentModule') -ErrorAction 'SilentlyContinue' -ErrorVariable errors
 
-            $result | Should -BeNullOrEmpty
-            $errors | Should -HaveCount 1
-            $errors[0].FullyQualifiedErrorId | Should -Be 'GSDPM0001,Get-SqlDscPreferredModule'
+            $result | Should-BeFalsy
+            $errors | Should-BeCollection -Count 1
+            $errors[0].FullyQualifiedErrorId | Should-Be 'GSDPM0001,Get-SqlDscPreferredModule'
         }
 
         It 'Should return the first available module from a list' {
@@ -110,8 +110,8 @@ Describe 'Get-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_
             if ($sqlServerModule) {
                 $result = Get-SqlDscPreferredModule -Name @('NonExistentModule', 'SqlServer') -ErrorAction 'Stop'
 
-                $result | Should -Not -BeNullOrEmpty
-                $result.Name | Should -Be 'SqlServer'
+                $result | Should-BeTruthy
+                $result.Name | Should-Be 'SqlServer'
             }
             else {
                 Set-ItResult -Skipped -Because 'SqlServer module is not available in test environment'
@@ -123,17 +123,17 @@ Describe 'Get-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_
         It 'Should refresh PSModulePath and return a module' {
             $result = Get-SqlDscPreferredModule -Refresh -ErrorAction 'Stop'
 
-            $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType 'PSModuleInfo'
-            $result.Name | Should -BeIn @('SqlServer', 'SQLPS')
+            $result | Should-BeTruthy
+            $result | Should-HaveType 'PSModuleInfo'
+            @('SqlServer', 'SQLPS') | Should-ContainCollection ($result.Name)
         }
 
         It 'Should return the same result with and without Refresh' {
             $resultWithoutRefresh = Get-SqlDscPreferredModule -ErrorAction 'Stop'
             $resultWithRefresh = Get-SqlDscPreferredModule -Refresh -ErrorAction 'Stop'
 
-            $resultWithoutRefresh.Name | Should -Be $resultWithRefresh.Name
-            $resultWithoutRefresh.Version | Should -Be $resultWithRefresh.Version
+            $resultWithoutRefresh.Name | Should-Be $resultWithRefresh.Name
+            $resultWithoutRefresh.Version | Should-Be $resultWithRefresh.Version
         }
     }
 
@@ -166,8 +166,8 @@ Describe 'Get-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_
                 if ($sqlServerModule -and $env:SMODefaultModuleName -eq 'SqlServer') {
                     $result = Get-SqlDscPreferredModule -ErrorAction 'Stop'
 
-                    $result | Should -Not -BeNullOrEmpty
-                    $result.Name | Should -Be 'SqlServer'
+                    $result | Should-BeTruthy
+                    $result.Name | Should-Be 'SqlServer'
                 }
                 else {
                     Set-ItResult -Skipped -Because 'SqlServer module is not available or environment variable not set properly'
@@ -203,9 +203,9 @@ Describe 'Get-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_
                 if ($sqlServerModule -and $env:SMODefaultModuleVersion) {
                     $result = Get-SqlDscPreferredModule -ErrorAction 'Stop'
 
-                    $result | Should -Not -BeNullOrEmpty
-                    $result.Name | Should -Be 'SqlServer'
-                    $result.Version.ToString() | Should -Be $env:SMODefaultModuleVersion
+                    $result | Should-BeTruthy
+                    $result.Name | Should-Be 'SqlServer'
+                    $result.Version.ToString() | Should-Be $env:SMODefaultModuleVersion
                 }
                 else {
                     Set-ItResult -Skipped -Because 'SqlServer module is not available or environment variable not set properly'
@@ -232,7 +232,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_
                     # Set to a non-existent version
                     $env:SMODefaultModuleVersion = '999.999.999'
 
-                    { Get-SqlDscPreferredModule -ErrorAction 'Stop' } | Should -Throw -ErrorId 'GSDPM0001,Get-SqlDscPreferredModule'
+                    { Get-SqlDscPreferredModule -ErrorAction 'Stop' } | Should-Throw -FullyQualifiedErrorId 'GSDPM0001,Get-SqlDscPreferredModule'
                 }
             }
         }
@@ -241,16 +241,16 @@ Describe 'Get-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_
     Context 'When validating error handling' {
         It 'Should throw a terminating error when no modules are found and ErrorAction is Stop' {
             { Get-SqlDscPreferredModule -Name @('NonExistentModule1', 'NonExistentModule2') -ErrorAction 'Stop' } |
-                Should -Throw -ErrorId 'GSDPM0001,Get-SqlDscPreferredModule'
+                Should-Throw -FullyQualifiedErrorId 'GSDPM0001,Get-SqlDscPreferredModule'
         }
 
         It 'Should write a non-terminating error when no modules are found and ErrorAction is Continue' {
             $result = Get-SqlDscPreferredModule -Name @('NonExistentModule1', 'NonExistentModule2') -ErrorAction 'SilentlyContinue' -ErrorVariable errors
 
-            $result | Should -BeNullOrEmpty
-            $errors | Should -HaveCount 1
-            $errors[0].FullyQualifiedErrorId | Should -Be 'GSDPM0001,Get-SqlDscPreferredModule'
-            $errors[0].CategoryInfo.Category | Should -Be 'ObjectNotFound'
+            $result | Should-BeFalsy
+            $errors | Should-BeCollection -Count 1
+            $errors[0].FullyQualifiedErrorId | Should-Be 'GSDPM0001,Get-SqlDscPreferredModule'
+            $errors[0].CategoryInfo.Category | Should-Be 'ObjectNotFound'
         }
     }
 
@@ -258,16 +258,16 @@ Describe 'Get-SqlDscPreferredModule' -Tag @('Integration_SQL2017', 'Integration_
         It 'Should return PSModuleInfo type' {
             $result = Get-SqlDscPreferredModule -ErrorAction 'Stop'
 
-            $result | Should -BeOfType 'PSModuleInfo'
-            $result.PSTypeNames | Should -Contain 'System.Management.Automation.PSModuleInfo'
+            $result | Should-HaveType 'PSModuleInfo'
+            $result.PSTypeNames | Should-ContainCollection 'System.Management.Automation.PSModuleInfo'
         }
 
         It 'Should have expected properties' {
             $result = Get-SqlDscPreferredModule -ErrorAction 'Stop'
 
-            $result.Name | Should -Not -BeNullOrEmpty
-            $result.Version | Should -Not -BeNullOrEmpty
-            $result.Path | Should -Not -BeNullOrEmpty
+            $result.Name | Should-BeTruthy
+            $result.Version | Should-BeTruthy
+            $result.Path | Should-BeTruthy
         }
     }
 }

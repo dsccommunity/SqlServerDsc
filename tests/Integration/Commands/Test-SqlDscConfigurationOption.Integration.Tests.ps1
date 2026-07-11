@@ -63,7 +63,7 @@ Describe 'Test-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integra
 
             # Test should return true for current value
             $result = Test-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value $currentValue.RunValue
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should return false when testing incorrect value' {
@@ -73,7 +73,7 @@ Describe 'Test-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integra
             # Test opposite value - should return false
             $oppositeValue = if ($currentValue.RunValue -eq 0) { 1 } else { 0 }
             $result = Test-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value $oppositeValue
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
 
         It 'Should return true after setting value and testing' {
@@ -82,11 +82,11 @@ Describe 'Test-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integra
 
             # Test should return true for the value we just set
             $result = Test-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value 1
-            $result | Should -BeTrue
+            $result | Should-BeTrue
 
             # Test should return false for the opposite value
             $result = Test-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value 0
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
 
         It 'Should return true after setting different value and testing' {
@@ -95,16 +95,16 @@ Describe 'Test-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integra
 
             # Test should return true for the value we just set
             $result = Test-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value 0
-            $result | Should -BeTrue
+            $result | Should-BeTrue
 
             # Test should return false for the opposite value
             $result = Test-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value 1
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
 
         It 'Should throw an error when the configuration option does not exist' {
             { Test-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'NonExistentOption' -Value 1 -ErrorAction 'Stop' } |
-                Should -Throw
+                Should-Throw
         }
     }
 
@@ -115,12 +115,12 @@ Describe 'Test-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integra
 
             # Test should return true for current value
             $result = Test-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'cost threshold for parallelism' -Value $currentValue.RunValue
-            $result | Should -BeTrue
+            $result | Should-BeTrue
 
             # Test should return false for a different value (if current is not 99, test 99, otherwise test 50)
             $differentValue = if ($currentValue.RunValue -ne 99) { 99 } else { 50 }
             $result = Test-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'cost threshold for parallelism' -Value $differentValue
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
 
         It 'Should correctly test max degree of parallelism option' {
@@ -129,12 +129,12 @@ Describe 'Test-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integra
 
             # Test should return true for current value
             $result = Test-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'max degree of parallelism' -Value $currentValue.RunValue
-            $result | Should -BeTrue
+            $result | Should-BeTrue
 
             # Test should return false for a different value (if current is not 8, test 8, otherwise test 4)
             $differentValue = if ($currentValue.RunValue -ne 8) { 8 } else { 4 }
             $result = Test-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'max degree of parallelism' -Value $differentValue
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 
@@ -145,12 +145,12 @@ Describe 'Test-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integra
 
             # Test using pipeline should return true for current value
             $result = $script:serverObject | Test-SqlDscConfigurationOption -Name 'Agent XPs' -Value $currentValue.RunValue
-            $result | Should -BeTrue
+            $result | Should-BeTrue
 
             # Test using pipeline should return false for opposite value
             $oppositeValue = if ($currentValue.RunValue -eq 0) { 1 } else { 0 }
             $result = $script:serverObject | Test-SqlDscConfigurationOption -Name 'Agent XPs' -Value $oppositeValue
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 
@@ -161,7 +161,7 @@ Describe 'Test-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integra
 
             # Test minimum value
             $result = Test-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value 0
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         It 'Should correctly test maximum boundary value for Agent XPs' {
@@ -170,7 +170,7 @@ Describe 'Test-SqlDscConfigurationOption' -Tag @('Integration_SQL2017', 'Integra
 
             # Test maximum value
             $result = Test-SqlDscConfigurationOption -ServerObject $script:serverObject -Name 'Agent XPs' -Value 1
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
     }
 }
