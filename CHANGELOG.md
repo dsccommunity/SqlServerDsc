@@ -31,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlDatabase
   - Fixed logic in `Set-SqlDscDatabaseProperty` so pipeline input is properly
     handled in the cmdlet's `Process` block. ([issue #2456](https://github.com/dsccommunity/SqlServerDsc/issues/2456))
+- SqlRole
+  - Fix if statements checking the parameters are present. ([issue #1702](https://github.com/dsccommunity/SqlServerDsc/issues/1702))
 
 ### Changed
 
