@@ -1237,6 +1237,7 @@ stages:
                   # Run the integration tests in a specific group order.
                   # Prerequisites
                   # TODO: Move the prerequisites tests to generic folder than Commands
+                  'tests/Integration/Resources/DSCv3_DebugDscEngine.Integration.Tests.ps1'
                   'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
                   # Group 1
                   #'tests/Integration/Resources/DSC_SqlSetup.Integration.Tests.ps1'
