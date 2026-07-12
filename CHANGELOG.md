@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - Several integration tests wrongly said that the command `Test-DscConfiguration`
     return `$true` when it is in fact return the string value `'True'`.
+  - Some integration tests still wasn't converted correctly to Pester 6 syntax
 - DSC_SqlRS and DSC_SqlWindowsFirewall
   - Fixed a duplicated word in localized `TestFailedAfterSet` messages.
 - SqlServerDsc
