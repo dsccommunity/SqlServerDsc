@@ -207,7 +207,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
             $resourceCurrentState.Ensure | Should-Be 'Present'
             $resourceCurrentState.ServerRoleName | Should-Be $ConfigurationData.AllNodes.Role3Name
-            $resourceCurrentState.Members | Should-Be @(
+            $resourceCurrentState.Members | Should-BeCollection @(
                 $ConfigurationData.AllNodes.User1Name
                 $ConfigurationData.AllNodes.User2Name
             )
@@ -265,7 +265,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should-Be 'Present'
             $resourceCurrentState.ServerRoleName | Should-Be $ConfigurationData.AllNodes.Role1Name
 
-            $resourceCurrentState.Members | Should-Be @(
+            $resourceCurrentState.Members | Should-BeCollection @(
                 $ConfigurationData.AllNodes.User1Name
                 $ConfigurationData.AllNodes.User2Name
             )
@@ -324,7 +324,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Ensure | Should-Be 'Present'
             $resourceCurrentState.ServerRoleName | Should-Be $ConfigurationData.AllNodes.Role2Name
 
-            $resourceCurrentState.Members | Should-Be @(
+            $resourceCurrentState.Members | Should-BeCollection @(
                 $ConfigurationData.AllNodes.User1Name
                 $ConfigurationData.AllNodes.User2Name
                 $ConfigurationData.AllNodes.User4Name
@@ -509,7 +509,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             }
 
             $currentState.Ensure | Should-Be 'Present'
-            $currentState.Members | Should-Be @($testMemberName)
+            $currentState.Members | Should-BeCollection @($testMemberName)
             $currentState.MembersToInclude | Should-BeFalsy
             $currentState.MembersToExclude | Should-BeFalsy
         }

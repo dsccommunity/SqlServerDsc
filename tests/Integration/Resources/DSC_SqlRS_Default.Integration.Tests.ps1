@@ -229,7 +229,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
             }
 
-            $webRequestStatusCode | Should-BeString -CaseSensitive 200
+            $webRequestStatusCode | Should-Be 200
         }
 
         It 'Should be able to access the Reports site without any error' {
@@ -291,7 +291,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
             }
 
-            $webRequestStatusCode | Should-BeString -CaseSensitive 200
+            $webRequestStatusCode | Should-Be 200
         }
     }
 
@@ -473,7 +473,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
             }
 
-            $webRequestStatusCode | Should-BeString -CaseSensitive 200
+            $webRequestStatusCode | Should-Be 200
         }
 
         It 'Should be able to access the Reports site without any error' {
@@ -535,7 +535,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
             }
 
-            $webRequestStatusCode | Should-BeString -CaseSensitive 200
+            $webRequestStatusCode | Should-Be 200
         }
     }
 

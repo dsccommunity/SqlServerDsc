@@ -135,9 +135,9 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.SourcePath | Should-Be $ConfigurationData.AllNodes.SourcePath
             $resourceCurrentState.DatabaseEngineFirewall | Should-BeTrue
             $resourceCurrentState.BrowserFirewall | Should-BeTrue
-            $resourceCurrentState.ReportingServicesFirewall | Should-BeFalse
-            $resourceCurrentState.AnalysisServicesFirewall | Should-BeFalse
-            $resourceCurrentState.IntegrationServicesFirewall | Should-BeFalse
+            $resourceCurrentState.ReportingServicesFirewall | Should-BeNull
+            $resourceCurrentState.AnalysisServicesFirewall | Should-BeFalsy
+            $resourceCurrentState.IntegrationServicesFirewall | Should-BeFalsy
         }
 
         It 'Should return True when Test-DscConfiguration is run' {
