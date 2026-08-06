@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlServerDsc
   - Bump GitHub actions checkout to v7
+  - Bump action Stale to v11
   - Update tests to Pester 6 syntax where supported.
   - Added Windows user credential format guidance to the credential overview
     documentation. ([issue #1768](https://github.com/dsccommunity/SqlServerDsc/issues/1768))
