@@ -3,6 +3,12 @@
 The `SqlRS` DSC resource initializes and configures SQL Reporting Services
 server.
 
+The optional `DatabaseName` property can be used to select a custom-named or
+existing Reporting Services catalog. When it is omitted, the resource preserves
+the existing database-name derivation based on the Reporting Services version
+and instance name. Reporting Services derives the corresponding temporary
+database name from the primary catalog name.
+
 ## Requirements
 
 * Target machine must be running Windows Server 2012 or later.
