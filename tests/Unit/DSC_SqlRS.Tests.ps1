@@ -948,6 +948,41 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 0
                 Should-Invoke -CommandName Restart-SqlDscRSService -Exactly -Scope It -Times 1
             }
+
+            Context 'When the database connection also changes' {
+                BeforeEach {
+                    Mock -CommandName Invoke-SqlDscQuery -MockWith {
+                        return @{
+                            Tables = @(
+                                @{
+                                    Rows = @(
+                                        @{
+                                            DatabaseExists = 1
+                                        }
+                                    )
+                                }
+                            )
+                        }
+                    } -ParameterFilter {
+                        $PassThru -and $Query -match 'DB_ID'
+                    }
+                }
+
+                It 'Should update the database connection and virtual directories' {
+                    $parameters = $testParameters.Clone()
+                    $parameters.DatabaseName = 'ReportServer_Custom'
+
+                    $null = Set-TargetResource @parameters
+
+                    Should-Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -ParameterFilter {
+                        $DatabaseName -eq 'ReportServer_Custom'
+                    } -Scope It -Times 1
+                    Should-Invoke -CommandName Remove-SqlDscRSUrlReservation -Exactly -Scope It -Times 2
+                    Should-Invoke -CommandName Set-SqlDscRSVirtualDirectory -Exactly -Scope It -Times 2
+                    Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Scope It -Times 2
+                    Should-Invoke -CommandName Restart-SqlDscRSService -Exactly -Scope It -Times 2
+                }
+            }
         }
 
         Context "When configuring a named instance that are already initialized (<TestCaseVersionName>), suppress restart" {

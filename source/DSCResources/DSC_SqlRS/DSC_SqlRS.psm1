@@ -564,7 +564,8 @@ function Set-TargetResource
                 }
             }
         }
-        else
+
+        if ($isReportingServicesInitialized)
         {
             $getTargetResourceParameters = @{
                 InstanceName         = $InstanceName
