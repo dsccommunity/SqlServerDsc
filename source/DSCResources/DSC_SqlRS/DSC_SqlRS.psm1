@@ -185,8 +185,10 @@ function Get-TargetResource
         specified, no additional wait time is applied after service restart.
 
     .PARAMETER StatementTimeout
-        Specifies the query statement timeout in seconds when creating the
-        Reporting Services databases. Default 600 seconds (10 minutes).
+        Specifies the SQL timeout in seconds when creating the Reporting
+        Services databases. The shared SQL connection implementation uses this
+        value for both connection establishment and query execution. Default
+        600 seconds (10 minutes).
 
     .PARAMETER Encrypt
         Specifies how encryption should be enforced. There are currently no

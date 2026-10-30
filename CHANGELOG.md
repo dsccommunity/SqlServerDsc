@@ -10,8 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - Added adapted resource manifest generation to the build pipeline.
 - SqlRS
-  - Added parameter `StatementTimeout` to configure the query timeout used when
-    creating the Reporting Services databases.
+  - Added parameter `StatementTimeout` to configure the SQL connection and query
+    timeout used when creating the Reporting Services databases.
     ([issue #2481](https://github.com/dsccommunity/SqlServerDsc/issues/2481))
 
 ### Fixed
