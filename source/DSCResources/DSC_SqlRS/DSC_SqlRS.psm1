@@ -376,7 +376,7 @@ function Set-TargetResource
         $restartReportingService = $false
 
         $isReportingServicesInitialized = $rsConfiguration | Test-SqlDscRSInitialized
-        $isDatabaseConnectionDifferent = $PSBoundParameters.ContainsKey('DatabaseName') -and $rsConfiguration.DatabaseName -ne $reportingServicesDatabaseName
+        $isDatabaseConnectionDifferent = $PSBoundParameters.ContainsKey('DatabaseName') -and $rsConfiguration.DatabaseName -cne $reportingServicesDatabaseName
 
         if (-not $isReportingServicesInitialized -or $isDatabaseConnectionDifferent)
         {
@@ -840,7 +840,7 @@ function Test-TargetResource
         $result = $false
     }
 
-    if ($PSBoundParameters.ContainsKey('DatabaseName') -and $DatabaseName -ne $currentConfig.DatabaseName)
+    if ($PSBoundParameters.ContainsKey('DatabaseName') -and $DatabaseName -cne $currentConfig.DatabaseName)
     {
         Write-Verbose -Message "The Reporting Services database name is '$($currentConfig.DatabaseName)', should be '$DatabaseName'."
         $result = $false

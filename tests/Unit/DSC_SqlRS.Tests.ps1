@@ -447,6 +447,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                         'MSReportServer_ConfigurationSetting'
                         'root/Microsoft/SQLServer/ReportServer/RS_SQL2016/v13/Admin'
                     ) | Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName" -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'DatabaseName' -Value 'ReportServer' -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $mockDynamicIsInitialized -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockNamedInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value $mockVirtualDirectoryReportServerName -PassThru |
@@ -982,6 +983,17 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     Should-Invoke -CommandName Add-SqlDscRSUrlReservation -Exactly -Scope It -Times 2
                     Should-Invoke -CommandName Restart-SqlDscRSService -Exactly -Scope It -Times 2
                 }
+
+                It 'Should update the database connection when only the name casing changes' {
+                    $parameters = $testParameters.Clone()
+                    $parameters.DatabaseName = 'reportserver'
+
+                    $null = Set-TargetResource @parameters
+
+                    Should-Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -ParameterFilter {
+                        $DatabaseName -ceq 'reportserver'
+                    } -Scope It -Times 1
+                }
             }
         }
 
@@ -1516,6 +1528,32 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
                 Should-Invoke -CommandName Get-TargetResource -Exactly -ParameterFilter {
                     $DatabaseName -eq 'ReportServer_Custom'
                 } -Scope It -Times 1
+            }
+        }
+
+        Context 'When only the configured database name casing is different' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        IsInitialized = $true
+                        DatabaseName  = 'ReportServer_Custom'
+                    }
+                }
+            }
+
+            It 'Should return state as not in desired state' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $testParameters = @{
+                        InstanceName         = 'INSTANCE'
+                        DatabaseServerName   = 'MockDatabaseServer'
+                        DatabaseInstanceName = 'MockDatabaseInstance'
+                        DatabaseName         = 'reportserver_custom'
+                    }
+
+                    Test-TargetResource @testParameters | Should-BeFalse
+                }
             }
         }
     }
