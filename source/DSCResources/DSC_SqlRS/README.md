@@ -29,6 +29,8 @@ server.
 
   For more details, see the article [Connect to SQL Server with strict encryption](https://learn.microsoft.com/en-us/sql/relational-databases/security/networking/connect-with-strict-encryption?view=sql-server-ver16)
   and [Configure SQL Server Database Engine for encrypting connections](https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/configure-sql-server-encryption?view=sql-server-ver16).
+* Parameter `StatementTimeout` controls the query timeout used when creating the
+  Reporting Services databases. The default is 600 seconds (10 minutes).
 
 ## Known issues
 
