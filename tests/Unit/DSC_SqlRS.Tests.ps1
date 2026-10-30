@@ -1587,25 +1587,29 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
             }
         }
 
-        It 'Should return state as in desired state when the database name matches' {
-            Mock -CommandName Get-TargetResource -MockWith {
-                return @{
-                    IsInitialized = $true
-                    DatabaseName  = 'ReportServer_Custom'
+        Context 'When the database name matches' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        IsInitialized = $true
+                        DatabaseName  = 'ReportServer_Custom'
+                    }
                 }
             }
 
-            InModuleScope -ScriptBlock {
-                Set-StrictMode -Version 1.0
+            It 'Should return state as in desired state' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
 
-                $defaultParameters = @{
-                    InstanceName         = 'INSTANCE'
-                    DatabaseServerName   = 'MockDatabaseServer'
-                    DatabaseInstanceName = 'MockDatabaseInstance'
-                    DatabaseName         = 'ReportServer_Custom'
+                    $defaultParameters = @{
+                        InstanceName         = 'INSTANCE'
+                        DatabaseServerName   = 'MockDatabaseServer'
+                        DatabaseInstanceName = 'MockDatabaseInstance'
+                        DatabaseName         = 'ReportServer_Custom'
+                    }
+
+                    Test-TargetResource @defaultParameters | Should-BeTrue
                 }
-
-                Test-TargetResource @defaultParameters | Should-BeTrue
             }
         }
     }
