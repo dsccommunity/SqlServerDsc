@@ -687,6 +687,8 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 It 'Should generate the database scripts using the explicit name' {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $mockDefaultParameters = @{
                             InstanceName         = $mockNamedInstanceName
                             DatabaseServerName   = $mockReportingServicesDatabaseServerName
@@ -1515,6 +1517,8 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
 
             It 'Should return state as not in desired state' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $testParameters = @{
                         InstanceName         = 'INSTANCE'
                         DatabaseServerName   = 'MockDatabaseServer'
@@ -1592,6 +1596,8 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
             }
 
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $defaultParameters = @{
                     InstanceName         = 'INSTANCE'
                     DatabaseServerName   = 'MockDatabaseServer'
