@@ -448,6 +448,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                         'root/Microsoft/SQLServer/ReportServer/RS_SQL2016/v13/Admin'
                     ) | Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName" -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'DatabaseName' -Value 'ReportServer' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'InstallationID' -Value 'local-installation-id' -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $mockDynamicIsInitialized -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockNamedInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value $mockVirtualDirectoryReportServerName -PassThru |
@@ -507,6 +508,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         Mock -CommandName Remove-SqlDscRSUrlReservation
         Mock -CommandName Set-SqlDscRSUrlReservation
         Mock -CommandName Initialize-SqlDscRS
+        Mock -CommandName Get-SqlDscRSDatabaseInstallation
         Mock -CommandName Request-SqlDscRSDatabaseScript -MockWith {
             return 'select * from something'
         }
@@ -663,6 +665,49 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                         $PassThru -and $Query -match "DB_ID\(N'ReportServer_Custom'\)"
                     } -Scope It -Times 1
+                    Should-Invoke -CommandName Get-SqlDscRSDatabaseInstallation -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Initialize-SqlDscRS -Exactly -Scope It -Times 1
+                }
+
+                Context 'When the local installation is waiting to join an initialized member' {
+                    BeforeAll {
+                        Mock -CommandName Get-SqlDscRSDatabaseInstallation -MockWith {
+                            return @(
+                                [PSCustomObject] @{
+                                    InstallationID = 'local-installation-id'
+                                    MachineName    = 'LOCALSERVER'
+                                    InstanceName   = 'INSTANCE'
+                                    IsInitialized  = $false
+                                }
+                                [PSCustomObject] @{
+                                    InstallationID = 'initialized-installation-id'
+                                    MachineName    = 'INITIALIZEDSERVER'
+                                    InstanceName   = 'INSTANCE'
+                                    IsInitialized  = $true
+                                }
+                            )
+                        }
+                    }
+
+                    It 'Should throw an actionable error without attempting local initialization' {
+                        InModuleScope -ScriptBlock {
+                            Set-StrictMode -Version 1.0
+
+                            $mockDefaultParameters = @{
+                                InstanceName         = $mockNamedInstanceName
+                                DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                                DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                                DatabaseName         = 'ReportServer_Custom'
+                            }
+
+                            $expectedError = '*LOCALSERVER\INSTANCE*INITIALIZEDSERVER\INSTANCE*Scale-out Deployment*Add Server*DSC_SQLRS0003*'
+
+                            { Set-TargetResource @mockDefaultParameters } | Should-Throw -ExceptionMessage $expectedError
+                        }
+
+                        Should-Invoke -CommandName Get-SqlDscRSDatabaseInstallation -Exactly -Scope It -Times 1
+                        Should-Invoke -CommandName Initialize-SqlDscRS -Exactly -Scope It -Times 0
+                    }
                 }
             }
 

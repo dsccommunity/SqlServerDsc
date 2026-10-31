@@ -9,6 +9,13 @@ the existing database-name derivation based on the Reporting Services version
 and instance name. Reporting Services derives the corresponding temporary
 database name from the primary catalog name.
 
+Connecting a new report server to a catalog that already contains an initialized
+report server can leave the new server waiting to join a scale-out deployment.
+The resource detects this state and returns an actionable error. To complete the
+join, connect Report Server Configuration Manager to an initialized member, open
+**Scale-out Deployment**, select the waiting server, and choose **Add Server**.
+The resource does not perform this cross-server activation automatically.
+
 ## Requirements
 
 * Target machine must be running Windows Server 2012 or later.

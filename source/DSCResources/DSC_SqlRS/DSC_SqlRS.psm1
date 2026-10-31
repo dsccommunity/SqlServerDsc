@@ -526,6 +526,34 @@ function Set-TargetResource
             #>
             if (-not ($rsConfiguration | Test-SqlDscRSInitialized))
             {
+                if ($databaseExists)
+                {
+                    $databaseInstallations = @($rsConfiguration | Get-SqlDscRSDatabaseInstallation -ErrorAction 'Stop')
+                    $localInstallationId = $rsConfiguration.InstallationID.Trim('{}')
+
+                    $localInstallation = $databaseInstallations |
+                        Where-Object -FilterScript { $_.InstallationID.Trim('{}') -eq $localInstallationId } |
+                        Select-Object -First 1
+
+                    $initializedInstallation = $databaseInstallations |
+                        Where-Object -FilterScript {
+                            $_.InstallationID.Trim('{}') -ne $localInstallationId -and $_.IsInitialized
+                        } |
+                        Select-Object -First 1
+
+                    if ($null -ne $localInstallation -and -not $localInstallation.IsInitialized -and $null -ne $initializedInstallation)
+                    {
+                        $errorMessage = $script:localizedData.ReportServerWaitingToJoin -f @(
+                            $localInstallation.MachineName
+                            $localInstallation.InstanceName
+                            $initializedInstallation.MachineName
+                            $initializedInstallation.InstanceName
+                        )
+
+                        New-InvalidOperationException -Message $errorMessage
+                    }
+                }
+
                 Write-Verbose -Message "Did not help restarting the Reporting Services service, running the CIM method to initialize report server on $DatabaseServerName\$DatabaseInstanceName for instance ID '$($rsConfiguration.InstallationID)'."
 
                 <#

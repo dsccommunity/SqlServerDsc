@@ -7,4 +7,5 @@ ConvertFrom-StringData @'
     RestartToFinishInitialization = Restarting Reporting Services to finish initialization.
     WaitingForServiceReady = Waiting {0} seconds for Reporting Services to be fully ready after restart. (DSC_SQLRS0001)
     ServiceNameIsNullOrEmpty = The Configuration.ServiceName property is null or empty for SQL Server Reporting Services instance '{0}'. This property is required to determine the service name for SQL Server version 14 and higher. (DSC_SQLRS0002)
+    ReportServerWaitingToJoin = Reporting Services installation '{0}\{1}' is registered in the existing report server database but is waiting to join the scale-out deployment. Connect Report Server Configuration Manager to initialized installation '{2}\{3}', open Scale-out Deployment, select the waiting server, and choose Add Server. (DSC_SQLRS0003)
 '@
