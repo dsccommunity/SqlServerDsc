@@ -19,6 +19,9 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
     .PARAMETER DatabaseInstanceName
         Name of the SQL Server instance to host the Reporting Service database.
 
+    .PARAMETER DatabaseName
+        Name of the Reporting Services database.
+
     .PARAMETER Encrypt
         Specifies how encryption should be enforced. There are currently no
         difference between using `Mandatory` or `Strict`.
@@ -43,6 +46,10 @@ function Get-TargetResource
         $DatabaseInstanceName,
 
         [Parameter()]
+        [System.String]
+        $DatabaseName,
+
+        [Parameter()]
         [ValidateSet('Mandatory', 'Optional', 'Strict')]
         [System.String]
         $Encrypt
@@ -56,6 +63,7 @@ function Get-TargetResource
         InstanceName                 = $InstanceName
         DatabaseServerName           = $DatabaseServerName
         DatabaseInstanceName         = $DatabaseInstanceName
+        DatabaseName                 = $null
         ReportServerVirtualDirectory = $null
         ReportsVirtualDirectory      = $null
         ReportServerReservedUrl      = $null
@@ -69,6 +77,8 @@ function Get-TargetResource
 
     if ($null -ne $rsConfiguration)
     {
+        $getTargetResourceResult.DatabaseName = $rsConfiguration.DatabaseName
+
         if ($rsConfiguration.DatabaseServerName.Contains('\'))
         {
             $getTargetResourceResult.DatabaseServerName = $rsConfiguration.DatabaseServerName.Split('\')[0]
@@ -153,6 +163,10 @@ function Get-TargetResource
 
     .PARAMETER DatabaseInstanceName
         Name of the SQL Server instance to host the Reporting Service database.
+
+    .PARAMETER DatabaseName
+        Name of the Reporting Services database. If not specified, the resource
+        derives the name from the Reporting Services version and instance name.
 
     .PARAMETER ReportServerVirtualDirectory
         Report Server Web Service virtual directory. Optional.
@@ -244,6 +258,10 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
+        $DatabaseName,
+
+        [Parameter()]
+        [System.String]
         $ReportServerVirtualDirectory,
 
         [Parameter()]
@@ -305,7 +323,7 @@ function Set-TargetResource
                 New-InvalidOperationException -Message $errorMessage
             }
 
-            $reportingServicesDatabaseName = 'ReportServer'
+            $defaultReportingServicesDatabaseName = 'ReportServer'
         }
         elseif ($InstanceName -eq 'MSSQLSERVER')
         {
@@ -320,7 +338,7 @@ function Set-TargetResource
             }
 
             $reportingServicesServiceName = 'ReportServer'
-            $reportingServicesDatabaseName = 'ReportServer'
+            $defaultReportingServicesDatabaseName = 'ReportServer'
         }
         else
         {
@@ -335,7 +353,16 @@ function Set-TargetResource
             }
 
             $reportingServicesServiceName = "ReportServer`$$InstanceName"
-            $reportingServicesDatabaseName = "ReportServer`$$InstanceName"
+            $defaultReportingServicesDatabaseName = "ReportServer`$$InstanceName"
+        }
+
+        $reportingServicesDatabaseName = if ($PSBoundParameters.ContainsKey('DatabaseName'))
+        {
+            $DatabaseName
+        }
+        else
+        {
+            $defaultReportingServicesDatabaseName
         }
 
         # cSpell: ignore cimv2
@@ -348,7 +375,10 @@ function Set-TargetResource
         $language = $wmiOperatingSystem.OSLanguage
         $restartReportingService = $false
 
-        if (-not ($rsConfiguration | Test-SqlDscRSInitialized))
+        $isReportingServicesInitialized = $rsConfiguration | Test-SqlDscRSInitialized
+        $isDatabaseConnectionDifferent = $PSBoundParameters.ContainsKey('DatabaseName') -and $rsConfiguration.DatabaseName -cne $reportingServicesDatabaseName
+
+        if (-not $isReportingServicesInitialized -or $isDatabaseConnectionDifferent)
         {
             Write-Verbose -Message "Initializing Reporting Services on $DatabaseServerName\$DatabaseInstanceName."
 
@@ -367,7 +397,7 @@ function Set-TargetResource
                 $ReportsReservedUrl = @('http://+:80')
             }
 
-            if ($rsConfiguration.VirtualDirectoryReportServer -ne $ReportServerVirtualDirectory)
+            if (-not $isReportingServicesInitialized -and $rsConfiguration.VirtualDirectoryReportServer -ne $ReportServerVirtualDirectory)
             {
                 Write-Verbose -Message "Setting report server virtual directory on $DatabaseServerName\$DatabaseInstanceName to '$ReportServerVirtualDirectory'."
 
@@ -381,7 +411,7 @@ function Set-TargetResource
                 }
             }
 
-            if ($rsConfiguration.VirtualDirectoryReportManager -ne $ReportsVirtualDirectory)
+            if (-not $isReportingServicesInitialized -and $rsConfiguration.VirtualDirectoryReportManager -ne $ReportsVirtualDirectory)
             {
                 Write-Verbose -Message "Setting reports virtual directory on $DatabaseServerName\$DatabaseInstanceName to '$ReportServerVirtualDirectory'."
 
@@ -393,10 +423,6 @@ function Set-TargetResource
                     $rsConfiguration | Add-SqlDscRSUrlReservation -Application $reportsApplicationName -UrlString $_ -Lcid $language -Force -ErrorAction 'Stop'
                 }
             }
-
-            Write-Verbose -Message "Generate database creation script on $DatabaseServerName\$DatabaseInstanceName for database '$reportingServicesDatabaseName'."
-
-            $reportingServicesDatabaseScript = $rsConfiguration | Request-SqlDscRSDatabaseScript -DatabaseName $reportingServicesDatabaseName -Lcid $language -ErrorAction 'Stop'
 
             # The WindowsServiceIdentityActual property contains the actual account name actively used by the service.
             $reportingServicesServiceAccountUserName = $rsConfiguration.WindowsServiceIdentityActual
@@ -421,7 +447,24 @@ function Set-TargetResource
                 $invokeSqlDscQueryParameters.Encrypt = $true
             }
 
-            Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $reportingServicesDatabaseScript
+            $databaseExists = $false
+
+            if ($PSBoundParameters.ContainsKey('DatabaseName'))
+            {
+                $escapedDatabaseName = $reportingServicesDatabaseName.Replace("'", "''")
+                $databaseExistsQuery = "SELECT CASE WHEN DB_ID(N'$escapedDatabaseName') IS NULL THEN 0 ELSE 1 END AS DatabaseExists;"
+                $databaseExistsResult = Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $databaseExistsQuery -PassThru
+                $databaseExists = [System.Boolean] $databaseExistsResult.Tables[0].Rows[0].DatabaseExists
+            }
+
+            if (-not $databaseExists)
+            {
+                Write-Verbose -Message "Generate database creation script on $DatabaseServerName\$DatabaseInstanceName for database '$reportingServicesDatabaseName'."
+
+                $reportingServicesDatabaseScript = $rsConfiguration | Request-SqlDscRSDatabaseScript -DatabaseName $reportingServicesDatabaseName -Lcid $language -ErrorAction 'Stop'
+                Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $reportingServicesDatabaseScript
+            }
+
             Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $reportingServicesDatabaseRightsScript
 
             Write-Verbose -Message "Set database connection on $DatabaseServerName\$DatabaseInstanceName to database '$reportingServicesDatabaseName'."
@@ -483,6 +526,34 @@ function Set-TargetResource
             #>
             if (-not ($rsConfiguration | Test-SqlDscRSInitialized))
             {
+                if ($databaseExists)
+                {
+                    $databaseInstallations = @($rsConfiguration | Get-SqlDscRSDatabaseInstallation -ErrorAction 'Stop')
+                    $localInstallationId = $rsConfiguration.InstallationID.Trim('{}')
+
+                    $localInstallation = $databaseInstallations |
+                        Where-Object -FilterScript { $_.InstallationID.Trim('{}') -eq $localInstallationId } |
+                        Select-Object -First 1
+
+                    $initializedInstallation = $databaseInstallations |
+                        Where-Object -FilterScript {
+                            $_.InstallationID.Trim('{}') -ne $localInstallationId -and $_.IsInitialized
+                        } |
+                        Select-Object -First 1
+
+                    if ($null -ne $localInstallation -and -not $localInstallation.IsInitialized -and $null -ne $initializedInstallation)
+                    {
+                        $errorMessage = $script:localizedData.ReportServerWaitingToJoin -f @(
+                            $localInstallation.MachineName
+                            $localInstallation.InstanceName
+                            $initializedInstallation.MachineName
+                            $initializedInstallation.InstanceName
+                        )
+
+                        New-InvalidOperationException -Message $errorMessage
+                    }
+                }
+
                 Write-Verbose -Message "Did not help restarting the Reporting Services service, running the CIM method to initialize report server on $DatabaseServerName\$DatabaseInstanceName for instance ID '$($rsConfiguration.InstallationID)'."
 
                 <#
@@ -521,12 +592,18 @@ function Set-TargetResource
                 }
             }
         }
-        else
+
+        if ($isReportingServicesInitialized)
         {
             $getTargetResourceParameters = @{
                 InstanceName         = $InstanceName
                 DatabaseServerName   = $DatabaseServerName
                 DatabaseInstanceName = $DatabaseInstanceName
+            }
+
+            if ($PSBoundParameters.ContainsKey('DatabaseName'))
+            {
+                $getTargetResourceParameters.DatabaseName = $DatabaseName
             }
 
             $currentConfig = Get-TargetResource @getTargetResourceParameters
@@ -673,6 +750,10 @@ function Set-TargetResource
     .PARAMETER DatabaseInstanceName
         Name of the SQL Server instance to host the Reporting Service database.
 
+    .PARAMETER DatabaseName
+        Name of the Reporting Services database. When specified, the configured
+        database name is included in the desired-state comparison.
+
     .PARAMETER ReportServerVirtualDirectory
         Report Server Web Service virtual directory. Optional.
 
@@ -725,6 +806,10 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
+        $DatabaseName,
+
+        [Parameter()]
+        [System.String]
         $ReportServerVirtualDirectory,
 
         [Parameter()]
@@ -770,11 +855,22 @@ function Test-TargetResource
         $getTargetResourceParameters.Encrypt = $Encrypt
     }
 
+    if ($PSBoundParameters.ContainsKey('DatabaseName'))
+    {
+        $getTargetResourceParameters.DatabaseName = $DatabaseName
+    }
+
     $currentConfig = Get-TargetResource @getTargetResourceParameters
 
     if (-not $currentConfig.IsInitialized)
     {
         Write-Verbose -Message "Reporting services $DatabaseServerName\$DatabaseInstanceName are not initialized."
+        $result = $false
+    }
+
+    if ($PSBoundParameters.ContainsKey('DatabaseName') -and $DatabaseName -cne $currentConfig.DatabaseName)
+    {
+        Write-Verbose -Message "The Reporting Services database name is '$($currentConfig.DatabaseName)', should be '$DatabaseName'."
         $result = $false
     }
 

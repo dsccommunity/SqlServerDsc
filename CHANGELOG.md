@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- DSC_SqlRS
+  - Added the optional parameter `DatabaseName` to configure a custom-named or
+    existing Reporting Services catalog. ([issue #2483](https://github.com/dsccommunity/SqlServerDsc/issues/2483))
+    When an existing catalog requires scale-out activation, the resource now
+    reports the waiting server and the initialized member that must add it.
 - SqlServerDsc
   - Added adapted resource manifest generation to the build pipeline.
 
