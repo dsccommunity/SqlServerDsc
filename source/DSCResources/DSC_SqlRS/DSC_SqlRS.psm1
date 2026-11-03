@@ -447,15 +447,10 @@ function Set-TargetResource
                 $invokeSqlDscQueryParameters.Encrypt = $true
             }
 
-            $databaseExists = $false
-
-            if ($PSBoundParameters.ContainsKey('DatabaseName'))
-            {
-                $escapedDatabaseName = $reportingServicesDatabaseName.Replace("'", "''")
-                $databaseExistsQuery = "SELECT CASE WHEN DB_ID(N'$escapedDatabaseName') IS NULL THEN 0 ELSE 1 END AS DatabaseExists;"
-                $databaseExistsResult = Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $databaseExistsQuery -PassThru
-                $databaseExists = [System.Boolean] $databaseExistsResult.Tables[0].Rows[0].DatabaseExists
-            }
+            $escapedDatabaseName = $reportingServicesDatabaseName.Replace("'", "''")
+            $databaseExistsQuery = "SELECT CASE WHEN DB_ID(N'$escapedDatabaseName') IS NULL THEN 0 ELSE 1 END AS DatabaseExists;"
+            $databaseExistsResult = Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $databaseExistsQuery -PassThru
+            $databaseExists = [System.Boolean] $databaseExistsResult.Tables[0].Rows[0].DatabaseExists
 
             if (-not $databaseExists)
             {

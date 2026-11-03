@@ -9,6 +9,11 @@ the existing database-name derivation based on the Reporting Services version
 and instance name. Reporting Services derives the corresponding temporary
 database name from the primary catalog name.
 
+Before creating a catalog, the resource checks whether the resolved database name
+already exists. This applies to both an explicitly configured `DatabaseName` and
+the automatically derived default name. Existing catalogs are connected without
+running the catalog-creation script.
+
 Connecting a new report server to a catalog that already contains an initialized
 report server can leave the new server waiting to join a scale-out deployment.
 The resource detects this state and returns an actionable error. To complete the

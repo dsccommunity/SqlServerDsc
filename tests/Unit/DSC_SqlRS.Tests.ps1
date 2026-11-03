@@ -499,6 +499,21 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
         Mock -CommandName Import-SqlDscPreferredModule
         Mock -CommandName Invoke-SqlDscQuery
+        Mock -CommandName Invoke-SqlDscQuery -MockWith {
+            return @{
+                Tables = @(
+                    @{
+                        Rows = @(
+                            @{
+                                DatabaseExists = 0
+                            }
+                        )
+                    }
+                )
+            }
+        } -ParameterFilter {
+            $PassThru -and $Query -match 'DB_ID'
+        }
         Mock -CommandName Enable-SqlDscRsSecureConnection
         Mock -CommandName Disable-SqlDscRsSecureConnection
         Mock -CommandName Restart-SqlDscRSService
@@ -618,8 +633,101 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 } -Scope It -Times 1
 
                 Should-Invoke -CommandName Get-CimInstance -Exactly -Scope It -Times 1
-                Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 2
+                Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 3
                 Should-Invoke -CommandName Restart-SqlDscRSService -Exactly -Scope It -Times 2
+            }
+
+            Context 'When the derived database already exists' {
+                BeforeEach {
+                    Mock -CommandName Invoke-SqlDscQuery -MockWith {
+                        return @{
+                            Tables = @(
+                                @{
+                                    Rows = @(
+                                        @{
+                                            DatabaseExists = 1
+                                        }
+                                    )
+                                }
+                            )
+                        }
+                    } -ParameterFilter {
+                        $PassThru -and $Query -match 'DB_ID'
+                    }
+                }
+
+                It 'Should connect to the existing derived database without generating a creation script' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockDefaultParameters = @{
+                            InstanceName         = $mockNamedInstanceName
+                            DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                            DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                        }
+
+                        $null = Set-TargetResource @mockDefaultParameters
+                    }
+
+                    $expectedDatabaseName = if ($TestCaseVersion -ge 14)
+                    {
+                        'ReportServer'
+                    }
+                    else
+                    {
+                        "ReportServer`$$mockNamedInstanceName"
+                    }
+
+                    Should-Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Scope It -Times 0
+                    Should-Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -ParameterFilter {
+                        $DatabaseName -eq $expectedDatabaseName
+                    } -Scope It -Times 1
+                    Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
+                        $PassThru -and $Query -match "DB_ID\(N'$([System.Text.RegularExpressions.Regex]::Escape($expectedDatabaseName))'\)"
+                    } -Scope It -Times 1
+                    Should-Invoke -CommandName Get-SqlDscRSDatabaseInstallation -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Initialize-SqlDscRS -Exactly -Scope It -Times 1
+                }
+
+                Context 'When the local installation is waiting to join an initialized member' {
+                    BeforeAll {
+                        Mock -CommandName Get-SqlDscRSDatabaseInstallation -MockWith {
+                            return @(
+                                [PSCustomObject] @{
+                                    InstallationID = 'local-installation-id'
+                                    MachineName    = 'LOCALSERVER'
+                                    InstanceName   = 'INSTANCE'
+                                    IsInitialized  = $false
+                                }
+                                [PSCustomObject] @{
+                                    InstallationID = 'initialized-installation-id'
+                                    MachineName    = 'INITIALIZEDSERVER'
+                                    InstanceName   = 'INSTANCE'
+                                    IsInitialized  = $true
+                                }
+                            )
+                        }
+                    }
+
+                    It 'Should throw an actionable error without attempting local initialization' {
+                        InModuleScope -ScriptBlock {
+                            Set-StrictMode -Version 1.0
+
+                            $mockDefaultParameters = @{
+                                InstanceName         = $mockNamedInstanceName
+                                DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                                DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                            }
+
+                            $expectedError = '*LOCALSERVER\INSTANCE*INITIALIZEDSERVER\INSTANCE*Scale-out Deployment*Add Server*DSC_SQLRS0003*'
+
+                            { Set-TargetResource @mockDefaultParameters } | Should-Throw -ExceptionMessage $expectedError
+                        }
+
+                        Should-Invoke -CommandName Get-SqlDscRSDatabaseInstallation -Exactly -Scope It -Times 1
+                        Should-Invoke -CommandName Initialize-SqlDscRS -Exactly -Scope It -Times 0
+                    }
+                }
             }
 
             Context 'When an explicitly named database already exists' {
@@ -776,7 +884,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                         Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                             $PesterBoundParameters.Keys -contains 'Encrypt'
-                        } -Scope It -Times 2
+                        } -Scope It -Times 3
                     }
                 }
             }
@@ -1211,12 +1319,12 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 } -Scope It -Times 1
 
                 Should-Invoke -CommandName Get-CimInstance -Exactly -Scope It -Times 1
-                Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 2
+                Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 3
                 Should-Invoke -CommandName Restart-SqlDscRSService -Exactly -Scope It -Times 2
 
                 Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                     $PesterBoundParameters.Keys -notcontains 'Encrypt'
-                } -Scope It -Times 2
+                } -Scope It -Times 3
             }
         }
     }
@@ -1316,7 +1424,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             } -Scope It -Times 1
 
             Should-Invoke -CommandName Get-CimInstance -Exactly -Scope It -Times 1
-            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 2
+            Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 3
             Should-Invoke -CommandName Restart-SqlDscRSService -Exactly -Scope It -Times 1
         }
     }
