@@ -598,7 +598,29 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should-Invoke -CommandName Get-CimInstance -Exactly -Scope It -Times 1
                 Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 2
+                Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
+                    $StatementTimeout -eq 600
+                } -Scope It -Times 2
                 Should-Invoke -CommandName Restart-SqlDscRSService -Exactly -Scope It -Times 2
+            }
+
+            It 'Should use the specified statement timeout for both database scripts' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockDefaultParameters = @{
+                        InstanceName         = $mockNamedInstanceName
+                        DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                        DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                        StatementTimeout     = 30
+                    }
+
+                    $null = Set-TargetResource @mockDefaultParameters
+                }
+
+                Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
+                    $StatementTimeout -eq 30
+                } -Scope It -Times 2
             }
 
             Context 'When there is no Reporting Services instance after Set-TargetResource has been called' {

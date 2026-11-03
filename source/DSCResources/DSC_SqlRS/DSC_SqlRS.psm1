@@ -184,6 +184,12 @@ function Get-TargetResource
         systems where the service may take longer to fully initialize. If not
         specified, no additional wait time is applied after service restart.
 
+    .PARAMETER StatementTimeout
+        Specifies the SQL timeout in seconds when creating the Reporting
+        Services databases. The shared SQL connection implementation uses this
+        value for both connection establishment and query execution. Default
+        600 seconds (10 minutes).
+
     .PARAMETER Encrypt
         Specifies how encryption should be enforced. There are currently no
         difference between using `Mandatory` or `Strict`.
@@ -269,6 +275,10 @@ function Set-TargetResource
         [Parameter()]
         [System.UInt32]
         $RestartTimeout,
+
+        [Parameter()]
+        [System.Int32]
+        $StatementTimeout = 600,
 
         [Parameter()]
         [ValidateSet('Mandatory', 'Optional', 'Strict')]
@@ -408,12 +418,13 @@ function Set-TargetResource
             Import-SqlDscPreferredModule
 
             $invokeSqlDscQueryParameters = @{
-                ServerName   = $DatabaseServerName
-                InstanceName = $DatabaseInstanceName
-                DatabaseName = 'master'
-                Force        = $true
-                Verbose      = $VerbosePreference
-                ErrorAction  = 'Stop'
+                ServerName       = $DatabaseServerName
+                InstanceName     = $DatabaseInstanceName
+                DatabaseName     = 'master'
+                StatementTimeout = $StatementTimeout
+                Force            = $true
+                Verbose          = $VerbosePreference
+                ErrorAction      = 'Stop'
             }
 
             if ($PSBoundParameters.ContainsKey('Encrypt') -and $Encrypt -ne 'Optional')
@@ -700,6 +711,9 @@ function Set-TargetResource
     .PARAMETER RestartTimeout
         Not used in Test-TargetResource.
 
+    .PARAMETER StatementTimeout
+        Not used in Test-TargetResource.
+
     .PARAMETER Encrypt
         Specifies how encryption should be enforced. There are currently no
         difference between using `Mandatory` or `Strict`.
@@ -750,6 +764,10 @@ function Test-TargetResource
         [Parameter()]
         [System.UInt32]
         $RestartTimeout,
+
+        [Parameter()]
+        [System.Int32]
+        $StatementTimeout,
 
         [Parameter()]
         [ValidateSet('Mandatory', 'Optional', 'Strict')]

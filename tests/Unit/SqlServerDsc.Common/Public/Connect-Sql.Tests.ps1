@@ -238,6 +238,13 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
 
             Should-Invoke -CommandName New-Object -Exactly -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter -Scope It -Times 1
         }
+
+        It 'Should use StatementTimeout for connection establishment and query execution' {
+            $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -SetupCredential $mockSqlCredential -LoginType 'SqlLogin' -StatementTimeout 30 -ErrorAction 'Stop'
+
+            $databaseEngineServerObject.ConnectionContext.ConnectTimeout | Should-Be 30
+            $databaseEngineServerObject.ConnectionContext.StatementTimeout | Should-Be 30
+        }
     }
 
     # Skipping on Linux and macOS because they do not support Windows Authentication.
