@@ -3,6 +3,27 @@
 The `SqlRS` DSC resource initializes and configures SQL Reporting Services
 server.
 
+The optional `DatabaseName` property can be used to select a custom-named or
+existing Reporting Services catalog. When it is omitted, the resource preserves
+the existing database-name derivation based on the Reporting Services version
+and instance name. Reporting Services derives the corresponding temporary
+database name from the primary catalog name.
+
+Before creating a catalog, the resource checks whether the resolved database name
+already exists. This applies to both an explicitly configured `DatabaseName` and
+the automatically derived default name. Existing catalogs are connected without
+running the catalog-creation script. The resource also verifies core Reporting
+Services catalog tables before connecting. If an existing database is empty,
+partial, damaged, or cannot be inspected, the resource preserves it and stops
+with recovery guidance instead of running creation DDL against it.
+
+Connecting a new report server to a catalog that already contains an initialized
+report server can leave the new server waiting to join a scale-out deployment.
+The resource detects this state and returns an actionable error. To complete the
+join, connect Report Server Configuration Manager to an initialized member, open
+**Scale-out Deployment**, select the waiting server, and choose **Add Server**.
+The resource does not perform this cross-server activation automatically.
+
 ## Requirements
 
 * Target machine must be running Windows Server 2012 or later.
@@ -12,7 +33,10 @@ server.
 * If `PsDscRunAsCredential` common parameter is used to run the resource, the
   specified credential must have permissions to connect to the SQL Server instance
   specified in `DatabaseServerName` and `DatabaseInstanceName`, and have permission
-  to create the Reporting Services databases.
+  to create the Reporting Services databases. The login must also be able to verify
+  catalog absence before creation, normally through the default `VIEW ANY DATABASE`
+  permission. The resource fails closed if the resolved catalog is not visible and
+  the login cannot distinguish an absent database from a hidden existing database.
 * Parameter `Encrypt` controls whether the connection used by `Invoke-SqlCmd`
   should enforce encryption. This parameter can only be used together with the
   module _SqlServer_ v22.x (minimum v22.0.49-preview). The parameter will be

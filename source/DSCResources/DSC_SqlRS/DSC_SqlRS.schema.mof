@@ -4,6 +4,7 @@ class DSC_SqlRS : OMI_BaseResource
     [Key, Description("Name of the _SQL Server Reporting Services_ instance to be configured.")] String InstanceName;
     [Required, Description("Name of the _SQL Server_ to host the _Reporting Services_ database.")] String DatabaseServerName;
     [Required, Description("Name of the _SQL Server_ instance to host the _Reporting Services_ database.")] String DatabaseInstanceName;
+    [Write, Description("Name of the _Reporting Services_ database. If not specified, the resource derives the name from the _Reporting Services_ version and instance name.")] String DatabaseName;
     [Write, Description("_Report Server Web Service_ virtual directory. Optional.")] String ReportServerVirtualDirectory;
     [Write, Description("_Report Manager_ or _Report Web App_ virtual directory name. Optional.")] String ReportsVirtualDirectory;
     [Write, Description("_Report Server_ URL reservations. Optional. If not specified, `'http://+:80'` URL reservation will be used.")] String ReportServerReservedUrl[];
