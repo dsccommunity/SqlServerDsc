@@ -505,8 +505,9 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     @{
                         Rows = @(
                             @{
-                                DatabaseExists    = 0
-                                CanViewAnyDatabase = 1
+                                DatabaseExists        = 0
+                                CanViewAnyDatabase     = 1
+                                IsReportServerDatabase = 0
                             }
                         )
                     }
@@ -646,8 +647,9 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                                 @{
                                     Rows = @(
                                         @{
-                                            DatabaseExists     = 0
-                                            CanViewAnyDatabase = 0
+                                            DatabaseExists        = 0
+                                            CanViewAnyDatabase     = 0
+                                            IsReportServerDatabase = 0
                                         }
                                     )
                                 }
@@ -686,8 +688,9 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                                 @{
                                     Rows = @(
                                         @{
-                                            DatabaseExists    = 1
-                                            CanViewAnyDatabase = 1
+                                            DatabaseExists        = 1
+                                            CanViewAnyDatabase     = 1
+                                            IsReportServerDatabase = 1
                                         }
                                     )
                                 }
@@ -772,6 +775,48 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 }
             }
 
+            Context 'When an existing database is not a complete report server catalog' {
+                BeforeEach {
+                    Mock -CommandName Invoke-SqlDscQuery -MockWith {
+                        return @{
+                            Tables = @(
+                                @{
+                                    Rows = @(
+                                        @{
+                                            DatabaseExists        = 1
+                                            CanViewAnyDatabase     = 1
+                                            IsReportServerDatabase = 0
+                                        }
+                                    )
+                                }
+                            )
+                        }
+                    } -ParameterFilter {
+                        $PassThru -and $Query -match 'DB_ID'
+                    }
+                }
+
+                It 'Should preserve the existing database and fail before configuration' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockDefaultParameters = @{
+                            InstanceName         = $mockNamedInstanceName
+                            DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                            DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                        }
+
+                        $expectedError = '*ReportServer*SERVER\INSTANCE*schema could not be verified*will not run*DSC_SQLRS0005*'
+
+                        { Set-TargetResource @mockDefaultParameters } | Should-Throw -ExceptionMessage $expectedError
+                    }
+
+                    Should-Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Scope It -Times 0
+                    Should-Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Scope It -Times 0
+                    Should-Invoke -CommandName Initialize-SqlDscRS -Exactly -Scope It -Times 0
+                }
+            }
+
             Context 'When an explicitly named database already exists' {
                 BeforeEach {
                     Mock -CommandName Invoke-SqlDscQuery -MockWith {
@@ -780,8 +825,9 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                                 @{
                                     Rows = @(
                                         @{
-                                            DatabaseExists    = 1
-                                            CanViewAnyDatabase = 1
+                                            DatabaseExists        = 1
+                                            CanViewAnyDatabase     = 1
+                                            IsReportServerDatabase = 1
                                         }
                                     )
                                 }
@@ -870,8 +916,9 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                                 @{
                                     Rows = @(
                                         @{
-                                            DatabaseExists    = 0
-                                            CanViewAnyDatabase = 1
+                                            DatabaseExists        = 0
+                                            CanViewAnyDatabase     = 1
+                                            IsReportServerDatabase = 0
                                         }
                                     )
                                 }
@@ -1157,8 +1204,9 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                                 @{
                                     Rows = @(
                                         @{
-                                            DatabaseExists    = 1
-                                            CanViewAnyDatabase = 1
+                                            DatabaseExists        = 1
+                                            CanViewAnyDatabase     = 1
+                                            IsReportServerDatabase = 1
                                         }
                                     )
                                 }

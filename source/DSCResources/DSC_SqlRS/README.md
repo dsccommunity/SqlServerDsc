@@ -12,7 +12,10 @@ database name from the primary catalog name.
 Before creating a catalog, the resource checks whether the resolved database name
 already exists. This applies to both an explicitly configured `DatabaseName` and
 the automatically derived default name. Existing catalogs are connected without
-running the catalog-creation script.
+running the catalog-creation script. The resource also verifies core Reporting
+Services catalog tables before connecting. If an existing database is empty,
+partial, damaged, or cannot be inspected, the resource preserves it and stops
+with recovery guidance instead of running creation DDL against it.
 
 Connecting a new report server to a catalog that already contains an initialized
 report server can leave the new server waiting to join a scale-out deployment.

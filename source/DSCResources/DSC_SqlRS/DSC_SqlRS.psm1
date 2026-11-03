@@ -448,14 +448,26 @@ function Set-TargetResource
             }
 
             $escapedDatabaseName = $reportingServicesDatabaseName.Replace("'", "''")
-            $databaseExistsQuery = "SELECT CASE WHEN DB_ID(N'$escapedDatabaseName') IS NULL THEN 0 ELSE 1 END AS DatabaseExists, HAS_PERMS_BY_NAME(NULL, NULL, 'VIEW ANY DATABASE') AS CanViewAnyDatabase;"
+            $databaseExistsQuery = "SELECT CASE WHEN DB_ID(N'$escapedDatabaseName') IS NULL THEN 0 ELSE 1 END AS DatabaseExists, HAS_PERMS_BY_NAME(NULL, NULL, 'VIEW ANY DATABASE') AS CanViewAnyDatabase, CASE WHEN OBJECT_ID(QUOTENAME(N'$escapedDatabaseName') + N'.dbo.ConfigurationInfo', N'U') IS NOT NULL AND OBJECT_ID(QUOTENAME(N'$escapedDatabaseName') + N'.dbo.Catalog', N'U') IS NOT NULL THEN 1 ELSE 0 END AS IsReportServerDatabase;"
             $databaseExistsResult = Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $databaseExistsQuery -PassThru
             $databaseExists = [System.Boolean] $databaseExistsResult.Tables[0].Rows[0].DatabaseExists
             $canViewAnyDatabase = [System.Boolean] $databaseExistsResult.Tables[0].Rows[0].CanViewAnyDatabase
+            $isReportServerDatabase = [System.Boolean] $databaseExistsResult.Tables[0].Rows[0].IsReportServerDatabase
 
             if (-not $databaseExists -and -not $canViewAnyDatabase)
             {
                 $errorMessage = $script:localizedData.DatabaseExistenceCannotBeDetermined -f @(
+                    $reportingServicesDatabaseName
+                    $DatabaseServerName
+                    $DatabaseInstanceName
+                )
+
+                New-InvalidOperationException -Message $errorMessage
+            }
+
+            if ($databaseExists -and -not $isReportServerDatabase)
+            {
+                $errorMessage = $script:localizedData.ExistingDatabaseIsNotReportServerCatalog -f @(
                     $reportingServicesDatabaseName
                     $DatabaseServerName
                     $DatabaseInstanceName
