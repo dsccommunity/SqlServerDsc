@@ -288,7 +288,7 @@ stages:
               TEST_CONFIGURATION: 'Integration_SQL2025'
         pool:
           vmImage: $(JOB_VMIMAGE)
-        timeoutInMinutes: '0'
+        timeoutInMinutes: '120'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
@@ -460,7 +460,7 @@ stages:
               TEST_CONFIGURATION: 'Integration_SQL2025'
         pool:
           vmImage: $(JOB_VMIMAGE)
-        timeoutInMinutes: '0'
+        timeoutInMinutes: '120'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
@@ -535,7 +535,7 @@ stages:
               TEST_CONFIGURATION: 'Integration_SQL2022_RS'
         pool:
           vmImage: $(JOB_VMIMAGE)
-        timeoutInMinutes: '0'
+        timeoutInMinutes: '120'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
@@ -644,7 +644,7 @@ stages:
               TEST_CONFIGURATION: 'Integration_PowerBI'
         pool:
           vmImage: $(JOB_VMIMAGE)
-        timeoutInMinutes: '0'
+        timeoutInMinutes: '120'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
@@ -752,7 +752,7 @@ stages:
               TEST_CONFIGURATION: 'Integration_PowerBI'
         pool:
           vmImage: $(JOB_VMIMAGE)
-        timeoutInMinutes: '0'
+        timeoutInMinutes: '120'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
@@ -857,7 +857,7 @@ stages:
               TEST_CONFIGURATION: 'Integration_SQL2025'
         pool:
           vmImage: $(JOB_VMIMAGE)
-        timeoutInMinutes: '0'
+        timeoutInMinutes: '120'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
@@ -952,7 +952,7 @@ stages:
               TEST_CONFIGURATION: 'Integration_SQL2025'
         pool:
           vmImage: $(JOB_VMIMAGE)
-        timeoutInMinutes: '0'
+        timeoutInMinutes: '120'
         variables:
           SMODefaultModuleName: 'dbatools'
         steps:
@@ -1058,7 +1058,7 @@ stages:
           SMODefaultModuleName: 'SqlServer'
         pool:
           vmImage: $(JOB_VMIMAGE)
-        timeoutInMinutes: '0'
+        timeoutInMinutes: '120'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
@@ -1125,7 +1125,7 @@ stages:
           SMODefaultModuleName: 'SqlServer'
         pool:
           vmImage: $(JOB_VMIMAGE)
-        timeoutInMinutes: '0'
+        timeoutInMinutes: '120'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
@@ -1183,7 +1183,7 @@ stages:
               TEST_CONFIGURATION: 'Integration_PowerBI'
         pool:
           vmImage: $(JOB_VMIMAGE)
-        timeoutInMinutes: 0
+        timeoutInMinutes: 120
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
@@ -1271,7 +1271,7 @@ stages:
               TEST_CONFIGURATION: 'Integration_SQL2025'
         pool:
           vmImage: $(JOB_VMIMAGE)
-        timeoutInMinutes: 0
+        timeoutInMinutes: 120
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
@@ -1363,7 +1363,7 @@ stages:
           SMODefaultModuleName: 'dbatools'
         pool:
           vmImage: $(JOB_VMIMAGE)
-        timeoutInMinutes: '0'
+        timeoutInMinutes: '120'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
