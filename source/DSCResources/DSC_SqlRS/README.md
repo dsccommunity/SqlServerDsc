@@ -30,7 +30,10 @@ The resource does not perform this cross-server activation automatically.
 * If `PsDscRunAsCredential` common parameter is used to run the resource, the
   specified credential must have permissions to connect to the SQL Server instance
   specified in `DatabaseServerName` and `DatabaseInstanceName`, and have permission
-  to create the Reporting Services databases.
+  to create the Reporting Services databases. The login must also be able to verify
+  catalog absence before creation, normally through the default `VIEW ANY DATABASE`
+  permission. The resource fails closed if the resolved catalog is not visible and
+  the login cannot distinguish an absent database from a hidden existing database.
 * Parameter `Encrypt` controls whether the connection used by `Invoke-SqlCmd`
   should enforce encryption. This parameter can only be used together with the
   module _SqlServer_ v22.x (minimum v22.0.49-preview). The parameter will be

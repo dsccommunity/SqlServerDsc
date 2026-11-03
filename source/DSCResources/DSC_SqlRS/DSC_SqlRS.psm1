@@ -448,9 +448,21 @@ function Set-TargetResource
             }
 
             $escapedDatabaseName = $reportingServicesDatabaseName.Replace("'", "''")
-            $databaseExistsQuery = "SELECT CASE WHEN DB_ID(N'$escapedDatabaseName') IS NULL THEN 0 ELSE 1 END AS DatabaseExists;"
+            $databaseExistsQuery = "SELECT CASE WHEN DB_ID(N'$escapedDatabaseName') IS NULL THEN 0 ELSE 1 END AS DatabaseExists, HAS_PERMS_BY_NAME(NULL, NULL, 'VIEW ANY DATABASE') AS CanViewAnyDatabase;"
             $databaseExistsResult = Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $databaseExistsQuery -PassThru
             $databaseExists = [System.Boolean] $databaseExistsResult.Tables[0].Rows[0].DatabaseExists
+            $canViewAnyDatabase = [System.Boolean] $databaseExistsResult.Tables[0].Rows[0].CanViewAnyDatabase
+
+            if (-not $databaseExists -and -not $canViewAnyDatabase)
+            {
+                $errorMessage = $script:localizedData.DatabaseExistenceCannotBeDetermined -f @(
+                    $reportingServicesDatabaseName
+                    $DatabaseServerName
+                    $DatabaseInstanceName
+                )
+
+                New-InvalidOperationException -Message $errorMessage
+            }
 
             if (-not $databaseExists)
             {

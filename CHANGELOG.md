@@ -11,7 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added the optional parameter `DatabaseName` to configure a custom-named or
     existing Reporting Services catalog. ([issue #2483](https://github.com/dsccommunity/SqlServerDsc/issues/2483))
     Catalog existence is checked for both explicitly configured and automatically
-    derived database names before any catalog-creation script is executed.
+    derived database names before any catalog-creation script is executed. The
+    resource fails closed when the SQL login cannot safely determine absence.
     When an existing catalog requires scale-out activation, the resource now
     reports the waiting server and the initialized member that must add it.
 - SqlServerDsc

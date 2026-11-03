@@ -505,7 +505,8 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     @{
                         Rows = @(
                             @{
-                                DatabaseExists = 0
+                                DatabaseExists    = 0
+                                CanViewAnyDatabase = 1
                             }
                         )
                     }
@@ -637,6 +638,46 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 Should-Invoke -CommandName Restart-SqlDscRSService -Exactly -Scope It -Times 2
             }
 
+            Context 'When catalog absence cannot be safely determined' {
+                BeforeEach {
+                    Mock -CommandName Invoke-SqlDscQuery -MockWith {
+                        return @{
+                            Tables = @(
+                                @{
+                                    Rows = @(
+                                        @{
+                                            DatabaseExists     = 0
+                                            CanViewAnyDatabase = 0
+                                        }
+                                    )
+                                }
+                            )
+                        }
+                    } -ParameterFilter {
+                        $PassThru -and $Query -match 'DB_ID'
+                    }
+                }
+
+                It 'Should fail closed before generating a database creation script' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockDefaultParameters = @{
+                            InstanceName         = $mockNamedInstanceName
+                            DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                            DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                        }
+
+                        $expectedError = '*ReportServer*SERVER\INSTANCE*VIEW ANY DATABASE*DSC_SQLRS0004*'
+
+                        { Set-TargetResource @mockDefaultParameters } | Should-Throw -ExceptionMessage $expectedError
+                    }
+
+                    Should-Invoke -CommandName Request-SqlDscRSDatabaseScript -Exactly -Scope It -Times 0
+                    Should-Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Scope It -Times 0
+                }
+            }
+
             Context 'When the derived database already exists' {
                 BeforeEach {
                     Mock -CommandName Invoke-SqlDscQuery -MockWith {
@@ -645,7 +686,8 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                                 @{
                                     Rows = @(
                                         @{
-                                            DatabaseExists = 1
+                                            DatabaseExists    = 1
+                                            CanViewAnyDatabase = 1
                                         }
                                     )
                                 }
@@ -738,7 +780,8 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                                 @{
                                     Rows = @(
                                         @{
-                                            DatabaseExists = 1
+                                            DatabaseExists    = 1
+                                            CanViewAnyDatabase = 1
                                         }
                                     )
                                 }
@@ -827,7 +870,8 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                                 @{
                                     Rows = @(
                                         @{
-                                            DatabaseExists = 0
+                                            DatabaseExists    = 0
+                                            CanViewAnyDatabase = 1
                                         }
                                     )
                                 }
@@ -1113,7 +1157,8 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                                 @{
                                     Rows = @(
                                         @{
-                                            DatabaseExists = 1
+                                            DatabaseExists    = 1
+                                            CanViewAnyDatabase = 1
                                         }
                                     )
                                 }
