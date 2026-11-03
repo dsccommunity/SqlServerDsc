@@ -952,6 +952,108 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 }
             }
 
+            Context 'When another node creates the database concurrently' {
+                BeforeEach {
+                    $script:databaseExistenceQueryCallCount = 0
+
+                    Mock -CommandName Invoke-SqlDscQuery -MockWith {
+                        $script:databaseExistenceQueryCallCount++
+
+                        $databaseExists = [System.Int32] ($script:databaseExistenceQueryCallCount -gt 1)
+
+                        return @{
+                            Tables = @(
+                                @{
+                                    Rows = @(
+                                        @{
+                                            DatabaseExists        = $databaseExists
+                                            CanViewAnyDatabase     = 1
+                                            IsReportServerDatabase = $databaseExists
+                                        }
+                                    )
+                                }
+                            )
+                        }
+                    } -ParameterFilter {
+                        $PassThru -and $Query -match 'DB_ID'
+                    }
+
+                    Mock -CommandName Request-SqlDscRSDatabaseScript -MockWith {
+                        return 'create report server database'
+                    }
+
+                    Mock -CommandName Invoke-SqlDscQuery -MockWith {
+                        throw 'Database already exists.'
+                    } -ParameterFilter {
+                        $Query -eq 'create report server database'
+                    }
+                }
+
+                It 'Should recheck the catalog and continue when it is complete' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockDefaultParameters = @{
+                            InstanceName         = $mockNamedInstanceName
+                            DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                            DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                        }
+
+                        $null = Set-TargetResource @mockDefaultParameters
+                    }
+
+                    Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
+                        $PassThru -and $Query -match 'DB_ID'
+                    } -Scope It -Times 2
+                    Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
+                        $Query -eq 'create report server database'
+                    } -Scope It -Times 1
+                    Should-Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Scope It -Times 1
+                }
+
+                Context 'When the concurrently created database is incomplete' {
+                    BeforeEach {
+                        Mock -CommandName Invoke-SqlDscQuery -MockWith {
+                            $script:databaseExistenceQueryCallCount++
+
+                            $databaseExists = [System.Int32] ($script:databaseExistenceQueryCallCount -gt 1)
+
+                            return @{
+                                Tables = @(
+                                    @{
+                                        Rows = @(
+                                            @{
+                                                DatabaseExists        = $databaseExists
+                                                CanViewAnyDatabase     = 1
+                                                IsReportServerDatabase = 0
+                                            }
+                                        )
+                                    }
+                                )
+                            }
+                        } -ParameterFilter {
+                            $PassThru -and $Query -match 'DB_ID'
+                        }
+                    }
+
+                    It 'Should preserve the original creation error' {
+                        InModuleScope -ScriptBlock {
+                            Set-StrictMode -Version 1.0
+
+                            $mockDefaultParameters = @{
+                                InstanceName         = $mockNamedInstanceName
+                                DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                                DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                            }
+
+                            { Set-TargetResource @mockDefaultParameters } | Should-Throw -ExceptionMessage '*Database already exists*'
+                        }
+
+                        Should-Invoke -CommandName Set-SqlDscRSDatabaseConnection -Exactly -Scope It -Times 0
+                    }
+                }
+            }
+
             Context 'When there is no Reporting Services instance after Set-TargetResource has been called' {
                 BeforeEach {
                     Mock -CommandName Get-ItemProperty

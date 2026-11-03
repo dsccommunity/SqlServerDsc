@@ -481,7 +481,33 @@ function Set-TargetResource
                 Write-Verbose -Message "Generate database creation script on $DatabaseServerName\$DatabaseInstanceName for database '$reportingServicesDatabaseName'."
 
                 $reportingServicesDatabaseScript = $rsConfiguration | Request-SqlDscRSDatabaseScript -DatabaseName $reportingServicesDatabaseName -Lcid $language -ErrorAction 'Stop'
-                Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $reportingServicesDatabaseScript
+
+                try
+                {
+                    Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $reportingServicesDatabaseScript
+                }
+                catch
+                {
+                    $databaseCreationError = $_
+
+                    try
+                    {
+                        $databaseExistsResult = Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $databaseExistsQuery -PassThru
+                        $databaseExists = [System.Boolean] $databaseExistsResult.Tables[0].Rows[0].DatabaseExists
+                        $isReportServerDatabase = [System.Boolean] $databaseExistsResult.Tables[0].Rows[0].IsReportServerDatabase
+                    }
+                    catch
+                    {
+                        throw $databaseCreationError
+                    }
+
+                    if (-not ($databaseExists -and $isReportServerDatabase))
+                    {
+                        throw $databaseCreationError
+                    }
+
+                    Write-Verbose -Message "Database '$reportingServicesDatabaseName' was created concurrently on $DatabaseServerName\$DatabaseInstanceName. Continuing with the existing report server catalog."
+                }
             }
 
             Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $reportingServicesDatabaseRightsScript
