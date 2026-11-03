@@ -950,6 +950,25 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                         $DatabaseName -eq 'ReportServer_Custom'
                     } -Scope It -Times 1
                 }
+
+                It 'Should escape apostrophes in the database existence query' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockDefaultParameters = @{
+                            InstanceName         = $mockNamedInstanceName
+                            DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                            DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                            DatabaseName         = "O'Brien"
+                        }
+
+                        $null = Set-TargetResource @mockDefaultParameters
+                    }
+
+                    Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
+                        $PassThru -and $Query -match "DB_ID\(N'O''Brien'\)"
+                    } -Scope It -Times 1
+                }
             }
 
             Context 'When another node creates the database concurrently' {
