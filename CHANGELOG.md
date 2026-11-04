@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Several integration tests wrongly said that the command `Test-DscConfiguration`
     return `$true` when it is in fact return the string value `'True'`.
   - Some integration tests still wasn't converted correctly to Pester 6 syntax
+  - Limited integration jobs to 120 minutes so stalled media downloads do not
+    occupy a Microsoft-hosted agent for approximately six hours.
+    ([issue #2485](https://github.com/dsccommunity/SqlServerDsc/issues/2485))
 - DSC_SqlRS and DSC_SqlWindowsFirewall
   - Fixed a duplicated word in localized `TestFailedAfterSet` messages.
 - SqlServerDsc
