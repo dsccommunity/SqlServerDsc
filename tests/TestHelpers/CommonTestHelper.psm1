@@ -294,7 +294,12 @@ function New-SQLSelfSignedCertificate
         Subject            = "CN=$certificateSubject"
         EKU                = 'Server Authentication'
         KeyUsage           = 'KeyEncipherment, DataEncipherment'
-        SAN                = "dns:$certificateSubject"
+        <#
+            Include 'localhost' so that connections to 'localhost\<instance>' pass
+            the server certificate name validation, which is enforced by default
+            by SQL Server 2025 (Microsoft.Data.SqlClient) when encryption is used.
+        #>
+        SAN                = @("dns:$certificateSubject", 'dns:localhost')
         FriendlyName       = 'Sql Encryption certificate'
         Path               = $sqlPrivateCertificatePath
         Password           = $sqlPrivateKeyPassword

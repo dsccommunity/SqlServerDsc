@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Several integration tests wrongly said that the command `Test-DscConfiguration`
     return `$true` when it is in fact return the string value `'True'`.
   - Some integration tests still wasn't converted correctly to Pester 6 syntax
+  - The build script `Test-ShouldRunDscResourceIntegrationTests.ps1` now
+    checks for changed DSC resource integration test files before returning
+    early when no changes exist under the source folder, so changes that only
+    affect the integration tests trigger the DSC resource integration tests.
 - DSC_SqlRS and DSC_SqlWindowsFirewall
   - Fixed a duplicated word in localized `TestFailedAfterSet` messages.
 - SqlServerDsc
@@ -37,6 +41,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     handled in the cmdlet's `Process` block. ([issue #2456](https://github.com/dsccommunity/SqlServerDsc/issues/2456))
 - SqlRole
   - Fix if statements checking the parameters are present. ([issue #1702](https://github.com/dsccommunity/SqlServerDsc/issues/1702))
+- SqlSecureConnection
+  - Re-enabled the integration tests for SQL Server 2025. The test helper
+    `New-SQLSelfSignedCertificate` now adds `localhost` to the certificate
+    subject alternative names so the connection to `localhost` after the
+    service restart passes certificate name validation ([issue #2440](https://github.com/dsccommunity/SqlServerDsc/issues/2440)).
 
 ### Changed
 
