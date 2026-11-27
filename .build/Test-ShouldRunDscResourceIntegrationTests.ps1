@@ -380,12 +380,14 @@ function Get-PrivateFunctionsUsedByClassResources
     .DESCRIPTION
         This function analyzes the changes between two git references and determines
         if DSC resource integration tests should run based on the files that have
-        been modified. It performs an optimized analysis by first checking if any
-        changes exist under the source/ folder. If no source changes are detected,
-        it skips the expensive analysis and returns false. Otherwise, it checks for
-        changes to DSC resources, classes, public commands used by DSC resources,
-        private functions used by those public commands, private functions used by
-        class-based DSC resources, and integration tests.
+        been modified. It first checks if any DSC resource integration test files
+        have been changed, in which case it returns true. It then performs an
+        optimized analysis by checking if any changes exist under the source/
+        folder. If no source changes are detected, it skips the expensive analysis
+        and returns false. Otherwise, it checks for changes to DSC resources,
+        classes, public commands used by DSC resources, private functions used by
+        those public commands, and private functions used by class-based DSC
+        resources.
     .PARAMETER BaseBranch
         The base branch to compare against. Default is 'origin/main'.
 
@@ -459,6 +461,22 @@ function Test-ShouldRunDscResourceIntegrationTests
     Write-Host "##[endgroup]"
     Write-Host ""
 
+    <#
+        Check if integration test files themselves are changed. This must be
+        done before the early optimization below, otherwise changes that only
+        affect the integration tests would never trigger the tests.
+    #>
+    $changedIntegrationTests = $changedFiles | Where-Object -FilterScript { $_ -match '^tests/Integration/Resources/' }
+    if ($changedIntegrationTests)
+    {
+        Write-Warning "DSC resource integration test files have been modified. DSC resource integration tests will run."
+        Write-Host "##[group]Changed Integration Test Files"
+        $changedIntegrationTests | ForEach-Object -Process { Write-Host "  $_" }
+        Write-Host "##[endgroup]"
+        Write-Host ""
+        return $true
+    }
+
     # Early optimization: Check if any changes are under the source folder
     $sourcePrefix = '^' + [regex]::Escape((($SourcePath -replace '\\','/') -replace '/+$','')) + '/'
     $changedSourceFiles = $changedFiles | Where-Object -FilterScript { $_ -match $sourcePrefix }
@@ -526,18 +544,6 @@ function Test-ShouldRunDscResourceIntegrationTests
         Write-Warning "Private functions used by DSC resource-related public commands or class-based DSC resources have been modified. DSC resource integration tests will run."
         Write-Host "##[group]Affected Private Functions"
         $affectedPrivateFunctions | ForEach-Object -Process { Write-Host "  $_" }
-        Write-Host "##[endgroup]"
-        Write-Host ""
-        return $true
-    }
-
-    # Check if integration test files themselves are changed
-    $changedIntegrationTests = $changedFiles | Where-Object -FilterScript { $_ -match '^tests/Integration/Resources/' }
-    if ($changedIntegrationTests)
-    {
-        Write-Warning "DSC resource integration test files have been modified. DSC resource integration tests will run."
-        Write-Host "##[group]Changed Integration Test Files"
-        $changedIntegrationTests | ForEach-Object -Process { Write-Host "  $_" }
         Write-Host "##[endgroup]"
         Write-Host ""
         return $true

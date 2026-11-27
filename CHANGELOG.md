@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Several integration tests wrongly said that the command `Test-DscConfiguration`
     return `$true` when it is in fact return the string value `'True'`.
   - Some integration tests still wasn't converted correctly to Pester 6 syntax
+  - The build script `Test-ShouldRunDscResourceIntegrationTests.ps1` now
+    checks for changed DSC resource integration test files before returning
+    early when no changes exist under the source folder, so changes that only
+    affect the integration tests trigger the DSC resource integration tests.
 - DSC_SqlRS and DSC_SqlWindowsFirewall
   - Fixed a duplicated word in localized `TestFailedAfterSet` messages.
 - SqlServerDsc
